@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>First People's Language Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.css' type='text/css' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+#map {
+    position:absolute;
+    left:25%;
+    top:0;
+    bottom:0;
+    width: 75%;
+}
+.map-overlay {
+    position: absolute;
+    width: 25%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #fff;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.map-overlay fieldset {
+    display: none;
+    background: #ddd;
+    border: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.map-overlay input {
+    display: block;
+    border: none;
+    width: 100%;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 0;
+}
+
+.map-overlay .listing {
+    overflow: auto;
+    max-height: 100%;
+}
+
+.map-overlay .listing > * {
+    display: block;
+    padding: 5px 10px;
+    margin: 0;
+}
+
+.map-overlay .listing a {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #404;
+    text-decoration: none;
+}
+
+.map-overlay .listing a:last-child {
+    border: none;
+}
+
+.map-overlay .listing a:hover {
+    background: #f0f0f0;
+}
+</style>
+
+<div id='map'></div>
+
+<div class='map-overlay'>
+    <fieldset>
+        <input id='feature-filter' type='text' placeholder='communities' />
+    </fieldset>
+    <div id='feature-listing' class='listing'></div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
+    center: [-125, 55],
+    maxZoom: 19,
+    minZoom: 3,
+    zoom: 5
+});
+
+// Holds visible nations features for filtering
+var nations = [];
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false
+});
+
+var filterEl = document.getElementById('feature-filter');
+var listingEl = document.getElementById('feature-listing');
+
+function renderListings(features) {
+    // Clear any existing listings
+    listingEl.innerHTML = '';
+    if (features.length) {
+        features.forEach(function(feature) {
+            var prop = feature.properties;
+            var item = document.createElement('a');
+            item.target = '_blank';
+            item.textContent = prop.popup;
+            item.addEventListener('mouseover', function() {
+                // Highlight corresponding feature on the map
+                popup.setLngLat(feature.geometry.coordinates)
+                    .setText(feature.properties.popup + ' community')
+                    .addTo(map);
+            });
+            listingEl.appendChild(item);
+        });
+
+        // Show the filter input
+        filterEl.parentNode.style.display = 'block';
+    } else {
+        var empty = document.createElement('p');
+        empty.textContent = 'Drag the map to populate results';
+        listingEl.appendChild(empty);
+
+        // Hide the filter input
+        filterEl.parentNode.style.display = 'none';
+
+        // remove features filter
+        map.setFilter('fn-nations', ['has', 'popup']);
+    }
+}
+
+function normalize(string) {
+    return string.trim().toLowerCase();
+}
+
+function getUniqueFeatures(array, comparatorProperty) {
+    var existingFeatureKeys = {};
+    // Because features come from tiled vector data, feature geometries may be split
+    // or duplicated across tile boundaries and, as a result, features may appear
+    // multiple times in query results.
+    var uniqueFeatures = array.filter(function(el) {
+        if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+            return false;
+        } else {
+            existingFeatureKeys[el.properties[comparatorProperty]] = true;
+            return true;
+        }
+    });
+
+    return uniqueFeatures;
+}
+
+function moveend() {
+    var features = map.queryRenderedFeatures({layers:['fn-nations']});
+
+    if (features) {
+        var uniqueFeatures = getUniqueFeatures(features, "popup");
+        // Populate features for the listing overlay.
+        renderListings(uniqueFeatures);
+
+        // Clear the input container
+        filterEl.value = '';
+
+        // Store the current features in sn `nations` variable to
+        // later use for filtering on `keyup`.
+        nations = uniqueFeatures;
+    }
+}
+
+map.on('load', function() {
+
+
+    map.on('moveend', moveend);
+
+    map.on('mousemove', 'fn-nations', function(e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        // Populate the popup and set its coordinates based on the feature.
+        var feature = e.features[0];
+        popup.setLngLat(feature.geometry.coordinates)
+            .setText(feature.properties.popup + " community")
+            .addTo(map);
+    });
+
+    map.on('mouseleave', 'fn-nations', function() {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+
+    filterEl.addEventListener('keyup', function(e) {
+        var value = normalize(e.target.value);
+
+        // Filter visible features that don't match the input value.
+        var filtered = nations.filter(function(feature) {
+            var name = normalize(feature.properties.popup);
+            var code = normalize(feature.properties.popup);
+            return name.indexOf(value) > -1 || code.indexOf(value) > -1;
+        });
+
+        // Populate the sidebar with filtered results
+        renderListings(filtered);
+
+        // Set the filter to populate features into the layer.
+        map.setFilter('fn-nations', ['match', ['get', 'popup'], filtered.map(function(feature) {
+            return feature.properties.popup;
+        }), true, false]);
+    });
+
+    // Call this function on initialization
+    // passing an empty array to render an empty state
+    renderListings([]);
+    setTimeout(moveend, 500)
+});
+
+map.addControl(new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl
+}));
+</script>
+
+</body>
+</html>
