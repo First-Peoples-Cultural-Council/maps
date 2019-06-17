@@ -26,7 +26,6 @@ Information Architecture
 DB Schema
 ![DB Schema](./fplm-schema.png)
 
-
 #### Mock-ups
 
 For a clickable prototype experience, the Adobe XD files are [here]().
