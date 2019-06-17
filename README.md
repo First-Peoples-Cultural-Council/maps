@@ -1,37 +1,32 @@
-## Welcome to GitHub Pages
+# First Peoples' Language Map
 
-You can use the [editor on GitHub](https://github.com/countable-web/first-peoples-language-map/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This repository contains planning materials for the FPLM web app project.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Deliverables
 
-### Markdown
+### Stakeholder Interviews
+Interview key stakeholders at FPCC to gather, develop and document fine-tuned requirements (expressed as epics/user stories) and review existing deployments (https://www.fp-artsmap.ca, http://maps.fpcc.ca).
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+  * Stakeholders from FPCC were interviewed and those discussions formed the basis of the [User Stories](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg)
+  * Key observations from interviews are held in the [User Stories - Appendix D2](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg)
+  * For interviewee privacy, the raw interview answers are not currently public [request access](https://docs.google.com/forms/d/1IQrmAR3WvaElUqNQQ44nh6mS92L4UsrTTOmqNM2gmY0/edit#response=ACYDBNgPnE6MSVW30CxZa744X3NjQqfTZkpy-KoWMjjMJvDrGrt2IzOsVuQcbcjsVmMoWUE)
+  * Stakeholder interview [schedule](https://docs.google.com/spreadsheets/d/1blPhBSdzw7pOeUZGrMV1AiUTPvK9kGU4RLvchswdug4/edit#gid=669170734).
 
-```markdown
-Syntax highlighted code block
+### Technology Options
+Select and review technology options, including decision on a cross-platform deployment (Android/iPhone).
 
-# Header 1
-## Header 2
-### Header 3
+  * See [User Stories - Appendix B](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg). Not all discussions surrounding these choices were documented. The key factor is the planning team demonstrated similar work and some prototyping using these stack components, and w recommend the implementing team use an appropriate technology stack they are experts in.
 
-- Bulleted
-- List
+### Planning
+Create wireframes, mock-ups, and technical designs based on requirements.
 
-1. Numbered
-2. List
+### Standards and Benchmarks
+Set and document baselines in terms of performance, test coverage, accessibility, browser support, font support.
 
-**Bold** and _Italic_ and `Code` text
+  * Benchmarks are shared the [User Stories - Appendix A](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg).
 
-[Link](url) and ![Image](src)
-```
+### Distribution
+All output and results from this step should be shared with FPCC in a digital, reusable format.
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+  * [This repository](./) and the accompanying [public Google Drive folder](https://drive.google.com/drive/folders/1cJmyfs9K645JTUn_bHOebEF0BYIVUhuv?usp=sharing) contain all outputs of Phase 1.
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/countable-web/first-peoples-language-map/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
