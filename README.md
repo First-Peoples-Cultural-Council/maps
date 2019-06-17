@@ -28,6 +28,10 @@ DB Schema
 
 #### Mock-ups
 
+[landing](./mock-1.png)
+[language](./mock-2.png)
+[detail](./mock-3.png)
+
 For a clickable prototype experience, the Adobe XD files are [here]().
 
 ### Standards and Benchmarks
