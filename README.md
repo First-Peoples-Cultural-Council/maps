@@ -20,6 +20,22 @@ Select and review technology options, including decision on a cross-platform dep
 ### Planning
 Create wireframes, mock-ups, and technical designs based on requirements.
 
+Information Architecture
+![Information Architecture](./fplm-ia.png)
+
+DB Schema
+![DB Schema](./fplm-schema.png)
+
+Wireframes 1
+![Wireframes](./wires-1.png)
+
+Wireframes 2
+![Wireframes](./wires-2.png)
+
+#### Mock-ups
+
+For a clickable prototype experience, the Adobe XD files are [here]().
+
 ### Standards and Benchmarks
 Set and document baselines in terms of performance, test coverage, accessibility, browser support, font support.
 
@@ -30,3 +46,9 @@ All output and results from this step should be shared with FPCC in a digital, r
 
   * [This repository](./) and the accompanying [public Google Drive folder](https://drive.google.com/drive/folders/1cJmyfs9K645JTUn_bHOebEF0BYIVUhuv?usp=sharing) contain all outputs of Phase 1.
 
+### Other Stuff
+This repository also contains.
+
+  * An export of the MapBox theme files.
+  * A script for importing the language regions, places, and community locations from a custom format to native geojson (see `scripts/convert.py`, it takes a raw file from `./data` as input.)
+  * The MIT Licence (proposed by Vendor, awaiting approval)
