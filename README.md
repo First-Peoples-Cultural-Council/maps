@@ -35,9 +35,9 @@ This diagram shows a high level proposed schema for the FPLM web app.
 
 #### Mock-ups
 
-[landing](./mock-1.png)
-[language](./mock-2.png)
-[detail](./mock-3.png)
+![landing](./mock-1.png)
+![language](./mock-2.png)
+![detail](./mock-3.png)
 
    * Video navigating through landing flows [mock-ups](https://drive.google.com/open?id=1YQ2PJAeml1cEhQsCwMk8o8CY2kiMAGgq).
    * Originals of Adobe design files [here](https://drive.google.com/drive/u/0/folders/1EUjSc2NAbVhD3fn6Pjj9_4OstD6pIE7E?ddrp=1). TODO @Felipe
