@@ -26,12 +26,6 @@ Information Architecture
 DB Schema
 ![DB Schema](./fplm-schema.png)
 
-Wireframes 1
-![Wireframes](./wires-1.png)
-
-Wireframes 2
-![Wireframes](./wires-2.png)
-
 #### Mock-ups
 
 For a clickable prototype experience, the Adobe XD files are [here]().
