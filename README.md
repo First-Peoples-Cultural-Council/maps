@@ -26,8 +26,13 @@ This repository contains planning materials for the FPLM web app project. At Cou
 
 #### Mock-ups
 
+Landing Page
 ![landing](./mock-1.png)
+
+Language Selected
 ![language](./mock-2.png)
+
+Language Detail (TODO: map should zoom)
 ![detail](./mock-3.png)
 
    * Video navigating through landing flows [mock-ups](https://drive.google.com/open?id=1YQ2PJAeml1cEhQsCwMk8o8CY2kiMAGgq).
