@@ -160,7 +160,7 @@ function renderListings(features) {
                         center: ll,
                         zoom: 10
                     });
-                    
+
                 }
 
             })
@@ -205,8 +205,58 @@ function moveend() {
 
 map.on('load', function() {
 
-
+    map.addLayer({
+            "id": "fn-lang-areas-fill",
+            "type": "fill",
+            "metadata": {},
+            "source": "composite",
+            "source-layer": "langs-0brkvj",
+            "layout": {},
+            "paint": {
+                "fill-color": ["get", "color"],
+                "fill-opacity": ["case",
+                    ["boolean", ["feature-state", "hover"], false],
+                    1,
+                    0.5
+                ]
+            }
+        })
     map.on('moveend', moveend);
+
+    var hov_title = null;
+
+    // When the user moves their mouse over the state-fill layer, we'll update the
+    // feature state for the feature under the mouse.
+    map.on("mouseover", "fn-lang-areas-fill", function (e) {
+        last_hov_title = hov_title;
+        hov_title = e.features[0].properties.title
+
+        if (last_hov_title !== hov_title) {
+            var relatedFeatures = map.querySourceFeatures('composite', {
+                sourceLayer: 'langs-0brkvj',
+                filter: ['in', 'title', e.features[0].properties.title]
+            }).forEach(function (feature) {
+                map.setFeatureState({ source: 'composite', sourceLayer: 'langs-0brkvj', id: feature.id }, { hover: true });
+            });
+        }
+        // if (e.features.length > 0) {
+        //     if (hoveredStateId) {
+        //         map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: false });
+        //     }
+        //     hoveredStateId = e.features[0].id;
+        //     map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: true });
+        // }
+
+    });
+
+    // When the mouse leaves the state-fill layer, update the feature state of the
+    // previously hovered feature.
+    map.on("mouseleave", "fn-lang-areas-fill", function () {
+        // if (hoveredStateId) {
+        //     map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: false });
+        // }
+        // hoveredStateId = null;
+    });
 
     // Call this function on initialization
     // passing an empty array to render an empty state
