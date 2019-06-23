@@ -39,18 +39,14 @@ You can visit the Django admin at `http://localhost/admin`. The username is `adm
 
 ## Front End
 
-  To get started:
+For development, setup is automatic.
 
-        cd frontend
-        yarn run dev
+To build & start for production:
 
-  To build & start for production:
-
-        cd frontend
+        docker-compose exec frontend bash
         yarn run build
         yarn start
 
-  To test:
+To test:
 
-        cd frontend
-        yarn run test
+        docker-compose exec frontend yarn run test
