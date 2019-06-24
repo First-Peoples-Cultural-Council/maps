@@ -1,67 +1,56 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        fpcc
-      </h1>
-      <h2 class="subtitle">
-        YAY
-      </h2>
-      <div class="links">
-        <a href="https://nuxtjs.org/" target="_blank" class="button--green"
-          >Documentation</a
-        >
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-          >GitHub</a
-        >
-      </div>
-    </div>
+  <div class="map-container">
+    <Mapbox
+      :access-token="MAPBOX_ACCESS_TOKEN"
+      :map-options="MAP_OPTIONS"
+      :nav-control="NAV_CONTROL"
+      :geolocate-control="GEOLOCATE_CONTROL"
+    ></Mapbox>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import MapboxGL from 'mapbox-gl'
+import {} from '../node_modules/mapbox-gl/dist/mapbox-gl.css'
+import Mapbox from 'mapbox-gl-vue'
 
+console.log('Mapbox', Mapbox)
+console.log('MapboxGL', MapboxGL)
 export default {
   components: {
-    Logo
+    Mapbox
+  },
+
+  data() {
+    return {
+      MAPBOX_ACCESS_TOKEN:
+        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
+      MAP_OPTIONS: {
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-74.5, 40],
+        zoom: 9
+      },
+      NAV_CONTROL: {
+        show: true,
+        position: 'top-right'
+      },
+      GEOLOCATE_CONTROL: {
+        show: true,
+        position: 'top-left'
+      }
+    }
   }
 }
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+#map {
+  width: 100%;
+  height: 100%;
 }
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.map-container {
+  width: 100%;
+  height: 100%;
 }
 </style>

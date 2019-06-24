@@ -1,3 +1,5 @@
+const webpack = require('webpack')
+
 module.exports = {
   mode: 'spa',
   server: {
@@ -27,7 +29,9 @@ module.exports = {
   /*
    ** Global CSS
    */
-  css: [],
+  css: [
+    '@/assets/styles/sass/global.sass'
+  ],
   /*
    ** Plugins to load before mounting the App
    */
@@ -52,6 +56,12 @@ module.exports = {
    ** Build configuration
    */
   build: {
+
+    plugins: [
+      new webpack.ProvidePlugin({
+        mapboxgl: 'mapbox-gl'
+      })
+    ],
     /*
      ** You can extend webpack config here
      */
