@@ -6,12 +6,13 @@
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
     ></Mapbox>
+    <nuxt-child />
   </div>
 </template>
 
 <script>
 import MapboxGL from 'mapbox-gl'
-import {} from '../node_modules/mapbox-gl/dist/mapbox-gl.css'
+import {} from '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
 import Mapbox from 'mapbox-gl-vue'
 
 console.log('Mapbox', Mapbox)
@@ -52,5 +53,6 @@ export default {
 .map-container {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 </style>
