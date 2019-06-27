@@ -7,6 +7,7 @@
       :geolocate-control="GEOLOCATE_CONTROL"
     ></Mapbox>
     <SearchBar></SearchBar>
+    <NavigationBar></NavigationBar>
     <nuxt-child />
   </div>
 </template>
@@ -16,13 +17,15 @@ import MapboxGL from 'mapbox-gl'
 import {} from '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
 import Mapbox from 'mapbox-gl-vue'
 import SearchBar from '@/components/SearchBar.vue'
+import NavigationBar from '@/components/NavigationBar.vue'
 
 console.log('Mapbox', Mapbox)
 console.log('MapboxGL', MapboxGL)
 export default {
   components: {
     Mapbox,
-    SearchBar
+    SearchBar,
+    NavigationBar
   },
 
   data() {
@@ -36,11 +39,11 @@ export default {
       },
       NAV_CONTROL: {
         show: true,
-        position: 'top-right'
+        position: 'bottom-right'
       },
       GEOLOCATE_CONTROL: {
         show: true,
-        position: 'top-left'
+        position: 'bottom-right'
       }
     }
   }
