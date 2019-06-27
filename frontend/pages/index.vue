@@ -6,6 +6,7 @@
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
     ></Mapbox>
+    <SearchBar></SearchBar>
     <nuxt-child />
   </div>
 </template>
@@ -14,12 +15,14 @@
 import MapboxGL from 'mapbox-gl'
 import {} from '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
 import Mapbox from 'mapbox-gl-vue'
+import SearchBar from '@/components/SearchBar.vue'
 
 console.log('Mapbox', Mapbox)
 console.log('MapboxGL', MapboxGL)
 export default {
   components: {
-    Mapbox
+    Mapbox,
+    SearchBar
   },
 
   data() {
