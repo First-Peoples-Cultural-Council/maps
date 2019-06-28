@@ -47,7 +47,7 @@ export default {
         {
           id: 2,
           name: 'Heritages',
-          path: '/heritage',
+          path: '/heritages',
           pathName: 'index-heritages-heritage'
         }
       ]
@@ -58,11 +58,12 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
-      const navigationTab = this.navigationTabs.find(nt => nt.name === data)
-      const pathName = navigationTab.pathName
-      console.log('Path', pathName)
-      this.$router.push({
-        name: pathName
+      const path = this.navigationTabs.find(nt => nt.name === data).path
+      const self = this
+      setTimeout(() => {
+        self.$router.push({
+          path
+        })
       })
     }
   }
