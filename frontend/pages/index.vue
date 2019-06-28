@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container">
+  <div class="map-container" @click="handleClick">
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
@@ -27,7 +27,6 @@ export default {
     SearchBar,
     NavigationBar
   },
-
   data() {
     return {
       MAPBOX_ACCESS_TOKEN:
@@ -45,6 +44,14 @@ export default {
         show: true,
         position: 'bottom-right'
       }
+    }
+  },
+  methods: {
+    handleClick(e) {
+      console.log('Router', this.$router)
+      this.$router.push({
+        path: 'languages'
+      })
     }
   }
 }
