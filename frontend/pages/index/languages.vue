@@ -13,9 +13,6 @@ export default {
   components: {
     SideBar
   },
-  mounted() {
-    console.log('Mounted Sidebar', this.$route)
-  },
   methods: {
     handleNavigation(e, data) {
       console.log('Handling Navigation!', e, data)

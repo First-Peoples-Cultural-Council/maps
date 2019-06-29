@@ -13,14 +13,11 @@
 </template>
 
 <script>
-import MapboxGL from 'mapbox-gl'
-import {} from '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
 import Mapbox from 'mapbox-gl-vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 
 console.log('Mapbox', Mapbox)
-console.log('MapboxGL', MapboxGL)
 export default {
   components: {
     Mapbox,

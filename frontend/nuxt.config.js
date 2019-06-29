@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 
 module.exports = {
-  mode: 'spa',
+  mode: 'universal',
   server: {
     port: 3000, // default: 3000
     host: '0.0.0.0' // default: localhost
