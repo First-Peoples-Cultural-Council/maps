@@ -1,6 +1,6 @@
 <template>
   <div class="language">
-    <h1>Language</h1>
+    <h1>Language Dynamic</h1>
   </div>
 </template>
 

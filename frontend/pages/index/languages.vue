@@ -1,7 +1,10 @@
 <template>
   <div>
     <SideBar active="Languages">
-      <nuxt-child />
+      <div>
+        Hello!
+        <nuxt-child />
+      </div>
     </SideBar>
   </div>
 </template>
