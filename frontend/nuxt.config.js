@@ -30,7 +30,8 @@ module.exports = {
    ** Global CSS
    */
   css: [
-    '@/assets/styles/sass/global.sass'
+    '@/assets/styles/sass/global.sass',
+    '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
   ],
   /*
    ** Plugins to load before mounting the App
