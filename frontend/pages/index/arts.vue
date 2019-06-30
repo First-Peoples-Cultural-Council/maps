@@ -1,6 +1,7 @@
 <template>
   <div>
     <SideBar active="Arts">
+      Hello
       <nuxt-child />
     </SideBar>
   </div>

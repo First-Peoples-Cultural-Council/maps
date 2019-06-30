@@ -1,6 +1,6 @@
 <template>
-  <div class="art">
-    <h1>Art</h1>
+  <div class="heritage">
+    <h1>Heritage Detail</h1>
   </div>
 </template>
 

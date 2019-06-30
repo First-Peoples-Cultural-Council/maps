@@ -1,6 +1,6 @@
 <template>
-  <div class="language">
-    <h1>Language Dynamic</h1>
+  <div class="art">
+    <h1>Dynamic Art</h1>
   </div>
 </template>
 

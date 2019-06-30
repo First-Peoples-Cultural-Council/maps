@@ -1,6 +1,7 @@
 <template>
   <div>
     <SideBar active="Heritages">
+      Heritages
       <nuxt-child />
     </SideBar>
   </div>
