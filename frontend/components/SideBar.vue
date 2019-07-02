@@ -9,7 +9,8 @@
           <b-nav-item
             v-for="tab in navigationTabs"
             :key="tab.id"
-            :class="{ active: active === tab.name }"
+            :active="active === tab.name ? true : false"
+            :class="tab.name | lowerCase"
             @click.prevent="handleNavigation($event, tab.name)"
           >
             {{ tab.name }}
@@ -27,6 +28,11 @@ import Logo from '@/components/Logo.vue'
 export default {
   components: {
     Logo
+  },
+  filters: {
+    lowerCase(value) {
+      return value.toLowerCase()
+    }
   },
   props: {
     active: {
