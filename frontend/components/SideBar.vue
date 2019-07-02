@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-container">
     <div class="sidebar-header">
-      Logo Goes Here
+      <Logo></Logo>
     </div>
     <div class="sidebar-body">
       <div class="sidebar-tabs">
@@ -22,7 +22,12 @@
 </template>
 
 <script>
+import Logo from '@/components/Logo.vue'
+
 export default {
+  components: {
+    Logo
+  },
   props: {
     active: {
       type: String,
@@ -82,11 +87,41 @@ export default {
 }
 .sidebar-header {
   background-color: transparent;
-  flex: 2 1 0;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  padding: 1em;
 }
 
 .sidebar-body {
   background-color: white;
   flex: 16 1 0;
+}
+
+.nav-item {
+  background-color: #f4eee9;
+  font-size: 0.9em;
+}
+.nav-item a {
+  color: var(--color-dark-gray, #707070);
+}
+.nav-item.active {
+  background-color: white;
+  border: 0;
+  position: relative;
+  line-height: 10px;
+}
+.active::before {
+  content: '';
+  display: block;
+  height: 10px;
+  width: 100%;
+  background-color: white;
+  position: absolute;
+  top: -10px;
+  border-top-right-radius: 1em;
+}
+.nav-item.active a {
+  color: var(--color-red, #c46257);
 }
 </style>

@@ -8,7 +8,8 @@
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
-    <nuxt-child />
+    <Languages v-if="this.$route.name === 'index'"></Languages>
+    <nuxt-child v-else />
   </div>
 </template>
 
@@ -16,13 +17,15 @@
 import Mapbox from 'mapbox-gl-vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import Languages from './index/languages.vue'
 
 console.log('Mapbox', Mapbox)
 export default {
   components: {
     Mapbox,
     SearchBar,
-    NavigationBar
+    NavigationBar,
+    Languages
   },
   data() {
     return {
@@ -42,6 +45,10 @@ export default {
         position: 'bottom-right'
       }
     }
+  },
+  mounted() {
+    console.log('Index Mounted')
+    console.log('Check Router', this.$route)
   },
   methods: {
     handleClick(e) {
