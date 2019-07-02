@@ -10,7 +10,7 @@ services:
     networks:
       - back-tier
   db:
-    image: postgres:9.5.1
+    image: mdillon/postgis 
     volumes:
       - pg-data:/var/lib/postgresql/data
     networks:

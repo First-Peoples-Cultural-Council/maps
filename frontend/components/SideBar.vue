@@ -26,7 +26,7 @@ export default {
   props: {
     active: {
       type: String,
-      default: 'Languages'
+      default: "Languages"
     }
   },
   data() {
@@ -34,40 +34,40 @@ export default {
       navigationTabs: [
         {
           id: 0,
-          name: 'Languages',
-          path: '/languages',
-          pathName: 'index-languages-language'
+          name: "Languages",
+          path: "/languages",
+          pathName: "index-languages-language"
         },
         {
           id: 1,
-          name: 'Arts',
-          path: '/arts',
-          pathName: 'index-arts-art'
+          name: "Arts",
+          path: "/arts",
+          pathName: "index-arts-art"
         },
         {
           id: 2,
-          name: 'Heritages',
-          path: '/heritages',
-          pathName: 'index-heritages-heritage'
+          name: "Heritages",
+          path: "/heritages",
+          pathName: "index-heritages-heritage"
         }
       ]
-    }
+    };
   },
   mounted() {
-    console.log('Mounted Sidebar', this.$route)
+    console.log("Mounted Sidebar", this.$route);
   },
   methods: {
     handleNavigation(e, data) {
-      const path = this.navigationTabs.find(nt => nt.name === data).path
-      const self = this
+      const path = this.navigationTabs.find(nt => nt.name === data).path;
+      const self = this;
       setTimeout(() => {
         self.$router.push({
           path
-        })
-      })
+        });
+      });
     }
   }
-}
+};
 </script>
 
 <style>
