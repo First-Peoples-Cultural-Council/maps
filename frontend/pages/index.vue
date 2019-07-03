@@ -19,7 +19,7 @@ import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import Languages from './index/languages.vue'
 
-console.log("Mapbox", Mapbox);
+console.log('Mapbox', Mapbox)
 export default {
   components: {
     Mapbox,
@@ -30,9 +30,9 @@ export default {
   data() {
     return {
       MAPBOX_ACCESS_TOKEN:
-        "pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA",
+        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: "mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj",
+        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -40,13 +40,13 @@ export default {
       },
       NAV_CONTROL: {
         show: true,
-        position: "bottom-right"
+        position: 'bottom-right'
       },
       GEOLOCATE_CONTROL: {
         show: true,
-        position: "bottom-right"
+        position: 'bottom-right'
       }
-    };
+    }
   },
   mounted() {
     console.log('Index Mounted')
@@ -54,32 +54,32 @@ export default {
   },
   methods: {
     handleClick(e) {
-      console.log("Router", this.$router);
+      console.log('Router', this.$router)
       this.$router.push({
-        path: "languages"
-      });
+        path: 'languages'
+      })
     },
     mapLoaded(map) {
       map.addLayer({
-        id: "fn-lang-areas-fill",
-        type: "fill",
+        id: 'fn-lang-areas-fill',
+        type: 'fill',
         metadata: {},
-        source: "composite",
-        "source-layer": "langs-0brkvj",
+        source: 'composite',
+        'source-layer': 'langs-0brkvj',
         layout: {},
         paint: {
-          "fill-color": ["get", "color"],
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
+          'fill-color': ['get', 'color'],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
             1,
             0.5
           ]
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style>
