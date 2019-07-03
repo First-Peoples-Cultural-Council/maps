@@ -3,6 +3,7 @@
     <SideBar active="Languages">
       <div>
         Hello!
+        <Accordion></Accordion>
         <nuxt-child />
       </div>
     </SideBar>
@@ -11,10 +12,11 @@
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-
+import Accordion from '@/components/Accordion.vue'
 export default {
   components: {
-    SideBar
+    SideBar,
+    Accordion
   },
   methods: {
     handleNavigation(e, data) {
