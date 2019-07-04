@@ -20,7 +20,6 @@ import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import Languages from './index/languages.vue'
 
-console.log('Mapbox', Mapbox)
 export default {
   components: {
     Mapbox,
@@ -49,14 +48,8 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log('Index Mounted')
-    console.log('Check Router', this.$route)
-  },
   methods: {
     handleClick(map, e) {
-      console.log('Map', map)
-      console.log('Event', e)
       console.log(map.queryRenderedFeatures(e.point))
     },
     mapLoaded(map) {
