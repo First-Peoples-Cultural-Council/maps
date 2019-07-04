@@ -3,7 +3,9 @@
     <SideBar active="Languages">
       <div>
         <Accordion :content="accordionContent"></Accordion>
-        <Badge content="Languages"></Badge>
+        <section class="badge-section">
+          <Badge content="Languages" number="23"></Badge>
+        </section>
         <nuxt-child />
       </div>
     </SideBar>
@@ -35,4 +37,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.badge-section {
+  margin-top: 1em;
+}
+</style>

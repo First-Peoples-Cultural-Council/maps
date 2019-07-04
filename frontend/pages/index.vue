@@ -1,14 +1,15 @@
 <template>
-  <div class="map-container" @click="handleClick">
+  <div class="map-container">
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
+      @map-click="handleClick"
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
-    <Languages v-if="this.$route.name === 'index'"></Languages>
+    <Languages v-if="'index'"></Languages>
     <nuxt-child v-else />
   </div>
 </template>
@@ -53,11 +54,10 @@ export default {
     console.log('Check Router', this.$route)
   },
   methods: {
-    handleClick(e) {
-      console.log('Router', this.$router)
-      this.$router.push({
-        path: 'languages'
-      })
+    handleClick(map, e) {
+      console.log('Map', map)
+      console.log('Event', e)
+      console.log(map.queryRenderedFeatures(e.point))
     },
     mapLoaded(map) {
       map.addLayer({
