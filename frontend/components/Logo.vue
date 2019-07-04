@@ -1,7 +1,7 @@
 <template>
   <div class="logo">
     <img
-      src="../assets/images/symbol_text.png"
+      src="../assets/images/symbol_text_background.png"
       alt="Language Map Of British Columbia"
     />
   </div>
@@ -9,4 +9,10 @@
 
 <script></script>
 
-<style></style>
+<style>
+.logo img {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+}
+</style>

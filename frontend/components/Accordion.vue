@@ -1,16 +1,25 @@
 <template>
   <div class="accordion">
-    <b-collapse id="outer-collapse" visible class="mt-2">
+    <b-collapse id="outer-collapse" visible>
       <b-card>
-        <p v-if="!notVisible" class="outer-text">
-          <span class="accordion-content"
-            >{{ content.substring(0, 35) }}...</span
-          >
+        <p
+          v-if="!notVisible"
+          class="outer-text d-flex align-items-center justify-content-between"
+        >
+          <span class="accordion-content">
+            {{ content.substring(0, 35) }}...
+          </span>
           <b-button
             v-b-toggle.inner-collapse
             size="sm"
-            class="accordion-toggle float-right"
-          ></b-button>
+            class="accordion-toggle"
+          >
+            <img
+              src="@/assets/images/expand_icon.svg"
+              alt="Expand"
+              class="accordion-toggle-icon"
+            />
+          </b-button>
         </p>
         <b-collapse id="inner-collapse" v-model="notVisible">
           <b-card>
@@ -19,7 +28,13 @@
               v-b-toggle.inner-collapse
               size="sm"
               class="accordion-toggle float-right"
-            ></b-button>
+            >
+              <img
+                src="@/assets/images/contract_icon.svg"
+                alt="Contract"
+                class="accordion-toggle-icon"
+              />
+            </b-button>
           </b-card>
         </b-collapse>
       </b-card>
@@ -52,6 +67,9 @@ export default {
   padding: 0;
   margin: 0;
 }
+#outer-collapse > .card > .card-body {
+  padding: 0.25rem 0.75rem;
+}
 #inner-collapse {
   margin: 0;
   padding: 0;
@@ -61,8 +79,24 @@ export default {
 }
 #inner-collapse .card-body {
   padding: 0;
+  padding-top: 0.25rem;
 }
 .accordion-content {
   font-size: 0.8em;
+  margin: 0;
+  padding: 0;
+}
+.accordion-toggle {
+  background-color: transparent;
+  border: 0;
+}
+.accordion-toggle:hover {
+  background-color: transparent;
+  border: 0;
+}
+.accordion-toggle-icon {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
 }
 </style>

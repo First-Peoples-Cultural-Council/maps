@@ -3,6 +3,7 @@
     <SideBar active="Languages">
       <div>
         <Accordion :content="accordionContent"></Accordion>
+        <Badge content="Languages"></Badge>
         <nuxt-child />
       </div>
     </SideBar>
@@ -12,10 +13,12 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
+import Badge from '@/components/Badge.vue'
 export default {
   components: {
     SideBar,
-    Accordion
+    Accordion,
+    Badge
   },
   data() {
     return {

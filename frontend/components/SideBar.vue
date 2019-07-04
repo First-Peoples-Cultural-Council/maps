@@ -12,8 +12,8 @@
             :active="active === tab.name ? true : false"
             :class="tab.name | lowerCase"
             @click.prevent="handleNavigation($event, tab.name)"
-            >{{ tab.name }}</b-nav-item
-          >
+            >{{ tab.name }}
+          </b-nav-item>
         </b-nav>
       </div>
       <div class="sidebar-content">
@@ -97,7 +97,6 @@ export default {
   flex: 1 1 0;
   display: flex;
   align-items: center;
-  padding: 1em;
 }
 
 .sidebar-body {
@@ -133,7 +132,7 @@ export default {
   display: block;
   width: 100%;
   height: 10px;
-  background-color: black;
+  background-color: white;
   position: absolute;
   top: -10px;
   left: 0;
