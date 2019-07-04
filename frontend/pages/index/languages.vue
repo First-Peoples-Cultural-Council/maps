@@ -2,13 +2,16 @@
   <div>
     <SideBar active="Languages">
       <div>
-        <Accordion :content="accordionContent"></Accordion>
-        <section class="badge-section mt-2">
+        <section class="pl-3 pr-3 mt-3">
+          <Accordion :content="accordionContent"></Accordion>
+        </section>
+        <section class="badge-section pl-3 pr-3 mt-3">
           <Badge :content="badgeContent" :number="badgeNumber"></Badge>
         </section>
         <hr />
-        <section class="language-section mt-2">
+        <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
+          <LanguageCard class="mt-2"></LanguageCard>
         </section>
       </div>
       <div>
@@ -22,13 +25,15 @@
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
-import LangFamilyTitle from '@/components/LangFamilyTitle.vue'
+import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
+import LanguageCard from '@/components/languages/LanguageCard.vue'
 export default {
   components: {
     SideBar,
     Accordion,
     Badge,
-    LangFamilyTitle
+    LangFamilyTitle,
+    LanguageCard
   },
   data() {
     return {

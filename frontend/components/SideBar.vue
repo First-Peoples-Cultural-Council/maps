@@ -104,10 +104,6 @@ export default {
   flex: 16 1 0;
 }
 
-.sidebar-content {
-  padding: 1em;
-}
-
 .nav-tabs .nav-link {
   font-size: 0.8em;
   background-color: #f4eee9;
