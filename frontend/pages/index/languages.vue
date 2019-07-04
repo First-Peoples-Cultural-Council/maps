@@ -2,8 +2,7 @@
   <div>
     <SideBar active="Languages">
       <div>
-        Hello!
-        <Accordion></Accordion>
+        <Accordion :content="accordionContent"></Accordion>
         <nuxt-child />
       </div>
     </SideBar>
@@ -17,6 +16,12 @@ export default {
   components: {
     SideBar,
     Accordion
+  },
+  data() {
+    return {
+      accordionContent:
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
+    }
   },
   methods: {
     handleNavigation(e, data) {

@@ -2,17 +2,19 @@
   <div class="accordion">
     <b-collapse id="outer-collapse" visible class="mt-2">
       <b-card>
-        <p class="outer-text">
-          <span>Collapse contents Here</span>
+        <p v-if="!notVisible" class="outer-text">
+          <span class="accordion-content"
+            >{{ content.substring(0, 35) }}...</span
+          >
           <b-button
             v-b-toggle.inner-collapse
             size="sm"
             class="accordion-toggle float-right"
           ></b-button>
         </p>
-        <b-collapse id="inner-collapse" class="mt-2">
+        <b-collapse id="inner-collapse" v-model="notVisible">
           <b-card>
-            <p>Hello</p>
+            <p class="accordion-content">{{ content }}</p>
             <b-button
               v-b-toggle.inner-collapse
               size="sm"
@@ -26,7 +28,19 @@
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    content: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      notVisible: false
+    }
+  }
+}
 </script>
 
 <style>
@@ -38,10 +52,17 @@ export default {}
   padding: 0;
   margin: 0;
 }
+#inner-collapse {
+  margin: 0;
+  padding: 0;
+}
 #inner-collapse .card {
   border: 0;
 }
 #inner-collapse .card-body {
   padding: 0;
+}
+.accordion-content {
+  font-size: 0.8em;
 }
 </style>
