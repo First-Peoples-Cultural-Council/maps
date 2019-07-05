@@ -10,6 +10,6 @@ RUN pip install -r requirements.txt
 
 RUN apt-get update \
   && apt-get install -y libproj-dev gdal-bin libpq-dev libpython3-dev \
-      build-essential sudo
+  default-libmysqlclient-dev build-essential
 
 CMD ./command.sh
