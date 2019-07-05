@@ -51,24 +51,24 @@ class DedruplifierClient:
             'field_tm_fn_internet_value': 'internet_speed'
         })
 
-        # l.other_names = region['field_tm_other_lang_names_value']
-        # l.fv_archive_link = region['field_tm_lr_firstvoi_link_url']
-        # l.color = region['field_tm_lr_colour_value']
-        # l.save()
+        self.map_drupal_items('tm_placename', Community, {
+            'field_tm_pn_othername_value': 'other_name',
+        })
 
-        # communities = json.loads(open('tmp/tm_fn_group.json').read())
-        # for pk, community in communities.items():
-        #     print(community)
-        #     try:
-        #         c = Community.objects.get(name=community['title'])
-        #     except Language.DoesNotExist:
-        #         c = Community(name=community['title'])
+        self.map_drupal_items('tm_placename', Champion, {
+            'field_tm_champ_bio_value': 'bio',
+            'field_language_target_id': 'language',
+            'field_tm_champ_occup_value': 'job',
+            'field_tm_nation_target_id': 'community',
+        })
+
+        self.map_drupal_items('tm_language_dialect', Dialect, {
+            'field_language_target_id': 'language',
+        })
 
         #     c.population = community['field_tm_fn_total_pop_value']
         #     c.point = Point(
         #         community['field_tm_fn_latlong_lat'], community['field_tm_fn_latlong_lon'])
-
-        #     c.save()
 
     def map_drupal_items(self, drupal_table, LocalTable, mapping={}):
         items = []
@@ -89,6 +89,8 @@ class DedruplifierClient:
                         except FKTable.DoesNotExist:
                             print(k, 'with pk',
                                   rec[k+'_title'], 'does not exist')
+                        except KeyError:
+                            print('WARN:', rec, 'has no', k+'_title')
                     else:
                         setattr(item, v, rec[k])
             item.save()

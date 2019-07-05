@@ -4,6 +4,7 @@ from django.contrib.gis.db import models
 
 
 class BaseModel(models.Model):
+    name = models.CharField(max_length=255, default='')
 
     def __str__(self):
         return self.name
@@ -13,17 +14,15 @@ class BaseModel(models.Model):
 
 
 class LanguageFamily(BaseModel):
-    name = models.CharField(max_length=255)
+    pass
 
 
 class LanguageSubFamily(BaseModel):
-    name = models.CharField(max_length=255)
     family = models.ForeignKey(
         LanguageFamily, on_delete=models.SET_NULL, null=True)
 
 
 class Language(BaseModel):
-    name = models.CharField(max_length=255)
     other_names = models.TextField(default='')
     fv_archive_link = models.URLField(max_length=255, blank=True, default='')
     color = models.CharField(max_length=31, default='')
@@ -33,7 +32,6 @@ class Language(BaseModel):
 
 
 class Community(BaseModel):
-    name = models.CharField(max_length=255)
     english_name = models.CharField(max_length=255, default='')
     internet_speed = models.CharField(max_length=255, default='')
     point = models.PointField(null=True)
@@ -44,20 +42,25 @@ class Community(BaseModel):
     website = models.URLField(max_length=255, default=None, null=True)
 
 
-class LanguageMember(BaseModel):
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+class LanguageMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class PlaceName(BaseModel):
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    text = models.CharField(max_length=255)
     point = models.PointField()
+    other_name = models.CharField(max_length=255, default='')
 
 
 class Champion(BaseModel):
-    name = models.CharField(max_length=255)
+    bio = models.TextField(default='')
+    job = models.CharField(max_length=255, default='')
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True, default=None
+    )
+    language = models.ForeignKey(
+        Language, on_delete=models.SET_NULL, null=True, default=None)
 
 
 class Dialect(BaseModel):
-    name = models.CharField(max_length=255)
+    language = models.ForeignKey(
+        Language, on_delete=models.CASCADE, null=True, default=None)
