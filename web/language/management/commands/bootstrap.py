@@ -9,7 +9,7 @@ from decimal import Decimal
 from datetime import datetime
 
 
-class Client:
+class DedruplifierClient:
 
     def query(self, sql):
         with self.db.cursor() as cursor:
@@ -97,6 +97,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        c = Client()
+        c = DedruplifierClient()
         c.update()
         c.load()
