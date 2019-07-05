@@ -14,6 +14,9 @@ export default {
   components: {
     SideBar
   },
+  mounted() {
+    console.log('arts mounted', this.$route)
+  },
   methods: {
     handleNavigation(e, data) {
       console.log('Handling Navigation!', e, data)
