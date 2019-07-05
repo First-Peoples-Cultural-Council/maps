@@ -9,7 +9,7 @@
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
-    <Languages v-if="'index'"></Languages>
+    <Languages v-if="this.$route.name === 'index'"></Languages>
     <nuxt-child v-else />
   </div>
 </template>

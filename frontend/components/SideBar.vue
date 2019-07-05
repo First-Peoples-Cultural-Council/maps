@@ -1,29 +1,24 @@
 <template>
   <div class="sidebar-container">
-    <div v-if="!isDetailMode">
-      <div class="sidebar-header">
-        <Logo></Logo>
-      </div>
-      <div class="sidebar-body">
-        <div class="sidebar-tabs">
-          <b-nav tabs fill>
-            <b-nav-item
-              v-for="tab in navigationTabs"
-              :key="tab.id"
-              :active="active === tab.name ? true : false"
-              :class="tab.name | lowerCase"
-              @click.prevent="handleNavigation($event, tab.name)"
-              >{{ tab.name }}
-            </b-nav-item>
-          </b-nav>
-        </div>
-        <div class="sidebar-content">
-          <slot></slot>
-        </div>
-      </div>
+    <div class="sidebar-header">
+      <Logo></Logo>
     </div>
-    <div v-else>
-      <slot name="detail"></slot>
+    <div class="sidebar-body">
+      <div class="sidebar-tabs">
+        <b-nav tabs fill>
+          <b-nav-item
+            v-for="tab in navigationTabs"
+            :key="tab.id"
+            :active="active === tab.name ? true : false"
+            :class="tab.name | lowerCase"
+            @click.prevent="handleNavigation($event, tab.name)"
+            >{{ tab.name }}
+          </b-nav-item>
+        </b-nav>
+      </div>
+      <div class="sidebar-content">
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -68,11 +63,6 @@ export default {
           pathName: 'index-heritages-heritage'
         }
       ]
-    }
-  },
-  computed: {
-    isDetailMode() {
-      return this.$store.state.sidebar.isDetailMode
     }
   },
   mounted() {

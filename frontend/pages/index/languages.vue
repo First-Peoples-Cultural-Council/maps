@@ -1,6 +1,9 @@
 <template>
   <div>
-    <SideBar active="Languages">
+    <SideBar
+      v-if="this.$route.name < 'index-languages-lang'"
+      active="Languages"
+    >
       <div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
@@ -14,15 +17,18 @@
           <LanguageCard class="mt-2"></LanguageCard>
         </section>
       </div>
-      <template v-slot:detail>
-        <nuxt-child />
-      </template>
     </SideBar>
+    <DetailSideBar v-else>
+      <div>
+        <nuxt-child />
+      </div>
+    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
+import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
@@ -33,7 +39,8 @@ export default {
     Accordion,
     Badge,
     LangFamilyTitle,
-    LanguageCard
+    LanguageCard,
+    DetailSideBar
   },
   data() {
     return {
