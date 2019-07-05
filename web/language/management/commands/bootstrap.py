@@ -187,5 +187,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         c = DedruplifierClient()
-        # c.update()
+        c.update()
         c.load()
