@@ -7,7 +7,21 @@
         </div>
       </template>
       <template v-slot:body>
-        LB
+        <div>
+          <div>
+            <h5
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+            >
+              Languages
+            </h5>
+            <h5
+              class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
+            >
+              Nłeʔkepmxcín
+            </h5>
+          </div>
+          <div><CardBadge content="Pronounce"></CardBadge></div>
+        </div>
       </template>
     </Card>
   </div>
@@ -15,10 +29,11 @@
 
 <script>
 import Card from '@/components/Card.vue'
-
+import CardBadge from '@/components/CardBadge.vue'
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   }
 }
 </script>
@@ -27,5 +42,12 @@ export default {
 .language-icon-container {
   background-color: red;
   border-radius: 50%;
+  height: 43px;
+  width: 43px;
+}
+.language-icon-container img {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 </style>
