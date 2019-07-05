@@ -1,6 +1,4 @@
-# Countable Modern Django
-
-A Dockerized boilerplate for a Django API driven web app, with Vue CLI and Postgres.
+# First People's Language Map
 
 ## Installation
 
@@ -34,7 +32,10 @@ You can visit the Django admin at `http://localhost/admin`. The username is `adm
 -   Uses Nuxt.js
 -   Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
 
-:wq ;)
+## Restoring data
+
+`docker-compose exec web python manage.py bootstrap` to get languages.
+
 
 ## Front End
 
