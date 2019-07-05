@@ -1,3 +1,4 @@
+*.pem
 docker-compose.override.yml
 web/tmp
 
