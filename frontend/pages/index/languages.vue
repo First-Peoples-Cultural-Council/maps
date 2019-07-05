@@ -43,6 +43,11 @@ export default {
       badgeNumber: 23
     }
   },
+  computed: {
+    feature() {
+      return this.$store.state.features.feature
+    }
+  },
   mounted() {
     console.log('Route', this.$route)
   },

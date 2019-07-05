@@ -18,8 +18,8 @@
 import Mapbox from 'mapbox-gl-vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import { bbox } from '@turf/turf'
 import Languages from './index/languages.vue'
-
 export default {
   components: {
     Mapbox,
@@ -45,12 +45,21 @@ export default {
       GEOLOCATE_CONTROL: {
         show: true,
         position: 'bottom-right'
-      }
+      },
+      feature: {}
     }
   },
   methods: {
     handleClick(map, e) {
-      console.log(map.queryRenderedFeatures(e.point))
+      const features = map.queryRenderedFeatures(e.point)
+      const feature = features.find(
+        feature => feature.layer.id === 'fn-lang-areas'
+      )
+      console.log(feature)
+      console.log(e.target)
+      const bounds = bbox(feature)
+      map.fitBounds(bounds, { padding: 30 })
+      this.$store.commit('features/set', feature)
     },
     mapLoaded(map) {
       map.addLayer({
