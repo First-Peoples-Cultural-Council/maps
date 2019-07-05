@@ -89,6 +89,17 @@ class DedruplifierClient:
                 l = Language.objects.get(name=region['title'])
             except Language.DoesNotExist:
                 l = Language(name=region['title'])
+
+            l.save()
+
+        communities = json.loads(open('tmp/tm_language_region.json').read())
+        for pk, community in communities.items():
+            print(community)
+            try:
+                l = Community.objects.get(name=community['title'])
+            except Language.DoesNotExist:
+                l = Community(name=community['title'])
+
             l.save()
 
 
