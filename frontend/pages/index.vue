@@ -60,6 +60,11 @@ export default {
       const bounds = bbox(feature)
       map.fitBounds(bounds, { padding: 30 })
       this.$store.commit('features/set', feature)
+      this.$store.commit('sidebar/set', true)
+
+      this.$router.push({
+        path: `/languages/${encodeURIComponent(feature.properties.title)}`
+      })
     },
     mapLoaded(map) {
       map.addLayer({

@@ -1,9 +1,15 @@
 <template>
   <div class="language">
-    <h1>Language Dynamic</h1>
+    Dynamic detail
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  mounted() {
+    console.log('Dynamic Language Mount', this.$route)
+  }
+}
+</script>
 
 <style></style>

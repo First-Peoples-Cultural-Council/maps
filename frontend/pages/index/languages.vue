@@ -14,9 +14,9 @@
           <LanguageCard class="mt-2"></LanguageCard>
         </section>
       </div>
-      <div>
+      <template v-slot:detail>
         <nuxt-child />
-      </div>
+      </template>
     </SideBar>
   </div>
 </template>
