@@ -25,7 +25,7 @@ SECRET_KEY = "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "language",
     "firstvoices",
     "arts",
+    "web",
 ]
 
 MIDDLEWARE = [

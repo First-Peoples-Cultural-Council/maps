@@ -5,7 +5,10 @@
       :map-options="MAP_OPTIONS"
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
-      @map-click="handleClick"
+      @map-load="mapLoaded"
+      @map-click="mapClicked"
+      @geolocate-error="geolocateError"
+      @geolocate-geolocate="geolocate"
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
@@ -32,7 +35,7 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
+        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj/draft',
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -50,7 +53,9 @@ export default {
     }
   },
   methods: {
-    handleClick(map, e) {
+    geolocateError() {},
+    geolocate() {},
+    mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas'
@@ -67,20 +72,27 @@ export default {
       })
     },
     mapLoaded(map) {
+      console.log('adding sources')
+      map.addSource('langs1', {
+        type: 'geojson',
+        data: '/static/web/langs.json'
+      })
       map.addLayer({
         id: 'fn-lang-areas-fill',
         type: 'fill',
-        metadata: {},
-        source: 'composite',
-        'source-layer': 'langs-0brkvj',
+        // metadata: {},
+        source: 'langs1',
         layout: {},
         paint: {
           'fill-color': ['get', 'color'],
           'fill-opacity': [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            1,
-            0.5
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3,
+            0.19,
+            9,
+            0.08
           ]
         }
       })
