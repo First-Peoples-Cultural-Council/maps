@@ -48,11 +48,13 @@ class DedruplifierClient:
             'field_tm_fn_comm_info_value': 'notes',
             'field_tm_fn_grp_alt_title_value': 'english_name',
             'field_tm_fn_lang_target_id': 'language',
-            'field_tm_fn_internet_value': 'internet_speed'
+            'field_tm_fn_internet_value': 'internet_speed',
+            'field_tm_fn_latlong_lat': 'point',
         })
 
-        self.map_drupal_items('tm_placename', Community, {
+        self.map_drupal_items('tm_placename', PlaceName, {
             'field_tm_pn_othername_value': 'other_name',
+            'field_tm_pn_location_lat': 'point',
         })
 
         self.map_drupal_items('tm_placename', Champion, {
@@ -91,6 +93,9 @@ class DedruplifierClient:
                                   rec[k+'_title'], 'does not exist')
                         except KeyError:
                             print('WARN:', rec, 'has no', k+'_title')
+                    elif k.endswith('_lat'):
+                        pt = Point(rec[k], rec[k[:-4] + '_lon'])
+                        setattr(item, v, pt)
                     else:
                         setattr(item, v, rec[k])
             item.save()

@@ -1,5 +1,6 @@
 from .models import Language, PlaceName, Community, Champion
 from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -9,16 +10,18 @@ class LanguageSerializer(serializers.ModelSerializer):
                   'fv_archive_link', 'color', 'sub_family', 'notes')
 
 
-class PlaceNameSerializer(serializers.ModelSerializer):
+class PlaceNameSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ('name', 'other_name')
+        fields = ('name', 'other_name',)
+        geo_field = "point"
 
 
-class CommunitySerializer(serializers.ModelSerializer):
+class CommunitySerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Community
-        fields = ('name', 'language')
+        fields = ('name', 'language',)
+        geo_field = "point"
 
 
 class ChampionSerializer(serializers.ModelSerializer):

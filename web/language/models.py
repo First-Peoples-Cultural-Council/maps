@@ -29,12 +29,13 @@ class Language(BaseModel):
     sub_family = models.ForeignKey(
         LanguageSubFamily, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(default="")
+    geom = models.MultiPolygonField(null=True, default=None)
 
 
 class Community(BaseModel):
+    point = models.PointField(null=True, default=None)
     english_name = models.CharField(max_length=255, default='')
     internet_speed = models.CharField(max_length=255, default='')
-    point = models.PointField(null=True)
     population = models.IntegerField(default=0)
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True, default=None)
@@ -47,7 +48,7 @@ class LanguageMember(models.Model):
 
 
 class PlaceName(BaseModel):
-    point = models.PointField()
+    point = models.PointField(null=True, default=None)
     other_name = models.CharField(max_length=255, default='')
 
 

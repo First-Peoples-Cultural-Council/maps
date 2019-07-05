@@ -2,3 +2,4 @@ Django>=2.0,<3.0
 djangorestframework
 pymysql
 psycopg2
+djangorestframework-gis
