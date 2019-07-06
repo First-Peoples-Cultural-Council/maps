@@ -12,7 +12,40 @@
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
-    <Languages v-if="this.$route.name === 'index'"></Languages>
+    <SideBar v-if="this.$route.name === 'index'" active="Languages">
+      <div>
+        <section class="pl-3 pr-3 mt-3">
+          <Accordion :content="accordionContent"></Accordion>
+        </section>
+        <section class="badge-section pl-3 pr-3 mt-3">
+          <Badge content="Languages" :number="languages.length"></Badge>
+          <Badge content="Communities" :number="communities.length"></Badge>
+        </section>
+        <hr />
+        <section class="language-section pl-3 pr-3">
+          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
+          <div v-for="language in languages" :key="language.name">
+            <LanguageCard
+              class="mt-3"
+              :name="language.name"
+              :color="language.color"
+              @click.prevent="handleCardClick($event, language.name)"
+            ></LanguageCard>
+          </div>
+        </section>
+        <section class="community-section pl-3 pr-3">
+          <div
+            v-for="community in communities.features"
+            :key="community.properties.name"
+          >
+            <CommunityCard
+              class="mt-3"
+              :name="community.properties.name"
+            ></CommunityCard>
+          </div>
+        </section>
+      </div>
+    </SideBar>
     <nuxt-child v-else />
   </div>
 </template>
@@ -21,14 +54,24 @@
 import Mapbox from 'mapbox-gl-vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import SideBar from '@/components/SideBar.vue'
+import Accordion from '@/components/Accordion.vue'
+import Badge from '@/components/Badge.vue'
+import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
+import LanguageCard from '@/components/languages/LanguageCard.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { bbox } from '@turf/turf'
-import Languages from './index/languages.vue'
 export default {
   components: {
     Mapbox,
     SearchBar,
     NavigationBar,
-    Languages
+    SideBar,
+    Accordion,
+    Badge,
+    LangFamilyTitle,
+    LanguageCard,
+    CommunityCard
   },
   data() {
     return {
@@ -50,6 +93,22 @@ export default {
         position: 'bottom-right'
       },
       feature: {}
+    }
+  },
+  async asyncData({ $axios }) {
+    let api = process.server
+      ? 'http://nginx/api/community/'
+      : 'http://localhost/api/community/'
+    const communities = await $axios.$get(api)
+
+    api = process.server
+      ? 'http://nginx/api/language/'
+      : 'http://localhost/api/language/'
+    const languages = await $axios.$get(api)
+
+    return {
+      languages,
+      communities
     }
   },
   methods: {
