@@ -7,10 +7,12 @@
     <div class="fpcc-card-header"><slot name="header"></slot></div>
     <div class="fpcc-card-body"><slot name="body"></slot></div>
     <div class="fpcc-card-footer">
-      <div class="fpcc-card-more">
-        <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
-        <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
-      </div>
+      <slot name="footer">
+        <div class="fpcc-card-more">
+          <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
+          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        </div>
+      </slot>
     </div>
   </div>
 </template>
