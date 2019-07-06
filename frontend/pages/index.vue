@@ -57,15 +57,19 @@ export default {
     geolocate() {},
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
+      console.log(features)
       const feature = features.find(
-        feature => feature.layer.id === 'fn-lang-areas'
+        feature => feature.layer.id === 'fn-lang-areas-fill'
       )
+
       console.log(feature)
+
       console.log(e.target)
       const bounds = bbox(feature)
       map.fitBounds(bounds, { padding: 30 })
       this.$store.commit('features/set', feature)
       this.$store.commit('sidebar/set', true)
+      console.log(feature)
 
       this.$router.push({
         path: `/languages/${encodeURIComponent(feature.properties.title)}`

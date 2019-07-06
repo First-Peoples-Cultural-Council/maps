@@ -9,12 +9,19 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="badgeNumber"></Badge>
+          <Badge :content="badgeContent" :number="languages.length"></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <LanguageCard class="mt-2"></LanguageCard>
+          <div v-for="language in languages" :key="language.name">
+            <LanguageCard
+              class="mt-2"
+              :name="language.name"
+              :color="language.color"
+              @click.prevent="handleCardClick($event, language.name)"
+            ></LanguageCard>
+          </div>
         </section>
       </div>
     </SideBar>
@@ -47,8 +54,7 @@ export default {
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
-      badgeNumber: 23,
-      languages: ['Test']
+      languages: []
     }
   },
   computed: {
@@ -57,13 +63,17 @@ export default {
     }
   },
   async asyncData({ $axios }) {
-    const data = await $axios.$get('http://web:8000/api/language/')
+    const api = process.server
+      ? 'http://nginx/api/language/'
+      : 'http://localhost/api/language/'
+    const data = await $axios.$get(api)
     return {
       languages: data
     }
   },
   mounted() {
     console.log('Route', this.$route)
+    console.log('Lang', this.languages)
   },
   methods: {
     handleNavigation(e, data) {

@@ -2,7 +2,10 @@
   <div class="language-card">
     <Card>
       <template v-slot:header>
-        <div class="language-icon-container">
+        <div
+          class="language-icon-container"
+          :style="'background-color:' + color"
+        >
           <img src="@/assets/images/language_icon.svg" alt="Language" />
         </div>
       </template>
@@ -17,7 +20,7 @@
             <h5
               class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
             >
-              Nłeʔkepmxcín
+              {{ name }}
             </h5>
           </div>
           <div><CardBadge content="Pronounce"></CardBadge></div>
@@ -34,11 +37,24 @@ export default {
   components: {
     Card,
     CardBadge
+  },
+  props: {
+    name: {
+      type: String,
+      default: ''
+    },
+    color: {
+      type: String,
+      default: 'RGB(0, 0, 0)'
+    }
   }
 }
 </script>
 
 <style>
+.language-card {
+  cursor: pointer;
+}
 .language-icon-container {
   background-color: red;
   border-radius: 50%;

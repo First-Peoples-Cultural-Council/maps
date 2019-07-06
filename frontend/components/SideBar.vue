@@ -91,6 +91,8 @@ export default {
   width: var(--sidebar-wdith, 350px);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 1em;
 }
 .sidebar-header {
   background-color: transparent;
