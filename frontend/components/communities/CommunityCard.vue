@@ -1,12 +1,12 @@
 <template>
-  <div class="language-card">
+  <div class="community-card">
     <Card>
       <template v-slot:header>
         <div
-          class="language-icon-container"
+          class="community-icon-container"
           :style="'background-color:' + color"
         >
-          <img src="@/assets/images/language_icon.svg" alt="Language" />
+          <img src="@/assets/images/community_icon.svg" alt="community" />
         </div>
       </template>
       <template v-slot:body>
@@ -15,7 +15,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Languages
+              Community
             </h5>
             <h5
               class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
@@ -47,7 +47,7 @@ export default {
     },
     color: {
       type: String,
-      default: 'RGB(0, 0, 0)'
+      default: 'RGB(255, 255, 255)'
     }
   },
   methods: {
@@ -59,16 +59,16 @@ export default {
 </script>
 
 <style>
-.language-card {
+.community-card {
   cursor: pointer;
 }
-.language-icon-container {
+.community-icon-container {
   background-color: red;
   border-radius: 50%;
   height: 43px;
   width: 43px;
 }
-.language-icon-container img {
+.community-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;

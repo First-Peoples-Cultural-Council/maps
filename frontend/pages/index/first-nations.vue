@@ -9,18 +9,19 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="languages.length"></Badge>
+          <Badge :content="badgeContent" :number="communities.length"></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="language in languages" :key="language.name">
-            <LanguageCard
+          <div
+            v-for="community in communities.features"
+            :key="community.properties.name"
+          >
+            <CommunityCard
               class="mt-3"
-              :name="language.name"
-              :color="language.color"
-              @click.prevent="handleCardClick($event, language.name)"
-            ></LanguageCard>
+              :name="community.properties.name"
+            ></CommunityCard>
           </div>
         </section>
       </div>
@@ -39,22 +40,22 @@ import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
-import LanguageCard from '@/components/languages/LanguageCard.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
 export default {
   components: {
     SideBar,
     Accordion,
     Badge,
     LangFamilyTitle,
-    LanguageCard,
-    DetailSideBar
+    DetailSideBar,
+    CommunityCard
   },
   data() {
     return {
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
-      badgeContent: 'Languages',
-      languages: []
+      badgeContent: 'Communities',
+      communities: []
     }
   },
   computed: {
@@ -64,11 +65,11 @@ export default {
   },
   async asyncData({ $axios }) {
     const api = process.server
-      ? 'http://nginx/api/language/'
-      : 'http://localhost/api/language/'
+      ? 'http://nginx/api/community/'
+      : 'http://localhost/api/community/'
     const data = await $axios.$get(api)
     return {
-      languages: data
+      communities: data
     }
   },
   mounted() {
