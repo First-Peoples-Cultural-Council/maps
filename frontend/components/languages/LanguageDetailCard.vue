@@ -15,7 +15,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Languages
+              Language
             </h5>
             <h5
               class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
@@ -26,6 +26,16 @@
           <div class="d-inline-block" @click.prevent.stop="handlePronounce">
             <CardBadge content="Pronounce"></CardBadge>
           </div>
+          <div class="d-inline-block">
+            <CardBadge content="Share & Embed"></CardBadge>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="fpcc-card-more">
+          <img v-if="!hover" src="@/assets/images/return_icon.svg" alt="Go" />
+          <img v-else src="@/assets/images/return_icon_hover.svg" alt="Go" />
+          <span class="ml-1 font-weight-bold">Return</span>
         </div>
       </template>
     </Card>
@@ -58,7 +68,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .language-card {
   cursor: pointer;
 }
@@ -72,5 +82,25 @@ export default {
   display: inline-block;
   width: 100%;
   height: 100%;
+}
+
+.fpcc-card-more {
+  padding: 0.3em;
+  font-size: 0.7em;
+}
+
+.language-card:hover .fpcc-card-more {
+  color: white;
+}
+
+.fpcc-card-more img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+}
+
+.fpcc-card {
+  border: 0;
+  box-shadow: none;
 }
 </style>

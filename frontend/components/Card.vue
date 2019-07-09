@@ -45,11 +45,6 @@ export default {
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
 }
-
-.fpcc-card:hover {
-  position: relative;
-  left: 10px;
-}
 .fpcc-card:hover .fpcc-card-more {
   background-color: var(--color-darkgray);
 }

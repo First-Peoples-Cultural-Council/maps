@@ -10,7 +10,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-wdith, 350px);
+  width: var(--sidebar-width, 350px);
   display: flex;
   flex-direction: column;
 }

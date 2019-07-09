@@ -71,16 +71,6 @@ export default {
     return {
       communities: data
     }
-  },
-  mounted() {
-    console.log('Route', this.$route)
-    console.log('Lang', this.languages)
-  },
-  methods: {
-    handleNavigation(e, data) {
-      console.log('Handling Navigation!', e, data)
-      console.log('Router!', this.$router)
-    }
   }
 }
 </script>

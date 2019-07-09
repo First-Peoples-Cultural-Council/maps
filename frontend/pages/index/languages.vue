@@ -16,10 +16,10 @@
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="language in languages" :key="language.name">
             <LanguageCard
-              class="mt-3"
+              class="mt-3 hover-left-move"
               :name="language.name"
               :color="language.color"
-              @click.prevent="handleCardClick($event, language.name)"
+              @click.native.prevent="handleCardClick($event, language.name)"
             ></LanguageCard>
           </div>
         </section>
@@ -71,14 +71,11 @@ export default {
       languages: data
     }
   },
-  mounted() {
-    console.log('Route', this.$route)
-    console.log('Lang', this.languages)
-  },
   methods: {
-    handleNavigation(e, data) {
-      console.log('Handling Navigation!', e, data)
-      console.log('Router!', this.$router)
+    handleCardClick(e, data) {
+      this.$router.push({
+        path: `/languages/${encodeURIComponent(data)}`
+      })
     }
   }
 }

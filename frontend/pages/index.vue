@@ -26,7 +26,7 @@
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="language in languages" :key="language.name">
             <LanguageCard
-              class="mt-3"
+              class="mt-3 hover-left-move"
               :name="language.name"
               :color="language.color"
               @click.prevent="handleCardClick($event, language.name)"
@@ -39,7 +39,7 @@
             :key="community.properties.name"
           >
             <CommunityCard
-              class="mt-3"
+              class="mt-3 hover-left-move"
               :name="community.properties.name"
             ></CommunityCard>
           </div>
@@ -116,26 +116,19 @@ export default {
     geolocate() {},
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
-      console.log(features)
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas-fill'
       )
-
-      console.log(feature)
-
-      console.log(e.target)
       const bounds = bbox(feature)
       map.fitBounds(bounds, { padding: 30 })
       this.$store.commit('features/set', feature)
       this.$store.commit('sidebar/set', true)
-      console.log(feature)
 
       this.$router.push({
         path: `/languages/${encodeURIComponent(feature.properties.title)}`
       })
     },
     mapLoaded(map) {
-      console.log('adding sources')
       map.addSource('langs1', {
         type: 'geojson',
         data: '/static/web/langs.json'
@@ -174,6 +167,6 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  padding-left: var(-sidebar-width, 350px);
+  padding-left: var(--sidebar-width, 350px);
 }
 </style>

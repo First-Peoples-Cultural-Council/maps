@@ -65,9 +65,6 @@ export default {
       ]
     }
   },
-  mounted() {
-    console.log('Mounted Sidebar', this.$route)
-  },
   methods: {
     handleNavigation(e, data) {
       const path = this.navigationTabs.find(nt => nt.name === data).path
@@ -88,7 +85,7 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-wdith, 350px);
+  width: var(--sidebar-width, 350px);
   display: flex;
   flex-direction: column;
   overflow-y: auto;

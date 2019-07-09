@@ -1,13 +1,14 @@
 <template>
   <div class="language">
-    Dynamic detail
+    <LanguageDetailCard :name="this.$route.params.lang"></LanguageDetailCard>
   </div>
 </template>
 
 <script>
+import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 export default {
-  mounted() {
-    console.log('Dynamic Language Mount', this.$route)
+  components: {
+    LanguageDetailCard
   }
 }
 </script>
