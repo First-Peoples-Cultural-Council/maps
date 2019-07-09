@@ -92,10 +92,12 @@ export default {
         show: true,
         position: 'bottom-right'
       },
-      feature: {}
+      feature: {},
+      accordionContent:
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
     }
   },
-  async asyncData({ $axios }) {
+  async asyncData({ $axios, store }) {
     let api = process.server
       ? 'http://nginx/api/community/'
       : 'http://localhost/api/community/'
@@ -105,6 +107,9 @@ export default {
       ? 'http://nginx/api/language/'
       : 'http://localhost/api/language/'
     const languages = await $axios.$get(api)
+
+    store.commit('languages/set', languages)
+    store.commit('communities/set', communities)
 
     return {
       languages,

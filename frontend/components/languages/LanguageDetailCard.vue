@@ -1,9 +1,9 @@
 <template>
-  <div class="language-card">
+  <div class="language-detail-card">
     <Card>
       <template v-slot:header>
         <div
-          class="language-icon-container"
+          class="language-detail-icon-container"
           :style="'background-color:' + color"
         >
           <img src="@/assets/images/language_icon.svg" alt="Language" />
@@ -32,9 +32,24 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/return_icon.svg" alt="Go" />
-          <img v-else src="@/assets/images/return_icon_hover.svg" alt="Go" />
+        <div
+          class="fpcc-card-more"
+          @click.prevent="handleReturn"
+          @mouseover.prevent="handleMouseOver"
+          @mouseleave="handleMouseLeave"
+        >
+          <img
+            v-if="!hover"
+            class="ml-1"
+            src="@/assets/images/return_icon.svg"
+            alt="Go"
+          />
+          <img
+            v-else
+            class="ml-1"
+            src="@/assets/images/return_icon_hover.svg"
+            alt="Go"
+          />
           <span class="ml-1 font-weight-bold">Return</span>
         </div>
       </template>
@@ -60,28 +75,51 @@ export default {
       default: 'RGB(0, 0, 0)'
     }
   },
+  data() {
+    return {
+      hover: false
+    }
+  },
   methods: {
     handlePronounce() {
       console.log('Pronounce')
+    },
+    handleReturn() {
+      this.$router.go(-1)
+    },
+    handleMouseOver() {
+      this.hover = true
+    },
+    handleMouseLeave() {
+      this.hover = false
     }
   }
 }
 </script>
 
 <style scoped>
-.language-card {
+.language-detail-card {
   cursor: pointer;
 }
-.language-icon-container {
-  background-color: red;
+.language-detail-icon-container {
+  background-color: black;
   border-radius: 50%;
   height: 43px;
   width: 43px;
 }
-.language-icon-container img {
+.language-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
+}
+.fpcc-card-more {
+  background-color: var(--color-beige);
+  display: flex;
+  align-items: center;
+  height: 35px;
+  justify-content: center;
+  border-top-left-radius: 0.5em;
+  border-bottom-left-radius: 0.5em;
 }
 
 .fpcc-card-more {
@@ -89,8 +127,9 @@ export default {
   font-size: 0.7em;
 }
 
-.language-card:hover .fpcc-card-more {
+.fpcc-card-more:hover {
   color: white;
+  background-color: var(--color-darkgray);
 }
 
 .fpcc-card-more img {

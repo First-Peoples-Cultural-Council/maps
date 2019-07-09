@@ -58,7 +58,7 @@ export default {
   cursor: pointer;
 }
 .community-icon-container {
-  background-color: red;
+  background-color: black;
   border-radius: 50%;
   height: 43px;
   width: 43px;
