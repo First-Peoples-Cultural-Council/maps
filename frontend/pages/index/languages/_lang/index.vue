@@ -37,6 +37,7 @@ import { mapState } from 'vuex'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
+import { bbox } from '@turf/turf'
 export default {
   components: {
     LanguageDetailCard,
@@ -46,6 +47,7 @@ export default {
   },
   computed: {
     ...mapState({
+      mapinstance: state => state.mapinstance.mapInstance,
       communities: state => state.communities.communities,
       languages: state => state.languages.languages,
       language(state) {
@@ -61,13 +63,26 @@ export default {
       }
     })
   },
-  mounted() {
-    console.log('Store', this.$store.state.languages)
+  watch: {
+    mapinstance(val) {
+      this.zoomToLanguage(val)
+    }
   },
   methods: {
     handleMoreDetails() {
       this.$router.push({
         path: `${encodeURIComponent(this.$route.params.lang)}/details`
+      })
+    },
+    zoomToLanguage(mapinstance) {
+      const self = this
+      mapinstance.once('idle', function(e) {
+        const features = mapinstance.querySourceFeatures('langs1')
+        const feature = features.find(
+          feature => feature.properties.title === self.$route.params.lang
+        )
+        const bounds = bbox(feature)
+        mapinstance.fitBounds(bounds, { padding: 30 })
       })
     }
   }

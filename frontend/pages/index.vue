@@ -5,6 +5,7 @@
       :map-options="MAP_OPTIONS"
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
+      @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
       @geolocate-error="geolocateError"
@@ -29,7 +30,7 @@
               class="mt-3 hover-left-move"
               :name="language.name"
               :color="language.color"
-              @click.prevent="handleCardClick($event, language.name)"
+              @click.native.prevent="handleCardClick($event, language.name)"
             ></LanguageCard>
           </div>
         </section>
@@ -61,6 +62,7 @@ import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { bbox } from '@turf/turf'
+
 export default {
   components: {
     Mapbox,
@@ -92,6 +94,7 @@ export default {
         show: true,
         position: 'bottom-right'
       },
+      map: {},
       feature: {},
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
@@ -119,15 +122,24 @@ export default {
   methods: {
     geolocateError() {},
     geolocate() {},
+    handleCardClick(e, data) {
+      this.$router.push({
+        path: `/languages/${encodeURIComponent(data)}`
+      })
+    },
+    mapInit(map, e) {
+      const self = this
+      self.$store.commit('mapinstance/set', map)
+    },
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas-fill'
       )
-      const bounds = bbox(feature)
-      map.fitBounds(bounds, { padding: 30 })
       this.$store.commit('features/set', feature)
       this.$store.commit('sidebar/set', true)
+      const bounds = bbox(feature)
+      map.fitBounds(bounds, { padding: 30 })
       console.log(feature)
       this.$router.push({
         path: `/languages/${encodeURIComponent(feature.properties.title)}`
@@ -156,16 +168,6 @@ export default {
             0.08
           ]
         }
-      })
-      const self = this
-      map.on('idle', function(e) {
-        console.log('Features', map.querySourceFeatures('langs1'))
-        const center = map.getCenter()
-        self.$router.push({
-          hash: `#${center.lat}/${center.lng}`
-        })
-        console.log(self.$route)
-        console.log(self.$route.hash)
       })
     }
   }
