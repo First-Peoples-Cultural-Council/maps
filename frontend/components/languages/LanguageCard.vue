@@ -33,7 +33,7 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more" @click.prevent="handleReturn">
+        <div class="fpcc-card-more">
           <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
           <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
         </div>

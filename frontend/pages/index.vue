@@ -128,7 +128,7 @@ export default {
       map.fitBounds(bounds, { padding: 30 })
       this.$store.commit('features/set', feature)
       this.$store.commit('sidebar/set', true)
-
+      console.log(feature)
       this.$router.push({
         path: `/languages/${encodeURIComponent(feature.properties.title)}`
       })
@@ -156,6 +156,16 @@ export default {
             0.08
           ]
         }
+      })
+      const self = this
+      map.on('idle', function(e) {
+        console.log('Features', map.querySourceFeatures('langs1'))
+        const center = map.getCenter()
+        self.$router.push({
+          hash: `#${center.lat}/${center.lng}`
+        })
+        console.log(self.$route)
+        console.log(self.$route.hash)
       })
     }
   }
