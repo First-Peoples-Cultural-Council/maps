@@ -89,7 +89,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .color-row {
   background-color: black;
   height: 7px;

@@ -27,7 +27,15 @@
         </section>
       </div>
     </SideBar>
-    <DetailSideBar v-else>
+    <DetailSideBar
+      v-else-if="this.$route.name === 'index-languages-lang'"
+      :width="detailOneWidth"
+    >
+      <div>
+        <nuxt-child />
+      </div>
+    </DetailSideBar>
+    <DetailSideBar v-else :width="detailTwoWidth">
       <div>
         <nuxt-child />
       </div>
@@ -65,7 +73,9 @@ export default {
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
-      languages: []
+      languages: [],
+      detailOneWidth: 375,
+      detailTwoWidth: 500
     }
   },
   computed: {
@@ -84,6 +94,9 @@ export default {
     return {
       languages: data
     }
+  },
+  mounted() {
+    console.log('Route', this.$route)
   },
   methods: {
     handleCardClick(e, data) {

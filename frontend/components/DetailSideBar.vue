@@ -1,8 +1,19 @@
 <template>
-  <div class="ds-container"><slot></slot></div>
+  <div class="ds-container" :style="'width: ' + width + 'px;'">
+    <slot></slot>
+  </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  props: {
+    width: {
+      default: 375,
+      type: Number
+    }
+  }
+}
+</script>
 
 <style>
 .ds-container {
@@ -13,5 +24,6 @@
   width: var(--sidebar-width, 350px);
   display: flex;
   flex-direction: column;
+  background-color: white;
 }
 </style>
