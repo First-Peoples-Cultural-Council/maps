@@ -5,11 +5,10 @@
       :map-options="MAP_OPTIONS"
       :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
+      @map-sourcedata="mapSourceData"
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
-      @geolocate-error="geolocateError"
-      @geolocate-geolocate="geolocate"
     ></Mapbox>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
@@ -19,35 +18,47 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge content="Languages" :number="languages.length"></Badge>
-          <Badge content="Communities" :number="communities.length"></Badge>
+          <Badge
+            content="Languages"
+            :number="features.length"
+            class="cursor-pointer"
+            @click.native.prevent="goToLang"
+          ></Badge>
+          <Badge
+            content="Communities"
+            :number="communities.length"
+            class="cursor-pointer"
+            @click.native.prevent="goToCommunity"
+          ></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="language in languages" :key="language.name">
+          <div v-for="(language, index) in features" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
-              @click.native.prevent="handleCardClick($event, language.name)"
+              :name="language.properties.title"
+              :color="language.properties.color"
+              @click.native.prevent="
+                handleCardClick($event, language.properties.title)
+              "
             ></LanguageCard>
           </div>
         </section>
         <section class="community-section pl-3 pr-3">
           <div
-            v-for="community in communities.features"
-            :key="community.properties.name"
+            v-for="community in communities"
+            :key="community.properties.title"
           >
             <CommunityCard
               class="mt-3 hover-left-move"
-              :name="community.properties.name"
+              :name="community.properties.title"
             ></CommunityCard>
           </div>
         </section>
       </div>
     </SideBar>
-    <nuxt-child v-else />
+    <nuxt-child v-else :features="features" />
   </div>
 </template>
 
@@ -61,7 +72,7 @@ import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { bbox } from '@turf/turf'
+import { zoomToLanguage } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -95,52 +106,39 @@ export default {
         position: 'bottom-right'
       },
       map: {},
-      feature: {},
+      features: [],
+      communities: [],
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
     }
   },
-  async asyncData({ $axios, store }) {
-    let api = process.server
-      ? 'http://nginx/api/community/'
-      : 'http://localhost/api/community/'
-    const communities = await $axios.$get(api)
-
-    api = process.server
-      ? 'http://nginx/api/language/'
-      : 'http://localhost/api/language/'
-    const languages = await $axios.$get(api)
-
-    store.commit('languages/set', languages)
-    store.commit('communities/set', communities)
-
-    return {
-      languages,
-      communities
-    }
-  },
   methods: {
-    geolocateError() {},
-    geolocate() {},
     handleCardClick(e, data) {
+      zoomToLanguage({ map: this.map, lang: data })
       this.$router.push({
         path: `/languages/${encodeURIComponent(data)}`
       })
     },
+    goToLang() {
+      this.$router.push({
+        path: `/languages`
+      })
+    },
+    goToCommunity() {
+      this.$router.push({
+        path: `/first-nations`
+      })
+    },
     mapInit(map, e) {
-      const self = this
-      self.$store.commit('mapinstance/set', map)
+      this.map = map
+      this.$store.commit('mapinstance/set', map)
     },
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas-fill'
       )
-      this.$store.commit('features/set', feature)
-      this.$store.commit('sidebar/set', true)
-      const bounds = bbox(feature)
-      map.fitBounds(bounds, { padding: 30 })
-      console.log(feature)
+      zoomToLanguage({ map, feature })
       this.$router.push({
         path: `/languages/${encodeURIComponent(feature.properties.title)}`
       })
@@ -153,7 +151,6 @@ export default {
       map.addLayer({
         id: 'fn-lang-areas-fill',
         type: 'fill',
-        // metadata: {},
         source: 'langs1',
         layout: {},
         paint: {
@@ -169,6 +166,21 @@ export default {
           ]
         }
       })
+      map.on('idle', e => {
+        const communities = e.target
+          .queryRenderedFeatures()
+          .filter(feature => feature.layer.id === 'fn-nations')
+        this.communities = communities
+        this.$store.commit('communities/set', communities)
+      })
+    },
+    mapSourceData(map, source) {
+      if (source.isSourceLoaded) {
+        const features = map.querySourceFeatures('langs1')
+        if (features.length > 0) {
+          this.features = features
+        }
+      }
     }
   }
 }

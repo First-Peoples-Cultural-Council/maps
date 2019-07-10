@@ -9,17 +9,19 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="languages.length"></Badge>
+          <Badge :content="badgeContent" :number="features.length"></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="language in languages" :key="language.name">
+          <div v-for="(language, index) in features" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
-              @click.native.prevent="handleCardClick($event, language.name)"
+              :name="language.properties.title"
+              :color="language.properties.color"
+              @click.native.prevent="
+                handleCardClick($event, language.properties.title)
+              "
             ></LanguageCard>
           </div>
         </section>
@@ -40,6 +42,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
+import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     SideBar,
@@ -48,6 +51,14 @@ export default {
     LangFamilyTitle,
     LanguageCard,
     DetailSideBar
+  },
+  props: {
+    features: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
@@ -60,6 +71,9 @@ export default {
   computed: {
     feature() {
       return this.$store.state.features.feature
+    },
+    mapinstance() {
+      return this.$store.state.mapinstance.mapInstance
     }
   },
   async asyncData({ $axios }) {
@@ -73,6 +87,7 @@ export default {
   },
   methods: {
     handleCardClick(e, data) {
+      zoomToLanguage({ map: this.mapinstance, lang: data })
       this.$router.push({
         path: `/languages/${encodeURIComponent(data)}`
       })

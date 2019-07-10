@@ -1,5 +1,5 @@
 export const state = () => ({
-  communities: null
+  communities: []
 })
 
 export const mutations = {

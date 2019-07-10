@@ -37,7 +37,7 @@ import { mapState } from 'vuex'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
-import { bbox } from '@turf/turf'
+import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     LanguageDetailCard,
@@ -48,10 +48,8 @@ export default {
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
-      communities: state => state.communities.communities,
-      languages: state => state.languages.languages,
-      language(state) {
-        return state.languages.languages.find(
+      language() {
+        return this.languages.find(
           lang => lang.name === this.$route.params.lang
         )
       },
@@ -64,25 +62,27 @@ export default {
     })
   },
   watch: {
-    mapinstance(val) {
-      this.zoomToLanguage(val)
+    mapinstance(mapinstance) {
+      const self = this
+      mapinstance.once('idle', function(e) {
+        zoomToLanguage({ map: mapinstance, lang: self.$route.params.lang })
+      })
+    }
+  },
+  async asyncData({ $axios, store }) {
+    const api = process.server
+      ? 'http://nginx/api/language/'
+      : 'http://localhost/api/language/'
+    const languages = await $axios.$get(api)
+
+    return {
+      languages
     }
   },
   methods: {
     handleMoreDetails() {
       this.$router.push({
         path: `${encodeURIComponent(this.$route.params.lang)}/details`
-      })
-    },
-    zoomToLanguage(mapinstance) {
-      const self = this
-      mapinstance.once('idle', function(e) {
-        const features = mapinstance.querySourceFeatures('langs1')
-        const feature = features.find(
-          feature => feature.properties.title === self.$route.params.lang
-        )
-        const bounds = bbox(feature)
-        mapinstance.fitBounds(bounds, { padding: 30 })
       })
     }
   }
