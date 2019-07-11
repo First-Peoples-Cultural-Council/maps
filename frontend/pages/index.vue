@@ -170,9 +170,7 @@ export default {
       })
       map.addSource('arts', {
         type: 'geojson',
-        data: '/api/arts',
-        cluster: true,
-        clusterRadius: 80
+        data: 'static/web/arts.json'
       })
       map.addLayer({
         id: 'fn-lang-areas-fill',
@@ -190,6 +188,16 @@ export default {
             9,
             0.08
           ]
+        }
+      })
+      map.addLayer({
+        id: 'fn-arts',
+        type: 'circle',
+        source: 'arts',
+        layout: {},
+        paint: {
+          'circle-color': 'black',
+          'circle-radius': 10
         }
       })
       const hash = this.$route.hash
