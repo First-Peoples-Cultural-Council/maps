@@ -50,7 +50,7 @@ class LanguageMember(models.Model):
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
     other_name = models.CharField(max_length=255, default='')
-
+    kind = models.CharField(max_length=15, default='')
 
 class Champion(BaseModel):
     bio = models.TextField(default='')
