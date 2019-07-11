@@ -1,7 +1,16 @@
 <template>
   <div class="card-badge">
     <span class="font-07">{{ content }}</span>
-    <img src="@/assets/images/pronounce_icon.svg" alt="Pronounce" />
+    <img
+      v-if="type === 'pronounce'"
+      src="@/assets/images/pronounce_icon.svg"
+      alt="Pronounce"
+    />
+    <img
+      v-else-if="type === 'share'"
+      src="@/assets/images/share_icon.svg"
+      alt="Share"
+    />
   </div>
 </template>
 
@@ -11,6 +20,10 @@ export default {
     content: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: 'pronounce'
     }
   }
 }

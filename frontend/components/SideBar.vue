@@ -1,7 +1,10 @@
 <template>
   <div class="sidebar-container">
     <div class="sidebar-header">
-      <Logo></Logo>
+      <Logo
+        class="cursor-pointer"
+        @click.native.prevent="handleLogoClick"
+      ></Logo>
     </div>
     <div class="sidebar-body">
       <div class="sidebar-tabs">
@@ -73,6 +76,11 @@ export default {
         self.$router.push({
           path
         })
+      })
+    },
+    handleLogoClick(e) {
+      this.$router.push({
+        path: '/'
       })
     }
   }
