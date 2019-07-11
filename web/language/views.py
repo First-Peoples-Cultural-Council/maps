@@ -28,5 +28,5 @@ class PlaceNameViewSet(viewsets.ModelViewSet):
 
 class ChampionViewSet(viewsets.ModelViewSet):
 
-    queryset = PlaceName.objects.all()
-    serializer_class = PlaceNameSerializer
+    queryset = Champion.objects.all()
+    serializer_class = ChampionSerializer

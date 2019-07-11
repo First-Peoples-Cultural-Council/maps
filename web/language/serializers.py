@@ -17,11 +17,18 @@ class LanguageSubFamilySerializer(serializers.ModelSerializer):
         fields = ('name','family')
 
 
+class ChampionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Champion
+        fields = ('name', 'bio', 'job', 'community', 'language')
+
+
 class LanguageSerializer(serializers.ModelSerializer):
     sub_family = LanguageSubFamilySerializer(read_only=True)
+    champion_set = ChampionSerializer(read_only=True, many=True)
     class Meta:
         model = Language
-        fields = ('name', 'other_names',
+        fields = ('name', 'other_names', 'champion_set',
                   'fv_archive_link', 'color', 'sub_family', 'notes')
 
 
@@ -32,14 +39,9 @@ class PlaceNameSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
 
 
-class CommunitySerializer(GeoFeatureModelSerializer):
+class CommunitySerializer(serializers.ModelSerializer):
+    champion_set = ChampionSerializer(read_only=True, many=True)
     class Meta:
         model = Community
-        fields = ('name', 'language',)
+        fields = ('name', 'language','champion_set')
         geo_field = "point"
-
-
-class ChampionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Champion
-        fields = ('name', 'bio', 'job', 'community', 'language')
