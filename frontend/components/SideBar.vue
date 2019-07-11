@@ -9,12 +9,7 @@
     <div class="sidebar-body">
       <div class="sidebar-tabs">
         <div>
-          <b-tabs
-            fill
-            active-nav-item-class="font-weight-bold text-uppercase text-danger"
-            active-tab-class="font-weight-bold text-success"
-            content-class="mt-3"
-          >
+          <b-tabs fill content-class="mt-3">
             <b-tab id="languages-tab" title="Languages" active
               ><slot></slot
             ></b-tab>

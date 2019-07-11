@@ -66,7 +66,12 @@
         </section>
       </div>
     </SideBar>
-    <nuxt-child v-else :features="features" :communities="communities" />
+    <nuxt-child
+      v-else
+      :features="features"
+      :communities="communities"
+      :places="places"
+    />
   </div>
 </template>
 
@@ -115,6 +120,7 @@ export default {
       },
       map: {},
       features: [],
+      places: [],
       communities: [],
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
@@ -151,14 +157,22 @@ export default {
         feature => feature.layer.id === 'fn-lang-areas-fill'
       )
       zoomToLanguage({ map, feature })
-      this.$router.push({
-        path: `/languages/${encodeURIComponent(feature.properties.title)}`
-      })
+      if (feature) {
+        this.$router.push({
+          path: `/languages/${encodeURIComponent(feature.properties.title)}`
+        })
+      }
     },
     mapLoaded(map) {
       map.addSource('langs1', {
         type: 'geojson',
         data: '/static/web/langs.json'
+      })
+      map.addSource('arts', {
+        type: 'geojson',
+        data: '/api/arts',
+        cluster: true,
+        clusterRadius: 80
       })
       map.addLayer({
         id: 'fn-lang-areas-fill',
@@ -191,10 +205,15 @@ export default {
       }
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
-        const communities = e.target
-          .queryRenderedFeatures()
-          .filter(feature => feature.layer.id === 'fn-nations')
+        const renderedFeatures = e.target.queryRenderedFeatures()
+        const communities = renderedFeatures.filter(
+          feature => feature.layer.id === 'fn-nations'
+        )
+        const places = renderedFeatures.filter(
+          feature => feature.layer.id === 'fn-places'
+        )
         this.communities = communities
+        this.places = places
 
         const center = map.getCenter()
         const zoom = map.getZoom()

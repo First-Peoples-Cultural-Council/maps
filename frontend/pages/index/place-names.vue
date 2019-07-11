@@ -1,9 +1,38 @@
 <template>
-  <div>
-    <h1>Place Names</h1>
-  </div>
+  <SideBar active="Language">
+    <section class="ml-2 mr-2">
+      <div v-if="places.length > 0">
+        <PlacesCard
+          v-for="(place, index) in places"
+          :key="index"
+          :name="place.properties.title"
+          class="mt-2"
+        ></PlacesCard>
+      </div>
+      <div v-else>
+        <h5>No places are visible on the map</h5>
+      </div>
+    </section>
+  </SideBar>
 </template>
 
-<script></script>
+<script>
+import SideBar from '@/components/SideBar.vue'
+import PlacesCard from '@/components/places/PlacesCard.vue'
+export default {
+  components: {
+    SideBar,
+    PlacesCard
+  },
+  props: {
+    places: {
+      default() {
+        return []
+      },
+      type: Array
+    }
+  }
+}
+</script>
 
 <style></style>

@@ -1,16 +1,16 @@
 <template>
   <div>
-    <DetailSideBar active="Languages">
+    <SideBar active="Languages">
       <h1>Communitiy Detail</h1>
-    </DetailSideBar>
+    </SideBar>
   </div>
 </template>
 
 <script>
-import DetailSideBar from '@/components/DetailSideBar.vue'
+import SideBar from '@/components/SideBar.vue'
 export default {
   components: {
-    DetailSideBar
+    SideBar
   }
 }
 </script>
