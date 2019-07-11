@@ -1,16 +1,35 @@
 <template>
   <div>
-    <SideBar active="Languages">
-      <h1>Communitiy Detail</h1>
-    </SideBar>
+    <DetailSideBar>
+      <CommunityDetailCard
+        :name="community.properties.title"
+      ></CommunityDetailCard>
+    </DetailSideBar>
   </div>
 </template>
 
 <script>
-import SideBar from '@/components/SideBar.vue'
+import DetailSideBar from '@/components/DetailSideBar.vue'
+import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 export default {
   components: {
-    SideBar
+    DetailSideBar,
+    CommunityDetailCard
+  },
+  props: {
+    communities: {
+      default() {
+        return []
+      },
+      type: Array
+    }
+  },
+  computed: {
+    community() {
+      return this.communities.find(
+        comm => comm.properties.title === this.$route.params.fn
+      )
+    }
   }
 }
 </script>

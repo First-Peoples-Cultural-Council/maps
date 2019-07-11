@@ -1,15 +1,12 @@
 <template>
   <div>
-    <SideBar
-      v-if="this.$route.name < 'index-languages-lang'"
-      active="Languages"
-    >
+    <SideBar active="Languages">
       <div>
         <section class="badge-section pl-3 pr-3 mt-3">
           <Badge :content="badgeContent" :number="communities.length"></Badge>
         </section>
         <hr />
-        <section class="language-section pl-3 pr-3">
+        <section class="community-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div
             v-for="community in communities"
@@ -26,17 +23,11 @@
         </section>
       </div>
     </SideBar>
-    <DetailSideBar v-else>
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
@@ -45,7 +36,6 @@ export default {
     SideBar,
     Badge,
     LangFamilyTitle,
-    DetailSideBar,
     CommunityCard
   },
   props: {

@@ -121,7 +121,7 @@ export default {
   font-weight: 500;
 }
 
-.login-nav {
+.login-nav a {
   background-color: var(--color-beige);
   border-radius: 0.5em;
   padding: 0.5em 2.7em;

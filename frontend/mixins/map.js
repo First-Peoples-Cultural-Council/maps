@@ -9,9 +9,7 @@ export const zoomToLanguage = ({ map, lang, feature }) => {
     console.log('Zoom to feature invoked')
     const bounds = bbox(feature)
     map.fitBounds(bounds, { padding: 30 })
-  } catch (e) {
-    alert('Language/Community must be visible in map!')
-  }
+  } catch (e) {}
 }
 
 export const zoomToCommunity = ({ map, comm, geom }) => {
