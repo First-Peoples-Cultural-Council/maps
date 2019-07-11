@@ -57,7 +57,7 @@ class DedruplifierClient:
             'field_tm_pn_location_lat': 'point',
         })
 
-        self.map_drupal_items('tm_placename', Champion, {
+        self.map_drupal_items('tm_champ', Champion, {
             'field_tm_champ_bio_value': 'bio',
             'field_language_target_id': 'language',
             'field_tm_champ_occup_value': 'job',
@@ -67,6 +67,7 @@ class DedruplifierClient:
         self.map_drupal_items('tm_language_dialect', Dialect, {
             'field_language_target_id': 'language',
         })
+
 
         #     c.population = community['field_tm_fn_total_pop_value']
         #     c.point = Point(
@@ -187,5 +188,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         c = DedruplifierClient()
-        c.update()
+        #c.update()
         c.load()

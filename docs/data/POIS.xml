@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+  <markers><marker nid='1285' map_icon='info.png ' loc_x='-130.321040' loc_y='54.318517' name="Seashore Charters" />
+  <marker nid='2409' map_icon='FV-icon-25x25.png ' loc_x='-119.165107' loc_y='50.529010' name="FirstVoices - Splatsin (Eastern dialect)" />
+  <marker nid='1592' map_icon='FV-icon-25x25.png ' loc_x='-128.697318' loc_y='60.070272' name="Liard Kaska FirstVoices Archive" />
+  <marker nid='1591' map_icon='FV-icon-25x25.png ' loc_x='-127.506524' loc_y='50.721848' name="Kwak̓wala FirstVoices Archive" />
+  <marker nid='1588' map_icon='FV-icon-25x25.png ' loc_x='-115.754570' loc_y='49.585099' name="Ktunaxa FirstVoices Archive" />
+  <marker nid='1587' map_icon='FV-icon-25x25.png ' loc_x='-124.990587' loc_y='50.049091' name="Klahoose FirstVoices Archive" />
+  <marker nid='1586' map_icon='FV-icon-25x25.png ' loc_x='-128.778200' loc_y='54.711844' name="kitsumkalum sm'algyax FirstVoices Archive" />
+  <marker nid='1583' map_icon='FV-icon-25x25.png ' loc_x='-123.708310' loc_y='48.776774' name="HUL'Q'UMI'NUM' FirstVoices Archive" />
+  <marker nid='1582' map_icon='FV-icon-25x25.png ' loc_x='-131.976598' loc_y='53.273583' name="Hlg̱aagilda X̱aayda Kil FirstVoices Archive" />
+  <marker nid='1581' map_icon='FV-icon-25x25.png ' loc_x='-123.198318' loc_y='49.225115' name="hən̓q̓əmin̓əm̓ FirstVoices Archive" />
+  <marker nid='1578' map_icon='FV-icon-25x25.png ' loc_x='-128.646970' loc_y='53.970779' name="Haisla FirstVoices Archive" />
+  <marker nid='1577' map_icon='FV-icon-25x25.png ' loc_x='-128.263939' loc_y='55.043991' name="Gitsenimx̱  FirstVoices Archive" />
+  <marker nid='1576' map_icon='FV-icon-25x25.png ' loc_x='-126.844709' loc_y='49.984450' name="Ehattesaht FirstVoices Archive" />
+  <marker nid='1570' map_icon='FV-icon-25x25.png ' loc_x='-134.707678' loc_y='60.168652' name="C/TFN Tlingit FirstVoices Archive" />
+  <marker nid='1607' map_icon='FV-icon-25x25.png ' loc_x='-120.298645' loc_y='50.680597' name="Secwepemc FirstVoices Archive" />
+  <marker nid='1608' map_icon='FV-icon-25x25.png ' loc_x='-119.701409' loc_y='50.828916' name="Secwepemctsin (Eastern Dialect) FirstVoices Archive" />
+  <marker nid='1613' map_icon='FV-icon-25x25.png ' loc_x='-124.891205' loc_y='54.051004' name="Stellat'en FirstVoices Archive" />
+  <marker nid='1597' map_icon='FV-icon-25x25.png ' loc_x='-124.601440' loc_y='54.080179' name="Nadleh Whut'en FirstVoices Archive" />
+  <marker nid='1621' map_icon='FV-icon-25x25.png ' loc_x='-125.056000' loc_y='54.600392' name="Yekooche FirstVoices Archive" />
+  <marker nid='1611' map_icon='FV-icon-25x25.png ' loc_x='-123.929653' loc_y='49.151550' name="Snuneymuxw FirstVoices Archive" />
+  <marker nid='1601' map_icon='FV-icon-25x25.png ' loc_x='-121.923708' loc_y='50.684879' name="Northern St̕át̕imcets FirstVoices Archive" />
+  <marker nid='1595' map_icon='FV-icon-25x25.png ' loc_x='-130.287320' loc_y='54.322572' name="Metlakatla Sm'algyax FirstVoices Archive" />
+  <marker nid='1579' map_icon='FV-icon-25x25.png ' loc_x='-121.959866' loc_y='49.133634' name="Halq'eméylem FirstVoices Archive" />
+  <marker nid='1573' map_icon='FV-icon-25x25.png ' loc_x='-122.502305' loc_y='52.979002' name="Dakelh/Southern Carrier FirstVoices Archive" />
+  <marker nid='1605' map_icon='FV-icon-25x25.png ' loc_x='-125.526009' loc_y='48.940002' name="Nuu-chah-nulth FirstVoices Archive" />
+  <marker nid='1590' map_icon='FV-icon-25x25.png ' loc_x='-125.616667' loc_y='57.416667' name="Kwadacha Tsek'ene FirstVoices Archive" />
+  <marker nid='1622' map_icon='FV-icon-25x25.png ' loc_x='-124.806747' loc_y='49.234637' name="c̕išaaʔatḥ" />
+  <marker nid='1288' map_icon='info.png ' loc_x='-126.656202' loc_y='52.366305' name="Bella Coola's Eagle Lodge" />
+  <marker nid='1289' map_icon='info.png ' loc_x='-122.143785' loc_y='52.278460' name="Xats’ull Heritage Village" />
+  <marker nid='1290' map_icon='info.png ' loc_x='-115.789375' loc_y='50.618827' name="CrossRiver Wilderness Centre" />
+  <marker nid='1291' map_icon='info.png ' loc_x='-115.756330' loc_y='49.585614' name="St. Eugene Golf Resort &amp; Casino" />
+  <marker nid='1292' map_icon='info.png ' loc_x='-120.090721' loc_y='49.354742' name="Mascot Gold Mine Tours and Snaza’ist Discovery Centre " />
+  <marker nid='1293' map_icon='info.png ' loc_x='-119.433349' loc_y='49.038374' name="Nk'Mip - The Okanagan’s Ultimate Destination Resort" />
+  <marker nid='1294' map_icon='info.png ' loc_x='-119.435012' loc_y='49.040533' name="Nk'Mip Desert Cultural Centre" />
+  <marker nid='1295' map_icon='info.png ' loc_x='-120.298645' loc_y='50.680597' name="Secwepemc Museum and Heritage Park" />
+  <marker nid='1296' map_icon='info.png ' loc_x='-119.615310' loc_y='50.875941' name="Talking Rock Resort and Quaaout Lodge" />
+  <marker nid='1417' map_icon='green_dot.png ' loc_x='-123.929347' loc_y='49.144875' name="Tillicum Lelum Aboriginal Friendship Centre" />
+  <marker nid='1418' map_icon='green_dot.png ' loc_x='-117.659650' loc_y='49.308732' name="Lower Columbia All First Nations" />
+  <marker nid='1419' map_icon='green_dot.png ' loc_x='-121.629632' loc_y='55.697588' name="Tansi Friendship Centre Society" />
+  <marker nid='1420' map_icon='green_dot.png ' loc_x='-124.997780' loc_y='49.680755' name="Wachiay Friendship Centre Society" />
+  <marker nid='1421' map_icon='green_dot.png ' loc_x='-120.239478' loc_y='55.759535' name="Nawican Friendship Centre" />
+  <marker nid='1422' map_icon='green_dot.png ' loc_x='-123.699718' loc_y='48.782593' name="Hiiye'yu Lelum (House of Friendship) Society" />
+  <marker nid='1423' map_icon='green_dot.png ' loc_x='-122.701093' loc_y='58.803895' name="Fort Nelson Aboriginal Friendship Society" />
+  <marker nid='1424' map_icon='green_dot.png ' loc_x='-120.851069' loc_y='56.241448' name="Fort St John Friendship Society" />
+  <marker nid='1425' map_icon='green_dot.png ' loc_x='-126.647268' loc_y='54.398810' name="Dzelk'ant Friendship Center - Houston Program Office" />
+  <marker nid='1426' map_icon='green_dot.png ' loc_x='-120.355730' loc_y='50.686268' name="Interior Indian Friendship Society" />
+  <marker nid='1427' map_icon='green_dot.png ' loc_x='-119.494361' loc_y='49.884505' name="Ki-Low-Na Friendship Society" />
+  <marker nid='1428' map_icon='green_dot.png ' loc_x='-121.928092' loc_y='50.698820' name="Lillooet Friendship Centre Society" />
+  <marker nid='1429' map_icon='green_dot.png ' loc_x='-120.786708' loc_y='50.110863' name="Conayt Friendship Society" />
+  <marker nid='1430' map_icon='green_dot.png ' loc_x='-119.586623' loc_y='49.485652' name="OoknaKane Friendship Centre" />
+  <marker nid='1431' map_icon='green_dot.png ' loc_x='-124.805919' loc_y='49.241332' name="Port Alberni Friendship Center" />
+  <marker nid='1432' map_icon='green_dot.png ' loc_x='-122.751777' loc_y='53.918804' name="Prince George Native Friendship Centre" />
+  <marker nid='1433' map_icon='green_dot.png ' loc_x='-130.327135' loc_y='54.310084' name="Friendship House Association of Prince Rupert" />
+  <marker nid='1434' map_icon='green_dot.png ' loc_x='-122.502911' loc_y='52.977020' name="Quesnel Tillicum Society, Native Friendship Centre" />
+  <marker nid='1436' map_icon='green_dot.png ' loc_x='-128.585676' loc_y='54.520214' name="Kermode Friendship Society" />
+  <marker nid='1437' map_icon='green_dot.png ' loc_x='-123.072547' loc_y='49.281286' name="Vancouver Aboriginal Friendship Centre " />
+  <marker nid='1438' map_icon='green_dot.png ' loc_x='-119.269380' loc_y='50.262986' name="First Nations Friendship Centre" />
+  <marker nid='1439' map_icon='green_dot.png ' loc_x='-123.369132' loc_y='48.424912' name="BC Association of Aboriginal Friendship Centres" />
+  <marker nid='1440' map_icon='green_dot.png ' loc_x='-123.388895' loc_y='48.455991' name="Victoria Native Friendship Centre" />
+  <marker nid='1441' map_icon='green_dot.png ' loc_x='-135.057087' loc_y='60.722991' name="Skookum Jim Friendship Centre" />
+  <marker nid='1442' map_icon='green_dot.png ' loc_x='-122.142445' loc_y='52.126865' name="Cariboo Friendship Society" />
+  <marker nid='1443' map_icon='green_dot.png ' loc_x='-126.936792' loc_y='50.593038' name="U'mista Cultural Centre" />
+  <marker nid='1444' map_icon='green_dot.png ' loc_x='-128.145204' loc_y='52.164316' name="Heiltsuk Cultural Education Centre" />
+  <marker nid='1445' map_icon='info.png ' loc_x='-123.461688' loc_y='48.580972' name="First Peoples' Heritage, Language and Culture Council" />
+  <marker nid='1446' map_icon='info.png ' loc_x='-123.461688' loc_y='48.580972' name="First Peoples' Cultural Foundation" />
+  <marker nid='1447' map_icon='green_dot.png ' loc_x='-121.959866' loc_y='49.133634' name="Coqualeetza Cultural Education Centre" />
+  <marker nid='1448' map_icon='green_dot.png ' loc_x='-123.708252' loc_y='48.776708' name="Quw'utsun Syuw’entst Lelum' Culture and Education Centre" />
+  <marker nid='1449' map_icon='green_dot.png ' loc_x='-123.710070' loc_y='48.777649' name="Red River West Cultural Association" />
+  <marker nid='1450' map_icon='green_dot.png ' loc_x='-120.298645' loc_y='50.680597' name="Secwepemc Cultural Education Society" />
+  <marker nid='1451' map_icon='green_dot.png ' loc_x='-119.601967' loc_y='49.478507' name="En'owkin Centre" />
+  <marker nid='1452' map_icon='green_dot.png ' loc_x='-124.070411' loc_y='53.976613' name="Stoney Creek Elders Cultural Society" />
+  <marker nid='1453' map_icon='green_dot.png ' loc_x='-124.104074' loc_y='53.941128' name="Yinka Déné Language Institute" />
+  <marker nid='1435' map_icon='green_dot.png ' loc_x='-127.166520' loc_y='54.781780' name="Dze L K'ant Friendship Centre " />
+  <marker nid='1575' map_icon='FV-icon-25x25.png ' loc_x='-124.671478' loc_y='48.806683' name="Ditidaht FirstVoices Archive" />
+  <marker nid='1620' map_icon='FV-icon-25x25.png ' loc_x='-132.144585' loc_y='54.011118' name="x̱aad kil (Massett Haida) FirstVoices Archive" />
+  <marker nid='1619' map_icon='FV-icon-25x25.png ' loc_x='-127.330856' loc_y='55.023693' name="Wet’suwet’en FirstVoices Archive" />
+  <marker nid='1617' map_icon='FV-icon-25x25.png ' loc_x='-127.506524' loc_y='50.721848' name="’Uik̓ala FirstVoices Archive" />
+  <marker nid='1616' map_icon='FV-icon-25x25.png ' loc_x='-124.075494' loc_y='51.417959' name="Tsilhqot'in (Xeni Gwet'in) FirstVoices Archive" />
+  <marker nid='1615' map_icon='FV-icon-25x25.png ' loc_x='-123.045377' loc_y='54.984340' name="Tse'Khene FirstVoices Archive" />
+  <marker nid='1614' map_icon='FV-icon-25x25.png ' loc_x='-134.707678' loc_y='60.168652' name="Tagish FirstVoices Archive" />
+  <marker nid='1612' map_icon='FV-icon-25x25.png ' loc_x='-135.052614' loc_y='60.719346' name="Southern Tutchone FirstVoices Archive" />
+  <marker nid='1610' map_icon='FV-icon-25x25.png ' loc_x='-124.607277' loc_y='49.892201' name="Sliammon FirstVoices Archive" />
+  <marker nid='1609' map_icon='FV-icon-25x25.png ' loc_x='-123.465858' loc_y='48.579461' name="SENĆOŦEN FirstVoices Archive" />
+  <marker nid='1606' map_icon='FV-icon-25x25.png ' loc_x='-126.762575' loc_y='52.372894' name="Nuxalk FirstVoices Archive" />
+  <marker nid='1603' map_icon='FV-icon-25x25.png ' loc_x='-119.536750' loc_y='49.881026' name="nsyilxcən FirstVoices Archive" />
+  <marker nid='1600' map_icon='FV-icon-25x25.png ' loc_x='-121.569300' loc_y='50.218391' name="nłeʔkepmxcin FirstVoices Archive" />
+  <marker nid='1599' map_icon='FV-icon-25x25.png ' loc_x='-129.082751' loc_y='55.204596' name="Nisga'a FirstVoices Archive" />
+  <marker nid='1598' map_icon='FV-icon-25x25.png ' loc_x='-124.248505' loc_y='54.450081' name="Nak’azdli Dakelh FirstVoices Archive" />
+  <marker nid='1594' map_icon='FV-icon-25x25.png ' loc_x='-113.580674' loc_y='52.877477' name="ᒪᐢᑿᒋᐢ ᓀᐦᐃᔭᐍᐏᐣ / Maskwacis Cree FirstVoices Archive" />
+  <marker nid='1593' map_icon='FV-icon-25x25.png ' loc_x='-122.720274' loc_y='50.312638' name="Lil'wat FirstVoices Archive" />
+  <marker nid='1283' map_icon='info.png ' loc_x='-130.322657' loc_y='54.316398' name="Museum of Northern B.C." />
+  <marker nid='1138' map_icon='info.png ' loc_x='-120.298333' loc_y='50.676944' name="Secwepemc Museum and Heritage Park" />
+  <marker nid='1137' map_icon='info.png ' loc_x='-125.247500' loc_y='50.032500' name="Wei Wai Kum House of Treasures" />
+  <marker nid='1141' map_icon='info.png ' loc_x='-128.065033' loc_y='55.103500' name="'Ksan Native Village and Museum" />
+  <marker nid='1139' map_icon='info.png ' loc_x='-122.252858' loc_y='49.149922' name="XÁ:YTEM  Longhouse Interpretive Centre" />
+  <marker nid='1267' map_icon='info.png ' loc_x='-123.118954' loc_y='49.284461' name="Bill Reid Gallery of Northwest Coast Art" />
+  <marker nid='1268' map_icon='info.png ' loc_x='-121.606348' loc_y='49.356060' name="Ruby Creek Art Gallery" />
+  <marker nid='1269' map_icon='info.png ' loc_x='-122.944502' loc_y='50.119650' name="Squamish Lil'wat Cultural Centre" />
+  <marker nid='1270' map_icon='info.png ' loc_x='-121.937355' loc_y='50.690374' name="St'át'imc Cultural Experiences" />
+  <marker nid='1271' map_icon='info.png ' loc_x='-121.957684' loc_y='49.111583' name="Sto:lo Artisan Centre" />
+  </markers>
