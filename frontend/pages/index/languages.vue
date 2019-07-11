@@ -9,16 +9,33 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="badgeNumber"></Badge>
+          <Badge :content="badgeContent" :number="features.length"></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <LanguageCard class="mt-2"></LanguageCard>
+          <div v-for="(language, index) in features" :key="index">
+            <LanguageCard
+              class="mt-3 hover-left-move"
+              :name="language.properties.title"
+              :color="language.properties.color"
+              @click.native.prevent="
+                handleCardClick($event, language.properties.title)
+              "
+            ></LanguageCard>
+          </div>
         </section>
       </div>
     </SideBar>
-    <DetailSideBar v-else>
+    <DetailSideBar
+      v-else-if="this.$route.name === 'index-languages-lang'"
+      :width="detailOneWidth"
+    >
+      <div>
+        <nuxt-child />
+      </div>
+    </DetailSideBar>
+    <DetailSideBar v-else :width="detailTwoWidth">
       <div>
         <nuxt-child />
       </div>
@@ -33,6 +50,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
+import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     SideBar,
@@ -42,26 +60,50 @@ export default {
     LanguageCard,
     DetailSideBar
   },
+  props: {
+    features: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
-      badgeNumber: 23
+      languages: [],
+      detailOneWidth: 375,
+      detailTwoWidth: 500
     }
   },
   computed: {
     feature() {
       return this.$store.state.features.feature
+    },
+    mapinstance() {
+      return this.$store.state.mapinstance.mapInstance
+    }
+  },
+  async asyncData({ $axios }) {
+    const api = process.server
+      ? 'http://nginx/api/language/'
+      : 'http://localhost/api/language/'
+    const data = await $axios.$get(api)
+    return {
+      languages: data
     }
   },
   mounted() {
     console.log('Route', this.$route)
   },
   methods: {
-    handleNavigation(e, data) {
-      console.log('Handling Navigation!', e, data)
-      console.log('Router!', this.$router)
+    handleCardClick(e, data) {
+      zoomToLanguage({ map: this.mapinstance, lang: data })
+      this.$router.push({
+        path: `/languages/${encodeURIComponent(data)}`
+      })
     }
   }
 }

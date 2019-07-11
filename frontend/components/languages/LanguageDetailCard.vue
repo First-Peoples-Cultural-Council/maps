@@ -1,13 +1,9 @@
 <template>
-  <div
-    class="language-card"
-    @mouseover.prevent="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="language-detail-card">
     <Card>
       <template v-slot:header>
         <div
-          class="language-icon-container"
+          class="language-detail-icon-container"
           :style="'background-color:' + color"
         >
           <img src="@/assets/images/language_icon.svg" alt="Language" />
@@ -19,7 +15,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Languages
+              Language
             </h5>
             <h5
               class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
@@ -30,12 +26,31 @@
           <div class="d-inline-block" @click.prevent.stop="handlePronounce">
             <CardBadge content="Pronounce"></CardBadge>
           </div>
+          <div class="d-inline-block">
+            <CardBadge content="Share & Embed"></CardBadge>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
-          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        <div
+          class="fpcc-card-more"
+          @click.prevent="handleReturn"
+          @mouseover.prevent="handleMouseOver"
+          @mouseleave="handleMouseLeave"
+        >
+          <img
+            v-if="!hover"
+            class="ml-1"
+            src="@/assets/images/return_icon.svg"
+            alt="Go"
+          />
+          <img
+            v-else
+            class="ml-1"
+            src="@/assets/images/return_icon_hover.svg"
+            alt="Go"
+          />
+          <span class="ml-1 font-weight-bold">Return</span>
         </div>
       </template>
     </Card>
@@ -69,6 +84,9 @@ export default {
     handlePronounce() {
       console.log('Pronounce')
     },
+    handleReturn() {
+      this.$router.go(-1)
+    },
     handleMouseOver() {
       this.hover = true
     },
@@ -80,16 +98,16 @@ export default {
 </script>
 
 <style scoped>
-.language-card {
+.language-detail-card {
   cursor: pointer;
 }
-.language-icon-container {
+.language-detail-icon-container {
   background-color: black;
   border-radius: 50%;
   height: 43px;
   width: 43px;
 }
-.language-icon-container img {
+.language-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
@@ -103,7 +121,25 @@ export default {
   border-top-left-radius: 0.5em;
   border-bottom-left-radius: 0.5em;
 }
-.fpcc-card:hover .fpcc-card-more {
+
+.fpcc-card-more {
+  padding: 0.3em;
+  font-size: 0.7em;
+}
+
+.fpcc-card-more:hover {
+  color: white;
   background-color: var(--color-darkgray);
+}
+
+.fpcc-card-more img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+}
+
+.fpcc-card {
+  border: 0;
+  box-shadow: none;
 }
 </style>

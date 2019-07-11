@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-inline-block">
     <b-badge class="badge">
       <span class="badge-icon">
         <img src="@/assets/images/language_icon_white.svg" alt="Icon" />
