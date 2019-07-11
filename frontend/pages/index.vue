@@ -40,7 +40,7 @@
               :name="language.properties.title"
               :color="language.properties.color"
               @click.native.prevent="
-                handleCardClick($event, language.properties.title)
+                handleCardClick($event, language.properties.title, 'languages')
               "
             ></LanguageCard>
           </div>
@@ -53,12 +53,20 @@
             <CommunityCard
               class="mt-3 hover-left-move"
               :name="community.properties.title"
+              @click.native.prevent="
+                handleCardClick(
+                  $event,
+                  community.properties.title,
+                  'content',
+                  community.geometry
+                )
+              "
             ></CommunityCard>
           </div>
         </section>
       </div>
     </SideBar>
-    <nuxt-child v-else :features="features" />
+    <nuxt-child v-else :features="features" :communities="communities" />
   </div>
 </template>
 
@@ -72,7 +80,7 @@ import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { zoomToLanguage } from '@/mixins/map.js'
+import { zoomToLanguage, zoomToCommunity } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -113,10 +121,14 @@ export default {
     }
   },
   methods: {
-    handleCardClick(e, data) {
-      zoomToLanguage({ map: this.map, lang: data })
+    handleCardClick(e, data, type, geom) {
+      if (type === 'languages') {
+        zoomToLanguage({ map: this.map, lang: data })
+      } else {
+        zoomToCommunity({ map: this.map, comm: data, geom })
+      }
       this.$router.push({
-        path: `/languages/${encodeURIComponent(data)}`
+        path: `/${type}/${encodeURIComponent(data)}`
       })
     },
     goToLang() {
@@ -166,12 +178,29 @@ export default {
           ]
         }
       })
+      const hash = this.$route.hash
+      if (hash) {
+        try {
+          const split = hash.split('/')
+          const lat = split[0].substr(1)
+          const lng = split[1]
+          const zoom = split[2]
+          map.setCenter([lat, lng])
+          map.setZoom(zoom)
+        } catch (e) {}
+      }
+      // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
         const communities = e.target
           .queryRenderedFeatures()
           .filter(feature => feature.layer.id === 'fn-nations')
         this.communities = communities
-        this.$store.commit('communities/set', communities)
+
+        const center = map.getCenter()
+        const zoom = map.getZoom()
+        this.$router.push({
+          hash: `${center.lat}/${center.lng}/${zoom}`
+        })
       })
     },
     mapSourceData(map, source) {

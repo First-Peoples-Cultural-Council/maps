@@ -27,7 +27,14 @@
             <CardBadge content="Pronounce"></CardBadge>
           </div>
           <div class="d-inline-block">
-            <CardBadge content="Share & Embed"></CardBadge>
+            <CardBadge
+              v-b-modal="'modal-1'"
+              content="Share & Embed"
+              type="share"
+            ></CardBadge>
+            <b-modal id="modal-1" title="BootstrapVue">
+              <p class="my-4">Hello from modal!</p>
+            </b-modal>
           </div>
         </div>
       </template>
@@ -85,7 +92,9 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.go(-1)
+      this.$router.push({
+        path: '/languages'
+      })
     },
     handleMouseOver() {
       this.hover = true

@@ -18,6 +18,9 @@
             <CommunityCard
               class="mt-3"
               :name="community.properties.title"
+              @click.native.prevent="
+                handleCardClick($event, community.properties.title)
+              "
             ></CommunityCard>
           </div>
         </section>
@@ -45,14 +48,24 @@ export default {
     DetailSideBar,
     CommunityCard
   },
+  props: {
+    communities: {
+      default() {
+        return []
+      },
+      type: Array
+    }
+  },
   data() {
     return {
       badgeContent: 'Communities'
     }
   },
-  computed: {
-    communities() {
-      return this.$store.state.communities.communities
+  methods: {
+    handleCardClick(e, title) {
+      this.$router.push({
+        path: `/content/${encodeURIComponent(title)}`
+      })
     }
   }
 }

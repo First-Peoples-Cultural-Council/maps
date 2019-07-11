@@ -9,3 +9,10 @@ export const zoomToLanguage = ({ map, lang, feature }) => {
   const bounds = bbox(feature)
   map.fitBounds(bounds, { padding: 30 })
 }
+
+export const zoomToCommunity = ({ map, comm, geom }) => {
+  map.flyTo({
+    center: geom.coordinates,
+    zoom: 10
+  })
+}
