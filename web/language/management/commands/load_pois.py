@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         for rec in json.loads(open('./fixtures/pois.json').read())['markers']['marker']:
             n=PlaceName(
-                point=Point(rec['_loc_y'],rec['_loc_x']),
+                point=Point(float(rec['_loc_y']),float(rec['_loc_x'])),
                 name=rec['_name'],
                 kind='poi'
             )

@@ -1,4 +1,7 @@
-from .models import Language, PlaceName, Community, Champion, LanguageSubFamily, LanguageFamily
+from .models import (
+    Language, PlaceName, Community,
+    Champion, LanguageSubFamily, LanguageFamily, 
+    LanguageLink, CommunityLink)
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
@@ -23,12 +26,18 @@ class ChampionSerializer(serializers.ModelSerializer):
         fields = ('name', 'bio', 'job', 'community', 'language')
 
 
+class LanguageLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LanguageLink
+        fields = ('title', 'url',)
+
 class LanguageSerializer(serializers.ModelSerializer):
     sub_family = LanguageSubFamilySerializer(read_only=True)
+    languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     class Meta:
         model = Language
-        fields = ('name', 'other_names', 'champion_set',
+        fields = ('name', 'other_names', 'champion_set', 'languagelink_set',
                   'fv_archive_link', 'color', 'sub_family', 'notes')
 
 
@@ -38,10 +47,16 @@ class PlaceNameSerializer(GeoFeatureModelSerializer):
         fields = ('name', 'other_name',)
         geo_field = "point"
 
+class CommunityLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityLink
+        fields = ('title', 'url',)
 
 class CommunitySerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
+    communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
+
     class Meta:
         model = Community
-        fields = ('name', 'language','champion_set')
+        fields = ('name', 'language','champion_set','communitylink_set')
         geo_field = "point"

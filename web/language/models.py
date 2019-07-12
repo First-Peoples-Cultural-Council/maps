@@ -32,16 +32,35 @@ class Language(BaseModel):
     geom = models.MultiPolygonField(null=True, default=None)
 
 
+class LanguageLink(models.Model):
+    url = models.URLField(max_length=255, default=None, null=True)
+    title = models.CharField(max_length=255)
+    language = models.ForeignKey(
+        Language, on_delete=models.CASCADE, null=True, default=None
+    )
+
+
 class Community(BaseModel):
+    notes = models.TextField(default="")
     point = models.PointField(null=True, default=None)
     english_name = models.CharField(max_length=255, default='')
+    other_names = models.CharField(max_length=255, default='')
     internet_speed = models.CharField(max_length=255, default='')
     population = models.IntegerField(default=0)
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True, default=None)
     email = models.EmailField(max_length=255, default=None, null=True)
     website = models.URLField(max_length=255, default=None, null=True)
+    phone = models.CharField(max_length=255, default='')
+    alt_phone = models.CharField(max_length=255, default='')
+    fax = models.CharField(max_length=255, default='')
 
+class CommunityLink(models.Model):
+    url = models.URLField(max_length=255, default=None, null=True)
+    title = models.CharField(max_length=255)
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, default=None
+    )
 
 class LanguageMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
