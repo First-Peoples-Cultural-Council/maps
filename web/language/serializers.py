@@ -37,7 +37,7 @@ class LanguageSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     class Meta:
         model = Language
-        fields = ('name', 'other_names', 'champion_set', 'languagelink_set',
+        fields = ('name', 'other_names', 'champion_set', 'languagelink_set'
                   'fv_archive_link', 'color', 'sub_family', 'notes')
 
 
@@ -58,5 +58,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Community
-        fields = ('name', 'language','champion_set','communitylink_set')
+        fields = ('name', 'language','champion_set','communitylink_set',
+            'english_name', 'other_names', 'internet_speed', 'population',
+            'email', 'website', 'phone', 'alt_phone', 'fax')
         geo_field = "point"
