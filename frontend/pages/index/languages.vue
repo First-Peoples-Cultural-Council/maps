@@ -87,9 +87,8 @@ export default {
     }
   },
   async asyncData({ $axios }) {
-    const api = process.server
-      ? 'http://nginx/api/language/'
-      : 'http://localhost/api/language/'
+    const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
+    console.log('Process', process)
     const data = await $axios.$get(api)
     return {
       languages: data

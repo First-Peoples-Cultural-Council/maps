@@ -24,10 +24,14 @@
             <li><nuxt-link to="/">Home</nuxt-link></li>
             <li><nuxt-link to="/languages">Languages</nuxt-link></li>
             <li><nuxt-link to="/first-nations">First Nations</nuxt-link></li>
-            <li><a href="#">Place-names</a></li>
-            <li><a href="#">Phrases</a></li>
-            <li><a href="#">Help</a></li>
-            <li class="login-nav cursor-pointer"><a href="#">Login</a></li>
+            <li><nuxt-link to="/place-names">Place-names</nuxt-link></li>
+            <li><a href="https://maps.fpcc.ca/phrases">Phrases</a></li>
+            <li><a href="https://maps.fpcc.ca/help">Help</a></li>
+            <li class="login-nav cursor-pointer">
+              <a href="https://maps.fpcc.ca/user/login" class="d-block"
+                >Login</a
+              >
+            </li>
             <li class="close-nav cursor-pointer" @click="closeNav">
               <a href="#">
                 <img src="@/assets/images/close_icon.svg" alt="Close"
@@ -117,7 +121,7 @@ export default {
   font-weight: 500;
 }
 
-.login-nav {
+.login-nav a {
   background-color: var(--color-beige);
   border-radius: 0.5em;
   padding: 0.5em 2.7em;
