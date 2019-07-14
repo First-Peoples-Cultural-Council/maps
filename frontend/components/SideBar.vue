@@ -8,17 +8,20 @@
     </div>
     <div class="sidebar-body">
       <div class="sidebar-tabs">
-        <div>
-          <b-tabs fill content-class="mt-3">
-            <b-tab id="languages-tab" title="Languages" active
-              ><slot></slot
-            ></b-tab>
-            <b-tab id="arts-tab" title="Arts"><p>Arts</p></b-tab>
-            <b-tab id="heritages-tab" title="Heritages"><p>Heritages</p></b-tab>
-          </b-tabs>
-        </div>
+        <b-nav tabs fill>
+          <b-nav-item
+            v-for="tab in navigationTabs"
+            :key="tab.id"
+            :active="active === tab.name ? true : false"
+            :class="tab.name | lowerCase"
+            @click.prevent="handleNavigation($event, tab.name)"
+            >{{ tab.name }}
+          </b-nav-item>
+        </b-nav>
       </div>
-      <div class="sidebar-content"></div>
+      <div class="sidebar-content">
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -53,8 +56,8 @@ export default {
         {
           id: 1,
           name: 'Arts',
-          path: '/arts',
-          pathName: 'index-arts-art'
+          path: '/art',
+          pathName: 'index-art-art'
         },
         {
           id: 2,
@@ -140,11 +143,10 @@ export default {
   border-top-right-radius: 0.5em;
 }
 
-.nav-tabs .nav-link.active[aria-posinset='2']::before {
+.nav-tabs .nav-item.arts .nav-link.active::before {
   border-top-left-radius: 0.5em;
 }
-
-.nav-tabs .nav-link.active[aria-posinset='3']::before {
+.nav-tabs .nav-item.heritages .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
 }
