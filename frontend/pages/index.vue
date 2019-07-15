@@ -172,7 +172,10 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/static/web/arts1.json'
+        data: '/static/web/arts1.json',
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50
       })
       map.addLayer({
         id: 'fn-lang-areas-fill',
@@ -193,15 +196,59 @@ export default {
         }
       })
       map.addLayer({
-        id: 'fn-arts',
+        id: 'clusters',
+        type: 'circle',
+        source: 'arts1',
+        filter: ['has', 'point_count'],
+        paint: {
+          // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+          // with three steps to implement three types of circles:
+          //   * Blue, 20px circles when point count is less than 100
+          //   * Yellow, 30px circles when point count is between 100 and 750
+          //   * Pink, 40px circles when point count is greater than or equal to 750
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#51bbd6',
+            100,
+            '#f1f075',
+            750,
+            '#f28cb1'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            20,
+            100,
+            30,
+            750,
+            40
+          ]
+        }
+      })
+
+      map.addLayer({
+        id: 'cluster-count',
         type: 'symbol',
         source: 'arts1',
+        filter: ['has', 'point_count'],
         layout: {
-          'icon-image': '{icon}-15',
-          'text-field': '{title}',
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top'
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+        }
+      })
+
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'arts1',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': '#11b4da',
+          'circle-radius': 4,
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff'
         }
       })
       const hash = this.$route.hash
