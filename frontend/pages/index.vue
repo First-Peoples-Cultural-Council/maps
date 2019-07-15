@@ -168,9 +168,9 @@ export default {
         type: 'geojson',
         data: '/static/web/langs.json'
       })
-      map.addSource('arts', {
+      map.addSource('arts1', {
         type: 'geojson',
-        data: 'static/web/arts.json'
+        data: '/static/web/arts1.json'
       })
       map.addLayer({
         id: 'fn-lang-areas-fill',
@@ -192,12 +192,14 @@ export default {
       })
       map.addLayer({
         id: 'fn-arts',
-        type: 'circle',
-        source: 'arts',
-        layout: {},
-        paint: {
-          'circle-color': 'black',
-          'circle-radius': 10
+        type: 'symbol',
+        source: 'arts1',
+        layout: {
+          'icon-image': '{icon}-15',
+          'text-field': '{title}',
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-offset': [0, 0.6],
+          'text-anchor': 'top'
         }
       })
       const hash = this.$route.hash
