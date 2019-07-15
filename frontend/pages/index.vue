@@ -273,7 +273,7 @@ export default {
         )
 
         const arts = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-arts'
+          feature => feature.layer.id === 'unclustered-points'
         )
         console.log('arts on idle', arts)
         this.communities = communities

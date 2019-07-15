@@ -1,17 +1,54 @@
 <template>
   <div class="searchbar-container">
     <div class="searchbar-input-container">
-      <input
-        class="searchbar-input"
-        placeholder="Search for any term, like Secwepemctsin"
-      />
+      <b-form-input
+        id="search-input"
+        v-model="searchQuery"
+        type="search"
+        class="search-input"
+        placeholder="Search for a language..."
+        @update="handleSearchUpdate"
+        @blur="handleSearchLeave"
+      ></b-form-input>
+      <b-popover
+        target="search-input"
+        placement="bottom"
+        :show.sync="show"
+        triggers=""
+      >
+        <template slot="title"
+          >Content via Slots</template
+        >
+        Embedding content <span class="text-danger">using slots</span> affords
+        you <em>greater <strong>control.</strong></em> and basic HTML support.
+      </b-popover>
       <span class="searchbar-icon"></span>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      show: false,
+      searchQuery: ''
+    }
+  },
+  methods: {
+    handleSearchUpdate() {
+      console.log('Form Changed')
+      if (this.searchQuery === '') {
+        this.show = false
+      } else {
+        this.show = true
+      }
+    },
+    handleSearchLeave() {
+      this.show = false
+    }
+  }
+}
 </script>
 
 <style>
