@@ -1,6 +1,6 @@
 <template>
   <div class="d-inline-block">
-    <b-badge class="badge">
+    <b-badge class="badge" :style="'background-color: ' + bgcolor">
       <span class="badge-icon">
         <img src="@/assets/images/language_icon_white.svg" alt="Icon" />
       </span>
@@ -20,6 +20,14 @@ export default {
     number: {
       type: Number,
       default: 104
+    },
+    bgcolor: {
+      type: String,
+      default: '#707070'
+    },
+    image: {
+      type: String,
+      default: 'language_icon_white.svg'
     }
   }
 }
@@ -31,7 +39,8 @@ export default {
 }
 .badge-content {
   display: inline-block;
-  margin: 0 0.5em;
+  margin: 0 0.25em;
+  font-size: 1em;
 }
 .badge-number {
   display: inline-block;
