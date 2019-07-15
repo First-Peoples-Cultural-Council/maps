@@ -52,8 +52,8 @@ class Client:
                     "geometry": {
                         "type": "Point",
                         "coordinates": [
-                                float(row[2]),
                                 float(row[3]),
+                                float(row[2]),
                         ]
                     }
                 })

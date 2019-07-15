@@ -29,7 +29,7 @@ class LanguageSubFamilySerializer(serializers.ModelSerializer):
 class ChampionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Champion
-        fields = ("name", "bio", "job", "community", "language")
+        fields = ("name", "bio", "job", "community")
 
 
 class LanguageLinkSerializer(serializers.ModelSerializer):
@@ -37,13 +37,15 @@ class LanguageLinkSerializer(serializers.ModelSerializer):
         model = LanguageLink
         fields = ('title', 'url')
 
+
 class LanguageSerializer(serializers.ModelSerializer):
     sub_family = LanguageSubFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
-
+    languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     class Meta:
         model = Language
         fields = (
+            "id",
             "name",
             "other_names",
             "champion_set",
