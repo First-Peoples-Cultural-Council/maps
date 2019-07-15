@@ -71,6 +71,7 @@
       :features="features"
       :communities="communities"
       :places="places"
+      :arts="arts"
     />
   </div>
 </template>
@@ -121,6 +122,7 @@ export default {
       map: {},
       features: [],
       places: [],
+      arts: [],
       communities: [],
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
@@ -222,8 +224,14 @@ export default {
         const places = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-places'
         )
+
+        const arts = renderedFeatures.filter(
+          feature => feature.layer.id === 'fn-arts'
+        )
+        console.log('arts on idle', arts)
         this.communities = communities
         this.places = places
+        this.arts = arts
 
         const center = map.getCenter()
         const zoom = map.getZoom()

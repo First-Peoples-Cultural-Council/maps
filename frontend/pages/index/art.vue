@@ -1,8 +1,14 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
-      <section class="ml-2 mr-2 mt-2">
-        <ArtsCard arttype="Public Art"></ArtsCard>
+      <section class="ml-2 mr-2 mt-2 pt-2">
+        <ArtsCard
+          v-for="(art, index) in arts"
+          :key="index"
+          arttype="Public Art"
+          :name="art.properties.title"
+          class="mb-2"
+        ></ArtsCard>
       </section>
     </SideBar>
     <DetailSideBar
@@ -26,6 +32,14 @@ export default {
     SideBar,
     ArtsCard,
     DetailSideBar
+  },
+  props: {
+    arts: {
+      default() {
+        return []
+      },
+      type: Array
+    }
   },
   mounted() {
     console.log('Arts', this.$route)
