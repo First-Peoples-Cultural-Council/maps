@@ -8,7 +8,7 @@ import json
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = 'Loads points of interest, from legacy custom json format out of drupal site.'
 
     def handle(self, *args, **options):
 

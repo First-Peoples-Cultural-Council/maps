@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 
 from django.contrib.gis.db import models
 
-
 class BaseModel(models.Model):
     name = models.CharField(max_length=255, default="")
 
@@ -29,7 +28,6 @@ class Language(BaseModel):
         LanguageSubFamily, on_delete=models.SET_NULL, null=True
     )
     notes = models.TextField(default="")
-    geom = models.MultiPolygonField(null=True, default=None)
     fluent_speakers = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_on_fluent_sum_value
@@ -38,6 +36,11 @@ class Language(BaseModel):
     pop_total_value = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_pop_total_value
+
+    color = models.CharField(max_length=31)
+    geom = models.PolygonField(null=True, default=None)
+    bbox = models.PolygonField(null=True, default=None)
+
 
 
 class LanguageLink(models.Model):

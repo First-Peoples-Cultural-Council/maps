@@ -58,7 +58,14 @@ class LanguageSerializer(serializers.ModelSerializer):
             "learners",
             "some_speakers",
             "pop_total_value",
+            "bbox",
         )
+
+class LanguageGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Language
+        fields = ("name", "color")
+        geo_field = ("geom")
 
 
 class PlaceNameSerializer(GeoFeatureModelSerializer):
