@@ -38,17 +38,14 @@ export default {
     LangFamilyTitle,
     CommunityCard
   },
-  props: {
-    communities: {
-      default() {
-        return []
-      },
-      type: Array
-    }
-  },
   data() {
     return {
       badgeContent: 'Communities'
+    }
+  },
+  computed: {
+    communities() {
+      return this.$store.state.communities.communities
     }
   },
   methods: {

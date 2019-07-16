@@ -33,12 +33,9 @@ export default {
     ArtsCard,
     DetailSideBar
   },
-  props: {
-    arts: {
-      default() {
-        return []
-      },
-      type: Array
+  computed: {
+    arts() {
+      return this.$store.state.arts.arts
     }
   },
   mounted() {

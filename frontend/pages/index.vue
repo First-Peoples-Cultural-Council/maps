@@ -20,7 +20,7 @@
         <section class="badge-section pl-3 pr-3 mt-3">
           <Badge
             content="Languages"
-            :number="features.length"
+            :number="languages.length"
             class="cursor-pointer"
             @click.native.prevent="goToLang"
           ></Badge>
@@ -34,7 +34,7 @@
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="(language, index) in features" :key="index">
+          <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
               :name="language.properties.title"
@@ -66,13 +66,7 @@
         </section>
       </div>
     </SideBar>
-    <nuxt-child
-      v-else
-      :features="features"
-      :communities="communities"
-      :places="places"
-      :arts="arts"
-    />
+    <nuxt-child v-else />
   </div>
 </template>
 
@@ -120,12 +114,16 @@ export default {
         position: 'bottom-right'
       },
       map: {},
-      features: [],
-      places: [],
-      arts: [],
-      communities: [],
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
+    }
+  },
+  computed: {
+    communities() {
+      return this.$store.state.communities.communities
+    },
+    languages() {
+      return this.$store.state.languages.languages
     }
   },
   methods: {
@@ -196,16 +194,11 @@ export default {
         }
       })
       map.addLayer({
-        id: 'clusters',
+        id: 'fn-arts-clusters',
         type: 'circle',
         source: 'arts1',
         filter: ['has', 'point_count'],
         paint: {
-          // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
-          // with three steps to implement three types of circles:
-          //   * Blue, 20px circles when point count is less than 100
-          //   * Yellow, 30px circles when point count is between 100 and 750
-          //   * Pink, 40px circles when point count is greater than or equal to 750
           'circle-color': [
             'step',
             ['get', 'point_count'],
@@ -240,7 +233,7 @@ export default {
       })
 
       map.addLayer({
-        id: 'unclustered-point',
+        id: 'fn-arts',
         type: 'circle',
         source: 'arts1',
         filter: ['!', ['has', 'point_count']],
@@ -271,14 +264,13 @@ export default {
         const places = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-places'
         )
-
         const arts = renderedFeatures.filter(
-          feature => feature.layer.id === 'unclustered-points'
+          feature => feature.layer.id === 'fn-arts'
         )
-        console.log('arts on idle', arts)
-        this.communities = communities
-        this.places = places
-        this.arts = arts
+        console.log('Map bounds', e.target.getBounds())
+        this.$store.commit('communities/set', communities)
+        this.$store.commit('places/set', places)
+        this.$store.commit('arts/set', arts)
 
         const center = map.getCenter()
         const zoom = map.getZoom()
@@ -289,9 +281,9 @@ export default {
     },
     mapSourceData(map, source) {
       if (source.isSourceLoaded) {
-        const features = map.querySourceFeatures('langs1')
-        if (features.length > 0) {
-          this.features = features
+        const languages = map.querySourceFeatures('langs1')
+        if (languages.length > 0) {
+          this.$store.commit('languages/set', languages)
         }
       }
     }

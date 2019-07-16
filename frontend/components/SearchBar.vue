@@ -17,10 +17,11 @@
         triggers=""
       >
         <template slot="title"
-          >Content via Slots</template
+          >Search Term: {{ searchQuery }}</template
         >
-        Embedding content <span class="text-danger">using slots</span> affords
-        you <em>greater <strong>control.</strong></em> and basic HTML support.
+        <div v-if="searchResults.length === 0" class="nosearch-results">
+          No search results were found
+        </div>
       </b-popover>
       <span class="searchbar-icon"></span>
     </div>
@@ -32,7 +33,8 @@ export default {
   data() {
     return {
       show: false,
-      searchQuery: ''
+      searchQuery: '',
+      searchResults: []
     }
   },
   methods: {
@@ -77,5 +79,15 @@ export default {
   border-bottom-right-radius: 0.5em;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-left: 0;
+}
+.popover {
+  width: var(--searchbar-width);
+  max-width: var(--searchbar-width);
+}
+
+.nosearch-results {
+  text-align: center;
+  font-size: 0.8em;
+  padding: 1em;
 }
 </style>

@@ -9,18 +9,18 @@
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="features.length"></Badge>
+          <Badge :content="badgeContent" :number="languages.length"></Badge>
         </section>
         <hr />
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="(language, index) in features" :key="index">
+          <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
               :name="language.properties.title"
               :color="language.properties.color"
               @click.native.prevent="
-                handleCardClick($event, language.properties.title)
+                handleCardClick($event, language.properties.title, 'languages')
               "
             ></LanguageCard>
           </div>
@@ -60,38 +60,21 @@ export default {
     LanguageCard,
     DetailSideBar
   },
-  props: {
-    features: {
-      type: Array,
-      default: function() {
-        return []
-      }
-    }
-  },
   data() {
     return {
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
-      languages: [],
       detailOneWidth: 375,
       detailTwoWidth: 500
     }
   },
   computed: {
-    feature() {
-      return this.$store.state.features.feature
+    languages() {
+      return this.$store.state.languages.languages
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
-    }
-  },
-  async asyncData({ $axios }) {
-    const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
-    console.log('Process', process)
-    const data = await $axios.$get(api)
-    return {
-      languages: data
     }
   },
   mounted() {

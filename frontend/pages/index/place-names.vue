@@ -24,12 +24,9 @@ export default {
     SideBar,
     PlacesCard
   },
-  props: {
-    places: {
-      default() {
-        return []
-      },
-      type: Array
+  computed: {
+    places() {
+      return this.$store.state.places.places
     }
   }
 }
