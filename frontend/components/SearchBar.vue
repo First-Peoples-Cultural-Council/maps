@@ -7,6 +7,7 @@
         type="search"
         class="search-input"
         placeholder="Search for a language..."
+        autocomplete="off"
         @update="handleSearchUpdate"
         @blur="handleSearchLeave"
       ></b-form-input>
@@ -20,8 +21,40 @@
         <template slot="title"
           >Search Term: {{ searchQuery }}
         </template>
-        <div v-if="languageResults.length === 0" class="nosearch-results">
-          No search results were found
+        <div v-if="isSearchEmpty" class="nosearch-results p-3">
+          <p>
+            <span>No search results were found</span><br /><span>
+              Didn't find what you were looking for? Email us at
+              <a href="#">daniel@email.com</a></span
+            >
+          </p>
+        </div>
+        <div v-else>
+          <div
+            v-for="(results, key) in searchResults"
+            :key="key"
+            class="search-row"
+          >
+            <div v-if="results.length > 0" class="mb-3">
+              <h5 class="search-result-group font-1 pl-3 pr-3">{{ key }}</h5>
+              <div
+                v-for="(result, index) in results"
+                :key="index"
+                class="search-results pl-3 pr-3"
+              >
+                <h5 class="search-result-title font-1 font-weight-normal">
+                  {{ result.properties.title }}
+                </h5>
+              </div>
+              <hr />
+            </div>
+          </div>
+          <div>
+            <p class="text-center p-3">
+              Didn't find what you were looking for? Email us at
+              <a href="#">daniel@email.com</a>
+            </p>
+          </div>
         </div>
       </b-popover>
       <span class="searchbar-icon"></span>
@@ -35,7 +68,6 @@ export default {
     return {
       show: false,
       searchQuery: '',
-      searchResults: [],
       languageResults: [],
       communityResults: [],
       placesResults: [],
@@ -54,6 +86,22 @@ export default {
     },
     arts() {
       return this.$store.state.arts.arts
+    },
+    isSearchEmpty() {
+      return (
+        this.languageResults.length === 0 &&
+        this.communityResults.length === 0 &&
+        this.placesResults.length === 0 &&
+        this.artsResults.length === 0
+      )
+    },
+    searchResults() {
+      return {
+        Languages: this.languageResults,
+        Communities: this.communityResults,
+        Places: this.placesResults,
+        Arts: this.arts
+      }
     }
   },
   mounted() {
@@ -70,27 +118,22 @@ export default {
       } else {
         this.show = true
       }
-      const languageResults = this.filterBasedOnTitle(
+      this.languageResults = this.filterBasedOnTitle(
         this.languages,
         this.searchQuery
       )
 
-      const communityResults = this.filterBasedOnTitle(
+      this.communityResults = this.filterBasedOnTitle(
         this.communities,
         this.searchQuery
       )
 
-      const placesResults = this.filterBasedOnTitle(
+      this.placesResults = this.filterBasedOnTitle(
         this.places,
         this.searchQuery
       )
 
-      const artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery)
-
-      console.log('Language Results', languageResults)
-      console.log('Communities Results', communityResults)
-      console.log('Places', placesResults)
-      console.log('Arts', artsResults)
+      this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery)
     },
     handleSearchLeave() {
       console.log(this.clickedElement)
@@ -104,18 +147,10 @@ export default {
     },
     clicked(event) {
       const el = event.target
-      const isPopOver = el.closest('#__BV_popover_1__')
+      const isPopOver = el.closest('.popover')
       if (!isPopOver) {
         this.show = false
       }
-    },
-    isSearchEmpty() {
-      return (
-        this.languageResults.length === 0 &&
-        this.communityResults.length === 0 &&
-        this.placesResults.length === 0 &&
-        this.artsResults.length === 0
-      )
     }
   }
 }
@@ -151,6 +186,12 @@ export default {
 .popover {
   width: var(--searchbar-width);
   max-width: var(--searchbar-width);
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.popover-body {
+  padding: 0;
 }
 
 .nosearch-results {
