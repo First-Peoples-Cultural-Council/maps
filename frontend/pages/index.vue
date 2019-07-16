@@ -37,10 +37,10 @@
           <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
-              :name="language.properties.title"
+              :name="language.properties.name"
               :color="language.properties.color"
               @click.native.prevent="
-                handleCardClick($event, language.properties.title, 'languages')
+                handleCardClick($event, language.properties.name, 'languages')
               "
             ></LanguageCard>
           </div>
@@ -159,14 +159,14 @@ export default {
       zoomToLanguage({ map, feature })
       if (feature) {
         this.$router.push({
-          path: `/languages/${encodeURIComponent(feature.properties.title)}`
+          path: `/languages/${encodeURIComponent(feature.properties.name)}`
         })
       }
     },
     mapLoaded(map) {
       map.addSource('langs1', {
         type: 'geojson',
-        data: '/static/web/langs.json'
+        data: '/api/language-geo/'
       })
       map.addSource('arts1', {
         type: 'geojson',
@@ -182,17 +182,10 @@ export default {
         layout: {},
         paint: {
           'fill-color': ['get', 'color'],
-          'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            3,
-            0.19,
-            9,
-            0.08
-          ]
+          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 0.08]
         }
       })
+
       map.addLayer({
         id: 'fn-arts-clusters',
         type: 'circle',

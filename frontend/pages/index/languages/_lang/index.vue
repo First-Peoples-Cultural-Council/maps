@@ -65,14 +65,13 @@ export default {
     mapinstance(mapinstance) {
       const self = this
       mapinstance.once('idle', function(e) {
-        zoomToLanguage({ map: mapinstance, lang: self.$route.params.lang })
+        zoomToLanguage({ map: mapinstance, lang: self.language })
       })
     }
   },
   async asyncData({ $axios, store }) {
     const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
     const languages = await $axios.$get(api)
-
     return {
       languages
     }
