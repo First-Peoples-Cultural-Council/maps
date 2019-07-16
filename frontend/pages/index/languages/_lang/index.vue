@@ -62,12 +62,6 @@ export default {
     })
   },
   watch: {
-    mapinstance(mapinstance) {
-      const self = this
-      mapinstance.once('idle', function(e) {
-        zoomToLanguage({ map: mapinstance, lang: self.language })
-      })
-    },
     language(newlang) {
       console.log('lang changed to', newlang)
       const self = this
