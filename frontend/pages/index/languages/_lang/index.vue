@@ -32,8 +32,8 @@
 </template>
 
 <script>
-import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import { mapState } from 'vuex'
+import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
@@ -67,6 +67,11 @@ export default {
       mapinstance.once('idle', function(e) {
         zoomToLanguage({ map: mapinstance, lang: self.language })
       })
+    },
+    language(newlang) {
+      console.log('lang changed to', newlang)
+      const self = this
+      zoomToLanguage({ map: self.mapinstance, lang: self.language })
     }
   },
   async asyncData({ $axios, store }) {

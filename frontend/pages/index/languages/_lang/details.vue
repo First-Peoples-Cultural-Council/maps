@@ -84,10 +84,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 
-import { mapState } from 'vuex'
 export default {
   components: {
     LanguageDetailCard,

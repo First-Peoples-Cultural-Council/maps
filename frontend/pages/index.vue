@@ -80,7 +80,7 @@ import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { zoomToLanguage, zoomToCommunity } from '@/mixins/map.js'
+import { zoomToCommunity } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -129,7 +129,8 @@ export default {
   methods: {
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
-        zoomToLanguage({ map: this.map, lang: data })
+        // const lang = this.languages.find(l => l.name === data)
+        // zoomToLanguage({ map: this.map, lang: lang })
       } else {
         zoomToCommunity({ map: this.map, comm: data, geom })
       }
@@ -156,7 +157,8 @@ export default {
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas-fill'
       )
-      zoomToLanguage({ map, feature })
+      // const lang = this.languages.find(l => l.name === feature.properties.name)
+      // zoomToLanguage({ map, lang })
       if (feature) {
         this.$router.push({
           path: `/languages/${encodeURIComponent(feature.properties.name)}`

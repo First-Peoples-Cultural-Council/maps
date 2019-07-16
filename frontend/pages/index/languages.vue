@@ -50,7 +50,6 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
-import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     SideBar,
@@ -82,7 +81,8 @@ export default {
   },
   methods: {
     handleCardClick(e, data) {
-      zoomToLanguage({ map: this.mapinstance, lang: data })
+      // const lang = this.languages.find(l => l.name === data)
+      // zoomToLanguage({ map: this.mapinstance, lang: lang })
       this.$router.push({
         path: `/languages/${encodeURIComponent(data)}`
       })

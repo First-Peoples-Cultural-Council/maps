@@ -1,15 +1,6 @@
-/* import { bbox } from '@turf/turf' */
-
-export const zoomToLanguage = ({ map, lang, feature }) => {
-  console.log('zooming to', lang)
-  /* if (!feature) {
-    const features = map.querySourceFeatures('langs1')
-    feature = features.find(feature => feature.properties.name === lang)
-}
-console.log('Zoom to feature invoked')
-const bounds = bbox(feature) */
+export const zoomToLanguage = ({ map, lang }) => {
   const bounds = [lang.bbox.coordinates[0][0], lang.bbox.coordinates[0][2]]
-  console.log(bounds)
+  console.log('zooming to', lang.name, bounds[0], bounds[1])
   map.fitBounds(bounds, { padding: 30 })
 }
 
