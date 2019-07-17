@@ -21,10 +21,24 @@
         </div>
         <div class="nav-body">
           <ul class="nav-links p-0 m-0 list-style-none">
-            <li><nuxt-link to="/">Home</nuxt-link></li>
-            <li><nuxt-link to="/languages">Languages</nuxt-link></li>
-            <li><nuxt-link to="/first-nations">First Nations</nuxt-link></li>
-            <li><nuxt-link to="/place-names">Place-names</nuxt-link></li>
+            <li>
+              <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
+            </li>
+            <li>
+              <nuxt-link to="/languages" @click.native="handleNavLink"
+                >Languages</nuxt-link
+              >
+            </li>
+            <li>
+              <nuxt-link to="/first-nations" @click.native="handleNavLink"
+                >First Nations</nuxt-link
+              >
+            </li>
+            <li>
+              <nuxt-link to="/place-names" @click.native="handleNavLink"
+                >Place-names</nuxt-link
+              >
+            </li>
             <li><a href="https://maps.fpcc.ca/phrases">Phrases</a></li>
             <li><a href="https://maps.fpcc.ca/help">Help</a></li>
             <li class="login-nav cursor-pointer">
@@ -51,6 +65,11 @@ export default {
       navigationOpen: false
     }
   },
+  computed: {
+    mapinstance() {
+      return this.$store.state.mapinstance.mapinstance
+    }
+  },
   methods: {
     handleLogoClick() {
       this.$router.push({
@@ -62,6 +81,9 @@ export default {
     },
     closeNav() {
       this.navigationOpen = false
+    },
+    handleNavLink() {
+      this.$root.$emit('resetMap')
     }
   }
 }

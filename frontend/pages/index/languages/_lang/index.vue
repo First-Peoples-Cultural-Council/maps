@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
@@ -46,20 +45,19 @@ export default {
     LanguageSeeAll
   },
   computed: {
-    ...mapState({
-      mapinstance: state => state.mapinstance.mapInstance,
-      language() {
-        return this.languages.find(
-          lang => lang.name === this.$route.params.lang
-        )
-      },
-      otherNames() {
-        return this.language.other_names.split('/')
-      },
-      languageColor() {
-        return this.language.color
-      }
-    })
+    mapinstance: state => state.mapinstance.mapInstance,
+    languages() {
+      return this.$store.state.languages.languageSet
+    },
+    language() {
+      return this.languages.find(lang => lang.name === this.$route.params.lang)
+    },
+    otherNames() {
+      return this.language.other_names.split('/')
+    },
+    languageColor() {
+      return this.language.color
+    }
   },
   watch: {
     language(newlang, oldlang) {
@@ -67,13 +65,6 @@ export default {
       if (oldlang && newlang && oldlang.name !== newlang.name) {
         zoomToLanguage({ map: this.mapinstance, lang: newlang })
       }
-    }
-  },
-  async asyncData({ $axios, store }) {
-    const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
-    const languages = await $axios.$get(api)
-    return {
-      languages
     }
   },
   created() {

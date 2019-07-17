@@ -182,6 +182,11 @@ export default {
       }
     },
     mapLoaded(map) {
+      this.$root.$on('resetMap', () => {
+        map.setCenter(this.MAP_OPTIONS.center)
+        map.setZoom(this.MAP_OPTIONS.zoom)
+      })
+
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
@@ -338,7 +343,6 @@ export default {
         const arts = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts'
         )
-        console.log('Map bounds', e.target.getBounds())
         this.$store.commit('communities/set', communities)
         this.$store.commit('places/set', places)
         this.$store.commit('arts/set', arts)
