@@ -29,7 +29,7 @@
             >
           </p>
         </div>
-        <div v-else>
+        <div v-else class="pt-2">
           <div
             v-for="(results, key) in searchResults"
             :key="key"
@@ -42,7 +42,22 @@
                 :key="index"
                 class="search-results pl-3 pr-3"
               >
-                <h5 class="search-result-title font-1 font-weight-normal">
+                <h5
+                  v-if="key === 'Languages' || key === 'Communities'"
+                  class="search-result-title font-1 font-weight-normal"
+                >
+                  {{ result.name }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Places'"
+                  class="search-result-title font-1 font-weight-normal"
+                >
+                  {{ result.properties.name }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Arts'"
+                  class="search-result-title font-1 font-weight-normal"
+                >
                   {{ result.properties.title }}
                 </h5>
               </div>
@@ -76,16 +91,16 @@ export default {
   },
   computed: {
     communities() {
-      return this.$store.state.communities.communities
+      return this.$store.state.communities.communitySet
     },
     languages() {
-      return this.$store.state.languages.languages
+      return this.$store.state.languages.languageSet
     },
     places() {
-      return this.$store.state.places.places
+      return this.$store.state.places.placesSet
     },
     arts() {
-      return this.$store.state.arts.arts
+      return this.$store.state.arts.artsSet
     },
     isSearchEmpty() {
       return (
@@ -130,20 +145,35 @@ export default {
 
       this.placesResults = this.filterBasedOnTitle(
         this.places,
-        this.searchQuery
+        this.searchQuery,
+        2
       )
 
-      this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery)
+      this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery, 1)
     },
     handleSearchLeave() {
       console.log(this.clickedElement)
       // this.show = false
     },
-    filterBasedOnTitle(data = [], query = '') {
+    filterBasedOnTitle(data = [], query = '', mode = 0) {
+      if (data.length === 0) {
+        return []
+      }
+      console.log('Data', data)
       const lowerCasedQuery = query.toLowerCase()
-      return data.filter(d =>
-        d.properties.title.toLowerCase().includes(lowerCasedQuery)
-      )
+      if (mode === 1) {
+        return data.filter(d =>
+          d.properties.title.toLowerCase().includes(lowerCasedQuery)
+        )
+      }
+
+      if (mode === 2) {
+        return data.filter(d =>
+          d.properties.name.toLowerCase().includes(lowerCasedQuery)
+        )
+      }
+
+      return data.filter(d => d.name.toLowerCase().includes(lowerCasedQuery))
     },
     clicked(event) {
       const el = event.target
