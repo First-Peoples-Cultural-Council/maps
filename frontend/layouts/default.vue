@@ -1,7 +1,15 @@
 <template>
   <nuxt />
 </template>
-
+<script>
+export default {
+  watch: {
+    $route() {
+      this.$eventHub.$emit('route-changed', this.$route)
+    }
+  }
+}
+</script>
 <style>
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',

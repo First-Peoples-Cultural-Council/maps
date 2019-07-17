@@ -76,6 +76,9 @@ export default {
       return this.$store.state.mapinstance.mapInstance
     }
   },
+  mounted() {
+    console.log('LANG LIST')
+  },
   methods: {
     handleCardClick(e, data) {
       // const lang = this.languages.find(l => l.name === data)
