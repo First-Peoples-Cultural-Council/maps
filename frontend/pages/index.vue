@@ -252,6 +252,8 @@ export default {
         },
         'fn-nations'
       )
+      map.setFilter('langs-highlighted', ['in', 'name', ''])
+
       map.addLayer(
         {
           id: 'fn-arts-clusters',
