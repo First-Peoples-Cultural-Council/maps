@@ -3,3 +3,5 @@ djangorestframework
 pymysql
 psycopg2
 djangorestframework-gis
+gunicorn
+gevent

@@ -10,7 +10,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: process.env.npm_package_name || '',
+    title: '%s | First Peoples\' Cultural Council',
     meta: [
       {
         charset: 'utf-8'
