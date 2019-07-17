@@ -1,6 +1,5 @@
 import Vue from 'vue'
-Vue.prototype.$eventHub = new Vue({
-}) // Global event bus
+Vue.prototype.$eventHub = new Vue({}) // Global event bus
 
 Vue.prototype.$eventHub.whenMap = function(fn) {
   if (this.map) {
