@@ -126,6 +126,22 @@ export default {
       return this.$store.state.languages.languages
     }
   },
+  async fetch({ $axios, store }) {
+    function getApiUrl(path) {
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+    }
+    const results = await Promise.all([
+      $axios.$get(getApiUrl('language/')),
+      $axios.$get(getApiUrl('community/')),
+      $axios.$get(getApiUrl('placename/')),
+      $axios.$get(getApiUrl('arts'))
+    ])
+
+    store.commit('languages/setStore', results[0])
+    store.commit('communities/setStore', results[1])
+    store.commit('places/setStore', results[2].features)
+    store.commit('arts/setStore', results[3].features)
+  },
   methods: {
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {

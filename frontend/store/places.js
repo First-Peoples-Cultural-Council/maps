@@ -1,9 +1,14 @@
 export const state = () => ({
-  places: []
+  places: [],
+  placesSet: []
 })
 
 export const mutations = {
   set(state, places) {
     state.places = places
+  },
+
+  setStore(state, placesSet) {
+    state.placesSet = placesSet
   }
 }
