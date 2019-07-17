@@ -159,7 +159,6 @@ export default {
       if (data.length === 0) {
         return []
       }
-      console.log('Data', data)
       const lowerCasedQuery = query.toLowerCase()
       if (mode === 1) {
         return data.filter(d =>

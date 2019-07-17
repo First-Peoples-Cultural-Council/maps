@@ -77,7 +77,6 @@ export default {
     }
   },
   created() {
-    console.log('created')
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
       zoomToLanguage({ map: map, lang: this.language })
