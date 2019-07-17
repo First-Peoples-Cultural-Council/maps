@@ -10,7 +10,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: '%s | First Peoples\' Cultural Council',
+    title: "%s | First Peoples' Cultural Council",
     meta: [
       {
         charset: 'utf-8'

@@ -1,7 +1,7 @@
 {
-  "name": "fpcc",
+  "name": "fplm",
   "version": "1.0.0",
-  "description": "My peachy Nuxt.js project",
+  "description": "First Peoples' Language Map",
   "author": "Aaron",
   "private": true,
   "scripts": {

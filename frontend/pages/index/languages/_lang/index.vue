@@ -88,6 +88,18 @@ export default {
         path: `${encodeURIComponent(this.$route.params.lang)}/details`
       })
     }
+  },
+  head() {
+    return {
+      title: this.language.name + " Language Resources and Stats",
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
+        }
+      ]
+    }
   }
 }
 </script>
