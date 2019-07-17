@@ -10,14 +10,20 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
 
-
-class LanguageViewSet(viewsets.ModelViewSet):
+class LanguageList(generics.ListAPIView):
     """
     API endpoint that allows languages to be viewed or edited.
     """
 
-    queryset = Language.objects.all()
+    queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageSerializer
+
+    @method_decorator(cache_page(60*60*2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = LanguageSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
@@ -29,19 +35,45 @@ class LanguageGeoList(generics.ListAPIView):
         serializer = LanguageGeoSerializer(queryset, many=True)
         return Response(serializer.data)
 
-class CommunityViewSet(viewsets.ModelViewSet):
+
+class CommunityList(generics.ListAPIView):
 
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
+    @method_decorator(cache_page(60*60*2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        if 'lang' in request.GET:
+            queryset=queryset.filter(language_id=lang)
+        serializer = CommunitySerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
-class PlaceNameViewSet(viewsets.ModelViewSet):
+class PlaceNameList(generics.ListAPIView):
 
     queryset = PlaceName.objects.all()
     serializer_class = PlaceNameSerializer
 
+    @method_decorator(cache_page(60*60*2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        if 'lang' in request.GET:
+            lang = Language.objects.get(pk=int(request.GET['lang']))
+            print(lang.geom)
+            queryset=queryset.filter(point__intersects=lang.geom)
+        serializer = PlaceNameSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-class ChampionViewSet(viewsets.ModelViewSet):
+
+class ChampionList(generics.ListAPIView):
 
     queryset = Champion.objects.all()
     serializer_class = ChampionSerializer
+
+    @method_decorator(cache_page(60*60*2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        if 'lang' in request.GET:
+            queryset=queryset.filter(language_id=lang)
+        serializer = ChampionSerializer(queryset, many=True)
+        return Response(serializer.data)

@@ -79,6 +79,7 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'

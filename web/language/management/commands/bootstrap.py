@@ -203,7 +203,7 @@ class DedruplifierClient:
                         except KeyError:
                             print("WARN:", rec, "has no", k + "_title")
                     elif k.endswith("_lat"):
-                        pt = Point(rec[k][0], rec[k[:-4] + "_lon"][0])
+                        pt = Point(rec[k[:-4] + "_lon"][0], rec[k][0])
                         setattr(item, v, pt)
                     else:
                         if len(rec[k]) > 1:
