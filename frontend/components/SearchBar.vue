@@ -9,8 +9,8 @@
         placeholder="Search for a language..."
         autocomplete="off"
         @update="handleSearchUpdate"
-        @blur="handleSearchLeave"
-      ></b-form-input>
+      >
+      </b-form-input>
       <b-popover
         target="search-input"
         placement="bottom"
@@ -45,18 +45,25 @@
                 <h5
                   v-if="key === 'Languages' || key === 'Communities'"
                   class="search-result-title font-1 font-weight-normal"
+                  @click="handleResultClick($event, key, result.name)"
                 >
                   {{ result.name }}
                 </h5>
                 <h5
                   v-else-if="key === 'Places'"
                   class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.properties.name)
+                  "
                 >
                   {{ result.properties.name }}
                 </h5>
                 <h5
                   v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.properties.title)
+                  "
                 >
                   {{ result.properties.title }}
                 </h5>
@@ -151,29 +158,21 @@ export default {
 
       this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery, 1)
     },
-    handleSearchLeave() {
-      console.log(this.clickedElement)
-      // this.show = false
-    },
     filterBasedOnTitle(data = [], query = '', mode = 0) {
       if (data.length === 0) {
         return []
       }
-      console.log('Data', data)
       const lowerCasedQuery = query.toLowerCase()
       if (mode === 1) {
-        console.log('It got here arts', data)
         return data.filter(d =>
           d.properties.title.toLowerCase().includes(lowerCasedQuery)
         )
       }
-
       if (mode === 2) {
         return data.filter(d =>
           d.properties.name.toLowerCase().includes(lowerCasedQuery)
         )
       }
-
       return data.filter(d => d.name.toLowerCase().includes(lowerCasedQuery))
     },
     clicked(event) {
@@ -181,6 +180,31 @@ export default {
       const isPopOver = el.closest('.popover')
       if (!isPopOver) {
         this.show = false
+      }
+    },
+    handleResultClick(event, type, data) {
+      if (type === 'Places') {
+        return this.$router.push({
+          path: `/place-names`
+        })
+      }
+
+      if (type === 'Languages') {
+        return this.$router.push({
+          path: `/languages/${encodeURIComponent(data)}`
+        })
+      }
+
+      if (type === 'Communities') {
+        return this.$router.push({
+          path: `/content/${encodeURIComponent(data)}`
+        })
+      }
+
+      if (type === 'Arts') {
+        return this.$router.push({
+          path: `/arts`
+        })
       }
     }
   }
@@ -229,5 +253,10 @@ export default {
   text-align: center;
   font-size: 0.8em;
   padding: 1em;
+}
+.search-results:hover h5 {
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold !important;
 }
 </style>
