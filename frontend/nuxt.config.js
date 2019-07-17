@@ -40,6 +40,12 @@ module.exports = {
     color: '#fff'
   },
   /*
+   ** history mode
+   */
+  //   router: {
+  //     mode: 'hash'
+  //   },
+  /*
    ** Global CSS
    */
   css: [
@@ -49,7 +55,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
