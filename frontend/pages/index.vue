@@ -187,6 +187,16 @@ export default {
           'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 0.08]
         }
       })
+      map.addLayer({
+        id: 'langs-highlighted',
+        type: 'fill',
+        source: 'langs1',
+        layout: {},
+        paint: {
+          'fill-color': 'black',
+          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 0.08]
+        }
+      })
 
       map.addLayer({
         id: 'fn-arts-clusters',
@@ -273,6 +283,7 @@ export default {
           hash: `${center.lat}/${center.lng}/${zoom}`
         })
       })
+      this.$eventHub.$emit('map-loaded', map)
     },
     mapSourceData(map, source) {
       if (source.isSourceLoaded) {

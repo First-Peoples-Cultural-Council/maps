@@ -62,10 +62,11 @@ export default {
     })
   },
   watch: {
-    language(newlang) {
-      console.log('lang changed to', newlang)
-      const self = this
-      zoomToLanguage({ map: self.mapinstance, lang: self.language })
+    language(newlang, oldlang) {
+      console.log('language changed from', oldlang.name, 'to', newlang.name)
+      if (oldlang && newlang && oldlang.name !== newlang.name) {
+        zoomToLanguage({ map: this.mapinstance, lang: newlang })
+      }
     }
   },
   async asyncData({ $axios, store }) {
@@ -74,6 +75,13 @@ export default {
     return {
       languages
     }
+  },
+  created() {
+    console.log('created')
+    // We don't always catch language routing updates, so also zoom to language on create.
+    this.$eventHub.whenMap(map => {
+      zoomToLanguage({ map: map, lang: this.language })
+    })
   },
   methods: {
     handleMoreDetails() {
