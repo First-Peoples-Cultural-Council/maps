@@ -9,6 +9,7 @@
         placeholder="Search for a language..."
         autocomplete="off"
         @update="handleSearchUpdate"
+        @focus="handleInputFocus"
       >
       </b-form-input>
       <b-popover
@@ -90,6 +91,7 @@ export default {
     return {
       show: false,
       searchQuery: '',
+      searchResultClicked: false,
       languageResults: [],
       communityResults: [],
       placesResults: [],
@@ -134,7 +136,6 @@ export default {
   },
   methods: {
     handleSearchUpdate() {
-      console.log('Form Changed')
       if (this.searchQuery === '') {
         this.show = false
       } else {
@@ -178,11 +179,22 @@ export default {
     clicked(event) {
       const el = event.target
       const isPopOver = el.closest('.popover')
+      const isInput = el.closest('.searchbar-input-container')
+      if (isInput) {
+        return
+      }
       if (!isPopOver) {
         this.show = false
       }
     },
+    handleInputFocus() {
+      if (this.searchQuery !== '') {
+        this.show = true
+      }
+    },
     handleResultClick(event, type, data) {
+      this.show = false
+      this.searchQuery = data
       if (type === 'Places') {
         return this.$router.push({
           path: `/place-names`
