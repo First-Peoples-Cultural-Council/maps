@@ -115,7 +115,7 @@ export default {
         Languages: this.languageResults,
         Communities: this.communityResults,
         Places: this.placesResults,
-        Arts: this.arts
+        Arts: this.artsResults
       }
     }
   },
@@ -162,6 +162,7 @@ export default {
       console.log('Data', data)
       const lowerCasedQuery = query.toLowerCase()
       if (mode === 1) {
+        console.log('It got here arts', data)
         return data.filter(d =>
           d.properties.title.toLowerCase().includes(lowerCasedQuery)
         )
