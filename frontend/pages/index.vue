@@ -10,6 +10,8 @@
       @map-load="mapLoaded"
       @map-click="mapClicked"
     ></Mapbox>
+    <ShareEmbed class="share-embed-control"></ShareEmbed>
+    <ResetMap class="reset-map-control"></ResetMap>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
@@ -77,6 +79,8 @@ import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
+import ShareEmbed from '@/components/ShareEmbed.vue'
+import ResetMap from '@/components/ResetMap.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
@@ -92,7 +96,9 @@ export default {
     Badge,
     LangFamilyTitle,
     LanguageCard,
-    CommunityCard
+    CommunityCard,
+    ShareEmbed,
+    ResetMap
   },
   data() {
     return {
@@ -390,5 +396,34 @@ export default {
   height: 100%;
   position: relative;
   padding-left: var(--sidebar-width, 350px);
+}
+.share-embed-control {
+  position: absolute;
+  right: 60px;
+  bottom: 35px;
+  background-color: white;
+  border: 1px solid #ddd5cc;
+  border-radius: 0.2em;
+  cursor: pointer;
+}
+
+.share-embed-control h5,
+.reset-map-control h5 {
+  font-size: 0.75em;
+  margin: 0;
+  padding: 0.5em;
+  color: #7b7b7b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.reset-map-control {
+  position: absolute;
+  right: 180px;
+  bottom: 35px;
+  background-color: white;
+  border: 1px solid #ddd5cc;
+  border-radius: 0.2em;
+  cursor: pointer;
 }
 </style>

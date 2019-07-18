@@ -26,46 +26,6 @@
           <div class="d-inline-block" @click.prevent.stop="handlePronounce">
             <CardBadge content="Pronounce"></CardBadge>
           </div>
-          <div class="d-inline-block">
-            <CardBadge
-              v-b-modal="'share-embed-modal'"
-              content="Share & Embed"
-              type="share"
-            ></CardBadge>
-            <b-modal
-              id="share-embed-modal"
-              ok-title="Close"
-              :ok-only="true"
-              :hide-header="true"
-              title="BootstrapVue"
-              cancel="false"
-            >
-              <div class="share-embed-modal-contents">
-                <h4>Share</h4>
-                <p>
-                  <code>{{ url }}</code>
-                  <b-button
-                    size="sm"
-                    class="d-block mt-2"
-                    variant="primary"
-                    @click="copyToClip"
-                    >Click To Copy</b-button
-                  >
-                </p>
-                <h4 class="mt-4">Embed</h4>
-                <p>
-                  <code>{{ iframe }}</code>
-                </p>
-                <b-button
-                  size="sm"
-                  class="d-block mt-2"
-                  variant="primary"
-                  @click="copyToClip"
-                  >Click To Copy</b-button
-                >
-              </div>
-            </b-modal>
-          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -114,20 +74,8 @@ export default {
   },
   data() {
     return {
-      hover: false,
-      origin: ''
+      hover: false
     }
-  },
-  computed: {
-    url() {
-      return `${this.origin}${this.$route.fullPath}`
-    },
-    iframe() {
-      return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
-    }
-  },
-  mounted() {
-    this.origin = window.location.origin
   },
   methods: {
     handlePronounce() {
@@ -143,8 +91,7 @@ export default {
     },
     handleMouseLeave() {
       this.hover = false
-    },
-    copyToClip() {}
+    }
   }
 }
 </script>
