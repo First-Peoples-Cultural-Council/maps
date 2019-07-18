@@ -73,7 +73,7 @@ export default {
   margin: 0;
   padding: 0.5em 0.75em;
   color: #7b7b7b;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
 }
 </style>

@@ -215,7 +215,7 @@ export default {
 
       if (type === 'Arts') {
         return this.$router.push({
-          path: `/arts`
+          path: `/art`
         })
       }
     }
@@ -270,5 +270,8 @@ export default {
   text-decoration: underline;
   cursor: pointer;
   font-weight: bold !important;
+}
+.search-result-group {
+  font-weight: bold;
 }
 </style>

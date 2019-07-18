@@ -26,7 +26,7 @@ export default {
   color: var(--color-gray, #707070);
 }
 .language-family-title {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-gray, #707070);
 }
 </style>
