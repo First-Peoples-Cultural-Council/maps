@@ -3,13 +3,14 @@
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
-      :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
+      :nav-control="{ show: false }"
       @map-sourcedata="mapSourceData"
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
     ></Mapbox>
+    <Zoom class="zoom-control"></Zoom>
     <ShareEmbed class="share-embed-control"></ShareEmbed>
     <ResetMap class="reset-map-control"></ResetMap>
     <SearchBar></SearchBar>
@@ -81,6 +82,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import Zoom from '@/components/Zoom.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
@@ -98,7 +100,8 @@ export default {
     LanguageCard,
     CommunityCard,
     ShareEmbed,
-    ResetMap
+    ResetMap,
+    Zoom
   },
   data() {
     return {
@@ -110,10 +113,6 @@ export default {
         maxZoom: 19,
         minZoom: 3,
         zoom: 5
-      },
-      NAV_CONTROL: {
-        show: true,
-        position: 'bottom-right'
       },
       GEOLOCATE_CONTROL: {
         show: true,
@@ -397,33 +396,20 @@ export default {
   position: relative;
   padding-left: var(--sidebar-width, 350px);
 }
-.share-embed-control {
+.share-embed-control,
+.zoom-control {
   position: absolute;
-  right: 60px;
-  bottom: 35px;
-  background-color: white;
-  border: 1px solid #ddd5cc;
-  border-radius: 0.2em;
-  cursor: pointer;
+  right: 50px;
+  bottom: 30px;
 }
 
-.share-embed-control h5,
-.reset-map-control h5 {
-  font-size: 0.75em;
-  margin: 0;
-  padding: 0.5em;
-  color: #7b7b7b;
-  font-weight: 600;
-  text-transform: uppercase;
+.zoom-control {
+  right: 267px;
 }
 
 .reset-map-control {
   position: absolute;
-  right: 180px;
-  bottom: 35px;
-  background-color: white;
-  border: 1px solid #ddd5cc;
-  border-radius: 0.2em;
-  cursor: pointer;
+  right: 170px;
+  bottom: 30px;
 }
 </style>

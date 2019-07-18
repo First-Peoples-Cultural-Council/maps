@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="share-embed-container">
     <h5 v-b-modal="'share-embed-modal'">Share & Embed</h5>
     <b-modal
       id="share-embed-modal"
@@ -61,4 +61,19 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.share-embed-container {
+  background-color: white;
+  border: 1px solid #ddd5cc;
+  border-radius: 0.2em;
+  cursor: pointer;
+}
+.share-embed-container h5 {
+  font-size: 0.75em;
+  margin: 0;
+  padding: 0.5em 0.75em;
+  color: #7b7b7b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+</style>
