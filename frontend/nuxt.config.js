@@ -10,6 +10,16 @@ module.exports = {
    ** Headers of the page
    */
   head: {
+    script: [
+      {
+        src: `https://cdnjs.cloudflare.com/ajax/libs/core-js/2.6.9/core.min.js`,
+        body: true
+      },
+      {
+        src: `https://unpkg.com/element-closest/browser`,
+        body: true
+      }
+    ],
     title: "%s | First Peoples' Cultural Council",
     meta: [
       {
@@ -64,6 +74,13 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
+  polyfill: {
+    features: [
+      {
+        require: '@babel/polyfill'
+      }
+    ]
+  },
   modules: [
     // Doc: https://bootstrap-vue.js.org/docs/
     'bootstrap-vue/nuxt',
@@ -90,6 +107,18 @@ module.exports = {
         mapboxgl: 'mapbox-gl'
       })
     ],
+    postcss: {
+      // Add plugin names as key and arguments as value
+      // Install them before as dependencies with npm or yarn
+      plugins: {
+        'postcss-flexbugs-fixes': {}
+      },
+      preset: {
+        autoprefixer: {
+          grid: true
+        }
+      }
+    },
     /*
      ** You can extend webpack config here
      */

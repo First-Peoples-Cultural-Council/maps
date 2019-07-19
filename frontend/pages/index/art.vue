@@ -37,9 +37,6 @@ export default {
     arts() {
       return this.$store.state.arts.arts
     }
-  },
-  mounted() {
-    console.log('Arts', this.$route)
   }
 }
 </script>

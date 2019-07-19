@@ -72,10 +72,8 @@ export default {
     handleNavigation(e, data) {
       const path = this.navigationTabs.find(nt => nt.name === data).path
       const self = this
-      setTimeout(() => {
-        self.$router.push({
-          path
-        })
+      self.$router.push({
+        path
       })
     },
     handleLogoClick(e) {
@@ -118,13 +116,13 @@ export default {
 
 .nav-tabs .nav-link {
   color: var(--color-gray, #707070);
-  font-weight: 500;
+  font-weight: 700;
   opacity: 0.8;
 }
 .nav-tabs .nav-link.active {
   color: var(--color-red, #c46257);
   position: relative;
-  font-weight: 500;
+  font-weight: 700;
   border: 0;
   line-height: 10px;
   opacity: 1;

@@ -67,7 +67,6 @@ export default {
   },
   watch: {
     language(newlang, oldlang) {
-      console.log('language changed from', oldlang.name, 'to', newlang.name)
       if (oldlang && newlang && oldlang.name !== newlang.name) {
         zoomToLanguage({ map: this.mapinstance, lang: newlang })
       }
