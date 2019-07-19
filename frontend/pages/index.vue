@@ -35,6 +35,7 @@
           ></Badge>
         </section>
         <hr />
+        <Filters></Filters>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="(language, index) in languages" :key="index">
@@ -87,6 +88,7 @@ import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { zoomToCommunity } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
@@ -101,7 +103,8 @@ export default {
     CommunityCard,
     ShareEmbed,
     ResetMap,
-    Zoom
+    Zoom,
+    Filters
   },
   data() {
     return {
