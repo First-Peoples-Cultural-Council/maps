@@ -12,11 +12,8 @@ module.exports = {
   head: {
     script: [
       {
-        src: `https://cdnjs.cloudflare.com/ajax/libs/core-js/2.6.9/core.min.js`,
-        body: true
-      },
-      {
-        src: `https://unpkg.com/element-closest/browser`,
+        src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from
+        `,
         body: true
       }
     ],
@@ -48,12 +45,14 @@ module.exports = {
       }
     ]
   },
+
   /*
    ** Customize the progress-bar color
    */
   loading: {
     color: '#fff'
   },
+
   /*
    ** history mode
    */
@@ -74,13 +73,6 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  polyfill: {
-    features: [
-      {
-        require: '@babel/polyfill'
-      }
-    ]
-  },
   modules: [
     // Doc: https://bootstrap-vue.js.org/docs/
     'bootstrap-vue/nuxt',
