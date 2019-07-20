@@ -34,8 +34,8 @@
             @click.native.prevent="goToCommunity"
           ></Badge>
         </section>
-        <hr />
-        <Filters></Filters>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="(language, index) in languages" :key="index">
@@ -414,5 +414,8 @@ export default {
   position: absolute;
   right: 170px;
   bottom: 30px;
+}
+.sidebar-divider {
+  margin-bottom: 0.5rem;
 }
 </style>

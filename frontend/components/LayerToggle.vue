@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="cursor-pointer" @click="on = !on">
+    <div class="cursor-pointer" @click="toggleLayer">
       <span class="font-08 d-inline-block"> {{ layerName }}</span>
       <span class="float-right">
         <img v-if="on" src="@/assets/images/on.svg" alt="On" />
@@ -24,7 +24,19 @@ export default {
   },
   data() {
     return {
-      on: false
+      on: true
+    }
+  },
+  methods: {
+    toggleLayer() {
+      this.on = !this.on
+      this.$eventHub.whenMap(map => {
+        if (this.on) {
+          map.setLayoutProperty(this.layer, 'visibility', 'visible')
+        } else {
+          map.setLayoutProperty(this.layer, 'visibility', 'none')
+        }
+      })
     }
   }
 }
