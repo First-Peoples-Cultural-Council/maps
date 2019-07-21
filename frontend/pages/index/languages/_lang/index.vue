@@ -28,27 +28,63 @@
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
     </section>
+    <section class="pl-2 pr-2 pt-2">
+      <CommunityCard
+        v-for="(community, index) in communities"
+        :key="index"
+        :name="community.properties.title"
+        class="mb-2"
+      ></CommunityCard>
+      <PlacesCard
+        v-for="place in places"
+        :key="place.properties.title"
+        :name="place.properties.title"
+        class="mb-2"
+      ></PlacesCard>
+      <ArtsCard
+        v-for="art in arts"
+        :key="art.name"
+        :arttype="art.properties.type"
+        :name="art.properties.title"
+      >
+      </ArtsCard>
+    </section>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 
+import ArtsCard from '@/components/arts/ArtsCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
+import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     LanguageDetailCard,
     LanguageDetailBadge,
     LanguageSummary,
-    LanguageSeeAll
+    LanguageSeeAll,
+    CommunityCard,
+    PlacesCard,
+    ArtsCard
   },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
+      communities() {
+        return this.$store.state.communities.communities
+      },
+      places() {
+        return this.$store.state.places.places
+      },
+      arts() {
+        return this.$store.state.arts.arts
+      },
       languages() {
         return this.$store.state.languages.languageSet
       },

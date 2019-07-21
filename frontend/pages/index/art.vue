@@ -5,7 +5,7 @@
         <ArtsCard
           v-for="(art, index) in arts"
           :key="index"
-          arttype="Public Art"
+          :arttype="art.properties.type"
           :name="art.properties.title"
           class="mb-2"
         ></ArtsCard>

@@ -7,7 +7,21 @@
     <Card>
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
-          <img src="@/assets/images/public_art_icon.svg" alt="Arts" />
+          <img
+            v-if="arttype.toLowerCase() === 'public art'"
+            src="@/assets/images/public_art_icon.svg"
+            alt="Arts"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'event'"
+            src="@/assets/images/event_icon.svg"
+            alt="Event"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'org'"
+            src="@/assets/images/organization_icon.svg"
+            alt="Organization"
+          />
         </div>
       </template>
       <template v-slot:body>
