@@ -54,7 +54,6 @@
 
 <script>
 import { mapState } from 'vuex'
-
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'

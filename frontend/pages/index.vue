@@ -76,6 +76,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
+import { uniqBy } from 'lodash'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -384,7 +385,11 @@ export default {
     },
     mapSourceData(map, source) {
       if (source.isSourceLoaded) {
-        const languages = map.querySourceFeatures('langs1')
+        const languages = uniqBy(
+          map.querySourceFeatures('langs1'),
+          lang => lang.properties.name
+        )
+        console.log('languages', languages)
         if (languages.length > 0) {
           this.$store.commit('languages/set', languages)
         }
