@@ -345,14 +345,33 @@ export default {
         const communities = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-nations'
         )
+        this.$store.commit('communities/set', communities)
         const places = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-places'
         )
+        this.$store.commit('places/set', places)
         const arts = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts'
         )
-        this.$store.commit('communities/set', communities)
-        this.$store.commit('places/set', places)
+
+        const clusters = renderedFeatures.filter(
+          feature => feature.layer.id === 'fn-arts-clusters'
+        )
+
+        const clusterSource = this.map.getSource('arts1')
+        clusters.map(cluster => {
+          clusterSource.getClusterLeaves(
+            cluster.properties.cluster_id,
+            Infinity,
+            0,
+            (err, features) => {
+              if (err) return
+              console.log(features)
+              arts.push(...features)
+            }
+          )
+        })
+        console.log('Commiting arts', arts)
         this.$store.commit('arts/set', arts)
 
         const center = map.getCenter()

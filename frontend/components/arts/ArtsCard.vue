@@ -8,7 +8,7 @@
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
           <img
-            v-if="arttype.toLowerCase() === 'public art'"
+            v-if="arttype.toLowerCase() === 'art'"
             src="@/assets/images/public_art_icon.svg"
             alt="Arts"
           />
@@ -30,7 +30,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ arttype }}
+              {{ arttype | mapName }}
             </h5>
             <h5
               class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
@@ -60,6 +60,12 @@ export default {
   components: {
     Card,
     CardBadge
+  },
+  filters: {
+    mapName(name) {
+      if (name.toLowerCase() === 'art') return 'Public Art'
+      return name
+    }
   },
   props: {
     arttype: {
