@@ -25,13 +25,13 @@
             <li><nuxt-link to="/languages">Languages</nuxt-link></li>
             <li><nuxt-link to="/first-nations">First Nations</nuxt-link></li>
             <li><nuxt-link to="/place-names">Place-names</nuxt-link></li>
-            <li><a href="https://maps.fpcc.ca/phrases">Phrases</a></li>
-            <li><a href="https://maps.fpcc.ca/help">Help</a></li>
+            <li><a target="_blank" href="https://firstvoices.com">Phrases</a></li>
+            <!-- <li><a target="_blank" href="https://maps.fpcc.ca/help">Help</a></li>
             <li class="login-nav cursor-pointer">
               <a href="https://maps.fpcc.ca/user/login" class="d-block"
                 >Login</a
               >
-            </li>
+            </li> -->
             <li class="close-nav cursor-pointer" @click="closeNav">
               <a href="#">
                 <img src="@/assets/images/close_icon.svg" alt="Close"

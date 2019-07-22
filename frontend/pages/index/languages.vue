@@ -84,6 +84,18 @@ export default {
         path: `/languages/${encodeURIComponent(data)}`
       })
     }
+  },
+  head() {
+    return {
+      title: `Indigenous Languages List in British Columbia`,
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: `A Full List of Indigenous Languages Spoken By First Nations in British Columbia, Canada.`
+        }
+      ]
+    }
   }
 }
 </script>

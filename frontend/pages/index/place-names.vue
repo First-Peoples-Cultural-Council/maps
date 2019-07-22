@@ -28,6 +28,18 @@ export default {
     places() {
       return this.$store.state.places.places
     }
+  },
+  head() {
+    return {
+      title: `Indigenous Place Names List in British Columbia`,
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: `A Full List of Indigenous Place Names used by First Nations of British Columbia, Canada.`
+        }
+      ]
+    }
   }
 }
 </script>

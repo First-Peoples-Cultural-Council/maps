@@ -54,6 +54,18 @@ export default {
         path: `/content/${encodeURIComponent(title)}`
       })
     }
+  },
+  head() {
+    return {
+      title: `Indigenous Communities List in British Columbia`,
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: `A List of Indigenous Communities. First Nations Communities in British Columbia, Canada.`
+        }
+      ]
+    }
   }
 }
 </script>
