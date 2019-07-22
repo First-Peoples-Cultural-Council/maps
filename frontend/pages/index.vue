@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container">
+  <div class="map-container" :class="{ detailModeContainer: isDetailMode }">
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
@@ -136,6 +136,9 @@ export default {
     },
     languages() {
       return this.$store.state.languages.languages
+    },
+    isDetailMode() {
+      return this.$store.state.sidebar.isDetailMode
     }
   },
   async fetch({ $axios, store }) {
@@ -481,5 +484,8 @@ export default {
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
+}
+.detailModeContainer {
+  padding-left: 500px !important;
 }
 </style>

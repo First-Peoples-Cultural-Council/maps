@@ -16,7 +16,7 @@
         :content="name"
         class="mr-2"
       ></LanguageDetailBadge>
-      <table class="lang-detail-table mt-3">
+      <table v-if="language.sub_family" class="lang-detail-table mt-3">
         <thead>
           <tr>
             <th>Language Family</th>
@@ -28,12 +28,12 @@
           <tr>
             <td>
               <LanguageDetailBadge
-                content="Athabaskan-Eyak-Tingit"
+                :content="language.sub_family.name"
               ></LanguageDetailBadge>
             </td>
             <td>
               <LanguageDetailBadge
-                content="Dene (Athabaskan)"
+                :content="language.sub_family.family.name"
               ></LanguageDetailBadge>
             </td>
             <td>
@@ -45,39 +45,28 @@
         </tbody>
       </table>
       <div class="lang-notes mt-3 color-gray font-08">
-        {{ language.notes || placeholder }}
+        {{ language.notes || '' }}
       </div>
-      <div class="lang-statement">
-        <h5 class="font-08 color-gray mt-3">Statement about language health</h5>
-        <p class="font-08 color-gray">
-          “English is now the first language of most Dane-zaa children, and of
-          many adults in our communities. Dane-zaa Záágéʔ was our primary
-          language until our grandparents and parents started to send our
-          children to school in the 1950s. English only became dominant in the
-          1980s. Because our language is orally based, Dane-zaa Záágéʔ becomes
-          increasingly endangered as our fluent speakers pass away.”
-        </p>
-      </div>
-      <div class="lang-links">
+      <div class="lang-statement"></div>
+      <div v-if="language.languagelink_set.length > 0" class="lang-links mt-4">
         <h5 class="text-uppercase color-gray font-08">Links</h5>
         <ul class="list-style-none p-0 m-0 font-08">
-          <li>
-            <a href="#" class="color-gold"
-              >Dane Wajich Dane-ẕaa Stories & Songs - Language page</a
-            >
-          </li>
-          <li>
-            <a href="#" class="color-gold"
-              >Images From a Stories Land: the Dane-zaa living landscape of
-              northeastern BC</a
-            >
-          </li>
-          <li>
-            <a href="#" class="color-gold"
-              >BC Archives: Living In A Storied Land</a
-            >
+          <li v-for="(link, index) in language.languagelink_set" :key="index">
+            <a class="color-gold word-break-all" :href="link.url">{{
+              link.title
+            }}</a>
           </li>
         </ul>
+      </div>
+      <div v-if="language.fv_archive_link" class="mt-4">
+        <h5 class="text-uppercase color-gray font-08">
+          First Voices Archive Link
+        </h5>
+        <a
+          class="color-gold font-08 word-break-all"
+          :href="language.fv_archive_link"
+          >{{ language.fv_archive_link }}</a
+        >
       </div>
     </section>
   </div>
@@ -93,12 +82,7 @@ export default {
     LanguageDetailCard,
     LanguageDetailBadge
   },
-  data() {
-    return {
-      placeholder: `We call our language Dane-zaa Záágéʔ, which translates as “people-regular language” in English. It is also known as the Beaver Language, because of the name the Europeans gave our people during the fur trade.
-        Dane-zaa Záágéʔ is a member of the Athabaskan language family, which is one of the largest in North America. It includes the Navajo language of the American Southwest, Hupa, spoken along the Pacific Coast of California and Oregon, and many languages of Alaska and Canada. Dane-zaa Záágéʔ is closely related to the languages spoken by our neighboring Athabaskan groups, such as Dene Dháh (Alberta Slavey), Sekani, Tsuut’ina (Sarcee), Dene Sųłiné (Chipewyan), and Dene Zā́gé’ (Kaska). Dane-zaa Záágéʔ is spoken at Hanás̱ Saahgéʔ (Doig River), Blueberry, Halfway River, and Prophet River in British Columbia as well as at the Boyer River (Rocky Lane) and Child Lake (Eleske) Reserves in Alberta.`
-    }
-  },
+  data() {},
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
@@ -108,7 +92,7 @@ export default {
         )
       },
       otherNames() {
-        return this.language.other_names.split('/')
+        return this.language.other_names.split(',')
       },
       languageColor() {
         return this.language.color
@@ -122,6 +106,9 @@ export default {
     return {
       languages
     }
+  },
+  mounted() {
+    this.$store.commit('sidebar/set', true)
   }
 }
 </script>

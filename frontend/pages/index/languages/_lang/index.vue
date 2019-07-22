@@ -16,10 +16,10 @@
         class="mr-2"
       ></LanguageDetailBadge>
       <LanguageSummary
-        population="121"
-        speakers="121"
-        somewhat="121"
-        learners="87"
+        :population="language.pop_total_value.toString() || 'NA'"
+        :speakers="language.fluent_speakers.toString() || 'NA'"
+        :somewhat="language.some_speakers.toString() || 'NA'"
+        :learners="language.learners.toString() || 'NA'"
         class="mt-4"
       ></LanguageSummary>
       <LanguageSeeAll
@@ -93,7 +93,7 @@ export default {
         )
       },
       otherNames() {
-        return this.language.other_names.split('/')
+        return this.language.other_names.split(',')
       },
       languageColor() {
         return this.language.color

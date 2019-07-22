@@ -20,3 +20,9 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
     }
   }
 })
+
+Vue.mixin({
+  mounted() {
+    this.$store.commit('sidebar/set', false)
+  }
+})
