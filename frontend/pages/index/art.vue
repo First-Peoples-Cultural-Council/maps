@@ -5,7 +5,7 @@
         <ArtsCard
           v-for="(art, index) in arts"
           :key="index"
-          arttype="Public Art"
+          :arttype="art.properties.type"
           :name="art.properties.title"
           class="mb-2"
         ></ArtsCard>
@@ -37,9 +37,6 @@ export default {
     arts() {
       return this.$store.state.arts.arts
     }
-  },
-  mounted() {
-    console.log('Arts', this.$route)
   }
 }
 </script>

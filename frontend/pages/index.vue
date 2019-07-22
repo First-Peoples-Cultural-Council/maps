@@ -1,15 +1,18 @@
 <template>
-  <div class="map-container">
+  <div class="map-container" :class="{ detailModeContainer: isDetailMode }">
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
-      :nav-control="NAV_CONTROL"
       :geolocate-control="GEOLOCATE_CONTROL"
+      :nav-control="{ show: false }"
       @map-sourcedata="mapSourceData"
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
     ></Mapbox>
+    <Zoom class="zoom-control"></Zoom>
+    <ShareEmbed class="share-embed-control"></ShareEmbed>
+    <ResetMap class="reset-map-control"></ResetMap>
     <SearchBar></SearchBar>
     <NavigationBar></NavigationBar>
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
@@ -31,7 +34,8 @@
             @click.native.prevent="goToCommunity"
           ></Badge>
         </section>
-        <hr />
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="(language, index) in languages" :key="index">
@@ -72,15 +76,23 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
+import { uniqBy } from 'lodash'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
+import ShareEmbed from '@/components/ShareEmbed.vue'
+import ResetMap from '@/components/ResetMap.vue'
+import Zoom from '@/components/Zoom.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { zoomToCommunity } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
+
+const markers = {}
+let markersOnScreen = {}
 
 export default {
   components: {
@@ -92,7 +104,11 @@ export default {
     Badge,
     LangFamilyTitle,
     LanguageCard,
-    CommunityCard
+    CommunityCard,
+    ShareEmbed,
+    ResetMap,
+    Zoom,
+    Filters
   },
   data() {
     return {
@@ -104,10 +120,6 @@ export default {
         maxZoom: 19,
         minZoom: 3,
         zoom: 5
-      },
-      NAV_CONTROL: {
-        show: true,
-        position: 'bottom-right'
       },
       GEOLOCATE_CONTROL: {
         show: true,
@@ -124,6 +136,9 @@ export default {
     },
     languages() {
       return this.$store.state.languages.languages
+    },
+    isDetailMode() {
+      return this.$store.state.sidebar.isDetailMode
     }
   },
   async fetch({ $axios, store }) {
@@ -143,6 +158,44 @@ export default {
     store.commit('arts/setStore', results[3].features)
   },
   methods: {
+    artsClusterImage(props) {
+      const html = `<svg xmlns="http://www.w3.org/2000/svg" width="54" height="53" viewBox="0 0 54 53"><defs><style>.a{fill:#fff;}.b{fill:#515350;}.c{fill:#b45339;}</style></defs><g transform="translate(-470 -452)"><circle class="a" cx="22.5" cy="22.5" r="22.5" transform="translate(470 460)"/><circle class="b" cx="20.5" cy="20.5" r="20.5" transform="translate(472 462)"/><circle class="a" cx="13.5" cy="13.5" r="13.5" transform="translate(497 452)"/><path class="c" d="M6989.312,282a11.31,11.31,0,1,0,11.309,11.31A11.311,11.311,0,0,0,6989.312,282Zm-8.654,6.817a.362.362,0,0,1,.5-.479,4.74,4.74,0,0,0,5-.428,4.148,4.148,0,0,1,6.021,1.149.468.468,0,0,1-.594.67,4.9,4.9,0,0,0-5.02.219C6984.084,291.716,6981.76,291.029,6980.657,288.817Zm14,4.09c-1.689-.242-4.229-.243-4.229,1.932v.828a.4.4,0,0,1-.4.395h-.636a.394.394,0,0,1-.395-.395v-.828c0-2.126-2.6-2.173-4.409-1.948a.174.174,0,0,1-.077-.337,15.241,15.241,0,0,1,10.233.019A.174.174,0,0,1,6994.661,292.907Zm-.027,2.136h-2.9a.245.245,0,0,1-.188-.4c.56-.668,1.848-1.766,3.279,0A.247.247,0,0,1,6994.633,295.042Zm-7.119,0h-2.929a.24.24,0,0,1-.185-.392c.557-.668,1.856-1.792,3.3,0A.24.24,0,0,1,6987.514,295.042Zm.677,3.261a1.426,1.426,0,1,1,1.426,1.427A1.425,1.425,0,0,1,6988.191,298.3Zm1.875,3.035a.181.181,0,0,1-.032-.359,6.421,6.421,0,0,0,4.893-3.81.181.181,0,0,1,.349.087C6995.026,299.007,6993.994,301.539,6990.066,301.338Zm8.381-10.352c-2.423,1.035-4.361-.6-5.569-2.669a5.777,5.777,0,0,0-2.654-2.289.349.349,0,0,1,.162-.667c1.855.111,3.091.948,4.326,2.955a4.26,4.26,0,0,0,3.611,1.947A.375.375,0,0,1,6998.447,290.986Z" transform="translate(-6478.949 172.052)"/></g><text x="42%" y="65%" text-anchor="middle" fill="white" font-size="0.9em" font-weight="Bold">${
+        props.point_count
+      }</text></svg>`
+      const el = document.createElement('div')
+      el.innerHTML = html
+      return el.firstChild
+    },
+    updateMarkers(map) {
+      const newMarkers = {}
+      const mapboxgl = require('mapbox-gl')
+      const features = map.querySourceFeatures('arts1')
+      // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+      // and add it to the map if it's not there already
+      for (let i = 0; i < features.length; i++) {
+        const coords = features[i].geometry.coordinates
+        const props = features[i].properties
+
+        if (!props.cluster) continue
+        const id = props.cluster_id
+
+        let marker = markers[id]
+        if (!marker) {
+          const el = this.artsClusterImage(props)
+          marker = markers[id] = new mapboxgl.Marker({ element: el }).setLngLat(
+            coords
+          )
+        }
+        newMarkers[id] = marker
+
+        if (!markersOnScreen[id]) marker.addTo(map)
+      }
+      // for every marker we've added previously, remove those that are no longer visible
+      for (const id in markersOnScreen) {
+        if (!newMarkers[id]) markersOnScreen[id].remove()
+      }
+      markersOnScreen = newMarkers
+    },
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
         // const lang = this.languages.find(l => l.name === data)
@@ -182,6 +235,11 @@ export default {
       }
     },
     mapLoaded(map) {
+      this.$root.$on('resetMap', () => {
+        map.setCenter(this.MAP_OPTIONS.center)
+        map.setZoom(this.MAP_OPTIONS.zoom)
+      })
+
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
@@ -253,7 +311,7 @@ export default {
         'fn-nations'
       )
       map.setFilter('langs-highlighted', ['in', 'name', ''])
-
+      /*
       map.addLayer(
         {
           id: 'fn-arts-clusters',
@@ -283,7 +341,7 @@ export default {
         },
         'fn-nations'
       )
-
+  */
       map.addLayer(
         {
           id: 'cluster-count',
@@ -332,15 +390,31 @@ export default {
         const communities = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-nations'
         )
+        this.$store.commit('communities/set', communities)
         const places = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-places'
         )
+        this.$store.commit('places/set', places)
         const arts = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts'
         )
-        console.log('Map bounds', e.target.getBounds())
-        this.$store.commit('communities/set', communities)
-        this.$store.commit('places/set', places)
+
+        const clusters = renderedFeatures.filter(
+          feature => feature.layer.id === 'fn-arts-clusters'
+        )
+
+        const clusterSource = this.map.getSource('arts1')
+        clusters.map(cluster => {
+          clusterSource.getClusterLeaves(
+            cluster.properties.cluster_id,
+            Infinity,
+            0,
+            (err, features) => {
+              if (err) return
+              arts.push(...features)
+            }
+          )
+        })
         this.$store.commit('arts/set', arts)
 
         const center = map.getCenter()
@@ -348,12 +422,17 @@ export default {
         this.$router.push({
           hash: `${center.lat}/${center.lng}/${zoom}`
         })
+
+        this.updateMarkers(map)
       })
       this.$eventHub.$emit('map-loaded', map)
     },
     mapSourceData(map, source) {
       if (source.isSourceLoaded) {
-        const languages = map.querySourceFeatures('langs1')
+        const languages = uniqBy(
+          map.querySourceFeatures('langs1'),
+          lang => lang.properties.name
+        )
         if (languages.length > 0) {
           this.$store.commit('languages/set', languages)
         }
@@ -374,5 +453,27 @@ export default {
   height: 100%;
   position: relative;
   padding-left: var(--sidebar-width, 350px);
+}
+.share-embed-control,
+.zoom-control {
+  position: absolute;
+  right: 50px;
+  bottom: 30px;
+}
+
+.zoom-control {
+  right: 267px;
+}
+
+.reset-map-control {
+  position: absolute;
+  right: 170px;
+  bottom: 30px;
+}
+.sidebar-divider {
+  margin-bottom: 0.5rem;
+}
+.detailModeContainer {
+  padding-left: 500px !important;
 }
 </style>

@@ -4,7 +4,11 @@ from .models import Language, PlaceName, Community, Champion
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from .serializers import (
-    LanguageGeoSerializer, LanguageSerializer, PlaceNameSerializer, CommunitySerializer, ChampionSerializer
+    LanguageGeoSerializer,
+    LanguageSerializer,
+    PlaceNameSerializer,
+    CommunitySerializer,
+    ChampionSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -18,7 +22,7 @@ class LanguageList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageSerializer
 
-    @method_decorator(cache_page(60*60*2))
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = self.get_queryset()
         serializer = LanguageSerializer(queryset, many=True)
@@ -28,8 +32,8 @@ class LanguageList(generics.ListAPIView):
 class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
-    
-    @method_decorator(cache_page(60*60*2))
+
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = self.get_queryset()
         serializer = LanguageGeoSerializer(queryset, many=True)
@@ -40,11 +44,14 @@ class CommunityList(generics.ListAPIView):
 
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
-    @method_decorator(cache_page(60*60*2))
+
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = self.get_queryset()
-        if 'lang' in request.GET:
-            queryset=queryset.filter(language_id=lang)
+        if "lang" in request.GET:
+            queryset = queryset.filter(
+                languages=Language.objects.get(pk=request.GET.get("lang"))
+            )
         serializer = CommunitySerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -54,13 +61,13 @@ class PlaceNameList(generics.ListAPIView):
     queryset = PlaceName.objects.all()
     serializer_class = PlaceNameSerializer
 
-    @method_decorator(cache_page(60*60*2))
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = self.get_queryset()
-        if 'lang' in request.GET:
-            lang = Language.objects.get(pk=int(request.GET['lang']))
+        if "lang" in request.GET:
+            lang = Language.objects.get(pk=int(request.GET["lang"]))
             print(lang.geom)
-            queryset=queryset.filter(point__intersects=lang.geom)
+            queryset = queryset.filter(point__intersects=lang.geom)
         serializer = PlaceNameSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -70,10 +77,10 @@ class ChampionList(generics.ListAPIView):
     queryset = Champion.objects.all()
     serializer_class = ChampionSerializer
 
-    @method_decorator(cache_page(60*60*2))
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = self.get_queryset()
-        if 'lang' in request.GET:
-            queryset=queryset.filter(language_id=lang)
+        if "lang" in request.GET:
+            queryset = queryset.filter(language_id=lang)
         serializer = ChampionSerializer(queryset, many=True)
         return Response(serializer.data)

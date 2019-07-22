@@ -10,6 +10,13 @@ module.exports = {
    ** Headers of the page
    */
   head: {
+    script: [
+      {
+        src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from
+        `,
+        body: true
+      }
+    ],
     title: "%s | First Peoples' Cultural Council",
     meta: [
       {
@@ -30,15 +37,22 @@ module.exports = {
         rel: 'icon',
         type: 'image/x-icon',
         href: '/favicon.ico'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap'
       }
     ]
   },
+
   /*
    ** Customize the progress-bar color
    */
   loading: {
     color: '#fff'
   },
+
   /*
    ** history mode
    */
@@ -85,6 +99,18 @@ module.exports = {
         mapboxgl: 'mapbox-gl'
       })
     ],
+    postcss: {
+      // Add plugin names as key and arguments as value
+      // Install them before as dependencies with npm or yarn
+      plugins: {
+        'postcss-flexbugs-fixes': {}
+      },
+      preset: {
+        autoprefixer: {
+          grid: true
+        }
+      }
+    },
     /*
      ** You can extend webpack config here
      */

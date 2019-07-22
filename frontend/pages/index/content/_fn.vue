@@ -1,9 +1,7 @@
 <template>
   <div>
     <DetailSideBar>
-      <CommunityDetailCard
-        :name="community.properties.title"
-      ></CommunityDetailCard>
+      <CommunityDetailCard :name="community.name"></CommunityDetailCard>
     </DetailSideBar>
   </div>
 </template>
@@ -16,19 +14,12 @@ export default {
     DetailSideBar,
     CommunityDetailCard
   },
-  props: {
-    communities: {
-      default() {
-        return []
-      },
-      type: Array
-    }
-  },
   computed: {
+    communities() {
+      return this.$store.state.communities.communitySet
+    },
     community() {
-      return this.communities.find(
-        comm => comm.properties.title === this.$route.params.fn
-      )
+      return this.communities.find(comm => comm.name === this.$route.params.fn)
     }
   }
 }

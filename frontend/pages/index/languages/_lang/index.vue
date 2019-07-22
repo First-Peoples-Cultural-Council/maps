@@ -16,10 +16,10 @@
         class="mr-2"
       ></LanguageDetailBadge>
       <LanguageSummary
-        population="121"
-        speakers="121"
-        somewhat="121"
-        learners="87"
+        :population="language.pop_total_value.toString() || 'NA'"
+        :speakers="language.fluent_speakers.toString() || 'NA'"
+        :somewhat="language.some_speakers.toString() || 'NA'"
+        :learners="language.learners.toString() || 'NA'"
         class="mt-4"
       ></LanguageSummary>
       <LanguageSeeAll
@@ -28,33 +28,72 @@
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
     </section>
+    <section class="pl-2 pr-2 pt-2">
+      <CommunityCard
+        v-for="(community, index) in communities"
+        :key="index"
+        :name="community.properties.title"
+        class="mb-2"
+      ></CommunityCard>
+      <PlacesCard
+        v-for="place in places"
+        :key="place.properties.title"
+        :name="place.properties.title"
+        class="mb-2"
+      ></PlacesCard>
+      <ArtsCard
+        v-for="art in arts"
+        :key="art.name"
+        :arttype="art.properties.type"
+        :name="art.properties.title"
+      >
+      </ArtsCard>
+    </section>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import ArtsCard from '@/components/arts/ArtsCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
+import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
 export default {
   components: {
     LanguageDetailCard,
     LanguageDetailBadge,
     LanguageSummary,
-    LanguageSeeAll
+    LanguageSeeAll,
+    CommunityCard,
+    PlacesCard,
+    ArtsCard
   },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
+      communities() {
+        return this.$store.state.communities.communities
+      },
+      places() {
+        return this.$store.state.places.places
+      },
+      arts() {
+        return this.$store.state.arts.arts
+      },
+      languages() {
+        return this.$store.state.languages.languageSet
+      },
       language() {
         return this.languages.find(
           lang => lang.name === this.$route.params.lang
         )
       },
       otherNames() {
-        return this.language.other_names.split('/')
+        return this.language.other_names.split(',')
       },
       languageColor() {
         return this.language.color
@@ -63,17 +102,9 @@ export default {
   },
   watch: {
     language(newlang, oldlang) {
-      console.log('language changed from', oldlang.name, 'to', newlang.name)
       if (oldlang && newlang && oldlang.name !== newlang.name) {
         zoomToLanguage({ map: this.mapinstance, lang: newlang })
       }
-    }
-  },
-  async asyncData({ $axios, store }) {
-    const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
-    const languages = await $axios.$get(api)
-    return {
-      languages
     }
   },
   created() {
@@ -91,12 +122,14 @@ export default {
   },
   head() {
     return {
-      title: this.language.name + " Language Resources and Stats",
+      title: this.language.name + ' Language Resources and Stats',
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
+          content: `${this.language.name}, also known as ${
+            this.language.other_names
+          } is an indigenous language of British Columbia.`
         }
       ]
     }
