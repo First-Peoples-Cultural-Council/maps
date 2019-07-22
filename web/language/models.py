@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from django.contrib.gis.db import models
 
+
 class BaseModel(models.Model):
     name = models.CharField(max_length=255, default="")
 
@@ -24,6 +25,8 @@ class Language(BaseModel):
     other_names = models.TextField(default="")
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     color = models.CharField(max_length=31, default="")
+    regions = models.CharField(max_length=255, default="")
+
     sub_family = models.ForeignKey(
         LanguageSubFamily, on_delete=models.SET_NULL, null=True
     )
@@ -42,7 +45,6 @@ class Language(BaseModel):
     bbox = models.PolygonField(null=True, default=None)
 
 
-
 class LanguageLink(models.Model):
     url = models.URLField(max_length=255, default=None, null=True)
     title = models.CharField(max_length=255)
@@ -54,6 +56,8 @@ class LanguageLink(models.Model):
 class Community(BaseModel):
     notes = models.TextField(default="")
     point = models.PointField(null=True, default=None)
+    regions = models.CharField(max_length=255, default="")
+
     english_name = models.CharField(max_length=255, default="")
     other_names = models.CharField(max_length=255, default="")
     internet_speed = models.CharField(max_length=255, default="")

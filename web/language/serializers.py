@@ -6,6 +6,7 @@ from .models import (
     LanguageSubFamily,
     LanguageFamily,
     LanguageLink,
+    Dialect,
     CommunityLink,
 )
 from rest_framework import serializers
@@ -35,21 +36,31 @@ class ChampionSerializer(serializers.ModelSerializer):
 class LanguageLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = LanguageLink
-        fields = ('title', 'url')
+        fields = ("title", "url")
+
+
+class DialectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dialect
+        fields = ("name",)
 
 
 class LanguageSerializer(serializers.ModelSerializer):
     sub_family = LanguageSubFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
+    dialect_set = DialectSerializer(read_only=True, many=True)
+
     class Meta:
         model = Language
         fields = (
             "id",
             "name",
             "other_names",
+            "regions",
             "champion_set",
             "languagelink_set",
+            "dialect_set",
             "fv_archive_link",
             "color",
             "sub_family",
@@ -61,11 +72,12 @@ class LanguageSerializer(serializers.ModelSerializer):
             "bbox",
         )
 
+
 class LanguageGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Language
         fields = ("name", "color")
-        geo_field = ("geom")
+        geo_field = "geom"
 
 
 class PlaceNameSerializer(GeoFeatureModelSerializer):
@@ -90,6 +102,7 @@ class CommunitySerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "languages",
+            "regions",
             "champion_set",
             "communitylink_set",
             "english_name",
