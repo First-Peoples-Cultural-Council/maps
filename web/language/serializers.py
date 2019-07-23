@@ -102,7 +102,7 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name",)
+        fields = ("name", "id", "color")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
