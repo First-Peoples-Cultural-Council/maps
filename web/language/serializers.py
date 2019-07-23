@@ -48,7 +48,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ("name",)
+        fields = ("name", "id", "color")
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
@@ -102,7 +102,7 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "color")
+        fields = ("name", "id")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
