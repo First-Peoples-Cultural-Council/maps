@@ -153,7 +153,7 @@ export default {
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
       $axios.$get(getApiUrl('community/')),
-      $axios.$get(getApiUrl('placename/')),
+      $axios.$get(getApiUrl('placename-geo/')),
       $axios.$get(getApiUrl('arts'))
     ])
 
