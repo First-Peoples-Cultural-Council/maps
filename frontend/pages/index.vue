@@ -90,6 +90,7 @@ import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { zoomToCommunity } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
+import layers from '@/plugins/layers.js'
 
 const markers = {}
 let markersOnScreen = {}
@@ -226,10 +227,8 @@ export default {
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
       const feature = features.find(
-        feature => feature.layer.id === 'fn-lang-areas-fill'
+        feature => feature.layer.id === 'fn-lang-areas-shaded'
       )
-      // const lang = this.languages.find(l => l.name === feature.properties.name)
-      // zoomToLanguage({ map, lang })
       if (feature) {
         this.$router.push({
           path: `/languages/${encodeURIComponent(feature.properties.name)}`
@@ -253,130 +252,7 @@ export default {
         clusterMaxZoom: 14,
         clusterRadius: 50
       })
-
-      map.addLayer(
-        {
-          id: 'fn-lang-areas-fill',
-          type: 'fill',
-          source: 'langs1',
-          layout: {},
-          paint: {
-            'fill-color': ['get', 'color'],
-            'fill-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              3,
-              0.5,
-              9,
-              0.08
-            ]
-          }
-        },
-        'fn-nations'
-      )
-      map.addLayer(
-        {
-          id: 'fn-lang-area-outlines',
-          type: 'line',
-          source: 'langs1',
-          layout: {},
-          paint: {
-            'line-color': ['get', 'color'],
-            'line-blur': 0,
-            'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2, 18, 10],
-            'line-offset': ['interpolate', ['linear'], ['zoom'], 4, 1, 18, 5],
-            'line-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4,
-              0.45,
-              18,
-              0.2
-            ]
-          }
-        },
-        'fn-nations'
-      )
-      map.addLayer(
-        {
-          id: 'langs-highlighted',
-          type: 'fill',
-          source: 'langs1',
-          layout: {},
-          paint: {
-            'fill-color': 'black',
-            'fill-opacity': 0.4
-          }
-        },
-        'fn-nations'
-      )
-      if (map) {
-        map.setFilter('langs-highlighted', ['in', 'name', ''])
-      }
-      /*
-      map.addLayer(
-        {
-          id: 'fn-arts-clusters',
-          type: 'symbol',
-          source: 'arts1',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': [
-              'step',
-              ['get', 'point_count'],
-              '#51bbd6',
-              100,
-              '#f1f075',
-              750,
-              '#f28cb1'
-            ],
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              20,
-              100,
-              30,
-              750,
-              40
-            ]
-          }
-        },
-        'fn-nations'
-      )
-  */
-      map.addLayer(
-        {
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'arts1',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12
-          }
-        },
-        'fn-nations'
-      )
-
-      map.addLayer(
-        {
-          id: 'fn-arts',
-          type: 'symbol',
-          source: 'arts1',
-          filter: ['!', ['has', 'point_count']],
-          layout: {
-            'icon-image': 'artist_icon',
-            'text-field': '{title}',
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 0.6],
-            'text-anchor': 'top'
-          }
-        },
-        'fn-nations'
-      )
+      layers.layers(map)
 
       const hash = this.$route.hash
       if (hash) {
@@ -407,7 +283,6 @@ export default {
         const clusters = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts-clusters'
         )
-
         const clusterSource = this.map.getSource('arts1')
         clusters.map(cluster => {
           clusterSource.getClusterLeaves(
