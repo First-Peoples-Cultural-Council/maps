@@ -86,9 +86,6 @@ export default {
     const url = getApiUrl(`community?lang=${languageId}`)
     */
   },
-  mounted() {
-    console.log(this.$route)
-  },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
@@ -124,6 +121,10 @@ export default {
       }
     }
   },
+  mounted() {
+    console.log(this.$route)
+  },
+
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {

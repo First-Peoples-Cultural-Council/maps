@@ -7,7 +7,7 @@
     <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
       <LayerToggle
         layer-name="Language Regions"
-        layer="fn-lang-areas-fill"
+        layer="fn-lang-areas-highlighted"
         class="mb-1"
       ></LayerToggle>
     </b-collapse>
