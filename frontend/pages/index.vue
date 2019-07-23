@@ -315,7 +315,37 @@ export default {
       if (map) {
         map.setFilter('langs-highlighted', ['in', 'name', ''])
       }
-
+      /*
+      map.addLayer(
+        {
+          id: 'fn-arts-clusters',
+          type: 'symbol',
+          source: 'arts1',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6',
+              100,
+              '#f1f075',
+              750,
+              '#f28cb1'
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              100,
+              30,
+              750,
+              40
+            ]
+          }
+        },
+        'fn-nations'
+      )
+  */
       map.addLayer(
         {
           id: 'cluster-count',
@@ -377,7 +407,7 @@ export default {
         const clusters = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts-clusters'
         )
-        console.log()
+
         const clusterSource = this.map.getSource('arts1')
         clusters.map(cluster => {
           clusterSource.getClusterLeaves(
@@ -412,21 +442,6 @@ export default {
           this.$store.commit('languages/set', languages)
         }
       }
-    },
-    inBounds(bounds, lnglat) {
-      let lng
-
-      const multLng =
-        (lnglat[0] - bounds._ne.lng) * (lnglat[0] - bounds._sw.lng)
-      if (bounds._ne.lng > bounds._sw.lng) {
-        lng = multLng < 0
-      } else {
-        lng = multLng > 0
-      }
-
-      const lat =
-        (lnglat[1] - bounds._ne.lat) * (lnglat[1] - bounds._sw.lat) < 0
-      return lng && lat
     }
   }
 }
