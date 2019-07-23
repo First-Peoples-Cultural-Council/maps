@@ -48,7 +48,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "id", "color")
+        fields = ("name", "id", "color", "bbox")
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):

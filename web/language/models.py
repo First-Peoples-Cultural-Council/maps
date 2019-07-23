@@ -22,15 +22,15 @@ class LanguageSubFamily(BaseModel):
 
 
 class Language(BaseModel):
-    other_names = models.TextField(default="")
+    other_names = models.TextField(default="", blank=True)
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     color = models.CharField(max_length=31, default="")
-    regions = models.CharField(max_length=255, default="")
+    regions = models.CharField(max_length=255, default="", blank=True)
 
     sub_family = models.ForeignKey(
         LanguageSubFamily, on_delete=models.SET_NULL, null=True
     )
-    notes = models.TextField(default="")
+    notes = models.TextField(default="", blank=True)
     fluent_speakers = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_on_fluent_sum_value
@@ -54,20 +54,20 @@ class LanguageLink(models.Model):
 
 
 class Community(BaseModel):
-    notes = models.TextField(default="")
+    notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
-    regions = models.CharField(max_length=255, default="")
+    regions = models.CharField(max_length=255, default="", blank=True)
 
-    english_name = models.CharField(max_length=255, default="")
-    other_names = models.CharField(max_length=255, default="")
-    internet_speed = models.CharField(max_length=255, default="")
+    english_name = models.CharField(max_length=255, default="", blank=True)
+    other_names = models.CharField(max_length=255, default="", blank=True)
+    internet_speed = models.CharField(max_length=255, default="", blank=True)
     population = models.IntegerField(default=0)
     languages = models.ManyToManyField(Language)
     email = models.EmailField(max_length=255, default=None, null=True)
-    website = models.URLField(max_length=255, default=None, null=True)
-    phone = models.CharField(max_length=255, default="")
-    alt_phone = models.CharField(max_length=255, default="")
-    fax = models.CharField(max_length=255, default="")
+    website = models.URLField(max_length=255, default=None, null=True, blank=True)
+    phone = models.CharField(max_length=255, default="", blank=True)
+    alt_phone = models.CharField(max_length=255, default="", blank=True)
+    fax = models.CharField(max_length=255, default="", blank=True)
 
 
 class CommunityLink(models.Model):
