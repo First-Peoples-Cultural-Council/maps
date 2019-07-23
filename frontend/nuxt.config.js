@@ -86,7 +86,8 @@ module.exports = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    debug: true
+    debug: true,
+    baseURL: 'http://35.183.71.157'
   },
 
   /*
