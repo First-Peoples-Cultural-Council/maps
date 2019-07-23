@@ -72,6 +72,23 @@ export default {
     PlacesCard,
     ArtsCard
   },
+  async asyncdata({ $axios, store }) {
+    /*
+    const languages = store.state.languages.languageSet
+    const languageName = this.$route.params.lang
+    const language = languages.find(
+      lang => lang.properties.title === languageName
+    )
+    const languageId = language.id
+    function getApiUrl(path) {
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+    }
+    const url = getApiUrl(`community?lang=${languageId}`)
+    */
+  },
+  mounted() {
+    console.log(this.$route)
+  },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,

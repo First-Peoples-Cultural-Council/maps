@@ -115,7 +115,7 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj/draft',
+        style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7',
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -195,6 +195,8 @@ export default {
         if (!newMarkers[id]) markersOnScreen[id].remove()
       }
       markersOnScreen = newMarkers
+      console.log('markers', markers)
+      console.log('Markers on screen', markersOnScreen)
     },
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
@@ -310,38 +312,10 @@ export default {
         },
         'fn-nations'
       )
-      map.setFilter('langs-highlighted', ['in', 'name', ''])
-      /*
-      map.addLayer(
-        {
-          id: 'fn-arts-clusters',
-          type: 'circle',
-          source: 'arts1',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': [
-              'step',
-              ['get', 'point_count'],
-              '#51bbd6',
-              100,
-              '#f1f075',
-              750,
-              '#f28cb1'
-            ],
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              20,
-              100,
-              30,
-              750,
-              40
-            ]
-          }
-        },
-        'fn-nations'
-      )
-  */
+      if (map) {
+        map.setFilter('langs-highlighted', ['in', 'name', ''])
+      }
+
       map.addLayer(
         {
           id: 'cluster-count',
@@ -360,14 +334,15 @@ export default {
       map.addLayer(
         {
           id: 'fn-arts',
-          type: 'circle',
+          type: 'symbol',
           source: 'arts1',
           filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 4,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
+          layout: {
+            'icon-image': 'artist_icon',
+            'text-field': '{title}',
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 0.6],
+            'text-anchor': 'top'
           }
         },
         'fn-nations'
@@ -402,7 +377,7 @@ export default {
         const clusters = renderedFeatures.filter(
           feature => feature.layer.id === 'fn-arts-clusters'
         )
-
+        console.log()
         const clusterSource = this.map.getSource('arts1')
         clusters.map(cluster => {
           clusterSource.getClusterLeaves(
@@ -437,6 +412,21 @@ export default {
           this.$store.commit('languages/set', languages)
         }
       }
+    },
+    inBounds(bounds, lnglat) {
+      let lng
+
+      const multLng =
+        (lnglat[0] - bounds._ne.lng) * (lnglat[0] - bounds._sw.lng)
+      if (bounds._ne.lng > bounds._sw.lng) {
+        lng = multLng < 0
+      } else {
+        lng = multLng > 0
+      }
+
+      const lat =
+        (lnglat[1] - bounds._ne.lat) * (lnglat[1] - bounds._sw.lat) < 0
+      return lng && lat
     }
   }
 }
