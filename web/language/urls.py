@@ -8,7 +8,6 @@ from .views import (
     PlaceNameGeoList,
     LanguageDetail,
     CommunityDetail,
-    PlaceNameDetail,
     LanguageGeoList,
 )
 
@@ -20,5 +19,4 @@ urlpatterns = [
     url("community/(?P<pk>\d+)/$", CommunityDetail.as_view()),
     url("community/$", CommunityList.as_view()),
     url("placename-geo/$", PlaceNameGeoList.as_view()),
-    url("placename/(?P<pk>\d+)/$", PlaceNameDetail.as_view()),
 ]

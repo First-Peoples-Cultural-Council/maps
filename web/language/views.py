@@ -8,7 +8,6 @@ from .serializers import (
     LanguageSerializer,
     LanguageDetailSerializer,
     PlaceNameGeoSerializer,
-    PlaceNameDetailSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     ChampionSerializer,
@@ -83,9 +82,4 @@ class PlaceNameGeoList(generics.ListAPIView):
             queryset = queryset.filter(point__intersects=lang.geom)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
-
-
-class PlaceNameDetail(generics.RetrieveAPIView):
-    serializer_class = PlaceNameDetailSerializer
-    queryset = PlaceName.objects.all()
 

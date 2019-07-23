@@ -93,12 +93,6 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
 
 
-class PlaceNameDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceName
-        fields = ("name", "other_name", "id")
-
-
 class CommunityLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLink
