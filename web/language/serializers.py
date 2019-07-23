@@ -46,6 +46,12 @@ class DialectSerializer(serializers.ModelSerializer):
 
 
 class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ("name",)
+
+
+class LanguageDetailSerializer(serializers.ModelSerializer):
     sub_family = LanguageSubFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
@@ -80,11 +86,17 @@ class LanguageGeoSerializer(GeoFeatureModelSerializer):
         geo_field = "geom"
 
 
-class PlaceNameSerializer(GeoFeatureModelSerializer):
+class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_name")
+        fields = ("name", "other_name", "id")
         geo_field = "point"
+
+
+class PlaceNameDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "other_name", "id")
 
 
 class CommunityLinkSerializer(serializers.ModelSerializer):
@@ -94,12 +106,19 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 
 
 class CommunitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name",)
+
+
+class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
 
     class Meta:
         model = Community
         fields = (
+            "id",
             "name",
             "languages",
             "regions",
