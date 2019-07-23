@@ -37,7 +37,9 @@
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
         <section class="language-section pl-3 pr-3">
-          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
+          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"
+            ><!--TODO: Aaron please remove this, why is it hardcoded? --></LangFamilyTitle
+          >
           <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -116,7 +118,8 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7',
+        // style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7',
+        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
