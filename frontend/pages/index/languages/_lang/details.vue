@@ -5,6 +5,7 @@
     <LanguageDetailCard
       :color="languageColor"
       :name="this.$route.params.lang"
+      :detail="true"
     ></LanguageDetailCard>
     <section class="pl-3 pr-3">
       <h5 class="other-lang-names-title text-uppercase mt-4">

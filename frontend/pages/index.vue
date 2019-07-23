@@ -204,7 +204,8 @@ export default {
       markersOnScreen = newMarkers
       console.log('markers', markers)
       console.log('markers on screen', markersOnScreen)
-      const clusterSource = this.map.getSource('arts1')
+      // const clusterSource = this.map.getSource('arts1')
+      /*
       try {
         for (const marker in markersOnScreen) {
           console.log('Cluster Number', marker)
@@ -219,6 +220,7 @@ export default {
           )
         }
       } catch (e) {}
+      */
     },
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
