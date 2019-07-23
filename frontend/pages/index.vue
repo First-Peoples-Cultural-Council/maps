@@ -292,7 +292,7 @@ export default {
       map.on('idle', e => {
         const renderedFeatures = e.target.queryRenderedFeatures()
         const communities = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-nations'
+          feature => feature.layer.id === 'fn-nations copy'
         )
         this.$store.commit('communities/set', communities)
         const places = renderedFeatures.filter(
