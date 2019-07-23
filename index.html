@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>First People's Language Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.css' type='text/css' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+#map {
+    position:absolute;
+    left:25%;
+    top:0;
+    bottom:0;
+    width: 75%;
+}
+.map-overlay {
+    position: absolute;
+    width: 25%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #fff;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.map-overlay fieldset {
+    display: none;
+    background: #ddd;
+    border: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.map-overlay input {
+    display: block;
+    border: none;
+    width: 100%;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 0;
+}
+
+.map-overlay .listing {
+    overflow: auto;
+    max-height: 100%;
+}
+
+.map-overlay .listing > * {
+    display: block;
+    padding: 5px 10px;
+    margin: 0;
+}
+
+.map-overlay .listing a {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #404;
+    text-decoration: none;
+}
+
+.map-overlay .listing a:last-child {
+    border: none;
+}
+
+.map-overlay .listing a:hover {
+    background: #f0f0f0;
+}
+</style>
+
+<div id='map'></div>
+
+<div class='map-overlay'>
+    <!-- <fieldset>
+        <input id='feature-filter' type='text' placeholder='communities' />
+    </fieldset> -->
+    <div id='feature-listing' class='listing'></div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
+    center: [-125, 55],
+    maxZoom: 19,
+    minZoom: 3,
+    zoom: 5
+});
+
+// Holds visible nations features for filtering
+var nations = [];
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false
+});
+
+//var filterEl = document.getElementById('feature-filter');
+var listingEl = document.getElementById('feature-listing');
+
+function renderListings(features) {
+
+    features.sort(function(a, b){
+        if(a.properties.title < b.properties.title) { return -1; }
+        if(a.properties.title > b.properties.title) { return 1; }
+        return 0;
+    })
+    // Clear any existing listings
+    listingEl.innerHTML = '';
+    if (features.length) {
+        features.forEach(function(feature) {
+            var prop = feature.properties;
+            var item = document.createElement('a');
+            item.target = '_blank';
+            item.textContent = prop.kind + ' - ' + prop.title;
+            item.addEventListener('mouseover', function() {
+                // Highlight corresponding feature on the map
+                var ll;
+                ll = feature.geometry.coordinates
+                while (ll.length && ll[0].length) {
+                    ll = ll[0]
+                }
+                popup.setLngLat(ll)
+                    .setText(feature.properties.kind + " - " + feature.properties.title)
+                    .addTo(map);
+            });
+            listingEl.appendChild(item);
+            item.addEventListener('click', function(){
+                var ll = feature.geometry.coordinates;
+                if (feature.properties.kind === 'langs') {
+                    var bounds = new mapboxgl.LngLatBounds(ll[0][0], ll[0][0]);
+                    ll.forEach(function(li) {
+
+                        bounds = li.reduce(function(bounds, coord) {
+                            return bounds.extend(coord);
+                        }, bounds);
+                    });
+                    map.fitBounds(
+                        bounds, {
+                        padding: 20
+                    });
+                } else {
+                    while (ll.length != 2) {
+                        ll = ll[0]
+                    }
+                    map.flyTo({
+                        center: ll,
+                        zoom: 10
+                    });
+
+                }
+
+            })
+        });
+
+    }
+}
+
+function normalize(string) {
+    return string.trim().toLowerCase();
+}
+
+function getUniqueFeatures(array, comparatorProperty) {
+    var existingFeatureKeys = {};
+    // Because features come from tiled vector data, feature geometries may be split
+    // or duplicated across tile boundaries and, as a result, features may appear
+    // multiple times in query results.
+    uniqueFeatures = [];
+    array.forEach(function(el) {
+        if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+            existingFeatureKeys[el.properties[comparatorProperty]].geometry.coordinates.push(el.geometry.coordinates[0])
+        } else {
+            existingFeatureKeys[el.properties[comparatorProperty]] = el;
+            uniqueFeatures.push(el);
+        }
+    });
+
+    return uniqueFeatures;
+}
+
+function moveend() {
+    var features = map.queryRenderedFeatures({layers:['fn-lang-areas', 'fn-nations', 'fn-places']});
+
+    if (features) {
+        var uniqueFeatures = getUniqueFeatures(features, "title");
+        // Populate features for the listing overlay.
+        renderListings(uniqueFeatures);
+
+        nations = uniqueFeatures;
+    }
+}
+
+map.on('load', function() {
+
+    map.addLayer({
+            "id": "fn-lang-areas-fill",
+            "type": "fill",
+            "metadata": {},
+            "source": "composite",
+            "source-layer": "langs-0brkvj",
+            "layout": {},
+            "paint": {
+                "fill-color": ["get", "color"],
+                "fill-opacity": ["case",
+                    ["boolean", ["feature-state", "hover"], false],
+                    1,
+                    0.5
+                ]
+            }
+        })
+    map.on('moveend', moveend);
+
+    var hov_title = null;
+
+    // When the user moves their mouse over the state-fill layer, we'll update the
+    // feature state for the feature under the mouse.
+    map.on("mouseover", "fn-lang-areas-fill", function (e) {
+        last_hov_title = hov_title;
+        hov_title = e.features[0].properties.title
+
+        if (last_hov_title !== hov_title) {
+            var relatedFeatures = map.querySourceFeatures('composite', {
+                sourceLayer: 'langs-0brkvj',
+                filter: ['in', 'title', e.features[0].properties.title]
+            }).forEach(function (feature) {
+                map.setFeatureState({ source: 'composite', sourceLayer: 'langs-0brkvj', id: feature.id }, { hover: true });
+            });
+        }
+        // if (e.features.length > 0) {
+        //     if (hoveredStateId) {
+        //         map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: false });
+        //     }
+        //     hoveredStateId = e.features[0].id;
+        //     map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: true });
+        // }
+
+    });
+
+    // When the mouse leaves the state-fill layer, update the feature state of the
+    // previously hovered feature.
+    map.on("mouseleave", "fn-lang-areas-fill", function () {
+        // if (hoveredStateId) {
+        //     map.setFeatureState({ source: 'composite', sourceLayer: 'fn-lang-areas-fill', id: hoveredStateId }, { hover: false });
+        // }
+        // hoveredStateId = null;
+    });
+
+    // Call this function on initialization
+    // passing an empty array to render an empty state
+    renderListings([]);
+    setTimeout(moveend, 500)
+});
+
+map.addControl(new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl
+}));
+</script>
+
+</body>
+</html>

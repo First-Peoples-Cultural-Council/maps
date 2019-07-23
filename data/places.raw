@@ -1,0 +1,201 @@
+[{
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.674802,55.256489]}",
+            "description": "\u003Ca href=\u0022\/placename\/gitanmaax\u0022\u003EGitanmaax\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/gitanmaax.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.691748,55.35075]}",
+            "description": "\u003Ca href=\u0022\/placename\/kispiox-0\u0022\u003EKispiox\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/kispiox_0.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.622734,54.003664]}",
+            "description": "\u003Ca href=\u0022\/placename\/lheidli-tenneh\u0022\u003ELheidli-T\u0026#039;enneh\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/lheidli-tenneh.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.964765,50.770176]}",
+            "description": "\u003Ca href=\u0022\/placename\/xwisten\u0022\u003EXwisten\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nBridge River",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/xwisten.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.442475,49.382993]}",
+            "description": "\u003Ca href=\u0022\/placename\/chawathil\u0022\u003EChawathil\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/chawathil.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.089347,51.592928]}",
+            "description": "\u003Ca href=\u0022\/placename\/xg%C3%A9t%E2%80%99tem%E2%80%99\u0022\u003EXg\u00e9t\u2019tem\u2019\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nDog Creek",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/11-dog_creek.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.251652,50.966485]}",
+            "description": "\u003Ca href=\u0022\/placename\/pellt%C3%ADq%E2%80%99t\u0022\u003EPellt\u00edq\u2019t\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nClinton",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/17-clinton.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.954304,52.089713]}",
+            "description": "\u003Ca href=\u0022\/placename\/t%E2%80%99%C3%A9xel%E2%80%99c\u0022\u003ET\u2019\u00e9xel\u2019c\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nWilliams Lake",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/williams-lake.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.123529,52.268393]}",
+            "description": "\u003Ca href=\u0022\/placename\/xats%E2%80%99%C3%BAll\u0022\u003EXats\u2019\u00fall \u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSoda Creek",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/soda-creek.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.828755,50.882798]}",
+            "description": "\u003Ca href=\u0022\/placename\/tsk%E2%80%99w%C3%A9ylecw\u0022\u003ETsk\u2019w\u00e9ylecw\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nPavilion",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/pavilion.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.694672,50.817125]}",
+            "description": "\u003Ca href=\u0022\/placename\/qw7ewt\u0022\u003EQw7ewt\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nLittle Shuswap Lake",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/little-shuswap.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.586667,51.091389]}",
+            "description": "\u003Ca href=\u0022\/placename\/llenllen%C3%A9y%E2%80%99ten\u0022\u003ELlenllen\u00e9y\u2019ten\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nHigh Bar ",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/highbar.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.14374,52.128008]}",
+            "description": "\u003Ca href=\u0022\/placename\/esk%E2%80%99%C3%A9t\u0022\u003EEsk\u2019\u00e9t\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nAlkali Lake",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/alkali-lake.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.234758,51.638908]}",
+            "description": "\u003Ca href=\u0022\/placename\/stsw%C3%A9cem%E2%80%99c\u0022\u003EStsw\u00e9cem\u2019c\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nCanoe Creek",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/canoe-creek.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.600328,51.672786]}",
+            "description": "\u003Ca href=\u0022\/placename\/tsq%E2%80%99%C3%A9scen\u0022\u003ETsq\u2019\u00e9scen\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nCanim Lake",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/canim-lake.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.299102,50.682532]}",
+            "description": "\u003Ca href=\u0022\/placename\/tk%E2%80%99eml%C3%BAps\u0022\u003ETk\u2019eml\u00faps\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nKamloops",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/kamloops.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.138466,50.551313]}",
+            "description": "\u003Ca href=\u0022\/placename\/splats%C3%ADn\u0022\u003ESplats\u00edn\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSplats\u00edn",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/splatsin.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.847624,50.751563]}",
+            "description": "\u003Ca href=\u0022\/placename\/sk%C3%ADtsesten\u0022\u003ESk\u00edtsesten\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSkeetchestn",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/skeetch-e.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.139405,51.186928]}",
+            "description": "\u003Ca href=\u0022\/placename\/simpcw\u0022\u003ESimpcw\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSimpcw",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/simpcw.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-116.028423,50.504375]}",
+            "description": "\u003Ca href=\u0022\/placename\/kenp%C3%A9sq%E2%80%99t\u0022\u003EKenp\u00e9sq\u2019t\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nShuswap",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/shuswap.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.716902,50.773478]}",
+            "description": "\u003Ca href=\u0022\/placename\/sk%E2%80%99atsin\u0022\u003ESk\u2019atsin \u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nNeskonlith",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/neskonlith.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.322,50.7753]}",
+            "description": "\u003Ca href=\u0022\/placename\/st%E2%80%99uxwt%C3%A9ws\u0022\u003ESt\u2019uxwt\u00e9ws \u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nBonaparte",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/bonaparte_0.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.70469236374,50.829167663279]}",
+            "description": "\u003Ca href=\u0022\/placename\/sexqeltq%C3%ADn\u0022\u003ESexqeltq\u00edn\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nAdams Lake",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/adams-lake.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Polygon\u0022,\u0022coordinates\u0022:[[[-131.66015625,54.181726602391],[-132.099609375,54.027133444125],[-132.28637695312,54.091617302326],[-132.69287109375,54.156001090285],[-133.09936523438,54.252389302768],[-133.18725585938,53.910810087254],[-133.06640625,53.748710796899],[-132.94555664062,53.488045536056],[-132.73681640625,53.298055574913],[-132.55004882812,53.041213040756],[-132.3193359375,52.902275861683],[-131.80297851562,52.549636074382],[-131.06689453125,51.923943445545],[-130.95703125,52.079506003797],[-130.98999023438,52.227799418871],[-131.2646484375,52.456009392641],[-131.49536132812,52.736291655911],[-131.63818359375,53.054421865461],[-131.82495117188,53.252068805894],[-131.923828125,53.468430720012],[-131.7041015625,53.9883950648],[-131.66015625,54.181726602391]]]}",
+            "description": "\u003Ca href=\u0022\/placename\/x%CC%B1aaydag%CC%B1a-gwaayyaay\u0022\u003EX\u0331AAYDAG\u0331A GWAAY.YAAY\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nHaida Gwaii (Queen Charlotte Islands)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/xaaydaga_gwaay_yaay.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Polygon\u0022,\u0022coordinates\u0022:[[[-131.66015625,54.175296724046],[-131.89636230469,54.049714182107],[-132.1875,54.027133444125],[-132.65991210938,54.14634989866],[-133.07739257812,54.172081409977],[-133.04443359375,54.030360014844],[-133.13781738281,53.910810087254],[-133.12133789062,53.797406457354],[-133.01696777344,53.677188271888],[-132.92358398438,53.618579364895],[-133.01696777344,53.592504809039],[-132.87414550781,53.468430720012],[-132.72583007812,53.448806835428],[-132.5390625,53.41608020368],[-132.41271972656,53.307903446686],[-132.73681640625,53.370220573957],[-132.76977539062,53.317749047491],[-132.70385742188,53.265212931247],[-132.55554199219,53.186287573913],[-132.46215820312,53.1368853338],[-132.30285644531,53.153359065124],[-132.20947265625,53.153359065124],[-132.13806152344,53.182995860087],[-132.24792480469,53.219190817989],[-131.98425292969,53.252068805894],[-131.94580078125,53.563151688427],[-131.90185546875,53.768195840198],[-131.69860839844,53.96901235074],[-131.66015625,54.175296724046]]]}",
+            "description": "\u003Ca href=\u0022\/placename\/x%CC%B1aaydag%CC%B1a-gwaayyaay-iinag%CC%B1waay\u0022\u003EX\u0331AAYDAG\u0331A GWAAY.YAAY IINAG\u0331WAAY\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nGraham Island",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/xaaydaga_gwaay_yaay_iinagwaay.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.39353179932,51.946592788943]}",
+            "description": "\u003Ca href=\u0022\/placename\/tl%E2%80%99esqox\u0022\u003ETl\u2019esqox\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nMuddy Creek",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/tlesqox.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Polygon\u0022,\u0022coordinates\u0022:[[[-131.80847167969,53.253712042468],[-131.60522460938,53.026348273933],[-131.99523925781,53.042864365226],[-131.89086914062,52.918839426767],[-131.81396484375,52.779508542576],[-131.65191650391,52.807742556974],[-131.81671142578,52.739617554271],[-131.69860839844,52.624727355737],[-131.6162109375,52.519563529257],[-131.47064208984,52.494487340047],[-131.43218994141,52.457683046545],[-131.41845703125,52.39068726148],[-131.36627197266,52.348763181988],[-131.28936767578,52.264795612972],[-131.16302490234,52.31519526438],[-130.98449707031,52.210972768075],[-131.03942871094,52.157084636204],[-131.15478515625,52.195823331178],[-131.1767578125,52.118312197618],[-131.25091552734,52.123371386254],[-131.58874511719,52.382305628708],[-131.90460205078,52.594706282078],[-132.09136962891,52.734628611563],[-132.34680175781,52.940362593356],[-132.11334228516,52.985030365232],[-132.52258300781,53.049469030575],[-132.55004882812,53.089075773131],[-132.36877441406,53.107216691893],[-132.30285644531,53.151711976333],[-132.18200683594,53.133589829245],[-132.11334228516,53.153359065124],[-131.99249267578,53.199451902832],[-131.80847167969,53.253712042468]]]}",
+            "description": "\u003Ca href=\u0022\/placename\/t%E2%80%99aaxwii-x%CC%B1aaydag%CC%B1a-gwaayyaay-iinag%CC%B1waay-0\u0022\u003ET\u2019AAXWII X\u0331AAYDAG\u0331A GWAAY.YAAY IINAG\u0331WAAY\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nMoresby Island",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/taaxwii_xaaydaga_gwaayyaay_0.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.56543731689,50.13323387917]}",
+            "description": "\u003Ca href=\u0022\/placename\/s%C3%ADsqe%CA%94\u0022\u003Es\u00edsqe\u0294\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSiska Creek",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/siska_mp.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-131.99214935303,53.265828963015]}",
+            "description": "\u003Ca href=\u0022\/placename\/sg%CC%B1iidagids\u0022\u003ESG\u0331IIDAGIDS\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSkidegate",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/sgiidagids.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.68928527832,55.352671434384]}",
+            "description": "\u003Ca href=\u0022\/placename\/kispiox\u0022\u003EKispiox\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/kispiox.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.56372070312,50.115404771833]}",
+            "description": "\u003Ca href=\u0022\/placename\/n%C6%9B%CC%93%C9%99q%CC%93%C6%9B%CC%93%C3%A1q%CC%93tn\u0022\u003En\u019b\u0313\u0259q\u0313\u019b\u0313\u00e1q\u0313tn\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nKanaka Bar area",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/kanaka_bar_area_maurice_michell_hoarce_michell.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-131.99785709381,53.248653753009]}",
+            "description": "\u003Ca href=\u0022\/placename\/hlg%CC%B1aagilda\u0022\u003EHLG\u0331AAGILDA\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSkidegate (original name)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/hlgaagilda.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.49299049377,50.72281851972]}",
+            "description": "\u003Ca href=\u0022\/placename\/gwasala-nakwaxdaxw\u0022\u003EGwa\u0026#039;sala-\u0026#039;Nakwaxda\u0026#039;xw\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/gwasala-nakwaxdaxw.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.67864227295,55.312637867482]}",
+            "description": "\u003Ca href=\u0022\/placename\/sik-edakh\u0022\u003ESik-edakh\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nGlen-Vowell",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/glen-vowell.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.14960575104,54.011526416769]}",
+            "description": "\u003Ca href=\u0022\/placename\/jagwaal\u0022\u003Ejagwaal\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n\u0026quot;...from her (Leona\u0026#039;s) parents\u0026#039; home down here to Auntie Bea\u0026#039;s house\u0026quot; (describing the location of an old village site at modern-day Masset)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/jagwaal.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.14821100235,54.010328543514]}",
+            "description": "\u003Ca href=\u0022\/placename\/%E1%B8%B5%E2%80%99yang\u0022\u003E\u1e35\u2019yang\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n\u0026quot;...from Auntie Bea\u0026#039;s house up this way\u0026quot; (describing the location of an old village site at modern-day Masset)",
+            "audioLink": null
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.15106487274,54.012156862526]}",
+            "description": "\u003Ca href=\u0022\/placename\/iijaaw\u0022\u003Eiijaaw\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n\u0026quot;...from the hill up to Leona\u0026#039;s mum\u0026#039;s house\u0026quot; (describing the location of an old village site at modern-day Masset)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/iijaaw.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.15260982513,54.01349337594]}",
+            "description": "\u003Ca href=\u0022\/placename\/aaw\u0022\u003Eaaw\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n\u0026quot;Way down the other end, as far as the hill...\u0026quot; (describing the location of an old village site at modern-day Masset)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/aaw.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.14904785156,54.020276150064]}",
+            "description": "\u003Ca href=\u0022\/placename\/4-villages-massett\u0022\u003E4 villages of Massett\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/4-villages-of-massett.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.32820129395,50.435641314823]}",
+            "description": "\u003Ca href=\u0022\/placename\/nk%CC%93%C9%99mc%C3%ADn\u0022\u003Enk\u0313\u0259mc\u00edn\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nSpences Bridge area",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/2006_done_to_fv_area_of_spences_bridge_elizabeth_lytton_lorraine_spence.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.34677815437,48.493032675965]}",
+            "description": "\u003Ca href=\u0022\/placename\/pkols\u0022\u003EPKOLS\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nMount Douglas",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/pkols.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.58123016357,50.231943953544]}",
+            "description": "\u003Ca href=\u0022\/placename\/%C6%9B%CC%93q%CC%93%C9%99mc%C3%ADn\u0022\u003E\u019b\u0313q\u0313\u0259mc\u00edn\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nLytton area",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/lytton_area_maurice_michell_hoarce_michell.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.44836425781,49.914093157463]}",
+            "description": "\u003Ca href=\u0022\/placename\/nkats%C3%A1m\u0022\u003ENkats\u00e1m\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nBoothroyd area",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/boothroyd_area_elizabeth_lytton_lorraine_spence.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.81115722656,50.111772102423]}",
+            "description": "\u003Ca href=\u0022\/placename\/scw%E2%80%99%CC%81exmx\u0022\u003EScw\u2019\u0301exmx\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\n\u0026quot;People of the creek\u0026quot; (Nicola Valley people)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/scwexmx.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.00445556641,50.862744320042]}",
+            "description": "\u003Ca href=\u0022\/placename\/t%CC%95%C5%82at%CC%95%C5%82asik%CC%95%CC%B1wala\u0022\u003ET\u0315\u0142at\u0315\u0142asik\u0315\u0331wala\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nNahwitti",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/tlatlasikwala.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.69683837891,50.501199132933]}",
+            "description": "\u003Ca href=\u0022\/placename\/g%CC%B1ut%CC%95sala\u0022\u003EG\u0331ut\u0315sala\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nQuatsino Sound",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/gutsala.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.07279014587,55.200720454849]}",
+            "description": "\u003Ca href=\u0022\/placename\/gitlaxt%E2%80%99aamiks\u0022\u003EGitlaxt\u2019aamiks\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nGitlakdamiks literally, \u0026quot;people on the ponds\u0026quot;",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/gitlaxtaamiks.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.1820526123,55.204345094934]}",
+            "description": "\u003Ca href=\u0022\/placename\/lisims\u0022\u003ELisims\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nNass (River)",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/lisims.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.07304763794,55.199838735748]}",
+            "description": "\u003Ca href=\u0022\/placename\/new-aiyansh\u0022\u003ENew Aiyansh\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nNew Aiyansh",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/new-aiyansh.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-131.8333,52.75]}",
+            "description": "\u003Ca href=\u0022\/placename\/t%E2%80%99aaxwii-x%CC%B1aaydag%CC%B1a-gwaayyaay-iinag%CC%B1waay\u0022\u003ET\u2019AAXWII X\u0331AAYDAG\u0331A GWAAY.YAAY IINAG\u0331WAAY\u003C\/a\u003E\u003Cbr \/\u003E\u003Cbr \/\u003E\n\u003Cb\u003ETranslation\u003C\/b\u003E\u003Cbr \/\u003E\nMoresby Island",
+            "audioLink": "\u003Cul class=\u0022graphic\u0022\u003E\n\u003Cli\u003E\n\u003Ca href=\u0022https:\/\/maps.fpcc.ca\/sites\/default\/files\/audio_files\/place_names\/taaxwii_xaaydaga_gwaayyaay.mp3\u0022\u003EPronunciation\u003C\/a\u003E\n\u003C\/li\u003E\n\u003C\/ul\u003E"
+        }]
