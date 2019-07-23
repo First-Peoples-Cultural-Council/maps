@@ -32,7 +32,7 @@ export default {
         layout: {},
         paint: {
           'line-color': ['get', 'color'],
-          'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
+          // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
           'line-width': [
             'interpolate',
             ['cubic-bezier', 1, 1, 1, 1],
@@ -57,7 +57,6 @@ export default {
         layout: {},
         paint: {
           'line-color': 'black',
-          'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 3],
           'line-width': [
             'interpolate',
             ['cubic-bezier', 1, 1, 1, 1],
@@ -65,10 +64,10 @@ export default {
             0,
             2,
             12,
-            12
+            20
           ],
-          'line-opacity': 0.7,
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -6]
+          'line-opacity': 0.45,
+          'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
         }
       },
       'fn-nations'
@@ -121,7 +120,10 @@ export default {
         layout: {
           'text-field': '{point_count_abbreviated}',
           'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 12
+          'text-size': 12,
+          'text-halo-color': 'hsl(0, 0%, 100%)',
+          'text-halo-width': 1,
+          'text-halo-blur': 1
         }
       },
       'fn-nations'
@@ -136,7 +138,8 @@ export default {
         layout: {
           'icon-image': 'artist_icon',
           'text-field': '{title}',
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         }
