@@ -5,10 +5,12 @@
       :map-options="MAP_OPTIONS"
       :geolocate-control="GEOLOCATE_CONTROL"
       :nav-control="{ show: false }"
-      @map-sourcedata="mapSourceData"
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
+      @map-zoomend="mapZoomEnd"
+      @map-moveend="mapMoveEnd"
+      @map-sourcedata="mapSourceData"
     ></Mapbox>
     <Zoom class="zoom-control"></Zoom>
     <ShareEmbed class="share-embed-control"></ShareEmbed>
@@ -43,28 +45,25 @@
           <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
-              :name="language.properties.name"
-              :color="language.properties.color"
+              :name="language.name"
+              :color="language.color"
               @click.native.prevent="
-                handleCardClick($event, language.properties.name, 'languages')
+                handleCardClick($event, language.name, 'languages')
               "
             ></LanguageCard>
           </div>
         </section>
         <section class="community-section pl-3 pr-3">
-          <div
-            v-for="community in communities"
-            :key="community.properties.title"
-          >
+          <div v-for="community in communities" :key="community.name">
             <CommunityCard
               class="mt-3 hover-left-move"
-              :name="community.properties.title"
+              :name="community.name"
               @click.native.prevent="
                 handleCardClick(
                   $event,
-                  community.properties.title,
+                  community.name,
                   'content',
-                  community.geometry
+                  community.name
                 )
               "
             ></CommunityCard>
@@ -78,7 +77,6 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { uniqBy } from 'lodash'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -90,7 +88,7 @@ import Zoom from '@/components/Zoom.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { zoomToCommunity } from '@/mixins/map.js'
+import { zoomToCommunity, inBounds } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 
@@ -144,6 +142,9 @@ export default {
     },
     isDetailMode() {
       return this.$store.state.sidebar.isDetailMode
+    },
+    languageSet() {
+      return this.$store.state.languages.languageSet
     }
   },
   async fetch({ $axios, store }) {
@@ -156,6 +157,13 @@ export default {
       $axios.$get(getApiUrl('placename-geo/')),
       $axios.$get(getApiUrl('arts'))
     ])
+
+    if (process.server) {
+      store.commit('languages/set', results[0])
+      store.commit('communities/set', results[1])
+      store.commit('places/set', results[2].features)
+      store.commit('arts/set', results[3].features)
+    }
 
     store.commit('languages/setStore', results[0])
     store.commit('communities/setStore', results[1])
@@ -277,6 +285,16 @@ export default {
       })
       layers.layers(map)
 
+      this.zoomToHash(map)
+
+      // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
+      map.on('idle', e => {
+        this.updateHash(map)
+        // this.updateData(map)
+      })
+      this.$eventHub.$emit('map-loaded', map)
+    },
+    zoomToHash(map) {
       const hash = this.$route.hash
       if (hash) {
         try {
@@ -288,58 +306,43 @@ export default {
           map.setZoom(zoom)
         } catch (e) {}
       }
-      // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
-      map.on('idle', e => {
-        const renderedFeatures = e.target.queryRenderedFeatures()
-        const communities = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-nations copy'
-        )
-        this.$store.commit('communities/set', communities)
-        const places = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-places'
-        )
-        this.$store.commit('places/set', places)
-        const arts = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-arts'
-        )
-
-        const clusters = renderedFeatures.filter(
-          feature => feature.layer.id === 'fn-arts-clusters'
-        )
-        const clusterSource = this.map.getSource('arts1')
-        clusters.map(cluster => {
-          clusterSource.getClusterLeaves(
-            cluster.properties.cluster_id,
-            Infinity,
-            0,
-            (err, features) => {
-              if (err) return
-              arts.push(...features)
-            }
-          )
-        })
-        this.$store.commit('arts/set', arts)
-
-        const center = map.getCenter()
-        const zoom = map.getZoom()
-        this.$router.push({
-          hash: `${center.lat}/${center.lng}/${zoom}`
-        })
-
-        this.updateMarkers(map)
+    },
+    updateHash(map) {
+      const center = map.getCenter()
+      const zoom = map.getZoom()
+      this.$router.push({
+        hash: `${center.lat}/${center.lng}/${zoom}`
       })
-      this.$eventHub.$emit('map-loaded', map)
+    },
+    updateData(map) {
+      const bounds = map.getBounds()
+      this.$store.commit('languages/set', this.filterLanguages(bounds))
+    },
+    mapZoomEnd(map, e) {
+      this.updateMarkers(map)
+      this.updateData(map)
+    },
+    mapMoveEnd(map, e) {
+      console.log('Move End')
+      this.updateMarkers(map)
+      this.updateData(map)
     },
     mapSourceData(map, source) {
-      if (source.isSourceLoaded) {
-        const languages = uniqBy(
-          map.querySourceFeatures('langs1'),
-          lang => lang.properties.name
-        )
-        if (languages.length > 0) {
-          this.$store.commit('languages/set', languages)
-        }
+      if (source.isSourceLoaded && source.sourceId === 'arts1') {
+        this.updateMarkers(map)
       }
+    },
+    filterLanguages(bounds) {
+      return this.languageSet.filter(lang => {
+        const sw = lang.bbox.coordinates[0][0]
+        const nw = lang.bbox.coordinates[0][1]
+        const ne = lang.bbox.coordinates[0][2]
+        const se = lang.bbox.coordinates[0][3]
+        return (
+          inBounds(bounds, sw) || inBounds(bounds, ne) || inBounds(bounds, nw),
+          inBounds(bounds, se)
+        )
+      })
     }
   }
 }

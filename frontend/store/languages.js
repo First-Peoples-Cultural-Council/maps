@@ -1,6 +1,7 @@
 export const state = () => ({
   languages: [],
-  languageSet: []
+  languageSet: [],
+  languageGeo: []
 })
 
 export const mutations = {
@@ -10,5 +11,9 @@ export const mutations = {
 
   setStore(state, languageSet) {
     state.languageSet = languageSet
+  },
+
+  setGeo(sate, languageGeo) {
+    state.languageGeo = languageGeo
   }
 }

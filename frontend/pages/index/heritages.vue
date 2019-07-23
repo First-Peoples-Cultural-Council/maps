@@ -36,9 +36,6 @@ export default {
     places() {
       return this.$store.state.places.places
     }
-  },
-  mounted() {
-    console.log('places', this.places)
   }
 }
 </script>

@@ -121,9 +121,6 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(this.$route)
-  },
 
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
