@@ -147,5 +147,11 @@ export default {
       },
       'fn-nations'
     )
+
+    map.on('click', 'fn-arts', function(e) {
+      window.open(
+        'http://fp-artsmap.ca/node/' + e.features[0].properties.node_id
+      )
+    })
   }
 }

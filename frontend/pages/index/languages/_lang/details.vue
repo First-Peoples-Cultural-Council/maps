@@ -5,6 +5,7 @@
     <LanguageDetailCard
       :color="languageColor"
       :name="this.$route.params.lang"
+      :detail="true"
     ></LanguageDetailCard>
     <section class="pl-3 pr-3">
       <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -100,7 +101,9 @@ export default {
     })
   },
   async asyncData({ $axios, store }) {
-    const api = process.server ? 'http://nginx/api/language/' : '/api/language/'
+    const api = process.server
+      ? 'https://nginx/api/language/'
+      : '/api/language/'
     const languages = await $axios.$get(api)
 
     return {

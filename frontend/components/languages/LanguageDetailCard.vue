@@ -70,6 +70,10 @@ export default {
     color: {
       type: String,
       default: 'RGB(0, 0, 0)'
+    },
+    detail: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -82,9 +86,15 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.push({
-        path: '/languages'
-      })
+      if (!this.detail) {
+        this.$router.push({
+          path: '/languages'
+        })
+      } else {
+        this.$router.push({
+          path: `/languages/${this.$route.params.lang}`
+        })
+      }
     },
     handleMouseOver() {
       this.hover = true

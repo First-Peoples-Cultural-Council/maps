@@ -175,6 +175,7 @@ export default {
       const newMarkers = {}
       const mapboxgl = require('mapbox-gl')
       const features = map.querySourceFeatures('arts1')
+      console.log('features', features)
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
       for (let i = 0; i < features.length; i++) {
@@ -183,6 +184,7 @@ export default {
 
         if (!props.cluster) continue
         const id = props.cluster_id
+        console.log('CLuster Id', id)
 
         let marker = markers[id]
         if (!marker) {
@@ -201,7 +203,24 @@ export default {
       }
       markersOnScreen = newMarkers
       console.log('markers', markers)
-      console.log('Markers on screen', markersOnScreen)
+      console.log('markers on screen', markersOnScreen)
+      // const clusterSource = this.map.getSource('arts1')
+      /*
+      try {
+        for (const marker in markersOnScreen) {
+          console.log('Cluster Number', marker)
+          clusterSource.getClusterLeaves(
+            marker,
+            Infinity,
+            0,
+            (err, features) => {
+              if (err) return
+              console.log('features', features)
+            }
+          )
+        }
+      } catch (e) {}
+      */
     },
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
@@ -321,21 +340,6 @@ export default {
           this.$store.commit('languages/set', languages)
         }
       }
-    },
-    inBounds(bounds, lnglat) {
-      let lng
-
-      const multLng =
-        (lnglat[0] - bounds._ne.lng) * (lnglat[0] - bounds._sw.lng)
-      if (bounds._ne.lng > bounds._sw.lng) {
-        lng = multLng < 0
-      } else {
-        lng = multLng > 0
-      }
-
-      const lat =
-        (lnglat[1] - bounds._ne.lat) * (lnglat[1] - bounds._sw.lat) < 0
-      return lng && lat
     }
   }
 }
