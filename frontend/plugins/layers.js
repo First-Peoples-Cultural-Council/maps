@@ -18,7 +18,7 @@ export default {
             22,
             ['get', 'color']
           ],
-          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 0.08]
+          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
         }
       },
       'fn-nations'
@@ -136,7 +136,8 @@ export default {
         source: 'arts1',
         filter: ['!', ['has', 'point_count']],
         layout: {
-          'icon-image': 'artist_icon',
+          'icon-image': '{type}',
+          'icon-size': 0.15,
           'text-field': '{title}',
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           'text-size': 12,

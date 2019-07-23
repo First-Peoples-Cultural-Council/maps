@@ -118,8 +118,9 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        // style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7',
-        style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj',
+        // style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7', clark old
+        // style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj', eliana old
+        style: 'mapbox://styles/countable-web/cjyfh91j70bj51cqk7zmlvdja/draft', // eliana new
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
