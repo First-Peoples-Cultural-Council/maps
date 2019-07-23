@@ -17,7 +17,7 @@ module.exports = {
         body: true
       }
     ],
-    title: "%s | First Peoples' Cultural Council",
+    title: "First Peoples' Language Map",
     meta: [
       {
         charset: 'utf-8'
