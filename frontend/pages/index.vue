@@ -328,7 +328,10 @@ export default {
       this.updateData(map)
     },
     mapSourceData(map, source) {
-      if (source.isSourceLoaded && source.sourceId === 'arts1') {
+      console.log(source)
+      console.log('map loaded?', map.loaded())
+      if (source.sourceId === 'arts1') {
+        console.log('Arts source')
         this.updateMarkers(map)
       }
     },
