@@ -272,12 +272,11 @@ export default {
         clusterRadius: 50
       })
       layers.layers(map)
-
       this.zoomToHash(map)
-
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
         this.updateHash(map)
+
         // this.updateData(map)
       })
       this.$eventHub.$emit('map-loaded', map)
@@ -290,16 +289,23 @@ export default {
           const lat = split[0].substr(1)
           const lng = split[1]
           const zoom = split[2]
-          map.setCenter([lat, lng])
-          map.setZoom(zoom)
+
+          map.flyTo({
+            center: [lng, lat],
+            zoom: zoom,
+            speed: 1,
+            curve: 1
+          })
         } catch (e) {}
       }
     },
     updateHash(map) {
       const center = map.getCenter()
       const zoom = map.getZoom()
-      this.$router.push({
-        hash: `${center.lat}/${center.lng}/${zoom}`
+      this.$store.commit('mapinstance/setView', {
+        lat: center.lat,
+        lng: center.lng,
+        zoom
       })
     },
     updateData(map) {

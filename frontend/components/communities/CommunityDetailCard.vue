@@ -82,9 +82,7 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.push({
-        path: '/first-nations'
-      })
+      this.$router.go(-1)
     },
     handleMouseOver() {
       this.hover = true

@@ -93,9 +93,7 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.push({
-        path: '/art'
-      })
+      this.$router.go(-1)
     }
   }
 }

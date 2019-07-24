@@ -8,7 +8,7 @@ export const zoomToLanguage = ({ map, lang }) => {
 export const zoomToPoint = ({ map, geom }) => {
   map.flyTo({
     center: geom.coordinates,
-    zoom: 12
+    zoom: 10
   })
 }
 
