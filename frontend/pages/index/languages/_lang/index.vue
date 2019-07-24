@@ -32,13 +32,13 @@
       <CommunityCard
         v-for="(community, index) in communities"
         :key="index"
-        :name="community.properties.title"
+        :name="community.name"
         class="mb-2"
       ></CommunityCard>
       <PlacesCard
         v-for="place in places"
-        :key="place.properties.title"
-        :name="place.properties.title"
+        :key="place.properties.name"
+        :name="place.properties.name"
         class="mb-2"
       ></PlacesCard>
       <ArtsCard
@@ -72,20 +72,6 @@ export default {
     PlacesCard,
     ArtsCard
   },
-  async asyncdata({ $axios, store }) {
-    /*
-    const languages = store.state.languages.languageSet
-    const languageName = this.$route.params.lang
-    const language = languages.find(
-      lang => lang.properties.title === languageName
-    )
-    const languageId = language.id
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
-    const url = getApiUrl(`community?lang=${languageId}`)
-    */
-  },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
@@ -101,11 +87,6 @@ export default {
       languages() {
         return this.$store.state.languages.languageSet
       },
-      language() {
-        return this.languages.find(
-          lang => lang.name === this.$route.params.lang
-        )
-      },
       otherNames() {
         return this.language.other_names.split(',')
       },
@@ -119,6 +100,21 @@ export default {
       if (oldlang && newlang && oldlang.name !== newlang.name) {
         zoomToLanguage({ map: this.mapinstance, lang: newlang })
       }
+    }
+  },
+  async asyncData({ $axios, store, params }) {
+    const languageName = params.lang
+
+    function getApiUrl(path) {
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+    }
+
+    const languages = await $axios.$get(getApiUrl(`language/`))
+    let language = languages.find(lang => lang.name === languageName)
+    const languageId = language.id
+    language = await $axios.$get(getApiUrl(`language/${languageId}`))
+    return {
+      language: language
     }
   },
 

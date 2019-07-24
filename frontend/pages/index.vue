@@ -138,13 +138,22 @@ export default {
       return this.$store.state.communities.communities
     },
     languages() {
-      return this.$store.state.languages.languages
+      return this.$store.state.languages.languages || []
     },
     isDetailMode() {
       return this.$store.state.sidebar.isDetailMode
     },
     languageSet() {
       return this.$store.state.languages.languageSet
+    },
+    communitySet() {
+      return this.$store.state.communities.communitySet
+    },
+    artsSet() {
+      return this.$store.state.arts.artsSet
+    },
+    placesSet() {
+      return this.$store.state.places.placesSet
     }
   },
   async fetch({ $axios, store }) {
@@ -183,7 +192,6 @@ export default {
       const newMarkers = {}
       const mapboxgl = require('mapbox-gl')
       const features = map.querySourceFeatures('arts1')
-      console.log('features', features)
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
       for (let i = 0; i < features.length; i++) {
@@ -192,7 +200,6 @@ export default {
 
         if (!props.cluster) continue
         const id = props.cluster_id
-        console.log('CLuster Id', id)
 
         let marker = markers[id]
         if (!marker) {
@@ -210,25 +217,6 @@ export default {
         if (!newMarkers[id]) markersOnScreen[id].remove()
       }
       markersOnScreen = newMarkers
-      console.log('markers', markers)
-      console.log('markers on screen', markersOnScreen)
-      // const clusterSource = this.map.getSource('arts1')
-      /*
-      try {
-        for (const marker in markersOnScreen) {
-          console.log('Cluster Number', marker)
-          clusterSource.getClusterLeaves(
-            marker,
-            Infinity,
-            0,
-            (err, features) => {
-              if (err) return
-              console.log('features', features)
-            }
-          )
-        }
-      } catch (e) {}
-      */
     },
     handleCardClick(e, data, type, geom) {
       if (type === 'languages') {
@@ -317,21 +305,20 @@ export default {
     updateData(map) {
       const bounds = map.getBounds()
       this.$store.commit('languages/set', this.filterLanguages(bounds))
+      this.$store.commit('communities/set', this.filterCommunities(bounds))
+      this.$store.commit('arts/set', this.filterArts(bounds))
+      this.$store.commit('places/set', this.filterPlaces(bounds))
     },
     mapZoomEnd(map, e) {
       this.updateMarkers(map)
       this.updateData(map)
     },
     mapMoveEnd(map, e) {
-      console.log('Move End')
       this.updateMarkers(map)
       this.updateData(map)
     },
     mapSourceData(map, source) {
-      console.log(source)
-      console.log('map loaded?', map.loaded())
       if (source.sourceId === 'arts1') {
-        console.log('Arts source')
         this.updateMarkers(map)
       }
     },
@@ -345,6 +332,28 @@ export default {
           inBounds(bounds, sw) || inBounds(bounds, ne) || inBounds(bounds, nw),
           inBounds(bounds, se)
         )
+      })
+    },
+    filterCommunities(bounds) {
+      return this.communitySet.filter(comm => {
+        if (comm.point !== null) {
+          const point = comm.point.coordinates
+          return inBounds(bounds, point)
+        }
+      })
+    },
+    filterArts(bounds) {
+      return this.artsSet.filter(art => {
+        const point = art.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterPlaces(bounds) {
+      return this.placesSet.filter(place => {
+        if (place.geometry !== null) {
+          const point = place.geometry.coordinates
+          return inBounds(bounds, point)
+        }
       })
     }
   }

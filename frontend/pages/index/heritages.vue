@@ -5,7 +5,7 @@
         <PlacesCard
           v-for="(place, index) in places"
           :key="index"
-          :name="place.properties.title"
+          :name="place.properties.name"
           class="mt-2"
         ></PlacesCard>
       </section>
