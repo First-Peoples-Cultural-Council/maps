@@ -21,7 +21,7 @@ export default {
           'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
 
     map.addLayer(
@@ -46,7 +46,7 @@ export default {
           'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
 
     map.addLayer(
@@ -70,7 +70,7 @@ export default {
           'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
     map.addLayer(
       {
@@ -94,7 +94,7 @@ export default {
           'line-opacity': 0.75
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
     map.addLayer(
       {
@@ -107,7 +107,7 @@ export default {
           'fill-opacity': 0.001
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
     map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 
@@ -126,7 +126,7 @@ export default {
           'text-halo-blur': 1
         }
       },
-      'fn-nations'
+      'fn-nations copy'
     )
 
     map.addLayer(
@@ -137,6 +137,7 @@ export default {
         filter: ['!', ['has', 'point_count']],
         layout: {
           'icon-image': '{type}',
+          'icon-allow-overlap': true,
           'icon-size': 0.15,
           'text-field': '{title}',
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
@@ -145,7 +146,33 @@ export default {
           'text-anchor': 'top'
         }
       },
-      'fn-nations'
+      'fn-nations copy'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places',
+        source: 'places1',
+        layout: {
+          'text-optional': true,
+          'icon-optional': true,
+          'icon-ignore-placemnt': true,
+          'icon-allow-overlap': true,
+          'text-size': 13,
+          'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
+          'text-field': ['get', 'name'],
+          'text-offset': [0, 1.3],
+          'icon-image': 'point_of_interest_icon',
+          'icon-size': 0.15
+        },
+        paint: {
+          'text-halo-color': 'hsl(0, 0%, 100%)',
+          'text-halo-width': 1,
+          'text-halo-blur': 1,
+          'text-color': 'hsl(0, 0%, 24%)'
+        }
+      },
+      'fn-nations copy'
     )
 
     map.on('click', 'fn-arts', function(e) {
@@ -161,7 +188,7 @@ export default {
       }
     })
 
-    map.on('click', 'fn-nations copy', function(e) {
+    map.on('click', 'fn-nations copy copy', function(e) {
       if (
         e.features[0] &&
         e.features[0].properties &&
