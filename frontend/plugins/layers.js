@@ -1,5 +1,5 @@
 export default {
-  layers: map => {
+  layers: (map, self) => {
     map.addLayer(
       {
         id: 'fn-lang-areas-fill',
@@ -149,9 +149,28 @@ export default {
     )
 
     map.on('click', 'fn-arts', function(e) {
-      window.open(
-        'http://fp-artsmap.ca/node/' + e.features[0].properties.node_id
-      )
+      console.log('Fn-arts', e)
+      if (
+        e.features[0] &&
+        e.features[0].properties &&
+        e.features[0].properties.title
+      ) {
+        self.$router.push({
+          path: `/art/${e.features[0].properties.title}`
+        })
+      }
+    })
+
+    map.on('click', 'fn-nations copy', function(e) {
+      if (
+        e.features[0] &&
+        e.features[0].properties &&
+        e.features[0].properties.title
+      ) {
+        self.$router.push({
+          path: `/content/${e.features[0].properties.title}`
+        })
+      }
     })
   }
 }
