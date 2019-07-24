@@ -1,5 +1,5 @@
 <template>
-  <SideBar active="Language">
+  <SideBar v-if="this.$route.name < 'index-place-names-placename'">
     <section class="ml-2 mr-2">
       <div v-if="places.length > 0">
         <PlacesCard
@@ -7,6 +7,9 @@
           :key="index"
           :name="place.properties.name"
           class="mt-2"
+          @click.native="
+            $router.push({ path: `/place-names/${place.properties.name}` })
+          "
         ></PlacesCard>
       </div>
       <div v-else>
@@ -14,20 +17,29 @@
       </div>
     </section>
   </SideBar>
+  <DetailSideBar v-else>
+    <nuxt-child />
+  </DetailSideBar>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
+import DetailSideBar from '@/components/DetailSideBar.vue'
+
 export default {
   components: {
     SideBar,
-    PlacesCard
+    PlacesCard,
+    DetailSideBar
   },
   computed: {
     places() {
       return this.$store.state.places.placesSet
     }
+  },
+  mounted() {
+    console.log('placename router', this.$route)
   },
   head() {
     return {

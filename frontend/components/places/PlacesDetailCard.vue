@@ -6,21 +6,7 @@
           class="arts-detail-icon-container"
           :style="'background-color:' + color"
         >
-          <img
-            v-if="arttype.toLowerCase() === 'art'"
-            src="@/assets/images/public_art_icon.svg"
-            alt="Arts"
-          />
-          <img
-            v-else-if="arttype.toLowerCase() === 'event'"
-            src="@/assets/images/event_icon.svg"
-            alt="Event"
-          />
-          <img
-            v-else-if="arttype.toLowerCase() === 'org'"
-            src="@/assets/images/organization_icon.svg"
-            alt="Organization"
-          />
+          <img src="@/assets/images/poi_icon.svg" alt="Places" />
         </div>
       </template>
       <template v-slot:body>
@@ -29,7 +15,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ arttype }}
+              {{ type }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
@@ -78,9 +64,9 @@ export default {
       type: String,
       default: 'RGB(255, 255, 255)'
     },
-    arttype: {
+    type: {
       type: String,
-      default: 'Public Art'
+      default: 'Point Of Interest'
     }
   },
   data() {
@@ -94,7 +80,7 @@ export default {
     },
     handleReturn() {
       this.$router.push({
-        path: '/art'
+        path: '/place-names'
       })
     }
   }

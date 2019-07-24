@@ -34,18 +34,33 @@
         :key="community.id"
         :name="community.name"
         class="mb-2"
+        @click.native="
+          $router.push({
+            path: `/content/${encodeURIComponent(community.name)}`
+          })
+        "
       ></CommunityCard>
       <PlacesCard
         v-for="place in places"
         :key="place.id"
         :name="place.properties.name"
         class="mb-2"
+        @click.native="
+          $router.push({
+            path: `/place-names/${encodeURIComponent(place.properties.name)}`
+          })
+        "
       ></PlacesCard>
       <ArtsCard
         v-for="art in arts"
         :key="art.id"
         :arttype="art.properties.type"
         :name="art.properties.title"
+        @click.native="
+          $router.push({
+            path: `/art/${encodeURIComponent(art.properties.title)}`
+          })
+        "
       >
       </ArtsCard>
     </section>

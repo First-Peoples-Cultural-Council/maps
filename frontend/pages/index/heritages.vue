@@ -7,6 +7,11 @@
           :key="index"
           :name="place.properties.name"
           class="mt-2"
+          @click.native="
+            $router.push({
+              path: `/place-names/${encodeURIComponent(place.properties.name)}`
+            })
+          "
         ></PlacesCard>
       </section>
     </SideBar>

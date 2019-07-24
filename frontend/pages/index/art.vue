@@ -8,7 +8,11 @@
           :arttype="art.properties.type"
           :name="art.properties.title"
           class="mb-2"
-          @click.native="$router.push({ path: `/art/${art.properties.title}` })"
+          @click.native="
+            $router.push({
+              path: `/art/${encodeURIComponent(art.properties.title)}`
+            })
+          "
         ></ArtsCard>
       </section>
     </SideBar>
