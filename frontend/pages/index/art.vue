@@ -1,13 +1,13 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
-      <section class="ml-2 mr-2 mt-2 pt-2">
+      <section class="pl-3 pr-3 pt-2">
         <ArtsCard
           v-for="(art, index) in arts"
           :key="index"
           :arttype="art.properties.type"
           :name="art.properties.title"
-          class="mb-2"
+          class="mt-3"
           @click.native="
             $router.push({
               path: `/art/${encodeURIComponent(art.properties.title)}`
