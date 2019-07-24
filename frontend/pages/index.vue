@@ -119,7 +119,7 @@ export default {
       MAP_OPTIONS: {
         // style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7', clark old
         // style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj', eliana old
-        style: 'mapbox://styles/countable-web/cjyfh91j70bj51cqk7zmlvdja/draft', // eliana new
+        style: 'mapbox://styles/countable-web/cjyfh91j70bj51cqk7zmlvdja', // eliana new
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
