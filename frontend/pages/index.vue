@@ -39,9 +39,9 @@
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
         <section class="language-section pl-3 pr-3">
-          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"
-            ><!--TODO: Aaron please remove this, why is it hardcoded? --></LangFamilyTitle
-          >
+          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)">
+            <!--TODO: Aaron please remove this, why is it hardcoded? -->
+          </LangFamilyTitle>
           <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -118,7 +118,7 @@ export default {
       MAP_OPTIONS: {
         // style: 'mapbox://styles/countable-web/cjydv03i63gcn1clj8bbhqiq7', clark old
         // style: 'mapbox://styles/countable-web/cjwcq8ybe06so1cpin5lz5sfj', eliana old
-        style: 'mapbox://styles/countable-web/cjyfh91j70bj51cqk7zmlvdja/draft', // eliana new
+        style: 'mapbox://styles/countable-web/cjyhwcz1q01zs1co2lliaq01p', // eliana new
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -290,6 +290,10 @@ export default {
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50
+      })
+      map.addSource('places1', {
+        type: 'geojson',
+        data: '/api/placename-geo/'
       })
       layers.layers(map, this)
       this.zoomToHash(map)
