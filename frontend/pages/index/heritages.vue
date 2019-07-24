@@ -1,7 +1,13 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritages">
-      <section class="pl-3 pr-3 pt-2">
+      <section class="pl-3 pr-3 pt-3">
+        <Badge
+          content="Points Of Interest"
+          :number="places.length"
+          class="cursor-pointer mb-1"
+          bgcolor="#c46156"
+        ></Badge>
         <PlacesCard
           v-for="(place, index) in places"
           :key="index"
@@ -30,12 +36,14 @@
 import SideBar from '@/components/SideBar.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
+import Badge from '@/components/Badge.vue'
 
 export default {
   components: {
     SideBar,
     DetailSideBar,
-    PlacesCard
+    PlacesCard,
+    Badge
   },
   computed: {
     places() {

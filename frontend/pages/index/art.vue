@@ -1,7 +1,25 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
-      <section class="pl-3 pr-3 pt-2">
+      <section class="pl-3 pr-3 pt-3">
+        <Badge
+          content="Public Arts"
+          :number="publicArts.length"
+          class="cursor-pointer mb-2"
+          bgcolor="#848159"
+        ></Badge>
+        <Badge
+          content="Organization"
+          :number="orgs.length"
+          class="cursor-pointer mb-2"
+          bgcolor="#a48116"
+        ></Badge>
+        <Badge
+          content="Events"
+          :number="events.length"
+          class="cursor-pointer mb-1"
+          bgcolor="#db531f"
+        ></Badge>
         <ArtsCard
           v-for="(art, index) in arts"
           :key="index"
@@ -31,16 +49,27 @@
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import Badge from '@/components/Badge.vue'
 
 export default {
   components: {
     SideBar,
     ArtsCard,
-    DetailSideBar
+    DetailSideBar,
+    Badge
   },
   computed: {
     arts() {
       return this.$store.state.arts.arts
+    },
+    publicArts() {
+      return this.arts.filter(art => art.properties.type === 'art')
+    },
+    orgs() {
+      return this.arts.filter(art => art.properties.type === 'org')
+    },
+    events() {
+      return this.arts.filter(art => art.properties.type === 'event')
     }
   }
 }

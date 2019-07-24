@@ -33,6 +33,7 @@
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
+            bgcolor="#6c4264"
             @click.native.prevent="goToCommunity"
           ></Badge>
         </section>
