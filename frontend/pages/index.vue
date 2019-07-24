@@ -33,6 +33,7 @@
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
+            bgcolor="#6c4264"
             @click.native.prevent="goToCommunity"
           ></Badge>
         </section>
@@ -126,7 +127,7 @@ export default {
       },
       GEOLOCATE_CONTROL: {
         show: true,
-        position: 'bottom-right'
+        position: 'bottom-left'
       },
       map: {},
       accordionContent:
@@ -405,17 +406,17 @@ export default {
 .share-embed-control,
 .zoom-control {
   position: absolute;
-  right: 50px;
+  right: 10px;
   bottom: 30px;
 }
 
 .zoom-control {
-  right: 267px;
+  right: 230px;
 }
 
 .reset-map-control {
   position: absolute;
-  right: 170px;
+  right: 135px;
   bottom: 30px;
 }
 .sidebar-divider {

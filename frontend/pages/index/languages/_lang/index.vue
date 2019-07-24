@@ -35,7 +35,7 @@
         v-for="community in communities"
         :key="community.id"
         :name="community.name"
-        class="mt-3"
+        class="mt-3 hover-left-move"
         @click.native="
           $router.push({
             path: `/content/${encodeURIComponent(community.name)}`
@@ -46,7 +46,7 @@
         v-for="place in places"
         :key="place.id"
         :name="place.properties.name"
-        class="mt-3"
+        class="mt-3 hover-left-move"
         @click.native="
           $router.push({
             path: `/place-names/${encodeURIComponent(place.properties.name)}`
@@ -56,7 +56,7 @@
       <ArtsCard
         v-for="art in arts"
         :key="art.id"
-        class="mt-3"
+        class="mt-3 hover-left-move"
         :arttype="art.properties.type"
         :name="art.properties.title"
         @click.native="

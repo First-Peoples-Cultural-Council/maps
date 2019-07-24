@@ -38,7 +38,7 @@
           <img
             v-if="!hover"
             class="ml-1"
-            src="@/assets/images/return_icon.svg"
+            src="@/assets/images/return_icon_hover.svg"
             alt="Go"
           />
           <img
@@ -110,7 +110,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: var(--color-beige);
+  background-color: #c46156;
   display: flex;
   align-items: center;
   height: 35px;
@@ -122,6 +122,7 @@ export default {
 .fpcc-card-more {
   padding: 0.3em;
   font-size: 0.7em;
+  color: white;
 }
 
 .fpcc-card-more:hover {

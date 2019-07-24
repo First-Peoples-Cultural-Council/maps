@@ -32,7 +32,7 @@
       </template>
       <template v-slot:footer>
         <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
+          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
           <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
         </div>
       </template>
@@ -93,7 +93,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: var(--color-beige);
+  background-color: #c46156;
   display: flex;
   align-items: center;
   height: 35px;
