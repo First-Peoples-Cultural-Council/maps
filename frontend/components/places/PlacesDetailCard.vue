@@ -79,9 +79,7 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.push({
-        path: '/place-names'
-      })
+      this.$router.go(-1)
     }
   }
 }

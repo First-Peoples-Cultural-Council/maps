@@ -1,12 +1,12 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritages">
-      <section class="ml-2 mr-2 mt-2 pt-2">
+      <section class="pl-3 pr-3 pt-2">
         <PlacesCard
           v-for="(place, index) in places"
           :key="index"
           :name="place.properties.name"
-          class="mt-2"
+          class="mt-3 hover-left-move"
           @click.native="
             $router.push({
               path: `/place-names/${encodeURIComponent(place.properties.name)}`

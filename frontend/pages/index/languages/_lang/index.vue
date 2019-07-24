@@ -22,18 +22,20 @@
         :learners="language.learners.toString() || 'NA'"
         class="mt-4"
       ></LanguageSummary>
+    </section>
+    <section>
       <LanguageSeeAll
         content="See all details"
         class="mt-3"
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
     </section>
-    <section class="pl-2 pr-2 pt-2">
+    <section class="pl-3 pr-3 pt-2">
       <CommunityCard
         v-for="community in communities"
         :key="community.id"
         :name="community.name"
-        class="mb-2"
+        class="mt-3"
         @click.native="
           $router.push({
             path: `/content/${encodeURIComponent(community.name)}`
@@ -44,7 +46,7 @@
         v-for="place in places"
         :key="place.id"
         :name="place.properties.name"
-        class="mb-2"
+        class="mt-3"
         @click.native="
           $router.push({
             path: `/place-names/${encodeURIComponent(place.properties.name)}`
@@ -54,6 +56,7 @@
       <ArtsCard
         v-for="art in arts"
         :key="art.id"
+        class="mt-3"
         :arttype="art.properties.type"
         :name="art.properties.title"
         @click.native="

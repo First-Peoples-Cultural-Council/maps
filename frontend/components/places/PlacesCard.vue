@@ -1,5 +1,9 @@
 <template>
-  <div class="community-card">
+  <div
+    class="community-card"
+    @mouseover.prevent="handleMouseOver"
+    @mouseleave="handleMouseLeave"
+  >
     <Card>
       <template v-slot:header>
         <div
@@ -26,6 +30,12 @@
           </div>
         </div>
       </template>
+      <template v-slot:footer>
+        <div class="fpcc-card-more">
+          <img v-if="!hover" src="@/assets/images/go_icon.svg" alt="Go" />
+          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        </div>
+      </template>
     </Card>
   </div>
 </template>
@@ -46,6 +56,22 @@ export default {
     color: {
       type: String,
       default: 'transparent'
+    }
+  },
+  data() {
+    return {
+      hover: false
+    }
+  },
+  methods: {
+    handlePronounce() {
+      console.log('Pronounce')
+    },
+    handleMouseOver() {
+      this.hover = true
+    },
+    handleMouseLeave() {
+      this.hover = false
     }
   }
 }

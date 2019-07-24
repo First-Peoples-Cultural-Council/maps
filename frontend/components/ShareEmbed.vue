@@ -45,11 +45,33 @@ export default {
     }
   },
   computed: {
+    lat() {
+      return this.$store.state.mapinstance.lat
+    },
+    lng() {
+      return this.$store.state.mapinstance.lng
+    },
+    zoom() {
+      return this.$store.state.mapinstance.zoom
+    },
     url() {
-      return `${this.origin}${this.$route.fullPath}`
+      if (this.lat && this.lng && this.zoom) {
+        console.log(this.$route)
+        return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${
+          this.zoom
+        }`
+      } else {
+        return `${this.origin}${this.$route.fullPath}`
+      }
     },
     iframe() {
-      return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
+      if (this.lat && this.lng && this.zoom) {
+        return `<iframe src="${this.origin}${this.$route.path}#${this.lat}/${
+          this.lng
+        }/${this.zoom}"></iframe>`
+      } else {
+        return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
+      }
     }
   },
   mounted() {

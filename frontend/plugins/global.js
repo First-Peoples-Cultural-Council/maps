@@ -26,19 +26,3 @@ Vue.mixin({
     this.$store.commit('sidebar/set', false)
   }
 })
-
-export default ({ app }) => {
-  // Every time the route changes (fired on initialization too)
-  app.router.beforeEach((to, from, next) => {
-    console.log('To', to)
-    console.log('From', from)
-    console.log('To Has Hash?', to.hash)
-    if (from.hash && to.hash) {
-      next({
-        path: to.path
-      })
-    } else {
-      next()
-    }
-  })
-}

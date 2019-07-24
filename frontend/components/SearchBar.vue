@@ -197,7 +197,7 @@ export default {
       this.searchQuery = data
       if (type === 'Places') {
         return this.$router.push({
-          path: `/place-names`
+          path: `/place-names/${encodeURIComponent(data)}`
         })
       }
 
@@ -215,7 +215,7 @@ export default {
 
       if (type === 'Arts') {
         return this.$router.push({
-          path: `/art`
+          path: `/art/${encodeURIComponent(data)}`
         })
       }
     }

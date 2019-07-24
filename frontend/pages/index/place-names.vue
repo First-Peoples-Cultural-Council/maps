@@ -1,12 +1,12 @@
 <template>
   <SideBar v-if="this.$route.name < 'index-place-names-placename'">
-    <section class="ml-2 mr-2">
+    <section class="pl-3 pr-3">
       <div v-if="places.length > 0">
         <PlacesCard
           v-for="(place, index) in places"
           :key="index"
           :name="place.properties.name"
-          class="mt-2"
+          class="mt-3"
           @click.native="
             $router.push({ path: `/place-names/${place.properties.name}` })
           "
