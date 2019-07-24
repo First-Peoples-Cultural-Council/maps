@@ -1,14 +1,40 @@
 <template>
   <div class="filters-container pl-2 pr-2">
     <div class="cursor-pointer ml-1" @click="showCollapse = !showCollapse">
-      <img src="@/assets/images/filter_icon.svg" alt="Filter" />
-      <span class="d-inline-block font-08">Filters</span>
+      <div>
+        <img src="@/assets/images/filter_icon.svg" alt="Filter" />
+        <span class="d-inline-block font-08">Filters</span>
+      </div>
+      <div></div>
     </div>
     <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
       <LayerToggle
-        layer-name="Language Regions"
-        layer="fn-lang-areas-highlighted"
+        layer-name="Western Names"
+        :layers="[
+          'settlement-subdivision-label',
+          'transit-label',
+          'water-point-label',
+          'water-line-label',
+          'natural-point-label',
+          'natural-line-label',
+          'waterway-label',
+          'road-label',
+          'settlement-label',
+          'coutour-label',
+          'poi-label'
+        ]"
         class="mb-1"
+      ></LayerToggle>
+      <LayerToggle
+        layer-name="Sleeping Languages (TBA)"
+        :layers="['fn-lang-areas-highlighted']"
+        class="mb-1"
+      ></LayerToggle>
+      <LayerToggle
+        layer-name="Reserves"
+        :layers="['fn-lang-areas-highlighted']"
+        class="mb-1"
+        :initial="false"
       ></LayerToggle>
     </b-collapse>
   </div>
