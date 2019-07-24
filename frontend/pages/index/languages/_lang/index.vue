@@ -10,8 +10,8 @@
         Other Language Names
       </h5>
       <LanguageDetailBadge
-        v-for="(name, index) in otherNames"
-        :key="index"
+        v-for="name in otherNames"
+        :key="name"
         :content="name"
         class="mr-2"
       ></LanguageDetailBadge>
@@ -30,20 +30,20 @@
     </section>
     <section class="pl-2 pr-2 pt-2">
       <CommunityCard
-        v-for="(community, index) in communities"
-        :key="index"
+        v-for="community in communities"
+        :key="community.id"
         :name="community.name"
         class="mb-2"
       ></CommunityCard>
       <PlacesCard
         v-for="place in places"
-        :key="place.properties.name"
+        :key="place.id"
         :name="place.properties.name"
         class="mb-2"
       ></PlacesCard>
       <ArtsCard
         v-for="art in arts"
-        :key="art.name"
+        :key="art.id"
         :arttype="art.properties.type"
         :name="art.properties.title"
       >
@@ -75,12 +75,7 @@ export default {
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
-      communities() {
-        return this.$store.state.communities.communities
-      },
-      places() {
-        return this.$store.state.places.places
-      },
+
       arts() {
         return this.$store.state.arts.arts
       },
@@ -110,11 +105,19 @@ export default {
     }
 
     const languages = await $axios.$get(getApiUrl(`language/`))
-    let language = languages.find(lang => lang.name === languageName)
+    const language = languages.find(lang => lang.name === languageName)
     const languageId = language.id
-    language = await $axios.$get(getApiUrl(`language/${languageId}`))
+
+    const result = await Promise.all([
+      $axios.$get(getApiUrl(`language/${languageId}`)),
+      $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
+      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
+    ])
+
     return {
-      language: language
+      language: result[0],
+      communities: result[1],
+      places: result[2].features
     }
   },
 
