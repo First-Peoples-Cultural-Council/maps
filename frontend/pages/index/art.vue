@@ -7,7 +7,7 @@
           :key="index"
           :arttype="art.properties.type"
           :name="art.properties.title"
-          class="mt-3"
+          class="mt-3 hover-left-move"
           @click.native="
             $router.push({
               path: `/art/${encodeURIComponent(art.properties.title)}`

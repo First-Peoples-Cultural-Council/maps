@@ -6,7 +6,7 @@
           v-for="(place, index) in places"
           :key="index"
           :name="place.properties.name"
-          class="mt-3"
+          class="mt-3 hover-left-move"
           @click.native="
             $router.push({
               path: `/place-names/${encodeURIComponent(place.properties.name)}`
