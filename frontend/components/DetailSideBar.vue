@@ -25,7 +25,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: white;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-bottom: 1em;
 }
 </style>

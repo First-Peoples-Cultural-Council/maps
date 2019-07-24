@@ -8,12 +8,13 @@
           :arttype="art.properties.type"
           :name="art.properties.title"
           class="mb-2"
+          @click.native="$router.push({ path: `/art/${art.properties.title}` })"
         ></ArtsCard>
       </section>
     </SideBar>
     <DetailSideBar
       v-else-if="this.$route.name === 'index-art-art'"
-      :width="detailOneWidth"
+      :width="375"
     >
       <div>
         <nuxt-child />

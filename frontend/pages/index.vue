@@ -88,7 +88,7 @@ import Zoom from '@/components/Zoom.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { zoomToCommunity, inBounds } from '@/mixins/map.js'
+import { inBounds } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 
@@ -219,15 +219,15 @@ export default {
       markersOnScreen = newMarkers
     },
     handleCardClick(e, data, type, geom) {
-      if (type === 'languages') {
-        // const lang = this.languages.find(l => l.name === data)
-        // zoomToLanguage({ map: this.map, lang: lang })
+      if (type === 'community') {
+        this.$router.push({
+          path: `/content/${encodeURIComponent(data)}`
+        })
       } else {
-        zoomToCommunity({ map: this.map, comm: data, geom })
+        this.$router.push({
+          path: `/${type}/${encodeURIComponent(data)}`
+        })
       }
-      this.$router.push({
-        path: `/${type}/${encodeURIComponent(data)}`
-      })
     },
     goToLang() {
       this.$router.push({

@@ -5,7 +5,7 @@ export const zoomToLanguage = ({ map, lang }) => {
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 
-export const zoomToCommunity = ({ map, comm, geom }) => {
+export const zoomToPoint = ({ map, geom }) => {
   map.flyTo({
     center: geom.coordinates,
     zoom: 10

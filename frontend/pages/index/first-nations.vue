@@ -8,16 +8,11 @@
         <hr />
         <section class="community-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div
-            v-for="community in communities"
-            :key="community.properties.title"
-          >
+          <div v-for="community in communities" :key="community.name">
             <CommunityCard
               class="mt-3"
-              :name="community.properties.title"
-              @click.native.prevent="
-                handleCardClick($event, community.properties.title)
-              "
+              :name="community.name"
+              @click.native.prevent="handleCardClick($event, community.name)"
             ></CommunityCard>
           </div>
         </section>
@@ -31,6 +26,7 @@ import SideBar from '@/components/SideBar.vue'
 import Badge from '@/components/Badge.vue'
 import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+
 export default {
   components: {
     SideBar,

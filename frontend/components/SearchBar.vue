@@ -254,7 +254,7 @@ export default {
   width: var(--searchbar-width);
   max-width: var(--searchbar-width);
   max-height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .popover-body {
