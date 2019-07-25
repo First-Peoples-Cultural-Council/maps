@@ -21,7 +21,7 @@ export default {
     place(newPlace, oldPlace) {
       if (newPlace !== oldPlace)
         this.$eventHub.whenMap(map => {
-          zoomToPoint({ map: map, geom: this.place.geometry })
+          zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
         })
     }
   },
@@ -45,7 +45,7 @@ export default {
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
-      zoomToPoint({ map: map, geom: this.place.geometry })
+      zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
     })
   },
   mounted() {
