@@ -253,25 +253,17 @@ export default {
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
 
-      const art = features.find(feat => feat.layer.id === 'fn-arts')
-      console.log('Art Found', art)
-      const community = features.find(
-        feat => feat.layer.id === 'fn-nations copy'
-      )
-      console.log('Community Found', community)
-      /*
       const feature = features.find(
         feature => feature.layer.id === 'fn-lang-areas-shaded'
       )
-      */
+
       console.log('Features on click', features)
-      /*
+
       if (feature) {
         this.$router.push({
           path: `/languages/${encodeURIComponent(feature.properties.name)}`
         })
       }
-      */
     },
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
