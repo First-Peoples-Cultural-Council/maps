@@ -43,7 +43,7 @@
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)">
             <!--TODO: Aaron please remove this, why is it hardcoded? -->
           </LangFamilyTitle>
-          <div v-for="(language, index) in languages" :key="index">
+          <div v-for="language in languages" :key="'language' + language.id">
             <LanguageCard
               class="mt-3 hover-left-move"
               :name="language.name"
@@ -55,7 +55,10 @@
           </div>
         </section>
         <section class="community-section pl-3 pr-3">
-          <div v-for="community in communities" :key="community.name">
+          <div
+            v-for="community in communities"
+            :key="'community ' + community.name"
+          >
             <CommunityCard
               class="mt-3 hover-left-move"
               :name="community.name"
