@@ -15,8 +15,10 @@
     <Zoom class="zoom-control"></Zoom>
     <ShareEmbed class="share-embed-control"></ShareEmbed>
     <ResetMap class="reset-map-control"></ResetMap>
-    <SearchBar></SearchBar>
-    <NavigationBar></NavigationBar>
+    <div class="top-bar-container">
+      <SearchBar></SearchBar>
+      <NavigationBar></NavigationBar>
+    </div>
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <div>
         <section class="pl-3 pr-3 mt-3">
@@ -160,7 +162,7 @@ export default {
   },
   async fetch({ $axios, store }) {
     function getApiUrl(path) {
-      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
     }
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
@@ -420,5 +422,59 @@ export default {
 }
 .markerCluster {
   opacity: 0.8;
+}
+
+@media (max-width: 576px) {
+  .map-container {
+    padding-left: 0;
+  }
+
+  .sidebar-container {
+    bottom: 0;
+    top: unset;
+    height: 100px;
+    width: 100%;
+  }
+
+  .searchbar-container {
+    width: auto;
+    position: static;
+    display: inline-block;
+    display: table-cell;
+    width: 85%;
+    padding-left: 0.5em;
+    vertical-align: middle;
+  }
+
+  .nav-container {
+    display: inline-block;
+    display: table-cell;
+    width: 15%;
+    padding-right: 0.5em;
+    vertical-align: middle;
+    padding-left: 0.5em;
+  }
+
+  .navbar-container {
+    position: static;
+    display: inline-block;
+    padding: 0.8em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .top-bar-container {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    display: table;
+  }
+
+  .popover {
+    max-height: 300px;
+    max-width: 100%;
+    width: 96%;
+  }
 }
 </style>

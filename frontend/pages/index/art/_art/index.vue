@@ -39,7 +39,7 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     function getApiUrl(path) {
-      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
     }
 
     const arts = (await $axios.$get(getApiUrl('arts'))).features

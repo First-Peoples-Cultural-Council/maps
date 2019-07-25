@@ -274,4 +274,8 @@ export default {
 .search-result-group {
   font-weight: bold;
 }
+
+.search-input::placeholder {
+  color: rgba(0, 0, 0, 0.2);
+}
 </style>
