@@ -12,6 +12,18 @@ export default {
   components: {
     PlacesDetailCard
   },
+  computed: {
+    mapinstance() {
+      return this.$store.state.mapinstance.mapInstance
+    }
+  },
+  watch: {
+    place(newlang, oldlang) {
+      console.log('Place CHanged')
+
+      zoomToPoint({ map: this.mapinstance, geom: this.place.geometry })
+    }
+  },
   async asyncData({ params, $axios, store }) {
     function getApiUrl(path) {
       return process.server ? `http://nginx/api/${path}` : `/api/${path}`
