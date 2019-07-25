@@ -54,8 +54,8 @@
         "
       ></PlacesCard>
       <ArtsCard
-        v-for="art in arts"
-        :key="'art' + art.id"
+        v-for="(art, index) in arts"
+        :key="'art' + index"
         class="mt-3 hover-left-move"
         :arttype="art.properties.type"
         :name="art.properties.title"
