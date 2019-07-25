@@ -92,21 +92,16 @@ export default {
   left: 0;
   bottom: 0;
   width: var(--sidebar-width, 350px);
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
   padding-bottom: 1em;
 }
 .sidebar-header {
   background-color: transparent;
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
+  overflow-x: hidden;
 }
 
 .sidebar-body {
   background-color: white;
-  flex: 16 1 0;
 }
 
 .nav-tabs .nav-link {

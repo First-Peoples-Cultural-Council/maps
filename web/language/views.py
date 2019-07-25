@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
-    PlaceNameSerializer,
+    LanguageDetailSerializer,
+    PlaceNameGeoSerializer,
     CommunitySerializer,
+    CommunityDetailSerializer,
     ChampionSerializer,
 )
 from django.utils.decorators import method_decorator
@@ -27,6 +29,11 @@ class LanguageList(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = LanguageSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class LanguageDetail(generics.RetrieveAPIView):
+    serializer_class = LanguageDetailSerializer
+    queryset = Language.objects.all()
 
 
 class LanguageGeoList(generics.ListAPIView):
@@ -56,10 +63,15 @@ class CommunityList(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class PlaceNameList(generics.ListAPIView):
+class CommunityDetail(generics.RetrieveAPIView):
+    serializer_class = CommunityDetailSerializer
+    queryset = Community.objects.all()
+
+
+class PlaceNameGeoList(generics.ListAPIView):
 
     queryset = PlaceName.objects.all()
-    serializer_class = PlaceNameSerializer
+    serializer_class = PlaceNameGeoSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
@@ -68,19 +80,6 @@ class PlaceNameList(generics.ListAPIView):
             lang = Language.objects.get(pk=int(request.GET["lang"]))
             print(lang.geom)
             queryset = queryset.filter(point__intersects=lang.geom)
-        serializer = PlaceNameSerializer(queryset, many=True)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-
-class ChampionList(generics.ListAPIView):
-
-    queryset = Champion.objects.all()
-    serializer_class = ChampionSerializer
-
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        if "lang" in request.GET:
-            queryset = queryset.filter(language_id=lang)
-        serializer = ChampionSerializer(queryset, many=True)
-        return Response(serializer.data)

@@ -5,9 +5,22 @@ export const zoomToLanguage = ({ map, lang }) => {
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 
-export const zoomToCommunity = ({ map, comm, geom }) => {
+export const zoomToPoint = ({ map, geom, zoom }) => {
+  console.log(geom.coordinates)
   map.flyTo({
     center: geom.coordinates,
-    zoom: 10
+    zoom: zoom || 10
   })
+}
+
+export const inBounds = (bounds, lnglat) => {
+  let lng
+  const multLng = (lnglat[0] - bounds._ne.lng) * (lnglat[0] - bounds._sw.lng)
+  if (bounds._ne.lng > bounds._sw.lng) {
+    lng = multLng < 0
+  } else {
+    lng = multLng > 0
+  }
+  const lat = (lnglat[1] - bounds._ne.lat) * (lnglat[1] - bounds._sw.lat) < 0
+  return lng && lat
 }

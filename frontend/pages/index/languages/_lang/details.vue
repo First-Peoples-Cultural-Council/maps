@@ -77,6 +77,7 @@
 import { mapState } from 'vuex'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
+import { zoomToLanguage } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -87,11 +88,6 @@ export default {
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
-      language() {
-        return this.languages.find(
-          lang => lang.name === this.$route.params.lang
-        )
-      },
       otherNames() {
         return this.language.other_names.split(',')
       },
@@ -100,18 +96,33 @@ export default {
       }
     })
   },
-  async asyncData({ $axios, store }) {
-    const api = process.server
-      ? 'https://nginx/api/language/'
-      : '/api/language/'
-    const languages = await $axios.$get(api)
+  async asyncData({ $axios, store, params }) {
+    const languageName = params.lang
+
+    function getApiUrl(path) {
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+    }
+
+    const languages = await $axios.$get(getApiUrl(`language/`))
+    const language = languages.find(lang => lang.name === languageName)
+    const languageId = language.id
+
+    const result = await Promise.all([
+      $axios.$get(getApiUrl(`language/${languageId}`))
+    ])
 
     return {
-      languages
+      language: result[0]
     }
   },
   mounted() {
     this.$store.commit('sidebar/set', true)
+  },
+  created() {
+    // We don't always catch language routing updates, so also zoom to language on create.
+    this.$eventHub.whenMap(map => {
+      zoomToLanguage({ map: map, lang: this.language })
+    })
   }
 }
 </script>

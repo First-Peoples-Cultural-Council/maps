@@ -1,0 +1,335 @@
+
+{
+  "header": {
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20190724.053824.70.0.001.json",
+    "dumpEventTime": "2019-07-24T05:38:24Z",
+    "dumpEventTimeStamp": "1563946704211",
+    "processId": 70,
+    "cwd": "/code",
+    "commandLine": [
+      "/usr/local/bin/node",
+      "server/index.js"
+    ],
+    "nodejsVersion": "v12.4.0",
+    "glibcVersionRuntime": "2.24",
+    "glibcVersionCompiler": "2.17",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "12.4.0",
+      "v8": "7.4.288.27-node.18",
+      "uv": "1.29.1",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.38.0",
+      "napi": "4",
+      "llhttp": "1.1.3",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1b",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019a",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v12.4.0/node-v12.4.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.4.0/node-v12.4.0.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "4.15.0-54-generic",
+    "osVersion": "#58~16.04.1-Ubuntu SMP Mon Jun 24 13:21:41 UTC 2019",
+    "osMachine": "x86_64",
+    "host": "fb8226a5f5ac"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000aadaf5",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x000000000098fec3",
+      "symbol": "node::OnFatalError(char const*, char const*) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b1552e",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b158a9",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f20105",
+      "symbol": " [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f2aa6b",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f2b787",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f2e225",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000ef9250",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationSpace) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x00000000011cb0ce",
+      "symbol": "v8::internal::Runtime_AllocateInNewSpace(int, unsigned long*, v8::internal::Isolate*) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000001a93942",
+      "symbol": " [/usr/local/bin/node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2167377920,
+    "totalCommittedMemory": 2164843120,
+    "usedMemory": 2058703264,
+    "availableMemory": 62134648,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 524288,
+        "committedMemory": 32024,
+        "capacity": 523976,
+        "used": 31712,
+        "available": 492264
+      },
+      "new_space": {
+        "memorySize": 33554432,
+        "committedMemory": 33030248,
+        "capacity": 16767232,
+        "used": 4032488,
+        "available": 12734744
+      },
+      "old_space": {
+        "memorySize": 1728700416,
+        "committedMemory": 1727794888,
+        "capacity": 1666534728,
+        "used": 1664831696,
+        "available": 1703032
+      },
+      "code_space": {
+        "memorySize": 10125312,
+        "committedMemory": 9878240,
+        "capacity": 8207904,
+        "used": 8207904,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 72355840,
+        "committedMemory": 71990088,
+        "capacity": 60281120,
+        "used": 60281120,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 320913408,
+        "committedMemory": 320913408,
+        "capacity": 320217704,
+        "used": 320217704,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 1204224,
+        "committedMemory": 1204224,
+        "capacity": 1100640,
+        "used": 1100640,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 16767232,
+        "used": 0,
+        "available": 16767232
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 1773.19,
+    "kernelCpuSeconds": 57.0811,
+    "cpuConsumptionPercent": 5.15307,
+    "maxRss": 2070478848,
+    "pageFaults": {
+      "IORequired": 57988,
+      "IONotRequired": 12882728
+    },
+    "fsActivity": {
+      "reads": 1654384,
+      "writes": 18384
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 922.45,
+    "kernelCpuSeconds": 31.7852,
+    "cpuConsumptionPercent": 2.68663,
+    "fsActivity": {
+      "reads": 763944,
+      "writes": 0
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "npm_package_devDependencies_babel_core": "7.0.0-bridge.0",
+    "npm_package_devDependencies__nuxtjs_eslint_module": "^0.0.1",
+    "npm_package_devDependencies_jest": "^24.1.0",
+    "npm_package_devDependencies_eslint_plugin_standard": ">=4.0.0",
+    "npm_package_dependencies_node_sass": "^4.12.0",
+    "npm_config_version_commit_hooks": "true",
+    "npm_config_user_agent": "yarn/1.16.0 npm/? node/v12.4.0 linux x64",
+    "NODE_VERSION": "12.4.0",
+    "npm_config_bin_links": "true",
+    "YARN_VERSION": "1.16.0",
+    "HOSTNAME": "fb8226a5f5ac",
+    "npm_node_execpath": "/usr/local/bin/node",
+    "npm_package_devDependencies_vue_jest": "^3.0.3",
+    "npm_package_devDependencies_nodemon": "^1.18.9",
+    "npm_package_devDependencies_eslint_plugin_node": ">=8.0.1",
+    "npm_config_init_version": "1.0.0",
+    "SHLVL": "1",
+    "HOME": "/root",
+    "npm_package_devDependencies_eslint_plugin_nuxt": ">=0.4.2",
+    "npm_package_devDependencies_eslint_config_prettier": "^4.1.0",
+    "npm_package_scripts_precommit": "yarn run lint",
+    "npm_config_init_license": "MIT",
+    "YARN_WRAP_OUTPUT": "false",
+    "npm_config_version_tag_prefix": "v",
+    "npm_package_dependencies__nuxtjs_pwa": "^2.6.0",
+    "npm_package_description": "First Peoples' Language Map",
+    "npm_package_readmeFilename": "README.md",
+    "npm_package_dependencies_nuxt": "^2.0.0",
+    "npm_package_devDependencies_babel_jest": "^24.1.0",
+    "npm_package_scripts_dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "npm_package_devDependencies_eslint_plugin_import": ">=2.16.0",
+    "_": "/usr/local/bin/yarn",
+    "npm_package_devDependencies_eslint_config_standard": ">=12.0.0",
+    "npm_package_dependencies_sass_loader": "^7.1.0",
+    "npm_package_dependencies_express": "^4.16.4",
+    "npm_package_private": "true",
+    "npm_package_scripts_lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "npm_config_registry": "https://registry.yarnpkg.com",
+    "npm_package_dependencies_postcss_flexbugs_fixes": "^4.1.0",
+    "npm_package_scripts_start": "cross-env NODE_ENV=production node server/index.js",
+    "npm_config_ignore_scripts": "",
+    "npm_config_version": "1.16.0",
+    "npm_package_devDependencies_eslint_plugin_jest": ">=22.3.0",
+    "PATH": "/tmp/yarn--1563911185131-0.8241236031670227:/code/node_modules/.bin:/usr/local/share/.config/yarn/link/node_modules/.bin:/usr/local/libexec/lib/node_modules/npm/bin/node-gyp-bin:/usr/local/lib/node_modules/npm/bin/node-gyp-bin:/usr/local/bin/node_modules/npm/bin/node-gyp-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "NODE": "/usr/local/bin/node",
+    "npm_package_dependencies_cross_env": "^5.2.0",
+    "npm_package_name": "fplm",
+    "npm_package_devDependencies_eslint": "^5.15.1",
+    "npm_package_devDependencies__vue_test_utils": "^1.0.0-beta.27",
+    "npm_package_devDependencies__nuxtjs_eslint_config": "^0.0.1",
+    "npm_lifecycle_script": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "npm_package_devDependencies__babel_runtime_corejs2": "^7.5.5",
+    "npm_package_scripts_test": "jest",
+    "npm_config_version_git_message": "v%s",
+    "npm_lifecycle_event": "dev",
+    "npm_package_version": "1.0.0",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"dev\"],\"original\":[\"run\",\"dev\"]}",
+    "npm_package_scripts_build": "nuxt build",
+    "npm_package_dependencies_lodash": "^4.17.15",
+    "npm_config_version_git_tag": "true",
+    "npm_config_version_git_sign": "",
+    "npm_package_scripts_generate": "nuxt generate",
+    "npm_config_strict_ssl": "true",
+    "npm_package_devDependencies_eslint_plugin_prettier": "^3.0.1",
+    "npm_package_devDependencies_core_js": "2",
+    "npm_package_scripts_lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore .",
+    "PWD": "/code",
+    "npm_execpath": "/opt/yarn-v1.16.0/bin/yarn.js",
+    "npm_package_dependencies_bootstrap": "^4.1.3",
+    "npm_package_dependencies_eslint_loader": "^2.2.0",
+    "npm_package_author_name": "Aaron",
+    "npm_package_devDependencies_eslint_plugin_vue": "^5.2.2",
+    "npm_package_dependencies_mapbox_gl": "^1.0.0",
+    "npm_package_dependencies_bootstrap_vue": "^2.0.0-rc.11",
+    "npm_config_save_prefix": "^",
+    "npm_config_ignore_optional": "",
+    "npm_package_devDependencies_babel_eslint": "^10.0.1",
+    "npm_package_dependencies__nuxtjs_axios": "^5.3.6",
+    "npm_package_devDependencies_eslint_plugin_promise": ">=4.0.1",
+    "npm_package_dependencies_mapbox_gl_vue": "^1.9.0",
+    "NODE_ENV": "development",
+    "INIT_CWD": "/code",
+    "_AXIOS_BASE_URL_": "http://localhost:80/",
+    "VUE_ENV": "server"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 65536,
+      "hard": 65536
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "linux-vdso.so.1",
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/lib/x86_64-linux-gnu/librt.so.1",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2",
+    "/code/node_modules/node-sass/vendor/linux-x64-72/binding.node",
+    "/lib/x86_64-linux-gnu/libnss_files.so.2",
+    "/lib/x86_64-linux-gnu/libnss_dns.so.2",
+    "/lib/x86_64-linux-gnu/libresolv.so.2"
+  ]
+}

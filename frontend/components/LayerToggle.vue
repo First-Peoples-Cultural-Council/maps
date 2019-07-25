@@ -17,24 +17,34 @@ export default {
       default: '',
       type: String
     },
-    layer: {
-      default: '',
-      type: String
+    layers: {
+      default: function() {
+        return []
+      },
+      type: Array
+    },
+    initial: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-      on: true
+      on: this.initial
     }
   },
   methods: {
     toggleLayer() {
       this.on = !this.on
       this.$eventHub.whenMap(map => {
-        if (this.on) {
-          map.setLayoutProperty(this.layer, 'visibility', 'visible')
-        } else {
-          map.setLayoutProperty(this.layer, 'visibility', 'none')
+        if (map) {
+          if (this.on) {
+            this.layers.map(l => {
+              map.setLayoutProperty(l, 'visibility', 'visible')
+            })
+          } else {
+            this.layers.map(l => map.setLayoutProperty(l, 'visibility', 'none'))
+          }
         }
       })
     }

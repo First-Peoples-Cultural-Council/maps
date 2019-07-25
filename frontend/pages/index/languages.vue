@@ -17,10 +17,10 @@
           <div v-for="(language, index) in languages" :key="index">
             <LanguageCard
               class="mt-3 hover-left-move"
-              :name="language.properties.name"
-              :color="language.properties.color"
+              :name="language.name"
+              :color="language.color"
               @click.native.prevent="
-                handleCardClick($event, language.properties.name, 'languages')
+                handleCardClick($event, language.name, 'languages')
               "
             ></LanguageCard>
           </div>

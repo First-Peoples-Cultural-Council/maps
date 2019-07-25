@@ -1,12 +1,26 @@
 <template>
-  <div class="language-detail-card">
+  <div class="arts-detail-card">
     <Card>
       <template v-slot:header>
         <div
-          class="language-detail-icon-container"
+          class="arts-detail-icon-container"
           :style="'background-color:' + color"
         >
-          <img src="@/assets/images/language_icon.svg" alt="Language" />
+          <img
+            v-if="arttype.toLowerCase() === 'art'"
+            src="@/assets/images/public_art_icon.svg"
+            alt="Arts"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'event'"
+            src="@/assets/images/event_icon.svg"
+            alt="Event"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'org'"
+            src="@/assets/images/organization_icon.svg"
+            alt="Organization"
+          />
         </div>
       </template>
       <template v-slot:body>
@@ -15,11 +29,9 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Language
+              {{ arttype }}
             </h5>
-            <h5
-              class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
-            >
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
             </h5>
           </div>
@@ -29,16 +41,11 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div
-          class="fpcc-card-more"
-          @click.prevent="handleReturn"
-          @mouseover.prevent="handleMouseOver"
-          @mouseleave="handleMouseLeave"
-        >
+        <div class="fpcc-card-more-art" @click.prevent="handleReturn">
           <img
             v-if="!hover"
             class="ml-1"
-            src="@/assets/images/return_icon_hover.svg"
+            src="@/assets/images/return_icon.svg"
             alt="Go"
           />
           <img
@@ -69,11 +76,11 @@ export default {
     },
     color: {
       type: String,
-      default: 'RGB(0, 0, 0)'
+      default: 'RGB(255, 255, 255)'
     },
-    detail: {
-      type: Boolean,
-      default: false
+    arttype: {
+      type: String,
+      default: 'Public Art'
     }
   },
   data() {
@@ -86,63 +93,48 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      if (!this.detail) {
-        this.$router.push({
-          path: '/languages'
-        })
-      } else {
-        this.$router.push({
-          path: `/languages/${this.$route.params.lang}`
-        })
-      }
-    },
-    handleMouseOver() {
-      this.hover = true
-    },
-    handleMouseLeave() {
-      this.hover = false
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
 <style scoped>
-.language-detail-card {
+.arts-detail-card {
   cursor: pointer;
 }
-.language-detail-icon-container {
+.arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
   height: 43px;
   width: 43px;
 }
-.language-detail-icon-container img {
+.arts-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more {
-  background-color: #c46156;
+.fpcc-card-more-art {
+  background-color: var(--color-beige);
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
   border-top-left-radius: 0.5em;
   border-bottom-left-radius: 0.5em;
-  color: white;
 }
 
-.fpcc-card-more {
+.fpcc-card-more-art {
   padding: 0.3em;
   font-size: 0.7em;
 }
 
-.fpcc-card-more:hover {
+.fpcc-card-more-art:hover {
   color: white;
   background-color: var(--color-darkgray);
 }
 
-.fpcc-card-more img {
+.fpcc-card-more-art img {
   display: inline-block;
   width: 15px;
   height: 15px;

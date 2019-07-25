@@ -10,8 +10,8 @@
         Other Language Names
       </h5>
       <LanguageDetailBadge
-        v-for="(name, index) in otherNames"
-        :key="index"
+        v-for="name in otherNames"
+        :key="name"
         :content="name"
         class="mr-2"
       ></LanguageDetailBadge>
@@ -22,30 +22,48 @@
         :learners="language.learners.toString() || 'NA'"
         class="mt-4"
       ></LanguageSummary>
+    </section>
+    <section>
       <LanguageSeeAll
         content="See all details"
         class="mt-3"
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
     </section>
-    <section class="pl-2 pr-2 pt-2">
+    <section class="pl-3 pr-3 pt-2">
       <CommunityCard
-        v-for="(community, index) in communities"
-        :key="index"
-        :name="community.properties.title"
-        class="mb-2"
+        v-for="community in communities"
+        :key="'community' + community.id"
+        :name="community.name"
+        class="mt-3 hover-left-move"
+        @click.native="
+          $router.push({
+            path: `/content/${encodeURIComponent(community.name)}`
+          })
+        "
       ></CommunityCard>
       <PlacesCard
         v-for="place in places"
-        :key="place.properties.title"
-        :name="place.properties.title"
-        class="mb-2"
+        :key="'place' + place.id"
+        :name="place.properties.name"
+        class="mt-3 hover-left-move"
+        @click.native="
+          $router.push({
+            path: `/place-names/${encodeURIComponent(place.properties.name)}`
+          })
+        "
       ></PlacesCard>
       <ArtsCard
-        v-for="art in arts"
-        :key="art.name"
+        v-for="(art, index) in arts"
+        :key="'art' + index"
+        class="mt-3 hover-left-move"
         :arttype="art.properties.type"
         :name="art.properties.title"
+        @click.native="
+          $router.push({
+            path: `/art/${encodeURIComponent(art.properties.title)}`
+          })
+        "
       >
       </ArtsCard>
     </section>
@@ -72,39 +90,15 @@ export default {
     PlacesCard,
     ArtsCard
   },
-  async asyncdata({ $axios, store }) {
-    /*
-    const languages = store.state.languages.languageSet
-    const languageName = this.$route.params.lang
-    const language = languages.find(
-      lang => lang.properties.title === languageName
-    )
-    const languageId = language.id
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
-    const url = getApiUrl(`community?lang=${languageId}`)
-    */
-  },
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
-      communities() {
-        return this.$store.state.communities.communities
-      },
-      places() {
-        return this.$store.state.places.places
-      },
+
       arts() {
         return this.$store.state.arts.arts
       },
       languages() {
         return this.$store.state.languages.languageSet
-      },
-      language() {
-        return this.languages.find(
-          lang => lang.name === this.$route.params.lang
-        )
       },
       otherNames() {
         return this.language.other_names.split(',')
@@ -121,8 +115,28 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(this.$route)
+  async asyncData({ $axios, store, params }) {
+    const languageName = params.lang
+
+    function getApiUrl(path) {
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+    }
+
+    const languages = await $axios.$get(getApiUrl(`language/`))
+    const language = languages.find(lang => lang.name === languageName)
+    const languageId = language.id
+
+    const result = await Promise.all([
+      $axios.$get(getApiUrl(`language/${languageId}`)),
+      $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
+      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
+    ])
+
+    return {
+      language: result[0],
+      communities: result[1],
+      places: result[2].features
+    }
   },
 
   created() {

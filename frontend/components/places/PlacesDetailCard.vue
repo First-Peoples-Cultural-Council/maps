@@ -1,16 +1,12 @@
 <template>
-  <div
-    class="community-card"
-    @mouseover.prevent="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="arts-detail-card">
     <Card>
       <template v-slot:header>
         <div
-          class="community-icon-container"
+          class="arts-detail-icon-container"
           :style="'background-color:' + color"
         >
-          <img src="@/assets/images/community_icon.svg" alt="community" />
+          <img src="@/assets/images/poi_icon.svg" alt="Places" />
         </div>
       </template>
       <template v-slot:body>
@@ -19,21 +15,32 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Community
+              {{ type }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
             </h5>
           </div>
-          <div class="d-inline-block">
+          <div class="d-inline-block" @click.prevent.stop="handlePronounce">
             <CardBadge content="Pronounce"></CardBadge>
           </div>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
-          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        <div class="fpcc-card-more-art" @click.prevent="handleReturn">
+          <img
+            v-if="!hover"
+            class="ml-1"
+            src="@/assets/images/return_icon.svg"
+            alt="Go"
+          />
+          <img
+            v-else
+            class="ml-1"
+            src="@/assets/images/return_icon_hover.svg"
+            alt="Go"
+          />
+          <span class="ml-1 font-weight-bold">Return</span>
         </div>
       </template>
     </Card>
@@ -56,6 +63,10 @@ export default {
     color: {
       type: String,
       default: 'RGB(255, 255, 255)'
+    },
+    type: {
+      type: String,
+      default: 'Point Of Interest'
     }
   },
   data() {
@@ -67,33 +78,30 @@ export default {
     handlePronounce() {
       console.log('Pronounce')
     },
-    handleMouseOver() {
-      this.hover = true
-    },
-    handleMouseLeave() {
-      this.hover = false
+    handleReturn() {
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
-<style>
-.community-card {
+<style scoped>
+.arts-detail-card {
   cursor: pointer;
 }
-.community-icon-container {
+.arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
   height: 43px;
   width: 43px;
 }
-.community-icon-container img {
+.arts-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more {
-  background-color: #c46156;
+.fpcc-card-more-art {
+  background-color: var(--color-beige);
   display: flex;
   align-items: center;
   height: 35px;
@@ -101,7 +109,25 @@ export default {
   border-top-left-radius: 0.5em;
   border-bottom-left-radius: 0.5em;
 }
-.fpcc-card:hover .fpcc-card-more {
+
+.fpcc-card-more-art {
+  padding: 0.3em;
+  font-size: 0.7em;
+}
+
+.fpcc-card-more-art:hover {
+  color: white;
   background-color: var(--color-darkgray);
+}
+
+.fpcc-card-more-art img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+}
+
+.fpcc-card {
+  border: 0;
+  box-shadow: none;
 }
 </style>

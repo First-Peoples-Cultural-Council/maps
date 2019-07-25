@@ -15,7 +15,10 @@ Vue.prototype.$eventHub.$on('map-loaded', function(map) {
 
 Vue.prototype.$eventHub.$on('route-changed', function(route) {
   if (this.map) {
-    if (route.name !== 'index-languages-lang') {
+    if (
+      route.name !== 'index-languages-lang' ||
+      route.name !== 'index-languages-lang-details'
+    ) {
       this.map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
     }
   }
