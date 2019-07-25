@@ -157,7 +157,7 @@ export default {
         e.features[0].properties.title
       ) {
         self.$router.push({
-          path: `/art/${e.features[0].properties.title}`
+          path: `/art/${encodeURIComponent(e.features[0].properties.title)}`
         })
       }
     })
@@ -169,7 +169,7 @@ export default {
         e.features[0].properties.title
       ) {
         self.$router.push({
-          path: `/content/${e.features[0].properties.title}`
+          path: `/content/${encodeURIComponent(e.features[0].properties.title)}`
         })
       }
     })
@@ -183,7 +183,9 @@ export default {
         e.features[0].properties.name
       ) {
         self.$router.push({
-          path: `/place-names/${e.features[0].properties.name}`
+          path: `/place-names/${encodeURIComponent(
+            e.features[0].properties.name
+          )}`
         })
       }
     })

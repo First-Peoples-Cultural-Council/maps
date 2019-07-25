@@ -77,6 +77,7 @@
 import { mapState } from 'vuex'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
+import { zoomToLanguage } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -116,6 +117,12 @@ export default {
   },
   mounted() {
     this.$store.commit('sidebar/set', true)
+  },
+  created() {
+    // We don't always catch language routing updates, so also zoom to language on create.
+    this.$eventHub.whenMap(map => {
+      zoomToLanguage({ map: map, lang: this.language })
+    })
   }
 }
 </script>
