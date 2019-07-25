@@ -37,7 +37,7 @@
             @click.native.prevent="goToCommunity"
           ></Badge>
         </section>
-        <hr class="sidebar-divider">
+        <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)">
@@ -72,7 +72,7 @@
         </section>
       </div>
     </SideBar>
-    <nuxt-child v-else/>
+    <nuxt-child v-else />
   </div>
 </template>
 

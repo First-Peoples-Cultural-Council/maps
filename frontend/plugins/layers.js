@@ -230,7 +230,7 @@ export default {
       }
     })
 
-    map.on('click', 'fn-places-GITHUB', function(e) {
+    map.on('click', 'fn-places', function(e) {
       console.log('FN PLACES GITHUB')
       console.log(e.features[0])
       if (
