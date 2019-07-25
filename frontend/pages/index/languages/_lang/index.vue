@@ -33,7 +33,7 @@
     <section class="pl-3 pr-3 pt-2">
       <CommunityCard
         v-for="community in communities"
-        :key="community.id"
+        :key="'community' + community.id"
         :name="community.name"
         class="mt-3 hover-left-move"
         @click.native="
@@ -44,7 +44,7 @@
       ></CommunityCard>
       <PlacesCard
         v-for="place in places"
-        :key="place.id"
+        :key="'place' + place.id"
         :name="place.properties.name"
         class="mt-3 hover-left-move"
         @click.native="
@@ -55,7 +55,7 @@
       ></PlacesCard>
       <ArtsCard
         v-for="art in arts"
-        :key="art.id"
+        :key="'art' + art.id"
         class="mt-3 hover-left-move"
         :arttype="art.properties.type"
         :name="art.properties.title"
