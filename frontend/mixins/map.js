@@ -6,6 +6,7 @@ export const zoomToLanguage = ({ map, lang }) => {
 }
 
 export const zoomToPoint = ({ map, geom, zoom }) => {
+  console.log(geom.coordinates)
   map.flyTo({
     center: geom.coordinates,
     zoom: zoom || 10
