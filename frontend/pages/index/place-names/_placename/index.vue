@@ -18,10 +18,11 @@ export default {
     }
   },
   watch: {
-    place(newlang, oldlang) {
-      console.log('Place CHanged')
-
-      zoomToPoint({ map: this.mapinstance, geom: this.place.geometry })
+    place(newPlace, oldPlace) {
+      if (newPlace !== oldPlace)
+        this.$eventHub.whenMap(map => {
+          zoomToPoint({ map: map, geom: this.place.geometry })
+        })
     }
   },
   async asyncData({ params, $axios, store }) {

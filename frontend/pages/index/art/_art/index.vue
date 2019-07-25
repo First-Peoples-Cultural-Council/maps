@@ -23,6 +23,20 @@ export default {
     ArtsDetailCard,
     LanguageSeeAll
   },
+  computed: {
+    mapinstance() {
+      return this.$store.state.mapinstance.mapinstance
+    }
+  },
+  watch: {
+    art(newArt, oldArt) {
+      if (newArt !== oldArt) {
+        this.$eventHub.whenMap(map => {
+          zoomToPoint({ map: map, geom: this.art.geometry, zoom: 13 })
+        })
+      }
+    }
+  },
   async asyncData({ params, $axios, store }) {
     function getApiUrl(path) {
       return process.server ? `http://nginx/api/${path}` : `/api/${path}`
@@ -41,7 +55,7 @@ export default {
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
-      zoomToPoint({ map: map, geom: this.art.geometry })
+      zoomToPoint({ map: map, geom: this.art.geometry, zoom: 13 })
     })
   },
   methods: {

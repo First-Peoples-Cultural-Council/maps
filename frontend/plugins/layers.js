@@ -149,32 +149,6 @@ export default {
       'fn-nations copy'
     )
 
-    map.addLayer(
-      {
-        id: 'fn-places',
-        source: 'places1',
-        layout: {
-          'text-optional': true,
-          'icon-optional': true,
-          'icon-ignore-placemnt': true,
-          'icon-allow-overlap': true,
-          'text-size': 13,
-          'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
-          'text-field': ['get', 'name'],
-          'text-offset': [0, 1.3],
-          'icon-image': 'point_of_interest_icon',
-          'icon-size': 0.15
-        },
-        paint: {
-          'text-halo-color': 'hsl(0, 0%, 100%)',
-          'text-halo-width': 1,
-          'text-halo-blur': 1,
-          'text-color': 'hsl(0, 0%, 24%)'
-        }
-      },
-      'fn-nations copy'
-    )
-
     map.on('click', 'fn-arts', function(e) {
       console.log('Fn-arts', e)
       if (
@@ -188,7 +162,7 @@ export default {
       }
     })
 
-    map.on('click', 'fn-nations copy copy', function(e) {
+    map.on('click', 'fn-nations copy', function(e) {
       if (
         e.features[0] &&
         e.features[0].properties &&
