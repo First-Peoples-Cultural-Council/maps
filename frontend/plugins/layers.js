@@ -131,11 +131,38 @@ export default {
 
     map.addLayer(
       {
+        id: 'fn-places',
+        type: 'symbol',
+        source: 'places1',
+        layout: {
+          //  'icon-ignore-placement': true,
+          //  'icon-allow-overlap': true,
+          // 'icon-optional': true,
+          // 'text-ignore-placement': true,
+          // 'text-allow-overlap': true,
+          'text-optional': true,
+          'symbol-spacing': 50,
+          'icon-image': 'point_of_interest_icon',
+          'icon-size': 0.15,
+          'text-field': '{name}',
+          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-size': 12,
+          'text-offset': [0, 0.6],
+          'text-anchor': 'top'
+        }
+      },
+      'fn-nations copy'
+    )
+
+    map.addLayer(
+      {
         id: 'fn-arts',
         type: 'symbol',
         source: 'arts1',
         filter: ['!', ['has', 'point_count']],
         layout: {
+          'text-optional': true,
+          'symbol-spacing': 50,
           'icon-image': '{type}',
           'icon-allow-overlap': true,
           'icon-size': 0.15,
@@ -149,34 +176,37 @@ export default {
       'fn-nations copy'
     )
 
-    map.addLayer(
-      {
-        id: 'fn-places',
-        source: 'places1',
-        layout: {
-          'text-optional': true,
-          'icon-optional': true,
-          'icon-ignore-placemnt': true,
-          'icon-allow-overlap': true,
-          'text-size': 13,
-          'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
-          'text-field': ['get', 'name'],
-          'text-offset': [0, 1.3],
-          'icon-image': 'point_of_interest_icon',
-          'icon-size': 0.15
-        },
-        paint: {
-          'text-halo-color': 'hsl(0, 0%, 100%)',
-          'text-halo-width': 1,
-          'text-halo-blur': 1,
-          'text-color': 'hsl(0, 0%, 24%)'
-        }
-      },
-      'fn-nations copy'
-    )
+    // map.addLayer(
+    //   {
+    //     id: 'fn-places-GITHUB2',
+    //     type: 'symbol',
+    //     source: 'places1',
+    //     layout: {
+    //       'text-optional': true,
+    //       'icon-optional': true,
+    //       'text-ignore-placemnt': true,
+    //       'icon-ignore-placemnt': true,
+    //       'symbol-spacing': 1,
+    //       'text-allow-overlap': true,
+    //       'icon-allow-overlap': true,
+    //       'text-size': 13,
+    //       'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
+    //       'text-field': ['get', 'name'],
+    //       'text-offset': [0, 1.3],
+    //       'icon-image': 'point_of_interest_icon',
+    //       'icon-size': 0.15
+    //     },
+    //     paint: {
+    //       'text-halo-color': 'hsl(0, 0%, 100%)',
+    //       'text-halo-width': 1,
+    //       'text-halo-blur': 1,
+    //       'text-color': 'hsl(0, 0%, 24%)'
+    //     }
+    //   },
+    //   'fn-nations copy'
+    // )
 
     map.on('click', 'fn-arts', function(e) {
-      console.log('Fn-arts', e)
       if (
         e.features[0] &&
         e.features[0].properties &&
