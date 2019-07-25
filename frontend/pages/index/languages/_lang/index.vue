@@ -119,7 +119,7 @@ export default {
     const languageName = params.lang
 
     function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
     }
 
     const languages = await $axios.$get(getApiUrl(`language/`))

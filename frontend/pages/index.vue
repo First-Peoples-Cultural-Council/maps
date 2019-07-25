@@ -160,7 +160,7 @@ export default {
   },
   async fetch({ $axios, store }) {
     function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
     }
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
