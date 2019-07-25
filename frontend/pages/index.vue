@@ -20,7 +20,7 @@
       <NavigationBar></NavigationBar>
     </div>
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
-      <div>
+      <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
         </section>
@@ -41,6 +41,8 @@
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)">
             <!--TODO: Aaron please remove this, why is it hardcoded? -->
@@ -75,7 +77,7 @@
             ></CommunityCard>
           </div>
         </section>
-      </div>
+      </template>
     </SideBar>
     <nuxt-child v-else />
   </div>
@@ -427,13 +429,6 @@ export default {
 @media (max-width: 576px) {
   .map-container {
     padding-left: 0;
-  }
-
-  .sidebar-container {
-    bottom: 0;
-    top: unset;
-    height: 100px;
-    width: 100%;
   }
 
   .searchbar-container {

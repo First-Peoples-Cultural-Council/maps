@@ -1,22 +1,28 @@
 <template>
   <div>
     <SideBar active="Languages">
-      <div>
+      <template v-slot:content>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="communities.length"></Badge>
+          <Badge
+            :content="badgeContent"
+            :number="communities.length"
+            bgcolor="rgb(108, 66, 100)"
+          ></Badge>
         </section>
         <hr />
+      </template>
+      <template v-slot:cards>
         <section class="community-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="community in communities" :key="community.name">
             <CommunityCard
-              class="mt-3"
+              class="mt-3 hover-left-move"
               :name="community.name"
               @click.native.prevent="handleCardClick($event, community.name)"
             ></CommunityCard>
           </div>
         </section>
-      </div>
+      </template>
     </SideBar>
   </div>
 </template>

@@ -1,25 +1,33 @@
 <template>
   <div>
     <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritages">
-      <section class="pl-3 pr-3 pt-3">
-        <Badge
-          content="Points Of Interest"
-          :number="places.length"
-          class="cursor-pointer mb-1"
-          bgcolor="#c46156"
-        ></Badge>
-        <PlacesCard
-          v-for="(place, index) in places"
-          :key="index"
-          :name="place.properties.name"
-          class="mt-3 hover-left-move"
-          @click.native="
-            $router.push({
-              path: `/place-names/${encodeURIComponent(place.properties.name)}`
-            })
-          "
-        ></PlacesCard>
-      </section>
+      <template v-slot:content>
+        <section class="pl-3 pr-3 pt-3">
+          <Badge
+            content="Points Of Interest"
+            :number="places.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#c46156"
+          ></Badge>
+        </section>
+      </template>
+      <template v-slot:cards>
+        <section class="pl-3 pr-3">
+          <PlacesCard
+            v-for="(place, index) in places"
+            :key="index"
+            :name="place.properties.name"
+            class="mt-3 hover-left-move"
+            @click.native="
+              $router.push({
+                path: `/place-names/${encodeURIComponent(
+                  place.properties.name
+                )}`
+              })
+            "
+          ></PlacesCard>
+        </section>
+      </template>
     </SideBar>
     <DetailSideBar
       v-else-if="this.$route.name === 'index-heritages-heritage'"

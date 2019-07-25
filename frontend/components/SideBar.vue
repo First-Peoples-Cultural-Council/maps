@@ -1,37 +1,49 @@
 <template>
   <div class="sidebar-container">
-    <div class="sidebar-header">
-      <Logo
-        class="cursor-pointer"
-        @click.native.prevent="handleLogoClick"
-      ></Logo>
+    <div class="sidebar-desktop">
+      <div class="sidebar-header">
+        <Logo
+          class="cursor-pointer"
+          @click.native.prevent="handleLogoClick"
+        ></Logo>
+      </div>
+      <div class="sidebar-body">
+        <div class="sidebar-tabs">
+          <b-nav tabs fill>
+            <b-nav-item
+              v-for="tab in navigationTabs"
+              :key="tab.id"
+              :active="active === tab.name ? true : false"
+              :class="tab.name | lowerCase"
+              @click.prevent="handleNavigation($event, tab.name)"
+              >{{ tab.name }}
+            </b-nav-item>
+          </b-nav>
+        </div>
+        <div class="sidebar-content">
+          <slot name="content"></slot>
+          <slot name="cards"></slot>
+        </div>
+      </div>
     </div>
-    <div class="sidebar-body">
-      <div class="sidebar-tabs">
-        <b-nav tabs fill>
-          <b-nav-item
-            v-for="tab in navigationTabs"
-            :key="tab.id"
-            :active="active === tab.name ? true : false"
-            :class="tab.name | lowerCase"
-            @click.prevent="handleNavigation($event, tab.name)"
-            >{{ tab.name }}
-          </b-nav-item>
-        </b-nav>
-      </div>
-      <div class="sidebar-content">
-        <slot></slot>
-      </div>
+    <div class="sidebar-mobile d-none">
+      <SideBarFold>
+        <template v-slot:cards>
+          <slot name="cards"></slot>
+        </template>
+      </SideBarFold>
     </div>
   </div>
 </template>
 
 <script>
 import Logo from '@/components/Logo.vue'
+import SideBarFold from '@/components/SideBarFold.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    SideBarFold
   },
   filters: {
     lowerCase(value) {
@@ -42,6 +54,12 @@ export default {
     active: {
       type: String,
       default: 'Languages'
+    },
+    badgesToDisplay: {
+      type: Array,
+      default() {
+        return []
+      }
     }
   },
   data() {
@@ -65,7 +83,8 @@ export default {
           path: '/heritages',
           pathName: 'index-heritages-heritage'
         }
-      ]
+      ],
+      fold: true
     }
   },
   methods: {
@@ -80,6 +99,9 @@ export default {
       this.$router.push({
         path: '/'
       })
+    },
+    toggleFold(e) {
+      this.fold = !this.fold
     }
   }
 }
@@ -142,5 +164,24 @@ export default {
 .nav-tabs .nav-item.heritages .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
+}
+
+@media (max-width: 576px) {
+  .sidebar-desktop {
+    display: none;
+  }
+
+  .sidebar-container {
+    width: 100%;
+    top: unset;
+    padding: 0;
+    margin: 0;
+    z-index: 50;
+    max-height: 90%;
+  }
+
+  .sidebar-mobile {
+    display: block !important;
+  }
 }
 </style>

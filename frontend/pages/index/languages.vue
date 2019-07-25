@@ -4,7 +4,7 @@
       v-if="this.$route.name < 'index-languages-lang'"
       active="Languages"
     >
-      <div>
+      <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
         </section>
@@ -12,6 +12,8 @@
           <Badge :content="badgeContent" :number="languages.length"></Badge>
         </section>
         <hr />
+      </template>
+      <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
           <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
           <div v-for="(language, index) in languages" :key="index">
@@ -25,7 +27,7 @@
             ></LanguageCard>
           </div>
         </section>
-      </div>
+      </template>
     </SideBar>
     <DetailSideBar
       v-else-if="this.$route.name === 'index-languages-lang'"
