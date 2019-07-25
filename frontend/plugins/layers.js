@@ -218,7 +218,7 @@ export default {
       }
     })
 
-    map.on('click', 'fn-nations copy copy', function(e) {
+    map.on('click', 'fn-nations copy', function(e) {
       if (
         e.features[0] &&
         e.features[0].properties &&
@@ -226,6 +226,20 @@ export default {
       ) {
         self.$router.push({
           path: `/content/${e.features[0].properties.title}`
+        })
+      }
+    })
+
+    map.on('click', 'fn-places-GITHUB', function(e) {
+      console.log('FN PLACES GITHUB')
+      console.log(e.features[0])
+      if (
+        e.features[0] &&
+        e.features[0].properties &&
+        e.features[0].properties.name
+      ) {
+        self.$router.push({
+          path: `/place-names/${e.features[0].properties.name}`
         })
       }
     })

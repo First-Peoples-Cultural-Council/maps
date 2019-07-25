@@ -22,6 +22,18 @@ export default {
     },
     community() {
       return this.communities.find(comm => comm.name === this.$route.params.fn)
+    },
+    mapinstance() {
+      return this.$store.state.mapinstance.mapInstance
+    }
+  },
+  watch: {
+    community(newComm, oldComm) {
+      if (newComm !== oldComm) {
+        this.$eventHub.whenMap(map => {
+          zoomToPoint({ map: this.mapinstance, geom: this.community.point })
+        })
+      }
     }
   },
   created() {
