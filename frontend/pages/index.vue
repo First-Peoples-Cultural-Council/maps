@@ -141,7 +141,7 @@ export default {
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
-        zoom: 5
+        zoom: 4
       },
       GEOLOCATE_CONTROL: {
         show: true,
