@@ -13,9 +13,6 @@
         :id="layer.id"
         :key="'layer' + layer.id"
         class="mb-1"
-        :name="layer.name"
-        :layers="layer.layerNames"
-        :initial="layer.active"
       ></LayerToggle>
     </b-collapse>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="cursor-pointer" @click="toggleLayer">
-      <span class="font-08 d-inline-block"> {{ name }}</span>
+      <span class="font-08 d-inline-block"> {{ layer.name }}</span>
       <span class="float-right">
         <img v-if="on" src="@/assets/images/on.svg" alt="On" />
         <img v-else src="@/assets/images/off.svg" alt="Off" />
@@ -13,20 +13,6 @@
 <script>
 export default {
   props: {
-    name: {
-      default: '',
-      type: String
-    },
-    layerNames: {
-      default: function() {
-        return []
-      },
-      type: Array
-    },
-    initial: {
-      type: Boolean,
-      default: true
-    },
     id: {
       type: Number,
       default: null

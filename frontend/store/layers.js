@@ -1,4 +1,3 @@
-import { _remove } from 'lodash'
 export const state = () => ({
   layers: [
     {
@@ -37,10 +36,6 @@ export const state = () => ({
 export const mutations = {
   set(state, layer) {
     state.layers.push(layer)
-  },
-
-  remove(state, layer) {
-    _remove(state.layers, l => l.id === layer.id)
   },
 
   toggleLayer(state, layer) {
