@@ -92,7 +92,7 @@ import ResetMap from '@/components/ResetMap.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds } from '@/mixins/map.js'
+import { inBounds, intersects } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 
@@ -348,13 +348,21 @@ export default {
     filterLanguages(bounds) {
       return this.languageSet.filter(lang => {
         const sw = lang.bbox.coordinates[0][0]
-        const nw = lang.bbox.coordinates[0][1]
         const ne = lang.bbox.coordinates[0][2]
-        const se = lang.bbox.coordinates[0][3]
-        return (
-          inBounds(bounds, sw) || inBounds(bounds, ne) || inBounds(bounds, nw),
-          inBounds(bounds, se)
-        )
+        const langBounds = {
+          _sw: {
+            lng: sw[0],
+            lat: sw[1]
+          },
+          _ne: {
+            lng: ne[0],
+            lat: ne[1]
+          }
+        }
+        console.log('Lang', lang.name)
+        console.log('Bounds, viewport', bounds)
+        console.log('Bounds Language', langBounds)
+        return intersects(bounds, langBounds)
       })
     },
     filterCommunities(bounds) {

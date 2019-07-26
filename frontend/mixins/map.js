@@ -24,3 +24,12 @@ export const inBounds = (bounds, lnglat) => {
   const lat = (lnglat[1] - bounds._ne.lat) * (lnglat[1] - bounds._sw.lat) < 0
   return lng && lat
 }
+
+export const intersects = (r1, r2) => {
+  return !(
+    r2._sw.lng >= r1._ne.lng ||
+    r2._ne.lng <= r1._sw.lng ||
+    r2._ne.lat <= r1._sw.lat ||
+    r2._sw.lat >= r1._ne.lat
+  )
+}
