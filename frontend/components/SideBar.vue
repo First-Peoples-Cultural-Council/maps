@@ -51,7 +51,7 @@ export default {
   props: {
     active: {
       type: String,
-      default: 'Languages'
+      default: ''
     },
     badgesToDisplay: {
       type: Array,
@@ -77,7 +77,7 @@ export default {
         },
         {
           id: 2,
-          name: 'Heritages',
+          name: 'Heritage',
           path: '/heritages',
           pathName: 'index-heritages-heritage'
         }
@@ -133,6 +133,7 @@ export default {
   color: var(--color-gray, #707070);
   font-weight: 700;
   opacity: 0.8;
+  text-decoration: underline;
 }
 .nav-tabs .nav-link.active {
   color: var(--color-red, #c46257);
@@ -159,7 +160,7 @@ export default {
 .nav-tabs .nav-item.arts .nav-link.active::before {
   border-top-left-radius: 0.5em;
 }
-.nav-tabs .nav-item.heritages .nav-link.active::before {
+.nav-tabs .nav-item.heritage .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
 }

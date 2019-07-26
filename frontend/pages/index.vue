@@ -19,7 +19,7 @@
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
-    <SideBar v-if="this.$route.name === 'index'" active="Languages">
+    <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
@@ -44,9 +44,6 @@
       </template>
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
-          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)">
-            <!--TODO: Aaron please remove this, why is it hardcoded? -->
-          </LangFamilyTitle>
           <div v-for="language in languages" :key="'language' + language.id">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -93,7 +90,6 @@ import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
 import Zoom from '@/components/Zoom.vue'
-import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds } from '@/mixins/map.js'
@@ -111,7 +107,6 @@ export default {
     SideBar,
     Accordion,
     Badge,
-    LangFamilyTitle,
     LanguageCard,
     CommunityCard,
     ShareEmbed,

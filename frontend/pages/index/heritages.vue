@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritages">
+    <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritage">
       <template v-slot:content>
         <section class="pl-3 pr-3 pt-3">
           <Badge
