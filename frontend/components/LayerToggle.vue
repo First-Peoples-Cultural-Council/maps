@@ -46,16 +46,17 @@ export default {
   methods: {
     toggleLayer() {
       this.$store.commit('layers/toggleLayer', this.layer)
+      console.log('Toggle layiner')
       this.$eventHub.whenMap(map => {
         if (map) {
           if (this.on) {
-            this.layerNames.map(l => {
+            this.layer.layerNames.map(l => {
               map.setLayoutProperty(l, 'visibility', 'visible')
             })
           } else {
-            this.layerNames.map(l =>
+            this.layer.layerNames.map(l => {
               map.setLayoutProperty(l, 'visibility', 'none')
-            )
+            })
           }
         }
       })
