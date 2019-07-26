@@ -30,7 +30,8 @@
             @click.native.prevent="$router.push({ path: `/first-nations` })"
           ></Badge>
         </section>
-        <hr />
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
@@ -86,6 +87,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
@@ -94,7 +96,8 @@ export default {
     Badge,
     LanguageCard,
     DetailSideBar,
-    CommunityCard
+    CommunityCard,
+    Filters
   },
   data() {
     return {

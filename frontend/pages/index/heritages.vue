@@ -10,6 +10,8 @@
             bgcolor="#c46156"
           ></Badge>
         </section>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
@@ -45,13 +47,15 @@ import SideBar from '@/components/SideBar.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
     SideBar,
     DetailSideBar,
     PlacesCard,
-    Badge
+    Badge,
+    Filters
   },
   computed: {
     places() {

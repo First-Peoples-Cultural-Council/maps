@@ -9,7 +9,8 @@
             bgcolor="rgb(108, 66, 100)"
           ></Badge>
         </section>
-        <hr />
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="community-section pl-3 pr-3">
@@ -30,12 +31,14 @@
 import SideBar from '@/components/SideBar.vue'
 import Badge from '@/components/Badge.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
     SideBar,
     Badge,
-    CommunityCard
+    CommunityCard,
+    Filters
   },
   data() {
     return {
