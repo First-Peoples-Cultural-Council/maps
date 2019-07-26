@@ -9,32 +9,13 @@
     </div>
     <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
       <LayerToggle
-        layer-name="Western Names"
-        :layers="[
-          'settlement-subdivision-label',
-          'transit-label',
-          'water-point-label',
-          'water-line-label',
-          'natural-point-label',
-          'natural-line-label',
-          'waterway-label',
-          'road-label',
-          'settlement-label',
-          'coutour-label',
-          'poi-label'
-        ]"
+        v-for="layer in layers"
+        :id="layer.id"
+        :key="'layer' + layer.id"
         class="mb-1"
-      ></LayerToggle>
-      <LayerToggle
-        layer-name="Sleeping Languages (TBA)"
-        :layers="['fn-lang-areas-highlighted']"
-        class="mb-1"
-      ></LayerToggle>
-      <LayerToggle
-        layer-name="Reserves"
-        :layers="['fn-lang-areas-highlighted']"
-        class="mb-1"
-        :initial="false"
+        :name="layer.name"
+        :layers="layer.layerNames"
+        :initial="layer.active"
       ></LayerToggle>
     </b-collapse>
   </div>
@@ -49,6 +30,11 @@ export default {
   data() {
     return {
       showCollapse: false
+    }
+  },
+  computed: {
+    layers() {
+      return this.$store.state.layers.layers
     }
   }
 }
