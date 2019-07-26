@@ -25,7 +25,7 @@
     </section>
     <section>
       <LanguageSeeAll
-        content="See all details"
+        :content="`Learn more about ${language.name}`"
         class="mt-3"
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>

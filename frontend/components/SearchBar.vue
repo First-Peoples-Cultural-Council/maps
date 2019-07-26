@@ -6,7 +6,7 @@
         v-model="searchQuery"
         type="search"
         class="search-input"
-        placeholder="Search for a language..."
+        placeholder="Search for a language, community, or place name..."
         autocomplete="off"
         @update="handleSearchUpdate"
         @focus="handleInputFocus"

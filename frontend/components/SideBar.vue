@@ -28,21 +28,7 @@
     </div>
     <div class="sidebar-mobile d-none">
       <SideBarFold>
-        <template v-slot:cards>
-          <div class="sidebar-tabs sidebar-tabs-fold">
-            <b-nav tabs fill>
-              <b-nav-item
-                v-for="tab in navigationTabs"
-                :key="tab.id"
-                :active="active === tab.name ? true : false"
-                :class="tab.name | lowerCase"
-                @click.prevent="handleNavigation($event, tab.name)"
-                >{{ tab.name }}
-              </b-nav-item>
-            </b-nav>
-          </div>
-          <slot name="cards"></slot>
-        </template>
+        <template v-slot:cards> </template>
       </SideBarFold>
     </div>
   </div>

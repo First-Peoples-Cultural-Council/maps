@@ -1,9 +1,9 @@
 <template>
-  <div class="accordion">
+  <div class="accordion sidebar-fold-container">
     <b-collapse id="outer-collapse" visible>
       <b-card>
         <div v-b-toggle.inner-collapse class="innerToggle">Toggle Inner</div>
-        <b-collapse id="inner-collapse" v-model="notVisible">
+        <b-collapse id="inner-collapse" v-model="visible">
           <b-card>
             <p class="accordion-content sidebar-fold-content">
               <slot name="cards"></slot>
@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style>
-.card-body {
+.sidebar-fold-container .card-body {
   padding: 0 !important;
 }
 
