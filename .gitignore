@@ -1,3 +1,4 @@
+web/media/
 *.sql
 *.pem
 docker-compose.override.yml

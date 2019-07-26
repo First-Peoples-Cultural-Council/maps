@@ -25,7 +25,7 @@
     </section>
     <section>
       <LanguageSeeAll
-        content="See all details"
+        :content="`Learn more about ${language.name}`"
         class="mt-3"
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
@@ -119,7 +119,7 @@ export default {
     const languageName = params.lang
 
     function getApiUrl(path) {
-      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
     }
 
     const languages = await $axios.$get(getApiUrl(`language/`))

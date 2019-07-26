@@ -7,7 +7,7 @@
           class="outer-text d-flex align-items-center justify-content-between"
         >
           <span class="accordion-content">
-            {{ content.substring(0, 35) }}...
+            {{ content.substring(0, 85) }}...
           </span>
           <b-button
             v-b-toggle.inner-collapse
