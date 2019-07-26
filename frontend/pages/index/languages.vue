@@ -22,12 +22,17 @@
             "
           ></Badge>
           <Badge
-            v-if="$route.query.mode !== 'lang'"
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
             bgcolor="#6c4264"
-            @click.native.prevent="$router.push({ path: `/first-nations` })"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'comm'
+                }
+              })
+            "
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -35,8 +40,10 @@
       </template>
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
-          <div v-for="(language, index) in languages" :key="index">
+          <div v-if="$route.query.mode !== 'comm'">
             <LanguageCard
+              v-for="(language, index) in languages"
+              :key="index"
               class="mt-3 hover-left-move"
               :name="language.name"
               :color="language.color"

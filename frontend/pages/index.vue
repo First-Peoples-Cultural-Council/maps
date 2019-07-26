@@ -29,21 +29,36 @@
             content="Languages"
             :number="languages.length"
             class="cursor-pointer"
-            @click.native.prevent="goToLang"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'lang'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
             bgcolor="#6c4264"
-            @click.native.prevent="goToCommunity"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'comm'
+                }
+              })
+            "
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
-        <section class="language-section pl-3 pr-3">
+        <section
+          v-if="$route.query.mode !== 'comm'"
+          class="language-section pl-3 pr-3"
+        >
           <div v-for="language in languages" :key="'language' + language.id">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -55,7 +70,10 @@
             ></LanguageCard>
           </div>
         </section>
-        <section class="community-section pl-3 pr-3">
+        <section
+          v-if="$route.query.mode !== 'lang'"
+          class="community-section pl-3 pr-3"
+        >
           <div
             v-for="community in communities"
             :key="'community ' + community.name"

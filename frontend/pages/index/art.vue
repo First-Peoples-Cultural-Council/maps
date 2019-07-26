@@ -8,18 +8,39 @@
             :number="publicArts.length"
             class="cursor-pointer mb-2"
             bgcolor="#848159"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'parts'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Organization"
             :number="orgs.length"
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'orgs'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Events"
             :number="events.length"
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'events'
+                }
+              })
+            "
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -28,7 +49,7 @@
       <template v-slot:cards>
         <section class="pl-3 pr-3">
           <ArtsCard
-            v-for="(art, index) in arts"
+            v-for="(art, index) in artsFiltered"
             :key="index"
             :arttype="art.properties.type"
             :name="art.properties.title"
@@ -68,6 +89,11 @@ export default {
     Badge,
     Filters
   },
+  data() {
+    return {
+      artsFiltered: this.arts
+    }
+  },
   computed: {
     arts() {
       return this.$store.state.arts.arts
@@ -80,6 +106,23 @@ export default {
     },
     events() {
       return this.arts.filter(art => art.properties.type === 'event')
+    }
+  },
+  watch: {
+    $route(to, from) {
+      const mode = to.query.mode
+      switch (mode) {
+        case 'parts':
+          this.artsFiltered = this.publicArts
+          break
+        case 'orgs':
+          this.artsFiltered = this.orgs
+          break
+        case 'events':
+          this.artsFiltered = this.events
+          break
+      }
+      console.log('Switch')
     }
   }
 }
