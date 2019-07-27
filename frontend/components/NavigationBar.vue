@@ -45,7 +45,8 @@
               <a href="https://maps.fpcc.ca/user/login" class="d-block"
                 >Login</a
               >
-            </li> -->
+            </li>
+            -->
             <li class="close-nav cursor-pointer" @click="closeNav">
               <a href="#">
                 <img src="@/assets/images/close_icon.svg" alt="Close"
