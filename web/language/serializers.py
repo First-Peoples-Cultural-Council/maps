@@ -135,6 +135,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "some_speakers",
             "pop_total_value",
             "bbox",
+            "audio_file",
         )
 
 
@@ -161,7 +162,7 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "point")
+        fields = ("name", "id", "point", "audio_file")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
@@ -207,5 +208,6 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "phone",
             "alt_phone",
             "fax",
+            "audio_file",
         )
         geo_field = "point"
