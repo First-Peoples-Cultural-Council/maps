@@ -35,8 +35,8 @@ module.exports = {
     link: [
       {
         rel: 'icon',
-        type: 'image/png',
-        href: '/symbol.png'
+        type: 'image/x-icon',
+        href: '/favicon.ico'
       },
       {
         rel: 'stylesheet',
