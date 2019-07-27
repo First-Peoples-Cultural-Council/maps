@@ -1,6 +1,13 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import LanguageList, CommunityList, PlaceNameList, ChampionList, LanguageGeoList
+from .views import (
+    LanguageList, 
+    CommunityList, 
+    PlaceNameList, 
+    ChampionList, 
+    LanguageGeoList, 
+    ArtList
+)
 
 urlpatterns = [
     path("language-geo/", LanguageGeoList.as_view()),
@@ -8,4 +15,5 @@ urlpatterns = [
     path("community/", CommunityList.as_view()),
     path("placename/", PlaceNameList.as_view()),
     path("champion/", ChampionList.as_view()),
+    path("art/", ArtList.as_view()),
 ]

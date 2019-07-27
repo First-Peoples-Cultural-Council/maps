@@ -124,3 +124,10 @@ class LNAData(BaseModel):
     pop_on_res = models.IntegerField(default=0)  # field_tm_lna2_pop_on_res_value
     pop_total_value = models.IntegerField(default=0)  # field_tm_lna2_pop_total_value
 
+
+class Art(BaseModel):
+    point = models.PointField(null=True, default=None)
+    art_type = models.CharField(max_length=10, default="")
+    title = models.CharField(max_length=255)
+    node_id = models.IntegerField()
+

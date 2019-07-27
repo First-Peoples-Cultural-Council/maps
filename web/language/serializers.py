@@ -7,6 +7,7 @@ from .models import (
     LanguageFamily,
     LanguageLink,
     CommunityLink,
+    Art,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -102,4 +103,11 @@ class CommunitySerializer(serializers.ModelSerializer):
             "alt_phone",
             "fax",
         )
+        geo_field = "point"
+        
+
+class ArtSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Art
+        fields = ("art_type", "title", "node_id")
         geo_field = "point"
