@@ -148,7 +148,7 @@ class LanguageGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_name", "id")
+        fields = ("name", "other_name", "id", "audio_file")
         geo_field = "point"
 
 

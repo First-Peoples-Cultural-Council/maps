@@ -85,6 +85,7 @@ class LanguageMember(models.Model):
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
     other_name = models.CharField(max_length=255, default="")
+    audio_file = models.FileField(null=True)
     kind = models.CharField(max_length=15, default="")
 
 
@@ -128,3 +129,8 @@ class LNAData(BaseModel):
     pop_on_res = models.IntegerField(default=0)  # field_tm_lna2_pop_on_res_value
     pop_total_value = models.IntegerField(default=0)  # field_tm_lna2_pop_total_value
 
+    num_schools = models.IntegerField(default=0)
+    nest_hours = models.FloatField(default=0)
+    oece_hours = models.FloatField(default=0)
+    info = models.TextField(default="")
+    school_hours = models.FloatField(default=0)
