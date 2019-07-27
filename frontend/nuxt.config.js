@@ -35,8 +35,8 @@ module.exports = {
     link: [
       {
         rel: 'icon',
-        type: 'image/x-icon',
-        href: '/favicon.ico'
+        type: 'image/png',
+        href: '/symbol.png'
       },
       {
         rel: 'stylesheet',
@@ -85,9 +85,6 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {
-    debug: true
-  },
 
   /*
    ** Build configuration
