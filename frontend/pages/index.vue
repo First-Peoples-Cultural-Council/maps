@@ -377,9 +377,7 @@ export default {
             lat: ne[1]
           }
         }
-        console.log('Lang', lang.name)
-        console.log('Bounds, viewport', bounds)
-        console.log('Bounds Language', langBounds)
+
         return intersects(bounds, langBounds)
       })
     },

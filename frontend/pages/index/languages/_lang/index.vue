@@ -30,6 +30,7 @@
         @click.native="handleMoreDetails"
       ></LanguageSeeAll>
     </section>
+    <Filters class="mb-4 mt-2"></Filters>
     <section class="pl-3 pr-3 pt-2">
       <CommunityCard
         v-for="community in communities"
@@ -80,6 +81,8 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
+
 export default {
   components: {
     LanguageDetailCard,
@@ -88,7 +91,8 @@ export default {
     LanguageSeeAll,
     CommunityCard,
     PlacesCard,
-    ArtsCard
+    ArtsCard,
+    Filters
   },
   computed: {
     ...mapState({

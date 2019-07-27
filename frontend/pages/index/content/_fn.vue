@@ -2,6 +2,8 @@
   <div>
     <DetailSideBar>
       <CommunityDetailCard :name="community.name"></CommunityDetailCard>
+      <hr class="sidebar-divider" />
+      <Filters class="mb-4"></Filters>
     </DetailSideBar>
   </div>
 </template>
@@ -10,11 +12,13 @@
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
     DetailSideBar,
-    CommunityDetailCard
+    CommunityDetailCard,
+    Filters
   },
   computed: {
     communities() {
