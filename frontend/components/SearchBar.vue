@@ -6,7 +6,7 @@
         v-model="searchQuery"
         type="search"
         class="search-input"
-        placeholder="Search for a language..."
+        placeholder="Search for a language, community, or place name..."
         autocomplete="off"
         @update="handleSearchUpdate"
         @focus="handleInputFocus"
@@ -273,5 +273,9 @@ export default {
 }
 .search-result-group {
   font-weight: bold;
+}
+
+.search-input::placeholder {
+  color: rgba(0, 0, 0, 0.2);
 }
 </style>

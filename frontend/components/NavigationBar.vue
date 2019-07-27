@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="nav-container">
     <div class="navbar-container cursor-pointer" @click="openNav">
       <nav class="navbar-icon-container">
         <img

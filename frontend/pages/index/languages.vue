@@ -4,18 +4,46 @@
       v-if="this.$route.name < 'index-languages-lang'"
       active="Languages"
     >
-      <div>
+      <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3">
-          <Badge :content="badgeContent" :number="languages.length"></Badge>
+          <Badge
+            :content="badgeContent"
+            :number="languages.length"
+            class="cursor-pointer"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'lang'
+                }
+              })
+            "
+          ></Badge>
+          <Badge
+            content="Communities"
+            :number="communities.length"
+            class="cursor-pointer"
+            bgcolor="#6c4264"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'comm'
+                }
+              })
+            "
+          ></Badge>
         </section>
-        <hr />
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
-          <LangFamilyTitle language="ᓀᐦᐃᔭᐍᐏᐣ (Nēhiyawēwin)"></LangFamilyTitle>
-          <div v-for="(language, index) in languages" :key="index">
+          <div v-if="$route.query.mode !== 'comm'">
             <LanguageCard
+              v-for="(language, index) in languages"
+              :key="index"
               class="mt-3 hover-left-move"
               :name="language.name"
               :color="language.color"
@@ -24,8 +52,24 @@
               "
             ></LanguageCard>
           </div>
+          <div v-if="$route.query.mode !== 'lang'">
+            <CommunityCard
+              v-for="community in communities"
+              :key="'community ' + community.name"
+              class="mt-3 hover-left-move"
+              :name="community.name"
+              @click.native.prevent="
+                handleCardClick(
+                  $event,
+                  community.name,
+                  'content',
+                  community.name
+                )
+              "
+            ></CommunityCard>
+          </div>
         </section>
-      </div>
+      </template>
     </SideBar>
     <DetailSideBar
       v-else-if="this.$route.name === 'index-languages-lang'"
@@ -48,16 +92,19 @@ import SideBar from '@/components/SideBar.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
-import LangFamilyTitle from '@/components/languages/LangFamilyTitle.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
+import Filters from '@/components/Filters.vue'
+
 export default {
   components: {
     SideBar,
     Accordion,
     Badge,
-    LangFamilyTitle,
     LanguageCard,
-    DetailSideBar
+    DetailSideBar,
+    CommunityCard,
+    Filters
   },
   data() {
     return {
@@ -74,6 +121,9 @@ export default {
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
+    },
+    communities() {
+      return this.$store.state.communities.communities
     }
   },
   methods: {

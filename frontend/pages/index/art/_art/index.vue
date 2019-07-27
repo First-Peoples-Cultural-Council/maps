@@ -10,6 +10,7 @@
       @click.native="handleClick($event, art.properties.node_id)"
     >
     </LanguageSeeAll>
+    <Filters class="mb-4 mt-2"></Filters>
   </div>
 </template>
 
@@ -17,11 +18,13 @@
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
     ArtsDetailCard,
-    LanguageSeeAll
+    LanguageSeeAll,
+    Filters
   },
   computed: {
     mapinstance() {
@@ -39,7 +42,7 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     function getApiUrl(path) {
-      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
     }
 
     const arts = (await $axios.$get(getApiUrl('arts'))).features

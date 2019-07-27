@@ -1,16 +1,20 @@
 <template>
   <div>
     <PlacesDetailCard :name="place.properties.name"></PlacesDetailCard>
+    <hr class="sidebar-divider" />
+    <Filters class="mb-4"></Filters>
   </div>
 </template>
 
 <script>
 import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
-    PlacesDetailCard
+    PlacesDetailCard,
+    Filters
   },
   computed: {
     mapinstance() {
@@ -27,7 +31,7 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     function getApiUrl(path) {
-      return process.server ? `https://nginx/api/${path}` : `/api/${path}`
+      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
     }
 
     const places = (await $axios.$get(getApiUrl('placename-geo/'))).features

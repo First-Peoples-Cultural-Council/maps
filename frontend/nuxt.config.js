@@ -85,9 +85,6 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {
-    debug: true
-  },
 
   /*
    ** Build configuration
