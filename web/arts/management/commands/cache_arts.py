@@ -42,6 +42,12 @@ class Client:
 
         for row in results:
             if float(row[2]) and float(row[3]):  # only want spatial data.
+                if float(row[3]) > -110:
+                    print(row[3], 'is outside the allowable area for this map, skip.')
+                    # skip any features that are past Alberta,
+                    # there seems to be junk in the arts db.
+                    continue
+
                 geojson['features'].append({
                     "type": "Feature",
                     "properties": {
@@ -65,4 +71,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        open('tmp/arts.json', 'w').write(json.dumps(Client().update()))
+        open('web/static/web/arts1.json', 'w').write(json.dumps(Client().update()))

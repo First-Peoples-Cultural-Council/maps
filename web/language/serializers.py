@@ -50,7 +50,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox")
+        fields = ("name", "id", "color", "bbox", "sleeping")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -141,7 +141,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
 class LanguageGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "color")
+        fields = ("name", "color", "sleeping")
         geo_field = "geom"
 
 

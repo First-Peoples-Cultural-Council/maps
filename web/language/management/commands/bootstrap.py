@@ -123,6 +123,7 @@ class DedruplifierClient:
                 "field_tm_other_lang_names_value": "other_names",
                 "field_tm_lr_firstvoi_link_url": "fv_archive_link",
                 "field_tm_lr_state_note_value": "notes",
+                "field_tm_lr_sleeping": "sleeping",
             },
         ):
             for i, v in enumerate(rec.get("field_tm_lr_link_title", [])):

@@ -26,6 +26,7 @@ class Language(BaseModel):
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     color = models.CharField(max_length=31, default="")
     regions = models.CharField(max_length=255, default="", blank=True)
+    sleeping = models.BooleanField(default=False)
 
     sub_family = models.ForeignKey(
         LanguageSubFamily, on_delete=models.SET_NULL, null=True
@@ -41,8 +42,9 @@ class Language(BaseModel):
     )  # sum of field_tm_lna2_pop_total_value
 
     color = models.CharField(max_length=31)
-    geom = models.PolygonField(null=True, default=None)
-    bbox = models.PolygonField(null=True, default=None)
+    geom = models.PolygonField(null=True, default=None, blank=True)
+    bbox = models.PolygonField(null=True, default=None, blank=True)
+    audio_file = models.FileField(null=True)
 
 
 class LanguageLink(models.Model):
@@ -68,6 +70,7 @@ class Community(BaseModel):
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
+    audio_file = models.FileField(null=True)
 
 
 class CommunityLink(models.Model):
