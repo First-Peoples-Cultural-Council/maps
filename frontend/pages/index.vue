@@ -315,6 +315,8 @@ export default {
         // this.updateData(map)
       })
       this.$eventHub.$emit('map-loaded', map)
+      map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
+      map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
     },
     zoomToHash(map) {
       const hash = this.$route.hash
