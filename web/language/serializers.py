@@ -177,11 +177,14 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         # get most recent lna for each nation
         for lnadata in LNAData.objects.filter(community=value).select_related("lna"):
-            if lnadata.lna.language_id in by_lang:
-                if lnadata.lna.year > by_lang[lnadata.lna.language_id]["lna"]["year"]:
-                    by_lang[lnadata.lna.language_id] = LNADataSerializer(lnadata).data
+            if not lnadata.lna: continue
+            lid = getattr(lnadata.lna, 'language_id')
+            if not lid: continue
+            if lid in by_lang:
+                if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
+                    by_lang[lid] = LNADataSerializer(lnadata).data
             else:
-                by_lang[lnadata.lna.language_id] = LNADataSerializer(lnadata).data
+                by_lang[lid] = LNADataSerializer(lnadata).data
         rep["lna_by_language"] = by_lang
         return rep
 
