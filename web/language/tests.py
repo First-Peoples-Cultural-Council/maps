@@ -6,7 +6,8 @@ from .models import (
     Language,
     PlaceName,
     Community,
-    Champion
+    Champion,
+    Art
 )
 
 
@@ -29,7 +30,7 @@ class LanguageAPITests(APITestCase):
 		test_language = Language.objects.create(name='Test language 001')
 		response = self.client.get('/api/language/{}/'.format(test_language.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		self.assertEqual(response.data['id'], (test_language.id))
+		self.assertEqual(len(response.data), 1)
 
 
 	def test_language_list_route_exists(self):
@@ -38,6 +39,17 @@ class LanguageAPITests(APITestCase):
 		"""
 		response = self.client.get('/api/language/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_language_list(self):
+		"""
+		Ensure we can retrieve newly created language objects.
+		"""
+		test_language1 = Language.objects.create(name='Test language 001')
+
+		response = self.client.get('/api/language/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		self.assertEqual(len(response.data), 1)
 
 
 	# def test_language_search_route_up(self):
@@ -66,37 +78,28 @@ class LanguageAPITests(APITestCase):
 	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
 	# 	self.assertEqual(len(response.data['language_results']), 0)
 	# 	self.assertEqual(response.data['language_results'], [])
-		
 
-	# def test_language_search_for_name(self):
-	# 	"""
-	# 	Ensure we can retrieve list of language objects that has the given name (newly created language).
-	# 	"""
-	# 	language.objects.create(name='Test_language_Countable_IUU')
-	# 	response = self.client.get('/api/language/search/?search_params=Test_language_Countable_IUU', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 1)
-	# 	self.assertEqual(response.data['language_results'][0].get('name'), 'Test_language_Countable_IUU')
-		
 
-	# def test_language_search_for_imo(self):
-	# 	"""
-	# 	Ensure we can retrieve list of language objects that has the given imo (newly created language).
-	# 	"""
-	# 	language.objects.create(imo='123321')
-	# 	response = self.client.get('/api/language/search/?search_params=123321', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 1)
-		
+class LanguageGeoAPITests(APITestCase):
 
-	# def test_language_search_for_mmsi(self):
-	# 	"""
-	# 	Ensure we can retrieve list of language objects that has the given mmsi (newly created language).
-	# 	"""
-	# 	language.objects.create(mmsi='123321')
-	# 	response = self.client.get('/api/language/search/?search_params=123321', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 1)
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+
+	def test_language_geo_list_route_exists(self):
+		"""
+		Ensure language list API route exists
+		"""
+		response = self.client.get('/api/language-geo/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_language_geo_detail(self):
+		"""
+		Ensure we can retrieve a newly created language object.
+		"""
+		test_language = Language.objects.create(name='Test language 001')
+		response = self.client.get('/api/language-geo/{}/'.format(test_language.id), format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		# self.assertEqual(len(response.data), 1)
 
 
 class CommunityAPITests(APITestCase):
@@ -118,7 +121,6 @@ class CommunityAPITests(APITestCase):
 		test_community = Community.objects.create(name='Test community 001')
 		response = self.client.get('/api/community/{}/'.format(test_community.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		# self.assertEqual(response.data['name'], 'Test community 001')
 
 
 	def test_community_list_route_exists(self):
@@ -177,7 +179,6 @@ class ChampionAPITests(APITestCase):
 		test_champion = Champion.objects.create(name='Test champion 001')
 		response = self.client.get('/api/champion/{}/'.format(test_champion.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		# self.assertEqual(response.data['name'], 'Test champion 001')
 
 
 	def test_champion_list_route_exists(self):
@@ -185,4 +186,33 @@ class ChampionAPITests(APITestCase):
 		Ensure champion list API route exists
 		"""
 		response = self.client.get('/api/champion/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class ArtAPITests(APITestCase):
+
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+
+	def test_art_detail_route_exists(self):
+		"""
+		Ensure Art Detail API route exists
+		"""
+		response = self.client.get('/api/art/0/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+	def test_art_detail(self):
+		"""
+		Ensure we can retrieve a newly created art object.
+		"""
+		test_art = Art.objects.create(node_id=0)
+		response = self.client.get('/api/art/{}/'.format(test_art.id), format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_art_list_route_exists(self):
+		"""
+		Ensure art list API route exists
+		"""
+		response = self.client.get('/api/art/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
