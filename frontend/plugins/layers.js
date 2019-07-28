@@ -1,5 +1,29 @@
 export default {
   layers: (map, self) => {
+    map.addLayer({
+      id: 'fn-nations copy',
+      type: 'symbol',
+      source: 'communities1',
+      layout: {
+        'text-optional': true,
+        'text-size': 13,
+        'icon-image': 'community',
+        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+        'text-padding': 0,
+        'text-offset': [0, 1.4],
+        'icon-optional': true,
+        'icon-size': 0.15,
+        'text-field': ['to-string', ['get', 'name']],
+        'icon-padding': 0
+      },
+      paint: {
+        'text-color': 'hsl(347, 0%, 0%)',
+        'text-halo-width': 1,
+        'text-halo-blur': 1,
+        'text-halo-color': 'hsl(0, 0%, 100%)',
+        'icon-opacity': 0.75
+      }
+    })
     map.addLayer(
       {
         id: 'fn-lang-areas-fill',
@@ -171,17 +195,28 @@ export default {
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
+        },
+        paint: {
+          'icon-opacity': 0.75
         }
       },
       'fn-nations copy'
     )
-
-    // map.addLayer(
-    //   {
-    //     id: 'fn-places-GITHUB2',
-    //     type: 'symbol',
-    //     source: 'places1',
-    //     layout: {
+    map.addLayer({
+      id: 'fn-lang-labels',
+      type: 'symbol',
+      source: 'langs1',
+      layout: {
+        'text-field': ['to-string', ['get', 'name']],
+        'text-size': 16,
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+      },
+      paint: {
+        'text-halo-width': 1,
+        'text-halo-blur': 1,
+        'text-halo-color': 'hsl(0, 0%, 100%)'
+      }
+    })
     //       'text-optional': true,
     //       'icon-optional': true,
     //       'text-ignore-placemnt': true,
@@ -189,22 +224,6 @@ export default {
     //       'symbol-spacing': 1,
     //       'text-allow-overlap': true,
     //       'icon-allow-overlap': true,
-    //       'text-size': 13,
-    //       'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
-    //       'text-field': ['get', 'name'],
-    //       'text-offset': [0, 1.3],
-    //       'icon-image': 'point_of_interest_icon',
-    //       'icon-size': 0.15
-    //     },
-    //     paint: {
-    //       'text-halo-color': 'hsl(0, 0%, 100%)',
-    //       'text-halo-width': 1,
-    //       'text-halo-blur': 1,
-    //       'text-color': 'hsl(0, 0%, 24%)'
-    //     }
-    //   },
-    //   'fn-nations copy'
-    // )
 
     map.on('click', 'fn-arts', function(e) {
       if (

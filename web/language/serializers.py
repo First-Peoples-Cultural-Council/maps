@@ -146,6 +146,13 @@ class LanguageGeoSerializer(GeoFeatureModelSerializer):
         geo_field = "geom"
 
 
+class CommunityGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name",)
+        geo_field = "point"
+
+
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
@@ -178,9 +185,11 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         # get most recent lna for each nation
         for lnadata in LNAData.objects.filter(community=value).select_related("lna"):
-            if not lnadata.lna: continue
-            lid = getattr(lnadata.lna, 'language_id')
-            if not lid: continue
+            if not lnadata.lna:
+                continue
+            lid = getattr(lnadata.lna, "language_id")
+            if not lid:
+                continue
             if lid in by_lang:
                 if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
                     by_lang[lid] = LNADataSerializer(lnadata).data

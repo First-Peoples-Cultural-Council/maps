@@ -10,6 +10,7 @@ from .serializers import (
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
+    CommunityGeoSerializer,
     ChampionSerializer,
 )
 from django.utils.decorators import method_decorator
@@ -47,6 +48,17 @@ class LanguageGeoList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class CommunityGeoList(generics.ListAPIView):
+    queryset = Community.objects.filter(point__isnull=False)
+    serializer_class = CommunityGeoSerializer
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = CommunityGeoSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class CommunityList(generics.ListAPIView):
 
     queryset = Community.objects.all()
@@ -70,7 +82,7 @@ class CommunityDetail(generics.RetrieveAPIView):
 
 class PlaceNameGeoList(generics.ListAPIView):
 
-    queryset = PlaceName.objects.all()
+    queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
