@@ -137,7 +137,7 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx', // hero
+        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx/draft', // hero
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -294,6 +294,10 @@ export default {
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
+      })
+      map.addSource('communities1', {
+        type: 'geojson',
+        data: '/api/community-geo/'
       })
       map.addSource('arts1', {
         type: 'geojson',

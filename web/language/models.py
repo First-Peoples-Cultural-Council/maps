@@ -50,7 +50,7 @@ class Language(BaseModel):
     color = models.CharField(max_length=31)
     geom = models.PolygonField(null=True, default=None, blank=True)
     bbox = models.PolygonField(null=True, default=None, blank=True)
-    audio_file = models.FileField(null=True)
+    audio_file = models.FileField(null=True, blank=True)
 
 
 class LanguageLink(models.Model):
@@ -76,7 +76,7 @@ class Community(BaseModel):
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
-    audio_file = models.FileField(null=True)
+    audio_file = models.FileField(null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Communities'
@@ -97,7 +97,7 @@ class LanguageMember(models.Model):
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
     other_name = models.CharField(max_length=255, default="")
-    audio_file = models.FileField(null=True)
+    audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
 
