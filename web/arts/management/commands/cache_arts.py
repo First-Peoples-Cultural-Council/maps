@@ -38,24 +38,27 @@ class Client:
 
         for row in results:
             if float(row[2]) and float(row[3]):  # only want spatial data.
+                name = row[1].strip()
                 if float(row[3]) > -110:
                     print(row[3], "is outside the allowable area for this map, skip.")
                     # skip any features that are past Alberta,
                     # there seems to be junk in the arts db.
                     continue
                 if (
-                    row[1].lower().endswith("band")
-                    or row[1].lower().endswith("nation")
-                    or row[1].lower().endswith("council")
+                    name.lower().endswith("band")
+                    or name.lower().endswith("nation")
+                    or name.lower().endswith("council")
+                    or name.lower().endswith("nations")
                 ):
                     # bands are duplicated in other layers, skip them.
+                    print(row[1], "is duplicated in another layer, skip.")
                     continue
                 geojson["features"].append(
                     {
                         "type": "Feature",
                         "properties": {
                             "type": row[0],
-                            "title": row[1],
+                            "title": name,
                             "node_id": row[4],
                         },
                         "geometry": {
