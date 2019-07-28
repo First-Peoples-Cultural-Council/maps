@@ -15,10 +15,16 @@ class BaseModel(models.Model):
 
 class LanguageFamily(BaseModel):
     pass
+    
+    class Meta:
+        verbose_name_plural = 'Language Families'
 
 
 class LanguageSubFamily(BaseModel):
     family = models.ForeignKey(LanguageFamily, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        verbose_name_plural = 'Language Sub Families'
 
 
 class Language(BaseModel):
@@ -71,6 +77,9 @@ class Community(BaseModel):
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
     audio_file = models.FileField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name_plural = 'Communities'
 
 
 class CommunityLink(models.Model):
