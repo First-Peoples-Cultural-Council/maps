@@ -1,6 +1,6 @@
 const addLangLayers = map => {
   map.addLayer({
-    id: 'fn-nations copy',
+    id: 'fn-nations',
     type: 'symbol',
     source: 'communities1',
     layout: {
@@ -44,7 +44,7 @@ const addLangLayers = map => {
         'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
       }
     },
-    'fn-nations copy'
+    'fn-nations'
   )
 
   map.addLayer(
@@ -69,7 +69,7 @@ const addLangLayers = map => {
         'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
       }
     },
-    'fn-nations copy'
+    'fn-nations'
   )
 
   map.addLayer(
@@ -93,7 +93,7 @@ const addLangLayers = map => {
         'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
       }
     },
-    'fn-nations copy'
+    'fn-nations'
   )
   map.addLayer(
     {
@@ -117,7 +117,7 @@ const addLangLayers = map => {
         'line-opacity': 0.75
       }
     },
-    'fn-nations copy'
+    'fn-nations'
   )
   map.addLayer(
     {
@@ -130,7 +130,7 @@ const addLangLayers = map => {
         'fill-opacity': 0.001
       }
     },
-    'fn-nations copy'
+    'fn-nations'
   )
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 }
@@ -153,7 +153,7 @@ export default {
           'text-halo-blur': 1
         }
       },
-      'fn-nations copy'
+      'fn-nations'
     )
 
     map.addLayer(
@@ -173,7 +173,7 @@ export default {
           'text-anchor': 'top'
         }
       },
-      'fn-nations copy'
+      'fn-nations'
     )
 
     map.addLayer(
@@ -197,7 +197,7 @@ export default {
           'icon-opacity': 0.75
         }
       },
-      'fn-nations copy'
+      'fn-nations'
     )
     map.addLayer({
       id: 'fn-lang-labels',
