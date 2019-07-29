@@ -290,7 +290,7 @@ export default {
             return this.$router.push({
               path: `/art/${encodeURIComponent(feature.properties.title)}`
             })
-          } else if (feature.layer.id === 'fn-nations copy') {
+          } else if (feature.layer.id === 'fn-nations') {
             done = true
             this.$router.push({
               path: `/content/${encodeURIComponent(feature.properties.name)}`
