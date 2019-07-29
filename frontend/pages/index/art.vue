@@ -8,6 +8,7 @@
             :number="publicArts.length"
             class="cursor-pointer mb-2"
             bgcolor="#848159"
+            type="part"
             @click.native.prevent="
               $router.push({
                 query: {
@@ -21,6 +22,7 @@
             :number="orgs.length"
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
+            type="org"
             @click.native.prevent="
               $router.push({
                 query: {
@@ -34,6 +36,7 @@
             :number="events.length"
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
+            type="event"
             @click.native.prevent="
               $router.push({
                 query: {

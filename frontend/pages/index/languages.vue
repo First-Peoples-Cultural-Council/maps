@@ -13,6 +13,7 @@
             :content="badgeContent"
             :number="languages.length"
             class="cursor-pointer"
+            type="language"
             @click.native.prevent="
               $router.push({
                 query: {
@@ -26,6 +27,7 @@
             :number="communities.length"
             class="cursor-pointer"
             bgcolor="#6c4264"
+            type="community"
             @click.native.prevent="
               $router.push({
                 query: {

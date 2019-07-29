@@ -29,6 +29,7 @@
             content="Languages"
             :number="languages.length"
             class="cursor-pointer"
+            type="language"
             @click.native.prevent="
               $router.push({
                 query: {
@@ -41,6 +42,7 @@
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
+            type="community"
             bgcolor="#6c4264"
             @click.native.prevent="
               $router.push({

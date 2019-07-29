@@ -8,6 +8,7 @@
             :number="places.length"
             class="cursor-pointer mb-1"
             bgcolor="#c46156"
+            type="poi"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
