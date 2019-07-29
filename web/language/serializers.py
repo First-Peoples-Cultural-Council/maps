@@ -10,6 +10,7 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
+    Art,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -50,7 +51,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox")
+        fields = ("name", "id", "color", "bbox", "sleeping")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -135,20 +136,28 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "some_speakers",
             "pop_total_value",
             "bbox",
+            "audio_file",
         )
 
 
 class LanguageGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "color")
+        fields = ("name", "color", "sleeping")
         geo_field = "geom"
+
+
+class CommunityGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name",)
+        geo_field = "point"
 
 
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_name", "id")
+        fields = ("name", "other_name", "id", "audio_file")
         geo_field = "point"
 
 
@@ -161,15 +170,13 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "point")
+        fields = ("name", "id", "point", "audio_file")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
-    languages = serializers.SlugRelatedField(
-        read_only=True, slug_field="name", many=True
-    )
+    languages = LanguageSerializer(read_only=True, many=True)
     # hide history lnas for now.
     # lnadata_set = LNADataSerializer(read_only=True, many=True)
     def to_representation(self, value):
@@ -177,11 +184,16 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         # get most recent lna for each nation
         for lnadata in LNAData.objects.filter(community=value).select_related("lna"):
-            if lnadata.lna.language_id in by_lang:
-                if lnadata.lna.year > by_lang[lnadata.lna.language_id]["lna"]["year"]:
-                    by_lang[lnadata.lna.language_id] = LNADataSerializer(lnadata).data
+            if not lnadata.lna:
+                continue
+            lid = getattr(lnadata.lna, "language_id")
+            if not lid:
+                continue
+            if lid in by_lang:
+                if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
+                    by_lang[lid] = LNADataSerializer(lnadata).data
             else:
-                by_lang[lnadata.lna.language_id] = LNADataSerializer(lnadata).data
+                by_lang[lid] = LNADataSerializer(lnadata).data
         rep["lna_by_language"] = by_lang
         return rep
 
@@ -194,7 +206,6 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "regions",
             "champion_set",
             "communitylink_set",
-            # "lnadata_set",
             "english_name",
             "other_names",
             "internet_speed",
@@ -204,5 +215,13 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "phone",
             "alt_phone",
             "fax",
+            "audio_file",
         )
+        geo_field = "point"
+        
+
+class ArtSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Art
+        fields = ("art_type", "title", "node_id")
         geo_field = "point"

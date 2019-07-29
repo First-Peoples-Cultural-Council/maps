@@ -8,18 +8,39 @@
             :number="publicArts.length"
             class="cursor-pointer mb-2"
             bgcolor="#848159"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'art'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Organization"
             :number="orgs.length"
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'org'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Events"
             :number="events.length"
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'event'
+                }
+              })
+            "
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -27,18 +48,33 @@
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <ArtsCard
-            v-for="(art, index) in arts"
-            :key="index"
-            :arttype="art.properties.type"
-            :name="art.properties.title"
-            class="mt-3 hover-left-move"
-            @click.native="
-              $router.push({
-                path: `/art/${encodeURIComponent(art.properties.title)}`
-              })
-            "
-          ></ArtsCard>
+          <div v-for="(art, index) in arts" :key="index">
+            <div v-if="$route.query.mode">
+              <ArtsCard
+                v-if="$route.query.mode === art.properties.type"
+                :arttype="art.properties.type"
+                :name="art.properties.title"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.title)}`
+                  })
+                "
+              ></ArtsCard>
+            </div>
+            <div v-else>
+              <ArtsCard
+                :arttype="art.properties.type"
+                :name="art.properties.title"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.title)}`
+                  })
+                "
+              ></ArtsCard>
+            </div>
+          </div>
         </section>
       </template>
     </SideBar>

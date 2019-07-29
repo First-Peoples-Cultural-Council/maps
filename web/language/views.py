@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, Champion
+from .models import Language, PlaceName, Community, Champion, Art
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from .serializers import (
@@ -10,7 +10,9 @@ from .serializers import (
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
+    CommunityGeoSerializer,
     ChampionSerializer,
+    ArtSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -47,6 +49,17 @@ class LanguageGeoList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class CommunityGeoList(generics.ListAPIView):
+    queryset = Community.objects.filter(point__isnull=False)
+    serializer_class = CommunityGeoSerializer
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = CommunityGeoSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class CommunityList(generics.ListAPIView):
 
     queryset = Community.objects.all()
@@ -70,7 +83,7 @@ class CommunityDetail(generics.RetrieveAPIView):
 
 class PlaceNameGeoList(generics.ListAPIView):
 
-    queryset = PlaceName.objects.all()
+    queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
@@ -83,3 +96,17 @@ class PlaceNameGeoList(generics.ListAPIView):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+      
+class ArtList(generics.ListAPIView):
+
+    queryset = Art.objects.all()
+    serializer_class = ArtSerializer
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        if "lang" in request.GET:
+            lang = Language.objects.get(pk=int(request.GET["lang"]))
+            queryset = queryset.filter(point__intersects=lang.geom)
+        serializer = ArtSerializer(queryset, many=True)
+        return Response(serializer.data)

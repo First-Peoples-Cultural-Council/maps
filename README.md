@@ -36,10 +36,18 @@ You can visit the Django admin at `http://localhost/admin`. The username is `adm
 
 `docker-compose exec web python manage.py bootstrap` to get languages.
 
+## Import arts 
+
+`docker-compose exec web python manage.py load_arts`
+
 
 ## Front End
 
-For development, setup is automatic.
+For development: 
+
+        For fixing Module Error (from ./node_modules/eslint-loader/index.js): 
+
+                docker-compose exec frontend yarn lint --fix
 
 To build & start for production:
 
@@ -47,9 +55,16 @@ To build & start for production:
         yarn run build
         yarn start
 
-To test:
+To test frontend:
 
         docker-compose exec frontend yarn run test
+
+## Back End
+
+To test backend API:
+
+        docker-compose exec web python manage.py test
+
 
 # Code Formatting / Standard
 

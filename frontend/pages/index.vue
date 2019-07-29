@@ -29,21 +29,36 @@
             content="Languages"
             :number="languages.length"
             class="cursor-pointer"
-            @click.native.prevent="goToLang"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'lang'
+                }
+              })
+            "
           ></Badge>
           <Badge
             content="Communities"
             :number="communities.length"
             class="cursor-pointer"
             bgcolor="#6c4264"
-            @click.native.prevent="goToCommunity"
+            @click.native.prevent="
+              $router.push({
+                query: {
+                  mode: 'comm'
+                }
+              })
+            "
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
-        <section class="language-section pl-3 pr-3">
+        <section
+          v-if="$route.query.mode !== 'comm'"
+          class="language-section pl-3 pr-3"
+        >
           <div v-for="language in languages" :key="'language' + language.id">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -55,7 +70,10 @@
             ></LanguageCard>
           </div>
         </section>
-        <section class="community-section pl-3 pr-3">
+        <section
+          v-if="$route.query.mode !== 'lang'"
+          class="community-section pl-3 pr-3"
+        >
           <div
             v-for="community in communities"
             :key="'community ' + community.name"
@@ -92,7 +110,7 @@ import ResetMap from '@/components/ResetMap.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds } from '@/mixins/map.js'
+import { inBounds, intersects } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 
@@ -119,11 +137,11 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx', // hero
+        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx/draft', // hero
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
-        zoom: 5
+        zoom: 4
       },
       GEOLOCATE_CONTROL: {
         show: true,
@@ -252,20 +270,50 @@ export default {
       this.map = map
       this.$store.commit('mapinstance/set', map)
     },
+    /**
+     * Handle clicks centrally so we can control precedence.
+     */
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
 
-      const feature = features.find(
-        feature => feature.layer.id === 'fn-lang-areas-shaded'
-      )
-
       console.log('Features on click', features)
+      let done = false
+      features.forEach(feature => {
+        if (
+          feature &&
+          feature.properties &&
+          (feature.properties.name || feature.properties.title)
+        ) {
+          console.log('found', feature.layer.id, feature)
+          if (feature.layer.id === 'fn-arts') {
+            done = true
+            return this.$router.push({
+              path: `/art/${encodeURIComponent(feature.properties.title)}`
+            })
+          } else if (feature.layer.id === 'fn-nations copy') {
+            done = true
+            this.$router.push({
+              path: `/content/${encodeURIComponent(feature.properties.name)}`
+            })
+          } else if (feature.layer.id === 'fn-places') {
+            done = true
+            this.$router.push({
+              path: `/place-names/${encodeURIComponent(
+                feature.properties.name
+              )}`
+            })
+          }
+        }
+      })
 
-      if (feature) {
-        this.$router.push({
-          path: `/languages/${encodeURIComponent(feature.properties.name)}`
+      if (!done)
+        features.forEach(feature => {
+          if (feature.layer.id === 'fn-lang-areas-shaded') {
+            this.$router.push({
+              path: `/languages/${encodeURIComponent(feature.properties.name)}`
+            })
+          }
         })
-      }
     },
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
@@ -276,6 +324,10 @@ export default {
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
+      })
+      map.addSource('communities1', {
+        type: 'geojson',
+        data: '/api/community-geo/'
       })
       map.addSource('arts1', {
         type: 'geojson',
@@ -297,6 +349,8 @@ export default {
         // this.updateData(map)
       })
       this.$eventHub.$emit('map-loaded', map)
+      map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
+      map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -348,13 +402,19 @@ export default {
     filterLanguages(bounds) {
       return this.languageSet.filter(lang => {
         const sw = lang.bbox.coordinates[0][0]
-        const nw = lang.bbox.coordinates[0][1]
         const ne = lang.bbox.coordinates[0][2]
-        const se = lang.bbox.coordinates[0][3]
-        return (
-          inBounds(bounds, sw) || inBounds(bounds, ne) || inBounds(bounds, nw),
-          inBounds(bounds, se)
-        )
+        const langBounds = {
+          _sw: {
+            lng: sw[0],
+            lat: sw[1]
+          },
+          _ne: {
+            lng: ne[0],
+            lat: ne[1]
+          }
+        }
+
+        return intersects(bounds, langBounds)
       })
     },
     filterCommunities(bounds) {

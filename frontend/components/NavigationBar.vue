@@ -48,7 +48,6 @@
                 >Login</a
               >
             </li>
-
             <li class="close-nav cursor-pointer" @click="closeNav">
               <a href="#">
                 <img src="@/assets/images/close_icon.svg" alt="Close"

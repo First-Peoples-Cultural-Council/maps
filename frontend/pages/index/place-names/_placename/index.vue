@@ -1,16 +1,20 @@
 <template>
   <div>
     <PlacesDetailCard :name="place.properties.name"></PlacesDetailCard>
+    <hr class="sidebar-divider" />
+    <Filters class="mb-4"></Filters>
   </div>
 </template>
 
 <script>
 import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
-    PlacesDetailCard
+    PlacesDetailCard,
+    Filters
   },
   computed: {
     mapinstance() {

@@ -19,14 +19,11 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              Languages
+              Language
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
             </h5>
-          </div>
-          <div class="d-inline-block" @click.prevent.stop="handlePronounce">
-            <CardBadge content="Pronounce"></CardBadge>
           </div>
         </div>
       </template>
@@ -42,11 +39,9 @@
 
 <script>
 import Card from '@/components/Card.vue'
-import CardBadge from '@/components/CardBadge.vue'
 export default {
   components: {
-    Card,
-    CardBadge
+    Card
   },
   props: {
     name: {

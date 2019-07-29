@@ -9,9 +9,9 @@ import json
 
 @api_view()
 def all(request):
-    if not os.path.exists("tmp/arts.json"):
-        open("tmp/arts.json", "w").write(json.dumps(Client().update()))
-    arts = json.loads(open("tmp/arts.json", "r").read())
+    if not os.path.exists("web/static/web/arts1.json"):
+        open("web/static/web/arts1.json", "w").write(json.dumps(Client().update()))
+    arts = json.loads(open("web/static/web/arts1.json", "r").read())
 
     # if "lang" in request.GET:
     #     languages=Language.objects.get(pk=request.GET.get("lang"))
