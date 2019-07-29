@@ -206,12 +206,15 @@ export default {
       const el = document.createElement('div')
       el.innerHTML = html
       el.firstChild.addEventListener('click', function(e) {
+        e.preventDefault()
+        e.stopPropagation()
         map.flyTo({
           center: [coords[0], coords[1]],
           zoom: map.getZoom() + 1,
           speed: 1,
           curve: 1
         })
+        return false
       })
       return el.firstChild
     },

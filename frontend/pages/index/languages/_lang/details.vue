@@ -22,7 +22,6 @@
           <tr>
             <th>Language Family</th>
             <th>Language Sub Family</th>
-            <th>Region</th>
           </tr>
         </thead>
         <tbody>
@@ -35,11 +34,6 @@
             <td>
               <LanguageDetailBadge
                 :content="language.sub_family.family.name"
-              ></LanguageDetailBadge>
-            </td>
-            <td>
-              <LanguageDetailBadge
-                content="Northeastern BC"
               ></LanguageDetailBadge>
             </td>
           </tr>
@@ -164,6 +158,7 @@ export default {
 
 .lna-table {
   border: 1px solid #ebe6dc;
+  margin-bottom: 0;
 }
 .lna-table-thead {
   font-size: 0.8em;
