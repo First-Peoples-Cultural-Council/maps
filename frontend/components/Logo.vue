@@ -12,7 +12,7 @@
 <style>
 .logo img {
   display: inline-block;
-  width: 100%;
+  width: 375px;
   height: auto;
 }
 </style>

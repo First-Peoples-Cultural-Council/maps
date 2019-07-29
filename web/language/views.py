@@ -6,8 +6,11 @@ from rest_framework.response import Response
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
-    PlaceNameSerializer,
+    LanguageDetailSerializer,
+    PlaceNameGeoSerializer,
     CommunitySerializer,
+    CommunityDetailSerializer,
+    CommunityGeoSerializer,
     ChampionSerializer,
     ArtSerializer,
 )
@@ -30,6 +33,11 @@ class LanguageList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class LanguageDetail(generics.RetrieveAPIView):
+    serializer_class = LanguageDetailSerializer
+    queryset = Language.objects.all()
+
+
 class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
@@ -38,6 +46,17 @@ class LanguageGeoList(generics.ListAPIView):
     def list(self, request):
         queryset = self.get_queryset()
         serializer = LanguageGeoSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class CommunityGeoList(generics.ListAPIView):
+    queryset = Community.objects.filter(point__isnull=False)
+    serializer_class = CommunityGeoSerializer
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = CommunityGeoSerializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -57,10 +76,15 @@ class CommunityList(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class PlaceNameList(generics.ListAPIView):
+class CommunityDetail(generics.RetrieveAPIView):
+    serializer_class = CommunityDetailSerializer
+    queryset = Community.objects.all()
 
-    queryset = PlaceName.objects.all()
-    serializer_class = PlaceNameSerializer
+
+class PlaceNameGeoList(generics.ListAPIView):
+
+    queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
+    serializer_class = PlaceNameGeoSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
@@ -69,24 +93,10 @@ class PlaceNameList(generics.ListAPIView):
             lang = Language.objects.get(pk=int(request.GET["lang"]))
             print(lang.geom)
             queryset = queryset.filter(point__intersects=lang.geom)
-        serializer = PlaceNameSerializer(queryset, many=True)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-
-class ChampionList(generics.ListAPIView):
-
-    queryset = Champion.objects.all()
-    serializer_class = ChampionSerializer
-
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        if "lang" in request.GET:
-            queryset = queryset.filter(language_id=lang)
-        serializer = ChampionSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
+      
 class ArtList(generics.ListAPIView):
 
     queryset = Art.objects.all()

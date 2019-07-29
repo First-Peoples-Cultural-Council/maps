@@ -1,14 +1,35 @@
 <template>
   <div>
-    <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritages">
-      <section class="ml-2 mr-2 mt-2 pt-2">
-        <PlacesCard
-          v-for="(place, index) in places"
-          :key="index"
-          :name="place.properties.title"
-          class="mt-2"
-        ></PlacesCard>
-      </section>
+    <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritage">
+      <template v-slot:content>
+        <section class="pl-3 pr-3 pt-3">
+          <Badge
+            content="Points Of Interest"
+            :number="places.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#c46156"
+          ></Badge>
+        </section>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:cards>
+        <section class="pl-3 pr-3">
+          <PlacesCard
+            v-for="(place, index) in places"
+            :key="index"
+            :name="place.properties.name"
+            class="mt-3 hover-left-move"
+            @click.native="
+              $router.push({
+                path: `/place-names/${encodeURIComponent(
+                  place.properties.name
+                )}`
+              })
+            "
+          ></PlacesCard>
+        </section>
+      </template>
     </SideBar>
     <DetailSideBar
       v-else-if="this.$route.name === 'index-heritages-heritage'"
@@ -25,20 +46,21 @@
 import SideBar from '@/components/SideBar.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
+import Badge from '@/components/Badge.vue'
+import Filters from '@/components/Filters.vue'
 
 export default {
   components: {
     SideBar,
     DetailSideBar,
-    PlacesCard
+    PlacesCard,
+    Badge,
+    Filters
   },
   computed: {
     places() {
       return this.$store.state.places.places
     }
-  },
-  mounted() {
-    console.log('places', this.places)
   }
 }
 </script>

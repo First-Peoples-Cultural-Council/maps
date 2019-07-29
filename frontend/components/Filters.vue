@@ -1,13 +1,25 @@
 <template>
   <div class="filters-container pl-2 pr-2">
     <div class="cursor-pointer ml-1" @click="showCollapse = !showCollapse">
-      <img src="@/assets/images/filter_icon.svg" alt="Filter" />
-      <span class="d-inline-block font-08">Filters</span>
+      <div>
+        <img src="@/assets/images/filter_icon.svg" alt="Filter" />
+        <span class="d-inline-block font-08">Filters</span>
+        <div class="float-right" style="line-height: 20px;">
+          <img
+            v-if="!showCollapse"
+            src="@/assets/images/arrow_down_icon.svg"
+            alt="Open"
+          />
+          <img v-else src="@/assets/images/arrow_up_icon.svg" alt="Close" />
+        </div>
+      </div>
+      <div></div>
     </div>
     <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
       <LayerToggle
-        layer-name="Language Regions"
-        layer="fn-lang-areas-fill"
+        v-for="layer in layers"
+        :id="layer.id"
+        :key="'layer' + layer.id"
         class="mb-1"
       ></LayerToggle>
     </b-collapse>
@@ -23,6 +35,11 @@ export default {
   data() {
     return {
       showCollapse: false
+    }
+  },
+  computed: {
+    layers() {
+      return this.$store.state.layers.layers
     }
   }
 }

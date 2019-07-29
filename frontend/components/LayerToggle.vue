@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="cursor-pointer" @click="toggleLayer">
-      <span class="font-08 d-inline-block"> {{ layerName }}</span>
+      <span class="font-08 d-inline-block"> {{ layer.name }}</span>
       <span class="float-right">
         <img v-if="on" src="@/assets/images/on.svg" alt="On" />
         <img v-else src="@/assets/images/off.svg" alt="Off" />
@@ -13,28 +13,37 @@
 <script>
 export default {
   props: {
-    layerName: {
-      default: '',
-      type: String
-    },
-    layer: {
-      default: '',
-      type: String
+    id: {
+      type: Number,
+      default: null
     }
   },
-  data() {
-    return {
-      on: true
+  computed: {
+    layers() {
+      return this.$store.state.layers.layers
+    },
+    layer() {
+      return this.layers.find(l => l.id === this.id)
+    },
+    on() {
+      return this.layer.active
     }
   },
   methods: {
     toggleLayer() {
-      this.on = !this.on
+      this.$store.commit('layers/toggleLayer', this.layer)
+      console.log('Toggle layiner')
       this.$eventHub.whenMap(map => {
-        if (this.on) {
-          map.setLayoutProperty(this.layer, 'visibility', 'visible')
-        } else {
-          map.setLayoutProperty(this.layer, 'visibility', 'none')
+        if (map) {
+          if (this.on) {
+            this.layer.layerNames.map(l => {
+              map.setLayoutProperty(l, 'visibility', 'visible')
+            })
+          } else {
+            this.layer.layerNames.map(l => {
+              map.setLayoutProperty(l, 'visibility', 'none')
+            })
+          }
         }
       })
     }

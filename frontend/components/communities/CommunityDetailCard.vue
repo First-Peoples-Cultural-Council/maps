@@ -17,9 +17,7 @@
             >
               community
             </h5>
-            <h5
-              class="font-09 m-0 p-0 color-gray text-uppercase font-weight-bold"
-            >
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
             </h5>
           </div>
@@ -38,7 +36,7 @@
           <img
             v-if="!hover"
             class="ml-1"
-            src="@/assets/images/return_icon.svg"
+            src="@/assets/images/return_icon_hover.svg"
             alt="Go"
           />
           <img
@@ -82,9 +80,7 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.push({
-        path: '/first-nations'
-      })
+      this.$router.go(-1)
     },
     handleMouseOver() {
       this.hover = true
@@ -112,7 +108,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: var(--color-beige);
+  background-color: #c46156;
   display: flex;
   align-items: center;
   height: 35px;
@@ -124,6 +120,7 @@ export default {
 .fpcc-card-more {
   padding: 0.3em;
   font-size: 0.7em;
+  color: white;
 }
 
 .fpcc-card-more:hover {

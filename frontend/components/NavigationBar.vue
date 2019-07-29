@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="nav-container">
     <div class="navbar-container cursor-pointer" @click="openNav">
       <nav class="navbar-icon-container">
         <img
@@ -25,12 +25,14 @@
               <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/languages" @click.native="handleNavLink"
+              <nuxt-link to="/languages" @click.native.prevent="handleNavLink"
                 >Languages</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link to="/first-nations" @click.native="handleNavLink"
+              <nuxt-link
+                to="/first-nations"
+                @click.native.prevent="handleNavLink"
                 >First Nations</nuxt-link
               >
             </li>
@@ -46,7 +48,6 @@
                 >Login</a
               >
             </li>
-            -->
             <li class="close-nav cursor-pointer" @click="closeNav">
               <a href="#">
                 <img src="@/assets/images/close_icon.svg" alt="Close"

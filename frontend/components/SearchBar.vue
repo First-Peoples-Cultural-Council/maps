@@ -6,7 +6,7 @@
         v-model="searchQuery"
         type="search"
         class="search-input"
-        placeholder="Search for a language..."
+        placeholder="Search for a language, community, or place name..."
         autocomplete="off"
         @update="handleSearchUpdate"
         @focus="handleInputFocus"
@@ -197,7 +197,7 @@ export default {
       this.searchQuery = data
       if (type === 'Places') {
         return this.$router.push({
-          path: `/place-names`
+          path: `/place-names/${encodeURIComponent(data)}`
         })
       }
 
@@ -215,7 +215,7 @@ export default {
 
       if (type === 'Arts') {
         return this.$router.push({
-          path: `/art`
+          path: `/art/${encodeURIComponent(data)}`
         })
       }
     }
@@ -254,7 +254,7 @@ export default {
   width: var(--searchbar-width);
   max-width: var(--searchbar-width);
   max-height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .popover-body {
@@ -273,5 +273,9 @@ export default {
 }
 .search-result-group {
   font-weight: bold;
+}
+
+.search-input::placeholder {
+  color: rgba(0, 0, 0, 0.2);
 }
 </style>

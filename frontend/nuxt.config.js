@@ -17,7 +17,7 @@ module.exports = {
         body: true
       }
     ],
-    title: "%s | First Peoples' Cultural Council",
+    title: "First Peoples' Language Map",
     meta: [
       {
         charset: 'utf-8'
@@ -85,9 +85,6 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {
-    debug: true
-  },
 
   /*
    ** Build configuration

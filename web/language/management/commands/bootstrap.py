@@ -20,6 +20,7 @@ import json
 from decimal import Decimal
 from datetime import datetime
 from django.contrib.gis.geos import Point
+from django.core.files import File
 
 TABLE_MAP = {
     "tm_language_region": Language,
@@ -30,6 +31,69 @@ TABLE_MAP = {
     "tm_language": LanguageFamily,
 }
 
+TAX_TERMS = (
+    (1, 1, "South Coast", "", "full_html", 0, "1490fc86-f82b-4083-a927-deb7a110a3ea"),
+    (2, 1, "Central Coast", "", "full_html", 0, "0c55c6f0-984d-4e39-8cc0-96988f603449"),
+    (3, 1, "North Coast", "", "full_html", 0, "3a00835b-5f66-41d3-8c27-cec2d28fe49b"),
+    (
+        4,
+        1,
+        "Vancouver Island",
+        "",
+        "full_html",
+        0,
+        "451d13ea-0a81-4d77-bba3-c4a98686e262",
+    ),
+    (
+        5,
+        1,
+        "Lower Mainland",
+        "",
+        "full_html",
+        0,
+        "3ab09683-1d0e-4949-8644-7efc74ee157f",
+    ),
+    (6, 1, "Fraser Valley", "", "full_html", 0, "a931767a-2092-4205-a941-c7735e6dc557"),
+    (7, 1, "Interior", "", "full_html", 0, "d434ce1d-e531-4ff6-9a4e-c1b4949a1bde"),
+    (
+        8,
+        1,
+        "Thompson/Okanagan",
+        "",
+        "full_html",
+        0,
+        "24a33138-bd17-4c90-90d8-a962b8bb75f9",
+    ),
+    (
+        9,
+        1,
+        "Kootenay Region",
+        "",
+        "full_html",
+        0,
+        "75b89b7a-db41-44bd-a953-6016a1a96df4",
+    ),
+    (10, 1, "Ten", "", "full_html", 0, "830d7f34-ad26-4a84-bb56-bc14d0fa894c"),
+    (
+        11,
+        1,
+        "Northeastern BC",
+        "",
+        "full_html",
+        0,
+        "2401376e-f183-4d97-a6cb-98a156a91725",
+    ),
+    (
+        12,
+        1,
+        "Nachako/Stikine",
+        "",
+        "full_html",
+        0,
+        "f907fa16-5b90-45aa-b23d-5cbb71fbb23c",
+    ),
+)
+
 
 class DedruplifierClient:
     def query(self, sql):
@@ -39,7 +103,9 @@ class DedruplifierClient:
         return results
 
     def load(self):
-
+        """
+        Populate Django DB based on Drupal output.
+        """
         self.map_drupal_items("tm_language", LanguageFamily)
 
         self.map_drupal_items(
@@ -57,12 +123,23 @@ class DedruplifierClient:
                 "field_tm_other_lang_names_value": "other_names",
                 "field_tm_lr_firstvoi_link_url": "fv_archive_link",
                 "field_tm_lr_state_note_value": "notes",
+                "field_tm_lr_sleeping": "sleeping",
             },
         ):
             for i, v in enumerate(rec.get("field_tm_lr_link_title", [])):
                 title = rec["field_tm_lr_link_title"][i]
                 url = rec["field_tm_lr_link_url"][i]
                 LanguageLink.objects.get_or_create(language=obj, title=title, url=url)
+
+                if "field_tm_region_tid" in rec:
+                    # regions are saved in Drupal's taxonomy terms, dig them out.
+                    regions = []
+                    for term_id in rec["field_tm_region_tid"]:
+                        for t in TAX_TERMS:
+                            if t[0] == term_id:
+                                regions.append(t[2])
+                    obj.regions = ",".join(regions)
+                    obj.save()
 
         for rec, obj in self.map_drupal_items(
             "tm_fn_group",
@@ -97,14 +174,28 @@ class DedruplifierClient:
                 url = rec["field_tm_fn_grp_links_url"][i]
                 CommunityLink.objects.get_or_create(community=obj, title=title, url=url)
 
-        self.map_drupal_items(
+            # regions are saved in Drupal's taxonomy terms, dig them out.
+            regions = []
+            for term_id in rec["field_tm_region_tid"]:
+                for t in TAX_TERMS:
+                    if t[0] == term_id:
+                        regions.append(t[2])
+            obj.regions = "".join(regions)
+
+        for rec, obj in self.map_drupal_items(
             "tm_placename",
             PlaceName,
             {
                 "field_tm_pn_othername_value": "other_name",
                 "field_tm_pn_location_lat": "point",
             },
-        )
+        ):
+            if "field_tm_pn_audio_fid_filename" in rec:
+                f = open(
+                    os.path.join("tmp/files", rec["field_tm_pn_audio_fid_filename"][0])
+                )
+                obj.audio_file.save(rec["field_tm_pn_audio_fid_filename"][0], File(f))
+                obj.save()
 
         self.map_drupal_items(
             "tm_champ",
@@ -127,6 +218,21 @@ class DedruplifierClient:
             {
                 "field_tm_lna1_lang_target_id": "language",
                 "field_tm_lna1_ass_year_value": "year",
+                # "field_tm_lna1_challs_value": "challs",
+                # "field_tm_lna1_dial_value": "dial",
+                # "field_tm_lna1_funding_app_type_value": "funding_type",
+                # "field_tm_lna1_lang_comm_value": "comm",
+                # "field_tm_lna1_lna_contact_email_value": "contact_email",
+                # "field_tm_lna1_lna_contact_fax_value": "contact_fax",
+                # "field_tm_lna1_lna_contact_org_value": "contact_org",
+                # "field_tm_lna1_lna_contact_ph_value": "contact_phone",
+                # "field_tm_lna1_lna_contact_value": "contact_name",
+                # "field_tm_lna1_opps_value": "opps",
+                # "field_tm_lna1_status_value": "status",
+                # "field_tm_lna1_status_date_value": "status_date",
+                # "field_tm_lna1_subd_date_value": "submitted_date",
+                # "field_tm_lna1_tot_errors_value": "num_errors",
+                # "field_tm_lna1_subd_value": "is_submitted",
             },
         )
 
@@ -153,6 +259,19 @@ class DedruplifierClient:
                 rec["field_tm_lna2_on_lrn_sum_value"][0]
                 + rec["field_tm_lna2_off_lrn_sum_value"][0]
             )
+            # count schools.
+            obj.num_schools = 0
+            if rec["field_tm_lna2_have_school_value"][0] == "yes":
+                obj.num_schools += 1
+            if rec["field_tm_lna2_have_school_2_value"][0] == "yes":
+                obj.num_schools += 1
+            if rec["field_tm_lna2_have_school_3_value"][0] == "yes":
+                obj.num_schools += 1
+
+            obj.nest_hours = rec.get("field_tm_lna2_lnest_hours_value", [0])[0]
+            obj.oece_hours = rec.get("field_tm_lna2_oece_hours_value", [0])[0]
+            obj.info = rec.get("field_tm_lna2_pop_add_info_value", [0])[0]
+            obj.school_hours = rec.get("field_tm_lna2_school_hrs_value", [0])[0]
             obj.save()
 
     def load_lnadata(self):
@@ -225,6 +344,8 @@ class DedruplifierClient:
             cursorclass=pymysql.cursors.DictCursor,
         )
 
+        os.makedirs("tmp/files", exist_ok=True)
+
         """
         DeDruplify - remove the Drupal node schema with foreign fields and save flat JSON
         """
@@ -242,6 +363,23 @@ class DedruplifierClient:
             print("type:", k, len(v))
         tables = [r["Tables_in_fpmaps_d7_live"] for r in self.query("show tables;")[:]]
 
+        # download files.
+        _files = {}
+        for row in self.query("select * from file_managed"):
+            print(row)
+            uri = row["uri"].replace("public://", "")
+            _files[row["fid"]] = uri
+            output_filename = os.path.join("tmp/files", uri)
+            output_dir = os.path.dirname(output_filename)
+            os.makedirs(output_dir, exist_ok=True)
+            cmd = "wget https://maps.fpcc.ca/sites/default/files/{} -P {}".format(
+                uri, output_dir
+            )
+            print(cmd)
+            if not os.path.exists(output_filename):
+                os.system(cmd)
+        # download from https://maps.fpcc.ca/sites/default/files/<path>
+        sys.exit()
         """
         mysql> select * from field_revision_field_tm_champ_link;
         +-------------+----------+---------+-----------+-------------+----------+-------+-------------------------+---------------------------+--------------------------------+
@@ -287,6 +425,13 @@ class DedruplifierClient:
             tmp = {}
             tmp.update(rec)
             for k, v in tmp.items():
+
+                # files
+                if k.endswith("_fid"):
+                    print(k, rec[k])
+                    newval = [_files[v[0]]]
+                    rec[k + "_filename"] = newval
+                # other fields
                 if k.endswith("target_id"):
                     rec[k + "_title"] = []
                     rec[k + "_type"] = []
@@ -312,6 +457,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         c = DedruplifierClient()
-        # c.update()
+        c.update()
         c.load()
         c.load_lnadata()
