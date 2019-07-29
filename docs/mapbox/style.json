@@ -1,26 +1,27 @@
 {
     "version": 8,
-    "name": "First Languages Eliana",
+    "name": "First Languages Hero",
     "metadata": {
         "mapbox:type": "default",
         "mapbox:origin": "outdoors-v11",
         "mapbox:autocomposite": true,
         "mapbox:groups": {
-            "1444855786460.0557": {"name": "Roads", "collapsed": false},
+            "1444855786460.0557": {"name": "Roads", "collapsed": true},
             "1444855799204.86": {"name": "Bridges", "collapsed": true},
             "3b87da06ac6b658e2d1d61bde21a0507": {
-                "name": "Group",
-                "collapsed": true
-            }
+                "name": "reserves",
+                "collapsed": false
+            },
+            "b1c70e9c93a76df242f05311b1691b49": {"name": "languages"}
         },
         "mapbox:sdk-support": {
             "js": "0.54.0",
-            "android": "6.7.0",
-            "ios": "4.7.0"
+            "android": "7.4.0",
+            "ios": "4.10.0"
         }
     },
-    "center": [-121.17024099440505, 51.52725530180703],
-    "zoom": 5.76,
+    "center": [-123.36825551014988, 51.52624617533422],
+    "zoom": 6.307441554927194,
     "bearing": 0,
     "pitch": 0,
     "sources": {
@@ -30,11 +31,11 @@
             "tileSize": 256
         },
         "composite": {
-            "url": "mapbox://countable-web.aonaewl8,mapbox.mapbox-streets-v8,countable-web.67m1lij2,countable-web.04mqu4ry,countable-web.4dan2uyg,countable-web.dgjp4u59,mapbox.mapbox-terrain-v2",
+            "url": "mapbox://mapbox.mapbox-streets-v8,countable-web.8njc1kxy,countable-web.67m1lij2,countable-web.04mqu4ry,countable-web.4dan2uyg,mapbox.mapbox-terrain-v2",
             "type": "vector"
         }
     },
-    "sprite": "mapbox://sprites/countable-web/cjydv03i63gcn1clj8bbhqiq7/75hiz17kybqxok208n5a8dnky",
+    "sprite": "mapbox://sprites/countable-web/cjyhw87ck01w01cp4u35a73lx/7h0fevwp467vrfzhbfvzqmxc3",
     "glyphs": "mapbox://fonts/countable-web/{fontstack}/{range}.pbf",
     "layers": [
         {
@@ -56,7 +57,7 @@
                     ["get", "class"],
                     "snow",
                     "hsl(0, 0%, 100%)",
-                    "hsl(52, 0%, 93%)"
+                    "hsl(170, 20%, 93%)"
                 ],
                 "fill-opacity": [
                     "interpolate",
@@ -204,7 +205,7 @@
             "id": "3d-land",
             "type": "hillshade",
             "source": "mapbox://mapbox.terrain-rgb",
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
                 "hillshade-exaggeration": [
                     "interpolate",
@@ -227,9 +228,9 @@
             "source-layer": "landuse_overlay",
             "minzoom": 5,
             "filter": ["==", ["get", "class"], "national_park"],
-            "layout": {"visibility": "none"},
+            "layout": {},
             "paint": {
-                "fill-color": "hsl(72, 23%, 81%)",
+                "fill-color": "hsl(144, 23%, 89%)",
                 "fill-opacity": [
                     "interpolate",
                     ["linear"],
@@ -445,7 +446,7 @@
             "source-layer": "contour",
             "minzoom": 11,
             "filter": ["!=", ["get", "index"], -1],
-            "layout": {"visibility": "none"},
+            "layout": {},
             "paint": {
                 "line-opacity": [
                     "interpolate",
@@ -461,9 +462,9 @@
                     ["linear"],
                     ["zoom"],
                     0,
-                    "hsl(203, 95%, 40%)",
+                    "hsl(203, 28%, 45%)",
                     22,
-                    "hsl(203, 95%, 40%)"
+                    "hsl(203, 25%, 40%)"
                 ],
                 "line-width": [
                     "interpolate",
@@ -500,6 +501,28 @@
             "paint": {"fill-color": "hsl(35, 12%, 89%)"}
         },
         {
+            "id": "cliff",
+            "type": "line",
+            "source": "composite",
+            "source-layer": "structure",
+            "minzoom": 15,
+            "filter": ["==", ["get", "class"], "cliff"],
+            "layout": {"line-cap": "round", "line-join": "round"},
+            "paint": {
+                "line-opacity": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    15,
+                    0,
+                    15.25,
+                    1
+                ],
+                "line-width": 10,
+                "line-pattern": "cliff"
+            }
+        },
+        {
             "id": "land-structure-line",
             "type": "line",
             "source": "composite",
@@ -522,28 +545,6 @@
                     40
                 ],
                 "line-color": "hsl(35, 12%, 89%)"
-            }
-        },
-        {
-            "id": "cliff",
-            "type": "line",
-            "source": "composite",
-            "source-layer": "structure",
-            "minzoom": 15,
-            "filter": ["==", ["get", "class"], "cliff"],
-            "layout": {"line-cap": "round", "line-join": "round"},
-            "paint": {
-                "line-opacity": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    15,
-                    0,
-                    15.25,
-                    1
-                ],
-                "line-width": 10,
-                "line-pattern": "cliff"
             }
         },
         {
@@ -627,7 +628,7 @@
                     9,
                     1,
                     14,
-                    8
+                    3
                 ],
                 "line-offset": [
                     "interpolate",
@@ -2021,10 +2022,10 @@
                     "interpolate",
                     ["exponential", 1.5],
                     ["zoom"],
-                    15,
+                    16,
                     2.5,
                     18,
-                    7
+                    5
                 ],
                 "line-color": [
                     "match",
@@ -2033,7 +2034,7 @@
                     "hsl(230, 85%, 67%)",
                     ["corridor", "crossing", "sidewalk"],
                     "hsl(230, 17%, 82%)",
-                    "hsl(50, 100%, 40%)"
+                    "hsl(50, 7%, 40%)"
                 ],
                 "line-opacity": ["step", ["zoom"], 0, 14, 1]
             }
@@ -2621,7 +2622,7 @@
                     "match",
                     ["get", "class"],
                     "motorway_link",
-                    "hsl(26, 67%, 70%)",
+                    "hsl(26, 7%, 70%)",
                     "trunk_link",
                     "hsl(46, 69%, 68%)",
                     "hsl(46, 69%, 68%)"
@@ -2896,7 +2897,7 @@
                     "match",
                     ["get", "class"],
                     "motorway",
-                    "hsl(26, 67%, 70%)",
+                    "hsl(26, 0%, 76%)",
                     "trunk",
                     "hsl(46, 69%, 68%)",
                     "hsl(46, 69%, 68%)"
@@ -3112,7 +3113,7 @@
                     "match",
                     ["get", "class"],
                     "motorway_link",
-                    "hsl(26, 67%, 70%)",
+                    "hsl(26, 7%, 70%)",
                     "trunk_link",
                     "hsl(46, 69%, 68%)",
                     "hsl(46, 69%, 68%)"
@@ -3385,7 +3386,7 @@
                 ]
             },
             "paint": {
-                "text-color": "hsl(100, 60%, 28%)",
+                "text-color": "hsl(203, 25%, 28%)",
                 "text-halo-width": 1,
                 "text-halo-color": "hsla(0, 0%, 100%, 0.5)"
             }
@@ -4370,11 +4371,12 @@
             }
         },
         {
-            "id": "fn-lang-area-outlines fade",
+            "id": "fn-lang-area-outlines-fade-GITHUB",
             "type": "line",
+            "metadata": {"mapbox:group": "b1c70e9c93a76df242f05311b1691b49"},
             "source": "composite",
             "source-layer": "langs-0brkvj",
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
                 "line-color": ["get", "color"],
                 "line-blur": ["interpolate", ["linear"], ["zoom"], 0, 1, 12, 6],
@@ -4400,11 +4402,12 @@
             }
         },
         {
-            "id": "fn-lang-area-outlines 2",
+            "id": "fn-lang-area-outlines-2-GITHUB",
             "type": "line",
+            "metadata": {"mapbox:group": "b1c70e9c93a76df242f05311b1691b49"},
             "source": "composite",
             "source-layer": "langs-0brkvj",
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
                 "line-color": ["get", "color"],
                 "line-blur": ["interpolate", ["linear"], ["zoom"], 0, 1, 12, 3],
@@ -4430,11 +4433,12 @@
             }
         },
         {
-            "id": "fn-lang-area-outlines 1",
+            "id": "fn-lang-area-outlines-1-GITHUB",
             "type": "line",
+            "metadata": {"mapbox:group": "b1c70e9c93a76df242f05311b1691b49"},
             "source": "composite",
             "source-layer": "langs-0brkvj",
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
                 "line-color": ["get", "color"],
                 "line-blur": 0,
@@ -4460,11 +4464,12 @@
             }
         },
         {
-            "id": "fn-lang-areas",
+            "id": "fn-lang-areas-GITHUB",
             "type": "fill",
+            "metadata": {"mapbox:group": "b1c70e9c93a76df242f05311b1691b49"},
             "source": "composite",
             "source-layer": "langs-0brkvj",
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
                 "fill-color": [
                     "interpolate",
@@ -4585,7 +4590,7 @@
             }
         },
         {
-            "id": "fn-nations",
+            "id": "fn-nations-old",
             "type": "symbol",
             "source": "composite",
             "source-layer": "nations-1b7nkd",
@@ -4618,12 +4623,12 @@
             "layout": {
                 "text-optional": true,
                 "text-size": 13,
-                "icon-image": "home",
+                "icon-image": "community",
                 "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
                 "text-padding": 0,
                 "text-offset": [0, 1.4],
                 "icon-optional": true,
-                "icon-size": 0.5,
+                "icon-size": 0.15,
                 "text-field": ["to-string", ["get", "title"]],
                 "icon-padding": 0
             },
@@ -4632,21 +4637,23 @@
                 "text-halo-width": 1,
                 "text-halo-blur": 1,
                 "text-halo-color": "hsl(0, 0%, 100%)",
-                "icon-opacity": 0.5
+                "icon-opacity": 0.75
             }
         },
         {
-            "id": "fn-places",
+            "id": "fn-places-GITHUB",
             "type": "symbol",
             "source": "composite",
-            "source-layer": "places-points-birtnm",
+            "source-layer": "places-cxlu9n",
             "layout": {
                 "text-optional": true,
                 "text-size": 13,
                 "text-font": ["Open Sans Italic", "Arial Unicode MS Regular"],
-                "icon-image": "dot-10",
+                "text-field": ["get", "name"],
                 "text-offset": [0, 1.3],
-                "text-field": ["get", "title"]
+                "icon-image": "point_of_interest_icon",
+                "icon-size": 0.15,
+                "visibility": "none"
             },
             "paint": {
                 "text-halo-color": "hsl(0, 0%, 100%)",
@@ -4662,30 +4669,19 @@
             "source-layer": "langs-0brkvj",
             "layout": {
                 "text-field": ["to-string", ["get", "title"]],
-                "text-size": 16
+                "text-size": 16,
+                "visibility": "none"
             },
             "paint": {
                 "text-halo-width": 1,
                 "text-halo-blur": 1,
                 "text-halo-color": "hsl(0, 0%, 100%)"
             }
-        },
-        {
-            "id": "geo-076dbc",
-            "type": "symbol",
-            "source": "composite",
-            "source-layer": "geo-076dbc",
-            "layout": {
-                "text-field": "artist",
-                "icon-image": "artist_icon",
-                "visibility": "none"
-            },
-            "paint": {}
         }
     ],
-    "created": "2019-07-22T03:57:30.724Z",
-    "id": "cjydv03i63gcn1clj8bbhqiq7",
-    "modified": "2019-07-23T00:24:50.131Z",
+    "created": "2019-07-24T23:42:53.295Z",
+    "id": "cjyhw87ck01w01cp4u35a73lx",
+    "modified": "2019-07-28T00:03:01.970Z",
     "owner": "countable-web",
     "visibility": "private",
     "draft": false
