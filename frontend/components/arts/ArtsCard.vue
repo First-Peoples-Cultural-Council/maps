@@ -36,9 +36,6 @@
               {{ name }}
             </h5>
           </div>
-          <div class="d-inline-block">
-            <CardBadge content="Pronounce"></CardBadge>
-          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -53,11 +50,9 @@
 
 <script>
 import Card from '@/components/Card.vue'
-import CardBadge from '@/components/CardBadge.vue'
 export default {
   components: {
-    Card,
-    CardBadge
+    Card
   },
   filters: {
     mapName(name) {
