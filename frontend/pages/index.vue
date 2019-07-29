@@ -270,20 +270,50 @@ export default {
       this.map = map
       this.$store.commit('mapinstance/set', map)
     },
+    /**
+     * Handle clicks centrally so we can control precedence.
+     */
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
 
-      const feature = features.find(
-        feature => feature.layer.id === 'fn-lang-areas-shaded'
-      )
-
       console.log('Features on click', features)
+      let done = false
+      features.forEach(feature => {
+        if (
+          feature &&
+          feature.properties &&
+          (feature.properties.name || feature.properties.title)
+        ) {
+          console.log('found', feature.layer.id, feature)
+          if (feature.layer.id === 'fn-arts') {
+            done = true
+            return this.$router.push({
+              path: `/art/${encodeURIComponent(feature.properties.title)}`
+            })
+          } else if (feature.layer.id === 'fn-nations copy') {
+            done = true
+            this.$router.push({
+              path: `/content/${encodeURIComponent(feature.properties.name)}`
+            })
+          } else if (feature.layer.id === 'fn-places') {
+            done = true
+            this.$router.push({
+              path: `/place-names/${encodeURIComponent(
+                feature.properties.name
+              )}`
+            })
+          }
+        }
+      })
 
-      if (feature) {
-        this.$router.push({
-          path: `/languages/${encodeURIComponent(feature.properties.name)}`
+      if (!done)
+        features.forEach(feature => {
+          if (feature.layer.id === 'fn-lang-areas-shaded') {
+            this.$router.push({
+              path: `/languages/${encodeURIComponent(feature.properties.name)}`
+            })
+          }
         })
-      }
     },
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {

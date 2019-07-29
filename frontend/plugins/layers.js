@@ -1,140 +1,143 @@
+const addLangLayers = map => {
+  map.addLayer({
+    id: 'fn-nations copy',
+    type: 'symbol',
+    source: 'communities1',
+    layout: {
+      'text-optional': true,
+      'text-size': 13,
+      'icon-image': 'community',
+      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-padding': 0,
+      'text-offset': [0, 1.4],
+      'icon-optional': true,
+      'icon-size': 0.15,
+      'text-field': ['to-string', ['get', 'name']],
+      'icon-padding': 0
+    },
+    paint: {
+      'text-color': 'hsl(347, 0%, 0%)',
+      'text-halo-width': 1,
+      'text-halo-blur': 1,
+      'text-halo-color': 'hsl(0, 0%, 100%)',
+      'icon-opacity': 0.75
+    }
+  })
+  map.addLayer(
+    {
+      id: 'fn-lang-areas-fill',
+      type: 'fill',
+      source: 'langs1',
+      layout: {},
+      paint: {
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          0,
+          ['get', 'color'],
+          7.54,
+          'hsla(0, 0%, 0%, 0)',
+          22,
+          ['get', 'color']
+        ],
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
+      }
+    },
+    'fn-nations copy'
+  )
+
+  map.addLayer(
+    {
+      id: 'fn-lang-area-outlines-fade',
+      type: 'line',
+      source: 'langs1',
+      layout: {},
+      paint: {
+        'line-color': ['get', 'color'],
+        // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
+        'line-width': [
+          'interpolate',
+          ['cubic-bezier', 1, 1, 1, 1],
+          ['zoom'],
+          0,
+          3,
+          12,
+          24
+        ],
+        'line-opacity': 0.12,
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
+      }
+    },
+    'fn-nations copy'
+  )
+
+  map.addLayer(
+    {
+      id: 'fn-lang-areas-highlighted',
+      type: 'line',
+      source: 'langs1',
+      layout: {},
+      paint: {
+        'line-color': 'black',
+        'line-width': [
+          'interpolate',
+          ['cubic-bezier', 1, 1, 1, 1],
+          ['zoom'],
+          0,
+          2,
+          12,
+          20
+        ],
+        'line-opacity': 0.35,
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
+      }
+    },
+    'fn-nations copy'
+  )
+  map.addLayer(
+    {
+      id: 'fn-lang-area-outlines-1',
+      type: 'line',
+      source: 'langs1',
+      layout: {},
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-blur': 0,
+        'line-width': [
+          'interpolate',
+          ['cubic-bezier', 1, 1, 1, 1],
+          ['zoom'],
+          0,
+          1,
+          12,
+          2
+        ],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
+        'line-opacity': 0.75
+      }
+    },
+    'fn-nations copy'
+  )
+  map.addLayer(
+    {
+      id: 'fn-lang-areas-shaded',
+      type: 'fill',
+      source: 'langs1',
+      layout: {},
+      paint: {
+        'fill-color': 'black',
+        'fill-opacity': 0.001
+      }
+    },
+    'fn-nations copy'
+  )
+  map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
+}
+
 export default {
   layers: (map, self) => {
-    map.addLayer({
-      id: 'fn-nations copy',
-      type: 'symbol',
-      source: 'communities1',
-      layout: {
-        'text-optional': true,
-        'text-size': 13,
-        'icon-image': 'community',
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-padding': 0,
-        'text-offset': [0, 1.4],
-        'icon-optional': true,
-        'icon-size': 0.15,
-        'text-field': ['to-string', ['get', 'name']],
-        'icon-padding': 0
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 1,
-        'text-halo-blur': 1,
-        'text-halo-color': 'hsl(0, 0%, 100%)',
-        'icon-opacity': 0.75
-      }
-    })
-    map.addLayer(
-      {
-        id: 'fn-lang-areas-fill',
-        type: 'fill',
-        source: 'langs1',
-        layout: {},
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            0,
-            ['get', 'color'],
-            7.54,
-            'hsla(0, 0%, 0%, 0)',
-            22,
-            ['get', 'color']
-          ],
-          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
-        }
-      },
-      'fn-nations copy'
-    )
-
-    map.addLayer(
-      {
-        id: 'fn-lang-area-outlines-fade',
-        type: 'line',
-        source: 'langs1',
-        layout: {},
-        paint: {
-          'line-color': ['get', 'color'],
-          // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
-          'line-width': [
-            'interpolate',
-            ['cubic-bezier', 1, 1, 1, 1],
-            ['zoom'],
-            0,
-            3,
-            12,
-            24
-          ],
-          'line-opacity': 0.12,
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
-        }
-      },
-      'fn-nations copy'
-    )
-
-    map.addLayer(
-      {
-        id: 'fn-lang-areas-highlighted',
-        type: 'line',
-        source: 'langs1',
-        layout: {},
-        paint: {
-          'line-color': 'black',
-          'line-width': [
-            'interpolate',
-            ['cubic-bezier', 1, 1, 1, 1],
-            ['zoom'],
-            0,
-            2,
-            12,
-            20
-          ],
-          'line-opacity': 0.35,
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
-        }
-      },
-      'fn-nations copy'
-    )
-    map.addLayer(
-      {
-        id: 'fn-lang-area-outlines-1',
-        type: 'line',
-        source: 'langs1',
-        layout: {},
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-blur': 0,
-          'line-width': [
-            'interpolate',
-            ['cubic-bezier', 1, 1, 1, 1],
-            ['zoom'],
-            0,
-            1,
-            12,
-            2
-          ],
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
-          'line-opacity': 0.75
-        }
-      },
-      'fn-nations copy'
-    )
-    map.addLayer(
-      {
-        id: 'fn-lang-areas-shaded',
-        type: 'fill',
-        source: 'langs1',
-        layout: {},
-        paint: {
-          'fill-color': 'black',
-          'fill-opacity': 0.001
-        }
-      },
-      'fn-nations copy'
-    )
-    map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
-
+    addLangLayers(map)
     map.addLayer(
       {
         id: 'cluster-count',
@@ -218,45 +221,5 @@ export default {
     //       'symbol-spacing': 1,
     //       'text-allow-overlap': true,
     //       'icon-allow-overlap': true,
-
-    map.on('click', 'fn-arts', function(e) {
-      if (
-        e.features[0] &&
-        e.features[0].properties &&
-        e.features[0].properties.title
-      ) {
-        self.$router.push({
-          path: `/art/${encodeURIComponent(e.features[0].properties.title)}`
-        })
-      }
-    })
-
-    map.on('click', 'fn-nations copy', function(e) {
-      if (
-        e.features[0] &&
-        e.features[0].properties &&
-        e.features[0].properties.title
-      ) {
-        self.$router.push({
-          path: `/content/${encodeURIComponent(e.features[0].properties.title)}`
-        })
-      }
-    })
-
-    map.on('click', 'fn-places', function(e) {
-      console.log('FN PLACES GITHUB')
-      console.log(e.features[0])
-      if (
-        e.features[0] &&
-        e.features[0].properties &&
-        e.features[0].properties.name
-      ) {
-        self.$router.push({
-          path: `/place-names/${encodeURIComponent(
-            e.features[0].properties.name
-          )}`
-        })
-      }
-    })
   }
 }
