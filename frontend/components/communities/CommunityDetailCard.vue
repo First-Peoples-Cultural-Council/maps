@@ -21,8 +21,9 @@
               {{ name }}
             </h5>
           </div>
-          <div class="d-inline-block" @click.prevent.stop="handlePronounce">
-            <CardBadge content="Pronounce"></CardBadge>
+          <div v-if="population" class="d-inline-block">
+            <span class="d-inline-block font-weight-bold">Population</span
+            ><span>{{ population }}</span>
           </div>
         </div>
       </template>
@@ -54,11 +55,9 @@
 
 <script>
 import Card from '@/components/Card.vue'
-import CardBadge from '@/components/CardBadge.vue'
 export default {
   components: {
-    Card,
-    CardBadge
+    Card
   },
   props: {
     name: {
@@ -68,6 +67,10 @@ export default {
     color: {
       type: String,
       default: 'RGB(255, 255, 255)'
+    },
+    population: {
+      type: Number,
+      default: null
     }
   },
   data() {
