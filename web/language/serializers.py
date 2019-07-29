@@ -167,9 +167,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
-    languages = serializers.SlugRelatedField(
-        read_only=True, slug_field="name", many=True
-    )
+    languages = LanguageSerializer(read_only=True, many=True)
     # hide history lnas for now.
     # lnadata_set = LNADataSerializer(read_only=True, many=True)
     def to_representation(self, value):
@@ -177,9 +175,11 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         # get most recent lna for each nation
         for lnadata in LNAData.objects.filter(community=value).select_related("lna"):
-            if not lnadata.lna: continue
-            lid = getattr(lnadata.lna, 'language_id')
-            if not lid: continue
+            if not lnadata.lna:
+                continue
+            lid = getattr(lnadata.lna, "language_id")
+            if not lid:
+                continue
             if lid in by_lang:
                 if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
                     by_lang[lid] = LNADataSerializer(lnadata).data
@@ -197,7 +197,6 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "regions",
             "champion_set",
             "communitylink_set",
-            # "lnadata_set",
             "english_name",
             "other_names",
             "internet_speed",

@@ -66,7 +66,7 @@ export default {
             12,
             20
           ],
-          'line-opacity': 0.45,
+          'line-opacity': 0.35,
           'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
         }
       },
