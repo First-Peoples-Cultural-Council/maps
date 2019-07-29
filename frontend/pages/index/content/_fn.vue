@@ -5,7 +5,7 @@
         :name="community.name"
         :population="commDetails.population"
       ></CommunityDetailCard>
-      <hr class="sidebar-divider" />
+      <hr class="sidebar-divider mt-0" />
       <Filters class="mb-1"></Filters>
 
       <section class="pl-3 pr-3">
@@ -50,7 +50,17 @@
             }}</span>
           </li>
         </ul>
-
+        <div class="mt-3">
+          <b-table
+            hover
+            :items="lna"
+            responsive
+            small
+            table-class="lna-table"
+            thead-class="lna-table-thead"
+            tbody-class="lna-table-tbody"
+          ></b-table>
+        </div>
         <div
           v-for="language in commDetails.languages"
           :key="'language' + language.id"
@@ -65,17 +75,6 @@
               })
             "
           ></LanguageCard>
-        </div>
-        <div class="mt-3">
-          <b-table
-            hover
-            :items="lna"
-            responsive
-            small
-            table-class="lna-table"
-            thead-class="lna-table-thead"
-            tbody-class="lna-table-tbody"
-          ></b-table>
         </div>
       </section>
     </DetailSideBar>

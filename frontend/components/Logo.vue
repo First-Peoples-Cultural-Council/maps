@@ -1,5 +1,5 @@
 <template>
-  <div class="logo">
+  <div class="logo" @click.prevent="$root.$emit('resetMap')">
     <img
       src="../assets/images/symbol_text_background.png"
       alt="Language Map Of British Columbia"
