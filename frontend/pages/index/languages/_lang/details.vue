@@ -69,12 +69,24 @@
           >{{ language.fv_archive_link }}</a
         >
       </div>
+      <div class="mt-3">
+        <b-table
+          hover
+          :items="lna"
+          responsive
+          small
+          table-class="lna-table"
+          thead-class="lna-table-thead"
+          tbody-class="lna-table-tbody"
+        ></b-table>
+      </div>
     </section>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import { values, omit } from 'lodash'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
@@ -93,6 +105,10 @@ export default {
       },
       languageColor() {
         return this.language.color
+      },
+      lna() {
+        const lnas = values(this.language.lna_by_nation)
+        return lnas.map(lna => omit(lna, ['lna', 'id', 'name']))
       }
     })
   },
@@ -144,5 +160,33 @@ export default {
 }
 .lang-detail-table {
   width: 100%;
+}
+
+.lna-table {
+  border: 1px solid #ebe6dc;
+}
+.lna-table-thead {
+  font-size: 0.8em;
+  color: var(--color-gray);
+}
+
+.lna-table-thead th {
+  font-weight: normal;
+  vertical-align: middle !important;
+  border: 0;
+  border-bottom: 0 !important;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.lna-table-tbody {
+  font-size: 0.8em;
+}
+
+.lna-table-tbody td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: var(--color-gray);
+  vertical-align: middle;
 }
 </style>
