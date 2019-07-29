@@ -10,6 +10,7 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
+    Art,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -50,7 +51,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox")
+        fields = ("name", "id", "color", "bbox", "sleeping")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -135,20 +136,28 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "some_speakers",
             "pop_total_value",
             "bbox",
+            "audio_file",
         )
 
 
 class LanguageGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Language
-        fields = ("name", "color")
+        fields = ("name", "color", "sleeping")
         geo_field = "geom"
+
+
+class CommunityGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name",)
+        geo_field = "point"
 
 
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_name", "id")
+        fields = ("name", "other_name", "id", "audio_file")
         geo_field = "point"
 
 
@@ -161,7 +170,7 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "point")
+        fields = ("name", "id", "point", "audio_file")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
@@ -206,5 +215,13 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "phone",
             "alt_phone",
             "fax",
+            "audio_file",
         )
+        geo_field = "point"
+        
+
+class ArtSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Art
+        fields = ("art_type", "title", "node_id")
         geo_field = "point"

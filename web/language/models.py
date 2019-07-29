@@ -15,10 +15,16 @@ class BaseModel(models.Model):
 
 class LanguageFamily(BaseModel):
     pass
+    
+    class Meta:
+        verbose_name_plural = 'Language Families'
 
 
 class LanguageSubFamily(BaseModel):
     family = models.ForeignKey(LanguageFamily, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        verbose_name_plural = 'Language Sub Families'
 
 
 class Language(BaseModel):
@@ -26,6 +32,7 @@ class Language(BaseModel):
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     color = models.CharField(max_length=31, default="")
     regions = models.CharField(max_length=255, default="", blank=True)
+    sleeping = models.BooleanField(default=False)
 
     sub_family = models.ForeignKey(
         LanguageSubFamily, on_delete=models.SET_NULL, null=True
@@ -41,8 +48,9 @@ class Language(BaseModel):
     )  # sum of field_tm_lna2_pop_total_value
 
     color = models.CharField(max_length=31)
-    geom = models.PolygonField(null=True, default=None)
-    bbox = models.PolygonField(null=True, default=None)
+    geom = models.PolygonField(null=True, default=None, blank=True)
+    bbox = models.PolygonField(null=True, default=None, blank=True)
+    audio_file = models.FileField(null=True, blank=True)
 
 
 class LanguageLink(models.Model):
@@ -68,6 +76,10 @@ class Community(BaseModel):
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
+    audio_file = models.FileField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name_plural = 'Communities'
 
 
 class CommunityLink(models.Model):
@@ -85,6 +97,7 @@ class LanguageMember(models.Model):
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
     other_name = models.CharField(max_length=255, default="")
+    audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
 
@@ -128,3 +141,14 @@ class LNAData(BaseModel):
     pop_on_res = models.IntegerField(default=0)  # field_tm_lna2_pop_on_res_value
     pop_total_value = models.IntegerField(default=0)  # field_tm_lna2_pop_total_value
 
+    num_schools = models.IntegerField(default=0)
+    nest_hours = models.FloatField(default=0)
+    oece_hours = models.FloatField(default=0)
+    info = models.TextField(default="")
+    school_hours = models.FloatField(default=0)
+
+class Art(BaseModel):
+    point = models.PointField(null=True, default=None)
+    art_type = models.CharField(max_length=10, default="")
+    title = models.CharField(max_length=255)
+    node_id = models.IntegerField()

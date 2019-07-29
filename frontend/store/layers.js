@@ -27,7 +27,7 @@ export const state = () => ({
     {
       name: 'Reserves',
       id: 3,
-      layerNames: ['fn-lang-areas-highlighted'],
+      layerNames: ['fn-reserve-outlines', 'fn-reserve-areas'],
       active: false
     }
   ]
