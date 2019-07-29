@@ -7,7 +7,7 @@ const addLangLayers = map => {
       'text-optional': true,
       'text-size': 13,
       'icon-image': 'community',
-      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
       'text-padding': 0,
       'text-offset': [0, 1.4],
       'icon-optional': true,
@@ -146,7 +146,7 @@ export default {
         filter: ['has', 'point_count'],
         layout: {
           'text-field': '{point_count_abbreviated}',
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
           'text-size': 12,
           'text-halo-color': 'hsl(0, 0%, 100%)',
           'text-halo-width': 1,
@@ -167,7 +167,7 @@ export default {
           'icon-image': 'point_of_interest_icon',
           'icon-size': 0.15,
           'text-field': '{name}',
-          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
@@ -188,7 +188,7 @@ export default {
           'icon-image': '{type}',
           'icon-size': 0.15,
           'text-field': '{title}',
-          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
@@ -206,7 +206,7 @@ export default {
       layout: {
         'text-field': ['to-string', ['get', 'name']],
         'text-size': 16,
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular']
       },
       paint: {
         'text-halo-width': 1,

@@ -4616,7 +4616,7 @@
             }
         },
         {
-            "id": "fn-nations copy",
+            "id": "fn-nations copy-GITHUB",
             "type": "symbol",
             "source": "composite",
             "source-layer": "nations-1b7nkd",
@@ -4626,6 +4626,7 @@
                 "icon-image": "community",
                 "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
                 "text-padding": 0,
+                "visibility": "none",
                 "text-offset": [0, 1.4],
                 "icon-optional": true,
                 "icon-size": 0.15,
@@ -4663,13 +4664,14 @@
             }
         },
         {
-            "id": "fn-lang-labels",
+            "id": "fn-lang-labels-GITHUB",
             "type": "symbol",
             "source": "composite",
             "source-layer": "langs-0brkvj",
             "layout": {
                 "text-field": ["to-string", ["get", "title"]],
                 "text-size": 16,
+                "text-font": ["FreeSans Medium", "Arial Unicode MS Regular"],
                 "visibility": "none"
             },
             "paint": {
@@ -4681,7 +4683,7 @@
     ],
     "created": "2019-07-24T23:42:53.295Z",
     "id": "cjyhw87ck01w01cp4u35a73lx",
-    "modified": "2019-07-28T00:03:01.970Z",
+    "modified": "2019-07-29T22:56:43.603Z",
     "owner": "countable-web",
     "visibility": "private",
     "draft": false
