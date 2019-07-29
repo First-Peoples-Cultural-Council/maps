@@ -146,3 +146,9 @@ class LNAData(BaseModel):
     oece_hours = models.FloatField(default=0)
     info = models.TextField(default="")
     school_hours = models.FloatField(default=0)
+
+class Art(BaseModel):
+    point = models.PointField(null=True, default=None)
+    art_type = models.CharField(max_length=10, default="")
+    title = models.CharField(max_length=255)
+    node_id = models.IntegerField()
