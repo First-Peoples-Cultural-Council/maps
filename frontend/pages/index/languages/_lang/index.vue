@@ -4,6 +4,7 @@
     <LanguageDetailCard
       :color="languageColor"
       :name="this.$route.params.lang"
+      :server="isServer"
     ></LanguageDetailCard>
     <section class="ml-2 mr-2">
       <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -136,13 +137,15 @@ export default {
       $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
     ])
 
+    const isServer = !!process.server
+
     return {
       language: result[0],
       communities: result[1],
-      places: result[2].features
+      places: result[2].features,
+      isServer
     }
   },
-
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {

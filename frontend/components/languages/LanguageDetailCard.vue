@@ -67,6 +67,10 @@ export default {
     detail: {
       type: Boolean,
       default: false
+    },
+    server: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -80,7 +84,11 @@ export default {
     },
     handleReturn() {
       if (!this.detail) {
-        this.$router.go(-1)
+        if (this.server) {
+          this.$router.push({ path: '/languages' })
+        } else {
+          this.$router.go(-1)
+        }
       } else {
         this.$router.push({
           path: `/languages/${this.$route.params.lang}`
