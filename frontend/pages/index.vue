@@ -425,6 +425,7 @@ export default {
     },
     mapMoveEnd(map, e) {
       this.updateMarkers(map)
+      this.updateData(map)
       this.updateMapState(map)
     },
     mapSourceData(map, source) {
