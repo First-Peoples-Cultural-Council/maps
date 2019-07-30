@@ -92,7 +92,7 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      if (this.isServer) {
+      if (this.server) {
         this.$router.push({
           path: '/art'
         })
