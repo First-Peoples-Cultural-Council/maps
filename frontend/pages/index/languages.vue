@@ -14,13 +14,7 @@
             :number="languages.length"
             class="cursor-pointer"
             type="language"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'lang'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'lang'"
           ></Badge>
           <Badge
             content="Communities"
@@ -28,13 +22,7 @@
             class="cursor-pointer"
             bgcolor="#6c4264"
             type="community"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'comm'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'comm'"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -42,7 +30,7 @@
       </template>
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
-          <div v-if="$route.query.mode !== 'comm'">
+          <div v-if="mode !== 'comm'">
             <LanguageCard
               v-for="(language, index) in languages"
               :key="index"
@@ -54,7 +42,7 @@
               "
             ></LanguageCard>
           </div>
-          <div v-if="$route.query.mode !== 'lang'">
+          <div v-if="mode !== 'lang'">
             <CommunityCard
               v-for="community in communities"
               :key="'community ' + community.name"
@@ -114,7 +102,8 @@ export default {
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
       detailOneWidth: 375,
-      detailTwoWidth: 500
+      detailTwoWidth: 500,
+      mode: 'All'
     }
   },
   computed: {
@@ -137,6 +126,7 @@ export default {
       })
     }
   },
+
   head() {
     return {
       title: `Indigenous Languages List in British Columbia`,

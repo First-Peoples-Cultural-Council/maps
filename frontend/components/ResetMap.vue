@@ -13,12 +13,7 @@ export default {
   },
   methods: {
     resetMap() {
-      this.$eventHub.whenMap(map => {
-        map.flyTo({
-          center: [-121, 55],
-          zoom: 5
-        })
-      })
+      this.$root.$emit('resetMap')
     }
   }
 }

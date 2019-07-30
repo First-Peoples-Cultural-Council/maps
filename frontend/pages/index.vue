@@ -30,13 +30,7 @@
             :number="languages.length"
             class="cursor-pointer"
             type="language"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'lang'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'lang'"
           ></Badge>
           <Badge
             content="Communities"
@@ -44,23 +38,14 @@
             class="cursor-pointer"
             type="community"
             bgcolor="#6c4264"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'comm'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'comm'"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
-        <section
-          v-if="$route.query.mode !== 'comm'"
-          class="language-section pl-3 pr-3"
-        >
+        <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
           <div v-for="language in languages" :key="'language' + language.id">
             <LanguageCard
               class="mt-3 hover-left-move"
@@ -74,10 +59,7 @@
             ></LanguageCard>
           </div>
         </section>
-        <section
-          v-if="$route.query.mode !== 'lang'"
-          class="community-section pl-3 pr-3"
-        >
+        <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
           <div
             v-for="community in communities"
             :key="'community ' + community.name"
@@ -148,6 +130,7 @@ export default {
         show: true,
         position: 'bottom-left'
       },
+      mode: 'All',
       map: {},
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
@@ -208,7 +191,6 @@ export default {
     const map = this.$store.state.mapinstance.mapInstance
     const mapState = this.$store.state.mapinstance.mapState
     const forceReset = this.$store.state.mapinstance.forceReset
-    console.log('Force Reset', forceReset)
     if (to.name === 'index') {
       let lat, lng, zoom
       if (!forceReset) {
@@ -229,7 +211,8 @@ export default {
       }
       map.flyTo({
         center: [lng, lat],
-        zoom
+        zoom,
+        speed: 3
       })
     }
     next()
@@ -247,7 +230,7 @@ export default {
         map.flyTo({
           center: [coords[0], coords[1]],
           zoom: map.getZoom() + 1,
-          speed: 1,
+          speed: 3,
           curve: 1
         })
         return false
@@ -346,8 +329,12 @@ export default {
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
-        map.setCenter(this.MAP_OPTIONS.center)
-        map.setZoom(this.MAP_OPTIONS.zoom)
+        map.flyTo({
+          center: this.MAP_OPTIONS.center,
+          zoom: this.MAP_OPTIONS.zoom,
+          speed: 3,
+          curve: 1
+        })
       })
 
       map.addSource('langs1', {
@@ -391,7 +378,7 @@ export default {
           map.flyTo({
             center: [lng, lat],
             zoom: zoom,
-            speed: 1,
+            speed: 3,
             curve: 1
           })
         } catch (e) {}
