@@ -29,6 +29,12 @@ export const state = () => ({
       id: 3,
       layerNames: ['fn-reserve-outlines', 'fn-reserve-areas'],
       active: false
+    },
+    {
+      name: 'Provincial Borders',
+      id: 4,
+      layerNames: ['admin'],
+      active: true
     }
   ]
 })
