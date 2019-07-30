@@ -67,7 +67,9 @@
               :name="language.name"
               :color="language.color"
               @click.native.prevent="
-                handleCardClick($event, language.name, 'languages')
+                $router.push({
+                  path: `languages/${encodeURIComponent(language.name)}`
+                })
               "
             ></LanguageCard>
           </div>
@@ -84,12 +86,9 @@
               class="mt-3 hover-left-move"
               :name="community.name"
               @click.native.prevent="
-                handleCardClick(
-                  $event,
-                  community.name,
-                  'content',
-                  community.name
-                )
+                $router.push({
+                  path: `content/${encodeURIComponent(community.name)}`
+                })
               "
             ></CommunityCard>
           </div>
@@ -270,17 +269,6 @@ export default {
         if (!newMarkers[id]) markersOnScreen[id].remove()
       }
       markersOnScreen = newMarkers
-    },
-    handleCardClick(e, data, type, geom) {
-      if (type === 'community') {
-        this.$router.push({
-          path: `/content/${encodeURIComponent(data)}`
-        })
-      } else {
-        this.$router.push({
-          path: `/${type}/${encodeURIComponent(data)}`
-        })
-      }
     },
     goToLang() {
       this.$router.push({
