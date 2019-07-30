@@ -86,8 +86,12 @@ export default {
     },
     handleNavLink() {
       this.$store.commit('mapinstance/setForceReset', true)
-      this.$root.$emit('resetMap')
-      this.$router.push({ path: '/' })
+      if (this.$route.name === 'index') {
+        this.$root.$emit('resetMap')
+        this.$store.commit('mapinstance/setForceReset', false)
+      } else {
+        this.$router.push({ path: '/' })
+      }
     }
   }
 }
