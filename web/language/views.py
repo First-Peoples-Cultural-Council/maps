@@ -13,6 +13,7 @@ from .serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     ArtSerializer,
+    ArtDetailSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -110,3 +111,8 @@ class ArtList(generics.ListAPIView):
             queryset = queryset.filter(point__intersects=lang.geom)
         serializer = ArtSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class ArtDetail(generics.RetrieveAPIView):
+    serializer_class = ArtDetailSerializer
+    queryset = Art.objects.all()
