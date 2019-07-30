@@ -21,33 +21,33 @@
         <ul class="list-style-none m-0 p-0 mt-2">
           <li>
             <span class="font-08 color-gray">Email:</span>
-            <span class="font-08 font-weight-bold color-gray">{{
-              commDetails.email || 'N/A'
-            }}</span>
+            <span class="font-08 font-weight-bold color-gray">
+              {{ commDetails.email || 'N/A' }}
+            </span>
           </li>
           <li>
             <span class="font-08 color-gray">Website:</span>
-            <span class="font-08 font-weight-bold color-gray">{{
-              commDetails.website || 'N/A'
-            }}</span>
+            <span class="font-08 font-weight-bold color-gray">
+              {{ commDetails.website || 'N/A' }}
+            </span>
           </li>
           <li>
             <span class="font-08 color-gray">Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">{{
-              commDetails.phone || 'N/A'
-            }}</span>
+            <span class="font-08 font-weight-bold color-gray">
+              {{ commDetails.phone || 'N/A' }}
+            </span>
           </li>
           <li>
             <span class="font-08 color-gray">Alternate Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">{{
-              commDetails.alt_phone || 'N/A'
-            }}</span>
+            <span class="font-08 font-weight-bold color-gray">
+              {{ commDetails.alt_phone || 'N/A' }}
+            </span>
           </li>
           <li>
             <span class="font-08 color-gray">Fax #:</span>
-            <span class="font-08 font-weight-bold color-gray">{{
-              commDetails.fax || 'N/A'
-            }}</span>
+            <span class="font-08 font-weight-bold color-gray">
+              {{ commDetails.fax || 'N/A' }}
+            </span>
           </li>
         </ul>
 
@@ -126,9 +126,7 @@ export default {
   watch: {
     community(newComm, oldComm) {
       if (newComm !== oldComm) {
-        this.$eventHub.whenMap(map => {
-          zoomToPoint({ map: this.mapinstance, geom: this.community.point })
-        })
+        this.setupMap()
       }
     }
   },
@@ -149,9 +147,19 @@ export default {
   },
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
-    this.$eventHub.whenMap(map => {
-      zoomToPoint({ map: map, geom: this.community.point })
-    })
+    this.setupMap()
+  },
+  methods: {
+    setupMap() {
+      this.$eventHub.whenMap(map => {
+        zoomToPoint({ map: map, geom: this.community.point, zoom: 11 })
+        map.setFilter('fn-nations-highlighted', [
+          'in',
+          'name',
+          this.community.name
+        ])
+      })
+    }
   }
 }
 </script>

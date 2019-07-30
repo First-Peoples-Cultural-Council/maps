@@ -23,10 +23,7 @@ export default {
   },
   watch: {
     place(newPlace, oldPlace) {
-      if (newPlace !== oldPlace)
-        this.$eventHub.whenMap(map => {
-          zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
-        })
+      if (newPlace !== oldPlace) this.setupMap()
     }
   },
   async asyncData({ params, $axios, store }) {
@@ -47,13 +44,23 @@ export default {
     }
   },
   created() {
+    this.setupMap()
     // We don't always catch language routing updates, so also zoom to language on create.
-    this.$eventHub.whenMap(map => {
-      zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
-    })
   },
   mounted() {
     console.log('Mounted')
+  },
+  methods: {
+    setupMap() {
+      this.$eventHub.whenMap(map => {
+        zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
+        map.setFilter('fn-places-highlighted', [
+          'in',
+          'name',
+          this.place.properties.name
+        ])
+      })
+    }
   }
 }
 </script>

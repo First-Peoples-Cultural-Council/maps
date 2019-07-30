@@ -24,25 +24,15 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
     }
 
     console.log('routed to', route.name)
-    // whatever route we're on, its data should be allowed to overlap other stuff.
-    this.map.setLayoutProperty('fn-arts', 'icon-allow-overlap', false)
-    this.map.setLayoutProperty('fn-arts', 'text-allow-overlap', false)
-    this.map.setLayoutProperty('fn-nations', 'icon-allow-overlap', false)
-    this.map.setLayoutProperty('fn-nations', 'text-allow-overlap', false)
-    this.map.setLayoutProperty('fn-places', 'icon-allow-overlap', false)
-    this.map.setLayoutProperty('fn-places', 'text-allow-overlap', false)
 
-    if (route.name === 'index-content-fn') {
-      this.map.setLayoutProperty('fn-nations', 'icon-allow-overlap', true)
-      this.map.setLayoutProperty('fn-nations', 'text-allow-overlap', true)
+    if (route.name !== 'index-content-fn') {
+      this.map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
     }
-    if (route.name === 'index-art-art') {
-      this.map.setLayoutProperty('fn-arts', 'icon-allow-overlap', true)
-      this.map.setLayoutProperty('fn-arts', 'text-allow-overlap', true)
+    if (route.name !== 'index-art-art') {
+      this.map.setFilter('fn-arts-highlighted', ['in', 'title', ''])
     }
-    if (route.name === 'index-place-names-placename') {
-      this.map.setLayoutProperty('fn-places', 'icon-allow-overlap', true)
-      this.map.setLayoutProperty('fn-places', 'text-allow-overlap', true)
+    if (route.name !== 'index-place-names-placename') {
+      this.map.setFilter('fn-places-highlighted', ['in', 'name', ''])
     }
   }
 })

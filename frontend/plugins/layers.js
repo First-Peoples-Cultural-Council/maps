@@ -1,28 +1,4 @@
 const addLangLayers = map => {
-  map.addLayer({
-    id: 'fn-nations',
-    type: 'symbol',
-    source: 'communities1',
-    layout: {
-      'text-optional': true,
-      'text-size': 13,
-      'icon-image': 'community',
-      'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-      'text-padding': 0,
-      'text-offset': [0, 1.4],
-      'icon-optional': true,
-      'icon-size': 0.15,
-      'text-field': ['to-string', ['get', 'name']],
-      'icon-padding': 0
-    },
-    paint: {
-      'text-color': 'hsl(347, 0%, 0%)',
-      'text-halo-width': 1,
-      'text-halo-blur': 1,
-      'text-halo-color': 'hsl(0, 0%, 100%)',
-      'icon-opacity': 0.75
-    }
-  })
   map.addLayer(
     {
       id: 'fn-lang-areas-fill',
@@ -135,8 +111,35 @@ const addLangLayers = map => {
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 }
 
+const addNationsLayers = map => {
+  map.addLayer({
+    id: 'fn-nations',
+    type: 'symbol',
+    source: 'communities1',
+    layout: {
+      'text-optional': true,
+      'text-size': 13,
+      'icon-image': 'community',
+      'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+      'text-padding': 0,
+      'text-offset': [0, 1.4],
+      'icon-optional': true,
+      'icon-size': 0.15,
+      'text-field': ['to-string', ['get', 'name']],
+      'icon-padding': 0
+    },
+    paint: {
+      'text-color': 'hsl(347, 0%, 0%)',
+      'text-halo-width': 1,
+      'text-halo-blur': 1,
+      'text-halo-color': 'hsl(0, 0%, 100%)',
+      'icon-opacity': 0.75
+    }
+  })
+}
 export default {
   layers: (map, self) => {
+    addNationsLayers(map)
     addLangLayers(map)
     map.addLayer(
       {
@@ -199,6 +202,7 @@ export default {
       },
       'fn-nations'
     )
+
     map.addLayer({
       id: 'fn-lang-labels',
       type: 'symbol',
@@ -213,6 +217,97 @@ export default {
         'text-halo-blur': 1,
         'text-halo-color': 'hsl(0, 0%, 100%)'
       }
+    })
+
+    map.addLayer({
+      id: 'fn-nations-highlighted',
+      type: 'symbol',
+      source: 'communities1',
+      layout: {
+        'text-size': 15,
+        'icon-image': 'community',
+        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+        'text-padding': 0,
+        'text-offset': [0, 1.7],
+        'icon-size': 0.25,
+        'text-field': ['to-string', ['get', 'name']],
+        'icon-padding': 0
+      },
+      paint: {
+        'text-color': 'hsl(347, 0%, 0%)',
+        'text-halo-width': 2,
+        'text-halo-blur': 2,
+        'text-halo-color': 'hsl(53, 50%, 70%)'
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-arts-highlighted',
+      type: 'symbol',
+      source: 'arts1',
+      layout: {
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': '{type}',
+        'icon-size': 0.25,
+        'text-field': '{title}',
+        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+        'text-size': 15,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
+      },
+      paint: {
+        'text-color': 'hsl(347, 0%, 0%)',
+        'text-halo-width': 2,
+        'text-halo-blur': 2,
+        'text-halo-color': 'hsl(53, 50%, 70%)'
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-places-highlighted',
+      type: 'symbol',
+      source: 'places1',
+      layout: {
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': 'point_of_interest_icon',
+        'icon-size': 0.25,
+        'text-field': '{name}',
+        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+        'text-size': 15,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
+      },
+      paint: {
+        'text-color': 'hsl(347, 0%, 0%)',
+        'text-halo-width': 2,
+        'text-halo-blur': 2,
+        'text-halo-color': 'hsl(53, 50%, 70%)'
+      }
+    })
+
+    map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
+    map.setFilter('fn-places-highlighted', ['in', 'name', ''])
+    map.setFilter('fn-arts-highlighted', ['in', 'title', ''])
+
+    map.on('mouseenter', 'fn-nations', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-nations', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
+    map.on('mouseenter', 'fn-arts', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-arts', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
+    map.on('mouseenter', 'fn-places', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-places', e => {
+      map.getCanvas().style.cursor = 'default'
     })
     //       'text-optional': true,
     //       'icon-optional': true,
