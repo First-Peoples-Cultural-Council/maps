@@ -22,8 +22,9 @@
             </h5>
           </div>
           <div v-if="population" class="d-inline-block">
-            <span class="d-inline-block font-weight-bold">Population</span
-            ><span>{{ population }}</span>
+            <span class="d-inline-block font-weight-bold font-08"
+              >Population</span
+            ><span class="ml-1 font-08">{{ population }}</span>
           </div>
         </div>
       </template>

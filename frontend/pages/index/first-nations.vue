@@ -7,6 +7,7 @@
             :content="badgeContent"
             :number="communities.length"
             bgcolor="rgb(108, 66, 100)"
+            type="community"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />

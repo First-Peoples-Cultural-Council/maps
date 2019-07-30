@@ -2,7 +2,7 @@
   <div class="d-inline-block">
     <b-badge class="badge" :style="'background-color: ' + bgcolor">
       <span class="badge-icon">
-        <img src="@/assets/images/language_icon_white.svg" alt="Icon" />
+        <img :src="getImage" alt="Icon" />
       </span>
       <span class="badge-content">{{ content }}</span>
       <span class="badge-number">{{ number }}</span>
@@ -28,6 +28,22 @@ export default {
     image: {
       type: String,
       default: 'language_icon_white.svg'
+    },
+    type: {
+      type: String,
+      default: ''
+    }
+  },
+  computed: {
+    getImage() {
+      return {
+        language: '/language_icon_white.svg',
+        community: '/community_icon_white.svg',
+        org: '/organization_icon_white.svg',
+        event: '/event_icon_white.svg',
+        part: '/language_icon_white.svg',
+        poi: '/poi_icon_white.svg'
+      }[this.type]
     }
   }
 }
