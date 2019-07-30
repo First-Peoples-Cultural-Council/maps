@@ -14,7 +14,7 @@ from .models import (
 
 
 class LanguageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("name", "sleeping")
 
 
 class LNADataAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class LNADataAdmin(admin.ModelAdmin):
 
 admin.site.register(Champion)
 admin.site.register(PlaceName)
-admin.site.register(Language)
+admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(LanguageSubFamily)
 admin.site.register(Community)
