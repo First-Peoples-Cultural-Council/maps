@@ -34,9 +34,7 @@ export default {
   watch: {
     art(newArt, oldArt) {
       if (newArt !== oldArt) {
-        this.$eventHub.whenMap(map => {
-          zoomToPoint({ map: map, geom: this.art.geometry, zoom: 13 })
-        })
+        this.setupMap()
       }
     }
   },
@@ -57,13 +55,22 @@ export default {
   },
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
-    this.$eventHub.whenMap(map => {
-      zoomToPoint({ map: map, geom: this.art.geometry, zoom: 13 })
-    })
+    this.setupMap()
   },
   methods: {
     handleClick(e, data) {
       window.open(`https://fp-artsmap.ca/node/${data}`)
+    },
+    setupMap() {
+      this.$eventHub.whenMap(map => {
+        zoomToPoint({ map: map, geom: this.art.geometry, zoom: 11 })
+        console.log(this.art, 'is the art')
+        map.setFilter('fn-arts-highlighted', [
+          'in',
+          'title',
+          this.art.properties.title
+        ])
+      })
     }
   }
 }
