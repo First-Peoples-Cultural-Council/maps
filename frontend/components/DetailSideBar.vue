@@ -1,11 +1,16 @@
 <template>
   <div class="ds-container" :style="'width: ' + width + 'px;'">
     <slot></slot>
+    <Contact></Contact>
   </div>
 </template>
 
 <script>
+import Contact from '@/components/Contact.vue'
 export default {
+  components: {
+    Contact
+  },
   props: {
     width: {
       default: 375,

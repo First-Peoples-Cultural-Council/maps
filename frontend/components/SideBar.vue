@@ -24,6 +24,7 @@
           <slot name="content"></slot>
           <slot name="cards"></slot>
         </div>
+        <Contact></Contact>
       </div>
     </div>
     <div class="sidebar-mobile d-none">
@@ -37,11 +38,13 @@
 <script>
 import Logo from '@/components/Logo.vue'
 import SideBarFold from '@/components/SideBarFold.vue'
+import Contact from '@/components/Contact.vue'
 
 export default {
   components: {
     Logo,
-    SideBarFold
+    SideBarFold,
+    Contact
   },
   filters: {
     lowerCase(value) {
