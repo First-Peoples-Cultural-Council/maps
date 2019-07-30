@@ -67,7 +67,9 @@
               :name="language.name"
               :color="language.color"
               @click.native.prevent="
-                handleCardClick($event, language.name, 'languages')
+                $router.push({
+                  path: `languages/${encodeURIComponent(language.name)}`
+                })
               "
             ></LanguageCard>
           </div>
@@ -84,12 +86,9 @@
               class="mt-3 hover-left-move"
               :name="community.name"
               @click.native.prevent="
-                handleCardClick(
-                  $event,
-                  community.name,
-                  'content',
-                  community.name
-                )
+                $router.push({
+                  path: `content/${encodeURIComponent(community.name)}`
+                })
               "
             ></CommunityCard>
           </div>
@@ -139,7 +138,7 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx', // hero
+        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx/draft', // hero
         center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
@@ -200,6 +199,27 @@ export default {
     store.commit('places/setStore', results[2].features)
     store.commit('arts/setStore', results[3].features)
   },
+  beforeRouteUpdate(to, from, next) {
+    // called when the route that renders this component has changed,
+    // but this component is reused in the new route.
+    // For example, for a route with dynamic params `/foo/:id`, when we
+    // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+    // will be reused, and this hook will be called when that happens.
+    // has access to `this` component instance.
+    if (to.name === 'index') {
+      const map = this.$store.state.mapinstance.mapInstance
+      const mapState = this.$store.state.mapinstance.mapState
+      const lat = mapState.previous.lat || mapState.now.lat
+      const lng = mapState.previous.lng || mapState.now.lng
+      const zoom = mapState.previous.zoom || mapState.now.zoom
+      map.flyTo({
+        center: [lng, lat],
+        zoom
+      })
+    }
+    next()
+  },
+
   methods: {
     artsClusterImage(props, coords, map) {
       const html = `<svg class="markerCluster" xmlns="http://www.w3.org/2000/svg" width="54" height="53" viewBox="0 0 54 53"><defs><style>.a{fill:#fff;}.b{fill:#515350;}.c{fill:#b45339;}</style></defs><g transform="translate(-470 -452)"><circle class="a" cx="22.5" cy="22.5" r="22.5" transform="translate(470 460)"/><circle class="b" cx="20.5" cy="20.5" r="20.5" transform="translate(472 462)"/><circle class="a" cx="13.5" cy="13.5" r="13.5" transform="translate(497 452)"/><path class="c" d="M6989.312,282a11.31,11.31,0,1,0,11.309,11.31A11.311,11.311,0,0,0,6989.312,282Zm-8.654,6.817a.362.362,0,0,1,.5-.479,4.74,4.74,0,0,0,5-.428,4.148,4.148,0,0,1,6.021,1.149.468.468,0,0,1-.594.67,4.9,4.9,0,0,0-5.02.219C6984.084,291.716,6981.76,291.029,6980.657,288.817Zm14,4.09c-1.689-.242-4.229-.243-4.229,1.932v.828a.4.4,0,0,1-.4.395h-.636a.394.394,0,0,1-.395-.395v-.828c0-2.126-2.6-2.173-4.409-1.948a.174.174,0,0,1-.077-.337,15.241,15.241,0,0,1,10.233.019A.174.174,0,0,1,6994.661,292.907Zm-.027,2.136h-2.9a.245.245,0,0,1-.188-.4c.56-.668,1.848-1.766,3.279,0A.247.247,0,0,1,6994.633,295.042Zm-7.119,0h-2.929a.24.24,0,0,1-.185-.392c.557-.668,1.856-1.792,3.3,0A.24.24,0,0,1,6987.514,295.042Zm.677,3.261a1.426,1.426,0,1,1,1.426,1.427A1.425,1.425,0,0,1,6988.191,298.3Zm1.875,3.035a.181.181,0,0,1-.032-.359,6.421,6.421,0,0,0,4.893-3.81.181.181,0,0,1,.349.087C6995.026,299.007,6993.994,301.539,6990.066,301.338Zm8.381-10.352c-2.423,1.035-4.361-.6-5.569-2.669a5.777,5.777,0,0,0-2.654-2.289.349.349,0,0,1,.162-.667c1.855.111,3.091.948,4.326,2.955a4.26,4.26,0,0,0,3.611,1.947A.375.375,0,0,1,6998.447,290.986Z" transform="translate(-6478.949 172.052)"/></g><text x="42%" y="65%" text-anchor="middle" fill="white" font-size="0.9em" font-weight="Bold">${
@@ -249,17 +269,6 @@ export default {
         if (!newMarkers[id]) markersOnScreen[id].remove()
       }
       markersOnScreen = newMarkers
-    },
-    handleCardClick(e, data, type, geom) {
-      if (type === 'community') {
-        this.$router.push({
-          path: `/content/${encodeURIComponent(data)}`
-        })
-      } else {
-        this.$router.push({
-          path: `/${type}/${encodeURIComponent(data)}`
-        })
-      }
     },
     goToLang() {
       this.$router.push({
@@ -320,6 +329,7 @@ export default {
           }
         })
     },
+
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
         map.setCenter(this.MAP_OPTIONS.center)
@@ -350,8 +360,6 @@ export default {
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
         this.updateHash(map)
-
-        // this.updateData(map)
       })
       this.$eventHub.$emit('map-loaded', map)
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
@@ -391,13 +399,22 @@ export default {
       this.$store.commit('arts/set', this.filterArts(bounds))
       this.$store.commit('places/set', this.filterPlaces(bounds))
     },
+    updateMapState(map) {
+      const center = map.getCenter()
+      const zoom = map.getZoom()
+      this.$store.commit('mapinstance/setMapState', {
+        lat: center.lat,
+        lng: center.lng,
+        zoom
+      })
+    },
     mapZoomEnd(map, e) {
       this.updateMarkers(map)
-      this.updateData(map)
     },
     mapMoveEnd(map, e) {
       this.updateMarkers(map)
       this.updateData(map)
+      this.updateMapState(map)
     },
     mapSourceData(map, source) {
       if (source.sourceId === 'arts1') {
