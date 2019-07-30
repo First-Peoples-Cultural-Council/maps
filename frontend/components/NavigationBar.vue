@@ -85,7 +85,9 @@ export default {
       this.navigationOpen = false
     },
     handleNavLink() {
+      this.$store.commit('mapinstance/setForceReset', true)
       this.$root.$emit('resetMap')
+      this.$router.push({ path: '/' })
     }
   }
 }

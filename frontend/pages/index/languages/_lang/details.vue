@@ -100,7 +100,9 @@ export default {
       },
       lna() {
         const lnas = values(this.language.lna_by_nation)
-        return lnas.map(lna => omit(lna, ['lna', 'id', 'name']))
+        return lnas.map(lna =>
+          omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
+        )
       }
     })
   },

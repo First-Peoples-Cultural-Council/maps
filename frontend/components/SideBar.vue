@@ -2,10 +2,7 @@
   <div class="sidebar-container">
     <div class="sidebar-desktop">
       <div class="sidebar-header">
-        <Logo
-          class="cursor-pointer"
-          @click.native.prevent="handleLogoClick"
-        ></Logo>
+        <Logo class="cursor-pointer" :logo-alt="1"></Logo>
       </div>
       <div class="sidebar-body">
         <div class="sidebar-tabs">
@@ -94,11 +91,6 @@ export default {
       const self = this
       self.$router.push({
         path
-      })
-    },
-    handleLogoClick(e) {
-      this.$router.push({
-        path: '/'
       })
     },
     toggleFold(e) {

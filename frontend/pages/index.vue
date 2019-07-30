@@ -200,18 +200,28 @@ export default {
     store.commit('arts/setStore', results[3].features)
   },
   beforeRouteUpdate(to, from, next) {
-    // called when the route that renders this component has changed,
-    // but this component is reused in the new route.
-    // For example, for a route with dynamic params `/foo/:id`, when we
-    // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
-    // will be reused, and this hook will be called when that happens.
-    // has access to `this` component instance.
+    const map = this.$store.state.mapinstance.mapInstance
+    const mapState = this.$store.state.mapinstance.mapState
+    const forceReset = this.$store.state.mapinstance.forceReset
+    console.log('Force Reset', forceReset)
     if (to.name === 'index') {
-      const map = this.$store.state.mapinstance.mapInstance
-      const mapState = this.$store.state.mapinstance.mapState
-      const lat = mapState.previous.lat || mapState.now.lat
-      const lng = mapState.previous.lng || mapState.now.lng
-      const zoom = mapState.previous.zoom || mapState.now.zoom
+      let lat, lng, zoom
+      if (!forceReset) {
+        if (mapState.previous === null) {
+          lat = 55
+          lng = -121
+          zoom = 4
+        } else {
+          lat = mapState.previous.lat || mapState.now.lat
+          lng = mapState.previous.lng || mapState.now.lng
+          zoom = mapState.previous.zoom || mapState.now.zoom
+        }
+      } else {
+        lat = 55
+        lng = -121
+        zoom = 4
+        this.$store.commit('mapinstance/setForceReset', false)
+      }
       map.flyTo({
         center: [lng, lat],
         zoom
@@ -415,6 +425,7 @@ export default {
       this.updateMarkers(map)
       this.updateData(map)
       this.updateMapState(map)
+      console.log('Move End')
     },
     mapSourceData(map, source) {
       if (source.sourceId === 'arts1') {
