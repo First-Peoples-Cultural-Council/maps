@@ -372,7 +372,6 @@ export default {
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
         this.updateHash(map)
-        this.updateMapState(map)
       })
       this.$eventHub.$emit('map-loaded', map)
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
@@ -426,6 +425,7 @@ export default {
     },
     mapMoveEnd(map, e) {
       this.updateMarkers(map)
+      this.updateMapState(map)
     },
     mapSourceData(map, source) {
       if (source.sourceId === 'arts1') {

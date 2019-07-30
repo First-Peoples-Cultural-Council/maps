@@ -80,9 +80,7 @@ export default {
     },
     handleReturn() {
       if (!this.detail) {
-        this.$router.push({
-          path: '/languages'
-        })
+        this.$router.go(-1)
       } else {
         this.$router.push({
           path: `/languages/${this.$route.params.lang}`
