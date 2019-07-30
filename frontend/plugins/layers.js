@@ -17,7 +17,7 @@ const addLangLayers = map => {
           22,
           ['get', 'color']
         ],
-        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.06]
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.1]
       }
     },
     'fn-nations'
@@ -213,9 +213,36 @@ export default {
         'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular']
       },
       paint: {
-        'text-halo-width': 1,
-        'text-halo-blur': 1,
-        'text-halo-color': 'hsl(0, 0%, 100%)'
+        'text-halo-width': 2,
+        'text-halo-blur': 2,
+        'text-halo-color': [
+          'let',
+          'rgba',
+          ['to-rgba', ['to-color', ['get', 'color']]],
+
+          [
+            'let',
+            'r',
+            ['number', ['*', 1, ['at', 0, ['var', 'rgba']]]],
+            'g',
+            ['number', ['*', 1, ['at', 1, ['var', 'rgba']]]],
+            'b',
+            ['number', ['*', 1, ['at', 2, ['var', 'rgba']]]],
+            'a',
+            ['number', ['at', 3, ['var', 'rgba']]],
+
+            [
+              'let',
+              'r2',
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'r']]],
+              'g2',
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'g']]],
+              'b2',
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'b']]],
+              ['rgba', ['var', 'r2'], ['var', 'g2'], ['var', 'b2'], 1]
+            ]
+          ]
+        ]
       }
     })
 
