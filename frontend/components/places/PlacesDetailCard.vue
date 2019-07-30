@@ -67,6 +67,10 @@ export default {
     type: {
       type: String,
       default: 'Point Of Interest'
+    },
+    server: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -79,7 +83,13 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.go(-1)
+      if (this.server) {
+        this.$router.push({
+          path: '/place-names'
+        })
+      } else {
+        this.$router.go(-1)
+      }
     }
   }
 }

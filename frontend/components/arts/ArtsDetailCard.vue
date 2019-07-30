@@ -76,6 +76,10 @@ export default {
     arttype: {
       type: String,
       default: 'Public Art'
+    },
+    server: {
+      default: true,
+      type: Boolean
     }
   },
   data() {
@@ -88,7 +92,13 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.go(-1)
+      if (this.isServer) {
+        this.$router.push({
+          path: '/art'
+        })
+      } else {
+        this.$router.go(-1)
+      }
     }
   }
 }

@@ -4,6 +4,7 @@
       <CommunityDetailCard
         :name="community.name"
         :population="commDetails.population"
+        :server="isServer"
       ></CommunityDetailCard>
       <hr class="sidebar-divider mt-0" />
       <Filters class="mb-1"></Filters>
@@ -140,8 +141,10 @@ export default {
       getApiUrl(`community/${community.id}/`)
     )
 
+    const isServer = !!process.server
     return {
-      communityDetail
+      communityDetail,
+      isServer
     }
   },
   created() {

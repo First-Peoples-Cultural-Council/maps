@@ -1,6 +1,9 @@
 <template>
   <div>
-    <PlacesDetailCard :name="place.properties.name"></PlacesDetailCard>
+    <PlacesDetailCard
+      :name="place.properties.name"
+      :server="isServer"
+    ></PlacesDetailCard>
     <hr class="sidebar-divider" />
     <Filters class="mb-4"></Filters>
   </div>
@@ -39,8 +42,11 @@ export default {
         )
       }
     })
+
+    const isServer = !!process.server
     return {
-      place
+      place,
+      isServer
     }
   },
   created() {

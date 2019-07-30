@@ -72,6 +72,10 @@ export default {
     population: {
       type: Number,
       default: null
+    },
+    server: {
+      default: false,
+      type: Boolean
     }
   },
   data() {
@@ -84,7 +88,13 @@ export default {
       console.log('Pronounce')
     },
     handleReturn() {
-      this.$router.go(-1)
+      if (this.server) {
+        this.$router.push({
+          path: '/first-nations'
+        })
+      } else {
+        this.$router.go(-1)
+      }
     },
     handleMouseOver() {
       this.hover = true
