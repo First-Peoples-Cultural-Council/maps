@@ -58,6 +58,7 @@
               Language Family:
               {{ family === 'undefined' ? 'No Family' : family }}
             </h5>
+
             <div
               v-for="language in familyLanguages"
               :key="'language' + language.id"
@@ -183,7 +184,10 @@ export default {
     ])
 
     if (process.server) {
-      store.commit('languages/set', results[0])
+      store.commit(
+        'languages/set',
+        groupBy(results[0], 'sub_family.family.name')
+      )
       store.commit('communities/set', results[1])
       store.commit('places/set', results[2].features)
       store.commit('arts/set', results[3].features)
@@ -485,6 +489,10 @@ export default {
 
         return intersects(bounds, langBounds)
       })
+      console.log(
+        'Groupby',
+        groupBy(filteredLanguages, 'sub_family.family.name')
+      )
       return groupBy(filteredLanguages, 'sub_family.family.name')
     },
     filterCommunities(bounds) {
