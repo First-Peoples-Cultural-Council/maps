@@ -34,7 +34,8 @@
             :number="languages.length"
             class="cursor-pointer"
             type="language"
-            @click.native.prevent="mode = 'lang'"
+            :mode="getBadgeStatus(mode, 'lang')"
+            @click.native.prevent="handleBadge($event, 'lang')"
           ></Badge>
           <Badge
             content="Communities"
@@ -42,23 +43,36 @@
             class="cursor-pointer"
             type="community"
             bgcolor="#6c4264"
-            @click.native.prevent="mode = 'comm'"
+            :mode="getBadgeStatus(mode, 'comm')"
+            @click.native.prevent="handleBadge($event, 'comm')"
           ></Badge>
         </section>
       </template>
       <template v-slot:cards>
         <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
-          <div v-for="language in languages" :key="'language' + language.id">
-            <LanguageCard
-              class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
-              @click.native.prevent="
-                $router.push({
-                  path: `languages/${encodeURIComponent(language.name)}`
-                })
-              "
-            ></LanguageCard>
+          <div
+            v-for="(familyLanguages, family) in languages"
+            :key="'langfamily' + family"
+          >
+            <h5 class="language-family mt-3">
+              Language Family:
+              {{ family === 'undefined' ? 'No Family' : family }}
+            </h5>
+            <div
+              v-for="language in familyLanguages"
+              :key="'language' + language.id"
+            >
+              <LanguageCard
+                class="mt-3 hover-left-move"
+                :name="language.name"
+                :color="language.color"
+                @click.native.prevent="
+                  $router.push({
+                    path: `languages/${encodeURIComponent(language.name)}`
+                  })
+                "
+              ></LanguageCard>
+            </div>
           </div>
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
@@ -85,6 +99,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
+import { groupBy } from 'lodash'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -98,7 +113,6 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, intersects } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
-
 const markers = {}
 let markersOnScreen = {}
 
@@ -455,7 +469,7 @@ export default {
       }
     },
     filterLanguages(bounds) {
-      return this.languageSet.filter(lang => {
+      const filteredLanguages = this.languageSet.filter(lang => {
         const sw = lang.bbox.coordinates[0][0]
         const ne = lang.bbox.coordinates[0][2]
         const langBounds = {
@@ -471,6 +485,7 @@ export default {
 
         return intersects(bounds, langBounds)
       })
+      return groupBy(filteredLanguages, 'sub_family.family.name')
     },
     filterCommunities(bounds) {
       return this.communitySet.filter(comm => {
@@ -534,6 +549,11 @@ export default {
 }
 .markerCluster {
   opacity: 0.5;
+}
+
+.language-family {
+  color: var(--color-darkgray);
+  font-size: 0.9em;
 }
 
 @media (max-width: 576px) {

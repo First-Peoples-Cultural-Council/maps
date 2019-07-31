@@ -14,7 +14,8 @@
             :number="languages.length"
             class="cursor-pointer"
             type="language"
-            @click.native.prevent="mode = 'lang'"
+            :mode="getBadgeStatus(mode, 'lang')"
+            @click.native.prevent="handleBadge($event, 'lang')"
           ></Badge>
           <Badge
             content="Communities"
@@ -22,7 +23,8 @@
             class="cursor-pointer"
             bgcolor="#6c4264"
             type="community"
-            @click.native.prevent="mode = 'comm'"
+            :mode="getBadgeStatus(mode, 'comm')"
+            @click.native.prevent="handleBadge($event, 'comm')"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -31,16 +33,30 @@
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">
           <div v-if="mode !== 'comm'">
-            <LanguageCard
-              v-for="(language, index) in languages"
-              :key="index"
-              class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
-              @click.native.prevent="
-                handleCardClick($event, language.name, 'languages')
-              "
-            ></LanguageCard>
+            <div
+              v-for="(familyLanguages, family) in languages"
+              :key="'langfamily' + family"
+            >
+              <h5 class="language-family mt-3">
+                Language Family:
+                {{ family === 'undefined' ? 'No Family' : family }}
+              </h5>
+              <div
+                v-for="language in familyLanguages"
+                :key="'language' + language.id"
+              >
+                <LanguageCard
+                  class="mt-3 hover-left-move"
+                  :name="language.name"
+                  :color="language.color"
+                  @click.native.prevent="
+                    $router.push({
+                      path: `languages/${encodeURIComponent(language.name)}`
+                    })
+                  "
+                ></LanguageCard>
+              </div>
+            </div>
           </div>
           <div v-if="mode !== 'lang'">
             <CommunityCard
