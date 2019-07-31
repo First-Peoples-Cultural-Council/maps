@@ -14,7 +14,8 @@
             :number="languages.length"
             class="cursor-pointer"
             type="language"
-            @click.native.prevent="mode = 'lang'"
+            :mode="getBadgeStatus(mode, 'lang')"
+            @click.native.prevent="handleBadge($event, 'lang')"
           ></Badge>
           <Badge
             content="Communities"
@@ -22,7 +23,8 @@
             class="cursor-pointer"
             bgcolor="#6c4264"
             type="community"
-            @click.native.prevent="mode = 'comm'"
+            :mode="getBadgeStatus(mode, 'comm')"
+            @click.native.prevent="handleBadge($event, 'comm')"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />

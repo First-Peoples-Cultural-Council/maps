@@ -1,6 +1,10 @@
 <template>
   <div class="d-inline-block">
-    <b-badge class="badge" :style="'background-color: ' + bgcolor">
+    <b-badge
+      class="badge"
+      :style="'background-color: ' + bgcolor"
+      :class="'badge-' + mode"
+    >
       <span class="badge-icon">
         <img :src="getImage" alt="Icon" />
       </span>
@@ -32,6 +36,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    mode: {
+      type: String,
+      default: 'neutral'
     }
   },
   computed: {
@@ -75,6 +83,15 @@ export default {
 .badge-icon img {
   display: inline-block;
   width: 19px;
+}
+
+.badge-inactive {
+  opacity: 0.5;
+}
+
+.badge-active {
+  opacity: 1;
+  box-shadow: 0px 1px 4px 2px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 576px) {

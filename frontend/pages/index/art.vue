@@ -9,7 +9,8 @@
             class="cursor-pointer mb-2"
             bgcolor="#848159"
             type="part"
-            @click.native.prevent="mode = 'art'"
+            :mode="getBadgeStatus(mode, 'art')"
+            @click.native.prevent="handleBadge($event, 'art')"
           ></Badge>
           <Badge
             content="Organization"
@@ -17,7 +18,8 @@
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
             type="org"
-            @click.native.prevent="mode = 'org'"
+            :mode="getBadgeStatus(mode, 'org')"
+            @click.native.prevent="handleBadge($event, 'org')"
           ></Badge>
           <Badge
             content="Events"
@@ -25,7 +27,8 @@
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
             type="event"
-            @click.native.prevent="mode = 'event'"
+            :mode="getBadgeStatus(mode, 'event')"
+            @click.native.prevent="handleBadge($event, 'event')"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
