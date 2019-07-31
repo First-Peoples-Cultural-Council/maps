@@ -157,11 +157,6 @@ export default {
       return this.$store.state.places.placesSet
     }
   },
-  watch: {
-    $route(to, from) {
-      console.log('To and From', to, from)
-    }
-  },
   async fetch({ $axios, store }) {
     function getApiUrl(path) {
       return process.server ? `http://nginx/api/${path}` : `/api/${path}`
@@ -427,7 +422,6 @@ export default {
       this.updateMarkers(map)
       this.updateData(map)
       this.updateMapState(map)
-      console.log('Move End')
     },
     mapSourceData(map, source) {
       if (source.sourceId === 'arts1') {
