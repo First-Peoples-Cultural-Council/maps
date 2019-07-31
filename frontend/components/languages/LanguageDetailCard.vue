@@ -78,6 +78,11 @@ export default {
       hover: false
     }
   },
+  computed: {
+    comingFromDetail() {
+      return this.$store.state.languages.comingFromDetail
+    }
+  },
   methods: {
     handlePronounce() {
       console.log('Pronounce')
@@ -86,10 +91,14 @@ export default {
       if (!this.detail) {
         if (this.server) {
           this.$router.push({ path: '/languages' })
+        } else if (this.comingFromDetail) {
+          this.$router.push({ path: '/languages' })
+          this.$store.commit('languages/setComingFromDetail', false)
         } else {
           this.$router.go(-1)
         }
       } else {
+        this.$store.commit('languages/setComingFromDetail', true)
         this.$router.push({
           path: `/languages/${encodeURIComponent(this.$route.params.lang)}`
         })
