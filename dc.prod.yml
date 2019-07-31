@@ -18,4 +18,4 @@ services:
       - 8888:8888
     command: bash -c "yarn && yarn build && yarn start"
     environment:
-      - HOST=http://maps-dev.fpcc.ca
+      - HOST=http://maps.fpcc.ca

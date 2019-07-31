@@ -16,4 +16,6 @@ services:
   frontend:
     ports:
       - 8888:8888
-    command: bash -c "yarn build && yarn start"
+    command: bash -c "yarn && yarn build && yarn start"
+    environment:
+      - HOST=http://maps-dev.fpcc.ca
