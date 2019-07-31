@@ -3,7 +3,6 @@
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
-      :geolocate-control="GEOLOCATE_CONTROL"
       :nav-control="{ show: false }"
       @map-init="mapInit"
       @map-load="mapLoaded"
@@ -24,7 +23,12 @@
         <section class="pl-3 pr-3 mt-3">
           <Accordion :content="accordionContent"></Accordion>
         </section>
-        <section class="badge-section pl-3 pr-3 mt-3">
+        <section class="badge-section pl-3 pr-3 mt-3"></section>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:badges>
+        <section class="pl-3 pr-3 mt-3">
           <Badge
             content="Languages"
             :number="languages.length"
@@ -41,8 +45,6 @@
             @click.native.prevent="mode = 'comm'"
           ></Badge>
         </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
@@ -125,10 +127,6 @@ export default {
         maxZoom: 19,
         minZoom: 3,
         zoom: 4
-      },
-      GEOLOCATE_CONTROL: {
-        show: true,
-        position: 'bottom-left'
       },
       mode: 'All',
       map: {},

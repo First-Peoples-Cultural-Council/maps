@@ -19,6 +19,7 @@
         </div>
         <div class="sidebar-content">
           <slot name="content"></slot>
+          <slot name="badges"></slot>
           <slot name="cards"></slot>
         </div>
         <Contact></Contact>
@@ -26,7 +27,22 @@
     </div>
     <div class="sidebar-mobile d-none">
       <SideBarFold>
-        <template v-slot:cards> </template>
+        <template v-slot:badges>
+          <slot name="badges"></slot>
+        </template>
+        <slot name="cards"></slot>
+        <div class="sidebar-tabs">
+          <b-nav tabs fill>
+            <b-nav-item
+              v-for="tab in navigationTabs"
+              :key="tab.id"
+              :active="active === tab.name ? true : false"
+              :class="tab.name | lowerCase"
+              @click.prevent="handleNavigation($event, tab.name)"
+              >{{ tab.name }}
+            </b-nav-item>
+          </b-nav>
+        </div>
       </SideBarFold>
     </div>
   </div>
