@@ -67,7 +67,7 @@ class CommunityGeoList(generics.ListAPIView):
 
 class CommunityList(generics.ListAPIView):
 
-    queryset = Community.objects.all().order_by("name")
+    queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
     serializer_class = CommunitySerializer
 
     @method_decorator(cache_page(60 * 60 * 2))

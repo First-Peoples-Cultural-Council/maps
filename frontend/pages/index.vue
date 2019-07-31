@@ -533,7 +533,7 @@ export default {
   padding-left: 500px !important;
 }
 .markerCluster {
-  opacity: 0.8;
+  opacity: 0.5;
 }
 
 @media (max-width: 576px) {
