@@ -4,9 +4,7 @@
       {{ error }}
       <br />
       {{ content }}
-      <a :href="'mailto:' + email + '?subject=' + subject"
-        >firstpeoples.onmicrosoft.com</a
-      >
+      <a :href="'mailto:' + email + '?subject=' + subject">{{ email }}</a>
     </p>
   </div>
 </template>
@@ -16,7 +14,7 @@ export default {
   props: {
     email: {
       type: String,
-      default: 'firstpeoples.onmicrosoft.com'
+      default: 'info@fpcc.ca'
     },
     subject: {
       type: String,

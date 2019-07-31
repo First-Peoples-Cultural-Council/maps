@@ -21,15 +21,23 @@ export default {}
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+
+  display: table;
 }
 .fpcc-card-header {
-  flex: 1 1 0;
+  display: table-cell;
+  vertical-align: middle;
+  width: 15%;
 }
 .fpcc-card-body {
-  flex: 10 1 0;
+  display: table-cell;
   padding: 0 0.5em;
+  vertical-align: middle;
+  width: 70%;
 }
 .fpcc-card-footer {
-  flex: 2 1 0;
+  display: table-cell;
+  vertical-align: middle;
+  width: 15%;
 }
 </style>
