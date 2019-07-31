@@ -43,5 +43,5 @@ def load_sleeping():
                 lang.geom = poly[0]
                 lang.sleeping = True
                 lang.bbox = Polygon.from_bbox(lang.geom.extent)
-                lang.color = "RGB(0.5,0.5,0.5)"
+                lang.color = "RGB(1,1,1)"
             lang.save()

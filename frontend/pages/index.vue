@@ -458,7 +458,6 @@ export default {
     },
     filterLanguages(bounds) {
       return this.languageSet.filter(lang => {
-        console.log(lang)
         const sw = lang.bbox.coordinates[0][0]
         const ne = lang.bbox.coordinates[0][2]
         const langBounds = {
