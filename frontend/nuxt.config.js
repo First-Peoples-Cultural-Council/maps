@@ -12,8 +12,7 @@ module.exports = {
   head: {
     script: [
       {
-        src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from
-        `,
+        src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from%2CObject.assign`,
         body: true
       }
     ],

@@ -59,7 +59,7 @@
         v-for="(art, index) in arts"
         :key="'art' + index"
         class="mt-3 hover-left-move"
-        :arttype="art.properties.type"
+        :arttype="art.properties.art_type"
         :name="art.properties.title"
         @click.native="
           $router.push({
@@ -98,10 +98,6 @@ export default {
   computed: {
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
-
-      arts() {
-        return this.$store.state.arts.arts
-      },
       languages() {
         return this.$store.state.languages.languageSet
       },
@@ -128,13 +124,16 @@ export default {
     }
 
     const languages = await $axios.$get(getApiUrl(`language/`))
-    const language = languages.find(lang => lang.name === languageName)
+    const language = languages.find(
+      lang => lang.name.toLowerCase() === languageName.toLowerCase()
+    )
     const languageId = language.id
 
     const result = await Promise.all([
       $axios.$get(getApiUrl(`language/${languageId}`)),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
+      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`)),
+      $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
 
     const isServer = !!process.server
@@ -143,6 +142,7 @@ export default {
       language: result[0],
       communities: result[1],
       places: result[2].features,
+      arts: result[3].features,
       isServer
     }
   },
