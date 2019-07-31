@@ -76,4 +76,17 @@ export default {
   display: inline-block;
   width: 19px;
 }
+
+@media (max-width: 576px) {
+  .badge-icon {
+    display: none;
+  }
+
+  .badge-content {
+    font-size: 0.8em;
+  }
+  .badge-number {
+    font-size: 0.8em;
+  }
+}
 </style>

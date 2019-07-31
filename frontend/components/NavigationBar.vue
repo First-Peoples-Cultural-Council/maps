@@ -25,19 +25,17 @@
               <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/languages" @click.native.prevent="handleNavLink"
+              <nuxt-link to="/languages" @click.native="resetMap"
                 >Languages</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link
-                to="/first-nations"
-                @click.native.prevent="handleNavLink"
+              <nuxt-link to="/first-nations" @click.native="resetMap"
                 >First Nations</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link to="/place-names" @click.native="handleNavLink"
+              <nuxt-link to="/place-names" @click.native="resetMap"
                 >Place-names</nuxt-link
               >
             </li>
@@ -85,6 +83,15 @@ export default {
       this.navigationOpen = false
     },
     handleNavLink() {
+      this.$store.commit('mapinstance/setForceReset', true)
+      if (this.$route.name === 'index') {
+        this.$root.$emit('resetMap')
+        this.$store.commit('mapinstance/setForceReset', false)
+      } else {
+        this.$router.push({ path: '/' })
+      }
+    },
+    resetMap() {
       this.$root.$emit('resetMap')
     }
   }

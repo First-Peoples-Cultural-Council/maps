@@ -8,7 +8,8 @@ export const state = () => ({
   },
   lat: '',
   lng: '',
-  zoom: ''
+  zoom: '',
+  forceReset: false
 })
 
 export const mutations = {
@@ -23,11 +24,23 @@ export const mutations = {
   },
 
   setMapState(state, { lat, lng, zoom }) {
-    state.mapState.previous = assign({}, state.mapState.now)
-    state.mapState.now = {
-      lat,
-      lng,
-      zoom
+    if (state.mapState.now !== null) {
+      state.mapState.previous = assign({}, state.mapState.now)
+      state.mapState.now = {
+        lat,
+        lng,
+        zoom
+      }
+    } else {
+      state.mapState.now = {
+        lat,
+        lng,
+        zoom
+      }
     }
+  },
+
+  setForceReset(state, resetState) {
+    state.forceReset = resetState
   }
 }

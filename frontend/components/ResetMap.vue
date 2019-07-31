@@ -13,10 +13,7 @@ export default {
   },
   methods: {
     resetMap() {
-      this.$eventHub.whenMap(map => {
-        map.setCenter([-121, 55])
-        map.setZoom(5)
-      })
+      this.$root.$emit('resetMap')
     }
   }
 }

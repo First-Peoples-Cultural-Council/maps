@@ -225,5 +225,19 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
 class ArtSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Art
-        fields = ("art_type", "title", "node_id")
+        fields = ("id","art_type", "title", "node_id")
+        geo_field = "point"
+
+
+class ArtDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Art
+        fields = (
+            "id",
+            "point",
+            "art_type",
+            "title",
+            "node_id",
+        )
         geo_field = "point"

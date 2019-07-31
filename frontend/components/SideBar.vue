@@ -2,10 +2,7 @@
   <div class="sidebar-container">
     <div class="sidebar-desktop">
       <div class="sidebar-header">
-        <Logo
-          class="cursor-pointer"
-          @click.native.prevent="handleLogoClick"
-        ></Logo>
+        <Logo class="cursor-pointer" :logo-alt="1"></Logo>
       </div>
       <div class="sidebar-body">
         <div class="sidebar-tabs">
@@ -22,13 +19,30 @@
         </div>
         <div class="sidebar-content">
           <slot name="content"></slot>
+          <slot name="badges"></slot>
           <slot name="cards"></slot>
         </div>
+        <Contact></Contact>
       </div>
     </div>
     <div class="sidebar-mobile d-none">
       <SideBarFold>
-        <template v-slot:cards> </template>
+        <template v-slot:badges>
+          <slot name="badges"></slot>
+        </template>
+        <slot name="cards"></slot>
+        <div class="sidebar-tabs">
+          <b-nav tabs fill>
+            <b-nav-item
+              v-for="tab in navigationTabs"
+              :key="tab.id"
+              :active="active === tab.name ? true : false"
+              :class="tab.name | lowerCase"
+              @click.prevent="handleNavigation($event, tab.name)"
+              >{{ tab.name }}
+            </b-nav-item>
+          </b-nav>
+        </div>
       </SideBarFold>
     </div>
   </div>
@@ -37,11 +51,13 @@
 <script>
 import Logo from '@/components/Logo.vue'
 import SideBarFold from '@/components/SideBarFold.vue'
+import Contact from '@/components/Contact.vue'
 
 export default {
   components: {
     Logo,
-    SideBarFold
+    SideBarFold,
+    Contact
   },
   filters: {
     lowerCase(value) {
@@ -91,11 +107,6 @@ export default {
       const self = this
       self.$router.push({
         path
-      })
-    },
-    handleLogoClick(e) {
-      this.$router.push({
-        path: '/'
       })
     },
     toggleFold(e) {

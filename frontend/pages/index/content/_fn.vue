@@ -4,6 +4,7 @@
       <CommunityDetailCard
         :name="community.name"
         :population="commDetails.population"
+        :server="isServer"
       ></CommunityDetailCard>
       <hr class="sidebar-divider mt-0" />
       <Filters class="mb-1"></Filters>
@@ -115,8 +116,9 @@ export default {
     },
     lna() {
       const lnas = values(this.commDetails.lna_by_language)
-      console.log('LNA', lnas)
-      return lnas.map(lna => omit(lna, ['lna', 'id', 'name']))
+      return lnas.map(lna =>
+        omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
+      )
     },
     otherNames() {
       return this.commDetails.other_names.split(',')
@@ -140,8 +142,10 @@ export default {
       getApiUrl(`community/${community.id}/`)
     )
 
+    const isServer = !!process.server
     return {
-      communityDetail
+      communityDetail,
+      isServer
     }
   },
   created() {

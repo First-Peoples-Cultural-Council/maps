@@ -11,7 +11,8 @@ export const zoomToPoint = ({ map, geom, zoom }) => {
   if (currentZoom > zoom) zoom = currentZoom
   map.flyTo({
     center: geom.coordinates,
-    zoom: zoom || 10
+    zoom: zoom || 10,
+    speed: 3
   })
 }
 

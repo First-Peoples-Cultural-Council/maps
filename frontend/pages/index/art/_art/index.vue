@@ -3,6 +3,7 @@
     <ArtsDetailCard
       :arttype="art.properties.type"
       :name="art.properties.title"
+      :server="isServer"
     ></ArtsDetailCard>
     <LanguageSeeAll
       content="See all details"
@@ -49,8 +50,11 @@ export default {
         return a.properties.title.toLowerCase() === params.art.toLowerCase()
       }
     })
+
+    const isServer = !!process.server
     return {
-      art
+      art,
+      isServer
     }
   },
   created() {

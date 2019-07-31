@@ -9,13 +9,7 @@
             class="cursor-pointer mb-2"
             bgcolor="#848159"
             type="part"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'art'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'art'"
           ></Badge>
           <Badge
             content="Organization"
@@ -23,13 +17,7 @@
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
             type="org"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'org'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'org'"
           ></Badge>
           <Badge
             content="Events"
@@ -37,13 +25,7 @@
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
             type="event"
-            @click.native.prevent="
-              $router.push({
-                query: {
-                  mode: 'event'
-                }
-              })
-            "
+            @click.native.prevent="mode = 'event'"
           ></Badge>
         </section>
         <hr class="sidebar-divider" />
@@ -52,9 +34,9 @@
       <template v-slot:cards>
         <section class="pl-3 pr-3">
           <div v-for="(art, index) in arts" :key="index">
-            <div v-if="$route.query.mode">
+            <div v-if="mode !== 'All'">
               <ArtsCard
-                v-if="$route.query.mode === art.properties.type"
+                v-if="mode === art.properties.type"
                 :arttype="art.properties.type"
                 :name="art.properties.title"
                 class="mt-3 hover-left-move"
@@ -106,6 +88,11 @@ export default {
     DetailSideBar,
     Badge,
     Filters
+  },
+  data() {
+    return {
+      mode: 'All'
+    }
   },
   computed: {
     arts() {

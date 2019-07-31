@@ -54,14 +54,10 @@
         </ul>
       </div>
       <div v-if="language.fv_archive_link" class="mt-4">
-        <h5 class="text-uppercase color-gray font-08">
-          First Voices Archive Link
-        </h5>
-        <a
-          class="color-gold font-08 word-break-all"
-          :href="language.fv_archive_link"
-          >{{ language.fv_archive_link }}</a
-        >
+        <LanguageSeeAll
+          :content="`Learn ${language.name} on FirstVoices`"
+          @click.native="handleClick($event, language.fv_archive_link)"
+        ></LanguageSeeAll>
       </div>
       <div class="mt-3">
         <b-table
@@ -84,11 +80,13 @@ import { values, omit } from 'lodash'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
+import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 
 export default {
   components: {
     LanguageDetailCard,
-    LanguageDetailBadge
+    LanguageDetailBadge,
+    LanguageSeeAll
   },
   data() {},
   computed: {
@@ -102,7 +100,9 @@ export default {
       },
       lna() {
         const lnas = values(this.language.lna_by_nation)
-        return lnas.map(lna => omit(lna, ['lna', 'id', 'name']))
+        return lnas.map(lna =>
+          omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
+        )
       }
     })
   },
@@ -133,6 +133,11 @@ export default {
     this.$eventHub.whenMap(map => {
       zoomToLanguage({ map: map, lang: this.language })
     })
+  },
+  methods: {
+    handleClick(e, data) {
+      window.open(data)
+    }
   }
 }
 </script>

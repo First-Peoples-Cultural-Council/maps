@@ -23,12 +23,7 @@
           >Search Term: {{ searchQuery }}
         </template>
         <div v-if="isSearchEmpty" class="nosearch-results p-3">
-          <p>
-            <span>No search results were found</span><br /><span>
-              Didn't find what you were looking for? Email us at
-              <a href="#">daniel@email.com</a></span
-            >
-          </p>
+          <Contact error="No search results were found"></Contact>
         </div>
         <div v-else class="pt-2">
           <div
@@ -73,10 +68,7 @@
             </div>
           </div>
           <div>
-            <p class="text-center p-3">
-              Didn't find what you were looking for? Email us at
-              <a href="#">daniel@email.com</a>
-            </p>
+            <Contact></Contact>
           </div>
         </div>
       </b-popover>
@@ -86,7 +78,11 @@
 </template>
 
 <script>
+import Contact from '@/components/Contact.vue'
 export default {
+  components: {
+    Contact
+  },
   data() {
     return {
       show: false,
