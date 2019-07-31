@@ -6,15 +6,18 @@ Clone the project.
 
 Install Docker and docker-compose.
 
+Copy the local settings template. They're all in one file, dc.dev.yml. docker-compose.override.yml is gitignored so you can store secrets there if needed.
+```
+cp dc.dev.yml docker-compose.override.yml
+```
+
 Spin up the project.
 
 ```
 docker-compose up
 ```
 
-Your Vue app is served at `http://localhost`
-
-And, your Django app is served at `http://localhost/api`
+Your Django app is served at `http://localhost/api`
 
 To create a superuser:
 
@@ -23,6 +26,8 @@ docker-compose exec web ./setup.sh
 ```
 
 You can visit the Django admin at `http://localhost/admin`. The username is `admin`, password is `pass`.
+
+Your Vue app is served at `http://localhost`. The front-end won't work properly unless you have a realistic dataset. In this project, the database is quite small, we suggest using a production snapshot for development, because this gives better dev/prod parity for easier development. The other option is to populate tables using a script (an example is provided for migrating out of Druapl) or create your data manually in the Django admin.
 
 ## Contributing
 
