@@ -1,7 +1,9 @@
 <template>
   <div class="lang-see-all">
-    <span>{{ content }}</span>
-    <span><img src="@/assets/images/go_icon_hover.svg" alt="Go"/></span>
+    <span class="lang-see-all-content">{{ content }}</span>
+    <span class="lang-see-all-redirect"
+      ><img src="@/assets/images/go_icon_hover.svg" alt="Go"
+    /></span>
   </div>
 </template>
 
@@ -18,16 +20,29 @@ export default {
 
 <style>
 .lang-see-all {
-  line-height: 0;
-  display: flex;
-  justify-content: space-between;
   background-color: #c46156;
-  align-items: center;
   font-size: 0.9em;
   padding: 0.5em 0.5em;
   font-weight: bold;
   border-radius: 0.25em;
   cursor: pointer;
   color: white;
+  display: table;
+  width: 100%;
+}
+
+.lang-see-all span {
+  display: table-cell;
+  vertical-align: middle;
+  line-height: 1.1em;
+}
+
+.lang-see-all-content {
+  width: 90%;
+}
+
+.lang-see-all-redirect {
+  width: 10%;
+  text-align: center;
 }
 </style>

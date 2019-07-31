@@ -91,7 +91,7 @@ export default {
         }
       } else {
         this.$router.push({
-          path: `/languages/${this.$route.params.lang}`
+          path: `/languages/${encodeURIComponent(this.$route.params.lang)}`
         })
       }
     },

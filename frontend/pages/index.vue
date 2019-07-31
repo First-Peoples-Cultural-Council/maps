@@ -196,9 +196,10 @@ export default {
     const forceReset = this.$store.state.mapinstance.forceReset
     if (
       to.name === 'index' ||
-      to.name === 'index-languages' ||
-      to.name === 'index-art' ||
-      to.name === 'index-heritages' ||
+      (to.name === 'index-languages' && from.name === 'index-languages-lang') ||
+      (to.name === 'index-art' && from.name === 'index-art-art') ||
+      (to.name === 'index-heritages' &&
+        from.name === 'index-place-names-placename') ||
       to.name === 'index-place-names' ||
       to.name === 'index-first-nations'
     ) {

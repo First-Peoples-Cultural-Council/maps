@@ -39,7 +39,7 @@
                 >Place-names</nuxt-link
               >
             </li>
-            <li><a href="https://firstvoices.com">Phrases</a></li>
+            <li><a href="http://184.69.112.115/orderMaps">Order Maps</a></li>
             <li><a href="https://maps.fpcc.ca/help">Help</a></li>
             <li class="login-nav cursor-pointer">
               <a href="https://maps.fpcc.ca/user/login" class="d-block"
