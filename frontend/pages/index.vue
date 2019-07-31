@@ -186,10 +186,22 @@ export default {
     store.commit('arts/setStore', results[3].features)
   },
   beforeRouteUpdate(to, from, next) {
+    // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
+    // On page landing, there isn't a previous state, only a now state. So we go back to the default map state.
+    // On subsequent route changes, we move now state into previous state, allowing us to go back if return/back button is clicked
+    // If force reset is true, (by clicking the logo or home in navigation bar), we don't care about state. We want to reset the map
+    // so we have a if statement that checks that.
     const map = this.$store.state.mapinstance.mapInstance
     const mapState = this.$store.state.mapinstance.mapState
     const forceReset = this.$store.state.mapinstance.forceReset
-    if (to.name === 'index') {
+    if (
+      to.name === 'index' ||
+      to.name === 'index-languages' ||
+      to.name === 'index-art' ||
+      to.name === 'index-heritages' ||
+      to.name === 'index-place-names' ||
+      to.name === 'index-first-nations'
+    ) {
       let lat, lng, zoom
       if (!forceReset) {
         if (mapState.previous === null) {
