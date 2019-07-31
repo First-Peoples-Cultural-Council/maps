@@ -19,9 +19,13 @@ export const state = () => ({
       active: true
     },
     {
-      name: 'Sleeping Languages (TBA)',
+      name: 'Sleeping Languages',
       id: 2,
-      layerNames: ['fn-lang-areas-highlighted'],
+      layerNames: [
+        'fn-lang-area-outlines-1',
+        'fn-lang-area-outlines-fade',
+        'fn-lang-areas-fill'
+      ],
       active: true
     },
     {
@@ -48,8 +52,28 @@ export const mutations = {
     state.layers.push(layer)
   },
 
-  toggleLayer(state, layer) {
+  toggleLayer(state, { layer, map, on }) {
+    console.log(arguments)
     const toggleLayer = state.layers.find(l => l.id === layer.id)
     toggleLayer.active = !toggleLayer.active
+    if (toggleLayer.name === 'Sleeping Languages') {
+      if (on) {
+        layer.layerNames.map(l => {
+          map.setFilter(l, ['!', ['get', 'sleeping']])
+        })
+      } else {
+        layer.layerNames.map(l => {
+          map.setFilter(l, ['!=', 'name', ''])
+        })
+      }
+    } else if (on) {
+      layer.layerNames.map(l => {
+        map.setLayoutProperty(l, 'visibility', 'visible')
+      })
+    } else {
+      layer.layerNames.map(l => {
+        map.setLayoutProperty(l, 'visibility', 'none')
+      })
+    }
   }
 }
