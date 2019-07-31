@@ -54,12 +54,6 @@ module.exports = {
   },
 
   /*
-   ** history mode
-   */
-  //   router: {
-  //     mode: 'hash'
-  //   },
-  /*
    ** Global CSS
    */
   css: [
