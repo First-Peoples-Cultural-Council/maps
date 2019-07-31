@@ -1,8 +1,10 @@
 version: '3.3'
 
 services:
+  frontend:
+    environment:
+      - NODE_ENV=development
   web:
-
     environment:
       - ARTSMAP_HOST=ratpack.sebastiantech.ca
       - ARTSMAP_DB=fpcc_artsmap_prod
@@ -12,10 +14,3 @@ services:
       - FPLM_DB=fpmaps_d7_live
       - FPLM_USER=
       - FPLM_PW=
-    command: ./prod.sh
-  frontend:
-    ports:
-      - 8888:8888
-    command: bash -c "yarn && yarn build && yarn start"
-    environment:
-      - HOST=http://maps.fpcc.ca
