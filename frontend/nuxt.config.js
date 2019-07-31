@@ -52,6 +52,10 @@ module.exports = {
     color: '#fff'
   },
 
+  axios: {
+    baseURL: process.env.HOST 
+  },
+
   /*
    ** Global CSS
    */
