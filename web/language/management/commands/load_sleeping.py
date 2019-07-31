@@ -17,14 +17,31 @@ class Command(BaseCommand):
 
 
 def load_sleeping():
-
+    """
+    A 2nd language geom source, for sleeping langs
+    """
     for rec in json.loads(open("./fixtures/old-langs.json").read())["features"]:
 
         with transaction.atomic():
-
-            lang = Language.objects.get(name=rec["properties"]["Name"])
+            try:
+                lang = Language.objects.get(name=rec["properties"]["Name"])
+            except Language.DoesNotExist:
+                print(
+                    "failed to import language, none with name {}".format(
+                        rec["properties"]["Name"]
+                    )
+                )
             poly = GEOSGeometry(json.dumps(rec["geometry"]))
-            print(poly)
-            lang.geom = poly[0]
-            print(lang)
-            # lang.save()
+            # hardcode some known sleeping lang names overwrite those.
+            if (
+                not lang.geom
+                or lang.name == "Wetalh"
+                or lang.name == "Nicola"
+                or lang.name == "Pəntl’áč"
+            ):
+                print(lang, "being imported")
+                lang.geom = poly[0]
+                lang.sleeping = True
+                lang.bbox = Polygon.from_bbox(lang.geom.extent)
+                lang.color = "RGB(0.5,0.5,0.5)"
+            lang.save()

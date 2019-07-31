@@ -229,17 +229,15 @@ export default {
   },
   mounted() {
     // initial zoom on index page
+    console.log('ZOOOM')
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
         const bbox = [
-          [-145.921875, 46.800059446787316],
-          [-105.9951171875, 46.800059446787316],
-          [-105.9951171875, 63.568120480921074],
-          [-145.921875, 63.568120480921074],
-          [-145.921875, 46.800059446787316]
+          [-142.921875, 46.800059446787316],
+          [-108.9951171875, 62.568120480921074]
         ]
-        const bounds = [bbox[0], bbox[2]]
-        map.fitBounds(bounds, { padding: 30 })
+        const bounds = [bbox[0], bbox[1]]
+        map.fitBounds(bounds, { padding: 10 })
       })
     }
   },
@@ -451,6 +449,7 @@ export default {
     },
     filterLanguages(bounds) {
       return this.languageSet.filter(lang => {
+        console.log(lang)
         const sw = lang.bbox.coordinates[0][0]
         const ne = lang.bbox.coordinates[0][2]
         const langBounds = {
