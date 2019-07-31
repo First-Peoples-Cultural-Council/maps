@@ -49,9 +49,11 @@ class DialectSerializer(serializers.ModelSerializer):
 
 
 class LanguageSerializer(serializers.ModelSerializer):
+    sub_family = LanguageSubFamilySerializer(read_only=True)
+
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping")
+        fields = ("name", "id", "color", "bbox", "sleeping", "sub_family")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -218,7 +220,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "audio_file",
         )
         geo_field = "point"
-        
+
 
 class ArtSerializer(GeoFeatureModelSerializer):
     class Meta:

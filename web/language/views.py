@@ -23,7 +23,11 @@ class LanguageList(generics.ListAPIView):
     API endpoint that allows languages to be viewed or edited.
     """
 
-    queryset = Language.objects.filter(geom__isnull=False)
+    queryset = (
+        Language.objects.filter(geom__isnull=False)
+        .select_related("sub_family", "sub_family__family")
+        .order_by("sub_family__family", "name")
+    )
     serializer_class = LanguageSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
@@ -50,7 +54,7 @@ class LanguageGeoList(generics.ListAPIView):
 
 
 class CommunityGeoList(generics.ListAPIView):
-    queryset = Community.objects.filter(point__isnull=False)
+    queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
@@ -62,7 +66,7 @@ class CommunityGeoList(generics.ListAPIView):
 
 class CommunityList(generics.ListAPIView):
 
-    queryset = Community.objects.all()
+    queryset = Community.objects.all().order_by("name")
     serializer_class = CommunitySerializer
 
     @method_decorator(cache_page(60 * 60 * 2))
@@ -96,7 +100,7 @@ class PlaceNameGeoList(generics.ListAPIView):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-      
+
 class ArtList(generics.ListAPIView):
 
     queryset = Art.objects.all()

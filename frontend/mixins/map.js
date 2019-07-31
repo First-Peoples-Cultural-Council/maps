@@ -7,6 +7,8 @@ export const zoomToLanguage = ({ map, lang }) => {
 
 export const zoomToPoint = ({ map, geom, zoom }) => {
   console.log(geom.coordinates)
+  const currentZoom = map.getZoom()
+  if (currentZoom > zoom) zoom = currentZoom
   map.flyTo({
     center: geom.coordinates,
     zoom: zoom || 10
