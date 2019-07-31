@@ -24,6 +24,10 @@ docker-compose exec web ./setup.sh
 
 You can visit the Django admin at `http://localhost/admin`. The username is `admin`, password is `pass`.
 
+## Contributing
+
+To work on a feature locally, we suggest restoring a database dump. 
+
 ## Features
 
 -   Fully Dockerized, and configured with docker-compose
