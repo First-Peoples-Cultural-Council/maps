@@ -114,7 +114,9 @@ export default {
     }
 
     const languages = await $axios.$get(getApiUrl(`language/`))
-    const language = languages.find(lang => lang.name === languageName)
+    const language = languages.find(
+      lang => lang.name.toLowerCase() === languageName.toLowerCase()
+    )
     const languageId = language.id
 
     const result = await Promise.all([
