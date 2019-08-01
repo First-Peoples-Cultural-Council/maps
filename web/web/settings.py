@@ -23,7 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# env var, DEBUG=0 for False, DEBUG=1 for True.
+DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -124,3 +125,12 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 5872
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
+SERVER_EMAIL = "no-reply@fpcc.info"
+
