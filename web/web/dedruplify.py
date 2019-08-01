@@ -3,6 +3,7 @@ import os
 from decimal import Decimal
 from datetime import datetime
 import json
+from django.contrib.gis.geos import Point
 
 
 class DeDruplifierClient:
@@ -28,6 +29,7 @@ class DeDruplifierClient:
                         FKTable = getattr(LocalTable, v).field.related_model
                         try:
                             obj = FKTable.objects.get(name=rec[k + "_title"][0])
+                            print("setting", FKTable, v, "to", obj)
                             setattr(item, v, obj)
                         except FKTable.DoesNotExist:
                             print(k, "with pk", rec[k + "_title"], "does not exist")
@@ -42,9 +44,11 @@ class DeDruplifierClient:
                             setattr(item, v, ",".join(rec[k]))
                         else:
                             setattr(item, v, rec[k][0])
+                else:
+                    print("has no", k)
             item.save()
             items.append((rec, item))
-            # print('saved', item)
+            print("saved", item)
         return items
 
     def map_taxonomy(self):
@@ -105,7 +109,7 @@ class DeDruplifierClient:
 
         _files = {}
         # download files.
-        if file_site:
+        if this.file_site:
             for row in self.query("select * from file_managed"):
                 print(row)
                 uri = row["uri"].replace("public://", "")
@@ -113,9 +117,7 @@ class DeDruplifierClient:
                 output_filename = os.path.join("tmp/files", uri)
                 output_dir = os.path.dirname(output_filename)
                 os.makedirs(output_dir, exist_ok=True)
-                cmd = "wget https://maps.fpcc.ca/sites/default/files/{} -P {}".format(
-                    uri, output_dir
-                )
+                cmd = "wget {}/{} -P {}".format(this.file_site, uri, output_dir)
                 print(cmd)
                 if not os.path.exists(output_filename):
                     os.system(cmd)

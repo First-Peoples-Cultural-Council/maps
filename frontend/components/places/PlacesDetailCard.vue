@@ -71,6 +71,10 @@ export default {
     server: {
       type: Boolean,
       default: false
+    },
+    audioFile: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -80,7 +84,13 @@ export default {
   },
   methods: {
     handlePronounce() {
-      console.log('Pronounce')
+      console.log('Pronounce', this.audioFile)
+      this.audio = this.audio || new Audio(this.audioFile)
+      if (this.audio.paused) {
+        this.audio.play()
+      } else {
+        this.audio.pause()
+      }
     },
     handleReturn() {
       if (this.server) {

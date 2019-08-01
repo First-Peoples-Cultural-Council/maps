@@ -17,18 +17,8 @@ from language.models import (
 import os
 import sys
 import json
-from django.contrib.gis.geos import Point
 from django.core.files import File
 from web import dedruplify
-
-TABLE_MAP = {
-    "tm_language_region": Language,
-    "tm_language_subfamily": LanguageSubFamily,
-    "tm_placename": PlaceName,
-    "tm_champ": Champion,
-    "tm_language_dialect": Dialect,
-    "tm_language": LanguageFamily,
-}
 
 
 class Client(dedruplify.DeDruplifierClient):
@@ -112,31 +102,9 @@ class Client(dedruplify.DeDruplifierClient):
                         regions.append(t[2])
             obj.regions = "".join(regions)
 
-        for rec, obj in self.map_drupal_items(
-            "tm_placename",
-            PlaceName,
-            {
-                "field_tm_pn_othername_value": "other_name",
-                "field_tm_pn_location_lat": "point",
-            },
-        ):
-            if "field_tm_pn_audio_fid_filename" in rec:
-                f = open(
-                    os.path.join("tmp/files", rec["field_tm_pn_audio_fid_filename"][0])
-                )
-                obj.audio_file.save(rec["field_tm_pn_audio_fid_filename"][0], File(f))
-                obj.save()
+        self.load_placenames()
 
-        self.map_drupal_items(
-            "tm_champ",
-            Champion,
-            {
-                "field_tm_champ_bio_value": "bio",
-                "field_language_target_id": "language",
-                "field_tm_champ_occup_value": "job",
-                "field_tm_nation_target_id": "community",
-            },
-        )
+        self.load_champs()
 
         self.map_drupal_items(
             "tm_language_dialect", Dialect, {"field_language_target_id": "language"}
@@ -204,6 +172,37 @@ class Client(dedruplify.DeDruplifierClient):
             obj.school_hours = rec.get("field_tm_lna2_school_hrs_value", [0])[0]
             obj.save()
 
+    def load_champs(self):
+        self.map_drupal_items(
+            "tm_champ",
+            Champion,
+            {
+                "field_tm_champ_bio_value": "bio",
+                "field_language_target_id": "language",
+                "field_tm_champ_occup_value": "job",
+                "field_tm_nation_target_id": "community",
+            },
+        )
+
+    def load_placenames(self):
+
+        for rec, obj in self.map_drupal_items(
+            "tm_placename",
+            PlaceName,
+            {
+                "field_tm_pn_othername_value": "other_name",
+                "field_tm_pn_location_lat": "point",
+            },
+        ):
+            if "field_tm_pn_audio_fid_filename" in rec:
+                src = os.path.join(
+                    "tmp/files", rec["field_tm_pn_audio_fid_filename"][0]
+                )
+                print("saving from source ", src)
+                f = open(src, "rb")
+                obj.audio_file.save(rec["field_tm_pn_audio_fid_filename"][0], File(f))
+                obj.save()
+
     def load_lnadata(self):
         for language in Language.objects.all():
             print(language, "is being updated from LNA data")
@@ -241,9 +240,12 @@ class Command(BaseCommand):
             os.environ["FPLM_USER"],
             os.environ["FPLM_PW"],
             os.environ["FPLM_DB"],
+            "https://maps.fpcc.ca/sites/default/files/",
         )
-        c.update()
-        c.load()
+        # c.update()
+        # c.load_champs()
+        c.load_placenames()
+        # c.load()
         # c.load_lnadata()
 
 
