@@ -338,16 +338,11 @@ export default {
       console.log('Features on click', features)
       let done = false
       features.forEach(feature => {
-        if (
-          feature &&
-          feature.properties &&
-          (feature.properties.name || feature.properties.title)
-        ) {
-          console.log('found', feature.layer.id, feature)
+        if (feature && feature.properties && feature.properties.name) {
           if (feature.layer.id === 'fn-arts') {
             done = true
             return this.$router.push({
-              path: `/art/${encodeURIComponent(feature.properties.title)}`
+              path: `/art/${encodeURIComponent(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-nations') {
             done = true
@@ -395,7 +390,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/static/web/arts1.json',
+        data: '/api/art/',
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50

@@ -60,10 +60,10 @@
         :key="'art' + index"
         class="mt-3 hover-left-move"
         :arttype="art.properties.art_type"
-        :name="art.properties.title"
+        :name="art.properties.name"
         @click.native="
           $router.push({
-            path: `/art/${encodeURIComponent(art.properties.title)}`
+            path: `/art/${encodeURIComponent(art.properties.name)}`
           })
         "
       >

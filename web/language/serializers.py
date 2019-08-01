@@ -10,7 +10,6 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
-    Art,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -221,23 +220,3 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         )
         geo_field = "point"
 
-
-class ArtSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = Art
-        fields = ("id","art_type", "title", "node_id")
-        geo_field = "point"
-
-
-class ArtDetailSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Art
-        fields = (
-            "id",
-            "point",
-            "art_type",
-            "title",
-            "node_id",
-        )
-        geo_field = "point"

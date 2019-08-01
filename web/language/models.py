@@ -2,16 +2,7 @@ from django.contrib.auth.models import User
 
 from django.contrib.gis.db import models
 
-
-class BaseModel(models.Model):
-    name = models.CharField(max_length=255, default="")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
-        ordering = ["name"]
+from web.models import BaseModel
 
 
 class LanguageFamily(BaseModel):
@@ -147,10 +138,3 @@ class LNAData(BaseModel):
     oece_hours = models.FloatField(default=0)
     info = models.TextField(default="")
     school_hours = models.FloatField(default=0)
-
-
-class Art(BaseModel):
-    point = models.PointField(null=True, default=None)
-    art_type = models.CharField(max_length=10, default="")
-    title = models.CharField(max_length=255)
-    node_id = models.IntegerField()

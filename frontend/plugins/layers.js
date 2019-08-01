@@ -188,9 +188,9 @@ export default {
         layout: {
           'text-optional': true,
           'symbol-spacing': 50,
-          'icon-image': '{type}',
+          'icon-image': '{art_type}_icon',
           'icon-size': 0.15,
-          'text-field': '{title}',
+          'text-field': '{name}',
           'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
           'text-size': 12,
           'text-offset': [0, 0.6],
@@ -275,9 +275,9 @@ export default {
       layout: {
         'text-optional': true,
         'symbol-spacing': 50,
-        'icon-image': '{type}',
+        'icon-image': '{art_type}_icon',
         'icon-size': 0.25,
-        'text-field': '{title}',
+        'text-field': '{name}',
         'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
         'text-size': 15,
         'text-offset': [0, 0.6],
@@ -316,7 +316,7 @@ export default {
 
     map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
     map.setFilter('fn-places-highlighted', ['in', 'name', ''])
-    map.setFilter('fn-arts-highlighted', ['in', 'title', ''])
+    map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'

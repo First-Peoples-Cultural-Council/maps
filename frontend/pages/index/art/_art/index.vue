@@ -1,8 +1,8 @@
 <template>
   <div>
     <ArtsDetailCard
-      :arttype="art.properties.type"
-      :name="art.properties.title"
+      :arttype="art.properties.art_type"
+      :name="art.properties.name"
       :server="isServer"
     ></ArtsDetailCard>
     <LanguageSeeAll
@@ -46,8 +46,8 @@ export default {
 
     const arts = (await $axios.$get(getApiUrl('arts'))).features
     const art = arts.find(a => {
-      if (a.properties.title) {
-        return a.properties.title.toLowerCase() === params.art.toLowerCase()
+      if (a.properties.name) {
+        return a.properties.name.toLowerCase() === params.art.toLowerCase()
       }
     })
 
@@ -71,8 +71,8 @@ export default {
         console.log(this.art, 'is the art')
         map.setFilter('fn-arts-highlighted', [
           'in',
-          'title',
-          this.art.properties.title
+          'name',
+          this.art.properties.name
         ])
       })
     }

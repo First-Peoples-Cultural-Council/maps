@@ -29,7 +29,7 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
       this.map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
     }
     if (route.name !== 'index-art-art') {
-      this.map.setFilter('fn-arts-highlighted', ['in', 'title', ''])
+      this.map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
     }
     if (route.name !== 'index-place-names-placename') {
       this.map.setFilter('fn-places-highlighted', ['in', 'name', ''])

@@ -53,7 +53,7 @@ module.exports = {
   },
 
   axios: {
-    baseURL: process.env.HOST 
+    baseURL: process.env.HOST
   },
 
   /*
