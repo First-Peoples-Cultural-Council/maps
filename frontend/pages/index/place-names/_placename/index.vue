@@ -3,7 +3,7 @@
     <PlacesDetailCard
       :name="place.properties.name"
       :server="isServer"
-      :audioFile="place.properties.audio_file"
+      :audio-file="place.properties.audio_file"
     ></PlacesDetailCard>
     <hr class="sidebar-divider" />
     <Filters class="mb-4"></Filters>

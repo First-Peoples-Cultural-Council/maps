@@ -21,6 +21,13 @@
               {{ name }}
             </h5>
           </div>
+          <div
+            v-if="audioFile"
+            class="d-inline-block"
+            @click.prevent.stop="handlePronounce"
+          >
+            <CardBadge content="Pronounce"></CardBadge>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -71,6 +78,10 @@ export default {
     server: {
       type: Boolean,
       default: false
+    },
+    audioFile: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -85,7 +96,12 @@ export default {
   },
   methods: {
     handlePronounce() {
-      console.log('Pronounce')
+      this.audio = this.audio || new Audio(this.audioFile)
+      if (this.audio.paused) {
+        this.audio.play()
+      } else {
+        this.audio.pause()
+      }
     },
     handleReturn() {
       if (!this.detail) {

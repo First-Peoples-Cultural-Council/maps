@@ -286,29 +286,39 @@ export default {
       return el.firstChild
     },
     updateMarkers(map) {
-      const newMarkers = {}
+      let newMarkers = {}
       const mapboxgl = require('mapbox-gl')
       const features = map.querySourceFeatures('arts1')
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
-      for (let i = 0; i < features.length; i++) {
-        const coords = features[i].geometry.coordinates
-        const props = features[i].properties
+      console.log('zoom', map.getZoom(), this.$route.name)
+      if (
+        map.getZoom() > 6.5 ||
+        this.$route.name === 'index-languages-lang' ||
+        this.$route.name === 'index-languages-lang-details'
+      ) {
+        for (let i = 0; i < features.length; i++) {
+          const coords = features[i].geometry.coordinates
+          const props = features[i].properties
 
-        if (!props.cluster) continue
-        const id = props.cluster_id
+          if (!props.cluster) continue
+          const id = props.cluster_id
 
-        let marker = markers[id]
-        if (!marker) {
-          const el = this.artsClusterImage(props, coords, map)
-          marker = markers[id] = new mapboxgl.Marker({ element: el }).setLngLat(
-            coords
-          )
+          let marker = markers[id]
+          if (!marker) {
+            const el = this.artsClusterImage(props, coords, map)
+            marker = markers[id] = new mapboxgl.Marker({
+              element: el
+            }).setLngLat(coords)
+          }
+          newMarkers[id] = marker
+
+          if (!markersOnScreen[id]) marker.addTo(map)
         }
-        newMarkers[id] = marker
-
-        if (!markersOnScreen[id]) marker.addTo(map)
+      } else {
+        newMarkers = {}
       }
+
       // for every marker we've added previously, remove those that are no longer visible
       for (const id in markersOnScreen) {
         if (!newMarkers[id]) markersOnScreen[id].remove()

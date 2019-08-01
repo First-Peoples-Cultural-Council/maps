@@ -6,6 +6,7 @@
       :color="languageColor"
       :name="this.$route.params.lang"
       :detail="true"
+      :audio-file="language.properties.audio_file"
     ></LanguageDetailCard>
     <section class="pl-3 pr-3">
       <h5 class="other-lang-names-title text-uppercase mt-4">

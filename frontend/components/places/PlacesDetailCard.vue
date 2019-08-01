@@ -21,7 +21,11 @@
               {{ name }}
             </h5>
           </div>
-          <div class="d-inline-block" @click.prevent.stop="handlePronounce">
+          <div
+            v-if="audioFile"
+            class="d-inline-block"
+            @click.prevent.stop="handlePronounce"
+          >
             <CardBadge content="Pronounce"></CardBadge>
           </div>
         </div>
@@ -84,7 +88,6 @@ export default {
   },
   methods: {
     handlePronounce() {
-      console.log('Pronounce', this.audioFile)
       this.audio = this.audio || new Audio(this.audioFile)
       if (this.audio.paused) {
         this.audio.play()
