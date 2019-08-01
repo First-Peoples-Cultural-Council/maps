@@ -243,7 +243,7 @@ class Command(BaseCommand):
             "https://maps.fpcc.ca/sites/default/files/",
         )
         # c.update()
-        # c.load_champs()
+        c.load_champs()
         c.load_placenames()
         # c.load()
         # c.load_lnadata()
