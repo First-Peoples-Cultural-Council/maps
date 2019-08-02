@@ -1,31 +1,47 @@
 <template>
-  <div>
-    <ArtsDetailCard
-      :arttype="art.properties.art_type"
-      :name="art.properties.name"
-      :server="isServer"
-    ></ArtsDetailCard>
-    <LanguageSeeAll
-      content="See all details"
-      class="mt-3"
-      @click.native="handleClick($event, art.properties.node_id)"
-    >
-    </LanguageSeeAll>
-    <Filters class="mb-4 mt-2"></Filters>
-  </div>
+  <DetailSideBar>
+    <template v-slot:badges>
+      <h5 class="color-gray font-08 p-0 m-0">
+        {{ art.properties.art_type | titleCase }}:
+        <span class="font-weight-bold">{{ art.properties.name }}</span>
+      </h5>
+    </template>
+    <div>
+      <ArtsDetailCard
+        :arttype="art.properties.art_type"
+        :name="art.properties.name"
+        :server="isServer"
+      ></ArtsDetailCard>
+      <LanguageSeeAll
+        content="See all details"
+        class="mt-3"
+        @click.native="handleClick($event, art.properties.node_id)"
+      >
+      </LanguageSeeAll>
+      <Filters class="mb-4 mt-2"></Filters>
+    </div>
+  </DetailSideBar>
 </template>
 
 <script>
+import { startCase } from 'lodash'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
+import DetailSideBar from '@/components/DetailSideBar.vue'
 
 export default {
   components: {
     ArtsDetailCard,
     LanguageSeeAll,
-    Filters
+    Filters,
+    DetailSideBar
+  },
+  filters: {
+    titleCase(str) {
+      return startCase(str)
+    }
   },
   computed: {
     mapinstance() {

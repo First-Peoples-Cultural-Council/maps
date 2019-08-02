@@ -67,21 +67,17 @@
         </section>
       </template>
     </SideBar>
-    <DetailSideBar
-      v-else-if="this.$route.name === 'index-art-art'"
-      :width="375"
-    >
+    <div v-else-if="this.$route.name === 'index-art-art'">
       <div>
         <nuxt-child />
       </div>
-    </DetailSideBar>
+    </div>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 
@@ -89,7 +85,6 @@ export default {
   components: {
     SideBar,
     ArtsCard,
-    DetailSideBar,
     Badge,
     Filters
   },

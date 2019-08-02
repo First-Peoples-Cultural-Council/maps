@@ -17,7 +17,12 @@
             alt="Event"
           />
           <img
-            v-else-if="arttype.toLowerCase() === 'org'"
+            v-else-if="arttype.toLowerCase() === 'artist'"
+            src="@/assets/images/artist_icon.svg"
+            alt="Event"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'organization'"
             src="@/assets/images/organization_icon.svg"
             alt="Organization"
           />

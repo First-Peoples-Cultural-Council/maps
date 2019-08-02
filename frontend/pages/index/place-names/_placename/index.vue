@@ -1,24 +1,34 @@
 <template>
-  <div>
-    <PlacesDetailCard
-      :name="place.properties.name"
-      :server="isServer"
-      :audio-file="place.properties.audio_file"
-    ></PlacesDetailCard>
-    <hr class="sidebar-divider" />
-    <Filters class="mb-4"></Filters>
-  </div>
+  <DetailSideBar>
+    <template v-slot:badges>
+      <h5 class="color-gray font-08 p-0 m-0">
+        Point Of Interest:
+        <span class="font-weight-bold">{{ place.properties.name }}</span>
+      </h5>
+    </template>
+    <div>
+      <PlacesDetailCard
+        :name="place.properties.name"
+        :server="isServer"
+        :audio-file="place.properties.audio_file"
+      ></PlacesDetailCard>
+      <hr class="sidebar-divider" />
+      <Filters class="mb-4"></Filters>
+    </div>
+  </DetailSideBar>
 </template>
 
 <script>
 import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
+import DetailSideBar from '@/components/DetailSideBar.vue'
 
 export default {
   components: {
     PlacesDetailCard,
-    Filters
+    Filters,
+    DetailSideBar
   },
   computed: {
     mapinstance() {
