@@ -7,6 +7,9 @@
     </div>
     <div class="detail-sidebar-mobile sidebar-mobile d-none">
       <SideBarFold>
+        <template v-slot:badges>
+          <slot name="badges"></slot>
+        </template>
         <slot></slot>
       </SideBarFold>
     </div>
@@ -73,6 +76,10 @@ export default {
     position: fixed;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  .detail-sidebar-mobile .innerFix {
+    padding-top: 4.5em !important;
   }
 }
 </style>

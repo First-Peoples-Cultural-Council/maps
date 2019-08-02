@@ -36,7 +36,7 @@ export const state = () => ({
         'fn-reserve-areas',
         'fn-reserve-labels'
       ],
-      active: false
+      active: true
     },
     {
       name: 'Provincial Borders',
