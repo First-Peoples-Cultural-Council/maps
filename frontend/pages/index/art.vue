@@ -2,6 +2,9 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3">
           <Badge
             content="Public Arts"
@@ -10,7 +13,7 @@
             bgcolor="#848159"
             type="part"
             :mode="getBadgeStatus(mode, 'public_art')"
-            @click.native.prevent="handleBadge($event, 'art')"
+            @click.native.prevent="handleBadge($event, 'public_art')"
           ></Badge>
           <Badge
             content="Organization"
@@ -19,7 +22,7 @@
             bgcolor="#a48116"
             type="org"
             :mode="getBadgeStatus(mode, 'organization')"
-            @click.native.prevent="handleBadge($event, 'org')"
+            @click.native.prevent="handleBadge($event, 'organization')"
           ></Badge>
           <Badge
             content="Artists"
@@ -31,8 +34,6 @@
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
         </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">

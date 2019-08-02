@@ -274,4 +274,16 @@ export default {
 .search-input::placeholder {
   color: rgba(0, 0, 0, 0.2);
 }
+
+@media (max-width: 576px) {
+  .searchbar-container {
+    width: auto;
+    position: static;
+    display: inline-block;
+    display: table-cell;
+    width: 85%;
+    padding-left: 0.5em;
+    vertical-align: middle;
+  }
+}
 </style>

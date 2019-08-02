@@ -158,7 +158,7 @@ export default {
       this.$eventHub.whenMap(map => {
         zoomToPoint({ map: map, geom: this.community.point, zoom: 11 })
         map.setFilter('fn-nations-highlighted', [
-          'in',
+          '==',
           'name',
           this.community.name
         ])

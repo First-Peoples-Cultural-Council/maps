@@ -70,8 +70,8 @@ export default {
         zoomToPoint({ map: map, geom: this.art.geometry, zoom: 11 })
         console.log(this.art, 'is the art')
         map.setFilter('fn-arts-highlighted', [
-          'in',
-          'name',
+          '==',
+          'title',
           this.art.properties.name
         ])
       })

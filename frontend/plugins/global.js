@@ -52,10 +52,17 @@ Vue.mixin({
       }
     },
     handleBadge(e, data) {
+      const isMobileSideBarOpen = this.$store.state.responsive
+        .isMobileSideBarOpen
+
       if (this.mode === data) {
         this.mode = 'All'
       } else {
         this.mode = data
+      }
+
+      if (isMobileSideBarOpen) {
+        e.stopPropagation()
       }
     }
   }

@@ -11,9 +11,9 @@
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
     ></Mapbox>
-    <Zoom class="zoom-control"></Zoom>
-    <ShareEmbed class="share-embed-control"></ShareEmbed>
-    <ResetMap class="reset-map-control"></ResetMap>
+    <Zoom class="zoom-control hide-mobile"></Zoom>
+    <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
+    <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <div class="top-bar-container">
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
@@ -574,32 +574,6 @@ export default {
     padding-left: 0;
   }
 
-  .searchbar-container {
-    width: auto;
-    position: static;
-    display: inline-block;
-    display: table-cell;
-    width: 85%;
-    padding-left: 0.5em;
-    vertical-align: middle;
-  }
-
-  .nav-container {
-    display: inline-block;
-    display: table-cell;
-    width: 15%;
-    padding-right: 0.5em;
-    vertical-align: middle;
-    padding-left: 0.5em;
-  }
-
-  .navbar-container {
-    position: static;
-    display: inline-block;
-    padding: 0.8em;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
   .top-bar-container {
     position: fixed;
     top: 10px;
@@ -613,6 +587,10 @@ export default {
     max-height: 300px;
     max-width: 100%;
     width: 96%;
+  }
+
+  .detailModeContainer {
+    padding-left: 0px !important;
   }
 }
 </style>
