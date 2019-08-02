@@ -25,6 +25,7 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -43,10 +44,6 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
-
     const places = (await $axios.$get(getApiUrl('placename-geo/'))).features
     const place = places.find(a => {
       if (a.properties.name) {

@@ -58,7 +58,6 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    console.log(getApiUrl)
     const arts = (await $axios.$get(getApiUrl('arts'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
@@ -66,7 +65,6 @@ export default {
       }
     })
     const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
-    console.log('DETAIL', artDetails)
 
     const isServer = !!process.server
     return {
@@ -84,6 +82,8 @@ export default {
       window.open(`https://fp-artsmap.ca/node/${data}`)
     },
     setupMap() {
+      const mapboxgl = require('mapbox-gl')
+
       this.$eventHub.whenMap(map => {
         zoomToPoint({ map, geom: this.art.geometry, zoom: 15 })
         // map.setLayoutProperty('fn-arts-clusters', 'visibility', 'none')
@@ -92,6 +92,16 @@ export default {
           'name',
           this.art.properties.name
         ])
+        const el = document.createElement('div')
+        el.className = 'marker'
+        el.style =
+          "background-image: url('/_nuxt/assets/images/" +
+          this.art.properties.art_type +
+          "_icon.svg')"
+
+        new mapboxgl.Marker(el)
+          .setLngLat(this.art.geometry.coordinates)
+          .addTo(map)
       })
     }
   }

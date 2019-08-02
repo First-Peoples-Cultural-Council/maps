@@ -82,6 +82,7 @@ import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage } from '@/mixins/map.js'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -109,10 +110,6 @@ export default {
   },
   async asyncData({ $axios, store, params }) {
     const languageName = params.lang
-
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
 
     const languages = await $axios.$get(getApiUrl(`language/`))
     const language = languages.find(

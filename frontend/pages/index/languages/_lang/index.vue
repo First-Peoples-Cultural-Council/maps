@@ -221,6 +221,7 @@ import { zoomToLanguage } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -272,10 +273,6 @@ export default {
   },
   async asyncData({ $axios, store, params }) {
     const languageName = params.lang
-
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
 
     const languages = await $axios.$get(getApiUrl(`language/`))
     const language = languages.find(

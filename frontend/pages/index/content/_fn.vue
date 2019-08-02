@@ -109,6 +109,7 @@ import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -172,10 +173,6 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $route }) {
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
-
     const communities = await $axios.$get(getApiUrl(`/community/`))
     const community = communities.find(comm => comm.name === params.fn)
     const communityDetail = await $axios.$get(
