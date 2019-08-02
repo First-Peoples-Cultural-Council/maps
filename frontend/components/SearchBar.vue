@@ -281,7 +281,7 @@ export default {
     position: static;
     display: inline-block;
     display: table-cell;
-    width: 85%;
+    width: 70%;
     padding-left: 0.5em;
     vertical-align: middle;
   }

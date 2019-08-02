@@ -12,6 +12,12 @@
         alt="Language Map Of British Columbia"
       />
     </div>
+    <div v-else-if="logoAlt === 3" class="style-two-container">
+      <img
+        src="../assets/images/symbol.png"
+        alt="Language Map Of British Columbia"
+      />
+    </div>
   </div>
 </template>
 
@@ -44,5 +50,11 @@ export default {
 }
 .style-two-container {
   text-align: center;
+}
+
+@media (max-width: 992px) {
+  .logo img {
+    width: 100%;
+  }
 }
 </style>

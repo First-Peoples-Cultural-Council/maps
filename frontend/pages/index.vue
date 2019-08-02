@@ -15,6 +15,7 @@
     <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
     <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <div class="top-bar-container">
+      <Logo :logo-alt="3" class="mobile-logo hide-mobile"></Logo>
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
@@ -105,6 +106,7 @@ import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
+import Logo from '@/components/Logo.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
@@ -144,7 +146,8 @@ export default {
     ShareEmbed,
     ResetMap,
     Zoom,
-    Filters
+    Filters,
+    Logo
   },
   data() {
     return {
@@ -632,6 +635,13 @@ export default {
 @media (max-width: 992px) {
   .map-container {
     padding-left: 0;
+  }
+
+  .mobile-logo {
+    display: table-cell !important;
+    width: 15%;
+    padding-left: 0.5em;
+    vertical-align: middle;
   }
 
   .top-bar-container {
