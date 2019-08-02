@@ -10,7 +10,7 @@
             bgcolor="#848159"
             type="part"
             :mode="getBadgeStatus(mode, 'public_art')"
-            @click.native.prevent="handleBadge($event, 'art')"
+            @click.native.prevent="handleBadge($event, 'public_art')"
           ></Badge>
           <Badge
             content="Organization"
@@ -19,7 +19,7 @@
             bgcolor="#a48116"
             type="org"
             :mode="getBadgeStatus(mode, 'organization')"
-            @click.native.prevent="handleBadge($event, 'org')"
+            @click.native.prevent="handleBadge($event, 'organization')"
           ></Badge>
           <Badge
             content="Artists"
