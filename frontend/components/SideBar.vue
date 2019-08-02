@@ -228,5 +228,14 @@ export default {
   .sidebar-tabs-fold .nav-fill .nav-item {
     background-color: white;
   }
+
+  .nav-tabs .nav-link.active::before {
+    position: static;
+    content: unset;
+  }
+
+  .nav-tabs .nav-link.active {
+    line-height: inherit;
+  }
 }
 </style>
