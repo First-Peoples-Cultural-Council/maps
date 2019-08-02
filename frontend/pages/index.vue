@@ -120,9 +120,9 @@ const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
             <p>
-                <a href='/art/${encodeURIComponent(
+                <a href="/art/${encodeURIComponent(
                   props.name
-                )}' class='art-popup'>${props.name}</a> |
+                )}" class='art-popup'>${props.name}</a> |
                 <span class='art-popup-type'>${props.art_type}</span>
             </p>
         </div>`

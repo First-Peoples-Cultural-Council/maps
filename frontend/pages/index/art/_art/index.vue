@@ -64,6 +64,7 @@ export default {
         return a.properties.name.toLowerCase() === params.art.toLowerCase()
       }
     })
+    console.log('art', art, params.art.toLowerCase())
     const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
 
     const isServer = !!process.server
@@ -85,13 +86,8 @@ export default {
       const mapboxgl = require('mapbox-gl')
 
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map, geom: this.art.geometry, zoom: 15 })
-        // map.setLayoutProperty('fn-arts-clusters', 'visibility', 'none')
-        map.setFilter('fn-arts-highlighted', [
-          '==',
-          'name',
-          this.art.properties.name
-        ])
+        zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+
         const el = document.createElement('div')
         el.className = 'marker'
         el.style =

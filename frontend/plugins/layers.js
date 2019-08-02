@@ -283,28 +283,28 @@ export default {
       }
     })
 
-    map.addLayer({
-      id: 'fn-arts-highlighted',
-      type: 'symbol',
-      source: 'arts1',
-      layout: {
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': '{art_type}_icon',
-        'icon-size': 0.25,
-        'text-field': '{name}',
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-        'text-size': 15,
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': 'hsl(53, 50%, 70%)'
-      }
-    })
+    // map.addLayer({
+    //   id: 'fn-arts-highlighted',
+    //   type: 'symbol',
+    //   source: 'arts1',
+    //   layout: {
+    //     'text-optional': true,
+    //     'symbol-spacing': 50,
+    //     'icon-image': '{art_type}_icon',
+    //     'icon-size': 0.25,
+    //     'text-field': '{name}',
+    //     'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+    //     'text-size': 15,
+    //     'text-offset': [0, 0.6],
+    //     'text-anchor': 'top'
+    //   },
+    //   paint: {
+    //     'text-color': 'hsl(347, 0%, 0%)',
+    //     'text-halo-width': 2,
+    //     'text-halo-blur': 2,
+    //     'text-halo-color': 'hsl(53, 50%, 70%)'
+    //   }
+    // })
 
     map.addLayer({
       id: 'fn-places-highlighted',

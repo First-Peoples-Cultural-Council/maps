@@ -28,9 +28,9 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
     if (route.name !== 'index-content-fn') {
       this.map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
     }
-    if (route.name !== 'index-art-art') {
-      this.map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
-    }
+    // if (route.name !== 'index-art-art') {
+    //   this.map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
+    // }
     const markers = this.map.getContainer().getElementsByClassName('marker')
     for (let i = 0; i < markers.length; i++) {
       const marker = markers[i]

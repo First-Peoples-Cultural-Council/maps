@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 
 module.exports = {
-  mode: 'universal',
+  mode: 'spa',
   server: {
     port: 80, // default: 3000
     host: '0.0.0.0' // default: localhost
@@ -53,7 +53,7 @@ module.exports = {
   },
 
   axios: {
-    baseURL: 'http://192.168.45.205'
+    baseURL: process.env.HOST
   },
 
   /*
