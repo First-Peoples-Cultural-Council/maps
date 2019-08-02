@@ -369,16 +369,17 @@ export default {
           }
 
           if (feature.layer.id === 'fn-arts-clusters') {
-            console.log("CLSUTER")
-            let clusterId = feature.properties.cluster_id
-            let point_count = feature.properties.point_count
-            feature.layer.getClusterLeaves(clusterId, point_count, 0, function(err, aFeatures){
-              console.log('getClusterLeaves', err, aFeatures);
+            console.log('CLSUTER')
+            const clusterId = feature.properties.cluster_id
+            const point_count = feature.properties.point_count
+            feature.layer.getClusterLeaves(clusterId, point_count, 0, function(
+              err,
+              aFeatures
+            ) {
+              console.log('getClusterLeaves', err, aFeatures)
             })
           }
         }
-
-
       })
 
       if (!done)

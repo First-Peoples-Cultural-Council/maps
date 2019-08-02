@@ -19,5 +19,6 @@ module.exports = {
     rules: {
         "nuxt/no-cjs-in-config": "off",
         "no-console": "off"
+        "camelcase" "off"
     }
 };

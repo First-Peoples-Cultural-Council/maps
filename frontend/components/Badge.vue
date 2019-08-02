@@ -23,7 +23,7 @@ export default {
     },
     number: {
       type: Number,
-      default: 104
+      default: 0
     },
     bgcolor: {
       type: String,
