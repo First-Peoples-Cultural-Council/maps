@@ -60,7 +60,7 @@ export default {
   methods: {
     setupMap() {
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map: map, geom: this.place.geometry, zoom: 13 })
+        zoomToPoint({ map, geom: this.place.geometry, zoom: 13 })
         map.setFilter('fn-places-highlighted', [
           '==',
           'name',
