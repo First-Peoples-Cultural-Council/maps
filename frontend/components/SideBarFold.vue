@@ -75,15 +75,15 @@ export default {
 .innerToggle {
   padding: 0.5em;
   background-color: white;
+  box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
 }
 .fixTop {
   position: static;
   width: 100%;
   left: 0;
   right: 0;
-  box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  top: 62px;
+  top: 18%;
 }
 
 .innerFix {

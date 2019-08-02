@@ -202,7 +202,7 @@ export default {
     padding: 0;
     margin: 0;
     z-index: 50;
-    max-height: 90%;
+    max-height: 80%;
   }
 
   .sidebar-mobile {
