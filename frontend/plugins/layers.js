@@ -144,6 +144,7 @@ export default {
       id: 'fn-arts-clusters',
       type: 'circle',
       source: 'arts1',
+      minzoom: 5,
       filter: ['has', 'point_count'],
       paint: {
         'circle-color': '#555',
