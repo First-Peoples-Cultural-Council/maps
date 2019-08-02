@@ -2,7 +2,7 @@
   <SideBar v-if="this.$route.name < 'index-place-names-placename'">
     <template v-slot:content>
       <hr class="sidebar-divider" />
-      <Filters class="mb-4"></Filters>
+      <Filters class="mb-2"></Filters>
     </template>
     <template v-slot:badges>
       <section class="pl-3 pr-3 mt-3">

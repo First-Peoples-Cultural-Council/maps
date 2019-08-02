@@ -25,7 +25,7 @@
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
+        <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="pl-3 pr-3 mt-3">
@@ -641,6 +641,7 @@ export default {
     text-align: center;
     width: 100%;
     display: table;
+    z-index: 100;
   }
 
   .popover {

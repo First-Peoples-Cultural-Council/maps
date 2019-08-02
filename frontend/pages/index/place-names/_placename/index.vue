@@ -14,7 +14,7 @@
           :audio-file="place.properties.audio_file"
         ></PlacesDetailCard>
         <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
+        <Filters class="mb-2"></Filters>
       </div>
     </DetailSideBar>
   </div>
