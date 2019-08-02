@@ -2,6 +2,9 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3">
           <Badge
             content="Public Arts"
@@ -31,8 +34,6 @@
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
         </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">

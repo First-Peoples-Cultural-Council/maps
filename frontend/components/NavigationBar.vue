@@ -170,4 +170,22 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+
+@media (max-width: 576px) {
+  .nav-container {
+    display: inline-block;
+    display: table-cell;
+    width: 15%;
+    padding-right: 0.5em;
+    vertical-align: middle;
+    padding-left: 0.5em;
+  }
+
+  .navbar-container {
+    position: static;
+    display: inline-block;
+    padding: 0.8em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
 </style>

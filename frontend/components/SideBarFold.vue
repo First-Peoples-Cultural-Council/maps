@@ -67,8 +67,8 @@ export default {
 }
 
 .innerFix {
-  padding-top: 2em !important;
-  padding-bottom: 3em !important;
+  padding-top: 2.5em !important;
+  padding-bottom: 3.5em !important;
 }
 
 .badge-section section {
@@ -90,5 +90,15 @@ export default {
 
 #inner-collapse .sidebar-tabs .nav-item {
   background-color: White;
+}
+
+#inner-collapse .sidebar-tabs .nav-item a::before {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px -2px 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+.innerToggle > span > section > div {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
 }
 </style>
