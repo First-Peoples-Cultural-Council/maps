@@ -383,7 +383,7 @@ export default {
         if (feature.layer.id === 'fn-arts-clusters') {
           console.log(feature)
           const zoom = map.getZoom()
-          if (zoom < 14) {
+          if (zoom < 13) {
             const lat = feature.geometry.coordinates[1]
             const lng = feature.geometry.coordinates[0]
             map.flyTo({
