@@ -260,7 +260,6 @@ export default {
   },
   mounted() {
     // initial zoom on index page
-    console.log('ZOOOM')
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
         const bbox = [

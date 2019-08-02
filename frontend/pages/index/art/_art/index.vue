@@ -12,10 +12,11 @@
         :name="art.properties.name"
         :server="isServer"
       ></ArtsDetailCard>
+      <p class="pl-4 mt-3 color-gray font-08" v-html="artDetails.details"></p>
       <LanguageSeeAll
         content="See all details"
         class="mt-3"
-        @click.native="handleClick($event, art.properties.node_id)"
+        @click.native="handleClick($event, artDetails.node_id)"
       >
       </LanguageSeeAll>
       <Filters class="mb-2 mt-2"></Filters>
@@ -30,6 +31,7 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -56,21 +58,21 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
-
+    console.log(getApiUrl)
     const arts = (await $axios.$get(getApiUrl('arts'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
         return a.properties.name.toLowerCase() === params.art.toLowerCase()
       }
     })
+    const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
+    console.log('DETAIL', artDetails)
 
     const isServer = !!process.server
     return {
       art,
-      isServer
+      isServer,
+      artDetails
     }
   },
   created() {
@@ -84,7 +86,6 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         zoomToPoint({ map, geom: this.art.geometry, zoom: 15 })
-        console.log(this.art, 'is the art')
         // map.setLayoutProperty('fn-arts-clusters', 'visibility', 'none')
         map.setFilter('fn-arts-highlighted', [
           '==',

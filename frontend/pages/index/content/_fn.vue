@@ -141,7 +141,7 @@ export default {
         let fluent
         let someSpeakers
         let learners
-        const pop = this.commDetails.popluation
+        const pop = this.commDetails.population || lna.pop_total_value
         // get percentages.
         if (pop) {
           fluent = ((100 * lna.fluent_speakers) / pop).toFixed(1) + '%'
