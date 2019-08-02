@@ -275,7 +275,7 @@ export default {
   color: rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .searchbar-container {
     width: auto;
     position: static;

@@ -93,7 +93,7 @@
           @click.native="handleMoreDetails"
         ></LanguageSeeAll>
       </section>
-      <Filters class="mb-4 mt-2"></Filters>
+      <Filters class="mb-1 mt-2"></Filters>
       <section class="pl-3 pr-3 pt-2">
         <div
           v-if="

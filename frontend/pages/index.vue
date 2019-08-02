@@ -31,7 +31,7 @@
         <section class="pl-3 pr-3 mt-3">
           <Badge
             content="Languages"
-            :number="languages.length"
+            :number="languagesCount"
             class="cursor-pointer"
             type="language"
             :mode="getBadgeStatus(mode, 'lang')"
@@ -169,6 +169,9 @@ export default {
     languages() {
       return this.$store.state.languages.languages || []
     },
+    languagesCount() {
+      return this.$store.state.languages.languagesCount
+    },
     isDetailMode() {
       return this.$store.state.sidebar.isDetailMode
     },
@@ -204,6 +207,7 @@ export default {
       store.commit('communities/set', results[1])
       store.commit('places/set', results[2].features)
       store.commit('arts/set', results[3].features)
+      store.commit('languages/setLanguagesCount', results[0].length)
     }
 
     store.commit('languages/setStore', results[0])
@@ -552,9 +556,9 @@ export default {
 
         return intersects(bounds, langBounds)
       })
-      console.log(
-        'Groupby',
-        groupBy(filteredLanguages, 'sub_family.family.name')
+      this.$store.commit(
+        'languages/setLanguagesCount',
+        filteredLanguages.length
       )
       return groupBy(filteredLanguages, 'sub_family.family.name')
     },
@@ -627,7 +631,7 @@ export default {
   font-size: 0.9em;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .map-container {
     padding-left: 0;
   }

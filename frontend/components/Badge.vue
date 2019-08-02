@@ -94,15 +94,27 @@ export default {
   box-shadow: 0px 1px 4px 2px rgba(0, 0, 0, 0.3);
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .badge-icon {
+    display: none;
+  }
+
+  .badge-content {
+    display: inline-block;
+    font-size: 0.8em;
+  }
+  .badge-number {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 574px) {
+  .badge-icon {
+    display: inline-block;
   }
 
   .badge-content {
     display: none;
-  }
-  .badge-number {
-    font-size: 0.8em;
   }
 }
 </style>

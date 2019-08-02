@@ -3,6 +3,7 @@
     <b-collapse id="outer-collapse" visible>
       <b-card>
         <div
+          id="innerToggleHead"
           class="innerToggle pl-2 pr-2"
           :class="{ fixTop: visible }"
           @click.prevent="toggleSideBar"
@@ -79,7 +80,7 @@ export default {
   padding: 0.5em;
 }
 .fixTop {
-  position: fixed;
+  position: static;
   background-color: white;
   width: 100%;
   left: 0;
@@ -89,8 +90,7 @@ export default {
 }
 
 .innerFix {
-  padding-top: 2.5em !important;
-  padding-bottom: 3.5em !important;
+  padding-top: 0em !important;
 }
 
 .badge-section section {

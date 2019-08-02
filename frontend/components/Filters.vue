@@ -4,7 +4,7 @@
       <div>
         <img src="@/assets/images/filter_icon.svg" alt="Filter" />
         <span class="d-inline-block font-08">Filter Layers</span>
-        <div class="ang" style="line-height: 20px;">
+        <div class="float-right" style="line-height: 20px;">
           <img
             v-if="!showCollapse"
             src="@/assets/images/arrow_down_icon.svg"
