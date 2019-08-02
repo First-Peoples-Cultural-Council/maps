@@ -367,7 +367,18 @@ export default {
               )}`
             })
           }
+
+          if (feature.layer.id === 'fn-arts-clusters') {
+            console.log("CLSUTER")
+            let clusterId = feature.properties.cluster_id
+            let point_count = feature.properties.point_count
+            feature.layer.getClusterLeaves(clusterId, point_count, 0, function(err, aFeatures){
+              console.log('getClusterLeaves', err, aFeatures);
+            })
+          }
         }
+
+
       })
 
       if (!done)
@@ -465,16 +476,16 @@ export default {
       }
     },
     mapZoomEnd(map, e) {
-      this.updateMarkers(map)
+      // this.updateMarkers(map)
     },
     mapMoveEnd(map, e) {
-      this.updateMarkers(map)
+      // this.updateMarkers(map)
       this.updateData(map)
       this.updateMapState(map)
     },
     mapSourceData(map, source) {
       if (source.sourceId === 'arts1') {
-        this.updateMarkers(map)
+        // this.updateMarkers(map)
       }
     },
     filterLanguages(bounds) {

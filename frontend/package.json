@@ -32,8 +32,8 @@
   },
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.5.5",
-    "@nuxtjs/eslint-config": "^0.0.1",
-    "@nuxtjs/eslint-module": "^0.0.1",
+    "@nuxtjs/eslint-config": "^1.0.0",
+    "@nuxtjs/eslint-module": "^1.0.0",
     "@vue/test-utils": "^1.0.0-beta.27",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",

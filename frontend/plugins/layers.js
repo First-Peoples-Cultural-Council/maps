@@ -139,25 +139,36 @@ const addNationsLayers = map => {
 }
 export default {
   layers: (map, self) => {
+    map.addLayer({
+      id: 'fn-arts-clusters',
+      type: 'circle',
+      source: 'arts1',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#555',
+        'circle-radius': ['step', ['get', 'point_count'], 15, 30, 20, 75, 25],
+        'circle-opacity': 0.5,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 2,
+        'circle-stroke-opacity': 0.4
+      }
+    })
     addNationsLayers(map)
     addLangLayers(map)
-    map.addLayer(
-      {
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'arts1',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': '{point_count_abbreviated}',
-          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-          'text-size': 12,
-          'text-halo-color': 'hsl(0, 0%, 100%)',
-          'text-halo-width': 1,
-          'text-halo-blur': 1
-        }
+    map.addLayer({
+      id: 'fn-arts-clusters-text',
+      type: 'symbol',
+      source: 'arts1',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12
       },
-      'fn-nations'
-    )
+      paint: {
+        'text-color': '#ffffff'
+      }
+    })
 
     map.addLayer(
       {

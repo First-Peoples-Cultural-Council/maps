@@ -117,9 +117,29 @@ export default {
     },
     lna() {
       const lnas = values(this.commDetails.lna_by_language)
-      return lnas.map(lna =>
-        omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
-      )
+      return lnas.map(lna => {
+        console.log(lna)
+        let fluent
+        let someSpeakers
+        let learners
+        const pop = this.commDetails.popluation
+        // get percentages.
+        if (pop) {
+          fluent = ((100 * lna.fluent_speakers) / pop).toFixed(1) + '%'
+          someSpeakers = ((100 * lna.some_speakers) / pop).toFixed(1) + '%'
+          learners = ((100 * lna.learners) / pop).toFixed(1) + '%'
+        } else {
+          learners = 0
+          fluent = 0
+          someSpeakers = 0
+        }
+        return {
+          language: lna.lna.language,
+          fluent_speakers: fluent,
+          some_speakers: someSpeakers,
+          learners: learners
+        }
+      })
     },
     otherNames() {
       return this.commDetails.other_names.split(',')
