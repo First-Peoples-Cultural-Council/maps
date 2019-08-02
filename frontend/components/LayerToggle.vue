@@ -34,8 +34,7 @@ export default {
       this.$eventHub.whenMap(map => {
         this.$store.commit('layers/toggleLayer', {
           layer: this.layer,
-          map: map,
-          on: this.on
+          map: map
         })
       })
     }

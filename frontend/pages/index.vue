@@ -293,7 +293,7 @@ export default {
       // and add it to the map if it's not there already
       console.log('zoom', map.getZoom(), this.$route.name)
       if (
-        map.getZoom() > 6.5 ||
+        map.getZoom() > 6 ||
         this.$route.name === 'index-languages-lang' ||
         this.$route.name === 'index-languages-lang-details'
       ) {
