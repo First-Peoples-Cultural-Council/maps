@@ -114,6 +114,15 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, intersects } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
+
+const renderArtDetail = props => {
+  return `<div class='map-incident'>
+            <p>
+                <span class='detail'>details:</span> ${props}
+            </p>
+        </div>`
+}
+
 const markers = {}
 let markersOnScreen = {}
 
@@ -345,7 +354,6 @@ export default {
     mapClicked(map, e) {
       const features = map.queryRenderedFeatures(e.point)
 
-      console.log('Features on click', features)
       let done = false
       features.forEach(feature => {
         if (feature && feature.properties && feature.properties.name) {
@@ -367,18 +375,53 @@ export default {
               )}`
             })
           }
-
-          if (feature.layer.id === 'fn-arts-clusters') {
-            console.log("CLSUTER")
-            let clusterId = feature.properties.cluster_id
-            let point_count = feature.properties.point_count
-            feature.layer.getClusterLeaves(clusterId, point_count, 0, function(err, aFeatures){
-              console.log('getClusterLeaves', err, aFeatures);
-            })
-          }
         }
+        if (feature.layer.id === 'fn-arts-clusters') {
+          console.log(feature)
+          const zoom = map.getZoom()
+          if (zoom < 10) {
+            const lat = feature.geometry.coordinates[1]
+            const lng = feature.geometry.coordinates[0]
+            map.flyTo({
+              center: [lng, lat],
+              zoom: zoom + 1,
+              speed: 3,
+              curve: 1
+            })
+          } else {
+            const clusterId = feature.properties.cluster_id
+            map
+              .getSource('arts1')
+              .getClusterLeaves(
+                clusterId,
+                feature.properties.point_count,
+                0,
+                function(err, aFeatures) {
+                  console.log('getClusterLeaves', err, aFeatures)
+                  const html = aFeatures.reduce(function(ach, feature) {
+                    const props = feature.properties
+                    return ach + renderArtDetail(props)
+                  }, '')
+                  const mapboxgl = require('mapbox-gl')
+                  new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(
+                      `<div class='popup-inner'>
 
+                          ${html}
 
+                          <div class="scroll-indicator">
+                              <i class="fas fa-angle-down float"></i>
+                          </div>
+
+                          </div>`
+                    )
+                    .addTo(map)
+                }
+              )
+          }
+          done = true
+        }
       })
 
       if (!done)
@@ -413,7 +456,7 @@ export default {
         type: 'geojson',
         data: '/api/art/',
         cluster: true,
-        clusterMaxZoom: 14,
+        // clusterMaxZoom: 14,
         clusterRadius: 50
       })
       map.addSource('places1', {
@@ -441,7 +484,7 @@ export default {
 
           map.flyTo({
             center: [lng, lat],
-            zoom: zoom,
+            zoom,
             speed: 3,
             curve: 1
           })

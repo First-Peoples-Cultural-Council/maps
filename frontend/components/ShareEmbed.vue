@@ -81,9 +81,9 @@ export default {
     copyToClip(e, data) {
       let innerText = ''
       if (data === 'url') {
-        innerText = document.getElementById('urlShare').innerText
+        innerText = document.getElementById('urlShare').textContent
       } else if (data === 'iframe') {
-        innerText = document.getElementById('iframeShare').innerText
+        innerText = document.getElementById('iframeShare').textContent
       }
 
       const tempInput = document.createElement('input')
