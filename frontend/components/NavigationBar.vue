@@ -46,12 +46,15 @@
                 >Login</a
               >
             </li>
-            <li class="close-nav cursor-pointer" @click="closeNav">
-              <a href="#">
-                <img src="@/assets/images/close_icon.svg" alt="Close"
-              /></a>
-            </li>
           </ul>
+          <div
+            class="close-nav cursor-pointer d-inline-block"
+            @click="closeNav"
+          >
+            <a href="#">
+              <img src="@/assets/images/close_icon.svg" alt="Close"
+            /></a>
+          </div>
         </div>
       </div>
     </transition>
@@ -121,6 +124,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+  padding-right: 0.5em;
 }
 .nav-logo-img {
   display: inline-block;
@@ -139,12 +143,12 @@ export default {
   margin: 0;
 }
 .nav-links {
-  display: flex;
-  align-items: center;
+  display: inline-block;
 }
 .nav-links li {
   margin-right: 1em;
   font-size: 0.8em;
+  display: inline-block;
 }
 
 .nav-links a {
@@ -186,6 +190,33 @@ export default {
     display: inline-block;
     padding: 0.8em;
     border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .navigation {
+    flex-direction: column;
+    height: auto;
+    padding: 0.5em;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em !important;
+  }
+
+  .nav-links li {
+    margin: 0.5em 0;
+  }
+
+  .nav-header {
+    align-self: self-end;
+  }
+
+  .close-nav {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.75em;
   }
 }
 </style>
