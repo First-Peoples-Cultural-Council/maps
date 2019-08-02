@@ -175,7 +175,7 @@ export default {
   opacity: 0;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .nav-container {
     display: inline-block;
     display: table-cell;

@@ -1,5 +1,6 @@
 export const state = () => ({
   languages: [],
+  languagesCount: null,
   languageSet: [],
   languageGeo: [],
   comingFromDetail: false
@@ -18,5 +19,9 @@ export const mutations = {
   },
   setComingFromDetail(state, comingFromDetail) {
     state.comingFromDetail = comingFromDetail
+  },
+
+  setLanguagesCount(state, languagesCount) {
+    state.languagesCount = languagesCount
   }
 }

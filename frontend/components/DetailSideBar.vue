@@ -55,7 +55,7 @@ export default {
   padding-bottom: 1em;
 }
 
-@media (max-width: 574px) {
+@media (max-width: 992px) {
   .ds-container {
     display: none;
   }

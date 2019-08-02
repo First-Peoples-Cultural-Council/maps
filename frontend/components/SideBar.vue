@@ -176,7 +176,7 @@ export default {
   border-top-right-radius: 0em;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .sidebar-desktop {
     display: none;
   }

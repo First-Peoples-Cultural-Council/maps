@@ -16,7 +16,7 @@
         <section class="badge-section pl-3 pr-3 mt-3">
           <Badge
             :content="badgeContent"
-            :number="languages.length"
+            :number="languagesCount"
             class="cursor-pointer"
             type="language"
             :mode="getBadgeStatus(mode, 'lang')"
@@ -127,11 +127,15 @@ export default {
     languages() {
       return this.$store.state.languages.languages
     },
+
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
     communities() {
       return this.$store.state.communities.communities
+    },
+    languagesCount() {
+      return this.$store.state.languages.languagesCount
     }
   },
   methods: {
