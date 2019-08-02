@@ -588,5 +588,9 @@ export default {
     max-width: 100%;
     width: 96%;
   }
+
+  .detailModeContainer {
+    padding-left: 0px !important;
+  }
 }
 </style>
