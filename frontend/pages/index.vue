@@ -11,9 +11,9 @@
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
     ></Mapbox>
-    <Zoom class="zoom-control"></Zoom>
-    <ShareEmbed class="share-embed-control"></ShareEmbed>
-    <ResetMap class="reset-map-control"></ResetMap>
+    <Zoom class="zoom-control hide-mobile"></Zoom>
+    <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
+    <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <div class="top-bar-container">
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
@@ -286,29 +286,39 @@ export default {
       return el.firstChild
     },
     updateMarkers(map) {
-      const newMarkers = {}
+      let newMarkers = {}
       const mapboxgl = require('mapbox-gl')
       const features = map.querySourceFeatures('arts1')
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
-      for (let i = 0; i < features.length; i++) {
-        const coords = features[i].geometry.coordinates
-        const props = features[i].properties
+      console.log('zoom', map.getZoom(), this.$route.name)
+      if (
+        map.getZoom() > 6.5 ||
+        this.$route.name === 'index-languages-lang' ||
+        this.$route.name === 'index-languages-lang-details'
+      ) {
+        for (let i = 0; i < features.length; i++) {
+          const coords = features[i].geometry.coordinates
+          const props = features[i].properties
 
-        if (!props.cluster) continue
-        const id = props.cluster_id
+          if (!props.cluster) continue
+          const id = props.cluster_id
 
-        let marker = markers[id]
-        if (!marker) {
-          const el = this.artsClusterImage(props, coords, map)
-          marker = markers[id] = new mapboxgl.Marker({ element: el }).setLngLat(
-            coords
-          )
+          let marker = markers[id]
+          if (!marker) {
+            const el = this.artsClusterImage(props, coords, map)
+            marker = markers[id] = new mapboxgl.Marker({
+              element: el
+            }).setLngLat(coords)
+          }
+          newMarkers[id] = marker
+
+          if (!markersOnScreen[id]) marker.addTo(map)
         }
-        newMarkers[id] = marker
-
-        if (!markersOnScreen[id]) marker.addTo(map)
+      } else {
+        newMarkers = {}
       }
+
       // for every marker we've added previously, remove those that are no longer visible
       for (const id in markersOnScreen) {
         if (!newMarkers[id]) markersOnScreen[id].remove()
@@ -338,16 +348,11 @@ export default {
       console.log('Features on click', features)
       let done = false
       features.forEach(feature => {
-        if (
-          feature &&
-          feature.properties &&
-          (feature.properties.name || feature.properties.title)
-        ) {
-          console.log('found', feature.layer.id, feature)
+        if (feature && feature.properties && feature.properties.name) {
           if (feature.layer.id === 'fn-arts') {
             done = true
             return this.$router.push({
-              path: `/art/${encodeURIComponent(feature.properties.title)}`
+              path: `/art/${encodeURIComponent(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-nations') {
             done = true
@@ -395,7 +400,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/static/web/arts1.json',
+        data: '/api/art/',
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50
@@ -569,32 +574,6 @@ export default {
     padding-left: 0;
   }
 
-  .searchbar-container {
-    width: auto;
-    position: static;
-    display: inline-block;
-    display: table-cell;
-    width: 85%;
-    padding-left: 0.5em;
-    vertical-align: middle;
-  }
-
-  .nav-container {
-    display: inline-block;
-    display: table-cell;
-    width: 15%;
-    padding-right: 0.5em;
-    vertical-align: middle;
-    padding-left: 0.5em;
-  }
-
-  .navbar-container {
-    position: static;
-    display: inline-block;
-    padding: 0.8em;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
   .top-bar-container {
     position: fixed;
     top: 10px;
@@ -608,6 +587,10 @@ export default {
     max-height: 300px;
     max-width: 100%;
     width: 96%;
+  }
+
+  .detailModeContainer {
+    padding-left: 0px !important;
   }
 }
 </style>

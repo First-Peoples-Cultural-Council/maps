@@ -88,9 +88,6 @@ export default {
     }
   },
   methods: {
-    handlePronounce() {
-      console.log('Pronounce')
-    },
     handleReturn() {
       if (this.server) {
         this.$router.push({

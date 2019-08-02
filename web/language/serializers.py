@@ -10,7 +10,6 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
-    Art,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -127,6 +126,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "regions",
             "champion_set",
             "languagelink_set",
+            "audio_file",
             # "lna_set",
             "dialect_set",
             "fv_archive_link",
@@ -206,6 +206,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "name",
             "languages",
             "regions",
+            "audio_file",
             "champion_set",
             "communitylink_set",
             "english_name",
@@ -221,23 +222,3 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         )
         geo_field = "point"
 
-
-class ArtSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = Art
-        fields = ("id","art_type", "title", "node_id")
-        geo_field = "point"
-
-
-class ArtDetailSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Art
-        fields = (
-            "id",
-            "point",
-            "art_type",
-            "title",
-            "node_id",
-        )
-        geo_field = "point"

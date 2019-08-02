@@ -5,6 +5,7 @@
         :name="community.name"
         :population="commDetails.population"
         :server="isServer"
+        :audio-file="commDetails.audio_file"
       ></CommunityDetailCard>
       <hr class="sidebar-divider mt-0" />
       <Filters class="mb-1"></Filters>

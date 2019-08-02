@@ -3,9 +3,9 @@
     <b-collapse id="outer-collapse" visible>
       <b-card>
         <div
-          v-b-toggle.inner-collapse
           class="innerToggle pl-2 pr-2"
           :class="{ fixTop: visible }"
+          @click.prevent="toggleSideBar"
         >
           <span
             class="color-gray font-09 font-weight-bold d-inline-block valign-middle"
@@ -41,6 +41,20 @@ export default {
     return {
       visible: false
     }
+  },
+  computed: {
+    isMobileSideBarOpen() {
+      return this.$store.state.responsive.isMobileSideBarOpen
+    }
+  },
+  mounted() {
+    this.$store.commit('responsive/setMobileSideBarState', false)
+  },
+  methods: {
+    toggleSideBar() {
+      this.visible = !this.visible
+      this.$store.commit('responsive/setMobileSideBarState', this.visible)
+    }
   }
 }
 </script>
@@ -67,8 +81,8 @@ export default {
 }
 
 .innerFix {
-  padding-top: 2em !important;
-  padding-bottom: 3em !important;
+  padding-top: 2.5em !important;
+  padding-bottom: 3.5em !important;
 }
 
 .badge-section section {
@@ -90,5 +104,15 @@ export default {
 
 #inner-collapse .sidebar-tabs .nav-item {
   background-color: White;
+}
+
+#inner-collapse .sidebar-tabs .nav-item a::before {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px -2px 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+.innerToggle > span > section > div {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
 }
 </style>

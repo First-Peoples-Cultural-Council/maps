@@ -58,10 +58,10 @@
                   v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.title)
+                    handleResultClick($event, key, result.properties.name)
                   "
                 >
-                  {{ result.properties.title }}
+                  {{ result.properties.name }}
                 </h5>
               </div>
               <hr />
@@ -162,7 +162,7 @@ export default {
       const lowerCasedQuery = query.toLowerCase()
       if (mode === 1) {
         return data.filter(d =>
-          d.properties.title.toLowerCase().includes(lowerCasedQuery)
+          d.properties.name.toLowerCase().includes(lowerCasedQuery)
         )
       }
       if (mode === 2) {
@@ -273,5 +273,17 @@ export default {
 
 .search-input::placeholder {
   color: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 576px) {
+  .searchbar-container {
+    width: auto;
+    position: static;
+    display: inline-block;
+    display: table-cell;
+    width: 85%;
+    padding-left: 0.5em;
+    vertical-align: middle;
+  }
 }
 </style>

@@ -8,17 +8,17 @@
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
           <img
-            v-if="arttype.toLowerCase() === 'art'"
+            v-if="arttype.toLowerCase() === 'public_art'"
             src="@/assets/images/public_art_icon.svg"
-            alt="Arts"
+            alt="Public Art"
           />
           <img
-            v-else-if="arttype.toLowerCase() === 'event'"
-            src="@/assets/images/event_icon.svg"
-            alt="Event"
+            v-else-if="arttype.toLowerCase() === 'artist'"
+            src="@/assets/images/artist_icon.svg"
+            alt="Artist"
           />
           <img
-            v-else-if="arttype.toLowerCase() === 'org'"
+            v-else-if="arttype.toLowerCase() === 'organization'"
             src="@/assets/images/organization_icon.svg"
             alt="Organization"
           />
@@ -30,7 +30,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ arttype | mapName }}
+              {{ arttype }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
@@ -53,12 +53,6 @@ import Card from '@/components/Card.vue'
 export default {
   components: {
     Card
-  },
-  filters: {
-    mapName(name) {
-      if (name.toLowerCase() === 'art') return 'Public Art'
-      return name
-    }
   },
   props: {
     arttype: {

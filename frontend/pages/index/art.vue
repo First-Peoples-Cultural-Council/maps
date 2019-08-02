@@ -2,6 +2,9 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
+        <Filters class="mb-4"></Filters>
+      </template>
+      <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3">
           <Badge
             content="Public Arts"
@@ -9,8 +12,8 @@
             class="cursor-pointer mb-2"
             bgcolor="#848159"
             type="part"
-            :mode="getBadgeStatus(mode, 'art')"
-            @click.native.prevent="handleBadge($event, 'art')"
+            :mode="getBadgeStatus(mode, 'public_art')"
+            @click.native.prevent="handleBadge($event, 'public_art')"
           ></Badge>
           <Badge
             content="Organization"
@@ -18,46 +21,44 @@
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
             type="org"
-            :mode="getBadgeStatus(mode, 'org')"
-            @click.native.prevent="handleBadge($event, 'org')"
+            :mode="getBadgeStatus(mode, 'organization')"
+            @click.native.prevent="handleBadge($event, 'organization')"
           ></Badge>
           <Badge
-            content="Events"
-            :number="events.length"
+            content="Artists"
+            :number="artists.length"
             class="cursor-pointer mb-1"
             bgcolor="#db531f"
             type="event"
-            :mode="getBadgeStatus(mode, 'event')"
-            @click.native.prevent="handleBadge($event, 'event')"
+            :mode="getBadgeStatus(mode, 'artist')"
+            @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
         </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
           <div v-for="(art, index) in arts" :key="index">
             <div v-if="mode !== 'All'">
               <ArtsCard
-                v-if="mode === art.properties.type"
-                :arttype="art.properties.type"
-                :name="art.properties.title"
+                v-if="mode === art.properties.art_type"
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
                   $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.title)}`
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
                   })
                 "
               ></ArtsCard>
             </div>
             <div v-else>
               <ArtsCard
-                :arttype="art.properties.type"
-                :name="art.properties.title"
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
                   $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.title)}`
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
                   })
                 "
               ></ArtsCard>
@@ -102,13 +103,13 @@ export default {
       return this.$store.state.arts.arts
     },
     publicArts() {
-      return this.arts.filter(art => art.properties.type === 'art')
+      return this.arts.filter(art => art.properties.art_type === 'public_art')
     },
     orgs() {
-      return this.arts.filter(art => art.properties.type === 'org')
+      return this.arts.filter(art => art.properties.art_type === 'organization')
     },
-    events() {
-      return this.arts.filter(art => art.properties.type === 'event')
+    artists() {
+      return this.arts.filter(art => art.properties.art_type === 'artist')
     }
   }
 }
