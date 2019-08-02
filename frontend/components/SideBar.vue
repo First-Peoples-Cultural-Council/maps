@@ -1,49 +1,53 @@
 <template>
   <div ref="sidebarContainer" class="sidebar-container">
-    <div class="sidebar-desktop">
-      <div class="sidebar-header">
-        <Logo class="cursor-pointer" :logo-alt="1"></Logo>
-      </div>
-      <div class="sidebar-body">
-        <div class="sidebar-tabs">
-          <b-nav tabs fill>
-            <b-nav-item
-              v-for="tab in navigationTabs"
-              :key="tab.id"
-              :active="active === tab.name ? true : false"
-              :class="tab.name | lowerCase"
-              @click.prevent="handleNavigation($event, tab.name)"
-              >{{ tab.name }}
-            </b-nav-item>
-          </b-nav>
+    <div class="sidebarRelative position-relative">
+      <div class="sidebar-desktop">
+        <div class="sidebar-header">
+          <Logo class="cursor-pointer" :logo-alt="1"></Logo>
         </div>
-        <div class="sidebar-content">
-          <slot name="content"></slot>
-          <slot name="badges"></slot>
+        <div class="sidebar-body">
+          <div class="sidebar-tabs">
+            <b-nav tabs fill>
+              <b-nav-item
+                v-for="tab in navigationTabs"
+                :key="tab.id"
+                :active="active === tab.name ? true : false"
+                :class="tab.name | lowerCase"
+                @click.prevent="handleNavigation($event, tab.name)"
+                >{{ tab.name }}
+              </b-nav-item>
+            </b-nav>
+          </div>
+          <div class="sidebar-content">
+            <slot name="content"></slot>
+            <slot name="badges"></slot>
+            <slot name="cards"></slot>
+          </div>
+          <Contact></Contact>
+        </div>
+      </div>
+      <div class="sidebar-mobile d-none">
+        <SideBarFold>
+          <template v-slot:tabs>
+            <div class="sidebar-tabs">
+              <b-nav tabs fill>
+                <b-nav-item
+                  v-for="tab in navigationTabs"
+                  :key="tab.id"
+                  :active="active === tab.name ? true : false"
+                  :class="tab.name | lowerCase"
+                  @click.prevent="handleNavigation($event, tab.name)"
+                  >{{ tab.name }}
+                </b-nav-item>
+              </b-nav>
+            </div>
+          </template>
+          <template v-slot:badges>
+            <slot name="badges"></slot>
+          </template>
           <slot name="cards"></slot>
-        </div>
-        <Contact></Contact>
+        </SideBarFold>
       </div>
-    </div>
-    <div class="sidebar-mobile d-none">
-      <SideBarFold>
-        <template v-slot:badges>
-          <slot name="badges"></slot>
-        </template>
-        <slot name="cards"></slot>
-        <div class="sidebar-tabs">
-          <b-nav tabs fill>
-            <b-nav-item
-              v-for="tab in navigationTabs"
-              :key="tab.id"
-              :active="active === tab.name ? true : false"
-              :class="tab.name | lowerCase"
-              @click.prevent="handleNavigation($event, tab.name)"
-              >{{ tab.name }}
-            </b-nav-item>
-          </b-nav>
-        </div>
-      </SideBarFold>
     </div>
   </div>
 </template>
@@ -203,6 +207,11 @@ export default {
 
   .sidebar-mobile {
     display: block !important;
+  }
+
+  .sidebar-mobile .sidebar-tabs {
+    margin-top: 10px;
+    background-color: white;
   }
 
   .sidebar-tabs-fold {

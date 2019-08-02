@@ -1,13 +1,9 @@
 <template>
   <div class="accordion sidebar-fold-container">
     <b-collapse id="outer-collapse" visible>
-      <b-card>
-        <div
-          id="innerToggleHead"
-          class="innerToggle pl-2 pr-2"
-          :class="{ fixTop: visible }"
-          @click.prevent="toggleSideBar"
-        >
+      <div id="innerToggleHead" :class="{ fixTop: visible }">
+        <slot name="tabs"></slot>
+        <div class="innerToggle pl-2 pr-2" @click.prevent="toggleSideBar">
           <div class="d-table innerHeader">
             <span
               class="d-inline-block badge-section d-table-cell valign-middle"
@@ -32,14 +28,14 @@
             </span>
           </div>
         </div>
-        <b-collapse
-          id="inner-collapse"
-          v-model="visible"
-          :class="{ innerFix: visible }"
-        >
-          <slot></slot>
-        </b-collapse>
-      </b-card>
+      </div>
+      <b-collapse
+        id="inner-collapse"
+        v-model="visible"
+        :class="{ innerFix: visible }"
+      >
+        <slot></slot>
+      </b-collapse>
     </b-collapse>
   </div>
 </template>
@@ -78,24 +74,30 @@ export default {
 }
 .innerToggle {
   padding: 0.5em;
+  background-color: white;
 }
 .fixTop {
   position: static;
-  background-color: white;
   width: 100%;
   left: 0;
   right: 0;
   box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
-  z-index: 10000;
+  z-index: 10;
+  top: 62px;
 }
 
 .innerFix {
   padding-top: 0em !important;
+  padding-bottom: 1em !important;
 }
 
 .badge-section section {
   padding: 0 !important;
   margin: 0 !important;
+}
+
+#outer-collapse {
+  background-color: white;
 }
 
 #inner-collapse .sidebar-tabs {
@@ -131,5 +133,9 @@ export default {
 
 .innerHeader {
   width: 100%;
+}
+
+#outer-collapse .card-body {
+  position: relative;
 }
 </style>

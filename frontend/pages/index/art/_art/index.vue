@@ -18,7 +18,7 @@
         @click.native="handleClick($event, art.properties.node_id)"
       >
       </LanguageSeeAll>
-      <Filters class="mb-4 mt-2"></Filters>
+      <Filters class="mb-2 mt-2"></Filters>
     </div>
   </DetailSideBar>
 </template>
