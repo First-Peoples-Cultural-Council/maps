@@ -76,7 +76,7 @@ export default {
   position: relative;
 }
 .innerToggle {
-  padding: 0.25em;
+  padding: 0.5em;
 }
 .fixTop {
   position: fixed;
@@ -120,6 +120,11 @@ export default {
 }
 
 .innerToggle > span > section > div {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.innerToggle > div > span > section > div {
   margin: 0 !important;
   margin-bottom: 0 !important;
 }

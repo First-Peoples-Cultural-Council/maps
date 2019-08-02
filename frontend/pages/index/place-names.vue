@@ -34,15 +34,14 @@
       </section>
     </template>
   </SideBar>
-  <DetailSideBar v-else>
+  <div v-else>
     <nuxt-child />
-  </DetailSideBar>
+  </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 
@@ -50,7 +49,6 @@ export default {
   components: {
     SideBar,
     PlacesCard,
-    DetailSideBar,
     Badge,
     Filters
   },
