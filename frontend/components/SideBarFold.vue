@@ -3,9 +3,9 @@
     <b-collapse id="outer-collapse" visible>
       <b-card>
         <div
-          v-b-toggle.inner-collapse
           class="innerToggle pl-2 pr-2"
           :class="{ fixTop: visible }"
+          @click.prevent="toggleSideBar"
         >
           <span
             class="color-gray font-09 font-weight-bold d-inline-block valign-middle"
@@ -40,6 +40,20 @@ export default {
   data() {
     return {
       visible: false
+    }
+  },
+  computed: {
+    isMobileSideBarOpen() {
+      return this.$store.state.responsive.isMobileSideBarOpen
+    }
+  },
+  mounted() {
+    this.$store.commit('responsive/setMobileSideBarState', false)
+  },
+  methods: {
+    toggleSideBar() {
+      this.visible = !this.visible
+      this.$store.commit('responsive/setMobileSideBarState', this.visible)
     }
   }
 }
