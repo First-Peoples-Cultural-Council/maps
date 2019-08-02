@@ -1,21 +1,23 @@
 <template>
-  <DetailSideBar>
-    <template v-slot:badges>
-      <h5 class="color-gray font-08 p-0 m-0">
-        Point Of Interest:
-        <span class="font-weight-bold">{{ place.properties.name }}</span>
-      </h5>
-    </template>
-    <div>
-      <PlacesDetailCard
-        :name="place.properties.name"
-        :server="isServer"
-        :audio-file="place.properties.audio_file"
-      ></PlacesDetailCard>
-      <hr class="sidebar-divider" />
-      <Filters class="mb-4"></Filters>
-    </div>
-  </DetailSideBar>
+  <div class="place-names-dynamic-container">
+    <DetailSideBar>
+      <template v-slot:badges>
+        <h5 class="color-gray font-08 p-0 m-0">
+          Point Of Interest:
+          <span class="font-weight-bold">{{ place.properties.name }}</span>
+        </h5>
+      </template>
+      <div>
+        <PlacesDetailCard
+          :name="place.properties.name"
+          :server="isServer"
+          :audio-file="place.properties.audio_file"
+        ></PlacesDetailCard>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
+      </div>
+    </DetailSideBar>
+  </div>
 </template>
 
 <script>

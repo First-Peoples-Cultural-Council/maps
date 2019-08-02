@@ -1,5 +1,5 @@
 <template>
-  <div class="ds">
+  <div ref="sidebarContainer" class="ds">
     <div class="ds-container" :style="'width: ' + width + 'px;'">
       <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
       <slot></slot>
@@ -37,6 +37,17 @@ export default {
     return {
       style: 2
     }
+  },
+  mounted() {
+    const sideBarContainer = this.$refs.sidebarContainer
+    const el = document.getElementById('innerToggleHead')
+    sideBarContainer.addEventListener('scroll', function(e) {
+      if (this.scrollTop > '25') {
+        el.classList.add('position-fixed')
+      } else {
+        el.classList.remove('position-fixed')
+      }
+    })
   }
 }
 </script>
@@ -76,10 +87,6 @@ export default {
     position: fixed;
     overflow-y: auto;
     overflow-x: hidden;
-  }
-
-  .detail-sidebar-mobile .innerFix {
-    padding-top: 4.5em !important;
   }
 }
 </style>

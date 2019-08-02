@@ -10,7 +10,7 @@
         </section>
 
         <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
+        <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="badge-section pl-3 pr-3 mt-3">

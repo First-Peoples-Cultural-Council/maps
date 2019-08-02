@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar-container">
+  <div ref="sidebarContainer" class="sidebar-container">
     <div class="sidebar-desktop">
       <div class="sidebar-header">
         <Logo class="cursor-pointer" :logo-alt="1"></Logo>
@@ -100,6 +100,17 @@ export default {
       ],
       fold: true
     }
+  },
+  mounted() {
+    const sideBarContainer = this.$refs.sidebarContainer
+    const el = document.getElementById('innerToggleHead')
+    sideBarContainer.addEventListener('scroll', function(e) {
+      if (this.scrollTop > '25') {
+        el.classList.add('position-fixed')
+      } else {
+        el.classList.remove('position-fixed')
+      }
+    })
   },
   methods: {
     handleNavigation(e, data) {

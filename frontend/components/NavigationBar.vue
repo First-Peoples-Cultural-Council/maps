@@ -93,9 +93,12 @@ export default {
       } else {
         this.$router.push({ path: '/' })
       }
+
+      this.closeNav()
     },
     resetMap() {
       this.$root.$emit('resetMap')
+      this.closeNav()
     }
   }
 }
