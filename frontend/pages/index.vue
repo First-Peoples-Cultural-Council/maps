@@ -116,9 +116,13 @@ import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 
 const renderArtDetail = props => {
-  return `<div class='map-incident'>
+  return `<div class='map-popup'>
+            <hr>
             <p>
-                <span class='detail'>details:</span> ${props}
+                <a href='/art/${encodeURIComponent(
+                  props.name
+                )}' class='art-popup'>${props.name}</a> |
+                <span class='art-popup-type'>${props.art_type}</span>
             </p>
         </div>`
 }
@@ -383,12 +387,12 @@ export default {
         if (feature.layer.id === 'fn-arts-clusters') {
           console.log(feature)
           const zoom = map.getZoom()
-          if (zoom < 10) {
+          if (zoom < 13) {
             const lat = feature.geometry.coordinates[1]
             const lng = feature.geometry.coordinates[0]
             map.flyTo({
               center: [lng, lat],
-              zoom: zoom + 1,
+              zoom: zoom + 2,
               speed: 3,
               curve: 1
             })
@@ -411,9 +415,10 @@ export default {
                     .setLngLat(e.lngLat)
                     .setHTML(
                       `<div class='popup-inner'>
+                          <h4>Art Here:</h4>
 
                           ${html}
-
+                          <!-- TODO scroll indicator -->
                           <div class="scroll-indicator">
                               <i class="fas fa-angle-down float"></i>
                           </div>
@@ -460,7 +465,7 @@ export default {
         type: 'geojson',
         data: '/api/art/',
         cluster: true,
-        // clusterMaxZoom: 14,
+        clusterMaxZoom: 14,
         clusterRadius: 50
       })
       map.addSource('places1', {

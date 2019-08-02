@@ -83,11 +83,12 @@ export default {
     },
     setupMap() {
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+        zoomToPoint({ map, geom: this.art.geometry, zoom: 15 })
         console.log(this.art, 'is the art')
+        // map.setLayoutProperty('fn-arts-clusters', 'visibility', 'none')
         map.setFilter('fn-arts-highlighted', [
           '==',
-          'title',
+          'name',
           this.art.properties.name
         ])
       })
