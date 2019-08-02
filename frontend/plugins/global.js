@@ -31,6 +31,11 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
     if (route.name !== 'index-art-art') {
       this.map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
     }
+    const markers = this.map.getContainer().getElementsByClassName('marker')
+    for (let i = 0; i < markers.length; i++) {
+      const marker = markers[i]
+      marker.remove()
+    }
     if (route.name !== 'index-place-names-placename') {
       this.map.setFilter('fn-places-highlighted', ['in', 'name', ''])
     }

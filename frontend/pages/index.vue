@@ -114,6 +114,7 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, intersects } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
+import { getApiUrl } from '@/plugins/utils.js'
 
 const renderArtDetail = props => {
   return `<div class='map-popup'>
@@ -189,9 +190,6 @@ export default {
     }
   },
   async fetch({ $axios, store }) {
-    function getApiUrl(path) {
-      return process.server ? `http://nginx/api/${path}` : `/api/${path}`
-    }
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
       $axios.$get(getApiUrl('community/')),
@@ -464,7 +462,7 @@ export default {
         type: 'geojson',
         data: '/api/art/',
         cluster: true,
-        clusterMaxZoom: 14,
+        // clusterMaxZoom: 14,
         clusterRadius: 50
       })
       map.addSource('places1', {
