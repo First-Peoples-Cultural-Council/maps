@@ -29,13 +29,15 @@
           </div>
         </div>
       </div>
-      <b-collapse
-        id="inner-collapse"
-        v-model="visible"
-        :class="{ innerFix: visible }"
-      >
-        <slot></slot>
-      </b-collapse>
+      <div ref="innerCollapse">
+        <b-collapse
+          id="inner-collapse"
+          v-model="visible"
+          :class="{ innerFix: visible }"
+        >
+          <slot></slot>
+        </b-collapse>
+      </div>
     </b-collapse>
   </div>
 </template>
@@ -51,9 +53,6 @@ export default {
     isMobileSideBarOpen() {
       return this.$store.state.responsive.isMobileSideBarOpen
     }
-  },
-  mounted() {
-    this.$store.commit('responsive/setMobileSideBarState', false)
   },
   methods: {
     toggleSideBar() {
