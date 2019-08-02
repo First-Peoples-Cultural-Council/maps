@@ -116,6 +116,7 @@ const addNationsLayers = map => {
     id: 'fn-nations',
     type: 'symbol',
     source: 'communities1',
+    minzoom: 5,
     layout: {
       'text-optional': true,
       'text-size': 13,
@@ -175,6 +176,7 @@ export default {
         id: 'fn-places',
         type: 'symbol',
         source: 'places1',
+        minzoom: 5,
         layout: {
           'text-optional': true,
           'symbol-spacing': 50,
@@ -192,6 +194,7 @@ export default {
 
     map.addLayer(
       {
+        minzoom: 6,
         id: 'fn-arts',
         type: 'symbol',
         source: 'arts1',

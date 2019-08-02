@@ -80,14 +80,12 @@
         </section>
       </template>
     </SideBar>
-    <DetailSideBar
+    <div
       v-else-if="this.$route.name === 'index-languages-lang'"
       :width="detailOneWidth"
     >
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
+      <nuxt-child />
+    </div>
     <DetailSideBar v-else :width="detailTwoWidth">
       <div>
         <nuxt-child />

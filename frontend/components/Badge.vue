@@ -96,11 +96,10 @@ export default {
 
 @media (max-width: 576px) {
   .badge-icon {
-    display: none;
   }
 
   .badge-content {
-    font-size: 0.8em;
+    display: none;
   }
   .badge-number {
     font-size: 0.8em;

@@ -45,6 +45,10 @@ export default {
 </script>
 
 <style>
+.languageSummary {
+  width: 100%;
+  word-break: break-word;
+}
 .languageSummary th {
   font-size: 0.7em;
   padding: 0 0.5em;

@@ -7,21 +7,29 @@
           :class="{ fixTop: visible }"
           @click.prevent="toggleSideBar"
         >
-          <span
-            class="color-gray font-09 font-weight-bold d-inline-block valign-middle"
-          >
-          </span>
-          <span class="d-inline-block badge-section">
-            <slot name="badges"></slot>
-          </span>
-          <span class="d-inline-block float-right">
-            <img
-              v-if="!visible"
-              src="@/assets/images/arrow_up_icon.svg"
-              alt="Open"
-            />
-            <img v-else src="@/assets/images/arrow_down_icon.svg" alt="Close" />
-          </span>
+          <div class="d-table innerHeader">
+            <span
+              class="d-inline-block badge-section d-table-cell valign-middle"
+              style="width: 95%"
+            >
+              <slot name="badges"></slot>
+            </span>
+            <span
+              class="d-inline-block d-table-cell valign-middle"
+              style="width: 5%; line-height: 0;"
+            >
+              <img
+                v-if="!visible"
+                src="@/assets/images/arrow_up_icon.svg"
+                alt="Open"
+              />
+              <img
+                v-else
+                src="@/assets/images/arrow_down_icon.svg"
+                alt="Close"
+              />
+            </span>
+          </div>
         </div>
         <b-collapse
           id="inner-collapse"
@@ -68,8 +76,7 @@ export default {
   position: relative;
 }
 .innerToggle {
-  min-height: 40px;
-  padding: 0.5em;
+  padding: 0.25em;
 }
 .fixTop {
   position: fixed;
@@ -78,6 +85,7 @@ export default {
   left: 0;
   right: 0;
   box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
 }
 
 .innerFix {
@@ -114,5 +122,9 @@ export default {
 .innerToggle > span > section > div {
   margin: 0 !important;
   margin-bottom: 0 !important;
+}
+
+.innerHeader {
+  width: 100%;
 }
 </style>

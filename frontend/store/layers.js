@@ -36,7 +36,7 @@ export const state = () => ({
         'fn-reserve-areas',
         'fn-reserve-labels'
       ],
-      active: false
+      active: true
     },
     {
       name: 'Provincial Borders',
@@ -52,12 +52,11 @@ export const mutations = {
     state.layers.push(layer)
   },
 
-  toggleLayer(state, { layer, map, on }) {
-    console.log(arguments)
+  toggleLayer(state, { layer, map }) {
     const toggleLayer = state.layers.find(l => l.id === layer.id)
     toggleLayer.active = !toggleLayer.active
     if (toggleLayer.name === 'Sleeping Languages') {
-      if (on) {
+      if (toggleLayer.active) {
         layer.layerNames.map(l => {
           map.setFilter(l, ['!', ['get', 'sleeping']])
         })
@@ -66,7 +65,7 @@ export const mutations = {
           map.setFilter(l, ['!=', 'name', ''])
         })
       }
-    } else if (on) {
+    } else if (toggleLayer.active) {
       layer.layerNames.map(l => {
         map.setLayoutProperty(l, 'visibility', 'visible')
       })

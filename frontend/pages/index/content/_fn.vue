@@ -1,6 +1,23 @@
 <template>
   <div>
     <DetailSideBar>
+      <template v-slot:badges>
+        <h5
+          class="color-gray font-08 p-0 m-0"
+          style="margin-bottom: 0.2em !important;"
+        >
+          <span class="d-inline-block valign-middle">
+            Community:
+            <span class="font-weight-bold">{{ community.name }}</span>
+          </span>
+        </h5>
+        <Badge
+          content="Languages"
+          :number="commDetails.languages.length"
+          class="cursor-pointer"
+          type="language"
+        ></Badge>
+      </template>
       <CommunityDetailCard
         :name="community.name"
         :population="commDetails.population"
@@ -91,6 +108,7 @@ import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
+import Badge from '@/components/Badge.vue'
 
 export default {
   components: {
@@ -98,7 +116,8 @@ export default {
     CommunityDetailCard,
     LanguageDetailBadge,
     Filters,
-    LanguageCard
+    LanguageCard,
+    Badge
   },
   computed: {
     communities() {
