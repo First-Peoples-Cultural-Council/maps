@@ -1,7 +1,11 @@
 <template>
   <div class="accordion sidebar-fold-container">
     <b-collapse id="outer-collapse" visible>
-      <div id="innerToggleHead" :class="{ fixTop: visible }">
+      <div
+        id="innerToggleHead"
+        :class="{ fixTop: visible }"
+        class="cursor-pointer"
+      >
         <slot name="tabs"></slot>
         <div class="innerToggle pl-2 pr-2" @click.prevent="toggleSideBar">
           <div class="d-table innerHeader">
