@@ -203,6 +203,7 @@ export default {
     margin: 0;
     z-index: 50;
     max-height: 80%;
+    overflow: hidden;
   }
 
   .sidebar-mobile {
@@ -227,15 +228,6 @@ export default {
 
   .sidebar-tabs-fold .nav-fill .nav-item {
     background-color: white;
-  }
-
-  .nav-tabs .nav-link.active::before {
-    position: static;
-    content: unset;
-  }
-
-  .nav-tabs .nav-link.active {
-    line-height: inherit;
   }
 }
 </style>

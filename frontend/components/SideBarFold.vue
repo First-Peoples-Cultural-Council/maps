@@ -107,6 +107,11 @@ export default {
   z-index: 50;
 }
 
+#inner-collapse {
+  max-height: 100vh;
+  overflow-y: scroll;
+}
+
 #inner-collapse .sidebar-tabs .nav-tabs .nav-link {
   opacity: 1;
 }
