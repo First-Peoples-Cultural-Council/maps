@@ -59,39 +59,50 @@
               Language Family:
               {{ family === 'undefined' ? 'No Family' : family }}
             </h5>
-
-            <div
-              v-for="language in familyLanguages"
-              :key="'language' + language.id"
-            >
-              <LanguageCard
-                class="mt-3 hover-left-move"
-                :name="language.name"
-                :color="language.color"
-                @click.native.prevent="
-                  $router.push({
-                    path: `languages/${encodeURIComponent(language.name)}`
-                  })
-                "
-              ></LanguageCard>
-            </div>
+            <b-row>
+              <b-col
+                v-for="language in familyLanguages"
+                :key="'language' + language.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <LanguageCard
+                  class="mt-3 hover-left-move"
+                  :name="language.name"
+                  :color="language.color"
+                  @click.native.prevent="
+                    $router.push({
+                      path: `languages/${encodeURIComponent(language.name)}`
+                    })
+                  "
+                ></LanguageCard>
+              </b-col>
+            </b-row>
           </div>
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
-          <div
-            v-for="community in communities"
-            :key="'community ' + community.name"
-          >
-            <CommunityCard
-              class="mt-3 hover-left-move"
-              :name="community.name"
-              @click.native.prevent="
-                $router.push({
-                  path: `content/${encodeURIComponent(community.name)}`
-                })
-              "
-            ></CommunityCard>
-          </div>
+          <b-row>
+            <b-col
+              v-for="community in communities"
+              :key="'community ' + community.name"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <CommunityCard
+                class="mt-3 hover-left-move"
+                :name="community.name"
+                @click.native.prevent="
+                  $router.push({
+                    path: `content/${encodeURIComponent(community.name)}`
+                  })
+                "
+              ></CommunityCard>
+            </b-col>
+          </b-row>
         </section>
       </template>
     </SideBar>

@@ -87,7 +87,7 @@ export default {
 
 .innerFix {
   padding-top: 0em !important;
-  padding-bottom: 1em !important;
+  padding-bottom: 4em !important;
 }
 
 .badge-section section {
@@ -108,7 +108,7 @@ export default {
 }
 
 #inner-collapse {
-  max-height: 100vh;
+  max-height: 75vh;
   overflow-y: scroll;
 }
 

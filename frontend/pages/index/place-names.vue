@@ -18,15 +18,26 @@
     <template v-slot:cards>
       <section class="pl-3 pr-3 mt-3">
         <div v-if="places.length > 0">
-          <PlacesCard
-            v-for="(place, index) in places"
-            :key="index"
-            :name="place.properties.name"
-            class="mt-3"
-            @click.native="
-              $router.push({ path: `/place-names/${place.properties.name}` })
-            "
-          ></PlacesCard>
+          <b-row>
+            <b-col
+              v-for="(place, index) in places"
+              :key="index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <PlacesCard
+                :name="place.properties.name"
+                class="mt-3"
+                @click.native="
+                  $router.push({
+                    path: `/place-names/${place.properties.name}`
+                  })
+                "
+              ></PlacesCard>
+            </b-col>
+          </b-row>
         </div>
         <div v-else>
           <h5>No places are visible on the map</h5>

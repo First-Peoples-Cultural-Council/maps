@@ -103,17 +103,26 @@
               mode !== 'place'
           "
         >
-          <CommunityCard
-            v-for="community in communities"
-            :key="'community' + community.id"
-            :name="community.name"
-            class="mt-3 hover-left-move"
-            @click.native="
-              $router.push({
-                path: `/content/${encodeURIComponent(community.name)}`
-              })
-            "
-          ></CommunityCard>
+          <b-row>
+            <b-col
+              v-for="community in communities"
+              :key="'community' + community.id"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <CommunityCard
+                :name="community.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/content/${encodeURIComponent(community.name)}`
+                  })
+                "
+              ></CommunityCard>
+            </b-col>
+          </b-row>
         </div>
         <div
           v-if="
@@ -123,19 +132,28 @@
               mode !== 'comm'
           "
         >
-          <PlacesCard
-            v-for="place in places"
-            :key="'place' + place.id"
-            :name="place.properties.name"
-            class="mt-3 hover-left-move"
-            @click.native="
-              $router.push({
-                path: `/place-names/${encodeURIComponent(
-                  place.properties.name
-                )}`
-              })
-            "
-          ></PlacesCard>
+          <b-row>
+            <b-col
+              v-for="place in places"
+              :key="'place' + place.id"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <PlacesCard
+                :name="place.properties.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/place-names/${encodeURIComponent(
+                      place.properties.name
+                    )}`
+                  })
+                "
+              ></PlacesCard>
+            </b-col>
+          </b-row>
         </div>
         <div
           v-if="
@@ -145,19 +163,28 @@
               mode !== 'comm'
           "
         >
-          <ArtsCard
-            v-for="(art, index) in publicArts"
-            :key="'art' + index"
-            class="mt-3 hover-left-move"
-            :arttype="art.properties.art_type"
-            :name="art.properties.name"
-            @click.native="
-              $router.push({
-                path: `/art/${encodeURIComponent(art.properties.name)}`
-              })
-            "
-          >
-          </ArtsCard>
+          <b-row>
+            <b-col
+              v-for="(art, index) in publicArts"
+              :key="'art' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                class="mt-3 hover-left-move"
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              >
+              </ArtsCard>
+            </b-col>
+          </b-row>
         </div>
         <div
           v-if="
@@ -167,19 +194,28 @@
               mode !== 'comm'
           "
         >
-          <ArtsCard
-            v-for="(art, index) in orgs"
-            :key="'art' + index"
-            class="mt-3 hover-left-move"
-            :arttype="art.properties.art_type"
-            :name="art.properties.name"
-            @click.native="
-              $router.push({
-                path: `/art/${encodeURIComponent(art.properties.name)}`
-              })
-            "
-          >
-          </ArtsCard>
+          <b-row>
+            <b-col
+              v-for="(art, index) in orgs"
+              :key="'art' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                class="mt-3 hover-left-move"
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              >
+              </ArtsCard>
+            </b-col>
+          </b-row>
         </div>
         <div
           v-if="
@@ -189,19 +225,28 @@
               mode !== 'comm'
           "
         >
-          <ArtsCard
-            v-for="(art, index) in artists"
-            :key="'art' + index"
-            class="mt-3 hover-left-move"
-            :arttype="art.properties.art_type"
-            :name="art.properties.name"
-            @click.native="
-              $router.push({
-                path: `/art/${encodeURIComponent(art.properties.name)}`
-              })
-            "
-          >
-          </ArtsCard>
+          <b-row>
+            <b-col
+              v-for="(art, index) in artists"
+              :key="'art' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                class="mt-3 hover-left-move"
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              >
+              </ArtsCard>
+            </b-col>
+          </b-row>
         </div>
       </section>
     </div>

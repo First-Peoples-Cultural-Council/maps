@@ -80,21 +80,27 @@
             tbody-class="lna-table-tbody"
           ></b-table>
         </div>
-        <div
-          v-for="language in commDetails.languages"
-          :key="'language' + language.id"
-        >
-          <LanguageCard
-            class="mt-3 hover-left-move"
-            :name="language.name"
-            :color="language.color"
-            @click.native.prevent="
-              $router.push({
-                path: `/languages/${encodeURIComponent(language.name)}`
-              })
-            "
-          ></LanguageCard>
-        </div>
+        <b-row>
+          <b-col
+            v-for="language in commDetails.languages"
+            :key="'language' + language.id"
+            lg="12"
+            xl="12"
+            md="6"
+            sm="6"
+          >
+            <LanguageCard
+              class="mt-3 hover-left-move"
+              :name="language.name"
+              :color="language.color"
+              @click.native.prevent="
+                $router.push({
+                  path: `/languages/${encodeURIComponent(language.name)}`
+                })
+              "
+            ></LanguageCard>
+          </b-col>
+        </b-row>
       </section>
     </DetailSideBar>
   </div>

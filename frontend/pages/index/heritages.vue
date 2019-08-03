@@ -18,19 +18,28 @@
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <PlacesCard
-            v-for="(place, index) in places"
-            :key="index"
-            :name="place.properties.name"
-            class="mt-3 hover-left-move"
-            @click.native="
-              $router.push({
-                path: `/place-names/${encodeURIComponent(
-                  place.properties.name
-                )}`
-              })
-            "
-          ></PlacesCard>
+          <b-row>
+            <b-col
+              v-for="(place, index) in places"
+              :key="index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <PlacesCard
+                :name="place.properties.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/place-names/${encodeURIComponent(
+                      place.properties.name
+                    )}`
+                  })
+                "
+              ></PlacesCard>
+            </b-col>
+          </b-row>
         </section>
       </template>
     </SideBar>

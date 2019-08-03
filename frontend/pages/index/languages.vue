@@ -44,38 +44,53 @@
                 Language Family:
                 {{ family === 'undefined' ? 'No Family' : family }}
               </h5>
-              <div
-                v-for="language in familyLanguages"
-                :key="'language' + language.id"
-              >
-                <LanguageCard
-                  class="mt-3 hover-left-move"
-                  :name="language.name"
-                  :color="language.color"
-                  @click.native.prevent="
-                    $router.push({
-                      path: `languages/${encodeURIComponent(language.name)}`
-                    })
-                  "
-                ></LanguageCard>
-              </div>
+              <b-row>
+                <b-col
+                  v-for="language in familyLanguages"
+                  :key="'language' + language.id"
+                  lg="12"
+                  xl="12"
+                  md="6"
+                  sm="6"
+                >
+                  <LanguageCard
+                    class="mt-3 hover-left-move"
+                    :name="language.name"
+                    :color="language.color"
+                    @click.native.prevent="
+                      $router.push({
+                        path: `languages/${encodeURIComponent(language.name)}`
+                      })
+                    "
+                  ></LanguageCard>
+                </b-col>
+              </b-row>
             </div>
           </div>
           <div v-if="mode !== 'lang'">
-            <CommunityCard
-              v-for="community in communities"
-              :key="'community ' + community.name"
-              class="mt-3 hover-left-move"
-              :name="community.name"
-              @click.native.prevent="
-                handleCardClick(
-                  $event,
-                  community.name,
-                  'content',
-                  community.name
-                )
-              "
-            ></CommunityCard>
+            <b-row>
+              <b-col
+                v-for="community in communities"
+                :key="'community ' + community.name"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <CommunityCard
+                  class="mt-3 hover-left-move"
+                  :name="community.name"
+                  @click.native.prevent="
+                    handleCardClick(
+                      $event,
+                      community.name,
+                      'content',
+                      community.name
+                    )
+                  "
+                ></CommunityCard>
+              </b-col>
+            </b-row>
           </div>
         </section>
       </template>

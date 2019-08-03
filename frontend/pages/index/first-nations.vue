@@ -17,13 +17,22 @@
       </template>
       <template v-slot:cards>
         <section class="community-section pl-3 pr-3">
-          <div v-for="community in communities" :key="community.name">
-            <CommunityCard
-              class="mt-3 hover-left-move"
-              :name="community.name"
-              @click.native.prevent="handleCardClick($event, community.name)"
-            ></CommunityCard>
-          </div>
+          <b-row>
+            <b-col
+              v-for="community in communities"
+              :key="community.name"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <CommunityCard
+                class="mt-3 hover-left-move"
+                :name="community.name"
+                @click.native.prevent="handleCardClick($event, community.name)"
+              ></CommunityCard>
+            </b-col>
+          </b-row>
         </section>
       </template>
     </SideBar>

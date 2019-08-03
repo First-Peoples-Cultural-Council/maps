@@ -74,8 +74,6 @@ export default {
     bottom: 0;
     left: 0;
     position: fixed;
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 }
 </style>
