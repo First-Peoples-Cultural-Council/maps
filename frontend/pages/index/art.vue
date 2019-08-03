@@ -37,40 +37,67 @@
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <b-row>
+          <b-row v-if="mode !== 'organization' && mode !== 'public_art'">
             <b-col
-              v-for="(art, index) in arts"
-              :key="index"
+              v-for="(art, index) in artists"
+              :key="'artists ' + index"
               lg="12"
               xl="12"
               md="6"
               sm="6"
             >
-              <div v-if="mode !== 'All'">
-                <ArtsCard
-                  v-if="mode === art.properties.art_type"
-                  :arttype="art.properties.art_type"
-                  :name="art.properties.name"
-                  class="mt-3 hover-left-move"
-                  @click.native="
-                    $router.push({
-                      path: `/art/${encodeURIComponent(art.properties.name)}`
-                    })
-                  "
-                ></ArtsCard>
-              </div>
-              <div v-else>
-                <ArtsCard
-                  :arttype="art.properties.art_type"
-                  :name="art.properties.name"
-                  class="mt-3 hover-left-move"
-                  @click.native="
-                    $router.push({
-                      path: `/art/${encodeURIComponent(art.properties.name)}`
-                    })
-                  "
-                ></ArtsCard>
-              </div>
+              <ArtsCard
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              ></ArtsCard>
+            </b-col>
+          </b-row>
+          <b-row v-if="mode !== 'organization' && mode !== 'artist'">
+            <b-col
+              v-for="(art, index) in publicArts"
+              :key="'parts' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              ></ArtsCard>
+            </b-col>
+          </b-row>
+          <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
+            <b-col
+              v-for="(art, index) in orgs"
+              :key="'orgs' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                :arttype="art.properties.art_type"
+                :name="art.properties.name"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: `/art/${encodeURIComponent(art.properties.name)}`
+                  })
+                "
+              ></ArtsCard>
             </b-col>
           </b-row>
         </section>
