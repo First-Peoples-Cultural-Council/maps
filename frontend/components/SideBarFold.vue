@@ -112,7 +112,7 @@ export default {
 }
 
 #inner-collapse {
-  max-height: 75vh;
+  max-height: 60vh;
   overflow-y: scroll;
 }
 

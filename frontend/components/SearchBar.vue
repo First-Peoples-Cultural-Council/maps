@@ -282,6 +282,7 @@ export default {
     display: inline-block;
     display: table-cell;
     width: 70%;
+    padding-top: 0.5em;
     padding-left: 0.5em;
     vertical-align: middle;
   }
