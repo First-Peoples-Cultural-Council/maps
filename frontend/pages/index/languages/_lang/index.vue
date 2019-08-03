@@ -217,7 +217,7 @@ import LanguageSummary from '@/components/languages/LanguageSummary.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
-import { zoomToLanguage } from '@/mixins/map.js'
+import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
@@ -297,10 +297,14 @@ export default {
       isServer
     }
   },
-  created() {
+  mounted() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
-      zoomToLanguage({ map, lang: this.language })
+      if (this.$route.hash.length <= 1) {
+        zoomToLanguage({ map, lang: this.language })
+      } else {
+        selectLanguage({ map, lang: this.language })
+      }
     })
   },
   methods: {

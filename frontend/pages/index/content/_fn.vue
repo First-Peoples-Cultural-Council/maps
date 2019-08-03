@@ -192,7 +192,9 @@ export default {
   methods: {
     setupMap() {
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map, geom: this.community.point, zoom: 11 })
+        if (this.$route.hash.length <= 1) {
+          zoomToPoint({ map, geom: this.community.point, zoom: 11 })
+        }
         map.setFilter('fn-nations-highlighted', [
           '==',
           'name',

@@ -83,21 +83,24 @@ export default {
       window.open(`https://fp-artsmap.ca/node/${data}`)
     },
     setupMap() {
-      const mapboxgl = require('mapbox-gl')
-
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+        const mapboxgl = require('mapbox-gl')
 
-        const el = document.createElement('div')
-        el.className = 'marker'
-        el.style =
-          "background-image: url('/_nuxt/assets/images/" +
-          this.art.properties.art_type +
-          "_icon.svg')"
+        this.$eventHub.whenMap(map => {
+          if (this.$route.hash.length <= 1) {
+            zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+          }
+          const el = document.createElement('div')
+          el.className = 'marker'
+          el.style =
+            "background-image: url('/_nuxt/assets/images/" +
+            this.art.properties.art_type +
+            "_icon.svg')"
 
-        new mapboxgl.Marker(el)
-          .setLngLat(this.art.geometry.coordinates)
-          .addTo(map)
+          new mapboxgl.Marker(el)
+            .setLngLat(this.art.geometry.coordinates)
+            .addTo(map)
+        })
       })
     }
   }

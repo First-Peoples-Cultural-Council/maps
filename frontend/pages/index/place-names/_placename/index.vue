@@ -69,7 +69,9 @@ export default {
   methods: {
     setupMap() {
       this.$eventHub.whenMap(map => {
-        zoomToPoint({ map, geom: this.place.geometry, zoom: 13 })
+        if (this.$route.hash.length <= 1) {
+          zoomToPoint({ map, geom: this.place.geometry, zoom: 13 })
+        }
         map.setFilter('fn-places-highlighted', [
           '==',
           'name',

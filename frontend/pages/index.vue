@@ -302,6 +302,7 @@ export default {
       })
       return el.firstChild
     },
+    // deprecated.
     updateMarkers(map) {
       let newMarkers = {}
       const mapboxgl = require('mapbox-gl')

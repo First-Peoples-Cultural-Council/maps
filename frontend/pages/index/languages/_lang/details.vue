@@ -80,7 +80,7 @@ import { mapState } from 'vuex'
 import { values, omit } from 'lodash'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
-import { zoomToLanguage } from '@/mixins/map.js'
+import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { getApiUrl } from '@/plugins/utils.js'
 
@@ -127,11 +127,12 @@ export default {
   },
   mounted() {
     this.$store.commit('sidebar/set', true)
-  },
-  created() {
-    // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
-      zoomToLanguage({ map, lang: this.language })
+      if (this.$route.hash.length <= 1) {
+        zoomToLanguage({ map, lang: this.language })
+      } else {
+        selectLanguage({ map, lang: this.language })
+      }
     })
   },
   methods: {
