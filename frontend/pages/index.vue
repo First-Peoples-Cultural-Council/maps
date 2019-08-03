@@ -652,13 +652,12 @@ export default {
   .mobile-logo {
     display: table-cell !important;
     width: 15%;
-    padding-left: 0.5em;
-    vertical-align: middle;
+    vertical-align: top;
   }
 
   .top-bar-container {
     position: fixed;
-    top: 10px;
+    top: 0px;
     left: 0;
     text-align: center;
     width: 100%;
