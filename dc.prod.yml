@@ -3,8 +3,7 @@ version: '3.3'
 services:
   nginx:
     ports:
-      - 8080:80
-
+      - 80:80
   web:
     environment:
       - ARTSMAP_HOST=ratpack.sebastiantech.ca
@@ -17,8 +16,6 @@ services:
       - FPLM_PW=
     command: ./prod.sh
   frontend:
-    ports:
-      - 8888:8888
     command: bash -c "yarn && yarn build && yarn start"
     environment:
-      - HOST=http://maps.fpcc.ca
+      - HOST=http://maps-dev.fpcc.ca
