@@ -6,9 +6,9 @@ from .views import ArtList, ArtDetail
 
 
 urlpatterns = [
-    url("art/$", ArtList.as_view()),
+    url("art/$", ArtList.as_view(), name="art-list"),
     url(
-        "arts/$", ArtList.as_view()
+        "arts/$", ArtList.as_view(), name="arts-list"
     ),  # TODO: this is oddly cached and broken on the FE. it's not referenced but is called anyway.
-    url("art/(?P<pk>\d+)/$", ArtDetail.as_view()),
+    url("art/(?P<pk>\d+)/$", ArtDetail.as_view(), name="art-detail"),
 ]
