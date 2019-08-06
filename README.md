@@ -72,6 +72,10 @@ git add .
 
 If you want this field to be editable in the admin, this will happen by default. Depending on the previous rules, you may need to edit (admin.py)[https://docs.djangoproject.com/en/2.2/ref/contrib/admin/]
 
+## Deployment
+
+The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
+The `develop` branch id deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
 
 ## Restoring data
 
