@@ -19,4 +19,4 @@ services:
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
-      - HOST=http://maps.fpcc.ca:8080
+      - HOST=http://maps-dev.fpcc.ca:8080
