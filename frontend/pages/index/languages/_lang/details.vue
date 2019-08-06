@@ -40,6 +40,17 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="language.dialect_set.length > 0">
+        <h5 class="other-lang-names-title text-uppercase mt-4">
+          Dialect
+        </h5>
+        <LanguageDetailBadge
+          v-for="(dialect, index) in language.dialect_set"
+          :key="index"
+          :content="dialect.name"
+          class="mr-2"
+        ></LanguageDetailBadge>
+      </div>
       <div class="lang-notes mt-3 color-gray font-08">
         {{ language.notes || '' }}
       </div>
