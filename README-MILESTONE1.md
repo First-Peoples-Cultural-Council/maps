@@ -27,24 +27,24 @@ This repository contains planning materials for the FPLM web app project. At Cou
 #### Mock-ups
 
 Landing Page
-![landing](./mock-1.png)
+![landing](./docs/mock-1.png)
 
 Language Selected
-![language](./mock-2.png)
+![language](./docs/mock-2.png)
 
 Language Detail (TODO: map should zoom)
-![detail](./mock-3.png)
+![detail](./docs/mock-3.png)
 
    * Video navigating through landing flows [mock-ups](https://drive.google.com/open?id=1YQ2PJAeml1cEhQsCwMk8o8CY2kiMAGgq).
    * Originals of Adobe design files [here](https://drive.google.com/drive/u/0/folders/1EUjSc2NAbVhD3fn6Pjj9_4OstD6pIE7E?ddrp=1). TODO @Felipe
 
 #### Information Architecture
 This diagram shows the relationship with FPLM to other web properties.
-![Information Architecture](./fplm-ia.png)
+![Information Architecture](./docs/fplm-ia.png)
 
 #### DB Schema
 This diagram shows a high level proposed schema for the FPLM web app.
-![DB Schema](./fplm-schema.png)
+![DB Schema](./docs/fplm-schema.png)
 
 ### Standards and Benchmarks
 *Requrement: Set and document baselines in terms of performance, test coverage, accessibility, browser support, font support.*
