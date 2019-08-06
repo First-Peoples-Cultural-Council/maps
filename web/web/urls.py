@@ -28,5 +28,4 @@ urlpatterns = [
     ),
     path("api/", include("language.urls"), name="language"),
     path("api/", include("arts.urls"), name="arts"),
-    url(r"^api/", include("drf_autodocs.urls"), name="autodocs"),
 ]

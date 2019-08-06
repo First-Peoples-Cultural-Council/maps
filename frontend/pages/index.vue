@@ -124,7 +124,7 @@ import ResetMap from '@/components/ResetMap.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, intersects } from '@/mixins/map.js'
+import { inBounds, intersects, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import { getApiUrl } from '@/plugins/utils.js'
@@ -274,12 +274,7 @@ export default {
     // initial zoom on index page
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
-        const bbox = [
-          [-142.921875, 46.800059446787316],
-          [-108.9951171875, 62.568120480921074]
-        ]
-        const bounds = [bbox[0], bbox[1]]
-        map.fitBounds(bounds, { padding: 10 })
+        zoomToIdealBox(map)
       })
     }
   },
@@ -457,12 +452,7 @@ export default {
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
-        map.flyTo({
-          center: this.MAP_OPTIONS.center,
-          zoom: this.MAP_OPTIONS.zoom,
-          speed: 3,
-          curve: 1
-        })
+        zoomToIdealBox(map)
       })
 
       map.addSource('langs1', {
