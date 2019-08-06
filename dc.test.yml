@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+
+  web:
+    command: ./test.sh
+  frontend:
+    command: bash -c "yarn && yarn build && yarn start"
+    environment:
+      - HOST=http://maps.fpcc.ca:8080
