@@ -14,11 +14,11 @@ from .views import (
 
 
 urlpatterns = [
-    url("language-geo/$", LanguageGeoList.as_view()),
-    url("language/(?P<pk>\d+)/$", LanguageDetail.as_view()),
-    url("language/$", LanguageList.as_view()),
-    url("community-geo/$", CommunityGeoList.as_view()),
-    url("community/(?P<pk>\d+)/$", CommunityDetail.as_view()),
-    url("community/$", CommunityList.as_view()),
-    url("placename-geo/$", PlaceNameGeoList.as_view()),
+    url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
+    url("language/(?P<pk>\d+)/$", LanguageDetail.as_view(), name="language-detail"),
+    url("language/$", LanguageList.as_view(), name="language-list"),
+    url("community-geo/$", CommunityGeoList.as_view(), name="community-geo"),
+    url("community/(?P<pk>\d+)/$", CommunityDetail.as_view(), name="community-detail"),
+    url("community/$", CommunityList.as_view(), name="community-list"),
+    url("placename-geo/$", PlaceNameGeoList.as_view(), name="placename-geo"),
 ]

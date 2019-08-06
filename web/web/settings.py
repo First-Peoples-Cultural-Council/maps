@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "arts",
     "web",
     "django.contrib.gis",
+    "drf_autodocs",
 ]
 
 MIDDLEWARE = [
