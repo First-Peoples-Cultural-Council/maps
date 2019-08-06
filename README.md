@@ -1,6 +1,6 @@
 # First People's Language Map
 
-This is a web map that helps explore Indigenous language data.
+This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestone 2. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
 
 ## Technology Stack Overview
 
