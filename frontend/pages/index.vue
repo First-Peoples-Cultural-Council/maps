@@ -274,7 +274,7 @@ export default {
     // initial zoom on index page
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
-        zoomToIdealBox(map)
+        zoomToIdealBox({ map })
       })
     }
   },
@@ -452,7 +452,7 @@ export default {
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
-        zoomToIdealBox(map)
+        zoomToIdealBox({ map })
       })
 
       map.addSource('langs1', {
