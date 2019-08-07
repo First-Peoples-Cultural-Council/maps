@@ -6,7 +6,10 @@
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <Accordion :content="accordionContent"></Accordion>
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
         </section>
 
         <hr class="sidebar-divider" />

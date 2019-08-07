@@ -22,7 +22,10 @@
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <Accordion :content="accordionContent"></Accordion>
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
@@ -632,6 +635,10 @@ export default {
 .language-family {
   color: var(--color-darkgray);
   font-size: 0.9em;
+}
+
+.no-scroll-accordion #inner-collapse {
+  overflow: hidden;
 }
 
 @media (max-width: 992px) {

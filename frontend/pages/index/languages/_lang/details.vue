@@ -7,6 +7,7 @@
       :name="this.$route.params.lang"
       :detail="true"
       audio-file=""
+      :link="language.fv_archive_link"
     ></LanguageDetailCard>
     <section class="pl-3 pr-3">
       <h5 class="other-lang-names-title text-uppercase mt-4">

@@ -1,7 +1,7 @@
 <template>
   <DetailSideBar>
     <template v-slot:badges>
-      <div>
+      <div class="language-header-mobile d-none">
         <h5
           class="color-gray font-08 p-0 m-0"
           style="margin-bottom: 0.2em !important;"
@@ -10,7 +10,7 @@
           <span class="font-weight-bold">{{ language.name }}</span>
         </h5>
       </div>
-      <div>
+      <div class="badge-container">
         <Badge
           content="Communities"
           :number="communities.length"
@@ -58,15 +58,15 @@
         ></Badge>
       </div>
     </template>
-    <div class="language">
-      <div
-        class="color-row"
-        :style="'background-color: ' + languageColor"
-      ></div>
+    <template v-slot:content>
+      <div class="color-row" :style="'background-color: ' + languageColor">
+        &nbsp;
+      </div>
       <LanguageDetailCard
         :color="languageColor"
-        :name="this.$route.params.lang"
+        :name="$route.params.lang"
         :server="isServer"
+        :link="language.fv_archive_link"
       ></LanguageDetailCard>
       <section class="ml-2 mr-2">
         <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -94,6 +94,8 @@
         ></LanguageSeeAll>
       </section>
       <Filters class="mb-1 mt-2"></Filters>
+    </template>
+    <div class="language">
       <section class="pl-3 pr-3 pt-2">
         <div
           v-if="
@@ -384,5 +386,11 @@ export default {
 .other-lang-names-title {
   color: var(--color-gray);
   font-size: 0.8em;
+}
+
+@media (max-width: 992px) {
+  .language-header-mobile {
+    display: block !important;
+  }
 }
 </style>

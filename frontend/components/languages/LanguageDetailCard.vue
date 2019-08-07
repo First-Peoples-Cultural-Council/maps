@@ -21,6 +21,12 @@
               {{ name }}
             </h5>
           </div>
+          <CardBadge
+            v-if="link"
+            type="learn"
+            content="Learn Language"
+            :link="link"
+          ></CardBadge>
           <div
             v-if="audioFile"
             class="d-inline-block"
@@ -58,9 +64,11 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
@@ -82,6 +90,10 @@ export default {
     audioFile: {
       type: String,
       default: null
+    },
+    link: {
+      type: String,
+      default: ''
     }
   },
   data() {
