@@ -2,7 +2,7 @@
   <div class="place-names-dynamic-container">
     <DetailSideBar>
       <template v-slot:badges>
-        <h5 class="color-gray font-08 p-0 m-0">
+        <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
           Point Of Interest:
           <span class="font-weight-bold">{{ place.properties.name }}</span>
         </h5>

@@ -1,7 +1,7 @@
 <template>
   <DetailSideBar>
     <template v-slot:badges>
-      <div class="language-header-mobile d-none">
+      <div class="header-mobile d-none">
         <h5
           class="color-gray font-08 p-0 m-0"
           style="margin-bottom: 0.2em !important;"
@@ -386,11 +386,5 @@ export default {
 .other-lang-names-title {
   color: var(--color-gray);
   font-size: 0.8em;
-}
-
-@media (max-width: 992px) {
-  .language-header-mobile {
-    display: block !important;
-  }
 }
 </style>

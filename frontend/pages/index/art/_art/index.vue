@@ -1,7 +1,7 @@
 <template>
   <DetailSideBar>
     <template v-slot:badges>
-      <h5 class="color-gray font-08 p-0 m-0">
+      <h5 class="color-gray font-08 p-0 m-0 header-mobile d-none">
         {{ art.properties.art_type | titleCase }}:
         <span class="font-weight-bold">{{ art.properties.name }}</span>
       </h5>
