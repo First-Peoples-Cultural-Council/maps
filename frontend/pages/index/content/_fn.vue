@@ -104,10 +104,6 @@
           ></LanguageCard>
         </b-col>
       </b-row>
-      <div v-for="(lna, index) in lnaCollection" :key="'lna' + index">
-        <chartist type="Pie" :data="lna.data"></chartist>
-      </div>
-      <PieChart :chartdata="datacollection"></PieChart>
     </DetailSideBar>
   </div>
 </template>
@@ -122,7 +118,6 @@ import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
-import PieChart from '@/components/Charts/PieChart.vue'
 export default {
   components: {
     DetailSideBar,
@@ -130,8 +125,7 @@ export default {
     LanguageDetailBadge,
     Filters,
     LanguageCard,
-    Badge,
-    PieChart
+    Badge
   },
   data() {
     return {
@@ -174,22 +168,6 @@ export default {
       const filteredCommDetails = omit(this.communityDetail, ['name'])
       const details = filteredCommDetails
       return details
-    },
-    lnaCollection() {
-      const lnas = values(this.commDetails.lna_by_language)
-      console.log('lnas', lnas)
-      const collection = []
-      lnas.map(lna => {
-        collection.push({
-          name: lna.lna.language,
-          data: {
-            labels: ['Learners', 'Fluent', 'Speakers'],
-            series: [lna.learners, lna.fluent_speakers, lna.some_speakers]
-          }
-        })
-      })
-      console.log('Collection', collection)
-      return collection
     },
     lna() {
       const lnas = values(this.commDetails.lna_by_language)

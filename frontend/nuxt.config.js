@@ -62,7 +62,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [{ src: '~/plugins/Chartist.js' }, '~/plugins/global'],
+  plugins: ['~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
@@ -87,9 +87,6 @@ module.exports = {
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'
-      }),
-      new webpack.ProvidePlugin({
-        chartjs: 'vue-chartjs'
       })
     ],
     postcss: {
