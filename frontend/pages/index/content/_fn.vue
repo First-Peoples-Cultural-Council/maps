@@ -104,6 +104,10 @@
           ></LanguageCard>
         </b-col>
       </b-row>
+      <div v-for="(lna, index) in lnaCollection" :key="'lna' + index">
+        <chartist type="Pie" :data="lna.data"></chartist>
+      </div>
+      <PieChart :chartdata="datacollection"></PieChart>
     </DetailSideBar>
   </div>
 </template>
@@ -118,7 +122,7 @@ import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
-
+import PieChart from '@/components/Charts/PieChart.vue'
 export default {
   components: {
     DetailSideBar,
@@ -126,8 +130,39 @@ export default {
     LanguageDetailBadge,
     Filters,
     LanguageCard,
-    Badge
+    Badge,
+    PieChart
   },
+  data() {
+    return {
+      chartOptions: {
+        labelInterpolationFnc(value) {
+          return value[0]
+        }
+      },
+      responsiveOptions: [
+        [
+          'screen and (min-width: 640px)',
+          {
+            chartPadding: 30,
+            labelOffset: 100,
+            labelDirection: 'explode',
+            labelInterpolationFnc(value) {
+              return value
+            }
+          }
+        ],
+        [
+          'screen and (min-width: 1024px)',
+          {
+            labelOffset: 80,
+            chartPadding: 20
+          }
+        ]
+      ]
+    }
+  },
+
   computed: {
     communities() {
       return this.$store.state.communities.communitySet
@@ -140,10 +175,25 @@ export default {
       const details = filteredCommDetails
       return details
     },
+    lnaCollection() {
+      const lnas = values(this.commDetails.lna_by_language)
+      console.log('lnas', lnas)
+      const collection = []
+      lnas.map(lna => {
+        collection.push({
+          name: lna.lna.language,
+          data: {
+            labels: ['Learners', 'Fluent', 'Speakers'],
+            series: [lna.learners, lna.fluent_speakers, lna.some_speakers]
+          }
+        })
+      })
+      console.log('Collection', collection)
+      return collection
+    },
     lna() {
       const lnas = values(this.commDetails.lna_by_language)
       return lnas.map(lna => {
-        console.log(lna)
         let fluent
         let someSpeakers
         let learners
@@ -187,10 +237,29 @@ export default {
     )
 
     const isServer = !!process.server
+
     return {
       communityDetail,
       isServer,
-      community
+      community,
+      datacollection: {
+        labels: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July'
+        ],
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            data: [40, 39, 10, 40, 39, 80, 40]
+          }
+        ]
+      }
     }
   },
   created() {

@@ -15,7 +15,7 @@
     <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
     <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <div class="top-bar-container">
-      <Logo :logo-alt="3" class="mobile-logo hide-mobile"></Logo>
+      <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
@@ -429,7 +429,9 @@ export default {
                     return ach + renderArtDetail(props)
                   }, '')
                   const mapboxgl = require('mapbox-gl')
-                  new mapboxgl.Popup()
+                  new mapboxgl.Popup({
+                    className: 'artPopUp'
+                  })
                     .setLngLat(e.lngLat)
                     .setHTML(
                       `<div class='popup-inner'>
@@ -647,6 +649,22 @@ export default {
 
 .no-scroll-accordion #inner-collapse {
   overflow: hidden;
+}
+
+.artPopUp {
+  border-radius: 0.5em;
+}
+
+.popup-inner {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1em;
+}
+.artPopUp .mapboxgl-popup-content {
+  padding: 0em 0em 0em 0em;
+}
+.artPopUp .mapboxgl-popup-close-button {
+  background-color: white;
 }
 
 @media (max-width: 992px) {
