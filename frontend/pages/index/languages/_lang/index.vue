@@ -396,7 +396,7 @@ export default {
   height: 7px;
 }
 .other-lang-names-title {
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   font-size: 0.8em;
 }
 </style>

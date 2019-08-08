@@ -53,14 +53,14 @@ export default {
   font-size: 0.7em;
   padding: 0 0.5em;
   vertical-align: top;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   border-left: 1px solid rgba(0, 0, 0, 0.2);
   font-weight: 500;
   padding-right: 1em;
 }
 .languageSummary td {
   font-size: 0.8em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   font-weight: bold;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0 0.5em;

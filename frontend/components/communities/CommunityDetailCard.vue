@@ -155,7 +155,7 @@ export default {
 
 .fpcc-card-more:hover {
   color: white;
-  background-color: var(--color-darkgray);
+  background-color: #454545;
 }
 
 .fpcc-card-more img {

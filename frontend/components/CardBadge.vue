@@ -38,7 +38,7 @@ export default {
 <style>
 .card-badge {
   line-height: 0;
-  background-color: var(--color-gray);
+  background-color: var(--color-gray, #6f6f70);
   display: inline-block;
   color: white;
   border-radius: 1em;

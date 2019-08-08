@@ -268,13 +268,13 @@ export default {
 
 <style>
 .other-lang-names-title {
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   font-size: 0.8em;
 }
 .lang-detail-table th {
   font-size: 0.6em;
   text-transform: uppercase;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 .lang-detail-table {
   width: 100%;
@@ -286,7 +286,7 @@ export default {
 }
 .lna-table-thead {
   font-size: 0.8em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 
 .lna-table-thead th {
@@ -305,7 +305,7 @@ export default {
 .lna-table-tbody td {
   padding-left: 0.5em;
   padding-right: 0.5em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   vertical-align: middle;
 }
 </style>

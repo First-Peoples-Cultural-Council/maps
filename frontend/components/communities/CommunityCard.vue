@@ -97,6 +97,6 @@ export default {
   border-bottom-left-radius: 0.5em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: var(--color-darkgray);
+  background-color: #454545;
 }
 </style>

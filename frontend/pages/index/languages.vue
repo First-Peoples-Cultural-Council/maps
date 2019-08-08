@@ -61,7 +61,7 @@
                     :name="language.name"
                     :color="language.color"
                     @click.native.prevent="
-                      handleCardClick($event, community.name, 'lang')
+                      handleCardClick($event, language.name, 'lang')
                     "
                   ></LanguageCard>
                 </b-col>

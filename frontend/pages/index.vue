@@ -643,7 +643,7 @@ export default {
 }
 
 .language-family {
-  color: var(--color-darkgray);
+  color: var(--color-darkgray, #454545);
   font-size: 0.9em;
 }
 
