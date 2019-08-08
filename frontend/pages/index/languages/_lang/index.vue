@@ -64,7 +64,7 @@
       </div>
       <LanguageDetailCard
         :color="languageColor"
-        :name="$route.params.lang"
+        :name="language.name"
         :server="isServer"
         :link="language.fv_archive_link"
       ></LanguageDetailCard>
@@ -117,11 +117,7 @@
               <CommunityCard
                 :name="community.name"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  $router.push({
-                    path: `/content/${encodeURIComponent(community.name)}`
-                  })
-                "
+                @click.native="handleCardClick($event, community.name, 'comm')"
               ></CommunityCard>
             </b-col>
           </b-row>
@@ -147,11 +143,7 @@
                 :name="place.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/place-names/${encodeURIComponent(
-                      place.properties.name
-                    )}`
-                  })
+                  handleCardClick($event, place.properties.name, 'places')
                 "
               ></PlacesCard>
             </b-col>
@@ -179,9 +171,7 @@
                 :arttype="art.properties.art_type"
                 :name="art.properties.name"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               >
               </ArtsCard>
@@ -210,9 +200,7 @@
                 :arttype="art.properties.art_type"
                 :name="art.properties.name"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               >
               </ArtsCard>
@@ -241,9 +229,7 @@
                 :arttype="art.properties.art_type"
                 :name="art.properties.name"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               >
               </ArtsCard>
@@ -268,7 +254,7 @@ import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -323,7 +309,7 @@ export default {
 
     const languages = await $axios.$get(getApiUrl(`language/`))
     const language = languages.find(
-      lang => lang.name.toLowerCase() === languageName.toLowerCase()
+      lang => encodeFPCC(lang.name) === languageName
     )
     const languageId = language.id
 
@@ -333,6 +319,8 @@ export default {
       $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`)),
       $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
+
+    console.log('RegExp Url')
 
     const isServer = !!process.server
 
@@ -357,8 +345,32 @@ export default {
   methods: {
     handleMoreDetails() {
       this.$router.push({
-        path: `${encodeURIComponent(this.$route.params.lang)}/details`
+        path: `${encodeFPCC(this.$route.params.lang)}/details`
       })
+    },
+    handleCardClick($event, name, type) {
+      switch (type) {
+        case 'lang':
+          this.$router.push({
+            path: `/languages/${encodeFPCC(name)}`
+          })
+          break
+        case 'art':
+          this.$router.push({
+            path: `/art/${encodeFPCC(name)}`
+          })
+          break
+        case 'comm':
+          this.$router.push({
+            path: `/content/${encodeFPCC(name)}`
+          })
+          break
+        case 'places':
+          this.$router.push({
+            path: `/place-names/${encodeFPCC(name)}`
+          })
+          break
+      }
     }
   },
   head() {

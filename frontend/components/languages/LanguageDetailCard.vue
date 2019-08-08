@@ -65,6 +65,8 @@
 <script>
 import Card from '@/components/Card.vue'
 import CardBadge from '@/components/CardBadge.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
+
 export default {
   components: {
     Card,
@@ -128,7 +130,7 @@ export default {
       } else {
         this.$store.commit('languages/setComingFromDetail', true)
         this.$router.push({
-          path: `/languages/${encodeURIComponent(this.$route.params.lang)}`
+          path: `/languages/${encodeFPCC(this.$route.params.lang)}`
         })
       }
     },

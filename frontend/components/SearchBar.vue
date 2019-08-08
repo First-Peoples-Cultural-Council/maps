@@ -79,6 +79,7 @@
 
 <script>
 import Contact from '@/components/Contact.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
     Contact
@@ -193,25 +194,25 @@ export default {
       this.searchQuery = data
       if (type === 'Places') {
         return this.$router.push({
-          path: `/place-names/${encodeURIComponent(data)}`
+          path: `/place-names/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Languages') {
         return this.$router.push({
-          path: `/languages/${encodeURIComponent(data)}`
+          path: `/languages/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Communities') {
         return this.$router.push({
-          path: `/content/${encodeURIComponent(data)}`
+          path: `/content/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Arts') {
         return this.$router.push({
-          path: `/art/${encodeURIComponent(data)}`
+          path: `/art/${encodeFPCC(data)}`
         })
       }
     }

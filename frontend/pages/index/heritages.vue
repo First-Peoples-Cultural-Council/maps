@@ -36,13 +36,7 @@
               <PlacesCard
                 :name="place.properties.name"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  $router.push({
-                    path: `/place-names/${encodeURIComponent(
-                      place.properties.name
-                    )}`
-                  })
-                "
+                @click.native="handleCardClick($event, place.properties.name)"
               ></PlacesCard>
             </b-col>
           </b-row>
@@ -67,6 +61,7 @@ import Accordion from '@/components/Accordion.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -86,6 +81,13 @@ export default {
   computed: {
     places() {
       return this.$store.state.places.places
+    }
+  },
+  methods: {
+    handleCardClick(e, name) {
+      this.$router.push({
+        path: `/place-names/${encodeFPCC(name)}`
+      })
     }
   }
 }

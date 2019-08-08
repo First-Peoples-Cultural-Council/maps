@@ -8,7 +8,7 @@
         >
           <span class="valign-middle header-mobile d-none">
             Community:
-            <span class="font-weight-bold">{{ community.name }}</span>
+            <span class="font-weight-bold">{{ commDetails.name }}</span>
           </span>
         </h5>
         <div class="badge-container">
@@ -22,7 +22,7 @@
       </template>
       <template v-slot:content>
         <CommunityDetailCard
-          :name="community.name"
+          :name="commDetails.name"
           :population="commDetails.population"
           :server="isServer"
           :audio-file="commDetails.audio_file"
@@ -99,9 +99,7 @@
             :name="language.name"
             :color="language.color"
             @click.native.prevent="
-              $router.push({
-                path: `/languages/${encodeURIComponent(language.name)}`
-              })
+              handleCardClick($event, language.name, 'lang')
             "
           ></LanguageCard>
         </b-col>
@@ -119,7 +117,7 @@ import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -133,9 +131,6 @@ export default {
   computed: {
     communities() {
       return this.$store.state.communities.communitySet
-    },
-    community() {
-      return this.communities.find(comm => comm.name === this.$route.params.fn)
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
@@ -184,7 +179,9 @@ export default {
   },
   async asyncData({ params, $axios, store, $route }) {
     const communities = await $axios.$get(getApiUrl(`/community/`))
-    const community = communities.find(comm => comm.name === params.fn)
+    const community = communities.find(
+      comm => encodeFPCC(comm.name) === params.fn
+    )
     const communityDetail = await $axios.$get(
       getApiUrl(`community/${community.id}/`)
     )
@@ -192,7 +189,8 @@ export default {
     const isServer = !!process.server
     return {
       communityDetail,
-      isServer
+      isServer,
+      community
     }
   },
   created() {
@@ -210,6 +208,11 @@ export default {
           'name',
           this.community.name
         ])
+      })
+    },
+    handleCardClick($event, name, type) {
+      this.$router.push({
+        path: `/languages/${encodeFPCC(name)}`
       })
     }
   }

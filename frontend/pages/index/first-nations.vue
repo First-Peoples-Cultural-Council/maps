@@ -43,6 +43,7 @@ import SideBar from '@/components/SideBar.vue'
 import Badge from '@/components/Badge.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -64,7 +65,7 @@ export default {
   methods: {
     handleCardClick(e, title) {
       this.$router.push({
-        path: `/content/${encodeURIComponent(title)}`
+        path: `/content/${encodeFPCC(title)}`
       })
     }
   },

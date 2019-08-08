@@ -31,7 +31,7 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -61,7 +61,7 @@ export default {
     const arts = (await $axios.$get(getApiUrl('arts'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
-        return a.properties.name.toLowerCase() === params.art.toLowerCase()
+        return encodeFPCC(a.properties.name) === params.art
       }
     })
     console.log('art', art, params.art.toLowerCase())

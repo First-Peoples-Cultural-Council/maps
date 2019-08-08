@@ -76,9 +76,7 @@
                   :name="language.name"
                   :color="language.color"
                   @click.native.prevent="
-                    $router.push({
-                      path: `languages/${encodeURIComponent(language.name)}`
-                    })
+                    handleCardClick($event, language.name, 'lang')
                   "
                 ></LanguageCard>
               </b-col>
@@ -99,9 +97,7 @@
                 class="mt-3 hover-left-move"
                 :name="community.name"
                 @click.native.prevent="
-                  $router.push({
-                    path: `content/${encodeURIComponent(community.name)}`
-                  })
+                  handleCardClick($event, community.name, 'comm')
                 "
               ></CommunityCard>
             </b-col>
@@ -130,15 +126,15 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, intersects, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
             <p>
-                <a href="/art/${encodeURIComponent(
-                  props.name
-                )}" class='art-popup'>${props.name}</a> |
+                <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
+    props.name
+  }</a> |
                 <span class='art-popup-type'>${props.art_type}</span>
             </p>
         </div>`
@@ -282,6 +278,20 @@ export default {
     }
   },
   methods: {
+    handleCardClick($event, name, type) {
+      switch (type) {
+        case 'lang':
+          this.$router.push({
+            path: `/languages/${encodeFPCC(name)}`
+          })
+          break
+        case 'comm':
+          this.$router.push({
+            path: `/content/${encodeFPCC(name)}`
+          })
+          break
+      }
+    },
     isMainPage() {
       return (
         this.$route.name === 'index' ||
@@ -378,19 +388,17 @@ export default {
           if (feature.layer.id === 'fn-arts') {
             done = true
             return this.$router.push({
-              path: `/art/${encodeURIComponent(feature.properties.name)}`
+              path: `/art/${encodeFPCC(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-nations') {
             done = true
             this.$router.push({
-              path: `/content/${encodeURIComponent(feature.properties.name)}`
+              path: `/content/${encodeFPCC(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-places') {
             done = true
             this.$router.push({
-              path: `/place-names/${encodeURIComponent(
-                feature.properties.name
-              )}`
+              path: `/place-names/${encodeFPCC(feature.properties.name)}`
             })
           }
         }
@@ -447,7 +455,7 @@ export default {
         features.forEach(feature => {
           if (feature.layer.id === 'fn-lang-areas-shaded') {
             this.$router.push({
-              path: `/languages/${encodeURIComponent(feature.properties.name)}`
+              path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
           }
         })
