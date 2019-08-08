@@ -51,8 +51,6 @@ export default {
   left: 0;
   bottom: 0;
   width: var(--sidebar-width, 350px);
-  display: flex;
-  flex-direction: column;
   background-color: white;
   overflow-y: auto;
   padding-bottom: 1em;
