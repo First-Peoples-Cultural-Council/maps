@@ -17,7 +17,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 class LanguageFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = LanguageFamily
-        fields = ("name",)
+        fields = ("name", "color")
 
 
 class ChampionSerializer(serializers.ModelSerializer):
