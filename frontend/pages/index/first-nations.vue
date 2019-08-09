@@ -2,8 +2,7 @@
   <div>
     <SideBar active="Languages">
       <template v-slot:content>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
+        <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="badge-section pl-3 pr-3 mt-3">
@@ -44,6 +43,7 @@ import SideBar from '@/components/SideBar.vue'
 import Badge from '@/components/Badge.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -65,7 +65,7 @@ export default {
   methods: {
     handleCardClick(e, title) {
       this.$router.push({
-        path: `/content/${encodeURIComponent(title)}`
+        path: `/content/${encodeFPCC(title)}`
       })
     }
   },

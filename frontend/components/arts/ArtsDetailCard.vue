@@ -122,7 +122,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more-art {
-  background-color: var(--color-beige);
+  background-color: var(--color-beige, #f4eee9);
   display: flex;
   align-items: center;
   height: 35px;
@@ -138,7 +138,7 @@ export default {
 
 .fpcc-card-more-art:hover {
   color: white;
-  background-color: var(--color-darkgray);
+  background-color: #454545;
 }
 
 .fpcc-card-more-art img {

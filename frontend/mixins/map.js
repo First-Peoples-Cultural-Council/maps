@@ -9,6 +9,15 @@ export const selectLanguage = ({ map, lang }) => {
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 
+export const zoomToIdealBox = ({ map }) => {
+  const bbox = [
+    [-142.921875, 46.800059446787316],
+    [-108.9951171875, 62.568120480921074]
+  ]
+  const bounds = [bbox[0], bbox[1]]
+  map.fitBounds(bounds, { padding: 10 })
+}
+
 export const zoomToPoint = ({ map, geom, zoom }) => {
   console.log(geom.coordinates)
   const currentZoom = map.getZoom()

@@ -23,7 +23,10 @@
           >Search Term: {{ searchQuery }}
         </template>
         <div v-if="isSearchEmpty" class="nosearch-results p-3">
-          <Contact error="No search results were found"></Contact>
+          <Contact
+            error="No search results were found"
+            subject="FPCC Map: Didn't find what I was looking for (search)"
+          ></Contact>
         </div>
         <div v-else class="pt-2">
           <div
@@ -68,7 +71,9 @@
             </div>
           </div>
           <div>
-            <Contact></Contact>
+            <Contact
+              subject="FPCC Map: Didn't find what I was looking for (search)"
+            ></Contact>
           </div>
         </div>
       </b-popover>
@@ -79,6 +84,7 @@
 
 <script>
 import Contact from '@/components/Contact.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
     Contact
@@ -193,25 +199,25 @@ export default {
       this.searchQuery = data
       if (type === 'Places') {
         return this.$router.push({
-          path: `/place-names/${encodeURIComponent(data)}`
+          path: `/place-names/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Languages') {
         return this.$router.push({
-          path: `/languages/${encodeURIComponent(data)}`
+          path: `/languages/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Communities') {
         return this.$router.push({
-          path: `/content/${encodeURIComponent(data)}`
+          path: `/content/${encodeFPCC(data)}`
         })
       }
 
       if (type === 'Arts') {
         return this.$router.push({
-          path: `/art/${encodeURIComponent(data)}`
+          path: `/art/${encodeFPCC(data)}`
         })
       }
     }
@@ -247,8 +253,8 @@ export default {
   border-left: 0;
 }
 .popover {
-  width: var(--searchbar-width);
-  max-width: var(--searchbar-width);
+  width: var(--searchbar-width, 500px);
+  max-width: var(--searchbar-width, 500px);
   max-height: 500px;
   overflow-y: auto;
 }

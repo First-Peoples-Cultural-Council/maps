@@ -19,8 +19,8 @@ export default {
 
 <style>
 .detail-badge {
-  background-color: var(--color-beige, #efeae2);
-  color: var(--color-gray);
+  background-color: #ad8450;
+  color: white;
   border-radius: 0 !important;
   border: 0;
   padding: 0.3em;

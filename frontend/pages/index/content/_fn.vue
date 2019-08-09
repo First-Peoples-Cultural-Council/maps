@@ -6,102 +6,104 @@
           class="color-gray font-08 p-0 m-0"
           style="margin-bottom: 0.2em !important;"
         >
-          <span class="d-inline-block valign-middle">
+          <span class="valign-middle header-mobile d-none">
             Community:
-            <span class="font-weight-bold">{{ community.name }}</span>
+            <span class="font-weight-bold">{{ commDetails.name }}</span>
           </span>
         </h5>
-        <Badge
-          content="Languages"
-          :number="commDetails.languages.length"
-          class="cursor-pointer"
-          type="language"
-        ></Badge>
-      </template>
-      <CommunityDetailCard
-        :name="community.name"
-        :population="commDetails.population"
-        :server="isServer"
-        :audio-file="commDetails.audio_file"
-      ></CommunityDetailCard>
-      <hr class="sidebar-divider mt-0" />
-      <Filters class="mb-1"></Filters>
-
-      <section class="pl-3 pr-3">
-        <h5 class="other-lang-names-title text-uppercase mt-4">
-          Other Community Names
-        </h5>
-        <LanguageDetailBadge
-          v-for="(name, index) in otherNames"
-          :key="index"
-          :content="name"
-          class="mr-2"
-        ></LanguageDetailBadge>
-        <ul class="list-style-none m-0 p-0 mt-2">
-          <li>
-            <span class="font-08 color-gray">Email:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.email || 'N/A' }}
-            </span>
-          </li>
-          <li>
-            <span class="font-08 color-gray">Website:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.website || 'N/A' }}
-            </span>
-          </li>
-          <li>
-            <span class="font-08 color-gray">Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.phone || 'N/A' }}
-            </span>
-          </li>
-          <li>
-            <span class="font-08 color-gray">Alternate Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.alt_phone || 'N/A' }}
-            </span>
-          </li>
-          <li>
-            <span class="font-08 color-gray">Fax #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.fax || 'N/A' }}
-            </span>
-          </li>
-        </ul>
-        <div class="mt-3">
-          <b-table
-            hover
-            :items="lna"
-            responsive
-            small
-            table-class="lna-table"
-            thead-class="lna-table-thead"
-            tbody-class="lna-table-tbody"
-          ></b-table>
+        <div class="badge-container">
+          <Badge
+            content="Languages"
+            :number="commDetails.languages.length"
+            class="cursor-pointer"
+            type="language"
+          ></Badge>
         </div>
-        <b-row>
-          <b-col
-            v-for="language in commDetails.languages"
-            :key="'language' + language.id"
-            lg="12"
-            xl="12"
-            md="6"
-            sm="6"
-          >
-            <LanguageCard
-              class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
-              @click.native.prevent="
-                $router.push({
-                  path: `/languages/${encodeURIComponent(language.name)}`
-                })
-              "
-            ></LanguageCard>
-          </b-col>
-        </b-row>
-      </section>
+      </template>
+      <template v-slot:content>
+        <CommunityDetailCard
+          :name="commDetails.name"
+          :population="commDetails.population"
+          :server="isServer"
+          :audio-file="commDetails.audio_file"
+        ></CommunityDetailCard>
+        <hr class="sidebar-divider mt-0" />
+        <Filters class="mb-1"></Filters>
+
+        <section class="pl-3 pr-3">
+          <h5 class="other-lang-names-title text-uppercase mt-4">
+            Other Community Names
+          </h5>
+          <LanguageDetailBadge
+            v-for="(name, index) in otherNames"
+            :key="index"
+            :content="name"
+            class="mr-2"
+          ></LanguageDetailBadge>
+          <ul class="list-style-none m-0 p-0 mt-2">
+            <li>
+              <span class="font-08 color-gray">Email:</span>
+              <span class="font-08 font-weight-bold color-gray">
+                {{ commDetails.email || 'N/A' }}
+              </span>
+            </li>
+            <li>
+              <span class="font-08 color-gray">Website:</span>
+              <span class="font-08 font-weight-bold color-gray">
+                {{ commDetails.website || 'N/A' }}
+              </span>
+            </li>
+            <li>
+              <span class="font-08 color-gray">Phone #:</span>
+              <span class="font-08 font-weight-bold color-gray">
+                {{ commDetails.phone || 'N/A' }}
+              </span>
+            </li>
+            <li>
+              <span class="font-08 color-gray">Alternate Phone #:</span>
+              <span class="font-08 font-weight-bold color-gray">
+                {{ commDetails.alt_phone || 'N/A' }}
+              </span>
+            </li>
+            <li>
+              <span class="font-08 color-gray">Fax #:</span>
+              <span class="font-08 font-weight-bold color-gray">
+                {{ commDetails.fax || 'N/A' }}
+              </span>
+            </li>
+          </ul>
+          <div class="mt-3">
+            <b-table
+              hover
+              :items="lna"
+              responsive
+              small
+              table-class="lna-table"
+              thead-class="lna-table-thead"
+              tbody-class="lna-table-tbody"
+            ></b-table>
+          </div>
+        </section>
+      </template>
+      <b-row class="pr-3 pl-3">
+        <b-col
+          v-for="language in commDetails.languages"
+          :key="'language' + language.id"
+          lg="12"
+          xl="12"
+          md="6"
+          sm="6"
+        >
+          <LanguageCard
+            class="mt-3 hover-left-move"
+            :name="language.name"
+            :color="language.color"
+            @click.native.prevent="
+              handleCardClick($event, language.name, 'lang')
+            "
+          ></LanguageCard>
+        </b-col>
+      </b-row>
     </DetailSideBar>
   </div>
 </template>
@@ -115,8 +117,7 @@ import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl } from '@/plugins/utils.js'
-
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
     DetailSideBar,
@@ -126,12 +127,39 @@ export default {
     LanguageCard,
     Badge
   },
+  data() {
+    return {
+      chartOptions: {
+        labelInterpolationFnc(value) {
+          return value[0]
+        }
+      },
+      responsiveOptions: [
+        [
+          'screen and (min-width: 640px)',
+          {
+            chartPadding: 30,
+            labelOffset: 100,
+            labelDirection: 'explode',
+            labelInterpolationFnc(value) {
+              return value
+            }
+          }
+        ],
+        [
+          'screen and (min-width: 1024px)',
+          {
+            labelOffset: 80,
+            chartPadding: 20
+          }
+        ]
+      ]
+    }
+  },
+
   computed: {
     communities() {
       return this.$store.state.communities.communitySet
-    },
-    community() {
-      return this.communities.find(comm => comm.name === this.$route.params.fn)
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
@@ -144,7 +172,6 @@ export default {
     lna() {
       const lnas = values(this.commDetails.lna_by_language)
       return lnas.map(lna => {
-        console.log(lna)
         let fluent
         let someSpeakers
         let learners
@@ -180,15 +207,37 @@ export default {
   },
   async asyncData({ params, $axios, store, $route }) {
     const communities = await $axios.$get(getApiUrl(`/community/`))
-    const community = communities.find(comm => comm.name === params.fn)
+    const community = communities.find(
+      comm => encodeFPCC(comm.name) === params.fn
+    )
     const communityDetail = await $axios.$get(
       getApiUrl(`community/${community.id}/`)
     )
 
     const isServer = !!process.server
+
     return {
       communityDetail,
-      isServer
+      isServer,
+      community,
+      datacollection: {
+        labels: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July'
+        ],
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            data: [40, 39, 10, 40, 39, 80, 40]
+          }
+        ]
+      }
     }
   },
   created() {
@@ -207,6 +256,11 @@ export default {
           this.community.name
         ])
       })
+    },
+    handleCardClick($event, name, type) {
+      this.$router.push({
+        path: `/languages/${encodeFPCC(name)}`
+      })
     }
   }
 }
@@ -214,13 +268,13 @@ export default {
 
 <style>
 .other-lang-names-title {
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   font-size: 0.8em;
 }
 .lang-detail-table th {
   font-size: 0.6em;
   text-transform: uppercase;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 .lang-detail-table {
   width: 100%;
@@ -232,7 +286,7 @@ export default {
 }
 .lna-table-thead {
   font-size: 0.8em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 
 .lna-table-thead th {
@@ -251,7 +305,7 @@ export default {
 .lna-table-tbody td {
   padding-left: 0.5em;
   padding-right: 0.5em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   vertical-align: middle;
 }
 </style>

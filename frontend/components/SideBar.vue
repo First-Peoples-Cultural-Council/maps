@@ -23,7 +23,11 @@
             <slot name="badges"></slot>
             <slot name="cards"></slot>
           </div>
-          <Contact></Contact>
+          <Contact
+            :subject="
+              `FPCC Map: Didn't find what I was looking for (${$route.path})`
+            "
+          ></Contact>
         </div>
       </div>
       <div class="sidebar-mobile d-none">

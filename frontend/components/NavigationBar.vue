@@ -22,25 +22,42 @@
         <div class="nav-body">
           <ul class="nav-links p-0 m-0 list-style-none">
             <li>
-              <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
+              <nuxt-link class="color-gray" to="/" @click.native="handleNavLink"
+                >Home</nuxt-link
+              >
             </li>
             <li>
-              <nuxt-link to="/languages" @click.native="resetMap"
+              <nuxt-link
+                class="color-gray"
+                to="/languages"
+                @click.native="resetMap"
                 >Languages</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link to="/first-nations" @click.native="resetMap"
+              <nuxt-link
+                class="color-gray"
+                to="/first-nations"
+                @click.native="resetMap"
                 >First Nations</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link to="/place-names" @click.native="resetMap"
+              <nuxt-link
+                class="color-gray"
+                to="/place-names"
+                @click.native="resetMap"
                 >Place-names</nuxt-link
               >
             </li>
-            <li><a href="http://184.69.112.115/orderMaps">Order Maps</a></li>
-            <li><a href="https://maps.fpcc.ca/help">Help</a></li>
+            <li>
+              <a class="color-gray" href="http://184.69.112.115/orderMaps"
+                >Order Maps</a
+              >
+            </li>
+            <li>
+              <a class="color-gray" href="https://maps.fpcc.ca/help">Help</a>
+            </li>
             <li class="login-nav cursor-pointer">
               <a href="https://maps.fpcc.ca/user/login" class="d-block"
                 >Login</a
@@ -155,14 +172,16 @@ export default {
 }
 
 .nav-links a {
-  color: var(--color-gray);
+  color: var(--color-gray, '#6f6f70');
   font-weight: 500;
 }
 
 .login-nav a {
-  background-color: var(--color-beige);
+  display: inline-block;
+  background-color: #f4eee9;
   border-radius: 0.5em;
   padding: 0.5em 2.7em;
+  color: #6f6f70;
 }
 .close-nav {
   border-radius: 50%;

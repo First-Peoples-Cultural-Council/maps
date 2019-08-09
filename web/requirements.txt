@@ -5,5 +5,3 @@ psycopg2
 djangorestframework-gis
 gunicorn
 gevent
-drf_autodocs
-

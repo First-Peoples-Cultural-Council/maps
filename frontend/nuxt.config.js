@@ -40,7 +40,7 @@ module.exports = {
       {
         rel: 'stylesheet',
         href:
-          'https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap'
+          'https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap'
       }
     ]
   },
@@ -97,7 +97,8 @@ module.exports = {
       // Add plugin names as key and arguments as value
       // Install them before as dependencies with npm or yarn
       plugins: {
-        'postcss-flexbugs-fixes': {}
+        'postcss-flexbugs-fixes': {},
+        'postcss-css-variables': {}
       },
       preset: {
         autoprefixer: {

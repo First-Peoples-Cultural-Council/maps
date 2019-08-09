@@ -2,14 +2,21 @@
   <div ref="sidebarContainer" class="ds">
     <div class="ds-container" :style="'width: ' + width + 'px;'">
       <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
+      <slot name="content"></slot>
+      <slot name="badges"></slot>
       <slot></slot>
-      <Contact></Contact>
+      <Contact
+        :subject="
+          `FPCC Map: Didn't find what I was looking for (${$route.path})`
+        "
+      ></Contact>
     </div>
-    <div class="detail-sidebar-mobile sidebar-mobile d-none">
+    <div class="detail-sidebar-mobile sidebar-mobile d-none cursor-pointer">
       <SideBarFold>
         <template v-slot:badges>
           <slot name="badges"></slot>
         </template>
+        <slot name="content"></slot>
         <slot></slot>
       </SideBarFold>
     </div>
@@ -48,11 +55,18 @@ export default {
   left: 0;
   bottom: 0;
   width: var(--sidebar-width, 350px);
-  display: flex;
-  flex-direction: column;
   background-color: white;
   overflow-y: auto;
   padding-bottom: 1em;
+}
+
+.ds-container .badge-container {
+  padding: 0 1em;
+  padding-top: 1em;
+}
+
+.ds-container .badge {
+  margin-top: 0.5em;
 }
 
 @media (max-width: 992px) {

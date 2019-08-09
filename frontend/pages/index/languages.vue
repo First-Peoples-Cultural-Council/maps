@@ -6,7 +6,10 @@
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <Accordion :content="accordionContent"></Accordion>
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
         </section>
 
         <hr class="sidebar-divider" />
@@ -58,9 +61,7 @@
                     :name="language.name"
                     :color="language.color"
                     @click.native.prevent="
-                      $router.push({
-                        path: `languages/${encodeURIComponent(language.name)}`
-                      })
+                      handleCardClick($event, language.name, 'lang')
                     "
                   ></LanguageCard>
                 </b-col>
@@ -81,12 +82,7 @@
                   class="mt-3 hover-left-move"
                   :name="community.name"
                   @click.native.prevent="
-                    handleCardClick(
-                      $event,
-                      community.name,
-                      'content',
-                      community.name
-                    )
+                    handleCardClick($event, community.name, 'comm')
                   "
                 ></CommunityCard>
               </b-col>
@@ -117,6 +113,7 @@ import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -154,12 +151,19 @@ export default {
     }
   },
   methods: {
-    handleCardClick(e, data) {
-      // const lang = this.languages.find(l => l.name === data)
-      // zoomToLanguage({ map: this.mapinstance, lang: lang })
-      this.$router.push({
-        path: `/languages/${encodeURIComponent(data)}`
-      })
+    handleCardClick($event, name, type) {
+      switch (type) {
+        case 'lang':
+          this.$router.push({
+            path: `/languages/${encodeFPCC(name)}`
+          })
+          break
+        case 'comm':
+          this.$router.push({
+            path: `/content/${encodeFPCC(name)}`
+          })
+          break
+      }
     }
   },
 

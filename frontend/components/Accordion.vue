@@ -66,7 +66,7 @@ export default {
 #outer-collapse .outer-text {
   padding: 0;
   margin: 0;
-  color: var(--color-darkgray);
+  color: var(--color-darkgray, #454545);
 }
 #outer-collapse > .card > .card-body {
   padding: 0.25rem 0.75rem;
@@ -86,7 +86,7 @@ export default {
   font-size: 0.8em;
   margin: 0;
   padding: 0;
-  color: var(--color-darkgray);
+  color: var(--color-darkgray, #454545);
 }
 .accordion-toggle {
   background-color: transparent;

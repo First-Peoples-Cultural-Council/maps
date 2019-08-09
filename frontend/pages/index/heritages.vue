@@ -2,6 +2,12 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-heritages'" active="Heritage">
       <template v-slot:content>
+        <section class="pl-3 pr-3 mt-3">
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
+        </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </template>
@@ -30,13 +36,7 @@
               <PlacesCard
                 :name="place.properties.name"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  $router.push({
-                    path: `/place-names/${encodeURIComponent(
-                      place.properties.name
-                    )}`
-                  })
-                "
+                @click.native="handleCardClick($event, place.properties.name)"
               ></PlacesCard>
             </b-col>
           </b-row>
@@ -57,9 +57,11 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import Accordion from '@/components/Accordion.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -67,11 +69,25 @@ export default {
     DetailSideBar,
     PlacesCard,
     Badge,
-    Filters
+    Filters,
+    Accordion
+  },
+  data() {
+    return {
+      accordionContent:
+        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.'
+    }
   },
   computed: {
     places() {
       return this.$store.state.places.places
+    }
+  },
+  methods: {
+    handleCardClick(e, name) {
+      this.$router.push({
+        path: `/place-names/${encodeFPCC(name)}`
+      })
     }
   }
 }
