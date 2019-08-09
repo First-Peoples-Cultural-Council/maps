@@ -68,7 +68,7 @@ export default {
 }
 .badge-number {
   display: inline-block;
-  color: var(--color-red);
+  color: #c46257;
   background-color: white;
   height: 19px;
   width: 19px;

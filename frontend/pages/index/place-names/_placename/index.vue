@@ -2,7 +2,7 @@
   <div class="place-names-dynamic-container">
     <DetailSideBar>
       <template v-slot:badges>
-        <h5 class="color-gray font-08 p-0 m-0">
+        <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
           Point Of Interest:
           <span class="font-weight-bold">{{ place.properties.name }}</span>
         </h5>
@@ -25,7 +25,7 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -47,9 +47,7 @@ export default {
     const places = (await $axios.$get(getApiUrl('placename-geo/'))).features
     const place = places.find(a => {
       if (a.properties.name) {
-        return (
-          a.properties.name.toLowerCase() === params.placename.toLowerCase()
-        )
+        return encodeFPCC(a.properties.name) === params.placename
       }
     })
 

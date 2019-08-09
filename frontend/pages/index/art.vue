@@ -2,7 +2,7 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
-        <Filters class="mb-2"></Filters>
+        <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3">
@@ -51,9 +51,7 @@
                 :name="art.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -72,9 +70,7 @@
                 :name="art.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -93,9 +89,7 @@
                 :name="art.properties.name"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -116,6 +110,7 @@ import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -141,6 +136,13 @@ export default {
     },
     artists() {
       return this.arts.filter(art => art.properties.art_type === 'artist')
+    }
+  },
+  methods: {
+    handleCardClick($event, name, type) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
     }
   }
 }

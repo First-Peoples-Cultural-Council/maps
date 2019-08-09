@@ -7,6 +7,7 @@
       :name="this.$route.params.lang"
       :detail="true"
       audio-file=""
+      :link="language.fv_archive_link"
     ></LanguageDetailCard>
     <section class="pl-3 pr-3">
       <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -40,6 +41,17 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="language.dialect_set.length > 0">
+        <h5 class="other-lang-names-title text-uppercase mt-4">
+          Dialect
+        </h5>
+        <LanguageDetailBadge
+          v-for="(dialect, index) in language.dialect_set"
+          :key="index"
+          :content="dialect.name"
+          class="mr-2"
+        ></LanguageDetailBadge>
+      </div>
       <div class="lang-notes mt-3 color-gray font-08">
         {{ language.notes || '' }}
       </div>
@@ -149,14 +161,14 @@ export default {
   height: 7px;
 }
 .other-lang-names-title {
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   font-size: 0.8em;
 }
 
 .lang-detail-table th {
   font-size: 0.6em;
   text-transform: uppercase;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 .lang-detail-table {
   width: 100%;
@@ -168,7 +180,7 @@ export default {
 }
 .lna-table-thead {
   font-size: 0.8em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
 }
 
 .lna-table-thead th {
@@ -187,7 +199,7 @@ export default {
 .lna-table-tbody td {
   padding-left: 0.5em;
   padding-right: 0.5em;
-  color: var(--color-gray);
+  color: var(--color-gray, #6f6f70);
   vertical-align: middle;
 }
 </style>

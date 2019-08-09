@@ -15,14 +15,17 @@
     <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
     <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <div class="top-bar-container">
-      <Logo :logo-alt="3" class="mobile-logo hide-mobile"></Logo>
+      <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <Accordion :content="accordionContent"></Accordion>
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
@@ -73,9 +76,7 @@
                   :name="language.name"
                   :color="language.color"
                   @click.native.prevent="
-                    $router.push({
-                      path: `languages/${encodeURIComponent(language.name)}`
-                    })
+                    handleCardClick($event, language.name, 'lang')
                   "
                 ></LanguageCard>
               </b-col>
@@ -96,9 +97,7 @@
                 class="mt-3 hover-left-move"
                 :name="community.name"
                 @click.native.prevent="
-                  $router.push({
-                    path: `content/${encodeURIComponent(community.name)}`
-                  })
+                  handleCardClick($event, community.name, 'comm')
                 "
               ></CommunityCard>
             </b-col>
@@ -124,18 +123,18 @@ import ResetMap from '@/components/ResetMap.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, intersects } from '@/mixins/map.js'
+import { inBounds, intersects, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
             <p>
-                <a href="/art/${encodeURIComponent(
-                  props.name
-                )}" class='art-popup'>${props.name}</a> |
+                <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
+    props.name
+  }</a> |
                 <span class='art-popup-type'>${props.art_type}</span>
             </p>
         </div>`
@@ -274,16 +273,25 @@ export default {
     // initial zoom on index page
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
-        const bbox = [
-          [-142.921875, 46.800059446787316],
-          [-108.9951171875, 62.568120480921074]
-        ]
-        const bounds = [bbox[0], bbox[1]]
-        map.fitBounds(bounds, { padding: 10 })
+        zoomToIdealBox({ map })
       })
     }
   },
   methods: {
+    handleCardClick($event, name, type) {
+      switch (type) {
+        case 'lang':
+          this.$router.push({
+            path: `/languages/${encodeFPCC(name)}`
+          })
+          break
+        case 'comm':
+          this.$router.push({
+            path: `/content/${encodeFPCC(name)}`
+          })
+          break
+      }
+    },
     isMainPage() {
       return (
         this.$route.name === 'index' ||
@@ -380,19 +388,17 @@ export default {
           if (feature.layer.id === 'fn-arts') {
             done = true
             return this.$router.push({
-              path: `/art/${encodeURIComponent(feature.properties.name)}`
+              path: `/art/${encodeFPCC(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-nations') {
             done = true
             this.$router.push({
-              path: `/content/${encodeURIComponent(feature.properties.name)}`
+              path: `/content/${encodeFPCC(feature.properties.name)}`
             })
           } else if (feature.layer.id === 'fn-places') {
             done = true
             this.$router.push({
-              path: `/place-names/${encodeURIComponent(
-                feature.properties.name
-              )}`
+              path: `/place-names/${encodeFPCC(feature.properties.name)}`
             })
           }
         }
@@ -423,7 +429,9 @@ export default {
                     return ach + renderArtDetail(props)
                   }, '')
                   const mapboxgl = require('mapbox-gl')
-                  new mapboxgl.Popup()
+                  new mapboxgl.Popup({
+                    className: 'artPopUp'
+                  })
                     .setLngLat(e.lngLat)
                     .setHTML(
                       `<div class='popup-inner'>
@@ -449,7 +457,7 @@ export default {
         features.forEach(feature => {
           if (feature.layer.id === 'fn-lang-areas-shaded') {
             this.$router.push({
-              path: `/languages/${encodeURIComponent(feature.properties.name)}`
+              path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
           }
         })
@@ -457,12 +465,7 @@ export default {
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
-        map.flyTo({
-          center: this.MAP_OPTIONS.center,
-          zoom: this.MAP_OPTIONS.zoom,
-          speed: 3,
-          curve: 1
-        })
+        zoomToIdealBox({ map })
       })
 
       map.addSource('langs1', {
@@ -640,8 +643,28 @@ export default {
 }
 
 .language-family {
-  color: var(--color-darkgray);
+  color: var(--color-darkgray, #454545);
   font-size: 0.9em;
+}
+
+.no-scroll-accordion #inner-collapse {
+  overflow: hidden;
+}
+
+.artPopUp {
+  border-radius: 0.5em;
+}
+
+.popup-inner {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1em;
+}
+.artPopUp .mapboxgl-popup-content {
+  padding: 0em 0em 0em 0em;
+}
+.artPopUp .mapboxgl-popup-close-button {
+  background-color: white;
 }
 
 @media (max-width: 992px) {
