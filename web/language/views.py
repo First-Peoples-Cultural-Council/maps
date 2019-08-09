@@ -24,8 +24,8 @@ class LanguageList(generics.ListAPIView):
 
     queryset = (
         Language.objects.filter(geom__isnull=False)
-        .select_related("sub_family", "sub_family__family")
-        .order_by("sub_family__family", "name")
+        .select_related("family")
+        .order_by("family", "name")
     )
     serializer_class = LanguageSerializer
 
@@ -98,4 +98,3 @@ class PlaceNameGeoList(generics.ListAPIView):
             queryset = queryset.filter(point__intersects=lang.geom)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
-

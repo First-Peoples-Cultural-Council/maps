@@ -43,7 +43,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping", "sub_family")
+        fields = ("name", "id", "color", "bbox", "sleeping", "family")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -122,7 +122,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "dialect_set",
             "fv_archive_link",
             "color",
-            "sub_family",
+            "family",
             "notes",
             "fluent_speakers",
             "learners",
