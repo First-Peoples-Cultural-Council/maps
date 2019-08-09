@@ -12,13 +12,6 @@ class LanguageFamily(BaseModel):
         verbose_name_plural = "Language Families"
 
 
-class LanguageSubFamily(BaseModel):
-    family = models.ForeignKey(LanguageFamily, on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        verbose_name_plural = "Language Sub Families"
-
-
 class Language(BaseModel):
     other_names = models.TextField(default="", blank=True)
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
@@ -26,9 +19,7 @@ class Language(BaseModel):
     regions = models.CharField(max_length=255, default="", blank=True)
     sleeping = models.BooleanField(default=False)
 
-    sub_family = models.ForeignKey(
-        LanguageSubFamily, on_delete=models.SET_NULL, null=True
-    )
+    family = models.ForeignKey(LanguageFamily, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(default="", blank=True)
     fluent_speakers = models.IntegerField(
         default=0
