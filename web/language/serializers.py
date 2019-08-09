@@ -3,7 +3,6 @@ from .models import (
     PlaceName,
     Community,
     Champion,
-    LanguageSubFamily,
     LanguageFamily,
     LanguageLink,
     Dialect,
@@ -19,14 +18,6 @@ class LanguageFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = LanguageFamily
         fields = ("name",)
-
-
-class LanguageSubFamilySerializer(serializers.ModelSerializer):
-    family = LanguageFamilySerializer(read_only=True)
-
-    class Meta:
-        model = LanguageSubFamily
-        fields = ("name", "family")
 
 
 class ChampionSerializer(serializers.ModelSerializer):
@@ -48,7 +39,7 @@ class DialectSerializer(serializers.ModelSerializer):
 
 
 class LanguageSerializer(serializers.ModelSerializer):
-    sub_family = LanguageSubFamilySerializer(read_only=True)
+    family = LanguageFamilySerializer(read_only=True)
 
     class Meta:
         model = Language
@@ -96,7 +87,7 @@ class LNADetailSerializer(serializers.ModelSerializer):
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
-    sub_family = LanguageSubFamilySerializer(read_only=True)
+    family = LanguageFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     dialect_set = DialectSerializer(read_only=True, many=True)
@@ -221,4 +212,3 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "audio_file",
         )
         geo_field = "point"
-

@@ -3,7 +3,6 @@ from django.contrib import admin
 from .models import (
     Language,
     LanguageFamily,
-    LanguageSubFamily,
     Community,
     Dialect,
     PlaceName,
@@ -14,7 +13,7 @@ from .models import (
 
 
 class LanguageAdmin(admin.ModelAdmin):
-    list_display = ("name", "sleeping")
+    list_display = ("name", "sleeping", "family")
 
 
 class LNADataAdmin(admin.ModelAdmin):
@@ -25,7 +24,6 @@ admin.site.register(Champion)
 admin.site.register(PlaceName)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
-admin.site.register(LanguageSubFamily)
 admin.site.register(Community)
 admin.site.register(LNA)
 admin.site.register(LNAData, LNADataAdmin)

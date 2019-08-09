@@ -6,17 +6,10 @@ from web.models import BaseModel
 
 
 class LanguageFamily(BaseModel):
-    pass
+    color = models.CharField(default="RGB(0.5,0.5,0.5)", max_length=31)
 
     class Meta:
         verbose_name_plural = "Language Families"
-
-
-class LanguageSubFamily(BaseModel):
-    family = models.ForeignKey(LanguageFamily, on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        verbose_name_plural = "Language Sub Families"
 
 
 class Language(BaseModel):
@@ -26,8 +19,8 @@ class Language(BaseModel):
     regions = models.CharField(max_length=255, default="", blank=True)
     sleeping = models.BooleanField(default=False)
 
-    sub_family = models.ForeignKey(
-        LanguageSubFamily, on_delete=models.SET_NULL, null=True
+    family = models.ForeignKey(
+        LanguageFamily, null=True, on_delete=models.SET_NULL, blank=True
     )
     notes = models.TextField(default="", blank=True)
     fluent_speakers = models.IntegerField(
