@@ -13,7 +13,7 @@ from .models import (
 
 
 class LanguageAdmin(admin.ModelAdmin):
-    list_display = ("name", "sleeping")
+    list_display = ("name", "sleeping", "family")
 
 
 class LNADataAdmin(admin.ModelAdmin):
