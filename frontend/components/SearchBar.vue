@@ -23,7 +23,10 @@
           >Search Term: {{ searchQuery }}
         </template>
         <div v-if="isSearchEmpty" class="nosearch-results p-3">
-          <Contact error="No search results were found"></Contact>
+          <Contact
+            error="No search results were found"
+            subject="FPCC Map: Didn't find what I was looking for (search)"
+          ></Contact>
         </div>
         <div v-else class="pt-2">
           <div
@@ -68,7 +71,9 @@
             </div>
           </div>
           <div>
-            <Contact></Contact>
+            <Contact
+              subject="FPCC Map: Didn't find what I was looking for (search)"
+            ></Contact>
           </div>
         </div>
       </b-popover>
@@ -248,8 +253,8 @@ export default {
   border-left: 0;
 }
 .popover {
-  width: var(--searchbar-width);
-  max-width: var(--searchbar-width);
+  width: var(--searchbar-width, 500px);
+  max-width: var(--searchbar-width, 500px);
   max-height: 500px;
   overflow-y: auto;
 }

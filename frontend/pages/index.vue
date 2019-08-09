@@ -21,6 +21,8 @@
     </div>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
+        <div v-html="ie"></div>
+
         <section class="pl-3 pr-3 mt-3">
           <Accordion
             class="no-scroll-accordion"
@@ -173,7 +175,11 @@ export default {
       mode: 'All',
       map: {},
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.'
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
+      ie: `<!--[if lt IE 7]> <div class=">IE6</div> <![endif]-->
+        <!--[if IE 7]> <div class="ie7 ie">IE7</div> <![endif]-->
+        <!--[if IE 8]> <div class="ie8 ie">IE8</div> <![endif]-->
+        <!--[if IE 9]> <div class="ie9 ie">IE9</div> <![endif]-->`
     }
   },
   computed: {

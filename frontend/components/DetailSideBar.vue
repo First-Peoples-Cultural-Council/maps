@@ -5,7 +5,11 @@
       <slot name="content"></slot>
       <slot name="badges"></slot>
       <slot></slot>
-      <Contact></Contact>
+      <Contact
+        :subject="
+          `FPCC Map: Didn't find what I was looking for (${$route.path})`
+        "
+      ></Contact>
     </div>
     <div class="detail-sidebar-mobile sidebar-mobile d-none cursor-pointer">
       <SideBarFold>
