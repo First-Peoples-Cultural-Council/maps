@@ -217,10 +217,7 @@ export default {
     ])
 
     if (process.server) {
-      store.commit(
-        'languages/set',
-        groupBy(results[0], 'sub_family.family.name')
-      )
+      store.commit('languages/set', groupBy(results[0], 'family.name'))
       store.commit('communities/set', results[1])
       store.commit('places/set', results[2].features)
       store.commit('arts/set', results[3].features)
@@ -582,7 +579,7 @@ export default {
         'languages/setLanguagesCount',
         filteredLanguages.length
       )
-      return groupBy(filteredLanguages, 'sub_family.family.name')
+      return groupBy(filteredLanguages, 'family.name')
     },
     filterCommunities(bounds) {
       return this.communitySet.filter(comm => {
