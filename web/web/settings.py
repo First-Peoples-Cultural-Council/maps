@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ["*"]
 
 MEDIA_ROOT = "media/"
 MEDIA_URL = "/media/"
+APPEND_SLASH = True
 
 # Application definition
 
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     "firstvoices",
     "arts",
     "web",
-    "django.contrib.gis"
+    "django.contrib.gis",
 ]
 
 MIDDLEWARE = [
@@ -133,4 +134,3 @@ EMAIL_PORT = 5872
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
-
