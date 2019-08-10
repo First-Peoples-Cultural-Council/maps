@@ -89,6 +89,9 @@
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
           <b-row>
+            <h5 class="language-family mt-3 pl-3 pr-3">
+              Communities
+            </h5>
             <b-col
               v-for="community in communities"
               :key="'community ' + community.name"
