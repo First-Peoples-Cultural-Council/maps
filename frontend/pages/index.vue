@@ -22,7 +22,6 @@
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <div v-html="ie"></div>
-
         <section class="pl-3 pr-3 mt-3">
           <Accordion
             class="no-scroll-accordion"
