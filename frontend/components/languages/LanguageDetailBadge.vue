@@ -19,7 +19,7 @@ export default {
 
 <style>
 .detail-badge {
-  background-color: #ad8450;
+  background-color: #a79278;
   color: white;
   border-radius: 0 !important;
   border: 0;
