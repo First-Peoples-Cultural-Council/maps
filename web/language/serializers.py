@@ -43,7 +43,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping", "family")
+        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -143,14 +143,14 @@ class LanguageGeoSerializer(GeoFeatureModelSerializer):
 class CommunityGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Community
-        fields = ("name",)
+        fields = ("name", "other_names")
         geo_field = "point"
 
 
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_name", "id", "audio_file")
+        fields = ("name", "other_names", "id", "audio_file")
         geo_field = "point"
 
 

@@ -183,7 +183,7 @@ class Client(dedruplify.DeDruplifierClient):
             "tm_placename",
             PlaceName,
             {
-                "field_tm_pn_othername_value": "other_name",
+                "field_tm_pn_othername_value": "other_names",
                 "field_tm_pn_location_lat": "point",
             },
         ):

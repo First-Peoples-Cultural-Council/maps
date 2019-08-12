@@ -156,27 +156,37 @@ export default {
       this.placesResults = this.filterBasedOnTitle(
         this.places,
         this.searchQuery,
-        2
+        1
       )
 
       this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery, 1)
     },
     filterBasedOnTitle(data = [], query = '', mode = 0) {
+      console.log(data, query, mode)
       if (data.length === 0) {
         return []
       }
+      let results
       const lowerCasedQuery = query.toLowerCase()
       if (mode === 1) {
-        return data.filter(d =>
-          d.properties.name.toLowerCase().includes(lowerCasedQuery)
-        )
+        results = data.filter(d => {
+          return (
+            d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
+            (d.properties.other_names || '')
+              .toLowerCase()
+              .includes(lowerCasedQuery)
+          )
+        })
+      } else {
+        results = data.filter(d => {
+          return (
+            d.name.toLowerCase().includes(lowerCasedQuery) ||
+            (d.other_names || '').toLowerCase().includes(lowerCasedQuery)
+          )
+        })
       }
-      if (mode === 2) {
-        return data.filter(d =>
-          d.properties.name.toLowerCase().includes(lowerCasedQuery)
-        )
-      }
-      return data.filter(d => d.name.toLowerCase().includes(lowerCasedQuery))
+      console.log(results)
+      return results
     },
     clicked(event) {
       const el = event.target

@@ -81,7 +81,7 @@ class LanguageMember(models.Model):
 
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
-    other_name = models.CharField(max_length=255, default="")
+    other_names = models.CharField(max_length=255, default="")
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 

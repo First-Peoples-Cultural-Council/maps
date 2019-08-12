@@ -1,5 +1,6 @@
 <template>
   <div class="map-container" :class="{ detailModeContainer: isDetailMode }">
+    <div class="map-loading">LOADING MAP</div>
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
@@ -624,6 +625,35 @@ export default {
   position: relative;
   padding-left: var(--sidebar-width, 350px);
 }
+.map-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: #666;
+  font-size: 25px;
+}
+
+.map-loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+  animation: ellipsis steps(4, end) 900ms infinite;
+  content: '\2026'; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
 .share-embed-control,
 .zoom-control {
   position: absolute;
@@ -676,6 +706,10 @@ export default {
 }
 
 @media (max-width: 992px) {
+  .map-loading {
+    margin-left: -90px;
+  }
+
   .map-container {
     padding-left: 0;
   }
