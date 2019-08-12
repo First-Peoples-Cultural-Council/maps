@@ -134,3 +134,6 @@ EMAIL_PORT = 5872
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
+
+
+REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]}

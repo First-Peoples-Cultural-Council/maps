@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
+from rest_framework import routers
 
-import arts.views
+from .views import PageViewSet
+
+router = routers.DefaultRouter()
+router.register(r"api/page", PageViewSet, basename="page")
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
@@ -28,4 +32,4 @@ urlpatterns = [
     ),
     path("api/", include("language.urls"), name="language"),
     path("api/", include("arts.urls"), name="arts"),
-]
+] + router.urls
