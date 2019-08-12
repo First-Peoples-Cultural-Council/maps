@@ -119,6 +119,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "languagelink_set",
             "audio_file",
             # "lna_set",
+            "sleeping",
             "dialect_set",
             "fv_archive_link",
             "color",

@@ -3,5 +3,6 @@ djangorestframework
 pymysql
 psycopg2
 djangorestframework-gis
+django-markdownx
 gunicorn
 gevent

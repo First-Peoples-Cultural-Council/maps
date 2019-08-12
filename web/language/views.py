@@ -17,28 +17,42 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
 
-class LanguageList(generics.ListAPIView):
+class BaseModelViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows languages to be viewed or edited.
+    Abstract base viewset that allows multiple serializers depending on action.
     """
 
+    def get_serializer_class(self):
+        if self.action == "retrieve" or self.action == "partial_update":
+            if hasattr(self, "detail_serializer_class"):
+                return self.detail_serializer_class
+
+        return super().get_serializer_class()
+
+
+class LanguageViewSet(BaseModelViewSet):
+    serializer_class = LanguageSerializer
+    detail_serializer_class = LanguageDetailSerializer
     queryset = (
         Language.objects.filter(geom__isnull=False)
         .select_related("family")
         .order_by("family", "name")
     )
-    serializer_class = LanguageSerializer
 
-    @method_decorator(cache_page(60 * 60 * 2))
+
+class CommunityViewSet(BaseModelViewSet):
+    serializer_class = CommunitySerializer
+    detail_serializer_class = CommunityDetailSerializer
+    queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
+
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = LanguageSerializer(queryset, many=True)
+        if "lang" in request.GET:
+            queryset = queryset.filter(
+                languages=Language.objects.get(pk=request.GET.get("lang"))
+            )
+        serializer = CommunitySerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class LanguageDetail(generics.RetrieveAPIView):
-    serializer_class = LanguageDetailSerializer
-    queryset = Language.objects.all()
 
 
 class LanguageGeoList(generics.ListAPIView):
@@ -61,27 +75,6 @@ class CommunityGeoList(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = CommunityGeoSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class CommunityList(generics.ListAPIView):
-
-    queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
-    serializer_class = CommunitySerializer
-
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        if "lang" in request.GET:
-            queryset = queryset.filter(
-                languages=Language.objects.get(pk=request.GET.get("lang"))
-            )
-        serializer = CommunitySerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
-class CommunityDetail(generics.RetrieveAPIView):
-    serializer_class = CommunityDetailSerializer
-    queryset = Community.objects.all()
 
 
 class PlaceNameGeoList(generics.ListAPIView):

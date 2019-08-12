@@ -103,7 +103,16 @@ class Dialect(BaseModel):
     )
 
 
+class CommunityLanguageStats(BaseModel):
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
+    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
+
+
 class LNA(BaseModel):
+    """
+    Deprecated
+    """
+
     year = models.IntegerField(default=1970)
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True
@@ -113,6 +122,10 @@ class LNA(BaseModel):
 
 
 class LNAData(BaseModel):
+    """
+    Deprecated
+    """
+
     lna = models.ForeignKey(
         LNA, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna2_lna_target_id
