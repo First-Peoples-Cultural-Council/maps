@@ -23,7 +23,7 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     """
 
     def get_serializer_class(self):
-        if self.action == "retrieve" or self.action == "partial_update":
+        if self.action != "list":
             if hasattr(self, "detail_serializer_class"):
                 return self.detail_serializer_class
 
@@ -59,35 +59,12 @@ class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
 
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = LanguageGeoSerializer(queryset, many=True)
-        return Response(serializer.data)
-
 
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
 
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = CommunityGeoSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
 class PlaceNameGeoList(generics.ListAPIView):
 
     queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer
-
-    @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request):
-        queryset = self.get_queryset()
-        if "lang" in request.GET:
-            lang = Language.objects.get(pk=int(request.GET["lang"]))
-            print(lang.geom)
-            queryset = queryset.filter(point__intersects=lang.geom)
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
