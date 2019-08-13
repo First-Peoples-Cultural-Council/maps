@@ -31,6 +31,7 @@ export default {
   },
   methods: {
     handleLogoClick() {
+      console.log('Clicked')
       this.$store.commit('mapinstance/setForceReset', true)
       if (this.$route.name === 'index') {
         this.$root.$emit('resetMap')
@@ -55,6 +56,25 @@ export default {
 @media (max-width: 992px) {
   .logo img {
     width: 100%;
+  }
+
+  .logo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 574px) {
+  .logo img {
+    width: 100%;
+  }
+  .logo {
+    width: 40px;
+    height: 50px;
   }
 }
 </style>

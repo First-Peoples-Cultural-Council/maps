@@ -15,8 +15,8 @@
     <Zoom class="zoom-control hide-mobile"></Zoom>
     <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
     <ResetMap class="reset-map-control hide-mobile"></ResetMap>
+    <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
     <div class="top-bar-container">
-      <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
       <SearchBar></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
@@ -715,9 +715,7 @@ export default {
   }
 
   .mobile-logo {
-    display: table-cell !important;
-    width: 15%;
-    vertical-align: top;
+    display: block !important;
   }
 
   .top-bar-container {
@@ -728,6 +726,7 @@ export default {
     width: 100%;
     display: table;
     z-index: 100;
+    padding-left: 90px;
   }
 
   .popover {
@@ -738,6 +737,12 @@ export default {
 
   .detailModeContainer {
     padding-left: 0px !important;
+  }
+}
+
+@media (max-width: 574px) {
+  .top-bar-container {
+    padding-left: 50px;
   }
 }
 </style>

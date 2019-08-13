@@ -66,6 +66,17 @@
                 >
                   {{ result.properties.name }}
                 </h5>
+                <h5
+                  v-else-if="key === 'Locations'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.properties.name, {
+                      geom: result.geometry
+                    })
+                  "
+                >
+                  {{ result.properties.name }}
+                </h5>
               </div>
               <hr />
             </div>
@@ -83,8 +94,11 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import Contact from '@/components/Contact.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
+import { zoomToPoint } from '@/mixins/map.js'
+
 export default {
   components: {
     Contact
@@ -97,7 +111,8 @@ export default {
       languageResults: [],
       communityResults: [],
       placesResults: [],
-      artsResults: []
+      artsResults: [],
+      locationResults: []
     }
   },
   computed: {
@@ -118,7 +133,8 @@ export default {
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
-        this.artsResults.length === 0
+        this.artsResults.length === 0 &&
+        this.locationResults.length === 0
       )
     },
     searchResults() {
@@ -126,7 +142,8 @@ export default {
         Languages: this.languageResults,
         Communities: this.communityResults,
         Places: this.placesResults,
-        Arts: this.artsResults
+        Arts: this.artsResults,
+        Locations: this.locationResults
       }
     }
   },
@@ -137,7 +154,7 @@ export default {
     document.removeEventListener('click', this.clicked)
   },
   methods: {
-    handleSearchUpdate() {
+    handleSearchUpdate: debounce(async function() {
       if (this.searchQuery === '') {
         this.show = false
       } else {
@@ -160,9 +177,16 @@ export default {
       )
 
       this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery, 1)
-    },
+
+      this.locationResults = (await this.$axios.$get(
+        `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
+          this.searchQuery
+        }`
+      )).features
+
+      console.log(this.locationResults)
+    }, 500),
     filterBasedOnTitle(data = [], query = '', mode = 0) {
-      console.log(data, query, mode)
       if (data.length === 0) {
         return []
       }
@@ -185,7 +209,6 @@ export default {
           )
         })
       }
-      console.log(results)
       return results
     },
     clicked(event) {
@@ -204,7 +227,7 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data) {
+    handleResultClick(event, type, data, { geom }) {
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
@@ -228,6 +251,12 @@ export default {
       if (type === 'Arts') {
         return this.$router.push({
           path: `/art/${encodeFPCC(data)}`
+        })
+      }
+
+      if (type === 'Locations') {
+        this.$eventHub.whenMap(map => {
+          zoomToPoint({ map, geom: geom.coordinates, zoom: 5 })
         })
       }
     }
@@ -293,12 +322,12 @@ export default {
 
 @media (max-width: 992px) {
   .searchbar-container {
+    top: 0;
     width: auto;
     position: static;
     display: inline-block;
     display: table-cell;
     width: 70%;
-    padding-top: 0.5em;
     padding-left: 0.5em;
     vertical-align: middle;
   }
