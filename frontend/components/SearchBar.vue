@@ -70,9 +70,12 @@
                   v-else-if="key === 'Locations'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name, {
-                      geom: result.geometry
-                    })
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.properties.name,
+                      result.geometry
+                    )
                   "
                 >
                   {{ result.properties.name }}
@@ -98,6 +101,7 @@ import { debounce } from 'lodash'
 import Contact from '@/components/Contact.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import { zoomToPoint } from '@/mixins/map.js'
+const Fuse = require('fuse.js')
 
 export default {
   components: {
@@ -160,32 +164,51 @@ export default {
       } else {
         this.show = true
       }
-      this.languageResults = this.filterBasedOnTitle(
+      this.languageResults = this.fuzzySearch(
         this.languages,
-        this.searchQuery
-      )
-
-      this.communityResults = this.filterBasedOnTitle(
-        this.communities,
-        this.searchQuery
-      )
-
-      this.placesResults = this.filterBasedOnTitle(
-        this.places,
         this.searchQuery,
-        1
+        ['name', 'family.name', 'other_names']
+      )
+      this.communityResults = this.fuzzySearch(
+        this.communities,
+        this.searchQuery,
+        ['name']
       )
 
-      this.artsResults = this.filterBasedOnTitle(this.arts, this.searchQuery, 1)
+      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
+        'properties.name',
+        'properties.other_names'
+      ])
 
-      this.locationResults = (await this.$axios.$get(
-        `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
-          this.searchQuery
-        }&outputSRS=4326`
-      )).features
-
-      console.log(this.locationResults)
+      this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
+        'properties.name',
+        'properties.art_type'
+      ])
+      try {
+        this.locationResults = (await this.$axios.$get(
+          `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
+            this.searchQuery
+          }&outputSRS=4326`
+        )).features
+      } catch (e) {
+        console.error(e)
+      }
     }, 500),
+    fuzzySearch(data, query, keys) {
+      const options = {
+        shouldSort: true,
+        threshold: 0.6,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys
+      }
+
+      const fuse = new Fuse(data, options)
+      const result = fuse.search(query)
+      return result
+    },
     filterBasedOnTitle(data = [], query = '', mode = 0) {
       if (data.length === 0) {
         return []
@@ -227,7 +250,7 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data, { geom }) {
+    handleResultClick(event, type, data, geom) {
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
