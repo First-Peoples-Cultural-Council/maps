@@ -119,6 +119,9 @@
 <script>
 import Mapbox from 'mapbox-gl-vue'
 import { groupBy } from 'lodash'
+
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -505,6 +508,15 @@ export default {
       this.$eventHub.$emit('map-loaded', map)
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
+
+      const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          trash: true
+        }
+      })
+      map.addControl(draw, 'bottom-left')
     },
     zoomToHash(map) {
       const hash = this.$route.hash
