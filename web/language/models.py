@@ -85,6 +85,36 @@ class PlaceName(BaseModel):
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
+    western_name = models.CharField(max_length=64, blank=True)
+    traditional_name = models.CharField(max_length=64, blank=True)
+    community_only = models.BooleanField(null=True)
+    description = models.CharField(max_length=255, blank=True)
+
+    # Choices Constants:
+    PENDENT = "PE"
+    APROVED = "AP"
+    DECLINED = "DE"
+    # Choices:
+    # first element: constant Python identifier
+    # second element: human-readable version
+    STATUS_CHOICES = [
+        (PENDENT, 'Pendent'),
+        (APROVED, 'Aproved'),
+        (DECLINED, 'Declined'),
+    ]
+    status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default=PENDENT,
+    )
+
+
+class Media(BaseModel):
+    file_type = models.CharField(max_length=16, default=None)
+    url = models.CharField(max_length=255, default=None, null=True)
+    media_file = models.FileField(null=True, blank=True)
+    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+
 
 class Champion(BaseModel):
     bio = models.TextField(default="")
