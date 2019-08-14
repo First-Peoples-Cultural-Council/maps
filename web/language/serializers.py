@@ -213,3 +213,12 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "audio_file",
         )
         geo_field = "point"
+
+
+class PlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "point", "other_names", "audio_file", 
+                    "kind", "western_name", "traditional_name", 
+                    "community_only", "description", "status")
+                    

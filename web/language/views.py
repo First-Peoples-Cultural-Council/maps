@@ -7,6 +7,7 @@ from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
+    PlaceNameSerializer,
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
@@ -53,6 +54,21 @@ class CommunityViewSet(BaseModelViewSet):
             )
         serializer = CommunitySerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class PlaceNameViewSet(BaseModelViewSet):
+    serializer_class = PlaceNameSerializer
+    # detail_serializer_class = PlaceNameDetailSerializer
+    queryset = PlaceName.objects.all().order_by("name")
+
+    # def list(self, request):
+    #     queryset = self.get_queryset()
+    #     # if "lang" in request.GET:
+    #     #     queryset = queryset.filter(
+    #     #         languages=Language.objects.get(pk=request.GET.get("lang"))
+    #     #     )
+    #     serializer = PlaceNameSerializer(queryset, many=True)
+    #     return Response(serializer.data)
 
 
 class LanguageGeoList(generics.ListAPIView):

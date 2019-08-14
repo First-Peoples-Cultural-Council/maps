@@ -5,11 +5,12 @@ from rest_framework import routers
 from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
 
 
-from .views import LanguageViewSet, CommunityViewSet
+from .views import LanguageViewSet, CommunityViewSet, PlaceNameViewSet
 
 router = routers.DefaultRouter()
 router.register(r"language", LanguageViewSet, basename="language")
 router.register(r"community", CommunityViewSet, basename="community")
+router.register(r"placename", PlaceNameViewSet, basename="placename")
 
 urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
