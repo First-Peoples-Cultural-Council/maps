@@ -105,7 +105,8 @@ class PlaceName(BaseModel):
     status = models.CharField(
         max_length=2,
         choices=STATUS_CHOICES,
-        default=PENDENT,
+        null=True,
+        default=None,
     )
 
 
