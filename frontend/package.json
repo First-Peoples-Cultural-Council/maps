@@ -31,6 +31,8 @@
     "nuxt": "^2.0.0",
     "postcss-css-variables": "^0.13.0",
     "postcss-flexbugs-fixes": "^4.1.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "sass-loader": "^7.1.0"
   },
   "devDependencies": {
