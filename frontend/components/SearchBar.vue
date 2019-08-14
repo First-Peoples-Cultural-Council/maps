@@ -181,7 +181,7 @@ export default {
       this.locationResults = (await this.$axios.$get(
         `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
           this.searchQuery
-        }`
+        }&outputSRS=4326`
       )).features
 
       console.log(this.locationResults)
@@ -256,7 +256,7 @@ export default {
 
       if (type === 'Locations') {
         this.$eventHub.whenMap(map => {
-          zoomToPoint({ map, geom: geom.coordinates, zoom: 5 })
+          zoomToPoint({ map, geom, zoom: 11 })
         })
       }
     }
