@@ -1,18 +1,21 @@
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, Champion
-from rest_framework import viewsets, generics
+from .models import Language, PlaceName, Community, Champion, Media
+from rest_framework import viewsets, generics, mixins
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
     PlaceNameSerializer,
+    PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     CommunityGeoSerializer,
     ChampionSerializer,
+    MediaSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -58,7 +61,7 @@ class CommunityViewSet(BaseModelViewSet):
 
 class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
-    # detail_serializer_class = PlaceNameDetailSerializer
+    detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
 
     # def list(self, request):
@@ -69,6 +72,16 @@ class PlaceNameViewSet(BaseModelViewSet):
     #     #     )
     #     serializer = PlaceNameSerializer(queryset, many=True)
     #     return Response(serializer.data)
+
+
+# To enable onlye CREATE and DELETE, we create a custom ViewSet class...
+class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+    pass
+
+
+class MediaViewSet(MediaCustomViewSet, BaseModelViewSet):
+    serializer_class = MediaSerializer
+    queryset = Media.objects.all()
 
 
 class LanguageGeoList(generics.ListAPIView):
@@ -107,3 +120,4 @@ class PlaceNameGeoList(generics.ListAPIView):
             queryset = queryset.filter(point__intersects=lang.geom)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+        

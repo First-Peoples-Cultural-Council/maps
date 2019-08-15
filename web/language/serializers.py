@@ -9,6 +9,7 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
+    Media
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -221,4 +222,26 @@ class PlaceNameSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "point", "other_names", "audio_file", 
                     "kind", "western_name", "traditional_name", 
                     "community_only", "description", "status")
+
+
+# Serializer only for composing PlaceName data
+class PlaceNameMediaSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Media
+		fields = ("id", "file_type", "url", "media_file")
                     
+
+class MediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ("id", "file_type", "url", "media_file", "placename")
+
+
+class PlaceNameDetailSerializer(serializers.ModelSerializer):
+    medias = PlaceNameMediaSerializer(many=True, read_only=True)
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "point", "other_names", "audio_file", 
+                    "kind", "western_name", "traditional_name", 
+                    "community_only", "description", "status", "medias")
+        depth = 1
