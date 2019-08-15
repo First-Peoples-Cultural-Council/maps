@@ -79,7 +79,7 @@ class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, Gene
     pass
 
 
-class MediaViewSet(MediaCustomViewSet, BaseModelViewSet):
+class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     serializer_class = MediaSerializer
     queryset = Media.objects.all()
 

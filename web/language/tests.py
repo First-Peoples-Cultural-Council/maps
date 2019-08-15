@@ -6,7 +6,8 @@ from .models import (
     Language,
     PlaceName,
     Community,
-    Champion
+    Champion,
+	Media
 )
 
 
@@ -131,6 +132,16 @@ class PlaceNameAPITests(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+	def test_placename_list(self):
+		"""
+		Ensure placename list API brings newly created data
+		"""
+		test_placename = PlaceName.objects.create(name='Test placename 001')
+		response = self.client.get('/api/placename/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		assert len(response.data) > 0
+
+
 class ChampionAPITests(APITestCase):
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
@@ -158,3 +169,38 @@ class ChampionAPITests(APITestCase):
 		"""
 		response = self.client.get('/api/champion/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class MediaAPITests(APITestCase):
+
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+
+	def test_media_detail_route_does_not_exists(self):
+		"""
+		Ensure media Detail API route does not exists
+		"""
+		response = self.client.get('/api/media/0/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+	def test_media_list_route_does_not_exists(self):
+		"""
+		Ensure media list API route does not exists
+		"""
+		response = self.client.get('/api/media/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+	def test_media_post(self):
+		"""
+		Ensure media API POST method API works
+		"""
+		self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+
+
+	def test_media_delete(self):
+		"""
+		Ensure media API DELETE method API works
+		"""
+		test_media = Media.objects.create(name='Test media 001', file_type='image')
+		self.client.delete('/api/media/', {'id': test_media.id}, format='json')
