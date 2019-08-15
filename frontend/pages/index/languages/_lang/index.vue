@@ -276,13 +276,19 @@ export default {
   },
   computed: {
     publicArts() {
-      return this.arts.filter(art => art.properties.art_type === 'public_art')
+      return this.arts
+        ? this.arts.filter(art => art.properties.art_type === 'public_art')
+        : []
     },
     orgs() {
-      return this.arts.filter(art => art.properties.art_type === 'organization')
+      return this.arts
+        ? this.arts.filter(art => art.properties.art_type === 'organization')
+        : []
     },
     artists() {
-      return this.arts.filter(art => art.properties.art_type === 'artist')
+      return this.arts
+        ? this.arts.filter(art => art.properties.art_type === 'artist')
+        : []
     },
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
