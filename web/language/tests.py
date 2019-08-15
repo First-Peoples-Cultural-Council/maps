@@ -6,8 +6,7 @@ from .models import (
     Language,
     PlaceName,
     Community,
-    Champion,
-    Art
+    Champion
 )
 
 
@@ -50,34 +49,6 @@ class LanguageAPITests(APITestCase):
 		response = self.client.get('/api/language/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(len(response.data), 1)
-
-
-	# def test_language_search_route_up(self):
-	# 	"""
-	# 	Ensure language Search API route is up and running
-	# 	"""
-	# 	response = self.client.get('/api/language/search/?search_params=Test', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-		
-
-	# def test_language_search_no_parameters(self):
-	# 	"""
-	# 	Ensure we CANNOT retrieve list of language objects when no search parameter is provided
-	# 	"""
-	# 	response = self.client.get('/api/language/search/', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 0)
-	# 	self.assertEqual(response.data['language_results'], [])
-		
-
-	# def test_language_search_no_results(self):
-	# 	"""
-	# 	Ensure we CANNOT retrieve list of language objects with a non-existing given name.
-	# 	"""
-	# 	response = self.client.get('/api/language/search/?search_params=1_2_3_4_5_6', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 0)
-	# 	self.assertEqual(response.data['language_results'], [])
 
 
 class LanguageGeoAPITests(APITestCase):
@@ -186,33 +157,4 @@ class ChampionAPITests(APITestCase):
 		Ensure champion list API route exists
 		"""
 		response = self.client.get('/api/champion/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class ArtAPITests(APITestCase):
-
-	###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-	def test_art_detail_route_exists(self):
-		"""
-		Ensure Art Detail API route exists
-		"""
-		response = self.client.get('/api/art/0/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-	def test_art_detail(self):
-		"""
-		Ensure we can retrieve a newly created art object.
-		"""
-		test_art = Art.objects.create(node_id=0)
-		response = self.client.get('/api/art/{}/'.format(test_art.id), format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-	def test_art_list_route_exists(self):
-		"""
-		Ensure art list API route exists
-		"""
-		response = self.client.get('/api/art/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
