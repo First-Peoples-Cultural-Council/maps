@@ -4,6 +4,7 @@ from .models import Language, PlaceName, Community, Champion, Media
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
@@ -64,14 +65,23 @@ class PlaceNameViewSet(BaseModelViewSet):
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
 
-    # def list(self, request):
-    #     queryset = self.get_queryset()
-    #     # if "lang" in request.GET:
-    #     #     queryset = queryset.filter(
-    #     #         languages=Language.objects.get(pk=request.GET.get("lang"))
-    #     #     )
-    #     serializer = PlaceNameSerializer(queryset, many=True)
-    #     return Response(serializer.data)
+    @action(detail=True)
+    def verify(self, request, pk):
+        placename = PlaceName.objects.get(pk=int(pk))
+        placename.status = PlaceName.VERIFIED
+        placename.save()
+
+        return Response({"message": "Verified!"})
+
+    @action(detail=True)
+    def flag(self, request, pk):
+        placename = PlaceName.objects.get(pk=int(pk))
+        if placename.status == PlaceName.VERIFIED:
+            return Response({"message": "PlaceName has already been verified"})
+        else:
+            placename.status = PlaceName.FLAGGED
+            placename.save()
+            return Response({"message": "Flagged!"})
 
 
 # To enable onlye CREATE and DELETE, we create a custom ViewSet class...

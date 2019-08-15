@@ -91,16 +91,14 @@ class PlaceName(BaseModel):
     description = models.CharField(max_length=255, blank=True)
 
     # Choices Constants:
-    PENDENT = "PE"
+    FLAGGED = "FL"
     VERIFIED = "VE"
-    REJECTED = "RE"
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
     STATUS_CHOICES = [
-        (PENDENT, 'Pendent'),
+        (FLAGGED, 'Flagged'),
         (VERIFIED, 'Verified'),
-        (REJECTED, 'Rejected'),
     ]
     status = models.CharField(
         max_length=2,
