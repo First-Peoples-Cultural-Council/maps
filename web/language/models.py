@@ -79,12 +79,17 @@ class LanguageMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+class PlaceNameCategory(BaseModel):
+    icon_name = models.CharField(max_length=32, null=True, default=None)
+
+
 class PlaceName(BaseModel):
     point = models.PointField(null=True, default=None)
     other_names = models.CharField(max_length=255, default="")
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
+    category = models.ForeignKey(PlaceNameCategory, on_delete=models.SET_NULL, null=True)
     western_name = models.CharField(max_length=64, blank=True)
     traditional_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
@@ -106,9 +111,10 @@ class PlaceName(BaseModel):
         null=True,
         default=None,
     )
-
+    
 
 class Media(BaseModel):
+    description = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=16, default=None)
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)

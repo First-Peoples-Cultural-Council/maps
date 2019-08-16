@@ -1,6 +1,7 @@
 from .models import (
     Language,
     PlaceName,
+    PlaceNameCategory,
     Community,
     Champion,
     LanguageFamily,
@@ -216,6 +217,12 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         geo_field = "point"
 
 
+class PlaceNameCategory(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceNameCategory
+        fields = ("id", "name", "icon_file")
+
+
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
@@ -228,13 +235,13 @@ class PlaceNameSerializer(serializers.ModelSerializer):
 class PlaceNameMediaSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Media
-		fields = ("id", "file_type", "url", "media_file")
+		fields = ("id", "name", "description", "file_type", "url", "media_file")
                     
 
 class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
-        fields = ("id", "file_type", "url", "media_file", "placename")
+        fields = ("id", "name", "description", "file_type", "url", "media_file", "placename")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
@@ -243,5 +250,5 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         model = PlaceName
         fields = ("name", "id", "point", "other_names", "audio_file", 
                     "kind", "western_name", "traditional_name", 
-                    "community_only", "description", "status", "medias")
+                    "community_only", "description", "status", "category", "medias")
         depth = 1
