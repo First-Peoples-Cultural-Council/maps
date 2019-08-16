@@ -1,17 +1,22 @@
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, Champion
-from rest_framework import viewsets, generics
+from .models import Language, PlaceName, Community, Champion, Media
+from rest_framework import viewsets, generics, mixins
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
+    PlaceNameSerializer,
+    PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     CommunityGeoSerializer,
     ChampionSerializer,
+    MediaSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -53,6 +58,40 @@ class CommunityViewSet(BaseModelViewSet):
             )
         serializer = CommunitySerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class PlaceNameViewSet(BaseModelViewSet):
+    serializer_class = PlaceNameSerializer
+    detail_serializer_class = PlaceNameDetailSerializer
+    queryset = PlaceName.objects.all().order_by("name")
+
+    @action(detail=True)
+    def verify(self, request, pk):
+        placename = PlaceName.objects.get(pk=int(pk))
+        placename.status = PlaceName.VERIFIED
+        placename.save()
+
+        return Response({"message": "Verified!"})
+
+    @action(detail=True)
+    def flag(self, request, pk):
+        placename = PlaceName.objects.get(pk=int(pk))
+        if placename.status == PlaceName.VERIFIED:
+            return Response({"message": "PlaceName has already been verified"})
+        else:
+            placename.status = PlaceName.FLAGGED
+            placename.save()
+            return Response({"message": "Flagged!"})
+
+
+# To enable onlye CREATE and DELETE, we create a custom ViewSet class...
+class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+    pass
+
+
+class MediaViewSet(MediaCustomViewSet, GenericViewSet):
+    serializer_class = MediaSerializer
+    queryset = Media.objects.all()
 
 
 class LanguageGeoList(generics.ListAPIView):
