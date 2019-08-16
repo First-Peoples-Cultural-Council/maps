@@ -6,6 +6,7 @@ module.exports = {
     port: 80, // default: 3000
     host: '0.0.0.0' // default: localhost
   },
+
   /*
    ** Headers of the page
    */
@@ -66,7 +67,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/global'],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */

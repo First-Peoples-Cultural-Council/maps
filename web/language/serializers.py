@@ -120,7 +120,6 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "champion_set",
             "languagelink_set",
             "audio_file",
-            # "lna_set",
             "sleeping",
             "dialect_set",
             "fv_archive_link",
@@ -173,8 +172,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
     languages = LanguageSerializer(read_only=True, many=True)
-    # hide history lnas for now.
-    # lnadata_set = LNADataSerializer(read_only=True, many=True)
+    # hide history lnas for now, just show most recent
     def to_representation(self, value):
         rep = super().to_representation(value)
         by_lang = {}

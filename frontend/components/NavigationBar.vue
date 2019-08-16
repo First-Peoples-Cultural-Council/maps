@@ -202,9 +202,7 @@ export default {
     display: inline-block;
     display: table-cell;
     width: 15%;
-    padding-right: 0.5em;
     vertical-align: middle;
-    padding-left: 0.5em;
   }
 
   .navbar-container {
