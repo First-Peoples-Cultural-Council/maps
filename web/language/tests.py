@@ -7,7 +7,7 @@ from .models import (
     PlaceName,
     Community,
     Champion,
-    Art
+	Media
 )
 
 
@@ -50,34 +50,6 @@ class LanguageAPITests(APITestCase):
 		response = self.client.get('/api/language/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(len(response.data), 1)
-
-
-	# def test_language_search_route_up(self):
-	# 	"""
-	# 	Ensure language Search API route is up and running
-	# 	"""
-	# 	response = self.client.get('/api/language/search/?search_params=Test', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-		
-
-	# def test_language_search_no_parameters(self):
-	# 	"""
-	# 	Ensure we CANNOT retrieve list of language objects when no search parameter is provided
-	# 	"""
-	# 	response = self.client.get('/api/language/search/', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 0)
-	# 	self.assertEqual(response.data['language_results'], [])
-		
-
-	# def test_language_search_no_results(self):
-	# 	"""
-	# 	Ensure we CANNOT retrieve list of language objects with a non-existing given name.
-	# 	"""
-	# 	response = self.client.get('/api/language/search/?search_params=1_2_3_4_5_6', format='json')
-	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(len(response.data['language_results']), 0)
-	# 	self.assertEqual(response.data['language_results'], [])
 
 
 class LanguageGeoAPITests(APITestCase):
@@ -160,6 +132,16 @@ class PlaceNameAPITests(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+	def test_placename_list(self):
+		"""
+		Ensure placename list API brings newly created data
+		"""
+		test_placename = PlaceName.objects.create(name='Test placename 001')
+		response = self.client.get('/api/placename/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		assert len(response.data) > 0
+
+
 class ChampionAPITests(APITestCase):
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
@@ -189,30 +171,36 @@ class ChampionAPITests(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class ArtAPITests(APITestCase):
+class MediaAPITests(APITestCase):
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-	def test_art_detail_route_exists(self):
+	def test_media_detail_route_does_not_exists(self):
 		"""
-		Ensure Art Detail API route exists
+		Ensure media Detail API route does not exists
 		"""
-		response = self.client.get('/api/art/0/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+		response = self.client.get('/api/media/0/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-	def test_art_detail(self):
+	def test_media_list_route_does_not_exists(self):
 		"""
-		Ensure we can retrieve a newly created art object.
+		Ensure media list API route does not exists
 		"""
-		test_art = Art.objects.create(node_id=0)
-		response = self.client.get('/api/art/{}/'.format(test_art.id), format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		response = self.client.get('/api/media/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-	def test_art_list_route_exists(self):
+	def test_media_post(self):
 		"""
-		Ensure art list API route exists
+		Ensure media API POST method API works
 		"""
-		response = self.client.get('/api/art/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+
+
+	def test_media_delete(self):
+		"""
+		Ensure media API DELETE method API works
+		"""
+		test_media = Media.objects.create(name='Test media 001', file_type='image')
+		self.client.delete('/api/media/', {'id': test_media.id}, format='json')

@@ -1,6 +1,7 @@
 from .models import (
     Language,
     PlaceName,
+    PlaceNameCategory,
     Community,
     Champion,
     LanguageFamily,
@@ -9,6 +10,7 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
+    Media
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -211,3 +213,40 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "audio_file",
         )
         geo_field = "point"
+
+
+class PlaceNameCategory(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceNameCategory
+        fields = ("id", "name", "icon_file")
+
+
+class PlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "point", "other_names", "audio_file", 
+                    "kind", "western_name", "traditional_name", 
+                    "community_only", "description", "status")
+
+
+# Serializer only for composing PlaceName data
+class PlaceNameMediaSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Media
+		fields = ("id", "name", "description", "file_type", "url", "media_file")
+                    
+
+class MediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ("id", "name", "description", "file_type", "url", "media_file", "placename")
+
+
+class PlaceNameDetailSerializer(serializers.ModelSerializer):
+    medias = PlaceNameMediaSerializer(many=True, read_only=True)
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "point", "other_names", "audio_file", 
+                    "kind", "western_name", "traditional_name", 
+                    "community_only", "description", "status", "category", "medias")
+        depth = 1
