@@ -7,7 +7,9 @@
           style="margin-bottom: 0.2em !important;"
         >
           Language:
-          <span class="font-weight-bold">{{ language.name }}</span>
+          <span class="font-weight-bold language-title">{{
+            language.name
+          }}</span>
         </h5>
       </div>
       <div class="badge-container">
@@ -290,18 +292,18 @@ export default {
         ? this.arts.filter(art => art.properties.art_type === 'artist')
         : []
     },
-    ...mapState({
-      mapinstance: state => state.mapinstance.mapInstance,
-      languages() {
-        return this.$store.state.languages.languageSet
-      },
-      otherNames() {
-        return this.language.other_names.split(',')
-      },
-      languageColor() {
-        return this.language.color
-      }
-    })
+    mapinstance() {
+      return this.$store.state.mapinstance.mapInstance
+    },
+    languages() {
+      return this.$store.state.languages.languageSet
+    },
+    otherNames() {
+      return this.language.other_names.split(',')
+    },
+    languageColor() {
+      return this.language.color
+    }
   },
   watch: {
     language(newlang, oldlang) {
