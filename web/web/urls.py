@@ -32,4 +32,5 @@ urlpatterns = [
     ),
     path("api/", include("language.urls"), name="language"),
     path("api/", include("arts.urls"), name="arts"),
+    path("api/", include("users.urls"), name="users"),
 ] + router.urls
