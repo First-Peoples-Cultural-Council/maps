@@ -109,9 +109,13 @@ curl --request PATCH --header "Content-Type: application/json" \
 Even though what is returned includes the entire language object inline, not just its ID: ```
 {"id":253,"name":"Halfway River First Nations","languages":[{"name":"Dakelh (ᑕᗸᒡ)","id":18,"color":"RGB(0, 208, 104)","bbox"... }]}
 
-```
+````
 
 Our API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope.
+
+Lastly, to upload an audio file to a language or other object, make a separate PATCH request, not using JSON, but just the default raw for encoding: ```
+curl  --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --request PATCH -sS http://localhost/api/language/18/ -F 'audio_file=@./test.mp3'
+````
 
 ## Contributing
 
@@ -177,6 +181,8 @@ To test backend API:
 ```
 
         docker-compose exec web python manage.py test
+
+```
 
 ```
 
