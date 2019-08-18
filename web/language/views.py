@@ -1,6 +1,13 @@
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, Champion, Media
+from .models import (
+    Language,
+    PlaceName,
+    Community,
+    Champion,
+    Media,
+    CommunityLanguageStats,
+)
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
@@ -17,6 +24,7 @@ from .serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
+    CommunityLanguageStatsSerializer,
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -56,8 +64,14 @@ class CommunityViewSet(BaseModelViewSet):
             queryset = queryset.filter(
                 languages=Language.objects.get(pk=request.GET.get("lang"))
             )
-        serializer = CommunitySerializer(queryset, many=True)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+
+class CommunityLanguageStatsViewSet(BaseModelViewSet):
+    serializer_class = CommunityLanguageStatsSerializer
+    detail_serializer_class = CommunityLanguageStatsSerializer
+    queryset = CommunityLanguageStats.objects.all()
 
 
 class PlaceNameViewSet(BaseModelViewSet):
@@ -83,9 +97,20 @@ class PlaceNameViewSet(BaseModelViewSet):
             placename.save()
             return Response({"message": "Flagged!"})
 
+    def list(self, request):
+        queryset = self.get_queryset()
+        if "lang" in request.GET:
+            queryset = queryset.filter(
+                point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
+            )
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
 
 # To enable onlye CREATE and DELETE, we create a custom ViewSet class...
-class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+class MediaCustomViewSet(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet
+):
     pass
 
 
@@ -102,6 +127,7 @@ class LanguageGeoList(generics.ListAPIView):
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
+
 
 class PlaceNameGeoList(generics.ListAPIView):
 

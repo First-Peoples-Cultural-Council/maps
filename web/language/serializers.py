@@ -11,6 +11,7 @@ from .models import (
     LNA,
     LNAData,
     Media,
+    CommunityLanguageStats,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -86,6 +87,18 @@ class LNADetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = LNA
         fields = ("name", "id", "year", "language", "lnadata_set")
+
+
+class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityLanguageStats
+        fields = (
+            "language_id",
+            "community_id",
+            "fluent_speakers",
+            "semi_speakers",
+            "active_learners",
+        )
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
@@ -276,7 +289,6 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "audio_file",
             "kind",
             "western_name",
-            "traditional_name",
             "community_only",
             "description",
             "status",
@@ -317,7 +329,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "audio_file",
             "kind",
             "western_name",
-            "traditional_name",
             "community_only",
             "description",
             "status",
