@@ -41,13 +41,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "rest_framework",
     "rest_framework_gis",
+    "rest_framework.authtoken",
     "language",
     "firstvoices",
     "arts",
     "web",
-    "django.contrib.gis",
 ]
 
 MIDDLEWARE = [
@@ -138,4 +139,9 @@ DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
 
 
-# REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]}
+REST_FRAMEWORK = {
+    # "DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication"
+    ]
+}
