@@ -94,6 +94,24 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     dialect_set = DialectSerializer(read_only=True, many=True)
     # lna_set = LNADetailSerializer(read_only=True, many=True)
+    # Atomic Writable APIs
+    family_id = serializers.PrimaryKeyRelatedField(
+        queryset=LanguageFamily.objects.all(), write_only=True, source="family"
+    )
+    champion_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Champion.objects.all(),
+        write_only=True,
+        source="champion_set",
+        required=False,
+    )
+    languagelink_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=LanguageLink.objects.all(),
+        write_only=True,
+        source="languagelink_set",
+        required=False,
+    )
 
     def to_representation(self, value):
         rep = super().to_representation(value)
@@ -132,6 +150,9 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "pop_total_value",
             "bbox",
             "audio_file",
+            "family_id",
+            "champion_ids",
+            "languagelink_ids",
         )
 
 
@@ -186,7 +207,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     )
     communitylink_ids = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Champion.objects.all(),
+        queryset=CommunityLink.objects.all(),
         write_only=True,
         source="communitylink_set",
         required=False,

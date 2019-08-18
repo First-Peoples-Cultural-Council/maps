@@ -14,5 +14,14 @@ class BaseModel(models.Model):
         ordering = ["name"]
 
 
+class CulturalModel(BaseModel):
+    # mapped_spellings = models.CharField(max_length=255, default="")
+    other_names = models.CharField(max_length=255, default="")
+
+    class Meta:
+        abstract = True
+        ordering = ["name"]
+
+
 class Page(BaseModel):
     content = models.TextField(default="")

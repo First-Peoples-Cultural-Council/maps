@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from django.contrib.gis.db import models
 
-from web.models import BaseModel
+from web.models import BaseModel, CulturalModel
 
 
 class LanguageFamily(BaseModel):
@@ -12,8 +12,7 @@ class LanguageFamily(BaseModel):
         verbose_name_plural = "Language Families"
 
 
-class Language(BaseModel):
-    other_names = models.TextField(default="", blank=True)
+class Language(CulturalModel):
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     color = models.CharField(max_length=31, default="")
     regions = models.CharField(max_length=255, default="", blank=True)
@@ -46,13 +45,12 @@ class LanguageLink(models.Model):
     )
 
 
-class Community(BaseModel):
+class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
 
     english_name = models.CharField(max_length=255, default="", blank=True)
-    other_names = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
     population = models.IntegerField(default=0)
     languages = models.ManyToManyField(Language)
@@ -83,15 +81,15 @@ class PlaceNameCategory(BaseModel):
     icon_name = models.CharField(max_length=32, null=True, default=None)
 
 
-class PlaceName(BaseModel):
+class PlaceName(CulturalModel):
     point = models.PointField(null=True, default=None)
-    other_names = models.CharField(max_length=255, default="")
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
-    category = models.ForeignKey(PlaceNameCategory, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(
+        PlaceNameCategory, on_delete=models.SET_NULL, null=True
+    )
     western_name = models.CharField(max_length=64, blank=True)
-    traditional_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
 
@@ -101,24 +99,20 @@ class PlaceName(BaseModel):
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
-    STATUS_CHOICES = [
-        (FLAGGED, 'Flagged'),
-        (VERIFIED, 'Verified'),
-    ]
+    STATUS_CHOICES = [(FLAGGED, "Flagged"), (VERIFIED, "Verified")]
     status = models.CharField(
-        max_length=2,
-        choices=STATUS_CHOICES,
-        null=True,
-        default=None,
+        max_length=2, choices=STATUS_CHOICES, null=True, default=None
     )
-    
+
 
 class Media(BaseModel):
     description = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=16, default=None)
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
-    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias')
+    placename = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
+    )
 
 
 class Champion(BaseModel):
