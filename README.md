@@ -78,7 +78,7 @@ First, you should authenticate your API client as an FPCC admin user. For exampl
 
 ```
 curl --request POST --header "Content-Type: application/json" \
-    --data '{"username": "admin", "password": "********"}' http://localhost/api-token-auth/
+    --data '{"username": "admin", "password": "********"}' http://maps-dev.fpcc.ca/api-token-auth/
 ```
 
 This will return a token, such as `{"token":"cfc2b213a4adfbae02332fbbfb45ec09e56413a4"}`
@@ -88,34 +88,42 @@ Then, you can call the API using the returned token in your authorization header
 ```
 curl --request PATCH --header "Content-Type: application/json" \
     --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
-    --data '{"regions": "Kootenays"}' http://localhost/api/language/18/
+    --data '{"regions": "Kootenays"}' http://maps-dev.fpcc.ca/api/language/18/
 ```
 
 To create a new object, use POST, for example a new Community:
 
 ```
 curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
-    --data '{"name":"Heiltsuk Nation New","champion_ids": [22], "language_ids":[27],"sleeping":false,"other_names":"Heiltsuk,Bella Bella,Heiltsuk-Oweekala","regions":"","audio_file":null, "english_name":"","other_names":"Heiltsuk Band","internet_speed":"","population":0,"point":{"type":"Point","coordinates":[-128.145551,52.160363]},"email":"admin@example.net","website":"http://www.bellabella.net","phone":"","alt_phone":"(250) 999-9999","fax":"(250) 999-9999"}' http://localhost/api/community/
+    --data '{"name":"Heiltsuk Nation New","champion_ids": [22], "language_ids":[27],"sleeping":false,"other_names":"Heiltsuk,Bella Bella,Heiltsuk-Oweekala","regions":"","audio_file":null, "english_name":"","other_names":"Heiltsuk Band","internet_speed":"","population":0,"point":{"type":"Point","coordinates":[-128.145551,52.160363]},"email":"admin@example.net","website":"http://www.bellabella.net","phone":"","alt_phone":"(250) 999-9999","fax":"(250) 999-9999"}' http://maps-dev.fpcc.ca/api/community/
 ```
 
-There is an important difference between the objects you can write and read from APIs. We have opted for an "atomic" API, meaning that related objects are referenced by ID. So, to set the language of a community, you would do:
+To add some stats: ```
+curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --data '{ "fluent_speakers": 2, "semi_speakers": 3, "active_learners": 4, "language": 18, "community":255}' http://maps-dev.fpcc.ca/api/stats/
 
 ```
+
+There is an important difference between the objects you can write and read from APIs. Related object collections are referenced as a list of IDs, with the `_ids` suffix. So, to set the language of a community, you would do:
+
+```
+
 curl --request PATCH --header "Content-Type: application/json" \
-    --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
-    --data '{"language_ids": [18]}' http://localhost/api/community/255/
-```
+ --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
+ --data '{"language_ids": [18]}' http://maps-dev.fpcc.ca/api/community/255/
+
+````
 
 Even though what is returned includes the entire language object inline, not just its ID: ```
 {"id":253,"name":"Halfway River First Nations","languages":[{"name":"Dakelh (ᑕᗸᒡ)","id":18,"color":"RGB(0, 208, 104)","bbox"... }]}
 
 ````
 
-Our API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope.
-
 Lastly, to upload an audio file to a language or other object, make a separate PATCH request, not using JSON, but just the default raw for encoding: ```
-curl  --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --request PATCH -sS http://localhost/api/language/18/ -F 'audio_file=@./test.mp3'
-````
+curl --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --request PATCH -sS http://localhost/api/language/18/ -F 'audio_file=@./test.mp3'
+
+```
+
+*The API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope.*
 
 ## Contributing
 
@@ -181,6 +189,8 @@ To test backend API:
 ```
 
         docker-compose exec web python manage.py test
+
+```
 
 ```
 

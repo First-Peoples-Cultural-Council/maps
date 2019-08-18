@@ -93,8 +93,8 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLanguageStats
         fields = (
-            "language_id",
-            "community_id",
+            "language",
+            "community",
             "fluent_speakers",
             "semi_speakers",
             "active_learners",
