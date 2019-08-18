@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, Champion, Media
+from .models import Language, PlaceName, Community, CommunityMember, Champion, Media
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from .serializers import (
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
+    CommunityMemberSerializer,
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
@@ -60,6 +61,11 @@ class CommunityViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 
+class CommunityMemberViewSet(BaseModelViewSet):
+    serializer_class = CommunityMemberSerializer
+    queryset = CommunityMember.objects.all()
+
+
 class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
@@ -103,7 +109,7 @@ class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
 
-class PlaceNameGeoList(generics.ListAPIView):
 
+class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer

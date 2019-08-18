@@ -8,12 +8,19 @@ from .models import (
     LanguageLink,
     Dialect,
     CommunityLink,
+    CommunityMember,
     LNA,
     LNAData,
     Media
 )
+from .models import User
+
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+from users.serializers import (
+    UserSerializer,
+)
 
 
 class LanguageFamilySerializer(serializers.ModelSerializer):
@@ -26,6 +33,12 @@ class ChampionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Champion
         fields = ("name", "bio", "job", "community")
+
+
+class LanguageLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LanguageLink
+        fields = ("title", "url")
 
 
 class LanguageLinkSerializer(serializers.ModelSerializer):
@@ -166,6 +179,14 @@ class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = ("name", "id", "point", "audio_file")
+
+
+class CommunityMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True, many=True)
+    community = CommunitySerializer(read_only=True, many=True)
+    class Meta:
+        model = CommunityMember
+        fields = ("user", "community")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):

@@ -46,6 +46,10 @@ class LanguageLink(models.Model):
     )
 
 
+class LanguageMember(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 class Community(BaseModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
@@ -75,8 +79,11 @@ class CommunityLink(models.Model):
     )
 
 
-class LanguageMember(models.Model):
+class CommunityMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, default=None
+    )
 
 
 class PlaceNameCategory(BaseModel):
