@@ -28,6 +28,7 @@ from .serializers import (
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from web.permissions import IsAdminOrReadOnly
 
 
 class BaseModelViewSet(viewsets.ModelViewSet):
@@ -44,6 +45,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
 
 
 class LanguageViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     serializer_class = LanguageSerializer
     detail_serializer_class = LanguageDetailSerializer
     queryset = (
@@ -54,6 +57,8 @@ class LanguageViewSet(BaseModelViewSet):
 
 
 class CommunityViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     serializer_class = CommunitySerializer
     detail_serializer_class = CommunityDetailSerializer
     queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
@@ -69,6 +74,8 @@ class CommunityViewSet(BaseModelViewSet):
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     serializer_class = CommunityLanguageStatsSerializer
     detail_serializer_class = CommunityLanguageStatsSerializer
     queryset = CommunityLanguageStats.objects.all()
