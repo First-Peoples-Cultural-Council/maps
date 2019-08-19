@@ -175,7 +175,7 @@ class MediaAPITests(APITestCase):
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-	def test_media_detail_route_does_not_exists(self):
+	def test_media_detail_route_not_allowed(self):
 		"""
 		Ensure media Detail API route does not exists
 		"""
@@ -183,7 +183,7 @@ class MediaAPITests(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-	def test_media_list_route_does_not_exists(self):
+	def test_media_list_route_does_not_allowed(self):
 		"""
 		Ensure media list API route does not exists
 		"""
@@ -195,7 +195,8 @@ class MediaAPITests(APITestCase):
 		"""
 		Ensure media API POST method API works
 		"""
-		self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+		response = self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 	def test_media_delete(self):
@@ -203,4 +204,5 @@ class MediaAPITests(APITestCase):
 		Ensure media API DELETE method API works
 		"""
 		test_media = Media.objects.create(name='Test media 001', file_type='image')
-		self.client.delete('/api/media/', {'id': test_media.id}, format='json')
+		response = self.client.delete('/api/media/', {'id': test_media.id}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)

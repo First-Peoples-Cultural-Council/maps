@@ -105,7 +105,7 @@ class PlaceNameViewSet(BaseModelViewSet):
             return Response({"message": "Flagged!"})
 
 
-# To enable onlye CREATE and DELETE, we create a custom ViewSet class...
+# To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
     pass
 
