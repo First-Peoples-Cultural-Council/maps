@@ -12,7 +12,8 @@ from .models import (
     CommunityMember,
     LNA,
     LNAData,
-    Media
+    Media,
+    MediaFavourite,
 )
 from .models import User
 
@@ -266,6 +267,15 @@ class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
         fields = ("id", "name", "description", "file_type", "url", "media_file", "placename")
+
+
+class MediaFavouriteSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    media = MediaSerializer(read_only=True)
+
+    class Meta:
+        model = MediaFavourite
+        fields = ("id", "user", "media")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):

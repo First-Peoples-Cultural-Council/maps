@@ -9,7 +9,8 @@ from .models import (
     Community, 
     CommunityMember, 
     Champion, 
-    Media
+    Media,
+    MediaFavourite
 )
 
 from rest_framework import viewsets, generics, mixins
@@ -31,6 +32,7 @@ from .serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
+    MediaFavouriteSerializer,
 )
 
 from django.utils.decorators import method_decorator
@@ -143,6 +145,35 @@ class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, Gene
 class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     serializer_class = MediaSerializer
     queryset = Media.objects.all()
+
+
+# To enable only CREATE and DELETE, we create a custom ViewSet class...
+class MediaFavouriteCustomViewSet(
+    mixins.CreateModelMixin, 
+    mixins.ListModelMixin, 
+    mixins.RetrieveModelMixin, 
+    mixins.DestroyModelMixin, 
+    GenericViewSet
+):
+    pass
+
+
+class MediaFavouriteViewSet(MediaFavouriteCustomViewSet, GenericViewSet):
+    serializer_class = MediaFavouriteSerializer
+    queryset = MediaFavourite.objects.all()
+
+    def create(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            media_id = int(request.data['media']['id'])
+            if MediaFavourite.favourite_already_exists(user_id, media_id):
+                return Response({"message", "Media is already a user's favorite"})
+            else:
+                favourite = MediaFavourite.create_favourite(user_id, media_id)
+                serializer = MediaFavouriteSerializer(favourite)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
 
 class LanguageGeoList(generics.ListAPIView):

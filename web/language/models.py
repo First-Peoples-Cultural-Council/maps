@@ -153,7 +153,33 @@ class Media(BaseModel):
     file_type = models.CharField(max_length=16, default=None)
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
-    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias')
+    placename = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias'
+    )
+    
+
+class MediaFavourite(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    media = models.ForeignKey(Media, on_delete=models.CASCADE)
+
+    def create_favourite(user_id, media_id):
+        favourite = MediaFavourite()
+        favourite.user = User.objects.get(pk=user_id)
+        favourite.media = Media.objects.get(pk=media_id)
+        favourite.save()
+
+        return favourite
+
+    def favourite_already_exists(user_id, media_id):
+        favourite = MediaFavourite.objects.filter(
+            user__id=user_id
+        ).filter(
+            media__id=media_id
+        )
+        if favourite:
+            return True
+        else:
+            return False
 
 
 class Champion(BaseModel):

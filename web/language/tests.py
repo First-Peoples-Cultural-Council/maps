@@ -177,7 +177,7 @@ class MediaAPITests(APITestCase):
 
 	def test_media_detail_route_not_allowed(self):
 		"""
-		Ensure media Detail API route does not exists
+		Ensure media Detail API route does not exist
 		"""
 		response = self.client.get('/api/media/0/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -185,7 +185,7 @@ class MediaAPITests(APITestCase):
 
 	def test_media_list_route_does_not_allowed(self):
 		"""
-		Ensure media list API route does not exists
+		Ensure media list API route does not exist
 		"""
 		response = self.client.get('/api/media/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -206,3 +206,50 @@ class MediaAPITests(APITestCase):
 		test_media = Media.objects.create(name='Test media 001', file_type='image')
 		response = self.client.delete('/api/media/', {'id': test_media.id}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class MediaFavouriteAPITests(APITestCase):
+
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+
+	def test_mediafavourite_detail_route_exists(self):
+		"""
+		Ensure mediafavourite Detail API route exists
+		"""
+		response = self.client.get('/api/mediafavourite/0/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+	# def test_mediafavourite_detail(self):
+	# 	"""
+	# 	Ensure we can retrieve a newly created MediaFavourite object.
+	# 	"""
+	# 	test_mediafavourite = MediaFavourite.objects.create(name='Test mediafavourite 001', file_type='image')
+	# 	response = self.client.get('/api/mediafavourite/{}/'.format(test_champion.id), format='json')
+	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_mediafavourite_list_route_exists(self):
+		"""
+		Ensure mediafavourite list API route exists
+		"""
+		response = self.client.get('/api/mediafavourite/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	# def test_mediafavourite_post(self):
+	# 	"""
+	# 	Ensure mediafavourite API POST method API works
+	# 	"""
+	# 	response = self.client.post('/api/mediafavourite/', {'name': 'Test mediafavourite 001', 'file_type': 'image'}, format='json')
+	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	# def test_mediafavourite_delete(self):
+	# 	"""
+	# 	Ensure mediafavourite API DELETE method API works
+	# 	"""
+	# 	test_mediafavourite = MediaFavourite.objects.create(name='Test mediafavourite 001', file_type='image')
+	# 	response = self.client.delete('/api/mediafavourite/', {'id': test_mediafavourite.id}, format='json')
+	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
+	

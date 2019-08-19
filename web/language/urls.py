@@ -11,7 +11,8 @@ from .views import (
     CommunityViewSet, 
     CommunityMemberViewSet, 
     PlaceNameViewSet, 
-    MediaViewSet
+    MediaViewSet,
+    MediaFavouriteViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -26,6 +27,7 @@ router.register(r"placename/<int:pk>/verify/", PlaceNameViewSet, basename='place
 router.register(r"placename/<int:pk>/flag/", PlaceNameViewSet, basename='placename-flag')
 
 router.register(r"media", MediaViewSet, basename="media")
+router.register(r"mediafavourite", MediaFavouriteViewSet, basename="media-favourite")
 
 urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
