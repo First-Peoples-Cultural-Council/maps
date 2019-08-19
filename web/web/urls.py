@@ -33,5 +33,6 @@ urlpatterns = [
     ),
     path("api/", include("language.urls"), name="language"),
     path("api/", include("arts.urls"), name="arts"),
+    path("api/", include("users.urls"), name="users"),
     url(r"api-token-auth/", obtain_auth_token),
 ] + router.urls

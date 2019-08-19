@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "language",
     "firstvoices",
     "arts",
+    "users",
     "web",
 ]
 
@@ -138,6 +139,15 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
 
+
+# REST_FRAMEWORK = {
+#     "DEFAULT_PERMISSION_CLASSES": [
+#         "web.permissions.IsAdminOrReadOnly",
+#         "web.permissions.IsLanguageAdminOrReadOnly",
+#         "web.permissions.IsCommunityMemberOrReadOnly",
+#         "web.permissions.IsAuthenticatedUserOrReadOnly",
+#     ]
+# }
 
 REST_FRAMEWORK = {
     # "DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]

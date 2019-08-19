@@ -2,12 +2,15 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from django.contrib.auth.models import User
+
 from .models import (
     Language,
     PlaceName,
     Community,
     Champion,
-	Media
+	Media,
+	MediaFavourite
 )
 
 
@@ -175,17 +178,17 @@ class MediaAPITests(APITestCase):
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-	def test_media_detail_route_does_not_exists(self):
+	def test_media_detail_route_not_allowed(self):
 		"""
-		Ensure media Detail API route does not exists
+		Ensure media Detail API route does not exist
 		"""
 		response = self.client.get('/api/media/0/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-	def test_media_list_route_does_not_exists(self):
+	def test_media_list_route_does_not_allowed(self):
 		"""
-		Ensure media list API route does not exists
+		Ensure media list API route does not exist
 		"""
 		response = self.client.get('/api/media/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -195,7 +198,8 @@ class MediaAPITests(APITestCase):
 		"""
 		Ensure media API POST method API works
 		"""
-		self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+		response = self.client.post('/api/media/', {'name': 'Test media 001', 'file_type': 'image'}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 	def test_media_delete(self):
@@ -203,4 +207,60 @@ class MediaAPITests(APITestCase):
 		Ensure media API DELETE method API works
 		"""
 		test_media = Media.objects.create(name='Test media 001', file_type='image')
-		self.client.delete('/api/media/', {'id': test_media.id}, format='json')
+		response = self.client.delete('/api/media/', {'id': test_media.id}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class MediaFavouriteAPITests(APITestCase):
+
+	def setUp(self):
+		self.user = User.objects.create(
+            username='testeuser001',
+            first_name='Test',
+            last_name='user 001',
+            email='test@countable.ca',
+        )
+		self.media = Media.objects.create(name='Test media 001', file_type='image')
+
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+
+	def test_mediafavourite_detail_route_exists(self):
+		"""
+		Ensure mediafavourite Detail API route exists
+		"""
+		response = self.client.get('/api/mediafavourite/0/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+	def test_mediafavourite_detail(self):
+		"""
+		Ensure we can retrieve a newly created MediaFavourite object.
+		"""
+		test_mediafavourite = MediaFavourite.objects.create(user=self.user, media=self.media)
+		response = self.client.get('/api/mediafavourite/{}/'.format(test_mediafavourite.id), format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_mediafavourite_list_route_exists(self):
+		"""
+		Ensure mediafavourite list API route exists
+		"""
+		response = self.client.get('/api/mediafavourite/', format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	# def test_mediafavourite_post(self):
+	# 	"""
+	# 	Ensure mediafavourite API POST method API works
+	# 	"""
+	# 	response = self.client.post('/api/mediafavourite/', {'name': 'Test mediafavourite 001', 'file_type': 'image'}, format='json')
+	# 	self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_mediafavourite_delete(self):
+		"""
+		Ensure mediafavourite API DELETE method API works
+		"""
+		test_mediafavourite = MediaFavourite.objects.create(user=self.user, media=self.media)
+		response = self.client.delete('/api/mediafavourite/', {'id': test_mediafavourite.id}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
