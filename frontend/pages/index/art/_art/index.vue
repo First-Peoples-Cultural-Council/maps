@@ -93,7 +93,7 @@ export default {
           const el = document.createElement('div')
           el.className = 'marker'
           el.style =
-            "background-image: url('/_nuxt/assets/images/" +
+            "background-image: url('/" +
             this.art.properties.art_type +
             "_icon.svg')"
 

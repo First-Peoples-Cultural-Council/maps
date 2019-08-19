@@ -10,7 +10,8 @@ from .models import (
     CommunityMember, 
     Champion, 
     Media,
-    MediaFavourite
+    MediaFavourite,
+    CommunityLanguageStats,
 )
 
 from rest_framework import viewsets, generics, mixins
@@ -33,10 +34,12 @@ from .serializers import (
     ChampionSerializer,
     MediaSerializer,
     MediaFavouriteSerializer,
+    CommunityLanguageStatsSerializer,
 )
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from web.permissions import IsAdminOrReadOnly
 
 
 class BaseModelViewSet(viewsets.ModelViewSet):
@@ -53,6 +56,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
 
 
 class LanguageViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     serializer_class = LanguageSerializer
     detail_serializer_class = LanguageDetailSerializer
     queryset = (
@@ -81,6 +86,8 @@ class LanguageMemberViewSet(BaseModelViewSet):
 
 
 class CommunityViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
     serializer_class = CommunitySerializer
     detail_serializer_class = CommunityDetailSerializer
     queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
@@ -91,7 +98,7 @@ class CommunityViewSet(BaseModelViewSet):
             queryset = queryset.filter(
                 languages=Language.objects.get(pk=request.GET.get("lang"))
             )
-        serializer = CommunitySerializer(queryset, many=True)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -111,6 +118,14 @@ class CommunityMemberViewSet(BaseModelViewSet):
                 return Response(serializer.data)
         except:
             return Response("Unexpected error:", sys.exc_info()[0])
+
+          
+class CommunityLanguageStatsViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
+    serializer_class = CommunityLanguageStatsSerializer
+    detail_serializer_class = CommunityLanguageStatsSerializer
+    queryset = CommunityLanguageStats.objects.all()
 
 
 class PlaceNameViewSet(BaseModelViewSet):
@@ -136,9 +151,20 @@ class PlaceNameViewSet(BaseModelViewSet):
             placename.save()
             return Response({"message": "Flagged!"})
 
+    def list(self, request):
+        queryset = self.get_queryset()
+        if "lang" in request.GET:
+            queryset = queryset.filter(
+                point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
+            )
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
-class MediaCustomViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+class MediaCustomViewSet(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet
+):
     pass
 
 
@@ -184,7 +210,7 @@ class LanguageGeoList(generics.ListAPIView):
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
-
+    
 
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
