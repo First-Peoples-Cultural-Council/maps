@@ -206,7 +206,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $route }) {
-    const communities = await $axios.$get(getApiUrl(`/community/`))
+    const communities = await $axios.$get(getApiUrl(`community/`))
     const community = communities.find(
       comm => encodeFPCC(comm.name) === params.fn
     )
