@@ -182,11 +182,12 @@ class CommunitySerializer(serializers.ModelSerializer):
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True, many=True)
-    community = CommunitySerializer(read_only=True, many=True)
+    user = UserSerializer(read_only=True)
+    community = CommunitySerializer(read_only=True)
+
     class Meta:
         model = CommunityMember
-        fields = ("user", "community")
+        fields = ("id", "user", "community")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):

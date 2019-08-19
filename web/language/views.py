@@ -1,3 +1,5 @@
+import sys
+
 from django.shortcuts import render
 
 from .models import Language, PlaceName, Community, CommunityMember, Champion, Media
@@ -64,6 +66,19 @@ class CommunityViewSet(BaseModelViewSet):
 class CommunityMemberViewSet(BaseModelViewSet):
     serializer_class = CommunityMemberSerializer
     queryset = CommunityMember.objects.all()
+
+    def create(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            community_id = int(request.data['community']['id'])
+            if CommunityMember.member_already_exists(user_id, community_id):
+                return Response({"message", "User is already a community member"})
+            else:
+                member = CommunityMember.create_member(user_id, community_id)
+                serializer = CommunityMemberSerializer(member)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
 
 class PlaceNameViewSet(BaseModelViewSet):
