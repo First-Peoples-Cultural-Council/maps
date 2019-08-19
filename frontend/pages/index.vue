@@ -1,5 +1,12 @@
 <template>
-  <div class="map-container" :class="{ detailModeContainer: isDetailMode }">
+  <div
+    class="map-container"
+    :class="{
+      detailModeContainer:
+        this.$route.name === 'index-contribute' ||
+        this.$route.name === 'index-languages-lang-details'
+    }"
+  >
     <div class="map-loading">LOADING MAP</div>
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
@@ -13,6 +20,7 @@
       @map-sourcedata="mapSourceData"
     ></Mapbox>
     <Zoom class="zoom-control hide-mobile"></Zoom>
+    <Contribute class="hide-mobile contribute-control"></Contribute>
     <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
     <ResetMap class="reset-map-control hide-mobile"></ResetMap>
     <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
@@ -130,6 +138,7 @@ import Logo from '@/components/Logo.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
@@ -167,7 +176,8 @@ export default {
     ResetMap,
     Zoom,
     Filters,
-    Logo
+    Logo,
+    Contribute
   },
   data() {
     return {
@@ -681,6 +691,12 @@ export default {
   position: absolute;
   right: 135px;
   bottom: 30px;
+}
+
+.contribute-control {
+  position: absolute;
+  bottom: 30px;
+  right: 305px;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
