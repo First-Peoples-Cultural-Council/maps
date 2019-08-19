@@ -15,7 +15,17 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 
 
-class UserViewSet(viewsets.ModelViewSet):
+# To enable only UPDATE and RETRIEVE, we create a custom ViewSet class...
+class UserCustomViewSet(
+    mixins.UpdateModelMixin, 
+    mixins.ListModelMixin, 
+    mixins.RetrieveModelMixin, 
+    GenericViewSet
+):
+    pass
+
+
+class UserViewSet(UserCustomViewSet, GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("first_name")
 
