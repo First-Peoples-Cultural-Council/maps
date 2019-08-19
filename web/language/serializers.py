@@ -10,7 +10,8 @@ from .models import (
     CommunityLink,
     LNA,
     LNAData,
-    Media
+    Media,
+    CommunityLanguageStats,
 )
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -88,12 +89,42 @@ class LNADetailSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "year", "language", "lnadata_set")
 
 
+class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityLanguageStats
+        fields = (
+            "language",
+            "community",
+            "fluent_speakers",
+            "semi_speakers",
+            "active_learners",
+        )
+
+
 class LanguageDetailSerializer(serializers.ModelSerializer):
     family = LanguageFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     dialect_set = DialectSerializer(read_only=True, many=True)
     # lna_set = LNADetailSerializer(read_only=True, many=True)
+    # Atomic Writable APIs
+    family_id = serializers.PrimaryKeyRelatedField(
+        queryset=LanguageFamily.objects.all(), write_only=True, source="family"
+    )
+    champion_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Champion.objects.all(),
+        write_only=True,
+        source="champion_set",
+        required=False,
+    )
+    languagelink_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=LanguageLink.objects.all(),
+        write_only=True,
+        source="languagelink_set",
+        required=False,
+    )
 
     def to_representation(self, value):
         rep = super().to_representation(value)
@@ -132,6 +163,9 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "pop_total_value",
             "bbox",
             "audio_file",
+            "family_id",
+            "champion_ids",
+            "languagelink_ids",
         )
 
 
@@ -172,6 +206,26 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
     languages = LanguageSerializer(read_only=True, many=True)
+
+    # Atomic Writable APIs
+    language_ids = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Language.objects.all(), write_only=True, source="languages"
+    )
+    champion_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Champion.objects.all(),
+        write_only=True,
+        source="champion_set",
+        required=False,
+    )
+    communitylink_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=CommunityLink.objects.all(),
+        write_only=True,
+        source="communitylink_set",
+        required=False,
+    )
+
     # hide history lnas for now, just show most recent
     def to_representation(self, value):
         rep = super().to_representation(value)
@@ -205,14 +259,17 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "other_names",
             "internet_speed",
             "population",
+            "point",
             "email",
             "website",
             "phone",
             "alt_phone",
             "fax",
             "audio_file",
+            "language_ids",
+            "champion_ids",
+            "communitylink_ids",
         )
-        geo_field = "point"
 
 
 class PlaceNameCategory(serializers.ModelSerializer):
@@ -224,29 +281,58 @@ class PlaceNameCategory(serializers.ModelSerializer):
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "point", "other_names", "audio_file", 
-                    "kind", "western_name", "traditional_name", 
-                    "community_only", "description", "status")
+        fields = (
+            "name",
+            "id",
+            "point",
+            "other_names",
+            "audio_file",
+            "kind",
+            "western_name",
+            "community_only",
+            "description",
+            "status",
+        )
 
 
 # Serializer only for composing PlaceName data
 class PlaceNameMediaSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Media
-		fields = ("id", "name", "description", "file_type", "url", "media_file")
-                    
+    class Meta:
+        model = Media
+        fields = ("id", "name", "description", "file_type", "url", "media_file")
+
 
 class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
-        fields = ("id", "name", "description", "file_type", "url", "media_file", "placename")
+        fields = (
+            "id",
+            "name",
+            "description",
+            "file_type",
+            "url",
+            "media_file",
+            "placename",
+        )
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = PlaceNameMediaSerializer(many=True, read_only=True)
+
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "point", "other_names", "audio_file", 
-                    "kind", "western_name", "traditional_name", 
-                    "community_only", "description", "status", "category", "medias")
+        fields = (
+            "name",
+            "id",
+            "point",
+            "other_names",
+            "audio_file",
+            "kind",
+            "western_name",
+            "community_only",
+            "description",
+            "status",
+            "category",
+            "medias",
+        )
         depth = 1

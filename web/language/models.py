@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from django.contrib.gis.db import models
 
-from web.models import BaseModel
+from web.models import BaseModel, CulturalModel
 
 
 class LanguageFamily(BaseModel):
@@ -12,17 +12,67 @@ class LanguageFamily(BaseModel):
         verbose_name_plural = "Language Families"
 
 
-class Language(BaseModel):
-    other_names = models.TextField(default="", blank=True)
-    fv_archive_link = models.URLField(max_length=255, blank=True, default="")
-    color = models.CharField(max_length=31, default="")
-    regions = models.CharField(max_length=255, default="", blank=True)
-    sleeping = models.BooleanField(default=False)
+class Recording(models.Model):
+    speaker = models.CharField(max_length=255)
+    recorder = models.CharField(max_length=255)
+    created = models.DateTimeField("date created", auto_now_add=True)
+    date_recorded = models.DateField("date recorded")
+
+
+class Language(CulturalModel):
+    """
+    family
+
+    aliases (comma separated)
+    total_schools
+
+    avg_hrs_wk_languages_in_school
+
+    ece_programs
+    avg_hrs_wk_languages_in_ece
+    language_nests
+    avg_hrs_wk_languages_in_language_nests
+    community_adult_language_classes
+    language_audio (should include speaker, recorder, date recorded fields)
+    greeting_audio (should include speaker, recorder, date recorded fields)
+    fv_guid
+    fv_url
+    """
 
     family = models.ForeignKey(
         LanguageFamily, null=True, on_delete=models.SET_NULL, blank=True
     )
+    total_schools = models.IntegerField(default=0)
+    avg_hrs_wk_languages_in_school = models.FloatField(default=0)
+    ece_programs = models.IntegerField(default=0)
+    avg_hrs_wk_languages_in_ece = models.FloatField(default=0)
+    language_nests = models.IntegerField(default=0)
+    avg_hrs_wk_languages_in_language_nests = models.FloatField(default=0)
+    community_adult_language_classes = models.IntegerField(default=0)
+    language_audio = models.ForeignKey(
+        Recording,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="languages",
+    )
+    greeting_audio = models.ForeignKey(
+        Recording,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="greeting_languages",
+    )
+    fv_guid = models.CharField(max_length=40, blank=True, default="")
+    fv_archive_link = models.URLField(max_length=255, blank=True, default="")
+
+    color = models.CharField(max_length=31, default="")
+    regions = models.CharField(max_length=255, default="", blank=True)
+    sleeping = models.BooleanField(default=False)
+
     notes = models.TextField(default="", blank=True)
+
+    # Deprecated (switch to CommunityLanguageStats)
     fluent_speakers = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_on_fluent_sum_value
@@ -32,9 +82,10 @@ class Language(BaseModel):
         default=0
     )  # sum of field_tm_lna2_pop_total_value
 
-    color = models.CharField(max_length=31)
     geom = models.PolygonField(null=True, default=None, blank=True)
     bbox = models.PolygonField(null=True, default=None, blank=True)
+
+    # Deprecated, use recording instead.
     audio_file = models.FileField(null=True, blank=True)
 
 
@@ -46,22 +97,33 @@ class LanguageLink(models.Model):
     )
 
 
-class Community(BaseModel):
+class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
 
     english_name = models.CharField(max_length=255, default="", blank=True)
-    other_names = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
+    # TODO: just add off + on reserve populations. Deprecated.
     population = models.IntegerField(default=0)
+
+    population_on_reserve = models.IntegerField(default=0)
+    population_off_reserve = models.IntegerField(default=0)
+
+    fv_guid = models.CharField(max_length=40, blank=True, default="")
+    fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     languages = models.ManyToManyField(Language)
     email = models.EmailField(max_length=255, default=None, null=True)
     website = models.URLField(max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
+
+    # deprecated. TODO: change to recording.
     audio_file = models.FileField(null=True, blank=True)
+    audio = models.ForeignKey(
+        Recording, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Communities"
@@ -75,6 +137,18 @@ class CommunityLink(models.Model):
     )
 
 
+class CommunityLanguageStats(models.Model):
+    """
+    Latest, manually cleaned, aggregated LNA information for a given langugage in a particular community.
+    """
+
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
+    fluent_speakers = models.IntegerField(default=0)
+    semi_speakers = models.IntegerField(default=0)
+    active_learners = models.IntegerField(default=0)
+
+
 class LanguageMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -83,15 +157,15 @@ class PlaceNameCategory(BaseModel):
     icon_name = models.CharField(max_length=32, null=True, default=None)
 
 
-class PlaceName(BaseModel):
+class PlaceName(CulturalModel):
     point = models.PointField(null=True, default=None)
-    other_names = models.CharField(max_length=255, default="")
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
-    category = models.ForeignKey(PlaceNameCategory, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(
+        PlaceNameCategory, on_delete=models.SET_NULL, null=True
+    )
     western_name = models.CharField(max_length=64, blank=True)
-    traditional_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
 
@@ -101,24 +175,20 @@ class PlaceName(BaseModel):
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
-    STATUS_CHOICES = [
-        (FLAGGED, 'Flagged'),
-        (VERIFIED, 'Verified'),
-    ]
+    STATUS_CHOICES = [(FLAGGED, "Flagged"), (VERIFIED, "Verified")]
     status = models.CharField(
-        max_length=2,
-        choices=STATUS_CHOICES,
-        null=True,
-        default=None,
+        max_length=2, choices=STATUS_CHOICES, null=True, default=None
     )
-    
+
 
 class Media(BaseModel):
     description = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=16, default=None)
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
-    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias')
+    placename = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
+    )
 
 
 class Champion(BaseModel):
@@ -136,11 +206,6 @@ class Dialect(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.CASCADE, null=True, default=None
     )
-
-
-class CommunityLanguageStats(BaseModel):
-    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
 
 
 class LNA(BaseModel):
