@@ -7,6 +7,7 @@ from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
 
 from .views import (
     LanguageViewSet, 
+    LanguageMemberViewSet, 
     CommunityViewSet, 
     CommunityMemberViewSet, 
     PlaceNameViewSet, 
@@ -15,7 +16,7 @@ from .views import (
 
 router = routers.DefaultRouter()
 router.register(r"language", LanguageViewSet, basename="language")
-# router.register(r"language/admin/", UserViewSet, basename='language-admin')
+router.register(r"languagemember", LanguageMemberViewSet, basename='language-member')
 
 router.register(r"community", CommunityViewSet, basename="community")
 router.register(r"communitymember", CommunityMemberViewSet, basename='community-member')

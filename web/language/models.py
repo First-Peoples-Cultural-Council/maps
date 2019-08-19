@@ -48,6 +48,9 @@ class LanguageLink(models.Model):
 
 class LanguageMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    language = models.ForeignKey(
+        Language, on_delete=models.CASCADE, null=True, default=None
+    )
 
 
 class Community(BaseModel):

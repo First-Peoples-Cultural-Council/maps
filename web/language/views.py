@@ -2,15 +2,26 @@ import sys
 
 from django.shortcuts import render
 
-from .models import Language, PlaceName, Community, CommunityMember, Champion, Media
+from .models import (
+    Language, 
+    LanguageMember, 
+    PlaceName, 
+    Community, 
+    CommunityMember, 
+    Champion, 
+    Media
+)
+
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
+    LanguageMemberSerializer,
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
@@ -21,6 +32,7 @@ from .serializers import (
     ChampionSerializer,
     MediaSerializer,
 )
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
@@ -46,6 +58,24 @@ class LanguageViewSet(BaseModelViewSet):
         .select_related("family")
         .order_by("family", "name")
     )
+
+
+class LanguageMemberViewSet(BaseModelViewSet):
+    serializer_class = LanguageMemberSerializer
+    queryset = LanguageMember.objects.all()
+
+    # def create(self, request):
+    #     try:
+    #         user_id = int(request.data['user']['id'])
+    #         language_id = int(request.data['language']['id'])
+    #         if LanguageMember.member_already_exists(user_id, language_id):
+    #             return Response({"message", "User is already a language member"})
+    #         else:
+    #             member = LanguageMember.create_member(user_id, language_id)
+    #             serializer = LanguageMemberSerializer(member)
+    #             return Response(serializer.data)
+    #     except:
+    #         return Response("Unexpected error:", sys.exc_info()[0])
 
 
 class CommunityViewSet(BaseModelViewSet):

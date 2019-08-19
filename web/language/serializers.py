@@ -6,6 +6,7 @@ from .models import (
     Champion,
     LanguageFamily,
     LanguageLink,
+    LanguageMember,
     Dialect,
     CommunityLink,
     CommunityMember,
@@ -41,12 +42,6 @@ class LanguageLinkSerializer(serializers.ModelSerializer):
         fields = ("title", "url")
 
 
-class LanguageLinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LanguageLink
-        fields = ("title", "url")
-
-
 class DialectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dialect
@@ -59,6 +54,15 @@ class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
+
+
+class LanguageMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    language = LanguageSerializer(read_only=True)
+
+    class Meta:
+        model = LanguageMember
+        fields = ("id", "user", "language")
 
 
 class LNASerializer(serializers.ModelSerializer):
