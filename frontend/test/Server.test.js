@@ -83,6 +83,8 @@ describe(`Index Route / (Landing Page)`, () => {
     expect(communitiesRendered.sort()).toEqual(communityNamesApi.sort())
   }, 300000)
 
+  // TODO: Check if languages render correctly
+  /*
   test('All languages are rendered', async () => {
     // const context = {}
     // const { html } = await nuxt.server.renderRoute('/', context)
@@ -105,7 +107,7 @@ describe(`Index Route / (Landing Page)`, () => {
       }
     })
     console.log('Html', html)
-    /*
+    
     languagesApi.map(async lang => {
       const context = {}
       console.log('Lang Name', encodeFPCC(lang.name))
@@ -126,16 +128,17 @@ describe(`Index Route / (Landing Page)`, () => {
         context
       )
       console.log('Html', html)
-      /*
+      
       const { window } = new JSDOM(html).window
       const languageRendered = uniqBy(
         window.document.getElementsByClassName('language-title'),
         'textContent'encodeFPCC
       ).map(lang => lang.textContent.trim())
       console.log('Language Rendered', languageRendered)
-      */
+      
     // })
   }, 300000)
+  */
 })
 
 afterAll(() => {
