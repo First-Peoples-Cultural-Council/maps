@@ -8,6 +8,10 @@
       <span class="font-07">{{ content }}</span>
       <img src="@/assets/images/share_icon.svg" alt="Learn" />
     </div>
+    <div v-if="type === 'edit'">
+      <span class="font-07">{{ content }}</span>
+      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+    </div>
   </div>
 </template>
 
