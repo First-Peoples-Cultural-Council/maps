@@ -85,9 +85,34 @@ class CommunityMember(models.Model):
         Community, on_delete=models.CASCADE, null=True, default=None
     )
 
+    def create_member(user_id, community_id):
+        member = CommunityMember()
+        member.user = User.objects.get(pk=user_id)
+        member.community = Community.objects.get(pk=community_id)
+        member.save()
+
+        return member
+
+    def member_already_exists(user_id, community_id):
+        member = CommunityMember.objects.filter(
+            user__id=user_id
+        ).filter(
+            community__id=community_id
+        )
+        if member:
+            return True
+        else:
+            return False
+
+    class Meta:
+        verbose_name_plural = "Community Members"
+
 
 class PlaceNameCategory(BaseModel):
     icon_name = models.CharField(max_length=32, null=True, default=None)
+
+    class Meta:
+        verbose_name_plural = "Place name Categories"
 
 
 class PlaceName(BaseModel):
