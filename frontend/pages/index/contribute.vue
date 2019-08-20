@@ -29,19 +29,19 @@
         </section>
       </div>
       <section class="pr-3 pl-3">
-        <label for="traditionalName" class="contribute-title-one mt-3"
+        <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
           >Traditional Name</label
         >
         <b-form-input id="traditionalName" type="text"></b-form-input>
 
-        <label for="westernName" class="contribute-title-one mt-3"
+        <label for="westernName" class="contribute-title-one mt-3 mb-1"
           >Western Name</label
         >
         <b-form-input id="westernName" type="text"></b-form-input>
 
         <b-row class="mt-3">
           <b-col xl="6">
-            <label for="traditionalName" class="contribute-title-one"
+            <label for="traditionalName" class="contribute-title-one mb-1"
               >Language</label
             >
             <b-form-select
@@ -50,7 +50,7 @@
             ></b-form-select>
           </b-col>
           <b-col xl="6">
-            <label for="traditionalName" class="contribute-title-one"
+            <label for="traditionalName" class="contribute-title-one mb-1"
               >Category</label
             >
             <b-form-select
@@ -60,7 +60,7 @@
           </b-col>
         </b-row>
         <!-- Text Editor -->
-        <h5 class="contribute-title-one mt-3">Description</h5>
+        <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
         <TuiEditor
           mode="wysiwyg"
           :options="{
@@ -70,7 +70,7 @@
           height="300px"
         />
 
-        <h5 class="mt-3">Upload Files</h5>
+        <h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>
         <b-form-file
           v-model="file"
           :state="Boolean(file)"
@@ -81,20 +81,30 @@
 
       <hr />
       <section class="pl-3 pr-3">
-        <b-row>
-          <b-col xl="6">
-            <b-button variant="primary">Preview</b-button>
+        <b-row no-gutters>
+          <b-col xl="6" class="pr-2">
+            <b-button block variant="secondary">Preview</b-button>
           </b-col>
-          <b-col xl="6">
-            <b-button variant="primary">Cancel</b-button>
+          <b-col xl="6" class="pl-2">
+            <b-button block variant="light">Cancel</b-button>
           </b-col>
         </b-row>
-        <b-row>
+        <b-row class="mt-3">
           <b-col xl="12">
-            <b-button variant="primary">Submit</b-button>
+            <b-button block variant="danger">Submit</b-button>
           </b-col>
         </b-row>
       </section>
+      <audio-recorder
+        upload-url="some url"
+        :attempts="3"
+        :time="2"
+        :before-recording="callback"
+        :after-recording="callback"
+        :before-upload="callback"
+        :successful-upload="callback"
+        :failed-upload="callback"
+      />
     </DetailSideBar>
   </div>
 </template>
@@ -113,6 +123,11 @@ export default {
   data() {
     return {
       content: 'Hello World!'
+    }
+  },
+  methods: {
+    callback(msg) {
+      console.debug('Event: ', msg)
     }
   }
 }
