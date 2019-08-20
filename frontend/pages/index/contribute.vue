@@ -45,8 +45,8 @@
               >Language</label
             >
             <b-form-select
-              v-model="selected"
-              :options="options"
+              v-model="languageSelected"
+              :options="languageOptions"
             ></b-form-select>
           </b-col>
           <b-col xl="6">
@@ -54,13 +54,14 @@
               >Category</label
             >
             <b-form-select
-              v-model="selected"
-              :options="options"
+              v-model="categorySelected"
+              :options="categoryOptions"
             ></b-form-select>
           </b-col>
         </b-row>
         <!-- Text Editor -->
         <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
+
         <TuiEditor
           mode="wysiwyg"
           :options="{
@@ -69,7 +70,6 @@
           preview-style="vertical"
           height="300px"
         />
-
         <h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>
         <b-form-file
           v-model="file"
@@ -80,6 +80,7 @@
       </section>
 
       <hr />
+
       <section class="pl-3 pr-3">
         <b-row no-gutters>
           <b-col xl="6" class="pr-2">
@@ -95,16 +96,7 @@
           </b-col>
         </b-row>
       </section>
-      <audio-recorder
-        upload-url="some url"
-        :attempts="3"
-        :time="2"
-        :before-recording="callback"
-        :after-recording="callback"
-        :before-upload="callback"
-        :successful-upload="callback"
-        :failed-upload="callback"
-      />
+      <AudioRecorder></AudioRecorder>
     </DetailSideBar>
   </div>
 </template>
@@ -113,16 +105,23 @@
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import AudioRecorder from '@/components/AudioRecorder.vue'
 
 export default {
   components: {
     DetailSideBar,
     LanguageCard,
-    CommunityCard
+    CommunityCard,
+    AudioRecorder
   },
   data() {
     return {
-      content: 'Hello World!'
+      content: 'Hello World!',
+      languageOptions: [],
+      categoryOptions: [],
+      languageSelected: null,
+      categorySelected: null,
+      file: null
     }
   },
   methods: {

@@ -67,11 +67,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [
-    '~/mixins/mixins.js',
-    '~/plugins/global',
-    { src: '~/plugins/audiorecorder', mode: 'client' }
-  ],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
