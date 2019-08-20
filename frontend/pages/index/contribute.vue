@@ -1,23 +1,58 @@
 <template>
   <div>
     <DetailSideBar :width="500">
-      <section class="pr-2 pl-2">
-        <label for="traditionalName">Traditional Name</label>
+      <div class="contribute-header pt-3 pb-3">
+        <div>
+          <h4 class="text-uppercase contribute-title mr-2">
+            You are contributing to
+          </h4>
+        </div>
+        <section class="pl-2 pr-2">
+          <b-row no-gutters>
+            <b-col xl="6" class="pr-1"
+              ><LanguageCard
+                :go="false"
+                variant="white"
+                icon="small"
+                name="diiɁdiitidq"
+              ></LanguageCard
+            ></b-col>
+            <b-col xl="6" class="pl-1"
+              ><CommunityCard
+                :go="false"
+                variant="white"
+                icon="small"
+                name="diiɁdiitidq"
+              ></CommunityCard
+            ></b-col>
+          </b-row>
+        </section>
+      </div>
+      <section class="pr-3 pl-3">
+        <label for="traditionalName" class="contribute-title-one mt-3"
+          >Traditional Name</label
+        >
         <b-form-input id="traditionalName" type="text"></b-form-input>
 
-        <label for="westernName">Western Name</label>
+        <label for="westernName" class="contribute-title-one mt-3"
+          >Western Name</label
+        >
         <b-form-input id="westernName" type="text"></b-form-input>
 
-        <b-row>
+        <b-row class="mt-3">
           <b-col xl="6">
-            <label for="traditionalName">Language</label>
+            <label for="traditionalName" class="contribute-title-one"
+              >Language</label
+            >
             <b-form-select
               v-model="selected"
               :options="options"
             ></b-form-select>
           </b-col>
           <b-col xl="6">
-            <label for="traditionalName">Category</label>
+            <label for="traditionalName" class="contribute-title-one"
+              >Category</label
+            >
             <b-form-select
               v-model="selected"
               :options="options"
@@ -25,7 +60,7 @@
           </b-col>
         </b-row>
         <!-- Text Editor -->
-        <h5>Description</h5>
+        <h5 class="contribute-title-one mt-3">Description</h5>
         <TuiEditor
           mode="wysiwyg"
           :options="{
@@ -35,7 +70,7 @@
           height="300px"
         />
 
-        <h5>Upload Files</h5>
+        <h5 class="mt-3">Upload Files</h5>
         <b-form-file
           v-model="file"
           :state="Boolean(file)"
@@ -45,7 +80,7 @@
       </section>
 
       <hr />
-      <section class="pl-2 pr-2">
+      <section class="pl-3 pr-3">
         <b-row>
           <b-col xl="6">
             <b-button variant="primary">Preview</b-button>
@@ -66,10 +101,14 @@
 
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import LanguageCard from '@/components/languages/LanguageCard.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
 
 export default {
   components: {
-    DetailSideBar
+    DetailSideBar,
+    LanguageCard,
+    CommunityCard
   },
   data() {
     return {
@@ -79,4 +118,23 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.contribute-header {
+  background-color: #f4f0eb;
+}
+.contribute-title {
+  background-color: #591d14;
+  color: white;
+  font-size: 0.8em;
+  padding: 0.65em;
+  text-align: right;
+  font-weight: bold;
+}
+.contribute-title-one {
+  color: #707070;
+  font-weight: bold;
+  font-size: 0.85em;
+  padding: 0;
+  margin: 0;
+}
+</style>
