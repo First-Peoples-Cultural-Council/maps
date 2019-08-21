@@ -181,6 +181,7 @@ export default {
   },
   data() {
     return {
+      isClickDisabled: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -402,6 +403,11 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
+      console.log('Click Disabled', this.isClickDisabled)
+      if (this.isClickDisabled) {
+        return
+      }
+
       const features = map.queryRenderedFeatures(e.point)
 
       let done = false
