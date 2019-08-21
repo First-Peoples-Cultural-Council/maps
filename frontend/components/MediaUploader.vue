@@ -11,13 +11,19 @@
       ></b-form-file>
       <div class="mediaUploadArea cursor-pointer" @click="triggerBrowse">
         <p class="m-0 p-0">
-          <img
-            class="d-inline-block"
-            src="@/assets/images/clip_icon.svg"
-            alt="Clip"
-          />
-          <span style="color: #C46257;">Choose files</span>, drop files here or
-          record an audio
+          <span v-if="!recording">
+            <img
+              class="d-inline-block"
+              src="@/assets/images/clip_icon.svg"
+              alt="Clip"
+            />
+
+            <span style="color: #C46257;">Choose files</span>, drop files here
+            or record an audio
+          </span>
+          <span v-else class="d-flex align-items-center justify-content-center">
+            Recording... <b-spinner type="grow" label="Spinning"></b-spinner>
+          </span>
         </p>
         <div v-for="(fileToBeUploaded, index) in files" :key="index">
           <div>
@@ -26,8 +32,8 @@
         </div>
         <div
           v-for="(audioToBeUploaded, index) in audios"
-          class="mt-2"
           :key="'audio' + index"
+          class="mt-2"
         >
           <div>
             <AudioComponent
