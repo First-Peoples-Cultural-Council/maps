@@ -1,0 +1,225 @@
+<template>
+  <div class="nav-container">
+    <div class="navbar-container cursor-pointer" @click="openNav">
+      <nav class="navbar-icon-container">
+        <img
+          src="@/assets/images/menu_icon.svg"
+          alt="Menu"
+          class="navbar-icon"
+        />
+      </nav>
+    </div>
+    <transition name="fade">
+      <div v-if="navigationOpen" class="navigation">
+        <div class="nav-header pl-2">
+          <img
+            src="@/assets/images/symbol_text.png"
+            alt="Logo"
+            class="nav-logo-img cursor-pointer"
+            @click="handleLogoClick"
+          />
+        </div>
+        <div class="nav-body">
+          <ul class="nav-links p-0 m-0 list-style-none">
+            <li>
+              <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
+            </li>
+            <li>
+              <nuxt-link to="/languages" @click.native="resetMap"
+                >Languages</nuxt-link
+              >
+            </li>
+            <li>
+              <nuxt-link to="/first-nations" @click.native="resetMap"
+                >First Nations</nuxt-link
+              >
+            </li>
+            <li>
+              <nuxt-link to="/place-names" @click.native="resetMap"
+                >Place-names</nuxt-link
+              >
+            </li>
+            <li><a href="http://184.69.112.115/orderMaps">Order Maps</a></li>
+            <li><a href="https://maps.fpcc.ca/help">Help</a></li>
+            <li class="login-nav cursor-pointer">
+              <a href="https://maps.fpcc.ca/user/login" class="d-block"
+                >Login</a
+              >
+            </li>
+          </ul>
+          <div
+            class="close-nav cursor-pointer d-inline-block"
+            @click="closeNav"
+          >
+            <a href="#">
+              <img src="@/assets/images/close_icon.svg" alt="Close"
+            /></a>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      navigationOpen: false
+    }
+  },
+  computed: {
+    mapinstance() {
+      return this.$store.state.mapinstance.mapinstance
+    }
+  },
+  methods: {
+    handleLogoClick() {
+      this.$router.push({
+        path: '/'
+      })
+    },
+    openNav() {
+      this.navigationOpen = true
+    },
+    closeNav() {
+      this.navigationOpen = false
+    },
+    handleNavLink() {
+      this.$store.commit('mapinstance/setForceReset', true)
+      if (this.$route.name === 'index') {
+        this.$root.$emit('resetMap')
+        this.$store.commit('mapinstance/setForceReset', false)
+      } else {
+        this.$router.push({ path: '/' })
+      }
+
+      this.closeNav()
+    },
+    resetMap() {
+      this.$root.$emit('resetMap')
+      this.closeNav()
+    }
+  }
+}
+</script>
+
+<style>
+.navbar-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  padding: 1em;
+  border-radius: 50%;
+  z-index: 50;
+}
+
+.navigation {
+  position: fixed;
+  height: 86px;
+  width: 100%;
+  display: flex;
+  background-color: white;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+  padding-right: 0.5em;
+}
+.nav-logo-img {
+  display: inline-block;
+  height: 40px;
+  width: auto;
+}
+.navbar-icon-container {
+  line-height: 0;
+}
+.navbar-icon {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  line-height: 0;
+  padding: 0;
+  margin: 0;
+}
+.nav-links {
+  display: inline-block;
+}
+.nav-links li {
+  margin-right: 1em;
+  font-size: 0.8em;
+  display: inline-block;
+}
+
+.nav-links a {
+  color: var(--color-gray);
+  font-weight: 500;
+}
+
+.login-nav a {
+  background-color: var(--color-beige);
+  border-radius: 0.5em;
+  padding: 0.5em 2.7em;
+}
+.close-nav {
+  border-radius: 50%;
+  border: 1px solid #dedcda;
+  padding: 1em;
+  line-height: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+@media (max-width: 992px) {
+  .nav-container {
+    display: inline-block;
+    display: table-cell;
+    width: 15%;
+    padding-right: 0.5em;
+    vertical-align: middle;
+    padding-left: 0.5em;
+  }
+
+  .navbar-container {
+    position: static;
+    display: inline-block;
+    padding: 0.8em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .navigation {
+    flex-direction: column;
+    height: auto;
+    padding: 0.5em;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em !important;
+  }
+
+  .nav-links li {
+    margin: 0.5em 0;
+  }
+
+  .nav-header {
+    align-self: self-end;
+  }
+
+  .close-nav {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.75em;
+  }
+}
+</style>

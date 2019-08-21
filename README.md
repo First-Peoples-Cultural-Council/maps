@@ -1,64 +1,101 @@
-# First Peoples' Language Map (FPLM)
+# First People's Language Map
 
-This repository contains planning materials for the FPLM web app project. At Countable we believe a key part of planning is developing an early prototype. We've included much of the data intended for Phase 2 in this [MapBox base layer](https://api.mapbox.com/styles/v1/countable-web/cjwcq8ybe06so1cpin5lz5sfj.html?fresh=true&title=true&access_token=pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA#4.78/52.44/-123.85).
+This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestone 2. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
 
-## Deliverables
+## Technology Stack Overview
 
-### Stakeholder Interviews
-*Requrement: Interview key stakeholders at FPCC to gather, develop and document fine-tuned requirements (expressed as epics/user stories) and review existing deployments (https://www.fp-artsmap.ca, http://maps.fpcc.ca).*
+-   Fully Dockerized, and configured with docker-compose.
+-   Uses PostgreSQL and PostGIS.
+-   API-Driven Django. We don't use Django's templates for anything.
+-   Uses Nuxt.js for SEO-friendly modern templates.
+-   Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
 
-  * Stakeholders from FPCC were interviewed and those discussions along with reviews of the existing deployments formed the basis of the [User Stories](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg)
-  * Key observations from interviews are held in the [User Stories - Appendix D2](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg)
-  * For interviewee privacy, the raw interview answers are not currently public [request access](https://docs.google.com/forms/d/1IQrmAR3WvaElUqNQQ44nh6mS92L4UsrTTOmqNM2gmY0/edit#response=ACYDBNgPnE6MSVW30CxZa744X3NjQqfTZkpy-KoWMjjMJvDrGrt2IzOsVuQcbcjsVmMoWUE)
-  * Stakeholder interview [schedule](https://docs.google.com/spreadsheets/d/1blPhBSdzw7pOeUZGrMV1AiUTPvK9kGU4RLvchswdug4/edit#gid=669170734).
+## Installation
 
-### Technology Options
-*Requrement: Select and review technology options, including decision on a cross-platform deployment (Android/iPhone).*
+Clone the project.
 
-  * See [User Stories - Appendix B](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg). Not all discussions surrounding these choices were documented. The key factor is the planning team demonstrated similar work and some prototyping using these stack components, and w recommend the implementing team use an appropriate technology stack they are experts in.
+```
+git clone https://github.com/countable-web/fplm.git
+```
 
-### Planning
-*Requrement: Create wireframes, mock-ups, and technical designs based on requirements.*
+Install [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 
-#### WireFrames
-  
-  * Video navigating through media upload [wireframes](https://drive.google.com/open?id=1EmrvRhYHrxxtTHq4tIIPKtRb0ro6DaZS).
+Copy the local settings template. They're all in one file, dc.dev.yml. docker-compose.override.yml is gitignored so you can store secrets there if needed.
+```
+cp dc.dev.yml docker-compose.override.yml
+```
 
-#### Mock-ups
+Spin up the project.
 
-Landing Page
-![landing](./mock-1.png)
+```
+docker-compose up
+```
 
-Language Selected
-![language](./mock-2.png)
+Your Django app is served at `http://localhost/api`
 
-Language Detail (TODO: map should zoom)
-![detail](./mock-3.png)
+To create a superuser, do this from the shell.
 
-   * Video navigating through landing flows [mock-ups](https://drive.google.com/open?id=1YQ2PJAeml1cEhQsCwMk8o8CY2kiMAGgq).
-   * Originals of Adobe design files [here](https://drive.google.com/drive/u/0/folders/1EUjSc2NAbVhD3fn6Pjj9_4OstD6pIE7E?ddrp=1). TODO @Felipe
+```
+docker-compose exec web ./setup.sh
+```
 
-#### Information Architecture
-This diagram shows the relationship with FPLM to other web properties.
-![Information Architecture](./fplm-ia.png)
+You can visit the Django admin at `http://localhost/admin` and sign in with your superuser. The username is `admin`, password is `pass`.
 
-#### DB Schema
-This diagram shows a high level proposed schema for the FPLM web app.
-![DB Schema](./fplm-schema.png)
+Your Vue app is served at `http://localhost`. The front-end won't work properly unless you have a realistic dataset. In this project, the database is quite small, we suggest using a production snapshot for development, because this gives better dev/prod parity for easier development. The other option is to populate tables using a script (an example is provided for migrating out of Druapl) or create your data manually in the Django admin.
 
-### Standards and Benchmarks
-*Requrement: Set and document baselines in terms of performance, test coverage, accessibility, browser support, font support.*
+## Contributing
 
-  * Benchmarks are shared the [User Stories - Appendix A](https://docs.google.com/document/d/1PoplPndKe7XYzABfq_HEup7jxsyDEAGyz5p-_hfo_bk/edit#heading=h.ibwfjzmfr3dg).
+To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file. If you ever have coding style problems, you can fix them by running:
 
-### Distribution
-*Requrement: All output and results from this step should be shared with FPCC in a digital, reusable format.*
+```
+docker-compose exec frontend lint --fix
+```
 
-  * [This repository](./) and the accompanying [public Google Drive folder](https://drive.google.com/drive/folders/1cJmyfs9K645JTUn_bHOebEF0BYIVUhuv?usp=sharing) contain all outputs of Phase 1.
+### Example, add a new database field.
 
-### Other Stuff
-This repository also contains.
+Open one of the `models.py`, and add your field according to the [docs](https://docs.djangoproject.com/en/2.2/topics/db/models/), ie) (new line marked with `+`)
 
-  * An export of the MapBox theme files.
-  * A script for importing the language regions, places, and community locations from a custom format to native geojson (see `scripts/convert.py`, it takes a raw file from `./data` as input.)
-  * The MIT Licence (proposed by Vendor, awaiting approval)
+```
+class Language(BaseModel)
+
++    flavour=CharField(default='Strawberry', max_length=31)
+    other_names = models.TextField(default="", blank=True)
+    fv_archive_link = models.URLField(max_length=255, blank=True, default="")
+```
+
+Then create, and apply the migration. Make sure you add the generated migration to GIT.
+```
+docker-compose exec web python manage.py makemigrations
+docker-compose exec web python manage.py migrate
+git add .
+```
+
+If you want this field to be editable in the admin, this will happen by default. Depending on the previous rules, you may need to edit (admin.py)[https://docs.djangoproject.com/en/2.2/ref/contrib/admin/]
+
+## Deployment
+
+The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
+The `develop` branch id deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
+
+## Restoring data
+
+This project was originally ported from a Drupal database, and we have a somewhat generic way of getting things out of Drupal the first time. Doing this requires populating the old database secrets in your docker-compose.override.yml
+
+`docker-compose exec web python manage.py bootstrap` to get languages.
+`docker-compose exec web python manage.py get_sleeping` to import an old KML source for languageion region geometry (included in repo).
+`docker-compose exec web python manage.py cache_arts` and `docker-compose exec web python manage.py load_arts` to get arts.
+
+
+## Testing
+
+To test frontend:
+```
+        docker-compose exec frontend yarn run test
+```
+
+To test backend API:
+```
+        docker-compose exec web python manage.py test
+```
+
+

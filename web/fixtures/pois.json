@@ -1,0 +1,706 @@
+{
+  "markers": {
+    "marker": [
+      {
+        "_nid": "1285",
+        "_map_icon": "info.png ",
+        "_loc_x": "-130.321040",
+        "_loc_y": "54.318517",
+        "_name": "Seashore Charters"
+      },
+      {
+        "_nid": "2409",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-119.165107",
+        "_loc_y": "50.529010",
+        "_name": "FirstVoices - Splatsin (Eastern dialect)"
+      },
+      {
+        "_nid": "1592",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-128.697318",
+        "_loc_y": "60.070272",
+        "_name": "Liard Kaska FirstVoices Archive"
+      },
+      {
+        "_nid": "1591",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-127.506524",
+        "_loc_y": "50.721848",
+        "_name": "Kwak̓wala FirstVoices Archive"
+      },
+      {
+        "_nid": "1588",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-115.754570",
+        "_loc_y": "49.585099",
+        "_name": "Ktunaxa FirstVoices Archive"
+      },
+      {
+        "_nid": "1587",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.990587",
+        "_loc_y": "50.049091",
+        "_name": "Klahoose FirstVoices Archive"
+      },
+      {
+        "_nid": "1586",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-128.778200",
+        "_loc_y": "54.711844",
+        "_name": "kitsumkalum sm'algyax FirstVoices Archive"
+      },
+      {
+        "_nid": "1583",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-123.708310",
+        "_loc_y": "48.776774",
+        "_name": "HUL'Q'UMI'NUM' FirstVoices Archive"
+      },
+      {
+        "_nid": "1582",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-131.976598",
+        "_loc_y": "53.273583",
+        "_name": "Hlg̱aagilda X̱aayda Kil FirstVoices Archive"
+      },
+      {
+        "_nid": "1581",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-123.198318",
+        "_loc_y": "49.225115",
+        "_name": "hən̓q̓əmin̓əm̓ FirstVoices Archive"
+      },
+      {
+        "_nid": "1578",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-128.646970",
+        "_loc_y": "53.970779",
+        "_name": "Haisla FirstVoices Archive"
+      },
+      {
+        "_nid": "1577",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-128.263939",
+        "_loc_y": "55.043991",
+        "_name": "Gitsenimx̱  FirstVoices Archive"
+      },
+      {
+        "_nid": "1576",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-126.844709",
+        "_loc_y": "49.984450",
+        "_name": "Ehattesaht FirstVoices Archive"
+      },
+      {
+        "_nid": "1570",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-134.707678",
+        "_loc_y": "60.168652",
+        "_name": "C/TFN Tlingit FirstVoices Archive"
+      },
+      {
+        "_nid": "1607",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-120.298645",
+        "_loc_y": "50.680597",
+        "_name": "Secwepemc FirstVoices Archive"
+      },
+      {
+        "_nid": "1608",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-119.701409",
+        "_loc_y": "50.828916",
+        "_name": "Secwepemctsin (Eastern Dialect) FirstVoices Archive"
+      },
+      {
+        "_nid": "1613",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.891205",
+        "_loc_y": "54.051004",
+        "_name": "Stellat'en FirstVoices Archive"
+      },
+      {
+        "_nid": "1597",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.601440",
+        "_loc_y": "54.080179",
+        "_name": "Nadleh Whut'en FirstVoices Archive"
+      },
+      {
+        "_nid": "1621",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-125.056000",
+        "_loc_y": "54.600392",
+        "_name": "Yekooche FirstVoices Archive"
+      },
+      {
+        "_nid": "1611",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-123.929653",
+        "_loc_y": "49.151550",
+        "_name": "Snuneymuxw FirstVoices Archive"
+      },
+      {
+        "_nid": "1601",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-121.923708",
+        "_loc_y": "50.684879",
+        "_name": "Northern St̕át̕imcets FirstVoices Archive"
+      },
+      {
+        "_nid": "1595",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-130.287320",
+        "_loc_y": "54.322572",
+        "_name": "Metlakatla Sm'algyax FirstVoices Archive"
+      },
+      {
+        "_nid": "1579",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-121.959866",
+        "_loc_y": "49.133634",
+        "_name": "Halq'eméylem FirstVoices Archive"
+      },
+      {
+        "_nid": "1573",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-122.502305",
+        "_loc_y": "52.979002",
+        "_name": "Dakelh/Southern Carrier FirstVoices Archive"
+      },
+      {
+        "_nid": "1605",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-125.526009",
+        "_loc_y": "48.940002",
+        "_name": "Nuu-chah-nulth FirstVoices Archive"
+      },
+      {
+        "_nid": "1590",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-125.616667",
+        "_loc_y": "57.416667",
+        "_name": "Kwadacha Tsek'ene FirstVoices Archive"
+      },
+      {
+        "_nid": "1622",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.806747",
+        "_loc_y": "49.234637",
+        "_name": "c̕išaaʔatḥ"
+      },
+      {
+        "_nid": "1288",
+        "_map_icon": "info.png ",
+        "_loc_x": "-126.656202",
+        "_loc_y": "52.366305",
+        "_name": "Bella Coola's Eagle Lodge"
+      },
+      {
+        "_nid": "1289",
+        "_map_icon": "info.png ",
+        "_loc_x": "-122.143785",
+        "_loc_y": "52.278460",
+        "_name": "Xats’ull Heritage Village"
+      },
+      {
+        "_nid": "1290",
+        "_map_icon": "info.png ",
+        "_loc_x": "-115.789375",
+        "_loc_y": "50.618827",
+        "_name": "CrossRiver Wilderness Centre"
+      },
+      {
+        "_nid": "1291",
+        "_map_icon": "info.png ",
+        "_loc_x": "-115.756330",
+        "_loc_y": "49.585614",
+        "_name": "St. Eugene Golf Resort & Casino"
+      },
+      {
+        "_nid": "1292",
+        "_map_icon": "info.png ",
+        "_loc_x": "-120.090721",
+        "_loc_y": "49.354742",
+        "_name": "Mascot Gold Mine Tours and Snaza’ist Discovery Centre "
+      },
+      {
+        "_nid": "1293",
+        "_map_icon": "info.png ",
+        "_loc_x": "-119.433349",
+        "_loc_y": "49.038374",
+        "_name": "Nk'Mip - The Okanagan’s Ultimate Destination Resort"
+      },
+      {
+        "_nid": "1294",
+        "_map_icon": "info.png ",
+        "_loc_x": "-119.435012",
+        "_loc_y": "49.040533",
+        "_name": "Nk'Mip Desert Cultural Centre"
+      },
+      {
+        "_nid": "1295",
+        "_map_icon": "info.png ",
+        "_loc_x": "-120.298645",
+        "_loc_y": "50.680597",
+        "_name": "Secwepemc Museum and Heritage Park"
+      },
+      {
+        "_nid": "1296",
+        "_map_icon": "info.png ",
+        "_loc_x": "-119.615310",
+        "_loc_y": "50.875941",
+        "_name": "Talking Rock Resort and Quaaout Lodge"
+      },
+      {
+        "_nid": "1417",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.929347",
+        "_loc_y": "49.144875",
+        "_name": "Tillicum Lelum Aboriginal Friendship Centre"
+      },
+      {
+        "_nid": "1418",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-117.659650",
+        "_loc_y": "49.308732",
+        "_name": "Lower Columbia All First Nations"
+      },
+      {
+        "_nid": "1419",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-121.629632",
+        "_loc_y": "55.697588",
+        "_name": "Tansi Friendship Centre Society"
+      },
+      {
+        "_nid": "1420",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-124.997780",
+        "_loc_y": "49.680755",
+        "_name": "Wachiay Friendship Centre Society"
+      },
+      {
+        "_nid": "1421",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-120.239478",
+        "_loc_y": "55.759535",
+        "_name": "Nawican Friendship Centre"
+      },
+      {
+        "_nid": "1422",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.699718",
+        "_loc_y": "48.782593",
+        "_name": "Hiiye'yu Lelum (House of Friendship) Society"
+      },
+      {
+        "_nid": "1423",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-122.701093",
+        "_loc_y": "58.803895",
+        "_name": "Fort Nelson Aboriginal Friendship Society"
+      },
+      {
+        "_nid": "1424",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-120.851069",
+        "_loc_y": "56.241448",
+        "_name": "Fort St John Friendship Society"
+      },
+      {
+        "_nid": "1425",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-126.647268",
+        "_loc_y": "54.398810",
+        "_name": "Dzelk'ant Friendship Center - Houston Program Office"
+      },
+      {
+        "_nid": "1426",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-120.355730",
+        "_loc_y": "50.686268",
+        "_name": "Interior Indian Friendship Society"
+      },
+      {
+        "_nid": "1427",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-119.494361",
+        "_loc_y": "49.884505",
+        "_name": "Ki-Low-Na Friendship Society"
+      },
+      {
+        "_nid": "1428",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-121.928092",
+        "_loc_y": "50.698820",
+        "_name": "Lillooet Friendship Centre Society"
+      },
+      {
+        "_nid": "1429",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-120.786708",
+        "_loc_y": "50.110863",
+        "_name": "Conayt Friendship Society"
+      },
+      {
+        "_nid": "1430",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-119.586623",
+        "_loc_y": "49.485652",
+        "_name": "OoknaKane Friendship Centre"
+      },
+      {
+        "_nid": "1431",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-124.805919",
+        "_loc_y": "49.241332",
+        "_name": "Port Alberni Friendship Center"
+      },
+      {
+        "_nid": "1432",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-122.751777",
+        "_loc_y": "53.918804",
+        "_name": "Prince George Native Friendship Centre"
+      },
+      {
+        "_nid": "1433",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-130.327135",
+        "_loc_y": "54.310084",
+        "_name": "Friendship House Association of Prince Rupert"
+      },
+      {
+        "_nid": "1434",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-122.502911",
+        "_loc_y": "52.977020",
+        "_name": "Quesnel Tillicum Society, Native Friendship Centre"
+      },
+      {
+        "_nid": "1436",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-128.585676",
+        "_loc_y": "54.520214",
+        "_name": "Kermode Friendship Society"
+      },
+      {
+        "_nid": "1437",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.072547",
+        "_loc_y": "49.281286",
+        "_name": "Vancouver Aboriginal Friendship Centre "
+      },
+      {
+        "_nid": "1438",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-119.269380",
+        "_loc_y": "50.262986",
+        "_name": "First Nations Friendship Centre"
+      },
+      {
+        "_nid": "1439",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.369132",
+        "_loc_y": "48.424912",
+        "_name": "BC Association of Aboriginal Friendship Centres"
+      },
+      {
+        "_nid": "1440",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.388895",
+        "_loc_y": "48.455991",
+        "_name": "Victoria Native Friendship Centre"
+      },
+      {
+        "_nid": "1441",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-135.057087",
+        "_loc_y": "60.722991",
+        "_name": "Skookum Jim Friendship Centre"
+      },
+      {
+        "_nid": "1442",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-122.142445",
+        "_loc_y": "52.126865",
+        "_name": "Cariboo Friendship Society"
+      },
+      {
+        "_nid": "1443",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-126.936792",
+        "_loc_y": "50.593038",
+        "_name": "U'mista Cultural Centre"
+      },
+      {
+        "_nid": "1444",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-128.145204",
+        "_loc_y": "52.164316",
+        "_name": "Heiltsuk Cultural Education Centre"
+      },
+      {
+        "_nid": "1445",
+        "_map_icon": "info.png ",
+        "_loc_x": "-123.461688",
+        "_loc_y": "48.580972",
+        "_name": "First Peoples' Heritage, Language and Culture Council"
+      },
+      {
+        "_nid": "1446",
+        "_map_icon": "info.png ",
+        "_loc_x": "-123.461688",
+        "_loc_y": "48.580972",
+        "_name": "First Peoples' Cultural Foundation"
+      },
+      {
+        "_nid": "1447",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-121.959866",
+        "_loc_y": "49.133634",
+        "_name": "Coqualeetza Cultural Education Centre"
+      },
+      {
+        "_nid": "1448",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.708252",
+        "_loc_y": "48.776708",
+        "_name": "Quw'utsun Syuw’entst Lelum' Culture and Education Centre"
+      },
+      {
+        "_nid": "1449",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-123.710070",
+        "_loc_y": "48.777649",
+        "_name": "Red River West Cultural Association"
+      },
+      {
+        "_nid": "1450",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-120.298645",
+        "_loc_y": "50.680597",
+        "_name": "Secwepemc Cultural Education Society"
+      },
+      {
+        "_nid": "1451",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-119.601967",
+        "_loc_y": "49.478507",
+        "_name": "En'owkin Centre"
+      },
+      {
+        "_nid": "1452",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-124.070411",
+        "_loc_y": "53.976613",
+        "_name": "Stoney Creek Elders Cultural Society"
+      },
+      {
+        "_nid": "1453",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-124.104074",
+        "_loc_y": "53.941128",
+        "_name": "Yinka Déné Language Institute"
+      },
+      {
+        "_nid": "1435",
+        "_map_icon": "green_dot.png ",
+        "_loc_x": "-127.166520",
+        "_loc_y": "54.781780",
+        "_name": "Dze L K'ant Friendship Centre "
+      },
+      {
+        "_nid": "1575",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.671478",
+        "_loc_y": "48.806683",
+        "_name": "Ditidaht FirstVoices Archive"
+      },
+      {
+        "_nid": "1620",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-132.144585",
+        "_loc_y": "54.011118",
+        "_name": "x̱aad kil (Massett Haida) FirstVoices Archive"
+      },
+      {
+        "_nid": "1619",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-127.330856",
+        "_loc_y": "55.023693",
+        "_name": "Wet’suwet’en FirstVoices Archive"
+      },
+      {
+        "_nid": "1617",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-127.506524",
+        "_loc_y": "50.721848",
+        "_name": "’Uik̓ala FirstVoices Archive"
+      },
+      {
+        "_nid": "1616",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.075494",
+        "_loc_y": "51.417959",
+        "_name": "Tsilhqot'in (Xeni Gwet'in) FirstVoices Archive"
+      },
+      {
+        "_nid": "1615",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-123.045377",
+        "_loc_y": "54.984340",
+        "_name": "Tse'Khene FirstVoices Archive"
+      },
+      {
+        "_nid": "1614",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-134.707678",
+        "_loc_y": "60.168652",
+        "_name": "Tagish FirstVoices Archive"
+      },
+      {
+        "_nid": "1612",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-135.052614",
+        "_loc_y": "60.719346",
+        "_name": "Southern Tutchone FirstVoices Archive"
+      },
+      {
+        "_nid": "1610",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.607277",
+        "_loc_y": "49.892201",
+        "_name": "Sliammon FirstVoices Archive"
+      },
+      {
+        "_nid": "1609",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-123.465858",
+        "_loc_y": "48.579461",
+        "_name": "SENĆOŦEN FirstVoices Archive"
+      },
+      {
+        "_nid": "1606",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-126.762575",
+        "_loc_y": "52.372894",
+        "_name": "Nuxalk FirstVoices Archive"
+      },
+      {
+        "_nid": "1603",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-119.536750",
+        "_loc_y": "49.881026",
+        "_name": "nsyilxcən FirstVoices Archive"
+      },
+      {
+        "_nid": "1600",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-121.569300",
+        "_loc_y": "50.218391",
+        "_name": "nłeʔkepmxcin FirstVoices Archive"
+      },
+      {
+        "_nid": "1599",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-129.082751",
+        "_loc_y": "55.204596",
+        "_name": "Nisga'a FirstVoices Archive"
+      },
+      {
+        "_nid": "1598",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-124.248505",
+        "_loc_y": "54.450081",
+        "_name": "Nak’azdli Dakelh FirstVoices Archive"
+      },
+      {
+        "_nid": "1594",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-113.580674",
+        "_loc_y": "52.877477",
+        "_name": "ᒪᐢᑿᒋᐢ ᓀᐦᐃᔭᐍᐏᐣ / Maskwacis Cree FirstVoices Archive"
+      },
+      {
+        "_nid": "1593",
+        "_map_icon": "FV-icon-25x25.png ",
+        "_loc_x": "-122.720274",
+        "_loc_y": "50.312638",
+        "_name": "Lil'wat FirstVoices Archive"
+      },
+      {
+        "_nid": "1283",
+        "_map_icon": "info.png ",
+        "_loc_x": "-130.322657",
+        "_loc_y": "54.316398",
+        "_name": "Museum of Northern B.C."
+      },
+      {
+        "_nid": "1138",
+        "_map_icon": "info.png ",
+        "_loc_x": "-120.298333",
+        "_loc_y": "50.676944",
+        "_name": "Secwepemc Museum and Heritage Park"
+      },
+      {
+        "_nid": "1137",
+        "_map_icon": "info.png ",
+        "_loc_x": "-125.247500",
+        "_loc_y": "50.032500",
+        "_name": "Wei Wai Kum House of Treasures"
+      },
+      {
+        "_nid": "1141",
+        "_map_icon": "info.png ",
+        "_loc_x": "-128.065033",
+        "_loc_y": "55.103500",
+        "_name": "'Ksan Native Village and Museum"
+      },
+      {
+        "_nid": "1139",
+        "_map_icon": "info.png ",
+        "_loc_x": "-122.252858",
+        "_loc_y": "49.149922",
+        "_name": "XÁ:YTEM  Longhouse Interpretive Centre"
+      },
+      {
+        "_nid": "1267",
+        "_map_icon": "info.png ",
+        "_loc_x": "-123.118954",
+        "_loc_y": "49.284461",
+        "_name": "Bill Reid Gallery of Northwest Coast Art"
+      },
+      {
+        "_nid": "1268",
+        "_map_icon": "info.png ",
+        "_loc_x": "-121.606348",
+        "_loc_y": "49.356060",
+        "_name": "Ruby Creek Art Gallery"
+      },
+      {
+        "_nid": "1269",
+        "_map_icon": "info.png ",
+        "_loc_x": "-122.944502",
+        "_loc_y": "50.119650",
+        "_name": "Squamish Lil'wat Cultural Centre"
+      },
+      {
+        "_nid": "1270",
+        "_map_icon": "info.png ",
+        "_loc_x": "-121.937355",
+        "_loc_y": "50.690374",
+        "_name": "St'át'imc Cultural Experiences"
+      },
+      {
+        "_nid": "1271",
+        "_map_icon": "info.png ",
+        "_loc_x": "-121.957684",
+        "_loc_y": "49.111583",
+        "_name": "Sto:lo Artisan Centre"
+      }
+    ]
+  }
+}

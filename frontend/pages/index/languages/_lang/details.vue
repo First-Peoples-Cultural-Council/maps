@@ -1,0 +1,193 @@
+<template>
+  <div>
+    <div class="color-row" :style="'background-color: ' + languageColor"></div>
+
+    <LanguageDetailCard
+      :color="languageColor"
+      :name="this.$route.params.lang"
+      :detail="true"
+      audio-file=""
+    ></LanguageDetailCard>
+    <section class="pl-3 pr-3">
+      <h5 class="other-lang-names-title text-uppercase mt-4">
+        Other Language Names
+      </h5>
+      <LanguageDetailBadge
+        v-for="(name, index) in otherNames"
+        :key="index"
+        :content="name"
+        class="mr-2"
+      ></LanguageDetailBadge>
+      <table v-if="language.sub_family" class="lang-detail-table mt-3">
+        <thead>
+          <tr>
+            <th>Language Family</th>
+            <th>Language Sub Family</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <LanguageDetailBadge
+                :content="language.sub_family.name"
+              ></LanguageDetailBadge>
+            </td>
+            <td>
+              <LanguageDetailBadge
+                :content="language.sub_family.family.name"
+              ></LanguageDetailBadge>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="lang-notes mt-3 color-gray font-08">
+        {{ language.notes || '' }}
+      </div>
+      <div class="lang-statement"></div>
+      <div v-if="language.languagelink_set.length > 0" class="lang-links mt-4">
+        <h5 class="text-uppercase color-gray font-08">Links</h5>
+        <ul class="list-style-none p-0 m-0 font-08">
+          <li v-for="(link, index) in language.languagelink_set" :key="index">
+            <a class="color-gold word-break-all" :href="link.url">{{
+              link.title
+            }}</a>
+          </li>
+        </ul>
+      </div>
+      <div v-if="language.fv_archive_link" class="mt-4">
+        <LanguageSeeAll
+          :content="`Learn ${language.name} on FirstVoices`"
+          @click.native="handleClick($event, language.fv_archive_link)"
+        ></LanguageSeeAll>
+      </div>
+      <div class="mt-3">
+        <b-table
+          hover
+          :items="lna"
+          responsive
+          small
+          table-class="lna-table"
+          thead-class="lna-table-thead"
+          tbody-class="lna-table-tbody"
+        ></b-table>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import { values, omit } from 'lodash'
+import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
+import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
+import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
+import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
+import { getApiUrl } from '@/plugins/utils.js'
+
+export default {
+  components: {
+    LanguageDetailCard,
+    LanguageDetailBadge,
+    LanguageSeeAll
+  },
+  data() {},
+  computed: {
+    ...mapState({
+      mapinstance: state => state.mapinstance.mapInstance,
+      otherNames() {
+        return this.language.other_names.split(',')
+      },
+      languageColor() {
+        return this.language.color
+      },
+      lna() {
+        const lnas = values(this.language.lna_by_nation)
+        return lnas.map(lna =>
+          omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
+        )
+      }
+    })
+  },
+  async asyncData({ $axios, store, params }) {
+    const languageName = params.lang
+
+    const languages = await $axios.$get(getApiUrl(`language/`))
+    const language = languages.find(
+      lang => lang.name.toLowerCase() === languageName.toLowerCase()
+    )
+    const languageId = language.id
+
+    const result = await Promise.all([
+      $axios.$get(getApiUrl(`language/${languageId}`))
+    ])
+
+    return {
+      language: result[0]
+    }
+  },
+  mounted() {
+    this.$store.commit('sidebar/set', true)
+    this.$eventHub.whenMap(map => {
+      if (this.$route.hash.length <= 1) {
+        zoomToLanguage({ map, lang: this.language })
+      } else {
+        selectLanguage({ map, lang: this.language })
+      }
+    })
+  },
+  methods: {
+    handleClick(e, data) {
+      window.open(data)
+    }
+  }
+}
+</script>
+
+<style>
+.color-row {
+  background-color: black;
+  height: 7px;
+}
+.other-lang-names-title {
+  color: var(--color-gray);
+  font-size: 0.8em;
+}
+
+.lang-detail-table th {
+  font-size: 0.6em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+}
+.lang-detail-table {
+  width: 100%;
+}
+
+.lna-table {
+  border: 1px solid #ebe6dc;
+  margin-bottom: 0;
+}
+.lna-table-thead {
+  font-size: 0.8em;
+  color: var(--color-gray);
+}
+
+.lna-table-thead th {
+  font-weight: normal;
+  vertical-align: middle !important;
+  border: 0;
+  border-bottom: 0 !important;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.lna-table-tbody {
+  font-size: 0.8em;
+}
+
+.lna-table-tbody td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: var(--color-gray);
+  vertical-align: middle;
+}
+</style>
