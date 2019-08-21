@@ -181,6 +181,7 @@ export default {
     handleSearchUpdate: debounce(async function() {
       if (this.searchQuery === '') {
         this.show = false
+        return
       } else {
         this.show = true
       }
