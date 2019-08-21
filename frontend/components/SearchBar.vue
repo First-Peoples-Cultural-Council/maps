@@ -78,7 +78,8 @@
                     )
                   "
                 >
-                  {{ result.properties.name }}
+                  {{ result.properties.name }} -
+                  {{ result.properties.feature.relativeLocation }}
                 </h5>
                 <h5
                   v-else-if="key === 'Address'"
@@ -208,7 +209,7 @@ export default {
           this.$axios.$get(
             `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
               this.searchQuery
-            }&outputSRS=4326`
+            }&outputSRS=4326&outputStyle=detail`
           ),
           this.$axios.$get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${
@@ -219,6 +220,7 @@ export default {
 
         this.locationResults = geoCodeResults[0].features
         this.addressResults = geoCodeResults[1].features
+        console.log('Government', this.locationResults)
         console.log('Mapbox', this.addressResults)
       } catch (e) {
         console.error(e)
