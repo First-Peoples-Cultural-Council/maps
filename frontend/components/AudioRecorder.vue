@@ -20,11 +20,11 @@
               Recording... <b-spinner type="grow" label="Spinning"></b-spinner>
             </span>
             <span v-if="audioUrl">
-              <Audio
+              <AudioComponent
                 class="mt-2"
                 :audio-object="audio"
-                :audio-u-r-l="audioUrl"
-              ></Audio>
+                :audio-url="audioUrl"
+              ></AudioComponent>
             </span>
           </p>
         </div>
@@ -43,11 +43,11 @@
 </template>
 
 <script>
-import Audio from '@/components/Audio.vue'
+import AudioComponent from '@/components/Audio.vue'
 
 export default {
   components: {
-    Audio
+    AudioComponent
   },
   props: {
     mode: {

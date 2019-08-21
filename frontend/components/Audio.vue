@@ -1,6 +1,6 @@
 <template>
   <div>
-    <audio class="audio-player" controls :src="audioURL">
+    <audio class="audio-player" controls :src="audioUrl">
       Your browser does not support the
       <code>audio</code> element.
     </audio>
@@ -14,7 +14,7 @@ export default {
       default: null,
       type: Object
     },
-    audioURL: {
+    audioUrl: {
       default: null,
       type: String
     }

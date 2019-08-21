@@ -73,12 +73,7 @@
           height="300px"
         />
         <h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>
-        <b-form-file
-          v-model="file"
-          :state="Boolean(file)"
-          placeholder="Choose a file or drop it here..."
-          drop-placeholder="Drop file here..."
-        ></b-form-file>
+        <MediaUploader></MediaUploader>
       </section>
 
       <hr />
@@ -107,13 +102,15 @@ import DetailSideBar from '@/components/DetailSideBar.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
+import MediaUploader from '@/components/MediaUploader.vue'
 
 export default {
   components: {
     DetailSideBar,
     LanguageCard,
     CommunityCard,
-    AudioRecorder
+    AudioRecorder,
+    MediaUploader
   },
   data() {
     return {
@@ -122,12 +119,17 @@ export default {
       categoryOptions: [],
       languageSelected: null,
       categorySelected: null,
-      file: null
+      files: [null]
     }
   },
   methods: {
     callback(msg) {
       console.debug('Event: ', msg)
+    },
+    handleFileSelect(e, file) {
+      if (!file) {
+        this.files.push(null)
+      }
     }
   }
 }
