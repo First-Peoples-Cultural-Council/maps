@@ -19,10 +19,12 @@
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
     ></Mapbox>
-    <Zoom class="zoom-control hide-mobile"></Zoom>
-    <Contribute class="hide-mobile contribute-control"></Contribute>
-    <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
-    <ResetMap class="reset-map-control hide-mobile"></ResetMap>
+    <div class="map-controls-overlay">
+      <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+      <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+      <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+      <Contribute class="hide-mobile contribute-control"></Contribute>
+    </div>
     <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
     <div class="top-bar-container">
       <SearchBar></SearchBar>
@@ -682,27 +684,14 @@ export default {
     width: 1.25em;
   }
 }
-.share-embed-control,
-.zoom-control {
+
+.map-controls-overlay {
   position: absolute;
+  bottom: 20px;
   right: 10px;
-  bottom: 30px;
-}
-
-.zoom-control {
-  right: 230px;
-}
-
-.reset-map-control {
-  position: absolute;
-  right: 135px;
-  bottom: 30px;
-}
-
-.contribute-control {
-  position: absolute;
-  bottom: 30px;
-  right: 305px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
@@ -771,6 +760,21 @@ export default {
 
   .detailModeContainer {
     padding-left: 0px !important;
+  }
+
+  .map-draw-instructions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: trasparent;
+    width: 100%;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 500px;
   }
 }
 
