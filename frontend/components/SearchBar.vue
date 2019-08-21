@@ -80,6 +80,20 @@
                 >
                   {{ result.properties.name }}
                 </h5>
+                <h5
+                  v-else-if="key === 'Address'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.place_name,
+                      result.geometry
+                    )
+                  "
+                >
+                  {{ result.place_name }}
+                </h5>
               </div>
               <hr />
             </div>
@@ -109,6 +123,8 @@ export default {
   },
   data() {
     return {
+      MAPBOX_ACCESS_TOKEN:
+        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       show: false,
       searchQuery: '',
       searchResultClicked: false,
@@ -116,7 +132,8 @@ export default {
       communityResults: [],
       placesResults: [],
       artsResults: [],
-      locationResults: []
+      locationResults: [],
+      addressResults: []
     }
   },
   computed: {
@@ -138,7 +155,8 @@ export default {
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
         this.artsResults.length === 0 &&
-        this.locationResults.length === 0
+        this.locationResults.length === 0 &&
+        this.addressResults.length === 0
       )
     },
     searchResults() {
@@ -147,7 +165,8 @@ export default {
         Communities: this.communityResults,
         Places: this.placesResults,
         Arts: this.artsResults,
-        Locations: this.locationResults
+        Locations: this.locationResults,
+        Address: this.addressResults
       }
     }
   },
@@ -185,11 +204,22 @@ export default {
         'properties.art_type'
       ])
       try {
-        this.locationResults = (await this.$axios.$get(
-          `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
-            this.searchQuery
-          }&outputSRS=4326`
-        )).features
+        const geoCodeResults = await Promise.all([
+          this.$axios.$get(
+            `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
+              this.searchQuery
+            }&outputSRS=4326`
+          ),
+          this.$axios.$get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${
+              this.searchQuery
+            }.json?access_token=${this.MAPBOX_ACCESS_TOKEN}`
+          )
+        ])
+
+        this.locationResults = geoCodeResults[0].features
+        this.addressResults = geoCodeResults[1].features
+        console.log('Mapbox', this.addressResults)
       } catch (e) {
         console.error(e)
       }
@@ -277,7 +307,7 @@ export default {
         })
       }
 
-      if (type === 'Locations') {
+      if (type === 'Locations' || type === 'Address') {
         this.$eventHub.whenMap(map => {
           zoomToPoint({ map, geom, zoom: 11 })
         })
