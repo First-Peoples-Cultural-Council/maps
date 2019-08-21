@@ -34,6 +34,8 @@
         >
         <b-form-input id="traditionalName" type="text"></b-form-input>
 
+        <AudioRecorder class="mt-3"></AudioRecorder>
+
         <label for="westernName" class="contribute-title-one mt-3 mb-1"
           >Western Name</label
         >
@@ -96,7 +98,6 @@
           </b-col>
         </b-row>
       </section>
-      <AudioRecorder></AudioRecorder>
     </DetailSideBar>
   </div>
 </template>

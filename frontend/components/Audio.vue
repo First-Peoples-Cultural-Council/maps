@@ -1,0 +1,32 @@
+<template>
+  <div>
+    <audio class="audio-player" controls :src="audioURL">
+      Your browser does not support the
+      <code>audio</code> element.
+    </audio>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    audioObject: {
+      default: null,
+      type: Object
+    },
+    audioURL: {
+      default: null,
+      type: String
+    }
+  }
+}
+</script>
+
+<style>
+.audio-player {
+  width: 100%;
+  height: 35px;
+  outline: none;
+  filter: sepia(20%) saturate(50%) grayscale(0) contrast(99%) invert(70%);
+}
+</style>
