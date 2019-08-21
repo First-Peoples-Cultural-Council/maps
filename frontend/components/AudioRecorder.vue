@@ -67,6 +67,15 @@ export default {
     }
   },
   methods: {
+    resetEverything() {
+      this.recording = false
+      this.mediaRecorder = null
+      this.audioChunksCollection = []
+      this.audioChunks = []
+      this.audioBlob = null
+      this.audioUrl = null
+      this.audio = null
+    },
     record(e) {
       if (!this.recording) {
         this.recording = true
