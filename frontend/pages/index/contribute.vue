@@ -2,6 +2,11 @@
   <div>
     <DetailSideBar :width="500">
       <div class="contribute-header pt-3 pb-3">
+        <div v-if="languageSelected === null" class="text-center pl-2 pr-2">
+          <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
+            Please select an area from the map
+          </b-alert>
+        </div>
         <div>
           <h4 class="text-uppercase contribute-title mr-2">
             You are contributing to
@@ -114,10 +119,12 @@ export default {
   },
   data() {
     return {
+      showDismissibleAlert: true,
       content: 'Hello World!',
       languageOptions: [],
       categoryOptions: [],
       languageSelected: null,
+      communitySelected: null,
       categorySelected: null,
       files: [null]
     }
@@ -131,6 +138,15 @@ export default {
         this.files.push(null)
       }
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.commit('contribute/setIsDrawMode', true)
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('contribute/setIsDrawMode', false)
+    next()
   }
 }
 </script>

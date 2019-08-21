@@ -6,10 +6,10 @@
     class="contribute-container"
     offset="-60"
   >
-    <b-dropdown-item href="#" @click="handleDropDownClick($event, 'point')"
+    <b-dropdown-item @click="handleDropDownClick($event, 'point')"
       >Add A Point marker</b-dropdown-item
     >
-    <b-dropdown-item href="#" @click="handleDropDownClick($event, 'polygon')"
+    <b-dropdown-item @click="handleDropDownClick($event, 'polygon')"
       >Add An Area Marker</b-dropdown-item
     >
   </b-dropdown>
@@ -19,6 +19,7 @@
 export default {
   methods: {
     handleDropDownClick(e, data) {
+      this.$store.commit('contribute/setIsDrawMode', true)
       this.$router.push({
         path: '/contribute'
       })

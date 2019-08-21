@@ -7,7 +7,9 @@
         this.$route.name === 'index-languages-lang-details'
     }"
   >
-    <div class="map-loading">LOADING MAP</div>
+    <div class="map-loading">
+      Loading Map <b-spinner type="grow" label="Spinning"></b-spinner>
+    </div>
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
@@ -183,7 +185,6 @@ export default {
   },
   data() {
     return {
-      isClickDisabled: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -228,6 +229,9 @@ export default {
     },
     placesSet() {
       return this.$store.state.places.placesSet
+    },
+    isDrawMode() {
+      return this.$store.state.contribute.isDrawMode
     }
   },
   async fetch({ $axios, store }) {
@@ -405,8 +409,8 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
-      console.log('Click Disabled', this.isClickDisabled)
-      if (this.isClickDisabled) {
+      console.log('Click Disabled', this.isDrawMode)
+      if (this.isDrawMode) {
         return
       }
 
