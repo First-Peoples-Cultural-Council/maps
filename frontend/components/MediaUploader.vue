@@ -4,7 +4,6 @@
       <b-form-file
         ref="fileUpload"
         v-model="file"
-        class="d-none"
         :state="Boolean(file)"
         placeholder="Choose a file or drop it here..."
         drop-placeholder="Drop file here..."
@@ -93,21 +92,25 @@ export default {
   },
   watch: {
     file(newFile, oldFile) {
+      if (!newFile) {
+        return
+      }
       if (oldFile && oldFile.name === newFile.name) {
         return
       }
       this.files.push(newFile)
-      console.log('This files', this.files)
     }
   },
   methods: {
+    clearFiles() {
+      console.log(this.$refs.fileUpload.reset())
+    },
     removeFile(e, data) {
-      console.log('Data', data)
-      console.log('Files', this.files)
       this.files = this.files.filter(file => file.name !== data.name)
+      this.clearFiles()
     },
     triggerBrowse(e) {
-      console.log(this.$refs.fileUpload.$el.children[0].click())
+      this.$refs.fileUpload.$el.children[0].click()
     },
     record(e) {
       if (!this.recording) {
