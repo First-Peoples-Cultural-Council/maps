@@ -3,8 +3,23 @@
     <DetailSideBar :width="500">
       <div class="contribute-header pt-3 pb-3">
         <div v-if="languageSelected === null" class="text-center pl-2 pr-2">
-          <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
+          <b-alert
+            v-if="drawnFeatures.length === 0"
+            show
+            variant="danger"
+            dismissible
+          >
             Please select an area from the map
+          </b-alert>
+        </div>
+        <div v-if="languageSelected === null" class="text-center pl-2 pr-2">
+          <b-alert
+            v-if="drawnFeatures.length > 1"
+            show
+            variant="warning"
+            dismissible
+          >
+            You may only contribute to one area at a time
           </b-alert>
         </div>
         <div>
@@ -117,6 +132,7 @@ export default {
     AudioRecorder,
     MediaUploader
   },
+
   data() {
     return {
       showDismissibleAlert: true,
@@ -127,6 +143,11 @@ export default {
       communitySelected: null,
       categorySelected: null,
       files: [null]
+    }
+  },
+  computed: {
+    drawnFeatures() {
+      return this.$store.state.contribute.drawnFeatures
     }
   },
   watch: {

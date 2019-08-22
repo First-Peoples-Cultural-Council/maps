@@ -545,9 +545,22 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
-      map.on('draw.create', function(e) {
-        console.log('Drawing Created')
-        console.log(draw.getAll())
+      map.on('draw.create', e => {
+        const featuresDrawn = draw.getAll()
+        console.log(featuresDrawn)
+        this.$store.commit(
+          'contribute/setDrawnFeatures',
+          featuresDrawn.features
+        )
+      })
+
+      map.on('draw.delete', e => {
+        const featuresDrawn = draw.getAll()
+        console.log(featuresDrawn)
+        this.$store.commit(
+          'contribute/setDrawnFeatures',
+          featuresDrawn.features
+        )
       })
       this.$eventHub.$emit('map-loaded', map)
     },
