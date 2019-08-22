@@ -3,7 +3,7 @@
     <b-row no-gutters>
       <b-col xl="10" class="pr-1">
         <div class="audioRecordedArea">
-          <p class="p-0 m-0">
+          <div class="p-0 m-0">
             <span v-if="!recording">
               Click on
               <img
@@ -19,14 +19,17 @@
             >
               Recording... <b-spinner type="grow" label="Spinning"></b-spinner>
             </span>
-            <span v-if="audioUrl">
+            <div v-if="audioUrl" class="d-flex align-items-center">
               <AudioComponent
                 class="mt-2"
                 :audio-object="audio"
                 :audio-url="audioUrl"
               ></AudioComponent>
-            </span>
-          </p>
+              <b-badge variant="light"
+                >X <span class="sr-only">Delete Recording</span></b-badge
+              >
+            </div>
+          </div>
         </div>
       </b-col>
       <b-col xl="2">

@@ -1,10 +1,8 @@
 <template>
-  <div>
-    <audio class="audio-player" controls :src="audioUrl">
-      Your browser does not support the
-      <code>audio</code> element.
-    </audio>
-  </div>
+  <audio class="audio-player" controls :src="audioUrl">
+    Your browser does not support the
+    <code>audio</code> element.
+  </audio>
 </template>
 
 <script>

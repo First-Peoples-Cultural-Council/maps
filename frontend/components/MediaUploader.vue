@@ -26,9 +26,22 @@
           </span>
         </p>
         <div v-for="(fileToBeUploaded, index) in files" :key="index">
-          <div>
+          <div></div>
+          <b-button
+            block
+            variant="light"
+            class="file-button text-align-left mt-1 mb-1"
+            @click.stop=""
+          >
             {{ fileToBeUploaded.name }}
-          </div>
+            <b-badge
+              pill
+              variant="dark"
+              class="float-right"
+              @click="removeFile($event, fileToBeUploaded)"
+              >X</b-badge
+            >
+          </b-button>
         </div>
         <div
           v-for="(audioToBeUploaded, index) in audios"
@@ -88,6 +101,11 @@ export default {
     }
   },
   methods: {
+    removeFile(e, data) {
+      console.log('Data', data)
+      console.log('Files', this.files)
+      this.files = this.files.filter(file => file.name !== data.name)
+    },
     triggerBrowse(e) {
       console.log(this.$refs.fileUpload.$el.children[0].click())
     },
@@ -136,5 +154,11 @@ export default {
   font-weight: bold;
   border-radius: 0.5em;
   text-align: center;
+}
+
+.file-button {
+  font-size: 1em;
+  padding: 0.2em 1em;
+  text-align: left;
 }
 </style>
