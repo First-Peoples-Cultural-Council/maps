@@ -19,9 +19,13 @@
 export default {
   methods: {
     handleDropDownClick(e, data) {
+      console.log('Data', data)
       this.$store.commit('contribute/setIsDrawMode', true)
       this.$router.push({
-        path: '/contribute'
+        path: '/contribute',
+        query: {
+          mode: data
+        }
       })
     }
   }

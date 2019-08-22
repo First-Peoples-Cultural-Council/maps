@@ -7,6 +7,11 @@
         this.$route.name === 'index-languages-lang-details'
     }"
   >
+    <div v-if="isDrawMode" class="drawing-mode-container">
+      <b-alert show class="p-1 pr-2 pl-2"
+        >You are currently in drawing mode</b-alert
+      >
+    </div>
     <div class="map-loading">
       Loading Map <b-spinner type="grow" label="Spinning"></b-spinner>
     </div>
@@ -527,7 +532,7 @@ export default {
       map.on('idle', e => {
         this.updateHash(map)
       })
-      this.$eventHub.$emit('map-loaded', map)
+
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
 
@@ -535,10 +540,13 @@ export default {
         displayControlsDefault: false,
         controls: {
           polygon: true,
+          point: true,
           trash: true
         }
       })
       map.addControl(draw, 'bottom-left')
+      map.on('draw.create', function(e) {})
+      this.$eventHub.$emit('map-loaded', map)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -677,6 +685,18 @@ export default {
   width: 0px;
 }
 
+.drawing-mode-container {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-left: 500px;
+  z-index: 50;
+}
+
 @keyframes ellipsis {
   to {
     width: 1.25em;
@@ -764,21 +784,6 @@ export default {
 
   .detailModeContainer {
     padding-left: 0px !important;
-  }
-
-  .map-draw-instructions {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: trasparent;
-    width: 100%;
-    bottom: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 500px;
   }
 }
 

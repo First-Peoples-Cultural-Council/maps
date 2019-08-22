@@ -129,6 +129,17 @@ export default {
       files: [null]
     }
   },
+  watch: {
+    '$route.query.mode'() {
+      this.$eventHub.whenMap(map => {
+        if (this.$route.query.mode === 'point') {
+          document.querySelector('.mapbox-gl-draw_point').click()
+        } else {
+          document.querySelector('.mapbox-gl-draw_polygon').click()
+        }
+      })
+    }
+  },
   methods: {
     callback(msg) {
       console.debug('Event: ', msg)
@@ -142,6 +153,13 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.$store.commit('contribute/setIsDrawMode', true)
+      vm.$eventHub.whenMap(map => {
+        if (vm.$route.query.mode === 'point') {
+          document.querySelector('.mapbox-gl-draw_point').click()
+        } else {
+          document.querySelector('.mapbox-gl-draw_polygon').click()
+        }
+      })
     })
   },
   beforeRouteLeave(to, from, next) {
