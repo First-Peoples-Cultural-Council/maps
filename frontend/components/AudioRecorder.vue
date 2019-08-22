@@ -21,12 +21,15 @@
             </span>
             <div v-if="audioUrl" class="d-flex align-items-center">
               <AudioComponent
-                class="mt-2"
+                class="mt-2 mr-2"
                 :audio-object="audio"
                 :audio-url="audioUrl"
               ></AudioComponent>
-              <b-badge variant="light"
-                >X <span class="sr-only">Delete Recording</span></b-badge
+              <b-button
+                class="mt-2"
+                variant="dark"
+                @click.prevent.stop="resetEverything"
+                >X</b-button
               >
             </div>
           </div>
