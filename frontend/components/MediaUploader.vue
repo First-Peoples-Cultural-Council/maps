@@ -4,6 +4,7 @@
       <b-form-file
         ref="fileUpload"
         v-model="file"
+        class="d-none"
         :state="Boolean(file)"
         placeholder="Choose a file or drop it here..."
         drop-placeholder="Drop file here..."
@@ -47,12 +48,17 @@
           :key="'audio' + index"
           class="mt-2"
         >
-          <div>
+          <div class="d-flex">
             <AudioComponent
-              class="mb-2"
+              class="mt-1 mb-1 mr-2"
               :audio-url="audioToBeUploaded.audioUrl"
               :audio-object="audioToBeUploaded.audio"
             ></AudioComponent>
+            <b-button
+              variant="dark"
+              @click.prevent.stop="deleteAudio($event, audioToBeUploaded)"
+              >X</b-button
+            >
           </div>
         </div>
       </div>
@@ -102,6 +108,11 @@ export default {
     }
   },
   methods: {
+    deleteAudio(e, data) {
+      this.audios = this.audios.filter(
+        audio => audio.audioUrl !== data.audioUrl
+      )
+    },
     clearFiles() {
       console.log(this.$refs.fileUpload.reset())
     },
