@@ -545,7 +545,10 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
-      map.on('draw.create', function(e) {})
+      map.on('draw.create', function(e) {
+        console.log('Drawing Created')
+        console.log(draw.getAll())
+      })
       this.$eventHub.$emit('map-loaded', map)
     },
     zoomToHash(map) {
