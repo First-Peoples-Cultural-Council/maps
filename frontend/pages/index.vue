@@ -135,7 +135,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { groupBy } from 'lodash'
+import { groupBy, uniqBy } from 'lodash'
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
@@ -151,7 +151,12 @@ import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, intersects, zoomToIdealBox } from '@/mixins/map.js'
+import {
+  inBounds,
+  intersects,
+  zoomToIdealBox,
+  pointIntersects
+} from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
@@ -547,20 +552,29 @@ export default {
       map.addControl(draw, 'bottom-left')
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
-        console.log(featuresDrawn)
-        this.$store.commit(
-          'contribute/setDrawnFeatures',
-          featuresDrawn.features
-        )
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
       })
 
       map.on('draw.delete', e => {
         const featuresDrawn = draw.getAll()
-        console.log(featuresDrawn)
-        this.$store.commit(
-          'contribute/setDrawnFeatures',
-          featuresDrawn.features
-        )
+        const features = featuresDrawn.features
+        console.log('drawn features on delete', features)
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1 || features.length === 0) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
       })
       this.$eventHub.$emit('map-loaded', map)
     },
@@ -622,21 +636,55 @@ export default {
         // this.updateMarkers(map)
       }
     },
-    filterLanguages(bounds) {
-      const filteredLanguages = this.languageSet.filter(lang => {
-        const sw = lang.bbox.coordinates[0][0]
-        const ne = lang.bbox.coordinates[0][2]
-        const langBounds = {
-          _sw: {
-            lng: sw[0],
-            lat: sw[1]
-          },
-          _ne: {
-            lng: ne[0],
-            lat: ne[1]
-          }
+    formatPoint(point) {
+      return {
+        lng: point[0],
+        lat: point[1]
+      }
+    },
+    formatLangBounds(lang) {
+      const sw = lang.bbox.coordinates[0][0]
+      const ne = lang.bbox.coordinates[0][2]
+      return {
+        _sw: {
+          lng: sw[0],
+          lat: sw[1]
+        },
+        _ne: {
+          lng: ne[0],
+          lat: ne[1]
         }
+      }
+    },
+    getLanguagesFromDraw(features) {
+      const languagesInFeature = []
+      features.map(feature => {
+        const geometry = feature.geometry
+        if (geometry.type === 'Point') {
+          const point = this.formatPoint(geometry.coordinates)
+          languagesInFeature.push(...this.filterLanguages(null, 'draw', point))
+        }
+        if (geometry.type === 'Polygon') {
+          geometry.coordinates[0].map(coord => {
+            const point = this.formatPoint(coord)
+            languagesInFeature.push(
+              ...this.filterLanguages(null, 'draw', point)
+            )
+          })
+        }
+      })
+      return uniqBy(languagesInFeature, 'name')
+    },
+    filterLanguages(bounds, mode = 'default', point = null) {
+      if (mode === 'draw' && point) {
+        return this.languageSet.filter(lang => {
+          const langBounds = this.formatLangBounds(lang)
+          return pointIntersects(point, langBounds)
+        })
+      }
 
+      const filteredLanguages = this.languageSet.filter(lang => {
+        const langBounds = this.formatLangBounds(lang)
         return intersects(bounds, langBounds)
       })
       this.$store.commit(

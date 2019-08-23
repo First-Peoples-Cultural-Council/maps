@@ -1,7 +1,8 @@
 export const state = () => ({
   isDrawMode: false,
   mode: null,
-  drawnFeatures: []
+  drawnFeatures: [],
+  languagesInFeature: []
 })
 
 export const mutations = {
@@ -15,5 +16,9 @@ export const mutations = {
 
   setDrawnFeatures(state, drawnFeatures) {
     state.drawnFeatures = drawnFeatures
+  },
+
+  setLanguagesInFeature(state, languagesInFeature) {
+    state.languagesInFeature = languagesInFeature
   }
 }

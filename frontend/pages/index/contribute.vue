@@ -2,7 +2,7 @@
   <div>
     <DetailSideBar :width="500">
       <div class="contribute-header pt-3 pb-3">
-        <div v-if="languageSelected === null" class="text-center pl-2 pr-2">
+        <div class="text-center pl-2 pr-2">
           <b-alert
             v-if="drawnFeatures.length === 0"
             show
@@ -12,7 +12,7 @@
             Please select an area from the map
           </b-alert>
         </div>
-        <div v-if="languageSelected === null" class="text-center pl-2 pr-2">
+        <div class="text-center pl-2 pr-2">
           <b-alert
             v-if="drawnFeatures.length > 1"
             show
@@ -34,7 +34,7 @@
                 :go="false"
                 variant="white"
                 icon="small"
-                name="diiɁdiitidq"
+                :name="languageSelected ? languageSelected : 'None'"
               ></LanguageCard
             ></b-col>
             <b-col xl="6" class="pl-1"
@@ -137,7 +137,6 @@ export default {
     return {
       showDismissibleAlert: true,
       content: 'Hello World!',
-      languageOptions: [],
       categoryOptions: [],
       languageSelected: null,
       communitySelected: null,
@@ -148,6 +147,20 @@ export default {
   computed: {
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
+    },
+    languageSet() {
+      return this.$store.state.languages.languageSet
+    },
+    languagesInFeature() {
+      return this.$store.state.contribute.languagesInFeature
+    },
+    languageOptions() {
+      return this.languagesInFeature.map(lang => {
+        return {
+          value: lang.name,
+          text: lang.name
+        }
+      })
     }
   },
   watch: {
@@ -159,6 +172,11 @@ export default {
           document.querySelector('.mapbox-gl-draw_polygon').click()
         }
       })
+    },
+    drawnFeatures(drawnFeatures) {
+      if (drawnFeatures.length === 0) {
+        this.languageSelected = null
+      }
     }
   },
   methods: {
