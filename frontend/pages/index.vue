@@ -566,7 +566,6 @@ export default {
       map.on('draw.delete', e => {
         const featuresDrawn = draw.getAll()
         const features = featuresDrawn.features
-        console.log('drawn features on delete', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length === 1 || features.length === 0) {

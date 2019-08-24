@@ -52,14 +52,22 @@
         <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
           >Traditional Name</label
         >
-        <b-form-input id="traditionalName" type="text"></b-form-input>
+        <b-form-input
+          id="traditionalName"
+          v-model="tname"
+          type="text"
+        ></b-form-input>
 
         <AudioRecorder class="mt-3"></AudioRecorder>
 
         <label for="westernName" class="contribute-title-one mt-3 mb-1"
           >Western Name</label
         >
-        <b-form-input id="westernName" type="text"></b-form-input>
+        <b-form-input
+          id="westernName"
+          v-model="wname"
+          type="text"
+        ></b-form-input>
 
         <b-row class="mt-3">
           <b-col xl="6">
@@ -85,6 +93,7 @@
         <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
 
         <TuiEditor
+          v-model="content"
           mode="wysiwyg"
           :options="{
             hideModeSwitch: true
@@ -109,7 +118,9 @@
         </b-row>
         <b-row class="mt-3">
           <b-col xl="12">
-            <b-button block variant="danger">Submit</b-button>
+            <b-button block variant="danger" @click="submitContribute"
+              >Submit</b-button
+            >
           </b-col>
         </b-row>
       </section>
@@ -136,12 +147,14 @@ export default {
   data() {
     return {
       showDismissibleAlert: true,
-      content: 'Hello World!',
+      content: '',
       categoryOptions: [],
       languageSelected: null,
       communitySelected: null,
       categorySelected: null,
-      files: [null]
+      files: [null],
+      tname: '',
+      wname: ''
     }
   },
   computed: {
@@ -180,6 +193,18 @@ export default {
     }
   },
   methods: {
+    submitContribute(e) {
+      const data = {
+        name: this.tname,
+        western_name: this.wname,
+        description: this.content,
+        point: this.drawnFeatures[0].geometry,
+        community_only: null,
+        status: null,
+        other_names: ''
+      }
+      console.log('Data', data)
+    },
     callback(msg) {
       console.debug('Event: ', msg)
     },
