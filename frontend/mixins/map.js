@@ -49,3 +49,12 @@ export const intersects = (r1, r2) => {
     r2._sw.lat >= r1._ne.lat
   )
 }
+
+export const pointIntersects = (point, r1) => {
+  return (
+    r1._sw.lat <= point.lat &&
+    r1._ne.lat >= point.lat &&
+    r1._sw.lng <= point.lng &&
+    r1._ne.lng >= point.lng
+  )
+}

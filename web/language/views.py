@@ -1,31 +1,42 @@
+import sys
+
 from django.shortcuts import render
 
 from .models import (
-    Language,
-    PlaceName,
-    Community,
-    Champion,
+    Language, 
+    LanguageMember, 
+    PlaceName, 
+    Community, 
+    CommunityMember, 
+    Champion, 
     Media,
+    MediaFavourite,
     CommunityLanguageStats,
 )
+
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
 from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
+    LanguageMemberSerializer,
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
+    CommunityMemberSerializer,
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
+    MediaFavouriteSerializer,
     CommunityLanguageStatsSerializer,
 )
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
@@ -56,6 +67,24 @@ class LanguageViewSet(BaseModelViewSet):
     )
 
 
+class LanguageMemberViewSet(BaseModelViewSet):
+    serializer_class = LanguageMemberSerializer
+    queryset = LanguageMember.objects.all()
+
+    # def create(self, request):
+    #     try:
+    #         user_id = int(request.data['user']['id'])
+    #         language_id = int(request.data['language']['id'])
+    #         if LanguageMember.member_already_exists(user_id, language_id):
+    #             return Response({"message", "User is already a language member"})
+    #         else:
+    #             member = LanguageMember.create_member(user_id, language_id)
+    #             serializer = LanguageMemberSerializer(member)
+    #             return Response(serializer.data)
+    #     except:
+    #         return Response("Unexpected error:", sys.exc_info()[0])
+
+
 class CommunityViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
@@ -73,6 +102,24 @@ class CommunityViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 
+class CommunityMemberViewSet(BaseModelViewSet):
+    serializer_class = CommunityMemberSerializer
+    queryset = CommunityMember.objects.all()
+
+    def create(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            community_id = int(request.data['community']['id'])
+            if CommunityMember.member_already_exists(user_id, community_id):
+                return Response({"message", "User is already a community member"})
+            else:
+                member = CommunityMember.create_member(user_id, community_id)
+                serializer = CommunityMemberSerializer(member)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
+
+          
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
@@ -114,7 +161,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 
-# To enable onlye CREATE and DELETE, we create a custom ViewSet class...
+# To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaCustomViewSet(
     mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet
 ):
@@ -126,6 +173,35 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     queryset = Media.objects.all()
 
 
+# To enable only CREATE and DELETE, we create a custom ViewSet class...
+class MediaFavouriteCustomViewSet(
+    mixins.CreateModelMixin, 
+    mixins.ListModelMixin, 
+    mixins.RetrieveModelMixin, 
+    mixins.DestroyModelMixin, 
+    GenericViewSet
+):
+    pass
+
+
+class MediaFavouriteViewSet(MediaFavouriteCustomViewSet, GenericViewSet):
+    serializer_class = MediaFavouriteSerializer
+    queryset = MediaFavourite.objects.all()
+
+    def create(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            media_id = int(request.data['media']['id'])
+            if MediaFavourite.favourite_already_exists(user_id, media_id):
+                return Response({"message", "Media is already a user's favorite"})
+            else:
+                favourite = MediaFavourite.create_favourite(user_id, media_id)
+                serializer = MediaFavouriteSerializer(favourite)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
+
+
 class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
@@ -134,9 +210,8 @@ class LanguageGeoList(generics.ListAPIView):
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
-
+    
 
 class PlaceNameGeoList(generics.ListAPIView):
-
     queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer

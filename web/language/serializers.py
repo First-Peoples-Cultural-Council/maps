@@ -6,15 +6,24 @@ from .models import (
     Champion,
     LanguageFamily,
     LanguageLink,
+    LanguageMember,
     Dialect,
     CommunityLink,
+    CommunityMember,
     LNA,
     LNAData,
     Media,
+    MediaFavourite,
     CommunityLanguageStats,
 )
+from .models import User
+
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+from users.serializers import (
+    UserSerializer,
+)
 
 
 class LanguageFamilySerializer(serializers.ModelSerializer):
@@ -47,6 +56,15 @@ class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
+
+
+class LanguageMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    language = LanguageSerializer(read_only=True)
+
+    class Meta:
+        model = LanguageMember
+        fields = ("id", "user", "language")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -202,6 +220,15 @@ class CommunitySerializer(serializers.ModelSerializer):
         fields = ("name", "id", "point", "audio_file")
 
 
+class CommunityMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    community = CommunitySerializer(read_only=True)
+
+    class Meta:
+        model = CommunityMember
+        fields = ("id", "user", "community")
+
+
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
@@ -314,6 +341,15 @@ class MediaSerializer(serializers.ModelSerializer):
             "media_file",
             "placename",
         )
+
+
+class MediaFavouriteSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    media = MediaSerializer(read_only=True)
+
+    class Meta:
+        model = MediaFavourite
+        fields = ("id", "user", "media")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
