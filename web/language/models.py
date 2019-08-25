@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from django.contrib.gis.db import models
 
 from web.models import BaseModel, CulturalModel
@@ -227,27 +225,27 @@ class Media(BaseModel):
     
 
 class MediaFavourite(BaseModel):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
-    # def create_favourite(user_id, media_id):
-    #     favourite = MediaFavourite()
-    #     favourite.user = User.objects.get(pk=user_id)
-    #     favourite.media = Media.objects.get(pk=media_id)
-    #     favourite.save()
+    def create_favourite(user_id, media_id):
+        favourite = MediaFavourite()
+        favourite.user = User.objects.get(pk=user_id)
+        favourite.media = Media.objects.get(pk=media_id)
+        favourite.save()
 
-    #     return favourite
+        return favourite
 
-    # def favourite_already_exists(user_id, media_id):
-    #     favourite = MediaFavourite.objects.filter(
-    #         user__id=user_id
-    #     ).filter(
-    #         media__id=media_id
-    #     )
-    #     if favourite:
-    #         return True
-    #     else:
-    #         return False
+    def favourite_already_exists(user_id, media_id):
+        favourite = MediaFavourite.objects.filter(
+            user__id=user_id
+        ).filter(
+            media__id=media_id
+        )
+        if favourite:
+            return True
+        else:
+            return False
 
 
 class Champion(BaseModel):
