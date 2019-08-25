@@ -97,11 +97,11 @@ class LanguageLink(models.Model):
     )
 
 
-class LanguageMember(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    language = models.ForeignKey(
-        Language, on_delete=models.CASCADE, null=True, default=None
-    )
+# class LanguageMember(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     language = models.ForeignKey(
+#         Language, on_delete=models.CASCADE, null=True, default=None
+#     )
 
 
 class Community(CulturalModel):
@@ -156,33 +156,33 @@ class CommunityLanguageStats(models.Model):
     active_learners = models.IntegerField(default=0)
 
 
-class CommunityMember(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    community = models.ForeignKey(
-        Community, on_delete=models.CASCADE, null=True, default=None
-    )
+# class CommunityMember(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     community = models.ForeignKey(
+#         Community, on_delete=models.CASCADE, null=True, default=None
+#     )
 
-    def create_member(user_id, community_id):
-        member = CommunityMember()
-        member.user = User.objects.get(pk=user_id)
-        member.community = Community.objects.get(pk=community_id)
-        member.save()
+#     def create_member(user_id, community_id):
+#         member = CommunityMember()
+#         member.user = User.objects.get(pk=user_id)
+#         member.community = Community.objects.get(pk=community_id)
+#         member.save()
 
-        return member
+#         return member
 
-    def member_already_exists(user_id, community_id):
-        member = CommunityMember.objects.filter(
-            user__id=user_id
-        ).filter(
-            community__id=community_id
-        )
-        if member:
-            return True
-        else:
-            return False
+#     def member_already_exists(user_id, community_id):
+#         member = CommunityMember.objects.filter(
+#             user__id=user_id
+#         ).filter(
+#             community__id=community_id
+#         )
+#         if member:
+#             return True
+#         else:
+#             return False
 
-    class Meta:
-        verbose_name_plural = "Community Members"
+#     class Meta:
+#         verbose_name_plural = "Community Members"
 
 
 class PlaceNameCategory(BaseModel):
@@ -227,27 +227,27 @@ class Media(BaseModel):
     
 
 class MediaFavourite(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
-    def create_favourite(user_id, media_id):
-        favourite = MediaFavourite()
-        favourite.user = User.objects.get(pk=user_id)
-        favourite.media = Media.objects.get(pk=media_id)
-        favourite.save()
+    # def create_favourite(user_id, media_id):
+    #     favourite = MediaFavourite()
+    #     favourite.user = User.objects.get(pk=user_id)
+    #     favourite.media = Media.objects.get(pk=media_id)
+    #     favourite.save()
 
-        return favourite
+    #     return favourite
 
-    def favourite_already_exists(user_id, media_id):
-        favourite = MediaFavourite.objects.filter(
-            user__id=user_id
-        ).filter(
-            media__id=media_id
-        )
-        if favourite:
-            return True
-        else:
-            return False
+    # def favourite_already_exists(user_id, media_id):
+    #     favourite = MediaFavourite.objects.filter(
+    #         user__id=user_id
+    #     ).filter(
+    #         media__id=media_id
+    #     )
+    #     if favourite:
+    #         return True
+    #     else:
+    #         return False
 
 
 class Champion(BaseModel):
