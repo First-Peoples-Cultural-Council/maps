@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "rest_framework",
     "rest_framework_gis",
-    "rest_framework.authtoken",
+    # "rest_framework.authtoken",
     "language",
     "firstvoices",
     "arts",
@@ -131,6 +131,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
 
+# Select the correct user model
+AUTH_USER_MODEL = "users.User"
+
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
@@ -149,9 +152,9 @@ SERVER_EMAIL = "no-reply@fpcc.info"
 #     ]
 # }
 
-REST_FRAMEWORK = {
-    # "DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication"
-    ]
-}
+# REST_FRAMEWORK = {
+#     # "DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         "rest_framework.authentication.TokenAuthentication"
+#     ]
+# }
