@@ -20,11 +20,11 @@ class LanguageUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # communities = CommunityUserSerializer(read_only=True, many=True)
-    # languages = LanguageUserSerializer(read_only=True, many=True)
+    communities = CommunityUserSerializer(read_only=True, many=True)
+    languages = LanguageUserSerializer(read_only=True, many=True)
     
     class Meta:
         model = User
         fields = ("id", "username", "first_name", "last_name", "email", 
                     "is_staff", "is_active", "is_superuser", 
-                    "last_login", "date_joined")
+                    "last_login", "date_joined", "communities", "languages")

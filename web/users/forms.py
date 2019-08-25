@@ -9,7 +9,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
         # fields = UserCreationForm.Meta.fields + ('community', 'languages', 'communities')
-        fields = ('email',)
+        fields = ('email', 'languages', 'communities')
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -17,4 +17,4 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         # fields = CustomUserChangeForm.Meta.fields + ('community', 'languages', 'communities')
-        fields = ('email', 'password', 'is_active', 'is_staff')
+        fields = ('email', 'password', 'languages', 'communities', 'is_active', 'is_staff')

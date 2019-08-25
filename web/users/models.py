@@ -50,8 +50,8 @@ class User(AbstractUser):
 
     pass
 
-    # communities = models.ManyToManyField(Community)
-    # languages = models.ManyToManyField(Language)
+    communities = models.ManyToManyField(Community)
+    languages = models.ManyToManyField(Language)
 
 	# email = models.EmailField(
     #     max_length=255, unique=True,
