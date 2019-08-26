@@ -146,6 +146,7 @@ export default {
   },
   data() {
     return {
+      place: null,
       showDismissibleAlert: true,
       content: '',
       categoryOptions: [],
