@@ -27,7 +27,11 @@
             @click.prevent.stop="handlePronounce"
           >
             <CardBadge content="Pronounce"></CardBadge>
-            <CardBadge content="Edit" type="edit"></CardBadge>
+            <CardBadge
+              content="Edit"
+              type="edit"
+              @click.native="handleEdit"
+            ></CardBadge>
           </div>
         </div>
       </template>
@@ -80,6 +84,10 @@ export default {
     audioFile: {
       type: String,
       default: null
+    },
+    id: {
+      type: Number,
+      default: null
     }
   },
   data() {
@@ -104,6 +112,15 @@ export default {
       } else {
         this.$router.go(-1)
       }
+    },
+    handleEdit() {
+      this.$router.push({
+        path: '/contribute',
+        query: {
+          mode: 'existing',
+          id: this.id
+        }
+      })
     }
   }
 }

@@ -4,7 +4,7 @@
       <div class="contribute-header pt-3 pb-3">
         <div class="text-center pl-2 pr-2">
           <b-alert
-            v-if="drawnFeatures.length === 0"
+            v-if="drawnFeatures.length === 0 && !place"
             show
             variant="danger"
             dismissible
@@ -14,7 +14,7 @@
         </div>
         <div class="text-center pl-2 pr-2">
           <b-alert
-            v-if="drawnFeatures.length > 1"
+            v-if="drawnFeatures.length > 1 && !place"
             show
             variant="warning"
             dismissible
@@ -134,6 +134,7 @@ import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import MediaUploader from '@/components/MediaUploader.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -194,6 +195,20 @@ export default {
         this.languageSelected = null
       }
     }
+  },
+
+  async asyncData({ query, $axios, store }) {
+    console.log('Params', query)
+    if (query.id) {
+      const place = await $axios.$get(getApiUrl(`placename/${query.id}/`))
+      console.log('Place', place)
+      return {
+        place,
+        tname: place.name
+      }
+    }
+
+    return {}
   },
   methods: {
     async submitContribute(e) {
