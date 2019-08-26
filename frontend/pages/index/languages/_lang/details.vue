@@ -94,7 +94,7 @@ import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -125,7 +125,7 @@ export default {
 
     const languages = await $axios.$get(getApiUrl(`language/`))
     const language = languages.find(
-      lang => lang.name.toLowerCase() === languageName.toLowerCase()
+      lang => encodeFPCC(lang.name) === languageName
     )
     const languageId = language.id
 

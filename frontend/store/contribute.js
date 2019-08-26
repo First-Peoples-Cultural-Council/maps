@@ -2,7 +2,9 @@ export const state = () => ({
   isDrawMode: false,
   mode: null,
   drawnFeatures: [],
-  languagesInFeature: []
+  languagesInFeature: [],
+  audio: null,
+  name: null
 })
 
 export const mutations = {
@@ -20,5 +22,13 @@ export const mutations = {
 
   setLanguagesInFeature(state, languagesInFeature) {
     state.languagesInFeature = languagesInFeature
+  },
+
+  setAudio(state, audio) {
+    state.audio = audio
+  },
+
+  setName(state, name) {
+    state.name = name
   }
 }

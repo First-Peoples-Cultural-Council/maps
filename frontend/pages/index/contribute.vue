@@ -143,7 +143,6 @@ export default {
     AudioRecorder,
     MediaUploader
   },
-
   data() {
     return {
       showDismissibleAlert: true,
@@ -157,7 +156,11 @@ export default {
       wname: ''
     }
   },
+
   computed: {
+    audio() {
+      return this.$store.state.contribute.audio
+    },
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
     },
@@ -193,17 +196,19 @@ export default {
     }
   },
   methods: {
-    submitContribute(e) {
+    async submitContribute(e) {
       const data = {
         name: this.tname,
         western_name: this.wname,
+        audio_file: this.audio,
         description: this.content,
         point: this.drawnFeatures[0].geometry,
         community_only: null,
         status: null,
-        other_names: ''
+        other_names: this.tname
       }
       console.log('Data', data)
+      console.log(await this.$axios.$post('/api/placename/', data))
     },
     callback(msg) {
       console.debug('Event: ', msg)

@@ -319,6 +319,8 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "community_only",
             "description",
             "status",
+            "category",
+            "medias",
         )
 
 
