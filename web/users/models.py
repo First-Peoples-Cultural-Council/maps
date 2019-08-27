@@ -46,15 +46,12 @@ class UserManager(BaseUserManager):
     #     return user
 
 
-class User:
+class User(AbstractUser):
     objects = UserManager()
 
+    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
+    languages = models.ManyToManyField(Language)
 
-# class User(AbstractUser):
-
-
-# communities = models.ManyToManyField(Community)
-# languages = models.ManyToManyField(Language)
 
 # email = models.EmailField(
 #     max_length=255, unique=True,

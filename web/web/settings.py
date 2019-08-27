@@ -45,11 +45,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_swagger",
     "rest_framework_gis",
-    # "rest_framework.authtoken",
     "language",
     "firstvoices",
     "arts",
-    # "users",
+    "users",
     "web",
 ]
 
@@ -133,7 +132,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
 
 # Select the correct user model
-# AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")

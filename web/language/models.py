@@ -1,7 +1,6 @@
 from django.contrib.gis.db import models
 
 from web.models import BaseModel, CulturalModel
-from django.contrib.auth.models import User
 
 
 class LanguageFamily(BaseModel):
@@ -226,7 +225,7 @@ class Media(BaseModel):
 
 
 class MediaFavourite(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
     def create_favourite(user_id, media_id):
