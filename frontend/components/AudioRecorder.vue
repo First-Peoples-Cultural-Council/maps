@@ -100,12 +100,7 @@ export default {
             }
             this.audioBlob = new Blob(this.audioChunks)
             this.audioUrl = URL.createObjectURL(this.audioBlob)
-            this.$store.commit(
-              'contribute/setAudio',
-              new File([this.audioBlob], 'testAudio', {
-                type: 'multipart/form-data'
-              })
-            )
+            this.$store.commit('contribute/setAudio', this.audioBlob)
             this.audio = new Audio(this.audioUrl)
           })
         })

@@ -50,7 +50,7 @@
       </div>
       <section class="pr-3 pl-3">
         <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
-          >Traditional Name</label
+          >Traditional Name (required)</label
         >
         <b-form-input
           id="traditionalName"
@@ -153,16 +153,19 @@ export default {
       languageSelected: null,
       communitySelected: null,
       categorySelected: null,
-      files: [null],
       tname: '',
       wname: ''
     }
   },
 
   computed: {
-    audio() {
+    files() {
+      return this.$store.state.contribute.files
+    },
+    audioBlob() {
       return this.$store.state.contribute.audio
     },
+
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
     },
@@ -214,11 +217,31 @@ export default {
   methods: {
     async uploadAudioFile(id) {
       const data = new FormData()
-      console.log('Detected audio', this.audio)
-      data.append('audio_file', this.audio)
+      const audio = new File([this.audioBlob], `${this.tname}`, {
+        type: 'multipart/form-data'
+      })
+      data.append('audio_file', audio)
       data.append('_method', 'PATCH')
-      const result = await this.$axios.$patch(`/api/placename/${id}/`, data)
-      console.log('Result Upload', result)
+      try {
+        await this.$axios.$patch(`/api/placename/${id}/`, data)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    uploadFiles(id) {
+      this.files.map(async file => {
+        const data = new FormData()
+        data.append('name', file.name)
+        data.append('description', '')
+        data.append('file_type', file.type)
+        data.append('placename', id)
+        data.append('media_file', file)
+        data.append('_method', 'POST')
+        console.log(
+          'Media Uploads',
+          await this.$axios.$post(`/api/media/`, data)
+        )
+      })
     },
     async submitContribute(e) {
       const data = {
@@ -231,22 +254,16 @@ export default {
         other_names: this.tname
       }
       console.log('Data', data)
+      console.log('Files', this.files)
       const { id } = await this.$axios.$post('/api/placename/', data)
-      this.uploadAudioFile(id)
+      // this.uploadAudioFile(id)
+      this.uploadFiles(id)
 
       /*
 
 
 
       */
-    },
-    callback(msg) {
-      console.debug('Event: ', msg)
-    },
-    handleFileSelect(e, file) {
-      if (!file) {
-        this.files.push(null)
-      }
     }
   },
   beforeRouteEnter(to, from, next) {
