@@ -231,6 +231,13 @@ class PlaceName(CulturalModel):
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
 
+    language = models.ForeignKey(
+        Language, null=True, default=None, on_delete=models.CASCADE
+    )
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, default=None
+    )
+
     # Choices Constants:
     FLAGGED = "FL"
     VERIFIED = "VE"
