@@ -164,15 +164,15 @@ class CommunityMember(models.Model):
     )
 
     # Choices Constants:
-    PENDANT = "PE"
+    UNVERIFIED = "UN"
     VERIFIED = "VE"
     REJECTED = "RE"
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
-    STATUS_CHOICES = [(PENDANT, "Pendant"), (VERIFIED, "Verified"), (REJECTED, "Rejected")]
+    STATUS_CHOICES = [(UNVERIFIED, "Unverified"), (VERIFIED, "Verified"), (REJECTED, "Rejected")]
     status = models.CharField(
-        max_length=2, choices=STATUS_CHOICES, default=PENDANT
+        max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED
     )
     
     class Meta:
