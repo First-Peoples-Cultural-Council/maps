@@ -6,11 +6,11 @@ from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
 
 
 from .views import (
-    LanguageViewSet, 
-    LanguageMemberViewSet, 
-    CommunityViewSet, 
-    CommunityMemberViewSet, 
-    PlaceNameViewSet, 
+    LanguageViewSet,
+    LanguageMemberViewSet,
+    CommunityViewSet,
+    CommunityMemberViewSet,
+    PlaceNameViewSet,
     MediaViewSet,
     MediaFavouriteViewSet,
     CommunityLanguageStatsViewSet,
@@ -18,19 +18,13 @@ from .views import (
 
 router = routers.DefaultRouter()
 router.register(r"language", LanguageViewSet, basename="language")
-router.register(r"languagemember", LanguageMemberViewSet, basename='language-member')
+router.register(r"languagemember", LanguageMemberViewSet, basename="language-member")
 
 router.register(r"community", CommunityViewSet, basename="community")
-router.register(r"communitymember", CommunityMemberViewSet, basename='community-member')
+router.register(r"communitymember", CommunityMemberViewSet, basename="community-member")
 
 router.register(r"placename", PlaceNameViewSet, basename="placename")
 router.register(r"stats", CommunityLanguageStatsViewSet, basename="placename")
-router.register(
-    r"placename/<int:pk>/verify/", PlaceNameViewSet, basename="placename-verify"
-)
-router.register(
-    r"placename/<int:pk>/flag/", PlaceNameViewSet, basename="placename-flag"
-)
 router.register(r"media", MediaViewSet, basename="media")
 router.register(r"mediafavourite", MediaFavouriteViewSet, basename="media-favourite")
 
