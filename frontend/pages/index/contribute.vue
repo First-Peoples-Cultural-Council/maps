@@ -223,10 +223,7 @@ export default {
 
       fetch('/api/placename/255/', {
         method: 'PATCH',
-        body: data,
-        headers: {
-          Authorization: 'Token ee15700a3b940f850ffd6f9e2190e69ab4b62a07'
-        }
+        body: data
       })
     },
     async submitContribute(e) {
