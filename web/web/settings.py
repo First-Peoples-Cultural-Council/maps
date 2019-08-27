@@ -35,7 +35,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "language",
     "firstvoices",
     "arts",
-    "users",
+    # "users",
     "web",
 ]
 
@@ -133,7 +133,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
 
 # Select the correct user model
-AUTH_USER_MODEL = "users.User"
+# AUTH_USER_MODEL = "users.User"
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")

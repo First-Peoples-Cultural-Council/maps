@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 
 from web.models import BaseModel, CulturalModel
+from django.contrib.auth.models import User
 
 
 class LanguageFamily(BaseModel):
@@ -220,12 +221,12 @@ class Media(BaseModel):
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
     placename = models.ForeignKey(
-        PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias'
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
     )
-    
+
 
 class MediaFavourite(BaseModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
     def create_favourite(user_id, media_id):
@@ -237,9 +238,7 @@ class MediaFavourite(BaseModel):
         return favourite
 
     def favourite_already_exists(user_id, media_id):
-        favourite = MediaFavourite.objects.filter(
-            user__id=user_id
-        ).filter(
+        favourite = MediaFavourite.objects.filter(user__id=user_id).filter(
             media__id=media_id
         )
         if favourite:

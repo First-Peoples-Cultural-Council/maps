@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import (AbstractUser, BaseUserManager)
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
@@ -46,46 +46,49 @@ class UserManager(BaseUserManager):
     #     return user
 
 
-class User(AbstractUser):
+class User:
+    objects = UserManager()
 
-    pass
 
-    communities = models.ManyToManyField(Community)
-    languages = models.ManyToManyField(Language)
+# class User(AbstractUser):
 
-	# email = models.EmailField(
-    #     max_length=255, unique=True,
-    #     verbose_name=_('Email'),
-    #     help_text=_("The user's email address acts as the username."))
 
-	# is_staff = models.BooleanField(
-    #     default=False,
-    #     verbose_name=_('Has Admin Access?'),
-    #     help_text=_("True if the user has access to the admin page."))
+# communities = models.ManyToManyField(Community)
+# languages = models.ManyToManyField(Language)
 
-	# name = models.CharField(
-    #     max_length=255, blank=True,
-    #     verbose_name=_('Name'),
-    #     help_text=_("A full name"),
-    #     error_messages={
-    #         'unique': _("A user with this username already exists.")
-    #     })
+# email = models.EmailField(
+#     max_length=255, unique=True,
+#     verbose_name=_('Email'),
+#     help_text=_("The user's email address acts as the username."))
 
-	# objects = UserManager()
+# is_staff = models.BooleanField(
+#     default=False,
+#     verbose_name=_('Has Admin Access?'),
+#     help_text=_("True if the user has access to the admin page."))
 
-	# USERNAME_FIELD = 'email'
-	# REQUIRED_FIELDS = []
+# name = models.CharField(
+#     max_length=255, blank=True,
+#     verbose_name=_('Name'),
+#     help_text=_("A full name"),
+#     error_messages={
+#         'unique': _("A user with this username already exists.")
+#     })
 
-	# def get_short_name(self):
-	# 	return "{}".format(self.name)
+# objects = UserManager()
 
-	# def get_absolute_url(self):
-	# 	return "/users/{}/".format(self.id)
+# USERNAME_FIELD = 'email'
+# REQUIRED_FIELDS = []
 
-	# def __str__(self):
-	# 	return str(self.name) or "(Anonymous Member #{})".format(self.id)
+# def get_short_name(self):
+# 	return "{}".format(self.name)
 
-	# class Meta:
-	# 	verbose_name = _("User")
-	# 	verbose_name_plural = _("Users")
-	# 	ordering = ('email',)
+# def get_absolute_url(self):
+# 	return "/users/{}/".format(self.id)
+
+# def __str__(self):
+# 	return str(self.name) or "(Anonymous Member #{})".format(self.id)
+
+# class Meta:
+# 	verbose_name = _("User")
+# 	verbose_name_plural = _("Users")
+# 	ordering = ('email',)
