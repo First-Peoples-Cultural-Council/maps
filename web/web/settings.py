@@ -159,20 +159,8 @@ REST_FRAMEWORK = {
 }
 
 ## jwt cognito
-# COGNITO_AWS_REGION = "ca-central-1"
-# COGNITO_USER_POOL = "ca-central-1_dW1peVcEx"
-# COGNITO_AUDIENCE = "7rj6th7pknck3tih16ihekk1ik"
-
-## warrant
-# AUTHENTICATION_BACKENDS = ["django_warrant.backend.CognitoBackend"]
-
-# COGNITO_USER_POOL_ID = "ca-central-1_dW1peVcEx"
-# COGNITO_APP_ID = "7rj6th7pknck3tih16ihekk1ik"
-
-# COGNITO_ATTR_MAPPING = {"email": "email"}
-# COGNITO_CREATE_UNKNOWN_USERS = True
 
 # AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
 # AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
 
-# https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://countable.ca
+# https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca
