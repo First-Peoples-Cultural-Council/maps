@@ -308,7 +308,21 @@ export default {
     }
     next()
   },
-  mounted() {
+  async mounted() {
+    if (this.$route.hash) {
+      const token = this.$route.hash.replace('#', '')
+      const user = await this.$axios.$get(
+        `${getApiUrl('user/login/')}?${token}`
+      )
+      if (user.success) {
+        this.$store.commit('user/setUserEmail', user.email)
+        this.$router.push({
+          path: '/'
+        })
+      }
+    } else {
+      // Check if already logged in here
+    }
     // initial zoom on index page
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
