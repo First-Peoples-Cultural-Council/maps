@@ -49,8 +49,13 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         else:
             return Response({"success": False})
 
-    def auth(detail=False):
-        return Response({"success": request.user.is_authenticated()})
+    @action(detail=False)
+    def auth(self, request):
+        context = {}
+        if request.user.is_authenticated:
+            return Response({"is_authenticated": True, "email": request.user.email})
+        else:
+            return Response({"is_authenticated": False})
 
     @action(detail=False)
     def search(self, request):
