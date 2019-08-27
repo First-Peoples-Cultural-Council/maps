@@ -85,7 +85,6 @@ export default {
   data() {
     return {
       file: null,
-      files: [],
       audios: [],
       recording: false,
       mediaRecorder: null,
@@ -96,6 +95,11 @@ export default {
       audio: null
     }
   },
+  computed: {
+    files() {
+      return this.$store.state.contribute.files
+    }
+  },
   watch: {
     file(newFile, oldFile) {
       if (!newFile) {
@@ -104,7 +108,7 @@ export default {
       if (oldFile && oldFile.name === newFile.name) {
         return
       }
-      this.files.push(newFile)
+      this.$store.commit('contribute/addFile', newFile)
     }
   },
   methods: {
@@ -117,7 +121,10 @@ export default {
       console.log(this.$refs.fileUpload.reset())
     },
     removeFile(e, data) {
-      this.files = this.files.filter(file => file.name !== data.name)
+      this.$store.commit(
+        'contribute/setFiles',
+        this.files.filter(file => file.name !== data.name)
+      )
       this.clearFiles()
     },
     triggerBrowse(e) {

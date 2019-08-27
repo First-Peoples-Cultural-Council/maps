@@ -4,7 +4,8 @@ export const state = () => ({
   drawnFeatures: [],
   languagesInFeature: [],
   audio: null,
-  name: null
+  name: null,
+  files: []
 })
 
 export const mutations = {
@@ -30,5 +31,13 @@ export const mutations = {
 
   setName(state, name) {
     state.name = name
+  },
+
+  setFiles(state, files) {
+    state.files = files
+  },
+
+  addFile(state, file) {
+    state.files.push(file)
   }
 }
