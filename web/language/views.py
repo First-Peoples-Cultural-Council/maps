@@ -114,6 +114,7 @@ class CommunityViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=True)
     def create_membership(self, request):
         try:
             user_id = int(request.data['user']['id'])
@@ -127,6 +128,7 @@ class CommunityViewSet(BaseModelViewSet):
         except:
             return Response("Unexpected error:", sys.exc_info()[0])
 
+    @action(detail=True)
     def create_self_membership(self, request):
         try:
             if request.user.is_authenticated():
@@ -149,6 +151,7 @@ class CommunityViewSet(BaseModelViewSet):
         except:
             return Response("Unexpected error:", sys.exc_info()[0])
 
+    @action(detail=True)
     def verify_membership(self, request):
         try:
             user_id = int(request.data['user']['id'])
@@ -198,6 +201,25 @@ class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
+
+    def create(self, request):
+        try:
+            community_id = int(request.data['community']['id'])
+            language_id = int(request.data['language']['id'])
+
+            community = Community.objects.get(pk=community_id)
+            language = Language.objects.get(pk=language_id)
+
+            serializer = PlaceNameSerializer(data=request.data)
+            serializer.language = language
+            serializer.community = community
+
+            serializer.is_valid(raise_exception=True)
+
+            serializer.save()
+            return Response(serializer.data)            
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
     @action(detail=True)
     def verify(self, request, pk):
