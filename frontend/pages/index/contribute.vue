@@ -57,7 +57,6 @@
           v-model="tname"
           type="text"
         ></b-form-input>
-        <input type="file" @change="handleAudioFile" />
 
         <AudioRecorder class="mt-3"></AudioRecorder>
 
@@ -213,23 +212,18 @@ export default {
     return {}
   },
   methods: {
-    handleAudioFile(event) {
+    async uploadAudioFile(id) {
       const data = new FormData()
-      data.append('audio_file', event.target.files[0])
+      console.log('Detected audio', this.audio)
+      data.append('audio_file', this.audio)
       data.append('_method', 'PATCH')
-
-      data.append('file', event.target.files[0])
-
-      fetch('/api/placename/255/', {
-        method: 'PATCH',
-        body: data
-      })
+      const result = await this.$axios.$patch(`/api/placename/${id}/`, data)
+      console.log('Result Upload', result)
     },
     async submitContribute(e) {
       const data = {
         name: this.tname,
         western_name: this.wname,
-        audio_file: this.audio,
         description: this.content,
         point: this.drawnFeatures[0].geometry,
         community_only: null,
@@ -237,7 +231,14 @@ export default {
         other_names: this.tname
       }
       console.log('Data', data)
-      console.log(await this.$axios.$post('/api/placename/', data))
+      const { id } = await this.$axios.$post('/api/placename/', data)
+      this.uploadAudioFile(id)
+
+      /*
+
+
+
+      */
     },
     callback(msg) {
       console.debug('Event: ', msg)
