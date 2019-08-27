@@ -214,9 +214,6 @@ export default {
   },
   methods: {
     handleAudioFile(event) {
-      console.log(event.target.files)
-      // curl --header "Authorization: Token ee15700a3b940f850ffd6f9e2190e69ab4b62a07" --request PATCH -sS http://localhost/api/language/18/
-      // -F 'audio_file=@./web/fixtures/test.mp3'
       const data = new FormData()
       data.append('audio_file', event.target.files[0])
       data.append('_method', 'PATCH')
