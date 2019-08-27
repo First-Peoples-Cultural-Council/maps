@@ -25,12 +25,6 @@ router.register(r"community", CommunityViewSet, basename="community")
 
 router.register(r"placename", PlaceNameViewSet, basename="placename")
 router.register(r"stats", CommunityLanguageStatsViewSet, basename="placename")
-router.register(
-    r"placename/<int:pk>/verify/", PlaceNameViewSet, basename="placename-verify"
-)
-router.register(
-    r"placename/<int:pk>/flag/", PlaceNameViewSet, basename="placename-flag"
-)
 router.register(r"media", MediaViewSet, basename="media")
 router.register(r"mediafavourite", MediaFavouriteViewSet, basename="media-favourite")
 

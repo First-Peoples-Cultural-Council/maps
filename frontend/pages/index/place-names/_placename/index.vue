@@ -9,6 +9,7 @@
       </template>
       <div>
         <PlacesDetailCard
+          :id="place.id"
           :name="place.properties.name"
           :server="isServer"
           :audio-file="place.properties.audio_file"

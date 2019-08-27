@@ -6,3 +6,5 @@ djangorestframework-gis
 django-markdownx
 gunicorn
 gevent
+django-rest-swagger
+cognitojwt

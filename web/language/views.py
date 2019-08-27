@@ -119,7 +119,7 @@ class CommunityViewSet(BaseModelViewSet):
 #         except:
 #             return Response("Unexpected error:", sys.exc_info()[0])
 
-          
+
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
@@ -175,11 +175,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaFavouriteCustomViewSet(
-    mixins.CreateModelMixin, 
-    mixins.ListModelMixin, 
-    mixins.RetrieveModelMixin, 
-    mixins.DestroyModelMixin, 
-    GenericViewSet
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    GenericViewSet,
 ):
     pass
 
@@ -190,8 +190,8 @@ class MediaFavouriteViewSet(MediaFavouriteCustomViewSet, GenericViewSet):
 
     def create(self, request):
         try:
-            user_id = int(request.data['user']['id'])
-            media_id = int(request.data['media']['id'])
+            user_id = int(request.data["user"]["id"])
+            media_id = int(request.data["media"]["id"])
             if MediaFavourite.favourite_already_exists(user_id, media_id):
                 return Response({"message", "Media is already a user's favorite"})
             else:
@@ -210,8 +210,17 @@ class LanguageGeoList(generics.ListAPIView):
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
-    
+
 
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(name__icontains="FirstVoices")
     serializer_class = PlaceNameGeoSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        if "lang" in request.GET:
+            queryset = queryset.filter(
+                point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
+            )
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)

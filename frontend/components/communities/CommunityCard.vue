@@ -4,11 +4,12 @@
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
-    <Card>
+    <Card :variant="variant">
       <template v-slot:header>
         <div
           class="community-icon-container"
           :style="'background-color:' + color"
+          :class="{ 'icon-sm': icon === 'small' }"
         >
           <img src="@/assets/images/community_icon.svg" alt="community" />
         </div>
@@ -30,9 +31,15 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
-          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        <div v-if="go">
+          <div class="fpcc-card-more">
+            <img
+              v-if="!hover"
+              src="@/assets/images/go_icon_hover.svg"
+              alt="Go"
+            />
+            <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+          </div>
         </div>
       </template>
     </Card>
@@ -53,6 +60,18 @@ export default {
     color: {
       type: String,
       default: 'RGB(255, 255, 255)'
+    },
+    go: {
+      type: Boolean,
+      default: true
+    },
+    variant: {
+      type: String,
+      default: 'normal'
+    },
+    icon: {
+      default: 'large',
+      type: String
     }
   },
   data() {
@@ -100,5 +119,10 @@ export default {
 }
 .fpcc-card:hover .fpcc-card-more {
   background-color: #454545;
+}
+
+.community-icon-container.icon-sm {
+  width: 30px;
+  height: 30px;
 }
 </style>

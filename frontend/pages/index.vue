@@ -7,7 +7,14 @@
         this.$route.name === 'index-languages-lang-details'
     }"
   >
-    <div class="map-loading">LOADING MAP</div>
+    <div v-if="isDrawMode" class="drawing-mode-container">
+      <b-alert show class="p-1 pr-2 pl-2"
+        >You are currently in drawing mode</b-alert
+      >
+    </div>
+    <div class="map-loading">
+      Loading Map <b-spinner type="grow" label="Spinning"></b-spinner>
+    </div>
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
       :map-options="MAP_OPTIONS"
@@ -19,10 +26,12 @@
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
     ></Mapbox>
-    <Zoom class="zoom-control hide-mobile"></Zoom>
-    <Contribute class="hide-mobile contribute-control"></Contribute>
-    <ShareEmbed class="share-embed-control hide-mobile"></ShareEmbed>
-    <ResetMap class="reset-map-control hide-mobile"></ResetMap>
+    <div class="map-controls-overlay">
+      <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+      <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+      <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+      <Contribute class="hide-mobile contribute-control"></Contribute>
+    </div>
     <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
     <div class="top-bar-container">
       <SearchBar></SearchBar>
@@ -126,7 +135,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { groupBy } from 'lodash'
+import { groupBy, uniqBy } from 'lodash'
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
@@ -142,7 +151,12 @@ import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, intersects, zoomToIdealBox } from '@/mixins/map.js'
+import {
+  inBounds,
+  intersects,
+  zoomToIdealBox,
+  pointIntersects
+} from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
@@ -225,6 +239,9 @@ export default {
     },
     placesSet() {
       return this.$store.state.places.placesSet
+    },
+    isDrawMode() {
+      return this.$store.state.contribute.isDrawMode
     }
   },
   async fetch({ $axios, store }) {
@@ -291,7 +308,21 @@ export default {
     }
     next()
   },
-  mounted() {
+  async mounted() {
+    if (this.$route.hash) {
+      const token = this.$route.hash.replace('#', '')
+      const user = await this.$axios.$get(
+        `${getApiUrl('user/login/')}?${token}`
+      )
+      if (user.success) {
+        this.$store.commit('user/setUserEmail', user.email)
+        this.$router.push({
+          path: '/'
+        })
+      }
+    } else {
+      // Check if already logged in here
+    }
     // initial zoom on index page
     if (this.$route.path === '/') {
       this.$eventHub.whenMap(map => {
@@ -402,6 +433,11 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
+      console.log('Click Disabled', this.isDrawMode)
+      if (this.isDrawMode) {
+        return
+      }
+
       const features = map.queryRenderedFeatures(e.point)
 
       let done = false
@@ -515,7 +551,7 @@ export default {
       map.on('idle', e => {
         this.updateHash(map)
       })
-      this.$eventHub.$emit('map-loaded', map)
+
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
 
@@ -523,10 +559,37 @@ export default {
         displayControlsDefault: false,
         controls: {
           polygon: true,
+          point: true,
           trash: true
         }
       })
       map.addControl(draw, 'bottom-left')
+      map.on('draw.create', e => {
+        const featuresDrawn = draw.getAll()
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
+      })
+
+      map.on('draw.delete', e => {
+        const featuresDrawn = draw.getAll()
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1 || features.length === 0) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
+      })
+      this.$eventHub.$emit('map-loaded', map)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -586,21 +649,55 @@ export default {
         // this.updateMarkers(map)
       }
     },
-    filterLanguages(bounds) {
-      const filteredLanguages = this.languageSet.filter(lang => {
-        const sw = lang.bbox.coordinates[0][0]
-        const ne = lang.bbox.coordinates[0][2]
-        const langBounds = {
-          _sw: {
-            lng: sw[0],
-            lat: sw[1]
-          },
-          _ne: {
-            lng: ne[0],
-            lat: ne[1]
-          }
+    formatPoint(point) {
+      return {
+        lng: point[0],
+        lat: point[1]
+      }
+    },
+    formatLangBounds(lang) {
+      const sw = lang.bbox.coordinates[0][0]
+      const ne = lang.bbox.coordinates[0][2]
+      return {
+        _sw: {
+          lng: sw[0],
+          lat: sw[1]
+        },
+        _ne: {
+          lng: ne[0],
+          lat: ne[1]
         }
+      }
+    },
+    getLanguagesFromDraw(features) {
+      const languagesInFeature = []
+      features.map(feature => {
+        const geometry = feature.geometry
+        if (geometry.type === 'Point') {
+          const point = this.formatPoint(geometry.coordinates)
+          languagesInFeature.push(...this.filterLanguages(null, 'draw', point))
+        }
+        if (geometry.type === 'Polygon') {
+          geometry.coordinates[0].map(coord => {
+            const point = this.formatPoint(coord)
+            languagesInFeature.push(
+              ...this.filterLanguages(null, 'draw', point)
+            )
+          })
+        }
+      })
+      return uniqBy(languagesInFeature, 'name')
+    },
+    filterLanguages(bounds, mode = 'default', point = null) {
+      if (mode === 'draw' && point) {
+        return this.languageSet.filter(lang => {
+          const langBounds = this.formatLangBounds(lang)
+          return pointIntersects(point, langBounds)
+        })
+      }
 
+      const filteredLanguages = this.languageSet.filter(lang => {
+        const langBounds = this.formatLangBounds(lang)
         return intersects(bounds, langBounds)
       })
       this.$store.commit(
@@ -665,6 +762,18 @@ export default {
   width: 0px;
 }
 
+.drawing-mode-container {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-left: 500px;
+  z-index: 50;
+}
+
 @keyframes ellipsis {
   to {
     width: 1.25em;
@@ -676,27 +785,14 @@ export default {
     width: 1.25em;
   }
 }
-.share-embed-control,
-.zoom-control {
+
+.map-controls-overlay {
   position: absolute;
+  bottom: 20px;
   right: 10px;
-  bottom: 30px;
-}
-
-.zoom-control {
-  right: 230px;
-}
-
-.reset-map-control {
-  position: absolute;
-  right: 135px;
-  bottom: 30px;
-}
-
-.contribute-control {
-  position: absolute;
-  bottom: 30px;
-  right: 305px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

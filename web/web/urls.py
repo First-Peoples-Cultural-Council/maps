@@ -18,6 +18,9 @@ from django.urls import include, path
 from django.conf.urls import url
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title="FPCC API")
 
 from .views import PageViewSet
 
@@ -35,4 +38,5 @@ urlpatterns = [
     path("api/", include("arts.urls"), name="arts"),
     path("api/", include("users.urls"), name="users"),
     url(r"api-token-auth/", obtain_auth_token),
+    url("docs/$", schema_view),
 ] + router.urls

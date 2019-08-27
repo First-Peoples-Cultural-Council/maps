@@ -77,8 +77,12 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/eslint-module',
+    '@tui-nuxt/editor'
   ],
+  tui: {
+    editor: {}
+  },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
