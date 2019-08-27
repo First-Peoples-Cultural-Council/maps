@@ -320,6 +320,8 @@ export default {
           path: '/'
         })
       }
+    } else {
+      // Check if already logged in here
     }
     // initial zoom on index page
     if (this.$route.path === '/') {
