@@ -121,6 +121,12 @@ class Community(CulturalModel):
     fv_guid = models.CharField(max_length=40, blank=True, default="")
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     languages = models.ManyToManyField(Language)
+
+    # One community can have more than one admin (i.e.: a couple)
+    # It is linked to LanguageMember and not to User because a 
+    # Language Admin is not any User. It is a special one.
+    language_admins = models.ManyToManyField(LanguageMember)
+
     email = models.EmailField(max_length=255, default=None, null=True)
     website = models.URLField(max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
