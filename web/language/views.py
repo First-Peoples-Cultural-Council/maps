@@ -127,6 +127,24 @@ class CommunityViewSet(BaseModelViewSet):
         except:
             return Response("Unexpected error:", sys.exc_info()[0])
 
+    def verify_membership(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            community_id = int(request.data['community']['id'])
+            if CommunityMember.member_already_exists(user_id, community_id):
+                member = CommunityMember.objects.filter(
+                    user__id=user_id
+                ).filter(
+                    community__id=community_id
+                )
+                CommunityMember.verify_membership(member.id)
+                
+                return Response({"message": "Verified!"})
+            else:
+                return Response({"message", "User is already a community member"})
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
+
 
 # class CommunityMemberViewSet(BaseModelViewSet):
 #     serializer_class = CommunityMemberSerializer

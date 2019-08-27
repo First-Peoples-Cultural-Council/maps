@@ -197,6 +197,11 @@ class CommunityMember(models.Model):
         else:
             return False
 
+    def verify_member(id):
+        member = CommunityMember.objects.get(pk=int(id))
+        member.status = CommunityMember.VERIFIED
+        member.save()
+
     class Meta:
         verbose_name_plural = "Community Members"
 
