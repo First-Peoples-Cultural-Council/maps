@@ -9,41 +9,34 @@ from language.models import Language, Community
 
 class UserManager(BaseUserManager):
 
-    pass
-
     # TODO: define later which fields are necessary forto create a user
     # For the moment, language and community as not required
 
-    # @sensitive_variables('password')
-    # def create_user(self, username, password):
-    #     """
-    #     Creates and saves a User with the given email and password.
-    #     """
-    #     if not email:
-    #         raise ValueError(_('Users must have an email address'))
-    #     if len(password) < 8:
-    #         raise ValidationError('Passwords must be at least 8 characters long')
-    #     user = self.model(
-    #         email=self.normalize_email(email),
-    #     )
+    @sensitive_variables("password")
+    def create_user(self, username, password, email=None):
+        """
+        Creates and saves a User with the given email and password.
+        """
+        if not email:
+            raise ValueError(_("Users must have an email address"))
+        if len(password) < 8:
+            raise ValidationError("Passwords must be at least 8 characters long")
+        user = self.model(email=self.normalize_email(email))
+        user.username = username
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    #     user.set_password(password)
-    #     user.save(using=self._db)
-    #     return user
-
-    # @sensitive_variables('password')
-    # def create_superuser(self, username, password):
-    #     """
-    #     Creates and saves a superuser with the given email, and password.
-    #     """
-    #     user = self.create_user(
-    #         email,
-    #         password=password,
-    #     )
-    #     user.is_staff = True
-    #     user.is_superuser = True
-    #     user.save(using=self._db)
-    #     return user
+    @sensitive_variables("password")
+    def create_superuser(self, username, password, email=None):
+        """
+        Creates and saves a superuser with the given email, and password.
+        """
+        user = self.create_user(username, password, email=email)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
 
 class User(AbstractUser):
