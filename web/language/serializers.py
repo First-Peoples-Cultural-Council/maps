@@ -6,10 +6,10 @@ from .models import (
     Champion,
     LanguageFamily,
     LanguageLink,
-    # LanguageMember,
+    LanguageMember,
     Dialect,
     CommunityLink,
-    # CommunityMember,
+    CommunityMember,
     LNA,
     LNAData,
     Media,
@@ -57,13 +57,13 @@ class LanguageSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
-# class LanguageMemberSerializer(serializers.ModelSerializer):
-#     user = UserSerializer(read_only=True)
-#     language = LanguageSerializer(read_only=True)
+class LanguageMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    language = LanguageSerializer(read_only=True)
 
-#     class Meta:
-#         model = LanguageMember
-#         fields = ("id", "user", "language")
+    class Meta:
+        model = LanguageMember
+        fields = ("id", "user", "language")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -219,13 +219,13 @@ class CommunitySerializer(serializers.ModelSerializer):
         fields = ("name", "id", "point", "audio_file")
 
 
-# class CommunityMemberSerializer(serializers.ModelSerializer):
-#     user = UserSerializer(read_only=True)
-#     community = CommunitySerializer(read_only=True)
+class CommunityMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    community = CommunitySerializer(read_only=True)
 
-#     class Meta:
-#         model = CommunityMember
-#         fields = ("id", "user", "community")
+    class Meta:
+        model = CommunityMember
+        fields = ("id", "user", "community")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
