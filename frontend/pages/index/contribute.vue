@@ -219,7 +219,6 @@ export default {
       data.append('_method', 'PATCH')
 
       data.append('file', event.target.files[0])
-      data.append('user', 'hubot')
 
       fetch('/api/placename/255/', {
         method: 'PATCH',
