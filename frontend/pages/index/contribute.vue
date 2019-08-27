@@ -57,6 +57,7 @@
           v-model="tname"
           type="text"
         ></b-form-input>
+        <input type="file" @change="handleAudioFile" />
 
         <AudioRecorder class="mt-3"></AudioRecorder>
 
@@ -212,6 +213,25 @@ export default {
     return {}
   },
   methods: {
+    handleAudioFile(event) {
+      console.log(event.target.files)
+      // curl --header "Authorization: Token ee15700a3b940f850ffd6f9e2190e69ab4b62a07" --request PATCH -sS http://localhost/api/language/18/
+      // -F 'audio_file=@./web/fixtures/test.mp3'
+      const data = new FormData()
+      data.append('audio_file', event.target.files[0])
+      data.append('_method', 'PATCH')
+
+      data.append('file', event.target.files[0])
+      data.append('user', 'hubot')
+
+      fetch('/api/placename/255/', {
+        method: 'PATCH',
+        body: data,
+        headers: {
+          Authorization: 'Token ee15700a3b940f850ffd6f9e2190e69ab4b62a07'
+        }
+      })
+    },
     async submitContribute(e) {
       const data = {
         name: this.tname,
