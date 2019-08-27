@@ -162,6 +162,18 @@ class CommunityMember(models.Model):
     community = models.ForeignKey(
         Community, on_delete=models.CASCADE, null=True, default=None
     )
+
+    # Choices Constants:
+    PENDANT = "PE"
+    VERIFIED = "VE"
+    REJECTED = "RE"
+    # Choices:
+    # first element: constant Python identifier
+    # second element: human-readable version
+    STATUS_CHOICES = [(PENDANT, "Pendant"), (VERIFIED, "Verified"), (REJECTED, "Rejected")]
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, default=PENDANT
+    )
     
     class Meta:
         unique_together = ('user', 'community',)
