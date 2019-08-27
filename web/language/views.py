@@ -127,6 +127,28 @@ class CommunityViewSet(BaseModelViewSet):
         except:
             return Response("Unexpected error:", sys.exc_info()[0])
 
+    def create_self_membership(self, request):
+        try:
+            if request.user.is_authenticated():
+                request = self.context.get("request")
+                if request and hasattr(request, "user"):
+                    user_id = request.user.id
+                    community_id = int(request.data['community']['id'])
+                    if CommunityMember.member_already_exists(user_id, community_id):
+                        return Response({"message", "User is already a community member"})
+                    else:
+                        member = CommunityMember.create_member(user_id, community_id)
+                        serializer = CommunityMemberSerializer(member)
+                        return Response(serializer.data)
+                else:
+                    content = {'Message': 'User is not logged in'}
+                    return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                content = {'Message': 'User is not logged in'}
+                return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
+
     def verify_membership(self, request):
         try:
             user_id = int(request.data['user']['id'])
