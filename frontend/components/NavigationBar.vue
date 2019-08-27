@@ -59,7 +59,9 @@
               <a class="color-gray" href="https://maps.fpcc.ca/help">Help</a>
             </li>
             <li class="login-nav cursor-pointer">
-              <a href="https://maps.fpcc.ca/user/login" class="d-block"
+              <a
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
+                class="d-block"
                 >Login</a
               >
             </li>
