@@ -4,10 +4,10 @@ from django.shortcuts import render
 
 from .models import (
     Language, 
-    # LanguageMember, 
+    LanguageMember, 
     PlaceName, 
     Community, 
-    # CommunityMember, 
+    CommunityMember, 
     Champion, 
     Media,
     MediaFavourite,
@@ -23,13 +23,13 @@ from .serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
-    # LanguageMemberSerializer,
+    LanguageMemberSerializer,
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
-    # CommunityMemberSerializer,
+    CommunityMemberSerializer,
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
@@ -66,6 +66,19 @@ class LanguageViewSet(BaseModelViewSet):
         .order_by("family", "name")
     )
 
+    def create_membership(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            language_id = int(request.data['language']['id'])
+            if LanguageMember.member_already_exists(user_id, language_id):
+                return Response({"message", "User is already a language member"})
+            else:
+                member = LanguageMember.create_member(user_id, language_id)
+                serializer = LanguageMemberSerializer(member)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
+
 
 # class LanguageMemberViewSet(BaseModelViewSet):
 #     serializer_class = LanguageMemberSerializer
@@ -100,6 +113,19 @@ class CommunityViewSet(BaseModelViewSet):
             )
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+    def create_membership(self, request):
+        try:
+            user_id = int(request.data['user']['id'])
+            community_id = int(request.data['community']['id'])
+            if CommunityMember.member_already_exists(user_id, community_id):
+                return Response({"message", "User is already a community member"})
+            else:
+                member = CommunityMember.create_member(user_id, community_id)
+                serializer = CommunityMemberSerializer(member)
+                return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
 
 # class CommunityMemberViewSet(BaseModelViewSet):
