@@ -241,6 +241,17 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     def list(self, request):
         queryset = self.get_queryset()
+
+        # Testing if user is VERIFIED
+        user_is_verified = false
+        if request.user.is_authenticated():
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user = User.objects.get(pk=int(request.user.id))                
+
+        if not user_is_verified:
+            queryset = queryset.filter(community_only__not_equals=True)           
+
         if "lang" in request.GET:
             queryset = queryset.filter(
                 point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
