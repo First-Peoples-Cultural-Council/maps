@@ -36,6 +36,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         if "email" in result:
             try:
                 user = User.objects.get(email=result["email"].strip())
+                is_new = False
             except User.DoesNotExist:
                 user = User(
                     email=result["email"].strip(),
@@ -43,8 +44,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     password="",
                 )
                 user.save()
+                is_new = True
             login(request, user)
-            return Response({"success": True, "email": user.email})
+            return Response({"success": True, "email": user.email, "new": is_new})
         else:
             return Response({"success": False})
 
