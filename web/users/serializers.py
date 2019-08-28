@@ -28,6 +28,21 @@ class UserSerializer(serializers.ModelSerializer):
     languages = LanguageUserSerializer(read_only=True, many=True)
     placename_set = PlaceNameUserSerializer(read_only=True, many=True)
 
+    community_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Community.objects.all(),
+        write_only=True,
+        source="communities",
+        required=False,
+    )
+    language_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Language.objects.all(),
+        write_only=True,
+        source="languages",
+        required=False,
+    )
+
     class Meta:
         model = User
         fields = (
@@ -44,4 +59,6 @@ class UserSerializer(serializers.ModelSerializer):
             "communities",
             "languages",
             "placename_set",
+            "community_ids",
+            "language_ids",
         )

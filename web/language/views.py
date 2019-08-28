@@ -115,6 +115,11 @@ class CommunityViewSet(BaseModelViewSet):
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user_id = request.user.id
+                if user_id != request.GET.get("user")["id"]:
+                    return Response(
+                        {"message": "Can only add yourself, not others."},
+                        status=status.HTTP_401_UNAUTHORIZED,
+                    )
                 community_id = int(request.data["community"]["id"])
                 if CommunityMember.member_already_exists(user_id, community_id):
                     return Response({"message", "User is already a community member"})
@@ -123,10 +128,10 @@ class CommunityViewSet(BaseModelViewSet):
                     serializer = CommunityMemberSerializer(member)
                     return Response(serializer.data)
             else:
-                content = {"Message": "User is not logged in"}
+                content = {"message": "User is not logged in"}
                 return Response(content, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            content = {"Message": "User is not logged in"}
+            content = {"message": "User is not logged in"}
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=False)

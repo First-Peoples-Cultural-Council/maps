@@ -54,15 +54,6 @@ class LanguageSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
-# class LanguageMemberSerializer(serializers.ModelSerializer):
-#     user = UserSerializer(read_only=True)
-#     language = LanguageSerializer(read_only=True)
-
-#     class Meta:
-#         model = LanguageMember
-#         fields = ("id", "user", "language")
-
-
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")
 
