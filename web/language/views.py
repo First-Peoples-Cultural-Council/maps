@@ -11,7 +11,7 @@ from .models import (
     CommunityMember,
     Champion,
     Media,
-    MediaFavourite,
+    Favourite,
     CommunityLanguageStats,
 )
 
@@ -35,7 +35,7 @@ from .serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     MediaSerializer,
-    MediaFavouriteSerializer,
+    FavouriteSerializer,
     CommunityLanguageStatsSerializer,
 )
 
@@ -242,7 +242,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
-class MediaFavouriteCustomViewSet(
+class FavouriteCustomViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -252,19 +252,19 @@ class MediaFavouriteCustomViewSet(
     pass
 
 
-class MediaFavouriteViewSet(MediaFavouriteCustomViewSet, GenericViewSet):
-    serializer_class = MediaFavouriteSerializer
-    queryset = MediaFavourite.objects.all()
+class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
+    serializer_class = FavouriteSerializer
+    queryset = Favourite.objects.all()
 
-    def create(self, request):
-        user_id = int(request.data["user"]["id"])
-        media_id = int(request.data["media"]["id"])
-        if MediaFavourite.favourite_already_exists(user_id, media_id):
-            return Response({"message", "Media is already a user's favorite"})
-        else:
-            favourite = MediaFavourite.create_favourite(user_id, media_id)
-            serializer = MediaFavouriteSerializer(favourite)
-            return Response(serializer.data)
+    # def create(self, request):
+    #     user_id = int(request.data["user"]["id"])
+    #     media_id = int(request.data["media"]["id"])
+    #     if Favourite.favourite_already_exists(user_id, media_id):
+    #         return Response({"message", "Media is already a user's favorite"})
+    #     else:
+    #         favourite = Favourite.create_favourite(user_id, media_id)
+    #         serializer = FavouriteSerializer(favourite)
+    #         return Response(serializer.data)
 
 
 class LanguageGeoList(generics.ListAPIView):

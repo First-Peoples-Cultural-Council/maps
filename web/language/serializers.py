@@ -12,7 +12,7 @@ from .models import (
     LNA,
     LNAData,
     Media,
-    MediaFavourite,
+    Favourite,
     CommunityLanguageStats,
 )
 
@@ -340,12 +340,12 @@ class MediaSerializer(serializers.ModelSerializer):
         )
 
 
-class MediaFavouriteSerializer(serializers.ModelSerializer):
+class FavouriteSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     media = MediaSerializer(read_only=True)
 
     class Meta:
-        model = MediaFavourite
+        model = Favourite
         fields = ("id", "media", "user")
 
 
