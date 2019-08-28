@@ -165,6 +165,9 @@ export default {
     audioBlob() {
       return this.$store.state.contribute.audioBlob
     },
+    audioFile() {
+      return this.$store.state.contribute.audioFile
+    },
 
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
@@ -215,11 +218,8 @@ export default {
     return {}
   },
   methods: {
-    async uploadAudioFile(id) {
+    async uploadAudioFile(id, audio) {
       const data = new FormData()
-      const audio = new File([this.audioBlob], `${this.tname}`, {
-        type: 'multipart/form-data'
-      })
       data.append('audio_file', audio)
       data.append('_method', 'PATCH')
       try {
@@ -263,7 +263,19 @@ export default {
       }
 
       const { id } = await this.$axios.$post('/api/placename/', data)
-      this.uploadAudioFile(id)
+
+      let audio = null
+      if (this.audioBlob && this.audioFile) {
+        return
+      } else if (this.audioBlob) {
+        audio = new File([this.audioBlob], `${this.tname}`, {
+          type: 'multipart/form-data'
+        })
+      } else {
+        audio = this.audioFile
+      }
+
+      this.uploadAudioFile(id, audio)
       this.uploadFiles(id)
     }
   },

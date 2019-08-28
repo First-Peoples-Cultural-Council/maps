@@ -2,7 +2,6 @@
   <div>
     <b-row no-gutters>
       <b-col xl="10" class="pr-1">
-        {{ file }}
         <b-form-file
           ref="fileUpload"
           v-model="file"
@@ -98,37 +97,23 @@ export default {
       mediaRecorder: null,
       audioChunksCollection: [],
       audioChunks: [],
-      audioBlob: null,
       audioUrl: null,
       audio: null
     }
   },
+  computed: {
+    audioBlob() {
+      return this.$store.state.contribute.audioBlob
+    },
+    audioFile() {
+      return this.$store.state.contribute.audioFile
+    }
+  },
   watch: {
     file(newFile, oldFile) {
-      console.log('Old File', oldFile)
-      console.log('New FIle', newFile)
-      if (!newFile && !oldFile) {
-        this.$store.commit('contribute/setAudioFile', null)
-        return
-      }
-
-      if (this.audio) {
-        this.resetAudio()
-      }
-
       this.$store.commit('contribute/setAudioFile', newFile)
     },
-    audio(newAudio, oldAudio) {
-      console.log('newAUdio', newAudio)
-      if (!newAudio) {
-        this.resetAudio()
-      }
-
-      if (this.file) {
-        this.resetFile()
-      }
-      this.$store.commit('contribute/setAudioBlob', this.audioBlob)
-    }
+    audio(newAudio, oldAudio) {}
   },
   methods: {
     triggerBrowse(e) {
@@ -147,11 +132,9 @@ export default {
       this.mediaRecorder = null
       this.audioChunksCollection = []
       this.audioChunks = []
-      this.audioBlob = null
       this.audioUrl = null
       this.audio = null
       this.$store.commit('contribute/setAudioBlob', null)
-      this.$store.commit('contribute/setAudioFile', null)
     },
     record(e) {
       if (!this.recording) {
@@ -168,9 +151,11 @@ export default {
             if (this.mode !== 'single') {
               this.audioChunksCollection.push(this.audioChunks)
             }
-            this.audioBlob = new Blob(this.audioChunks)
+            this.$store.commit(
+              'contribute/setAudioBlob',
+              new Blob(this.audioChunks)
+            )
             this.audioUrl = URL.createObjectURL(this.audioBlob)
-            this.$store.commit('contribute/setAudioBlob', this.audioBlob)
             this.audio = new Audio(this.audioUrl)
           })
         })
