@@ -1,6 +1,7 @@
 import sys
 
 from django.shortcuts import render
+from django.db.models import Q
 
 from users.models import User
 from .models import (
@@ -81,24 +82,6 @@ class LanguageViewSet(BaseModelViewSet):
         #     return Response(serializer.data)
 
 
-# class LanguageMemberViewSet(BaseModelViewSet):
-#     serializer_class = LanguageMemberSerializer
-#     queryset = LanguageMember.objects.all()
-
-#     # def create(self, request):
-#     #     try:
-#     #         user_id = int(request.data['user']['id'])
-#     #         language_id = int(request.data['language']['id'])
-#     #         if LanguageMember.member_already_exists(user_id, language_id):
-#     #             return Response({"message", "User is already a language member"})
-#     #         else:
-#     #             member = LanguageMember.create_member(user_id, language_id)
-#     #             serializer = LanguageMemberSerializer(member)
-#     #             return Response(serializer.data)
-#     #     except:
-#     #         return Response("Unexpected error:", sys.exc_info()[0])
-
-
 class CommunityViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
@@ -122,23 +105,48 @@ class CommunityViewSet(BaseModelViewSet):
         user.community_id = community
         user.save()
 
+    @action(detail=False)
+    def create_self_membership(self, request):
+        try:
+            if request.user.is_authenticated:
+                request = self.context.get("request")
+                if request and hasattr(request, "user"):
+                    user_id = request.user.id
+                    community_id = int(request.data["community"]["id"])
+                    if CommunityMember.member_already_exists(user_id, community_id):
+                        return Response(
+                            {"message", "User is already a community member"}
+                        )
+                    else:
+                        member = CommunityMember.create_member(user_id, community_id)
+                        serializer = CommunityMemberSerializer(member)
+                        return Response(serializer.data)
+                else:
+                    content = {"Message": "User is not logged in"}
+                    return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                content = {"Message": "User is not logged in"}
+                return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
-# class CommunityMemberViewSet(BaseModelViewSet):
-#     serializer_class = CommunityMemberSerializer
-#     queryset = CommunityMember.objects.all()
+    @action(detail=False)
+    def verify_membership(self, request):
+        print(request.data)
+        # try:
+        user_id = int(request.data["user"]["id"])
+        community_id = int(request.data["community"]["id"])
+        if CommunityMember.member_already_exists(user_id, community_id):
+            member = CommunityMember.objects.filter(user__id=user_id).filter(
+                community__id=community_id
+            )
+            CommunityMember.verify_membership(member.id)
 
-#     def create(self, request):
-#         try:
-#             user_id = int(request.data['user']['id'])
-#             community_id = int(request.data['community']['id'])
-#             if CommunityMember.member_already_exists(user_id, community_id):
-#                 return Response({"message", "User is already a community member"})
-#             else:
-#                 member = CommunityMember.create_member(user_id, community_id)
-#                 serializer = CommunityMemberSerializer(member)
-#                 return Response(serializer.data)
-#         except:
-#             return Response("Unexpected error:", sys.exc_info()[0])
+            return Response({"message": "Verified!"})
+        else:
+            return Response({"message", "User is already a community member"})
+        # except:
+        #     return Response("Unexpected error:", sys.exc_info()[0])
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
@@ -153,6 +161,25 @@ class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
+
+    def create(self, request):
+        try:
+            community_id = int(request.data["community"]["id"])
+            language_id = int(request.data["language"]["id"])
+
+            community = Community.objects.get(pk=community_id)
+            language = Language.objects.get(pk=language_id)
+
+            serializer = PlaceNameSerializer(data=request.data)
+            serializer.language = language
+            serializer.community = community
+
+            serializer.is_valid(raise_exception=True)
+
+            serializer.save()
+            return Response(serializer.data)
+        except:
+            return Response("Unexpected error:", sys.exc_info()[0])
 
     @action(detail=True)
     def verify(self, request, pk):
@@ -174,6 +201,19 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     def list(self, request):
         queryset = self.get_queryset()
+
+        # Testing if user is VERIFIED
+        user_is_verified = False
+        if request.user.is_authenticated:
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user = User.objects.get(pk=int(request.user.id))
+
+        if not user_is_verified:
+            queryset = queryset.filter(
+                Q(community_only=False) | Q(community_only__isnull=True)
+            )
+
         if "lang" in request.GET:
             queryset = queryset.filter(
                 point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom

@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
 
-from language.models import Language, Community
+# from language.models import Language, Community
 
 
 class UserManager(BaseUserManager):
@@ -42,8 +42,12 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     objects = UserManager()
 
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
-    languages = models.ManyToManyField(Language)
+    community = models.ForeignKey(
+        "language.Community", on_delete=models.SET_NULL, null=True
+    )
+
+    # communities = models.ManyToManyField("language.Community")
+    languages = models.ManyToManyField("language.Language")
 
 
 # email = models.EmailField(

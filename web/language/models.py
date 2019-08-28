@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 
+from users.models import User
+
 from web.models import BaseModel, CulturalModel
 
 
@@ -101,6 +103,25 @@ class LanguageLink(models.Model):
 #         Language, on_delete=models.CASCADE, null=True, default=None
 #     )
 
+#     def create_member(user_id, language_id):
+#         member = LanguageMember()
+#         member.user = User.objects.get(pk=user_id)
+#         member.language = Language.objects.get(pk=language_id)
+#         member.save()
+
+#         return member
+
+#     def member_already_exists(user_id, language_id):
+#         member = LanguageMember.objects.filter(
+#             user__id=user_id
+#         ).filter(
+#             language__id=language_id
+#         )
+#         if member:
+#             return True
+#         else:
+#             return False
+
 #     class Meta:
 #         unique_together = ('user', 'language',)
 
@@ -121,6 +142,12 @@ class Community(CulturalModel):
     fv_guid = models.CharField(max_length=40, blank=True, default="")
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     languages = models.ManyToManyField(Language)
+
+    # One community can have more than one admin (i.e.: a couple)
+    # It is linked to LanguageMember and not to User because a
+    # Language Admin is not any User. It is a special one.
+    # language_admins = models.ManyToManyField(LanguageMember)
+
     email = models.EmailField(max_length=255, default=None, null=True)
     website = models.URLField(max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
@@ -199,6 +226,11 @@ class CommunityMember(models.Model):
         else:
             return False
 
+    def verify_member(id):
+        member = CommunityMember.objects.get(pk=int(id))
+        member.status = CommunityMember.VERIFIED
+        member.save()
+
     class Meta:
         verbose_name_plural = "Community Members"
 
@@ -221,6 +253,13 @@ class PlaceName(CulturalModel):
     western_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
+
+    language = models.ForeignKey(
+        Language, null=True, default=None, on_delete=models.CASCADE
+    )
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, default=None
+    )
 
     # Choices Constants:
     FLAGGED = "FL"
