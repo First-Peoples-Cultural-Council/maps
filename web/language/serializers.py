@@ -315,6 +315,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "point",
+            "polygon",
             "other_names",
             "audio_file",
             "kind",

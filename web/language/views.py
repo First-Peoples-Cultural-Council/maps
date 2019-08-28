@@ -15,6 +15,7 @@ from .models import (
     CommunityLanguageStats,
 )
 
+from django.views.decorators.cache import never_cache
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
@@ -190,6 +191,8 @@ class PlaceNameViewSet(BaseModelViewSet):
             placename.save()
             return Response({"message": "Flagged!"})
 
+    # Users can contribute this data, so never cache it.
+    @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
 
@@ -267,6 +270,8 @@ class PlaceNameGeoList(generics.ListAPIView):
     )
     serializer_class = PlaceNameGeoSerializer
 
+    # Users can contribute this data, so never cache it.
+    @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
         if "lang" in request.GET:
