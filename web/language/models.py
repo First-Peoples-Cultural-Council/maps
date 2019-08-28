@@ -256,20 +256,26 @@ class PlaceName(CulturalModel):
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
 
+    creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
-        Language, null=True, default=None, on_delete=models.CASCADE
+        Language, null=True, default=None, on_delete=models.SET_NULL
     )
     community = models.ForeignKey(
-        Community, on_delete=models.CASCADE, null=True, default=None
+        Community, on_delete=models.SET_NULL, null=True, default=None
     )
 
     # Choices Constants:
     FLAGGED = "FL"
+    UNVERIFIED = "UN"
     VERIFIED = "VE"
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
-    STATUS_CHOICES = [(FLAGGED, "Flagged"), (VERIFIED, "Verified")]
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (FLAGGED, "Flagged"),
+        (VERIFIED, "Verified"),
+    ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=None
     )

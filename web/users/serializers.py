@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import User
 
-from language.models import Language, Community
+from language.models import Language, Community, PlaceName
 
 
 class CommunityUserSerializer(serializers.ModelSerializer):
@@ -17,9 +17,16 @@ class LanguageUserSerializer(serializers.ModelSerializer):
         fields = ("name", "id")
 
 
+class PlaceNameUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id")
+
+
 class UserSerializer(serializers.ModelSerializer):
-    community = CommunityUserSerializer(read_only=True, many=True)
+    communities = CommunityUserSerializer(read_only=True, many=True)
     languages = LanguageUserSerializer(read_only=True, many=True)
+    placename_set = PlaceNameUserSerializer(read_only=True, many=True)
 
     class Meta:
         model = User
@@ -34,6 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "last_login",
             "date_joined",
-            "community",
+            "communities",
             "languages",
+            "placename_set",
         )
