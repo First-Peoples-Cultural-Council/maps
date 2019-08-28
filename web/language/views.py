@@ -101,39 +101,34 @@ class CommunityViewSet(BaseModelViewSet):
     def create_membership(self, request):
 
         user_id = int(request.data["user"]["id"])
-        user.community_id = int(request.data["community"]["id"])
-        user.community_id = community
-        user.save()
+        community_id = int(request.data["community"]["id"])
+        community = Community.objects.get(pk=community_id)
+        user = User.objects.get(pk=user_id)
+        user.communities.add(community)
+        user.save_m2m()
 
     @action(detail=False)
     def create_self_membership(self, request):
-        try:
-            if request.user.is_authenticated:
-                request = self.context.get("request")
-                if request and hasattr(request, "user"):
-                    user_id = request.user.id
-                    community_id = int(request.data["community"]["id"])
-                    if CommunityMember.member_already_exists(user_id, community_id):
-                        return Response(
-                            {"message", "User is already a community member"}
-                        )
-                    else:
-                        member = CommunityMember.create_member(user_id, community_id)
-                        serializer = CommunityMemberSerializer(member)
-                        return Response(serializer.data)
+        if request.user.is_authenticated:
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user_id = request.user.id
+                community_id = int(request.data["community"]["id"])
+                if CommunityMember.member_already_exists(user_id, community_id):
+                    return Response({"message", "User is already a community member"})
                 else:
-                    content = {"Message": "User is not logged in"}
-                    return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+                    member = CommunityMember.create_member(user_id, community_id)
+                    serializer = CommunityMemberSerializer(member)
+                    return Response(serializer.data)
             else:
                 content = {"Message": "User is not logged in"}
                 return Response(content, status=status.HTTP_401_UNAUTHORIZED)
-        except:
-            return Response("Unexpected error:", sys.exc_info()[0])
+        else:
+            content = {"Message": "User is not logged in"}
+            return Response(content, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=False)
     def verify_membership(self, request):
-        print(request.data)
-        # try:
         user_id = int(request.data["user"]["id"])
         community_id = int(request.data["community"]["id"])
         if CommunityMember.member_already_exists(user_id, community_id):
@@ -145,8 +140,6 @@ class CommunityViewSet(BaseModelViewSet):
             return Response({"message": "Verified!"})
         else:
             return Response({"message", "User is already a community member"})
-        # except:
-        #     return Response("Unexpected error:", sys.exc_info()[0])
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
@@ -163,23 +156,20 @@ class PlaceNameViewSet(BaseModelViewSet):
     queryset = PlaceName.objects.all().order_by("name")
 
     def create(self, request):
-        try:
-            community_id = int(request.data["community"]["id"])
-            language_id = int(request.data["language"]["id"])
+        community_id = int(request.data["community"]["id"])
+        language_id = int(request.data["language"]["id"])
 
-            community = Community.objects.get(pk=community_id)
-            language = Language.objects.get(pk=language_id)
+        community = Community.objects.get(pk=community_id)
+        language = Language.objects.get(pk=language_id)
 
-            serializer = PlaceNameSerializer(data=request.data)
-            serializer.language = language
-            serializer.community = community
+        serializer = PlaceNameSerializer(data=request.data)
+        serializer.language = language
+        serializer.community = community
 
-            serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True)
 
-            serializer.save()
-            return Response(serializer.data)
-        except:
-            return Response("Unexpected error:", sys.exc_info()[0])
+        serializer.save()
+        return Response(serializer.data)
 
     @action(detail=True)
     def verify(self, request, pk):
@@ -250,17 +240,14 @@ class MediaFavouriteViewSet(MediaFavouriteCustomViewSet, GenericViewSet):
     queryset = MediaFavourite.objects.all()
 
     def create(self, request):
-        try:
-            user_id = int(request.data["user"]["id"])
-            media_id = int(request.data["media"]["id"])
-            if MediaFavourite.favourite_already_exists(user_id, media_id):
-                return Response({"message", "Media is already a user's favorite"})
-            else:
-                favourite = MediaFavourite.create_favourite(user_id, media_id)
-                serializer = MediaFavouriteSerializer(favourite)
-                return Response(serializer.data)
-        except:
-            return Response("Unexpected error:", sys.exc_info()[0])
+        user_id = int(request.data["user"]["id"])
+        media_id = int(request.data["media"]["id"])
+        if MediaFavourite.favourite_already_exists(user_id, media_id):
+            return Response({"message", "Media is already a user's favorite"})
+        else:
+            favourite = MediaFavourite.create_favourite(user_id, media_id)
+            serializer = MediaFavouriteSerializer(favourite)
+            return Response(serializer.data)
 
 
 class LanguageGeoList(generics.ListAPIView):

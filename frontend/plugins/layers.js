@@ -161,6 +161,7 @@ export default {
       id: 'fn-arts-clusters-text',
       type: 'symbol',
       source: 'arts1',
+      minzoom: 5,
       filter: ['has', 'point_count'],
       layout: {
         'text-field': '{point_count_abbreviated}',

@@ -42,9 +42,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     objects = UserManager()
 
-    community = models.ForeignKey(
-        "language.Community", on_delete=models.SET_NULL, null=True
-    )
+    communities = models.ManyToManyField("language.Community")
 
     # communities = models.ManyToManyField("language.Community")
     languages = models.ManyToManyField("language.Language")

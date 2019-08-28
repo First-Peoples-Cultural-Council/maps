@@ -146,6 +146,7 @@ class Community(CulturalModel):
     # One community can have more than one admin (i.e.: a couple)
     # It is linked to LanguageMember and not to User because a
     # Language Admin is not any User. It is a special one.
+    # @Denis, I suspect this should be represented as an attribute of the membership object, not another m2m [cvo]
     # language_admins = models.ManyToManyField(LanguageMember)
 
     email = models.EmailField(max_length=255, default=None, null=True)
@@ -331,8 +332,6 @@ class LNA(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna1_lang_target_id
-    # nations = models.ManyToManyField(Community)  # field_tm_lna1_comms_servd_target_id
-    # Held in LNAData model.
 
 
 class LNAData(BaseModel):
