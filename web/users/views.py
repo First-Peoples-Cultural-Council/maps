@@ -45,7 +45,14 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                 user.save()
                 is_new = True
             login(request, user)
-            return Response({"success": True, "email": user.email, "new": is_new})
+            return Response(
+                {
+                    "success": True,
+                    "email": user.email,
+                    "new": is_new,
+                    "worked": request.user.is_authenticated,
+                }
+            )
         else:
             return Response({"success": False})
 

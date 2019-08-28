@@ -95,14 +95,14 @@ class LanguageLink(models.Model):
     )
 
 
-class LanguageMember(models.Model):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
-    language = models.ForeignKey(
-        Language, on_delete=models.CASCADE, null=True, default=None
-    )
-    
-    class Meta:
-        unique_together = ('user', 'language',)
+# class LanguageMember(models.Model):
+#     user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
+#     language = models.ForeignKey(
+#         Language, on_delete=models.CASCADE, null=True, default=None
+#     )
+
+#     class Meta:
+#         unique_together = ('user', 'language',)
 
 
 class Community(CulturalModel):
@@ -158,7 +158,9 @@ class CommunityLanguageStats(models.Model):
 
 
 class CommunityMember(models.Model):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, default=None, null=True
+    )
     community = models.ForeignKey(
         Community, on_delete=models.CASCADE, null=True, default=None
     )
@@ -170,13 +172,15 @@ class CommunityMember(models.Model):
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
-    STATUS_CHOICES = [(UNVERIFIED, "Unverified"), (VERIFIED, "Verified"), (REJECTED, "Rejected")]
-    status = models.CharField(
-        max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED
-    )
-    
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
+    ]
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
+
     class Meta:
-        unique_together = ('user', 'community',)
+        unique_together = ("user", "community")
 
     def create_member(user_id, community_id):
         member = CommunityMember()
@@ -187,9 +191,7 @@ class CommunityMember(models.Model):
         return member
 
     def member_already_exists(user_id, community_id):
-        member = CommunityMember.objects.filter(
-            user__id=user_id
-        ).filter(
+        member = CommunityMember.objects.filter(user__id=user_id).filter(
             community__id=community_id
         )
         if member:

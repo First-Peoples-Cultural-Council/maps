@@ -6,7 +6,6 @@ from .models import (
     Champion,
     LanguageFamily,
     LanguageLink,
-    LanguageMember,
     Dialect,
     CommunityLink,
     CommunityMember,
@@ -20,9 +19,7 @@ from .models import (
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from users.serializers import (
-    UserSerializer,
-)
+from users.serializers import UserSerializer
 
 
 class LanguageFamilySerializer(serializers.ModelSerializer):
@@ -57,13 +54,13 @@ class LanguageSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
-class LanguageMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    language = LanguageSerializer(read_only=True)
+# class LanguageMemberSerializer(serializers.ModelSerializer):
+#     user = UserSerializer(read_only=True)
+#     language = LanguageSerializer(read_only=True)
 
-    class Meta:
-        model = LanguageMember
-        fields = ("id", "user", "language")
+#     class Meta:
+#         model = LanguageMember
+#         fields = ("id", "user", "language")
 
 
 class LNASerializer(serializers.ModelSerializer):
