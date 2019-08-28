@@ -163,7 +163,7 @@ export default {
       return this.$store.state.contribute.files
     },
     audioBlob() {
-      return this.$store.state.contribute.audio
+      return this.$store.state.contribute.audioBlob
     },
 
     drawnFeatures() {

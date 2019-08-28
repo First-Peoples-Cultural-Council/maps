@@ -118,7 +118,7 @@ export default {
       )
     },
     clearFiles() {
-      console.log(this.$refs.fileUpload.reset())
+      this.$refs.fileUpload.reset()
     },
     removeFile(e, data) {
       this.$store.commit(

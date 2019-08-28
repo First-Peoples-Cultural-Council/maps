@@ -2,7 +2,19 @@
   <div>
     <b-row no-gutters>
       <b-col xl="10" class="pr-1">
-        <div class="audioRecordedArea">
+        {{ file }}
+        <b-form-file
+          ref="fileUpload"
+          v-model="file"
+          class="d-none"
+          :state="Boolean(file)"
+          placeholder="Choose a file or drop it here..."
+          drop-placeholder="Drop file here..."
+        ></b-form-file>
+        <div
+          class="audioRecordedArea cursor-pointer"
+          @click.prevent="triggerBrowse"
+        >
           <div class="p-0 m-0">
             <span v-if="!recording">
               Click on
@@ -11,7 +23,8 @@
                 alt="Mic"
                 class="d-inline-block valign-middle"
               />
-              to record the pronounciation
+              to record the pronounciation or
+              <span style="color: #C46257;">click here</span> to choose a file
             </span>
             <span
               v-else
@@ -28,9 +41,26 @@
               <b-button
                 class="mt-2"
                 variant="dark"
-                @click.prevent.stop="resetEverything"
+                @click.prevent.stop="resetAudio"
                 >X</b-button
               >
+            </div>
+            <div v-if="file">
+              <b-button
+                block
+                variant="light"
+                class="file-button text-align-left mt-1 mb-1"
+                @click.stop=""
+              >
+                {{ file.name }}
+                <b-badge
+                  pill
+                  variant="dark"
+                  class="float-right"
+                  @click="resetFile($event, file)"
+                  >X</b-badge
+                >
+              </b-button>
             </div>
           </div>
         </div>
@@ -63,6 +93,7 @@ export default {
   },
   data() {
     return {
+      file: null,
       recording: false,
       mediaRecorder: null,
       audioChunksCollection: [],
@@ -72,8 +103,46 @@ export default {
       audio: null
     }
   },
+  watch: {
+    file(newFile, oldFile) {
+      console.log('Old File', oldFile)
+      console.log('New FIle', newFile)
+      if (!newFile && !oldFile) {
+        this.$store.commit('contribute/setAudioFile', null)
+        return
+      }
+
+      if (this.audio) {
+        this.resetAudio()
+      }
+
+      this.$store.commit('contribute/setAudioFile', newFile)
+    },
+    audio(newAudio, oldAudio) {
+      console.log('newAUdio', newAudio)
+      if (!newAudio) {
+        this.resetAudio()
+      }
+
+      if (this.file) {
+        this.resetFile()
+      }
+      this.$store.commit('contribute/setAudioBlob', this.audioBlob)
+    }
+  },
   methods: {
-    resetEverything() {
+    triggerBrowse(e) {
+      this.$refs.fileUpload.$el.children[0].click()
+    },
+    clearFiles() {
+      this.$refs.fileUpload.reset()
+    },
+    resetFile(e) {
+      this.clearFiles()
+      this.file = null
+      this.$store.commit('contribute/setAudioFile', null)
+    },
+    resetAudio() {
       this.recording = false
       this.mediaRecorder = null
       this.audioChunksCollection = []
@@ -81,7 +150,8 @@ export default {
       this.audioBlob = null
       this.audioUrl = null
       this.audio = null
-      this.$store.commit('contriute/setAudio', null)
+      this.$store.commit('contribute/setAudioBlob', null)
+      this.$store.commit('contribute/setAudioFile', null)
     },
     record(e) {
       if (!this.recording) {
@@ -100,7 +170,7 @@ export default {
             }
             this.audioBlob = new Blob(this.audioChunks)
             this.audioUrl = URL.createObjectURL(this.audioBlob)
-            this.$store.commit('contribute/setAudio', this.audioBlob)
+            this.$store.commit('contribute/setAudioBlob', this.audioBlob)
             this.audio = new Audio(this.audioUrl)
           })
         })

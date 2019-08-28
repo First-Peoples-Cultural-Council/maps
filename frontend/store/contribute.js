@@ -3,7 +3,8 @@ export const state = () => ({
   mode: null,
   drawnFeatures: [],
   languagesInFeature: [],
-  audio: null,
+  audioBlob: null,
+  audioFile: null,
   name: null,
   files: []
 })
@@ -25,8 +26,8 @@ export const mutations = {
     state.languagesInFeature = languagesInFeature
   },
 
-  setAudio(state, audio) {
-    state.audio = audio
+  setAudioBlob(state, audioBlob) {
+    state.audioBlob = audioBlob
   },
 
   setName(state, name) {
@@ -39,5 +40,9 @@ export const mutations = {
 
   addFile(state, file) {
     state.files.push(file)
+  },
+
+  setAudioFile(state, audioFile) {
+    state.audioFile = audioFile
   }
 }
