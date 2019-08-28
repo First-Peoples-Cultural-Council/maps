@@ -16,43 +16,45 @@ from .models import (
 
 class LanguageAPITests(APITestCase):
 
-	###### ONE TEST TESTS ONLY ONE SCENARIO ######
+	def setUp(self):
+		self.language = Language.objects.create(name='Test language 001')
 
-	def test_language_detail_route_exists(self):
-		"""
-		Ensure language Detail API route exists
-		"""
-		response = self.client.get('/api/language/0/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+		self.user = User.objects.create(
+            username = 'testeuser001',
+            first_name = 'Test',
+            last_name = 'user 001',
+            email = 'test@countable.ca')
+
+	###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
 
 	def test_language_detail(self):
 		"""
 		Ensure we can retrieve a newly created language object.
 		"""
-		test_language = Language.objects.create(name='Test language 001')
-		response = self.client.get('/api/language/{}/'.format(test_language.id), format='json')
+		# test_language = Language.objects.create(name='Test language 001')
+		response = self.client.get('/api/language/{}/'.format(self.language.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(len(response.data), 1)
-
-
-	def test_language_list_route_exists(self):
-		"""
-		Ensure language list API route exists
-		"""
-		response = self.client.get('/api/language/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 	def test_language_list(self):
 		"""
 		Ensure we can retrieve newly created language objects.
 		"""
-		test_language1 = Language.objects.create(name='Test language 001')
+		# test_language1 = Language.objects.create(name='Test language 001')
 
 		response = self.client.get('/api/language/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(len(response.data), 1)
+
+
+	def test_create_membership(self):
+		"""
+		Ensure we can create a language membership.
+		"""	
+		response = self.client.post('/api/languagemember/', {'user': {'id': self.user.id}, 'language': {'id': self.language.id}}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class LanguageGeoAPITests(APITestCase):
@@ -79,22 +81,22 @@ class LanguageGeoAPITests(APITestCase):
 
 class CommunityAPITests(APITestCase):
 
+	def setUp(self):
+		self.community = Community.objects.create(name='Test community 001')
+
+		self.user = User.objects.create(
+            username = 'testeuser001',
+            first_name = 'Test',
+            last_name = 'user 001',
+            email = 'test@countable.ca')
+
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-	def test_community_detail_route_exists(self):
-		"""
-		Ensure community Detail API route exists
-		"""
-		response = self.client.get('/api/community/0/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
 	def test_community_detail(self):
 		"""
 		Ensure we can retrieve a newly created community object.
 		"""
-		test_community = Community.objects.create(name='Test community 001')
-		response = self.client.get('/api/community/{}/'.format(test_community.id), format='json')
+		response = self.client.get('/api/community/{}/'.format(self.community.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -104,9 +106,47 @@ class CommunityAPITests(APITestCase):
 		"""
 		response = self.client.get('/api/community/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		self.assertEqual(len(response.data), 1)
+
+
+	def test_create_membership(self):
+		"""
+		Ensure we can create a community membership.
+		"""	
+		response = self.client.post('/api/communitymember/', {'user': {'id': self.user.id}, 'community': {'id': self.community.id}}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_verify_membership(self):
+		"""
+		Ensure we can verify a community membership.
+		"""	
+		response_post = self.client.post('/api/communitymember/', 
+										{'user': {'id': self.user.id}, 'community': {'id': self.community.id}}, 
+										format='json')
+		self.assertEqual(response_post.status_code, status.HTTP_200_OK)
+		
+		response_get = self.client.post('/api/communitymember/verify_membership/', 
+										{'user': {'id': self.user.id}, 'community': {'id': self.community.id}}, 
+										format='json')
+		self.assertEqual(response_get.status_code, status.HTTP_200_OK)
 
 
 class PlaceNameAPITests(APITestCase):
+
+	def setUp(self):
+		self.placename = PlaceName.objects.create(name='Test placename 001')
+
+		# self.user = User.objects.create(
+        #     username = 'testeuser001',
+        #     first_name = 'Test',
+        #     last_name = 'user 001',
+        #     email = 'test@countable.ca'
+        # )
+		# self.user.languages.add(self.language1)
+		# self.user.languages.add(self.language2)
+		# self.user.communities.add(self.community1)
+		# self.user.communities.add(self.community2)
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -122,8 +162,7 @@ class PlaceNameAPITests(APITestCase):
 		"""
 		Ensure we can retrieve a newly created placename object.
 		"""
-		test_placename = PlaceName.objects.create(name='Test placename 001')
-		response = self.client.get('/api/placename/{}/'.format(test_placename.id), format='json')
+		response = self.client.get('/api/placename/{}/'.format(self.placename.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -139,10 +178,10 @@ class PlaceNameAPITests(APITestCase):
 		"""
 		Ensure placename list API brings newly created data
 		"""
-		test_placename = PlaceName.objects.create(name='Test placename 001')
 		response = self.client.get('/api/placename/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		assert len(response.data) > 0
+		# assert len(response.data) = 1
+		self.assertEqual(len(response.data), 1)
 
 
 class ChampionAPITests(APITestCase):
@@ -221,23 +260,15 @@ class MediaFavouriteAPITests(APITestCase):
             email='test@countable.ca',
         )
 		self.media = Media.objects.create(name='Test media 001', file_type='image')
+		self.mediafavourite = MediaFavourite.objects.create(user=self.user, media=self.media)
 
 	###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-	def test_mediafavourite_detail_route_exists(self):
-		"""
-		Ensure mediafavourite Detail API route exists
-		"""
-		response = self.client.get('/api/mediafavourite/0/', format='json')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
 	def test_mediafavourite_detail(self):
 		"""
 		Ensure we can retrieve a newly created MediaFavourite object.
 		"""
-		test_mediafavourite = MediaFavourite.objects.create(user=self.user, media=self.media)
-		response = self.client.get('/api/mediafavourite/{}/'.format(test_mediafavourite.id), format='json')
+		response = self.client.get('/api/mediafavourite/{}/'.format(self.mediafavourite.id), format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -247,6 +278,7 @@ class MediaFavouriteAPITests(APITestCase):
 		"""
 		response = self.client.get('/api/mediafavourite/', format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		self.assertEqual(len(response.data), 1)
 
 
 	# def test_mediafavourite_post(self):
@@ -261,6 +293,5 @@ class MediaFavouriteAPITests(APITestCase):
 		"""
 		Ensure mediafavourite API DELETE method API works
 		"""
-		test_mediafavourite = MediaFavourite.objects.create(user=self.user, media=self.media)
-		response = self.client.delete('/api/mediafavourite/', {'id': test_mediafavourite.id}, format='json')
+		response = self.client.delete('/api/mediafavourite/', {'id': self.mediafavourite.id}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)

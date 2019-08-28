@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 
+from users.models import User
+
 from web.models import BaseModel, CulturalModel
 
 
@@ -100,6 +102,25 @@ class LanguageMember(models.Model):
     language = models.ForeignKey(
         Language, on_delete=models.CASCADE, null=True, default=None
     )
+
+    def create_member(user_id, language_id):
+        member = LanguageMember()
+        member.user = User.objects.get(pk=user_id)
+        member.language = Language.objects.get(pk=language_id)
+        member.save()
+
+        return member
+
+    def member_already_exists(user_id, language_id):
+        member = LanguageMember.objects.filter(
+            user__id=user_id
+        ).filter(
+            language__id=language_id
+        )
+        if member:
+            return True
+        else:
+            return False
     
     class Meta:
         unique_together = ('user', 'language',)
