@@ -237,10 +237,11 @@ export default {
         data.append('placename', id)
         data.append('media_file', file)
         data.append('_method', 'POST')
-        console.log(
-          'Media Uploads',
+        try {
           await this.$axios.$post(`/api/media/`, data)
-        )
+        } catch (e) {
+          console.error(e)
+        }
       })
     },
     async submitContribute(e) {
@@ -248,22 +249,22 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        point: this.drawnFeatures[0].geometry,
-        community_only: null,
-        status: null,
         other_names: this.tname
       }
-      console.log('Data', data)
-      console.log('Files', this.files)
+
+      if (this.$route.query.id) {
+        const id = this.$route.query.id
+        try {
+          await this.$axios.$patch(`/api/placename/${id}/`, data)
+        } catch (e) {
+          console.error(e)
+        }
+        return
+      }
+
       const { id } = await this.$axios.$post('/api/placename/', data)
-      // this.uploadAudioFile(id)
+      this.uploadAudioFile(id)
       this.uploadFiles(id)
-
-      /*
-
-
-
-      */
     }
   },
   beforeRouteEnter(to, from, next) {
