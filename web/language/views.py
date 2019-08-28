@@ -152,6 +152,14 @@ class CommunityLanguageStatsViewSet(BaseModelViewSet):
     queryset = CommunityLanguageStats.objects.all()
 
 
+class ChampionViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
+    serializer_class = ChampionSerializer
+    detail_serializer_class = ChampionSerializer
+    queryset = Champion.objects.all()
+
+
 class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
