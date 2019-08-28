@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from .models import User
 
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
@@ -11,7 +11,6 @@ from .serializers import UserSerializer
 from django.utils.decorators import method_decorator
 from .cognito import verify_token
 from django.db.models import Q
-from django.contrib.auth.models import User
 from django.contrib.auth import login
 
 

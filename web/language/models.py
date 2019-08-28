@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from django.contrib.gis.db import models
 
 from web.models import BaseModel, CulturalModel
@@ -98,10 +96,13 @@ class LanguageLink(models.Model):
 
 
 class LanguageMember(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
     language = models.ForeignKey(
         Language, on_delete=models.CASCADE, null=True, default=None
     )
+    
+    class Meta:
+        unique_together = ('user', 'language',)
 
 
 class Community(CulturalModel):
@@ -157,10 +158,25 @@ class CommunityLanguageStats(models.Model):
 
 
 class CommunityMember(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
     community = models.ForeignKey(
         Community, on_delete=models.CASCADE, null=True, default=None
     )
+
+    # Choices Constants:
+    UNVERIFIED = "UN"
+    VERIFIED = "VE"
+    REJECTED = "RE"
+    # Choices:
+    # first element: constant Python identifier
+    # second element: human-readable version
+    STATUS_CHOICES = [(UNVERIFIED, "Unverified"), (VERIFIED, "Verified"), (REJECTED, "Rejected")]
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED
+    )
+    
+    class Meta:
+        unique_together = ('user', 'community',)
 
     def create_member(user_id, community_id):
         member = CommunityMember()
@@ -222,12 +238,12 @@ class Media(BaseModel):
     url = models.CharField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
     placename = models.ForeignKey(
-        PlaceName, on_delete=models.SET_NULL, null=True, related_name='medias'
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
     )
-    
+
 
 class MediaFavourite(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
     def create_favourite(user_id, media_id):
@@ -239,9 +255,7 @@ class MediaFavourite(BaseModel):
         return favourite
 
     def favourite_already_exists(user_id, media_id):
-        favourite = MediaFavourite.objects.filter(
-            user__id=user_id
-        ).filter(
+        favourite = MediaFavourite.objects.filter(user__id=user_id).filter(
             media__id=media_id
         )
         if favourite:

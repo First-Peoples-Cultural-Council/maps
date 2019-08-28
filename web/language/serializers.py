@@ -16,7 +16,6 @@ from .models import (
     MediaFavourite,
     CommunityLanguageStats,
 )
-from .models import User
 
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
@@ -351,7 +350,7 @@ class MediaFavouriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MediaFavourite
-        fields = ("id", "user", "media")
+        fields = ("id", "media", "user")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
