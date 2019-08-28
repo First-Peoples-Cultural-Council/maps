@@ -59,11 +59,14 @@
               <a class="color-gray" href="https://maps.fpcc.ca/help">Help</a>
             </li>
             <li class="login-nav cursor-pointer">
+              {{ email }}
               <a
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
+                v-if="!email"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://countable.ca"
                 class="d-block"
                 >Login</a
               >
+              <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
           <div
@@ -81,6 +84,8 @@
 </template>
 
 <script>
+import { getApiUrl } from '@/plugins/utils.js'
+
 export default {
   data() {
     return {
@@ -90,9 +95,19 @@ export default {
   computed: {
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
+    },
+    email() {
+      return this.$store.state.user.email
     }
   },
   methods: {
+    async logout() {
+      await this.$axios.$get(`${getApiUrl('user/logout/')}`)
+
+      this.$store.commit('user/setUserEmail', null)
+      window.location =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&logout_uri=https://countable.ca'
+    },
     handleLogoClick() {
       this.$router.push({
         path: '/'

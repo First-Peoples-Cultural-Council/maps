@@ -11,7 +11,7 @@ from .serializers import UserSerializer
 from django.utils.decorators import method_decorator
 from .cognito import verify_token
 from django.db.models import Q
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 
 
 # To enable only UPDATE and RETRIEVE, we create a custom ViewSet class...
@@ -63,6 +63,12 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
             return Response({"is_authenticated": True, "email": request.user.email})
         else:
             return Response({"is_authenticated": False})
+
+    @action(detail=False)
+    def logout(self, request):
+        # TODO: invalidate the JWT on cognito ?
+        logout(request)
+        return Response({"success": True})
 
     @action(detail=False)
     def search(self, request):

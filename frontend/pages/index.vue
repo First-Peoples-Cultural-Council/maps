@@ -309,7 +309,7 @@ export default {
     next()
   },
   async mounted() {
-    if (this.$route.hash) {
+    if (this.$route.hash.includes('id_token')) {
       const token = this.$route.hash.replace('#', '')
       const user = await this.$axios.$get(
         `${getApiUrl('user/login/')}?${token}`
@@ -322,6 +322,14 @@ export default {
       }
     } else {
       // Check if already logged in here
+      const user = await this.$axios.$get(`${getApiUrl('user/auth/')}`)
+      console.log(user)
+      if (user.is_authenticated) {
+        this.$store.commit('user/setUserEmail', user.email)
+        this.$router.push({
+          path: '/'
+        })
+      }
     }
     // initial zoom on index page
     if (this.$route.path === '/') {
