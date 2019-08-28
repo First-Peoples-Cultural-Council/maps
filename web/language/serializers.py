@@ -204,6 +204,13 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
 
 
+class PlaceNamePolySerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "other_names", "id", "audio_file")
+        geo_field = "polygon"
+
+
 class CommunityLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLink

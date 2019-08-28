@@ -245,6 +245,7 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     point = models.PointField(null=True, default=None)
+    polygon = models.PolygonField(null=True, default=None)
     audio_file = models.FileField(null=True, blank=True)
     kind = models.CharField(max_length=15, default="")
 
