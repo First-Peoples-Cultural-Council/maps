@@ -76,6 +76,9 @@ class UserAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_user_set_community(self):
+        """
+        Check we can set the community
+        """
         # TODO: test I can't edit without logging in.
         self.client.login(username="testuser001", password="password")
         response = self.client.patch(
@@ -90,3 +93,15 @@ class UserAPITests(APITestCase):
         self.assertEqual(response.data["id"], self.user.id)
         self.assertEqual(len(response.data["languages"]), 2)
         self.assertEqual(len(response.data["communities"]), 2)
+
+    def test_user_patch(self):
+        """
+        Check we can set the bio on the user's settings page.
+        """
+        self.client.login(username="testuser001", password="password")
+        response = self.client.patch(
+            "/api/user/{}/".format(self.user.id), {"bio": "bio"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.get("/api/user/{}/".format(self.user.id), format="json")
+        self.assertEqual(response.data["bio"], "bio")
