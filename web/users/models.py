@@ -42,9 +42,10 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     objects = UserManager()
 
-    communities = models.ManyToManyField("language.Community")
+    communities = models.ManyToManyField(
+        "language.Community", through="language.CommunityMember"
+    )
 
-    # communities = models.ManyToManyField("language.Community")
     languages = models.ManyToManyField("language.Language")
 
 

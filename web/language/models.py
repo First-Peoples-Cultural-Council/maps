@@ -97,35 +97,6 @@ class LanguageLink(models.Model):
     )
 
 
-# class LanguageMember(models.Model):
-#     user = models.ForeignKey("users.User", on_delete=models.CASCADE, default=None, null=True)
-#     language = models.ForeignKey(
-#         Language, on_delete=models.CASCADE, null=True, default=None
-#     )
-
-#     def create_member(user_id, language_id):
-#         member = LanguageMember()
-#         member.user = User.objects.get(pk=user_id)
-#         member.language = Language.objects.get(pk=language_id)
-#         member.save()
-
-#         return member
-
-#     def member_already_exists(user_id, language_id):
-#         member = LanguageMember.objects.filter(
-#             user__id=user_id
-#         ).filter(
-#             language__id=language_id
-#         )
-#         if member:
-#             return True
-#         else:
-#             return False
-
-#     class Meta:
-#         unique_together = ('user', 'language',)
-
-
 class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
@@ -207,6 +178,11 @@ class CommunityMember(models.Model):
     ]
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
 
+    ROLE_ADMIN = "RA"
+    ROLE_MEMBER = "RM"
+    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"), (ROLE_MEMBER, "Community Member"))
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+
     class Meta:
         unique_together = ("user", "community")
 
@@ -277,7 +253,7 @@ class PlaceName(CulturalModel):
         (VERIFIED, "Verified"),
     ]
     status = models.CharField(
-        max_length=2, choices=STATUS_CHOICES, null=True, default=None
+        max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
 
 
