@@ -30,6 +30,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @action(detail=False)
     def login(self, request):
+        """
+        This API expects a JWT from AWS Cognito, which it uses to authenticate our user
+        """
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
         if "email" in result:
@@ -46,12 +49,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                 is_new = True
             login(request, user)
             return Response(
-                {
-                    "success": True,
-                    "email": user.email,
-                    "new": is_new,
-                    "worked": request.user.is_authenticated,
-                }
+                {"success": True, "email": user.email, "id": user.id, "new": is_new}
             )
         else:
             return Response({"success": False})
@@ -60,7 +58,13 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     def auth(self, request):
         context = {}
         if request.user.is_authenticated:
-            return Response({"is_authenticated": True, "email": request.user.email})
+            return Response(
+                {
+                    "is_authenticated": True,
+                    "email": request.user.email,
+                    "id": request.user.id,
+                }
+            )
         else:
             return Response({"is_authenticated": False})
 
