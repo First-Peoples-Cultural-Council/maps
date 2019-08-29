@@ -302,21 +302,7 @@ class PlaceNameCategory(serializers.ModelSerializer):
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = (
-            "name",
-            "id",
-            "point",
-            "polygon",
-            "other_names",
-            "audio_file",
-            "kind",
-            "western_name",
-            "community_only",
-            "description",
-            "status",
-            "category",
-            "medias",
-        )
+        fields = ("name", "id", "kind", "category")
 
 
 # Serializer only for composing PlaceName data
@@ -351,6 +337,12 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = PlaceNameMediaSerializer(many=True, read_only=True)
+    community = serializers.PrimaryKeyRelatedField(
+        queryset=Community.objects.all(), allow_null=True
+    )
+    language = serializers.PrimaryKeyRelatedField(
+        queryset=Language.objects.all(), allow_null=True
+    )
 
     class Meta:
         model = PlaceName
@@ -367,5 +359,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "status",
             "category",
             "medias",
+            "community",
+            "language",
         )
         depth = 1

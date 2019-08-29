@@ -170,21 +170,24 @@ class PlaceNameViewSet(BaseModelViewSet):
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
 
-    def create(self, request):
-        community_id = int(request.data["community"]["id"])
-        language_id = int(request.data["language"]["id"])
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
-        community = Community.objects.get(pk=community_id)
-        language = Language.objects.get(pk=language_id)
+    # def create(self, request):
+    #     community_id = int(request.data["community"]["id"])
+    #     language_id = int(request.data["language"]["id"])
 
-        serializer = PlaceNameSerializer(data=request.data)
-        serializer.language = language
-        serializer.community = community
+    #     community = Community.objects.get(pk=community_id)
+    #     language = Language.objects.get(pk=language_id)
 
-        serializer.is_valid(raise_exception=True)
+    #     serializer = PlaceNameSerializer(data=request.data)
+    #     serializer.language = language
+    #     serializer.community = community
 
-        serializer.save()
-        return Response(serializer.data)
+    #     serializer.is_valid(raise_exception=True)
+
+    #     serializer.save()
+    #     return Response(serializer.data)
 
     @action(detail=True)
     def verify(self, request, pk):

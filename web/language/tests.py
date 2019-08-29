@@ -7,6 +7,20 @@ from users.models import User
 from .models import Language, PlaceName, Community, Champion, Media, Favourite
 
 
+class BaseTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(
+            username="testuser001",
+            first_name="Test",
+            last_name="user 001",
+            email="test@countable.ca",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.user.set_password("password")
+        self.user.save()
+
+
 class LanguageAPITests(APITestCase):
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
@@ -93,7 +107,11 @@ class CommunityAPITests(APITestCase):
     #     response = self.client.get("/api/community/create_self_membership")
 
 
-class PlaceNameAPITests(APITestCase):
+class PlaceNameAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.community = Community.objects.create(name="Test Community")
+        self.language = Language.objects.create(name="Test Language")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -129,6 +147,50 @@ class PlaceNameAPITests(APITestCase):
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) > 0
+
+    def test_placename_post(self):
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        response = self.client.post(
+            "/api/placename/",
+            {
+                "name": "test place",
+                "point": {
+                    "type": "Point",
+                    "coordinates": [-132.14904785156, 54.020276150064],
+                },
+                "other_names": "string",
+                "western_name": "string",
+                "community_only": True,
+                "description": "string",
+                "community": self.community.id,
+                "language": self.language.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.name, "test place")
+        self.assertEqual(place.community_id, self.community.id)
+        self.assertEqual(place.language_id, self.language.id)
+
+        # now update it.
+        response = self.client.patch(
+            "/api/placename/{}/".format(created_id),
+            {"other_names": "updated other names", "community": None},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.other_names, "updated other names")
 
 
 class ChampionAPITests(APITestCase):
@@ -200,18 +262,10 @@ class MediaAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class FavouriteAPITests(APITestCase):
+class FavouriteAPITests(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create(
-            username="testuser001",
-            first_name="Test",
-            last_name="user 001",
-            email="test@countable.ca",
-            is_staff=True,
-            is_superuser=True,
-            password="password",
-        )
         self.place = PlaceName.objects.create(name="Test media 001")
+        return super().setUp()
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
