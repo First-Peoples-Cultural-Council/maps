@@ -60,7 +60,7 @@
         ></Badge>
       </div>
     </template>
-    <template v-slot:content>
+    <template v-slot:header>
       <div class="color-row" :style="'background-color: ' + languageColor">
         &nbsp;
       </div>
@@ -97,149 +97,153 @@
       </section>
       <Filters class="mb-1 mt-2"></Filters>
     </template>
-    <div class="language">
-      <section class="pl-3 pr-3 pt-2">
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'place'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="community in communities"
-              :key="'community' + community.id"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <CommunityCard
-                :name="community.name"
-                class="mt-3 hover-left-move"
-                @click.native="handleCardClick($event, community.name, 'comm')"
-              ></CommunityCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="place in places"
-              :key="'place' + place.id"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <PlacesCard
-                :name="place.properties.name"
-                class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, place.properties.name, 'places')
-                "
-              ></PlacesCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'place' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in publicArts"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
+    <template v-slot:content>
+      <div class="language">
+        <section class="pl-3 pr-3 pt-2">
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'place'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="community in communities"
+                :key="'community' + community.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
               >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
+                <CommunityCard
+                  :name="community.name"
+                  class="mt-3 hover-left-move"
+                  @click.native="
+                    handleCardClick($event, community.name, 'comm')
+                  "
+                ></CommunityCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="place in places"
+                :key="'place' + place.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <PlacesCard
+                  :name="place.properties.name"
+                  class="mt-3 hover-left-move"
+                  @click.native="
+                    handleCardClick($event, place.properties.name, 'places')
+                  "
+                ></PlacesCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
               mode !== 'place' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in orgs"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in publicArts"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
               >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'place' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in artists"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :arttype="art.properties.art_type"
+                  :name="art.properties.name"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'place' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in orgs"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
               >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-      </section>
-    </div>
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :arttype="art.properties.art_type"
+                  :name="art.properties.name"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'place' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in artists"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :arttype="art.properties.art_type"
+                  :name="art.properties.name"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+        </section>
+      </div>
+    </template>
   </DetailSideBar>
 </template>
 
