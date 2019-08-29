@@ -233,7 +233,9 @@ export default {
           this.$axios.$get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${
               this.searchQuery
-            }.json?access_token=${this.MAPBOX_ACCESS_TOKEN}`
+            }.json?access_token=${
+              this.MAPBOX_ACCESS_TOKEN
+            }&bbox=-140,48,-114,60`
           )
         ])
 
