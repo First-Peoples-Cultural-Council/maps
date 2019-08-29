@@ -188,7 +188,20 @@ export default {
       this.languageResults = this.fuzzySearch(
         this.languages,
         this.searchQuery,
-        ['name', 'family.name', 'other_names']
+        [
+          {
+            name: 'name',
+            weight: 0.3
+          },
+          {
+            name: 'family.name',
+            weight: 0.7
+          },
+          {
+            name: 'other_names',
+            weight: 0.7
+          }
+        ]
       )
       this.communityResults = this.fuzzySearch(
         this.communities,
@@ -197,13 +210,18 @@ export default {
       )
 
       this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
-        'properties.name',
-        'properties.other_names'
+        {
+          name: 'properties.name',
+          weight: 0.3
+        },
+        {
+          name: 'properties.other_names',
+          weight: 0.7
+        }
       ])
 
       this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
-        'properties.name',
-        'properties.art_type'
+        'properties.name'
       ])
       try {
         const geoCodeResults = await Promise.all([
@@ -230,11 +248,11 @@ export default {
     fuzzySearch(data, query, keys) {
       const options = {
         shouldSort: true,
-        threshold: 0.6,
+        threshold: 0.3,
         location: 0,
-        distance: 100,
+        distance: 70,
         maxPatternLength: 32,
-        minMatchCharLength: 1,
+        minMatchCharLength: 3,
         keys
       }
 
@@ -242,31 +260,31 @@ export default {
       const result = fuse.search(query)
       return result
     },
-    filterBasedOnTitle(data = [], query = '', mode = 0) {
-      if (data.length === 0) {
-        return []
-      }
-      let results
-      const lowerCasedQuery = query.toLowerCase()
-      if (mode === 1) {
-        results = data.filter(d => {
-          return (
-            d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
-            (d.properties.other_names || '')
-              .toLowerCase()
-              .includes(lowerCasedQuery)
-          )
-        })
-      } else {
-        results = data.filter(d => {
-          return (
-            d.name.toLowerCase().includes(lowerCasedQuery) ||
-            (d.other_names || '').toLowerCase().includes(lowerCasedQuery)
-          )
-        })
-      }
-      return results
-    },
+    // filterBasedOnTitle(data = [], query = '', mode = 0) {
+    //   if (data.length === 0) {
+    //     return []
+    //   }
+    //   let results
+    //   const lowerCasedQuery = query.toLowerCase()
+    //   if (mode === 1) {
+    //     results = data.filter(d => {
+    //       return (
+    //         d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         (d.properties.other_names || '')
+    //           .toLowerCase()
+    //           .includes(lowerCasedQuery)
+    //       )
+    //     })
+    //   } else {
+    //     results = data.filter(d => {
+    //       return (
+    //         d.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         (d.other_names || '').toLowerCase().includes(lowerCasedQuery)
+    //       )
+    //     })
+    //   }
+    //   return results
+    // },
     clicked(event) {
       const el = event.target
       const isPopOver = el.closest('.popover')

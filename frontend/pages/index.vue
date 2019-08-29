@@ -760,16 +760,6 @@ export default {
   font-size: 25px;
 }
 
-.map-loading:after {
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: bottom;
-  -webkit-animation: ellipsis steps(4, end) 900ms infinite;
-  animation: ellipsis steps(4, end) 900ms infinite;
-  content: '\2026'; /* ascii code for the ellipsis character */
-  width: 0px;
-}
-
 .drawing-mode-container {
   position: absolute;
   top: 60px;
@@ -780,18 +770,6 @@ export default {
   width: 100%;
   padding-left: 500px;
   z-index: 50;
-}
-
-@keyframes ellipsis {
-  to {
-    width: 1.25em;
-  }
-}
-
-@-webkit-keyframes ellipsis {
-  to {
-    width: 1.25em;
-  }
 }
 
 .map-controls-overlay {
