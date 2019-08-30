@@ -8,9 +8,10 @@
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
-      <b-alert show class="p-1 pr-2 pl-2"
-        >You are currently in drawing mode</b-alert
-      >
+      <b-alert show class="p-1 pr-2 pl-2">
+        <div>You are currently in drawing mode</div>
+        <DrawingTools></DrawingTools>
+      </b-alert>
     </div>
     <div class="map-loading">
       Loading Map <b-spinner type="grow" label="Spinning"></b-spinner>
@@ -22,6 +23,7 @@
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
+      @map-touchend="mapClicked"
       @map-zoomend="mapZoomEnd"
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
@@ -136,9 +138,9 @@
 <script>
 import Mapbox from 'mapbox-gl-vue'
 import { groupBy, uniqBy } from 'lodash'
-
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
+import DrawingTools from '@/components/DrawingTools.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -160,7 +162,6 @@ import {
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
-
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
@@ -191,7 +192,8 @@ export default {
     Zoom,
     Filters,
     Logo,
-    Contribute
+    Contribute,
+    DrawingTools
   },
   data() {
     return {
@@ -436,6 +438,42 @@ export default {
     mapInit(map, e) {
       this.map = map
       this.$store.commit('mapinstance/set', map)
+
+      const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          point: true,
+          trash: true
+        }
+      })
+      map.addControl(draw, 'bottom-left')
+
+      map.on('draw.create', e => {
+        const featuresDrawn = draw.getAll()
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
+      })
+
+      map.on('draw.delete', e => {
+        const featuresDrawn = draw.getAll()
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1 || features.length === 0) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
+      })
     },
     /**
      * Handle clicks centrally so we can control precedence.
@@ -563,40 +601,6 @@ export default {
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
 
-      const draw = new MapboxDraw({
-        displayControlsDefault: false,
-        controls: {
-          polygon: true,
-          point: true,
-          trash: true
-        }
-      })
-      map.addControl(draw, 'bottom-left')
-      map.on('draw.create', e => {
-        const featuresDrawn = draw.getAll()
-        const features = featuresDrawn.features
-        this.$store.commit('contribute/setDrawnFeatures', features)
-
-        if (features.length === 1) {
-          this.$store.commit(
-            'contribute/setLanguagesInFeature',
-            this.getLanguagesFromDraw(features)
-          )
-        }
-      })
-
-      map.on('draw.delete', e => {
-        const featuresDrawn = draw.getAll()
-        const features = featuresDrawn.features
-        this.$store.commit('contribute/setDrawnFeatures', features)
-
-        if (features.length === 1 || features.length === 0) {
-          this.$store.commit(
-            'contribute/setLanguagesInFeature',
-            this.getLanguagesFromDraw(features)
-          )
-        }
-      })
       this.$eventHub.$emit('map-loaded', map)
     },
     zoomToHash(map) {

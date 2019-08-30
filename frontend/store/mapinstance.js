@@ -17,6 +17,10 @@ export const mutations = {
     state.mapInstance = mapInstance
   },
 
+  setDraw(state, draw) {
+    state.draw = draw
+  },
+
   setView(state, { lat, lng, zoom }) {
     state.lat = lat
     state.lng = lng
