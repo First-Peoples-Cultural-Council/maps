@@ -48,7 +48,9 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const places = (await $axios.$get(getApiUrl('placename-geo/'))).features
+    const places = (await $axios.$get(
+      getApiUrl('placename-geo/?' + new Date())
+    )).features
     const geo_place = places.find(a => {
       if (a.properties.name) {
         return encodeFPCC(a.properties.name) === params.placename
