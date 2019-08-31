@@ -257,9 +257,9 @@ class MediaAPITests(APITestCase):
 		"""
         test_media = Media.objects.create(name="Test media 001", file_type="image")
         response = self.client.delete(
-            "/api/media/", {"id": test_media.id}, format="json"
+            "/api/media/{}/".format(test_media.id), format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
 class FavouriteAPITests(BaseTestCase):

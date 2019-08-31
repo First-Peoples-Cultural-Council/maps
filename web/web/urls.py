@@ -27,6 +27,14 @@ from .views import PageViewSet
 router = routers.DefaultRouter()
 router.register(r"api/page", PageViewSet, basename="page")
 
+
+def crash(request):
+    """
+    This is for checking error handling is working.
+    """
+    throw
+
+
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path(
@@ -38,5 +46,6 @@ urlpatterns = [
     path("api/", include("arts.urls"), name="arts"),
     path("api/", include("users.urls"), name="users"),
     url(r"api-token-auth/", obtain_auth_token),  # for token based api usage.
+    url("docs/crash/$", crash),
     url("docs/$", schema_view),
 ] + router.urls
