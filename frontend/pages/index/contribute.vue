@@ -228,7 +228,7 @@ export default {
     }
   },
 
-  async asyncData({ query, $axios, store }) {
+  async asyncData({ query, $axios, store, redirect }) {
     console.log('Params', query)
     if (query.id) {
       const place = await $axios.$get(getApiUrl(`placename/${query.id}/`))
