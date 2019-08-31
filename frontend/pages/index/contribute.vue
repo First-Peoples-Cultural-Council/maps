@@ -149,7 +149,7 @@ import LanguageCard from '@/components/languages/LanguageCard.vue'
 // import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 // import MediaUploader from '@/components/MediaUploader.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -339,7 +339,7 @@ export default {
       }
 
       this.$router.push({
-        path: '/place-names/' + this.tname
+        path: '/place-names/' + encodeFPCC(this.tname)
       })
     }
   },
