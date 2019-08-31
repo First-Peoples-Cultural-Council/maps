@@ -48,6 +48,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
+    // TODO: it's better to call /placename_by_name or something (new back-end api)
     const places = (await $axios.$get(
       getApiUrl('placename-geo/?' + new Date())
     )).features
