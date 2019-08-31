@@ -337,7 +337,7 @@ export default {
       await this.uploadAudioFile(id, audio)
 
       this.$router.push({
-        path: '/place-name/' + this.tname
+        path: '/place-names/' + this.tname
       })
     }
   },
