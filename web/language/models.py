@@ -213,7 +213,9 @@ class CommunityMember(models.Model):
 
 
 class PlaceNameCategory(BaseModel):
-    icon_name = models.CharField(max_length=32, null=True, default=None)
+    icon_name = models.CharField(
+        max_length=32, blank=True, default=None, help_text="Name of the icon in MapBox"
+    )
 
     class Meta:
         verbose_name_plural = "Place name Categories"
