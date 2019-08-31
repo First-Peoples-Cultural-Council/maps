@@ -101,4 +101,9 @@ export default {
 .contribute-container button:hover {
   color: white !important;
 }
+
+#contribute-modal .modal-body {
+  padding: 0;
+  margin: 0;
+}
 </style>

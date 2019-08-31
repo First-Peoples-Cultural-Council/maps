@@ -333,8 +333,9 @@ export default {
       } else {
         audio = this.audioFile
       }
-
-      await this.uploadAudioFile(id, audio)
+      if (audio) {
+        await this.uploadAudioFile(id, audio)
+      }
 
       this.$router.push({
         path: '/place-names/' + this.tname
