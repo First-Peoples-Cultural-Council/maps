@@ -25,6 +25,7 @@
             a specific point to contribute
           </div></b-list-group-item
         >
+        <!--
         <b-list-group-item button @click="handleClick($event, 'polygon')"
           ><div class="contribute-list-group-title">Add a polygon</div>
           <div>
@@ -32,6 +33,7 @@
             polygon to contribute
           </div></b-list-group-item
         >
+        -->
       </b-list-group>
     </b-modal>
   </div>

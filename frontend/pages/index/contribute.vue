@@ -103,8 +103,8 @@
             preview-style="vertical"
             height="300px"
           />
-          <h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>
-          <MediaUploader></MediaUploader>
+          <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
+          <!--<MediaUploader></MediaUploader>-->
         </section>
 
         <hr />
@@ -146,7 +146,7 @@ import DetailSideBar from '@/components/DetailSideBar.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-import MediaUploader from '@/components/MediaUploader.vue'
+// import MediaUploader from '@/components/MediaUploader.vue'
 import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
@@ -154,8 +154,7 @@ export default {
     DetailSideBar,
     LanguageCard,
     CommunityCard,
-    AudioRecorder,
-    MediaUploader
+    AudioRecorder
   },
   middleware: 'authenticated',
   data() {
