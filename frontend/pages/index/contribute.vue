@@ -149,7 +149,7 @@ import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import MediaUploader from '@/components/MediaUploader.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -199,7 +199,7 @@ export default {
     languageOptions() {
       return this.languagesInFeature.map(lang => {
         return {
-          value: lang.name,
+          value: lang.id,
           text: lang.name
         }
       })
@@ -240,6 +240,8 @@ export default {
       const data = new FormData()
       data.append('audio_file', audio)
       data.append('_method', 'PATCH')
+      data.append('csrftoken', getCookie('csrftoken'))
+
       try {
         await this.$axios.$patch(`/api/placename/${id}/`, data)
       } catch (e) {
@@ -254,6 +256,7 @@ export default {
         data.append('file_type', file.type)
         data.append('placename', id)
         data.append('media_file', file)
+        data.append('csrftoken', getCookie('csrftoken'))
         data.append('_method', 'POST')
         try {
           await this.$axios.$post(`/api/media/`, data)
@@ -267,20 +270,32 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        other_names: this.tname
+        other_names: this.tname,
+        geom: this.drawnFeatures[0].geometry,
+        community: null, // TODO: User's community.
+        language: this.languageSelected,
+        category: this.categorySelected
       }
 
       if (this.$route.query.id) {
         const id = this.$route.query.id
         try {
-          await this.$axios.$patch(`/api/placename/${id}/`, data)
+          await this.$axios.$patch(`/api/placename/${id}/`, data, {
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+            }
+          })
         } catch (e) {
           console.error(e)
         }
         return
       }
 
-      const { id } = await this.$axios.$post('/api/placename/', data)
+      const { id } = await this.$axios.$post('/api/placename/', data, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
 
       let audio = null
       if (this.audioBlob && this.audioFile) {

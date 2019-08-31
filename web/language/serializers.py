@@ -342,7 +342,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "id",
-            "point",
+            "geom",
             "other_names",
             "audio_file",
             "kind",
