@@ -4,19 +4,22 @@
       <template v-slot:badges>
         <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
           Point Of Interest:
-          <span class="font-weight-bold">{{ place.properties.name }}</span>
+          <span class="font-weight-bold">{{ place.name }}</span>
         </h5>
       </template>
       <div>
         <PlacesDetailCard
           :id="place.id"
-          :name="place.properties.name"
+          :name="place.name"
           :server="isServer"
-          :audio-file="place.properties.audio_file"
+          :audio-file="place.audio_file"
         ></PlacesDetailCard>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </div>
+      <p>
+        {{ place.description }}
+      </p>
     </DetailSideBar>
   </div>
 </template>
@@ -46,14 +49,16 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     const places = (await $axios.$get(getApiUrl('placename-geo/'))).features
-    const place = places.find(a => {
+    const geo_place = places.find(a => {
       if (a.properties.name) {
         return encodeFPCC(a.properties.name) === params.placename
       }
     })
 
+    const place = await $axios.$get(getApiUrl(`placename/${geo_place.id}/`))
     const isServer = !!process.server
     return {
+      geo_place,
       place,
       isServer
     }
@@ -69,14 +74,22 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.place.geometry, zoom: 13 })
+          zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
         }
-        map.setFilter('fn-places-highlighted', [
-          '==',
-          'name',
-          this.place.properties.name
-        ])
+        map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })
+    }
+  },
+  head() {
+    return {
+      title: this.place.name,
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: this.place.description
+        }
+      ]
     }
   }
 }

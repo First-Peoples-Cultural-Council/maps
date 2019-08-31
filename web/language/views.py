@@ -207,14 +207,14 @@ class PlaceNameViewSet(BaseModelViewSet):
 
         return Response({"message": "Verified!"})
 
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
         placename = PlaceName.objects.get(pk=int(pk))
         if placename.status == PlaceName.VERIFIED:
             return Response({"message": "PlaceName has already been verified"})
         else:
             placename.status = PlaceName.FLAGGED
-            placename.status_reason = request.data['status_reason']
+            placename.status_reason = request.data["status_reason"]
             placename.save()
             return Response({"message": "Flagged!"})
 
@@ -226,11 +226,16 @@ class PlaceNameViewSet(BaseModelViewSet):
         # Testing if user is VERIFIED
         user_is_verified = False
         if request.user.is_authenticated:
-            request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = User.objects.get(pk=int(request.user.id))
 
-        if not user_is_verified:
+        if user_is_verified:
+            queryset = queryset.filter(
+                Q(community_only=False)
+                | Q(community_only__isnull=True)
+                | Q(community=user.communities_set)
+            )
+        else:
             queryset = queryset.filter(
                 Q(community_only=False) | Q(community_only__isnull=True)
             )

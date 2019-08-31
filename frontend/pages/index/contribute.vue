@@ -248,9 +248,13 @@ export default {
       data.append('csrftoken', getCookie('csrftoken'))
 
       try {
-        await this.$axios.$patch(`/api/placename/${id}/`, data)
+        await this.$axios.$patch(`/api/placename/${id}/`, data, {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        })
       } catch (e) {
-        this.errors.concat(e.response.data.name)
+        // for now assume this always succeeds.
       }
     },
     uploadFiles(id) {
@@ -274,11 +278,11 @@ export default {
     async submitContribute(e) {
       let id
       this.errors = []
-      console.log('csrf token', getCookie('csrftoken'))
       if (!this.drawnFeatures.length) {
         this.errors = this.errors.push('Please choose a location first.')
         return
       }
+
       const data = {
         name: this.tname,
         western_name: this.wname,
