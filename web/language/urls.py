@@ -2,12 +2,7 @@ from django.urls import include
 from django.conf.urls import url
 
 from rest_framework import routers
-from .views import (
-    PlaceNameGeoList,
-    LanguageGeoList,
-    CommunityGeoList,
-    PlaceNamePolyList,
-)
+from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
 
 
 from .views import (
@@ -38,5 +33,4 @@ urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
     url("community-geo/$", CommunityGeoList.as_view(), name="community-geo"),
     url("placename-geo/$", PlaceNameGeoList.as_view(), name="placename-geo"),
-    url("placename-poly/$", PlaceNamePolyList.as_view(), name="placename-poly"),
 ] + router.urls

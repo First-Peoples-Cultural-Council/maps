@@ -1,25 +1,53 @@
 <template>
-  <b-dropdown
-    id="dropdown-dropup"
-    dropup
-    text="Contribute"
-    class="contribute-container"
-    offset="-60"
-  >
-    <b-dropdown-item @click="handleDropDownClick($event, 'point')"
-      >Add A Point marker</b-dropdown-item
+  <div>
+    <b-button v-b-modal.contribute-modal>Contribute</b-button>
+
+    <b-modal
+      id="contribute-modal"
+      ref="c-modal"
+      hide-footer
+      hide-header
+      title="Contribute"
+      s
     >
-    <b-dropdown-item @click="handleDropDownClick($event, 'polygon')"
-      >Add An Area Marker</b-dropdown-item
-    >
-  </b-dropdown>
+      <b-list-group>
+        <b-list-group-item button @click="handleClick($event, 'heritage')">
+          <div class="contribute-list-group-title">Edit An Existing Place</div>
+          <div>
+            This option will take you to the heritages tab where you can select
+            an existing place, and edit from there
+          </div>
+        </b-list-group-item>
+        <b-list-group-item button @click="handleClick($event, 'point')">
+          <div class="contribute-list-group-title">Add a point</div>
+          <div>
+            This option triggers drawing mode, where you will be able to select
+            a specific point to contribute
+          </div></b-list-group-item
+        >
+        <b-list-group-item button @click="handleClick($event, 'polygon')"
+          ><div class="contribute-list-group-title">Add a polygon</div>
+          <div>
+            This option triggers drawing mode, where you will be able to draw a
+            polygon to contribute
+          </div></b-list-group-item
+        >
+      </b-list-group>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 export default {
   methods: {
-    handleDropDownClick(e, data) {
-      console.log('Data', data)
+    handleClick(e, data) {
+      this.hideModal()
+      if (data === 'heritage') {
+        this.$router.push({
+          path: '/heritages'
+        })
+        return
+      }
       this.$store.commit('contribute/setIsDrawMode', true)
       this.$router.push({
         path: '/contribute',
@@ -27,6 +55,12 @@ export default {
           mode: data
         }
       })
+    },
+    showModal() {
+      this.$refs['c-modal'].show()
+    },
+    hideModal() {
+      this.$refs['c-modal'].hide()
     }
   }
 }

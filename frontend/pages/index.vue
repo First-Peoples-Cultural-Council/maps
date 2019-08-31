@@ -318,6 +318,7 @@ export default {
       )
       if (user.success) {
         this.$store.commit('user/setUserEmail', user.email)
+        this.$store.commit('user/setLoggedIn', true)
         this.$router.push({
           path: '/'
         })
@@ -328,6 +329,7 @@ export default {
       console.log(user)
       if (user.is_authenticated) {
         this.$store.commit('user/setUserEmail', user.email)
+        this.$store.commit('user/setLoggedIn', true)
         this.$router.push({
           path: '/'
         })
@@ -384,7 +386,7 @@ export default {
       })
       return el.firstChild
     },
-    // deprecated.
+    // deprecated, not called currently
     updateMarkers(map) {
       let newMarkers = {}
       const mapboxgl = require('mapbox-gl')
@@ -444,7 +446,8 @@ export default {
         controls: {
           polygon: true,
           point: true,
-          trash: true
+          trash: true,
+          line_string: true
         }
       })
       map.addControl(draw, 'bottom-left')
@@ -817,6 +820,10 @@ export default {
 }
 .artPopUp .mapboxgl-popup-close-button {
   background-color: white;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn {
+  display: none !important;
 }
 
 @media (max-width: 992px) {

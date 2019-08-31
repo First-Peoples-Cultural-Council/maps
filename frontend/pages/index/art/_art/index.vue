@@ -64,7 +64,6 @@ export default {
         return encodeFPCC(a.properties.name) === params.art
       }
     })
-    console.log('art', art, params.art.toLowerCase())
     const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
 
     const isServer = !!process.server
@@ -91,7 +90,7 @@ export default {
             zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
           }
           const el = document.createElement('div')
-          el.className = 'marker'
+          el.className = 'marker art-marker'
           el.style =
             "background-image: url('/" +
             this.art.properties.art_type +
@@ -102,6 +101,22 @@ export default {
             .addTo(map)
         })
       })
+    }
+  },
+  head() {
+    return {
+      title:
+        this.art.properties.name +
+        ' Indigenous ' +
+        this.art.properties.art_type +
+        " on First Peoples' Language Map",
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: this.art.properties.details
+        }
+      ]
     }
   }
 }
