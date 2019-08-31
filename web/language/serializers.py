@@ -286,7 +286,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class PlaceNameCategory(serializers.ModelSerializer):
+class PlaceNameCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceNameCategory
         fields = ("id", "name", "icon_file")

@@ -10,6 +10,7 @@ from .models import (
     Community,
     CommunityMember,
     Champion,
+    PlaceNameCategory,
     Media,
     Favourite,
     CommunityLanguageStats,
@@ -28,6 +29,7 @@ from .serializers import (
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
+    PlaceNameCategorySerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     CommunityMemberSerializer,
@@ -162,6 +164,14 @@ class ChampionViewSet(BaseModelViewSet):
     serializer_class = ChampionSerializer
     detail_serializer_class = ChampionSerializer
     queryset = Champion.objects.all()
+
+
+class PlaceNameCategoryViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
+    serializer_class = PlaceNameCategorySerializer
+    detail_serializer_class = PlaceNameCategorySerializer
+    queryset = PlaceNameCategory.objects.all()
 
 
 class PlaceNameViewSet(BaseModelViewSet):
