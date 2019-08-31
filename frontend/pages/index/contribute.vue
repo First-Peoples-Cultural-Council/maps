@@ -59,7 +59,10 @@
             type="text"
           ></b-form-input>
 
-          <AudioRecorder class="mt-3"></AudioRecorder>
+          <div class="contribute-title-one mt-3 mb-0">
+            Pronounciation
+          </div>
+          <AudioRecorder class="mt-1"></AudioRecorder>
 
           <label for="westernName" class="contribute-title-one mt-3 mb-1"
             >Western Name</label
@@ -109,14 +112,6 @@
         <hr />
 
         <section class="pl-3 pr-3">
-          <b-row no-gutters>
-            <b-col xl="6" class="pr-2">
-              <b-button block variant="secondary">Preview</b-button>
-            </b-col>
-            <b-col xl="6" class="pl-2">
-              <b-button block variant="light">Cancel</b-button>
-            </b-col>
-          </b-row>
           <b-row class="mt-3">
             <b-col xl="12">
               <b-button block variant="danger" @click="submitContribute"

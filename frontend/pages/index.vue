@@ -446,7 +446,8 @@ export default {
         controls: {
           polygon: true,
           point: true,
-          trash: true
+          trash: true,
+          line_string: true
         }
       })
       map.addControl(draw, 'bottom-left')

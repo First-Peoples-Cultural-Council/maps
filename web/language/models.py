@@ -256,6 +256,7 @@ class PlaceName(CulturalModel):
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
+    status_reason = models.TextField(max_length=256, blank=True)
 
 
 class Media(BaseModel):
