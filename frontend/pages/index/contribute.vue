@@ -154,6 +154,7 @@ export default {
     AudioRecorder,
     MediaUploader
   },
+  middleware: 'authenticated',
   data() {
     return {
       place: null,
