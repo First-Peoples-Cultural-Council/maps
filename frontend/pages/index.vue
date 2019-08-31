@@ -330,9 +330,6 @@ export default {
       if (user.is_authenticated) {
         this.$store.commit('user/setUserEmail', user.email)
         this.$store.commit('user/setLoggedIn', true)
-        this.$router.push({
-          path: '/'
-        })
       }
     }
     // initial zoom on index page
