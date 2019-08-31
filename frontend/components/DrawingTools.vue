@@ -15,15 +15,15 @@ export default {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
         if (data === 'point') {
-          this.$root.$emit('draw.change.mode', 'point')
+          document.querySelector('.mapbox-gl-draw_point').click()
         }
 
         if (data === 'polygon') {
-          this.$root.$emit('draw.change.mode', 'polygon')
+          document.querySelector('.mapbox-gl-draw_polygon').click()
         }
 
         if (data === 'trash') {
-          this.$root.$emit('draw.change.mode', 'trash')
+          document.querySelector('.mapbox-gl-draw_trash').click()
         }
       })
     }
