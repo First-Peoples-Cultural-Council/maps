@@ -10,6 +10,7 @@ from .models import (
     Community,
     CommunityMember,
     Champion,
+    PlaceNameCategory,
     Media,
     Favourite,
     CommunityLanguageStats,
@@ -28,6 +29,7 @@ from .serializers import (
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
+    PlaceNameCategorySerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     CommunityMemberSerializer,
@@ -164,6 +166,14 @@ class ChampionViewSet(BaseModelViewSet):
     queryset = Champion.objects.all()
 
 
+class PlaceNameCategoryViewSet(BaseModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+
+    serializer_class = PlaceNameCategorySerializer
+    detail_serializer_class = PlaceNameCategorySerializer
+    queryset = PlaceNameCategory.objects.all()
+
+
 class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
@@ -192,17 +202,19 @@ class PlaceNameViewSet(BaseModelViewSet):
     def verify(self, request, pk):
         placename = PlaceName.objects.get(pk=int(pk))
         placename.status = PlaceName.VERIFIED
+        placename.status_reason = ""
         placename.save()
 
         return Response({"message": "Verified!"})
 
-    @action(detail=True)
+    @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
         placename = PlaceName.objects.get(pk=int(pk))
         if placename.status == PlaceName.VERIFIED:
             return Response({"message": "PlaceName has already been verified"})
         else:
             placename.status = PlaceName.FLAGGED
+            placename.status_reason = request.data['status_reason']
             placename.save()
             return Response({"message": "Flagged!"})
 

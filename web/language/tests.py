@@ -192,6 +192,50 @@ class PlaceNameAPITests(BaseTestCase):
         place = PlaceName.objects.get(pk=created_id)
         self.assertEqual(place.other_names, "updated other names")
 
+    def test_placename_flag(self):
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        response = self.client.post(
+            "/api/placename/",
+            {
+                "name": "test place",
+                "point": {
+                    "type": "Point",
+                    "coordinates": [-132.14904785156, 54.020276150064],
+                },
+                "other_names": "string",
+                "western_name": "string",
+                "community_only": True,
+                "description": "string",
+                "community": self.community.id,
+                "language": self.language.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.name, "test place")
+        self.assertEqual(place.community_id, self.community.id)
+        self.assertEqual(place.language_id, self.language.id)
+
+        # now update it.
+        response = self.client.patch(
+            "/api/placename/{}/flag/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.status, PlaceName.FLAGGED)
+
 
 class ChampionAPITests(APITestCase):
 

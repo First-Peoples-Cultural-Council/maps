@@ -213,7 +213,9 @@ class CommunityMember(models.Model):
 
 
 class PlaceNameCategory(BaseModel):
-    icon_name = models.CharField(max_length=32, null=True, default=None)
+    icon_name = models.CharField(
+        max_length=32, blank=True, default=None, help_text="Name of the icon in MapBox"
+    )
 
     class Meta:
         verbose_name_plural = "Place name Categories"
@@ -254,6 +256,7 @@ class PlaceName(CulturalModel):
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
+    status_reason = models.TextField(max_length=256, blank=True)
 
 
 class Media(BaseModel):

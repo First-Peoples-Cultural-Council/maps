@@ -12,8 +12,6 @@
             >
               Please select an area from the map
             </b-alert>
-          </div>
-          <div class="text-center pl-2 pr-2">
             <b-alert
               v-if="drawnFeatures.length > 1 && !place"
               show
@@ -35,7 +33,7 @@
                   :go="false"
                   variant="white"
                   icon="small"
-                  :name="languageSelected ? languageSelected : 'None'"
+                  :name="languageSelectedName ? languageSelectedName : 'None'"
                 ></LanguageCard
               ></b-col>
               <b-col xl="6" class="pl-1"
@@ -114,6 +112,11 @@
         <section class="pl-3 pr-3">
           <b-row class="mt-3">
             <b-col xl="12">
+              <b-alert v-if="errors.length" show variant="warning" dismissible>
+                <ul>
+                  <li v-for="err in errors" :key="err">{{ err }}</li>
+                </ul>
+              </b-alert>
               <b-button block variant="danger" @click="submitContribute"
                 >Submit</b-button
               >
@@ -165,7 +168,8 @@ export default {
       communitySelected: null,
       categorySelected: null,
       tname: '',
-      wname: ''
+      wname: '',
+      errors: []
     }
   },
 
@@ -199,6 +203,12 @@ export default {
           text: lang.name
         }
       })
+    },
+    languageSelectedName() {
+      const lang = this.languagesInFeature.find(lang => {
+        return this.languageSelected === lang.id
+      })
+      return lang && lang.name
     }
   },
   watch: {
@@ -241,7 +251,7 @@ export default {
       try {
         await this.$axios.$patch(`/api/placename/${id}/`, data)
       } catch (e) {
-        console.error(e)
+        this.errors.concat(e.response.data.name)
       }
     },
     uploadFiles(id) {
@@ -258,10 +268,18 @@ export default {
           await this.$axios.$post(`/api/media/`, data)
         } catch (e) {
           console.error(e)
+          this.errors.concat(e.response.data.name)
         }
       })
     },
     async submitContribute(e) {
+      let id
+      this.errors = []
+      console.log('csrf token', getCookie('csrftoken'))
+      if (!this.drawnFeatures.length) {
+        this.errors = this.errors.push('Please choose a location first.')
+        return
+      }
       const data = {
         name: this.tname,
         western_name: this.wname,
@@ -274,7 +292,7 @@ export default {
       }
 
       if (this.$route.query.id) {
-        const id = this.$route.query.id
+        id = this.$route.query.id
         try {
           await this.$axios.$patch(`/api/placename/${id}/`, data, {
             headers: {
@@ -282,17 +300,25 @@ export default {
             }
           })
         } catch (e) {
-          console.error(e)
+          console.warn('ERROR in update', e.response)
+          this.errors = this.errors.concat(e.response.data.name)
+          return
         }
         return
-      }
-
-      const { id } = await this.$axios.$post('/api/placename/', data, {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
+      } else {
+        try {
+          const created = await this.$axios.$post('/api/placename/', data, {
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+            }
+          })
+          id = created.id
+        } catch (e) {
+          console.warn('ERROR in create', e.response)
+          this.errors = this.errors.concat(e.response.data.name)
+          return
         }
-      })
-
+      }
       let audio = null
       if (this.audioBlob && this.audioFile) {
         return
@@ -304,8 +330,11 @@ export default {
         audio = this.audioFile
       }
 
-      this.uploadAudioFile(id, audio)
-      this.uploadFiles(id)
+      await this.uploadAudioFile(id, audio)
+
+      this.$router.push({
+        path: '/place-name/' + this.tname
+      })
     }
   },
   beforeRouteEnter(to, from, next) {

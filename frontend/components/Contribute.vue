@@ -11,13 +11,13 @@
       s
     >
       <b-list-group>
-        <b-list-group-item button @click="handleClick($event, 'heritage')">
+        <!--<b-list-group-item button @click="handleClick($event, 'heritage')">
           <div class="contribute-list-group-title">Edit An Existing Place</div>
           <div>
             This option will take you to the heritages tab where you can select
             an existing place, and edit from there
           </div>
-        </b-list-group-item>
+        </b-list-group-item>-->
         <b-list-group-item button @click="handleClick($event, 'point')">
           <div class="contribute-list-group-title">Add a point</div>
           <div>
