@@ -32,7 +32,8 @@ MEDIA_ROOT = "media/"
 MEDIA_URL = "/media/"
 APPEND_SLASH = True
 
-# Application definition
+ADMINS = (("Denis", "denis@countable.ca"), ("Clark", "clark@countable.ca"))
+SERVER_EMAIL = "info@fpcc.ca"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -137,7 +138,7 @@ AUTH_USER_MODEL = "users.User"
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = 5872
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"

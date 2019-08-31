@@ -333,6 +333,27 @@ export default {
       if (type === 'Locations' || type === 'Address') {
         this.$eventHub.whenMap(map => {
           zoomToPoint({ map, geom, zoom: 11 })
+          console.log('GEOM', geom)
+          const el = document.createElement('div')
+          el.className = 'marker search-marker'
+          el.style = "background-image: url('https://i.imgur.com/MK4NUzI.png')"
+          const mapboxgl = require('mapbox-gl')
+
+          new mapboxgl.Marker(el).setLngLat(geom.coordinates).addTo(map)
+          new mapboxgl.Popup({
+            className: 'artPopUp'
+          })
+            .setLngLat(geom.coordinates)
+            .setHTML(
+              `<div class='popup-inner'>
+                <h4>${data}</h4>
+
+                (TODO: add other stuff here.)
+                <button>contribute to this point.</button>
+
+                </div>`
+            )
+            .addTo(map)
         })
       }
     }

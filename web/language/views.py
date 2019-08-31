@@ -28,7 +28,6 @@ from .serializers import (
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
-    PlaceNamePolySerializer,
     CommunitySerializer,
     CommunityDetailSerializer,
     CommunityMemberSerializer,
@@ -282,7 +281,7 @@ class CommunityGeoList(generics.ListAPIView):
 
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", point__isnull=False
+        name__icontains="FirstVoices", geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
 
@@ -292,25 +291,7 @@ class PlaceNameGeoList(generics.ListAPIView):
         queryset = self.get_queryset()
         if "lang" in request.GET:
             queryset = queryset.filter(
-                point__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
-            )
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
-
-
-class PlaceNamePolyList(generics.ListAPIView):
-    queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", polygon__isnull=False
-    )
-    serializer_class = PlaceNamePolySerializer
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        if "lang" in request.GET:
-            queryset = queryset.filter(
-                polygon__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")
-                ).geom
+                geom__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
             )
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
