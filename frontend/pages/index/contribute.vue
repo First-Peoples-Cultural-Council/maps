@@ -36,6 +36,7 @@
                   :name="languageSelectedName ? languageSelectedName : 'None'"
                 ></LanguageCard
               ></b-col>
+              <!--
               <b-col xl="6" class="pl-1"
                 ><CommunityCard
                   :go="false"
@@ -44,6 +45,7 @@
                   name="diiɁdiitidq"
                 ></CommunityCard
               ></b-col>
+              -->
             </b-row>
           </section>
         </div>
@@ -103,8 +105,8 @@
             preview-style="vertical"
             height="300px"
           />
-          <h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>
-          <MediaUploader></MediaUploader>
+          <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
+          <!--<MediaUploader></MediaUploader>-->
         </section>
 
         <hr />
@@ -144,18 +146,17 @@
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
-import CommunityCard from '@/components/communities/CommunityCard.vue'
+// import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-import MediaUploader from '@/components/MediaUploader.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+// import MediaUploader from '@/components/MediaUploader.vue'
+import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
     DetailSideBar,
     LanguageCard,
-    CommunityCard,
-    AudioRecorder,
-    MediaUploader
+    // CommunityCard,
+    AudioRecorder
   },
   middleware: 'authenticated',
   data() {
@@ -333,12 +334,16 @@ export default {
       } else {
         audio = this.audioFile
       }
+      if (audio) {
+        await this.uploadAudioFile(id, audio)
+      }
 
-      await this.uploadAudioFile(id, audio)
-
+      window.location = '/place-names/' + encodeFPCC(this.tname)
+      /*
       this.$router.push({
-        path: '/place-names/' + this.tname
+        path: '/place-names/' + encodeFPCC(this.tname)
       })
+      */
     }
   },
   beforeRouteEnter(to, from, next) {

@@ -50,7 +50,7 @@ export default {
   async asyncData({ params, $axios, store }) {
     // TODO: it's better to call /placename_by_name or something (new back-end api)
     const places = (await $axios.$get(
-      getApiUrl('placename-geo/?' + new Date())
+      getApiUrl('placename-geo/?timestamp=' + new Date().getTime())
     )).features
     const geo_place = places.find(a => {
       if (a.properties.name) {
