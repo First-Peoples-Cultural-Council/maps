@@ -89,8 +89,8 @@ export default {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
         bio: this.user.bio,
-        languages: [this.language],
-        communities: [this.community]
+        language_ids: [this.language],
+        community_ids: [this.community]
       }
       try {
         await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {
