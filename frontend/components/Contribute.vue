@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="contribute-container">
     <b-button v-b-modal.contribute-modal>Contribute</b-button>
 
     <b-modal
