@@ -246,6 +246,15 @@ export default {
       return this.$store.state.contribute.isDrawMode
     }
   },
+  async asyncData({ params, $axios, store }) {
+    // Check if already logged in here
+    const user = await $axios.$get(`${getApiUrl('user/auth/')}`)
+    if (user.is_authenticated) {
+      store.commit('user/setUser', user.user)
+      store.commit('user/setLoggedIn', true)
+    }
+    return user
+  },
   async fetch({ $axios, store }) {
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
@@ -311,25 +320,18 @@ export default {
     next()
   },
   async mounted() {
+    // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
       const token = this.$route.hash.replace('#', '')
       const user = await this.$axios.$get(
         `${getApiUrl('user/login/')}?${token}`
       )
       if (user.success) {
-        this.$store.commit('user/setUserEmail', user.email)
+        this.$store.commit('user/setUser', user)
         this.$store.commit('user/setLoggedIn', true)
         this.$router.push({
           path: '/'
         })
-      }
-    } else {
-      // Check if already logged in here
-      const user = await this.$axios.$get(`${getApiUrl('user/auth/')}`)
-      console.log(user)
-      if (user.is_authenticated) {
-        this.$store.commit('user/setUserEmail', user.email)
-        this.$store.commit('user/setLoggedIn', true)
       }
     }
     // initial zoom on index page

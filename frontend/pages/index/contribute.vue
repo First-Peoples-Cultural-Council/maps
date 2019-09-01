@@ -230,10 +230,8 @@ export default {
   },
 
   async asyncData({ query, $axios, store, redirect }) {
-    console.log('Params', query)
     if (query.id) {
       const place = await $axios.$get(getApiUrl(`placename/${query.id}/`))
-      console.log('Place', place)
       return {
         place,
         tname: place.name
@@ -280,8 +278,8 @@ export default {
     async submitContribute(e) {
       let id
       this.errors = []
-      if (!this.drawnFeatures.length) {
-        this.errors = this.errors.push('Please choose a location first.')
+      if (!this.drawnFeatures.length && !this.place.geom) {
+        this.errors.push('Please choose a location first.')
         return
       }
 
@@ -290,26 +288,30 @@ export default {
         western_name: this.wname,
         description: this.content,
         other_names: this.tname,
-        geom: this.drawnFeatures[0].geometry,
         community: null, // TODO: User's community.
         language: this.languageSelected,
         category: this.categorySelected
       }
+      if (this.drawnFeatures.length) data.geom = this.drawnFeatures[0].geometry
 
       if (this.$route.query.id) {
         id = this.$route.query.id
         try {
-          await this.$axios.$patch(`/api/placename/${id}/`, data, {
-            headers: {
-              'X-CSRFToken': getCookie('csrftoken')
+          const modified = await this.$axios.$patch(
+            `/api/placename/${id}/`,
+            data,
+            {
+              headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+              }
             }
-          })
+          )
+          id = modified.id
         } catch (e) {
           console.warn('ERROR in update', e.response)
           this.errors = this.errors.concat(e.response.data.name)
           return
         }
-        return
       } else {
         try {
           const created = await this.$axios.$post('/api/placename/', data, {
@@ -334,16 +336,12 @@ export default {
       } else {
         audio = this.audioFile
       }
+
       if (audio) {
         await this.uploadAudioFile(id, audio)
       }
 
       window.location = '/place-names/' + encodeFPCC(this.tname)
-      /*
-      this.$router.push({
-        path: '/place-names/' + encodeFPCC(this.tname)
-      })
-      */
     }
   },
   beforeRouteEnter(to, from, next) {

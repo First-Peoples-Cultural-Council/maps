@@ -62,11 +62,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         context = {}
         if request.user.is_authenticated:
             return Response(
-                {
-                    "is_authenticated": True,
-                    "email": request.user.email,
-                    "id": request.user.id,
-                }
+                {"is_authenticated": True, "user": UserSerializer(request.user).data}
             )
         else:
             return Response({"is_authenticated": False})

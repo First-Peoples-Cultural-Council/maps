@@ -3,9 +3,9 @@
     <b-row no-gutters>
       <b-col xl="10" class="pr-1">
         <b-form-file
-          accept="image/vorbis, image/mpeg"
           ref="fileUpload"
           v-model="file"
+          accept="image/vorbis, image/mpeg"
           class="d-none"
           :state="Boolean(file)"
           placeholder="Choose a file or drop it here..."

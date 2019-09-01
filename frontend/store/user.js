@@ -1,11 +1,11 @@
 export const state = () => ({
-  email: null,
+  user: null,
   isLoggedIn: false
 })
 
 export const mutations = {
-  setUserEmail(state, email) {
-    state.email = email
+  setUser(state, user) {
+    state.user = user
   },
 
   setLoggedIn(state, loggedIn) {

@@ -218,6 +218,10 @@ class PlaceNameViewSet(BaseModelViewSet):
             placename.save()
             return Response({"message": "Flagged!"})
 
+    @method_decorator(never_cache)
+    def detail(self, request):
+        return super().detail(request)
+
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):

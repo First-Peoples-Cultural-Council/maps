@@ -15,11 +15,9 @@ from .models import (
     Favourite,
     CommunityLanguageStats,
 )
-
+from users.serializers import PublicUserSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-
-from users.serializers import UserSerializer
 
 
 class LanguageFamilySerializer(serializers.ModelSerializer):
@@ -208,7 +206,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = PublicUserSerializer(read_only=True)
     community = CommunitySerializer(read_only=True)
 
     class Meta:
@@ -320,7 +318,7 @@ class MediaSerializer(serializers.ModelSerializer):
 
 
 class FavouriteSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = PublicUserSerializer(read_only=True)
     media = MediaSerializer(read_only=True)
 
     class Meta:
@@ -330,6 +328,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = PlaceNameMediaSerializer(many=True, read_only=True)
+    creator = PublicUserSerializer(read_only=True)
     community = serializers.PrimaryKeyRelatedField(
         queryset=Community.objects.all(), allow_null=True
     )
@@ -354,5 +353,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "medias",
             "community",
             "language",
+            "creator",
         )
         depth = 1

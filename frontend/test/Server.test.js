@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { Nuxt, Builder } from 'nuxt'
-import regeneratorRuntime from 'regenerator-runtime'
+// import regeneratorRuntime from 'regenerator-runtime'
 import { JSDOM } from 'jsdom'
 import { uniqBy } from 'lodash'
-import { JestEnvironment } from '@jest/environment'
+// import { JestEnvironment } from '@jest/environment'
 import request from 'request'
-import { encodeFPCC } from '@/plugins/utils.js'
+// import { encodeFPCC } from '@/plugins/utils.js'
 
 // We keep the nuxt and server instance
 // So we can close them at the end of the test

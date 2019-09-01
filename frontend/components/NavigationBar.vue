@@ -96,17 +96,16 @@ export default {
       return this.$store.state.mapinstance.mapinstance
     },
     email() {
-      return this.$store.state.user.email
+      return this.$store.state.user.user.email
     }
   },
   methods: {
     async logout() {
-      const response = await this.$axios.$get(`${getApiUrl('user/logout/')}`)
-      console.log(response)
-      this.$store.commit('user/setUserEmail', null)
+      await this.$axios.$get(`${getApiUrl('user/logout/')}`)
+      this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      // window.location =
-      //  'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&logout_uri=https://countable.ca'
+      window.location =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&logout_uri=https://countable.ca'
     },
     handleLogoClick() {
       this.$router.push({

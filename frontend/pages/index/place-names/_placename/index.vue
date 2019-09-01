@@ -20,6 +20,7 @@
       <p>
         {{ place.description }}
       </p>
+      <button v-if="uid === place.creator.id" @click="edit">Edit</button>
     </DetailSideBar>
   </div>
 </template>
@@ -40,6 +41,10 @@ export default {
   computed: {
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
+    },
+    uid() {
+      const user = this.$store.state.user.user
+      return user && user.id
     }
   },
   watch: {
@@ -49,8 +54,9 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     // TODO: it's better to call /placename_by_name or something (new back-end api)
+    const now = new Date()
     const places = (await $axios.$get(
-      getApiUrl('placename-geo/?timestamp=' + new Date().getTime())
+      getApiUrl('placename-geo/?timestamp=' + now.getTime())
     )).features
     const geo_place = places.find(a => {
       if (a.properties.name) {
@@ -81,6 +87,9 @@ export default {
         }
         map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })
+    },
+    edit() {
+      this.$router.push('/contribute?id=' + this.place.id)
     }
   },
   head() {
