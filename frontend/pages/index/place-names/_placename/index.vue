@@ -20,7 +20,15 @@
       <p>
         {{ place.description }}
       </p>
-      <button v-if="uid === place.creator.id" @click="edit">Edit</button>
+      <p v-if="place.creator">
+        uploaded by
+        <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
+          getCreatorName()
+        }}</nuxt-link>
+      </p>
+      <button class="btn" v-if="uid === place.creator.id" @click="edit">
+        Edit
+      </button>
     </DetailSideBar>
   </div>
 </template>
@@ -87,6 +95,12 @@ export default {
         }
         map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })
+    },
+    getCreatorName() {
+      return (
+        this.place.creator.first_name ||
+        this.place.creator.username.split('__')[0]
+      )
     },
     edit() {
       this.$router.push('/contribute?id=' + this.place.id)
