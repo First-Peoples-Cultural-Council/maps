@@ -335,6 +335,10 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     language = serializers.PrimaryKeyRelatedField(
         queryset=Language.objects.all(), allow_null=True
     )
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=PlaceNameCategory.objects.all(), allow_null=True
+    )
+    category_obj = PlaceNameCategorySerializer(source="category", read_only=True)
 
     class Meta:
         model = PlaceName
@@ -350,6 +354,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "description",
             "status",
             "category",
+            "category_obj",
             "medias",
             "community",
             "language",

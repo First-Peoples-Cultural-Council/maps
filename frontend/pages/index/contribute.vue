@@ -239,14 +239,13 @@ export default {
   },
 
   async asyncData({ query, $axios, store, redirect }) {
+    let data = {}
     if (query.id) {
       const now = new Date()
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
-      const categories = await $axios.$get(getApiUrl(`placenamecategory/`))
-      return {
-        categories,
+      data = {
         place,
         tname: place.name,
         wname: place.western_name,
@@ -255,11 +254,12 @@ export default {
         categorySelected: place.category
       }
     }
-
-    return {}
+    data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
+    return data
   },
   mounted() {
     console.log('mounted, place=', this.place)
+    console.log('mounted, categories=', this.categories)
   },
   methods: {
     async uploadAudioFile(id, audio) {
@@ -290,10 +290,7 @@ export default {
         data.append('_method', 'POST')
         try {
           await this.$axios.$post(`/api/media/`, data)
-        } catch (e) {
-          console.error(e)
-          this.errors.concat(e.response.data.name)
-        }
+        } catch (e) {}
       })
     },
     async submitContribute(e) {
@@ -308,7 +305,7 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        community: this.$store.state.user.user.communities[0],
+        community: this.$store.state.user.user.communities[0] || null,
         language: this.languageSelected,
         category: this.categorySelected
       }
@@ -329,7 +326,11 @@ export default {
           id = modified.id
         } catch (e) {
           console.warn('ERROR in update', e.response)
-          this.errors = this.errors.concat(e.response.data.name)
+          this.errors = this.errors.concat(
+            Object.entries(e.response.data).map(e => {
+              return e[0] + ': ' + e[1]
+            })
+          )
           return
         }
       } else {
@@ -341,8 +342,12 @@ export default {
           })
           id = created.id
         } catch (e) {
-          console.warn('ERROR in create', e.response)
-          this.errors = this.errors.concat(e.response.data.name)
+          console.error(Object.entries(e.response.data))
+          this.errors = this.errors.concat(
+            Object.entries(e.response.data).map(e => {
+              return e[0] + ': ' + e[1]
+            })
+          )
           return
         }
       }

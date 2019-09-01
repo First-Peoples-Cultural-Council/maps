@@ -21,7 +21,7 @@
       <p>
         {{ place.description }}
       </p>
-      <p v-if="place.category">category: {{ place.category.name }}</p>
+      <p v-if="place.category">category: {{ place.category_obj.name }}</p>
       <p v-if="place.community">community: {{ place.community.name }}</p>
       <p v-if="place.western_name">western name: {{ place.western_name }}</p>
       <p v-if="place.other_names">other names: {{ place.other_names }}</p>
