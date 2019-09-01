@@ -26,7 +26,11 @@
 
     <label for="community" class="contribute-title-one mb-1">Community</label>
     <b-form-select v-model="community" :options="communities"></b-form-select>
-
+    <b-alert v-if="errors.length" show variant="warning" dismissible>
+      <ul>
+        <li v-for="err in errors" :key="err">{{ err }}</li>
+      </ul>
+    </b-alert>
     <button class="btn btn-primary" @click="save()">Save</button>
   </DetailSideBar>
 </template>
@@ -41,9 +45,7 @@ export default {
   },
   data() {
     return {
-      //   first_name: '',
-      //   last_name: '',
-      //   bio: '',
+      errors: [],
       user: {},
       language: null,
       community: null
@@ -68,14 +70,17 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const user = await $axios.$get(getApiUrl(`user/${params.id}/`))
+    const now = new Date()
+    const user = await $axios.$get(
+      getApiUrl(`user/${params.id}/?${now.getTime()}`)
+    )
     return { user }
   },
 
   mounted() {
     console.log('USER', this.user)
-    this.community = this.user.communities[0]
-    this.language = this.user.languages[0]
+    this.community = this.user.communities[0].id
+    this.language = this.user.languages[0].id
   },
 
   methods: {
@@ -85,6 +90,7 @@ export default {
       )
     },
     async save() {
+      this.errors = []
       const data = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
@@ -100,6 +106,12 @@ export default {
         })
       } catch (e) {
         console.warn(e.response)
+        this.errors = this.errors.concat(
+          Object.entries(e.response.data).map(e => {
+            return e[0] + ': ' + e[1]
+          })
+        )
+        return
       }
       this.$router.push({
         path: '/profile/' + this.user.id
