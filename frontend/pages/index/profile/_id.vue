@@ -28,7 +28,9 @@ export default {
     const user = await $axios.$get(getApiUrl(`user/${params.id}/`))
     return { user }
   },
-
+  mounted() {
+    console.log('mounted, user=', this.user)
+  },
   methods: {
     isAdmin() {
       return this.user && this.user.id === this.$store.state.user.user.id

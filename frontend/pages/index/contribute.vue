@@ -164,7 +164,6 @@ export default {
       place: null,
       showDismissibleAlert: true,
       content: '',
-      categoryOptions: [],
       languageSelected: null,
       communitySelected: null,
       categorySelected: null,
@@ -175,6 +174,16 @@ export default {
   },
 
   computed: {
+    categoryOptions() {
+      return this.categories
+        ? this.categories.map(c => {
+            return {
+              value: c.id,
+              text: c.name
+            }
+          })
+        : []
+    },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
@@ -231,14 +240,26 @@ export default {
 
   async asyncData({ query, $axios, store, redirect }) {
     if (query.id) {
-      const place = await $axios.$get(getApiUrl(`placename/${query.id}/`))
+      const now = new Date()
+      const place = await $axios.$get(
+        getApiUrl(`placename/${query.id}/?` + now.getTime())
+      )
+      const categories = await $axios.$get(getApiUrl(`placenamecategory/`))
       return {
+        categories,
         place,
-        tname: place.name
+        tname: place.name,
+        wname: place.western_name,
+        content: place.description,
+        languageSelected: place.language,
+        categorySelected: place.category
       }
     }
 
     return {}
+  },
+  mounted() {
+    console.log('mounted, place=', this.place)
   },
   methods: {
     async uploadAudioFile(id, audio) {
@@ -287,8 +308,7 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        other_names: this.tname,
-        community: null, // TODO: User's community.
+        community: this.$store.state.user.user.communities[0],
         language: this.languageSelected,
         category: this.categorySelected
       }
