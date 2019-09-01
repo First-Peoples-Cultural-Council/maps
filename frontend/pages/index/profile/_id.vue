@@ -3,7 +3,7 @@
     <UserDetailCard :name="getUserName()" type="none"></UserDetailCard>
     <ul>
       <li v-for="placename in user.placename_set" :key="placename.id">
-        <nuxt-link :to="'/place-names/' + placename.name">{{
+        <nuxt-link :to="'/place-names/' + encodeFPCC(placename.name)">{{
           placename.name
         }}</nuxt-link>
       </li>
@@ -17,7 +17,7 @@
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import UserDetailCard from '@/components/user/UserDetailCard.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -43,7 +43,8 @@ export default {
       this.$router.push({
         path: `/profile/edit/${this.user.id}`
       })
-    }
+    },
+    encodeFPCC
   }
 }
 </script>
