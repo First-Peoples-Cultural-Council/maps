@@ -21,7 +21,6 @@
               {{ name }}
             </h5>
           </div>
-          <CardBadge content="Edit Profile" type="edit"></CardBadge>
         </div>
       </template>
       <template v-slot:footer>
@@ -52,13 +51,13 @@
 
 <script>
 import Card from '@/components/Card.vue'
-import CardBadge from '@/components/CardBadge.vue'
+// import CardBadge from '@/components/CardBadge.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card,
-    CardBadge
+    Card
+    // CardBadge
   },
   props: {
     name: {

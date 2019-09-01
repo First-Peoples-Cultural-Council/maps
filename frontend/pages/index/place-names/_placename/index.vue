@@ -26,7 +26,7 @@
           getCreatorName()
         }}</nuxt-link>
       </p>
-      <button class="btn" v-if="uid === place.creator.id" @click="edit">
+      <button v-if="uid === place.creator.id" class="btn" @click="edit">
         Edit
       </button>
     </DetailSideBar>

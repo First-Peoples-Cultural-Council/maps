@@ -30,6 +30,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     queryset = User.objects.all().order_by("first_name")
 
     @method_decorator(never_cache)
+    def detail(self, request):
+        return super().detail(request)
+
+    @method_decorator(never_cache)
     @action(detail=False)
     def login(self, request):
         """
