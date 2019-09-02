@@ -30,7 +30,14 @@
               v-else
               class="d-flex align-items-center justify-content-center"
             >
-              Recording... <b-spinner type="grow" label="Spinning"></b-spinner>
+              Recording...
+              <b-spinner type="grow" label="Spinning"></b-spinner> click
+              <img
+                src="@/assets/images/record_icon_grey.svg"
+                alt="Mic"
+                class="d-inline-block valign-middle ml-1 mr-1"
+              />
+              again to stop recording
             </span>
             <div v-if="audioUrl" class="d-flex align-items-center">
               <AudioComponent
@@ -118,7 +125,9 @@ export default {
   },
   methods: {
     triggerBrowse(e) {
-      this.$refs.fileUpload.$el.children[0].click()
+      if (!this.recording) {
+        this.$refs.fileUpload.$el.children[0].click()
+      }
     },
     clearFiles() {
       this.$refs.fileUpload.reset()
