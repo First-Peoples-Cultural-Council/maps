@@ -17,28 +17,28 @@
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </div>
-      <p>private data?: {{ !!place.community_only }}</p>
-      <p>
-        {{ place.description }}
-      </p>
-      <p v-if="place.category">category: {{ place.category_obj.name }}</p>
-      <p v-if="place.community">community: {{ place.community.name }}</p>
-      <p v-if="place.western_name">western name: {{ place.western_name }}</p>
-      <p v-if="place.other_names">other names: {{ place.other_names }}</p>
-      <p v-if="place.status">status: {{ place.status }}</p>
-      <p v-if="place.creator">
-        uploaded by
-        <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
-          getCreatorName()
-        }}</nuxt-link>
-      </p>
-      <button
-        v-if="uid === place.creator.id"
-        class="btn btn-primary"
-        @click="edit"
-      >
-        Edit
-      </button>
+      <section class="ml-2 mr-2">
+        <h5>Description</h5>
+        <p>{{ place.description }}</p>
+        <p v-if="place.category">category: {{ place.category_obj.name }}</p>
+        <p v-if="place.community">community: {{ place.community.name }}</p>
+        <p v-if="place.western_name">western name: {{ place.western_name }}</p>
+        <p v-if="place.other_names">other names: {{ place.other_names }}</p>
+        <p v-if="place.status">status: {{ place.status }}</p>
+        <p v-if="place.creator">
+          uploaded by
+          <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
+            getCreatorName()
+          }}</nuxt-link>
+        </p>
+        <button
+          v-if="uid === place.creator.id"
+          class="btn btn-primary"
+          @click="edit"
+        >
+          Edit
+        </button>
+      </section>
     </DetailSideBar>
   </div>
 </template>
