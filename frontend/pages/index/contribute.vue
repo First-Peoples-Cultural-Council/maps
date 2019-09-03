@@ -177,7 +177,9 @@ export default {
       categorySelected: null,
       tname: '',
       wname: '',
-      errors: []
+      errors: [],
+      languageOptions: [],
+      languageSelectedName: null
     }
   },
 
@@ -213,20 +215,6 @@ export default {
     },
     languagesInFeature() {
       return this.$store.state.contribute.languagesInFeature
-    },
-    languageOptions() {
-      return this.languagesInFeature.map(lang => {
-        return {
-          value: lang.id,
-          text: lang.name
-        }
-      })
-    },
-    languageSelectedName() {
-      const lang = this.languagesInFeature.find(lang => {
-        return this.languageSelected === lang.id
-      })
-      return lang && lang.name
     }
   },
   watch: {
@@ -243,6 +231,23 @@ export default {
       if (drawnFeatures.length === 0) {
         this.languageSelected = null
       }
+    },
+    languagesInFeature(newLangs) {
+      this.languageOptions = this.languagesInFeature.map(lang => {
+        return {
+          value: lang.id,
+          text: lang.name
+        }
+      })
+    },
+    languageSelected(newSelection) {
+      const langSelected = this.languageOptions.find(
+        lang => newSelection === lang.value
+      )
+
+      if (langSelected) {
+        this.languageSelectedName = langSelected.text
+      }
     }
   },
 
@@ -253,13 +258,27 @@ export default {
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
+
       data = {
         place,
         tname: place.name,
         wname: place.western_name,
         content: place.description,
-        languageSelected: place.language,
         categorySelected: place.category
+      }
+      if (place.language) {
+        try {
+          const language = await $axios.$get(
+            getApiUrl(`language/${place.language}`)
+          )
+          if (language) {
+            data.languageSelected = language.id
+            data.languageOptions = [{ value: language.id, text: language.name }]
+            data.languageSelectedName = language.name
+          }
+        } catch (e) {
+          console.error(e)
+        }
       }
     }
     data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
@@ -268,6 +287,7 @@ export default {
   mounted() {
     console.log('mounted, place=', this.place)
     console.log('mounted, categories=', this.categories)
+    console.log('Modernizer', this)
   },
   methods: {
     async uploadAudioFile(id, audio) {

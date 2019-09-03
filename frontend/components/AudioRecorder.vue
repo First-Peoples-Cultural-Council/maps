@@ -25,6 +25,11 @@
               />
               to record the pronounciation or
               <span style="color: #C46257;">click here</span> to choose a file
+              <span v-if="audioErrorMessage" class="d-block">
+                <b-alert class="m-0 mt-3" show variant="danger">{{
+                  audioErrorMessage
+                }}</b-alert>
+              </span>
             </span>
             <span
               v-else
@@ -106,7 +111,8 @@ export default {
       audioChunksCollection: [],
       audioChunks: [],
       audioUrl: null,
-      audio: null
+      audio: null,
+      audioErrorMessage: null
     }
   },
   computed: {
@@ -123,6 +129,7 @@ export default {
     },
     audio(newAudio, oldAudio) {}
   },
+  mounted() {},
   methods: {
     triggerBrowse(e) {
       if (!this.recording) {
@@ -148,27 +155,31 @@ export default {
     },
     record(e) {
       if (!this.recording) {
-        this.recording = true
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-          this.mediaRecorder = new MediaRecorder(stream)
-          this.mediaRecorder.start()
+        try {
+          navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            this.mediaRecorder = new MediaRecorder(stream)
+            this.mediaRecorder.start()
+            this.recording = true
 
-          this.mediaRecorder.addEventListener('dataavailable', event => {
-            this.audioChunks.push(event.data)
-          })
+            this.mediaRecorder.addEventListener('dataavailable', event => {
+              this.audioChunks.push(event.data)
+            })
 
-          this.mediaRecorder.addEventListener('stop', () => {
-            if (this.mode !== 'single') {
-              this.audioChunksCollection.push(this.audioChunks)
-            }
-            this.$store.commit(
-              'contribute/setAudioBlob',
-              new Blob(this.audioChunks)
-            )
-            this.audioUrl = URL.createObjectURL(this.audioBlob)
-            this.audio = new Audio(this.audioUrl)
+            this.mediaRecorder.addEventListener('stop', () => {
+              if (this.mode !== 'single') {
+                this.audioChunksCollection.push(this.audioChunks)
+              }
+              this.$store.commit(
+                'contribute/setAudioBlob',
+                new Blob(this.audioChunks)
+              )
+              this.audioUrl = URL.createObjectURL(this.audioBlob)
+              this.audio = new Audio(this.audioUrl)
+            })
           })
-        })
+        } catch (e) {
+          this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or outdated browser`
+        }
       } else {
         this.recording = false
         this.mediaRecorder.stop()

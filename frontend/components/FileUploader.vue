@@ -1,5 +1,5 @@
 <template>
-  <b-row no-gutters>
+  <div>
     <b-form-file
       ref="fileUpload"
       v-model="file"
@@ -21,12 +21,21 @@
           ></b-form-input>
         </b-col>
       </b-row>
+      <b-form-textarea
+        id="textarea"
+        v-model="description"
+        placeholder="Enter description"
+        rows="3"
+        max-rows="6"
+        class="mt-2 mb-2"
+      ></b-form-textarea>
       <b-button @click="handleUpload">Upload</b-button>
+      <b-button @click="resetToInitialState">Cancel</b-button>
     </div>
     <div v-if="errorMessage">
       {{ errorMessage }}
     </div>
-  </b-row>
+  </div>
 </template>
 
 <script>
@@ -43,11 +52,20 @@ export default {
     return {
       fileName: null,
       file: null,
+      description: null,
       errorMessage: null,
       successMessage: null
     }
   },
   methods: {
+    resetToInitialState() {
+      this.fileName = null
+      this.file = null
+      this.description = null
+      this.errorMessage = null
+      this.successMessage = null
+      this.clearFiles()
+    },
     clearFiles() {
       this.$refs.fileUpload.reset()
     },
@@ -69,6 +87,7 @@ export default {
       formData.append('name', this.fileName)
       formData.append('description', '')
       formData.append('file_type', this.file.type)
+      formData.append('description', this.description)
       formData.append('media_file', this.file)
       formData.append('placename', this.placeId)
       return formData

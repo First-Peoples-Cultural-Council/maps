@@ -49,7 +49,7 @@ export default {
         community: '/community_icon_white.svg',
         org: '/organization_icon_white.svg',
         event: '/event_icon_white.svg',
-        part: '/language_icon_white.svg',
+        part: '/public_art_icon_white.svg',
         poi: '/poi_icon_white.svg'
       }[this.type]
     }

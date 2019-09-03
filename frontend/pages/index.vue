@@ -335,7 +335,7 @@ export default {
       }
     }
     // initial zoom on index page
-    if (this.$route.path === '/') {
+    if (this.$route.path === '/' && !this.$route.hash) {
       this.$eventHub.whenMap(map => {
         zoomToIdealBox({ map })
       })
@@ -607,7 +607,7 @@ export default {
     },
     zoomToHash(map) {
       const hash = this.$route.hash
-      if (hash) {
+      if (hash && !hash.includes('id_token')) {
         try {
           const split = hash.split('/')
           const lat = split[0].substr(1)

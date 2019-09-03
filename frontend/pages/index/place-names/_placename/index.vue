@@ -39,7 +39,7 @@
           Edit
         </button>
       </section>
-      <section class="m-2">
+      <section v-if="place.medias && place.medias.length > 0" class="m-2">
         <h5>Uploaded Media</h5>
         <ul
           v-for="media in place.medias"
