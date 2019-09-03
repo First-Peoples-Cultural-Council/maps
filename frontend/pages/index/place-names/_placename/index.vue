@@ -39,6 +39,25 @@
           Edit
         </button>
       </section>
+      <section class="m-2">
+        <h5>Uploaded Media</h5>
+        <ul
+          v-for="media in place.medias"
+          :key="'media' + media.id"
+          class="m-0 p-0 mb-4"
+        >
+          <li>Name: {{ media.name }}</li>
+          <li>Description: {{ media.description }}</li>
+          <li>File Type: {{ media.file_type }}</li>
+          <li class="word-break-all">Download: {{ media.media_file }}</li>
+        </ul>
+      </section>
+      <section class="m-1">
+        <div v-if="isLoggedIn">
+          <h5 class="mt-4">Upload Media</h5>
+          <FileUploader :place-id="place.id"></FileUploader>
+        </div>
+      </section>
     </DetailSideBar>
   </div>
 </template>
@@ -49,16 +68,21 @@ import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import FileUploader from '@/components/FileUploader.vue'
 
 export default {
   components: {
     PlacesDetailCard,
     Filters,
-    DetailSideBar
+    DetailSideBar,
+    FileUploader
   },
   computed: {
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
+    },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
     },
     uid() {
       const user = this.$store.state.user.user

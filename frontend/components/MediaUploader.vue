@@ -1,14 +1,7 @@
 <template>
   <b-row no-gutters>
     <b-col xl="10">
-      <b-form-file
-        ref="fileUpload"
-        v-model="file"
-        class="d-none"
-        :state="Boolean(file)"
-        placeholder="Choose a file or drop it here..."
-        drop-placeholder="Drop file here..."
-      ></b-form-file>
+w
       <div class="mediaUploadArea cursor-pointer" @click="triggerBrowse">
         <p class="m-0 p-0">
           <span v-if="!recording">
