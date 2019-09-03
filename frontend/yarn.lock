@@ -7824,6 +7824,14 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
+nuxt-vue-multiselect@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/nuxt-vue-multiselect/-/nuxt-vue-multiselect-1.0.4.tgz#7a53ee3afa00040bbf8c23f0fb88ec72911079ea"
+  integrity sha512-xfm9upHmxd5ZDNSEpT0ZOAtSqJackO6LEos+deNMZ3Bxh+mg4Oz6cTX9niwKnHk0J6EqMjFsGjsq8JihxoLhWQ==
+  dependencies:
+    core-js "^2.6.5"
+    vue-multiselect "^2.1.6"
+
 nuxt@^2.0.0:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-2.8.1.tgz#10a307e51973fa7b55abfeb41b84c76cbdd6f2f6"
@@ -11382,6 +11390,11 @@ vue-meta@^1.6.0:
     lodash.isplainobject "^4.0.6"
     lodash.uniqueid "^4.0.1"
     object-assign "^4.1.1"
+
+vue-multiselect@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-2.1.6.tgz#5be5d811a224804a15c43a4edbb7485028a89c7f"
+  integrity sha512-s7jmZPlm9FeueJg1RwJtnE9KNPtME/7C8uRWSfp9/yEN4M8XcS/d+bddoyVwVnvFyRh9msFo0HWeW0vTL8Qv+w==
 
 vue-no-ssr@^1.1.1:
   version "1.1.1"

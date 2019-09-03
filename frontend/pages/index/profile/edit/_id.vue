@@ -32,6 +32,18 @@
       </ul>
     </b-alert>
     <button class="btn btn-primary" @click="save()">Save</button>
+
+    <multiselect
+      v-model="value"
+      tag-placeholder="Add this as new tag"
+      placeholder="Search or add a tag"
+      label="name"
+      track-by="code"
+      :options="options"
+      :multiple="true"
+      :taggable="true"
+      @tag="addTag"
+    ></multiselect>
   </DetailSideBar>
 </template>
 
@@ -48,7 +60,8 @@ export default {
       errors: [],
       user: {},
       language: null,
-      community: null
+      community: null,
+      value: [{ name: 'Javascript', code: 'js' }]
     }
   },
   computed: {
@@ -67,6 +80,14 @@ export default {
           value: l.id
         }
       })
+    },
+    options() {
+      return this.$store.state.languages.languageSet.map(l => {
+        return {
+          name: l.name,
+          code: l.id
+        }
+      })
     }
   },
   async asyncData({ params, $axios, store }) {
@@ -74,13 +95,12 @@ export default {
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?${now.getTime()}`)
     )
+    console.log('user from asyncdata', user)
     return { user }
   },
 
   mounted() {
     console.log('USER', this.user)
-    this.community = this.user.communities[0].id
-    this.language = this.user.languages[0].id
   },
 
   methods: {
@@ -88,6 +108,14 @@ export default {
       return (
         this.user && (this.user.first_name || this.user.username.split('__')[0])
       )
+    },
+    addTag(newTag) {
+      const tag = {
+        name: newTag,
+        code: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
+      }
+      this.options.push(tag)
+      this.value.push(tag)
     },
     async save() {
       this.errors = []

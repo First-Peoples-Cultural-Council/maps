@@ -78,7 +78,8 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     '@nuxtjs/eslint-module',
-    '@tui-nuxt/editor'
+    '@tui-nuxt/editor',
+    'nuxt-vue-multiselect'
   ],
   tui: {
     editor: {}
