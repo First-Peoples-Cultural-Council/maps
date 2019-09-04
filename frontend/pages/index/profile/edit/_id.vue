@@ -1,50 +1,52 @@
 <template>
-  <DetailSideBar>
-    <h4>Editing {{ getUserName() }}</h4>
+  <no-ssr>
+    <DetailSideBar>
+      <h4>Editing {{ getUserName() }}</h4>
 
-    <label for="westernName" class="contribute-title-one mt-3 mb-1"
-      >First Name</label
-    >
-    <b-form-input v-model="user.first_name" type="text"></b-form-input>
+      <label for="westernName" class="contribute-title-one mt-3 mb-1"
+        >First Name</label
+      >
+      <b-form-input v-model="user.first_name" type="text"></b-form-input>
 
-    <label for="westernName" class="contribute-title-one mt-3 mb-1"
-      >Last Name</label
-    >
-    <b-form-input v-model="user.last_name" type="text"></b-form-input>
+      <label for="westernName" class="contribute-title-one mt-3 mb-1"
+        >Last Name</label
+      >
+      <b-form-input v-model="user.last_name" type="text"></b-form-input>
 
-    <label for="westernName" class="contribute-title-one mt-3 mb-1"
-      >About you</label
-    >
-    <b-form-textarea
-      id="textarea"
-      v-model="user.bio"
-      placeholder="..."
-      rows="3"
-    ></b-form-textarea>
-    <label for="language" class="contribute-title-one mb-1">Language</label>
-    <b-form-select v-model="language" :options="languages"></b-form-select>
+      <label for="westernName" class="contribute-title-one mt-3 mb-1"
+        >About you</label
+      >
+      <b-form-textarea
+        id="textarea"
+        v-model="user.bio"
+        placeholder="..."
+        rows="3"
+      ></b-form-textarea>
+      <label for="language" class="contribute-title-one mb-1">Language</label>
+      <b-form-select v-model="language" :options="languages"></b-form-select>
 
-    <label for="community" class="contribute-title-one mb-1">Community</label>
-    <b-form-select v-model="community" :options="communities"></b-form-select>
-    <b-alert v-if="errors.length" show variant="warning" dismissible>
-      <ul>
-        <li v-for="err in errors" :key="err">{{ err }}</li>
-      </ul>
-    </b-alert>
-    <button class="btn btn-primary" @click="save()">Save</button>
+      <label for="community" class="contribute-title-one mb-1">Community</label>
+      <b-form-select v-model="community" :options="communities"></b-form-select>
+      <b-alert v-if="errors.length" show variant="warning" dismissible>
+        <ul>
+          <li v-for="err in errors" :key="err">{{ err }}</li>
+        </ul>
+      </b-alert>
+      <button class="btn btn-primary" @click="save()">Save</button>
 
-    <multiselect
-      v-model="value"
-      tag-placeholder="Add this as new tag"
-      placeholder="Search or add a tag"
-      label="name"
-      track-by="code"
-      :options="options"
-      :multiple="true"
-      :taggable="true"
-      @tag="addTag"
-    ></multiselect>
-  </DetailSideBar>
+      <multiselect
+        v-model="value"
+        tag-placeholder="Add this as new tag"
+        placeholder="Search or add a tag"
+        label="name"
+        track-by="code"
+        :options="options"
+        :multiple="true"
+        :taggable="true"
+        @tag="addTag"
+      ></multiselect>
+    </DetailSideBar>
+  </no-ssr>
 </template>
 
 <script>
@@ -61,10 +63,14 @@ export default {
       user: {},
       language: null,
       community: null,
-      value: [{ name: 'Javascript', code: 'js' }]
+      value: [],
+      options: []
     }
   },
   computed: {
+    languageSet() {
+      return this.$store.state.languages.languageSet
+    },
     communities() {
       return this.$store.state.communities.communitySet.map(c => {
         return {
@@ -80,14 +86,6 @@ export default {
           value: l.id
         }
       })
-    },
-    options() {
-      return this.$store.state.languages.languageSet.map(l => {
-        return {
-          name: l.name,
-          code: l.id
-        }
-      })
     }
   },
   async asyncData({ params, $axios, store }) {
@@ -95,8 +93,16 @@ export default {
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?${now.getTime()}`)
     )
-    console.log('user from asyncdata', user)
-    return { user }
+
+    const language = await $axios.$get(getApiUrl('language/'))
+    const options = language.map(l => {
+      return {
+        name: l.name,
+        code: l.id
+      }
+    })
+
+    return { user, options }
   },
 
   mounted() {
@@ -149,4 +155,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style>
+.multiselect__element span {
+  word-break: break-all;
+  white-space: normal;
+}
+</style>
