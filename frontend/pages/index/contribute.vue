@@ -101,7 +101,20 @@
               v-model="content"
               mode="wysiwyg"
               :options="{
-                hideModeSwitch: true
+                hideModeSwitch: true,
+                toolbarItems: [
+                  'heading',
+                  'bold',
+                  'italic',
+                  'strike',
+                  'hr',
+                  'quote',
+                  'ul',
+                  'ol',
+                  'indent',
+                  'outdent',
+                  'link'
+                ]
               }"
               preview-style="vertical"
               height="300px"
