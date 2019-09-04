@@ -23,7 +23,14 @@
         rows="3"
       ></b-form-textarea>
       <label for="language" class="contribute-title-one mb-1">Language</label>
-      <b-form-select v-model="language" :options="languages"></b-form-select>
+      <multiselect
+        v-model="value"
+        placeholder="Search or select a language"
+        label="name"
+        track-by="id"
+        :options="options"
+        :multiple="true"
+      ></multiselect>
 
       <label for="community" class="contribute-title-one mb-1">Community</label>
       <b-form-select v-model="community" :options="communities"></b-form-select>
@@ -33,18 +40,6 @@
         </ul>
       </b-alert>
       <button class="btn btn-primary" @click="save()">Save</button>
-
-      <multiselect
-        v-model="value"
-        tag-placeholder="Add this as new tag"
-        placeholder="Search or add a tag"
-        label="name"
-        track-by="code"
-        :options="options"
-        :multiple="true"
-        :taggable="true"
-        @tag="addTag"
-      ></multiselect>
     </DetailSideBar>
   </no-ssr>
 </template>
@@ -98,7 +93,7 @@ export default {
     const options = language.map(l => {
       return {
         name: l.name,
-        code: l.id
+        id: l.id
       }
     })
 
@@ -115,21 +110,13 @@ export default {
         this.user && (this.user.first_name || this.user.username.split('__')[0])
       )
     },
-    addTag(newTag) {
-      const tag = {
-        name: newTag,
-        code: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
-      }
-      this.options.push(tag)
-      this.value.push(tag)
-    },
     async save() {
       this.errors = []
       const data = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
         bio: this.user.bio,
-        language_ids: [this.language],
+        language_ids: this.value.map(lang => lang.id),
         community_ids: [this.community]
       }
       try {
