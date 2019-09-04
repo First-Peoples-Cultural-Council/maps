@@ -341,7 +341,7 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        community: this.$store.state.user.user.communities[0] || null,
+        community: this.$store.state.user.user.communities[0].id || null,
         language: this.languageSelected,
         category: this.categorySelected
       }
