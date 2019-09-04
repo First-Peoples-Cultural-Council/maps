@@ -30,7 +30,25 @@
           "
         ></LanguageDetailBadge>
       </div>
+      <div
+        v-if="user.placename_set && user.placename_set.length > 0"
+        class="mt-3"
+      >
+        <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
+          Contributions
+        </h5>
+        <PlacesCard
+          v-for="place in user.placename_set"
+          :key="`place${place.id}`"
+          :name="place.name"
+          class="mt-3 hover-left-move"
+          @click.native="
+            $router.push({ path: '/place-names/' + encodeFPCC(comm.name) })
+          "
+        ></PlacesCard>
+      </div>
     </section>
+
     <ul>
       <li v-for="placename in user.placename_set" :key="placename.id">
         <nuxt-link :to="'/place-names/' + encodeFPCC(placename.name)">{{
@@ -49,16 +67,20 @@ import DetailSideBar from '@/components/DetailSideBar.vue'
 import UserDetailCard from '@/components/user/UserDetailCard.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
+import PlacesCard from '@/components/places/PlacesCard.vue'
 
 export default {
   components: {
     DetailSideBar,
     UserDetailCard,
-    LanguageDetailBadge
+    LanguageDetailBadge,
+    PlacesCard
   },
   async asyncData({ params, $axios, store }) {
-    console.log('From State', 'Test')
-    const user = await $axios.$get(getApiUrl(`user/${params.id}/`))
+    const user = await $axios.$get(
+      getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
+    )
+    console.log('User', user)
     return { user }
   },
   mounted() {

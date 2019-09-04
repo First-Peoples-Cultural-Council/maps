@@ -30,14 +30,14 @@
           <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
             getCreatorName()
           }}</nuxt-link>
+          <button
+            v-if="uid === place.creator.id"
+            class="btn btn-primary"
+            @click="edit"
+          >
+            Edit
+          </button>
         </p>
-        <button
-          v-if="uid === place.creator.id"
-          class="btn btn-primary"
-          @click="edit"
-        >
-          Edit
-        </button>
       </section>
       <section v-if="place.medias && place.medias.length > 0" class="m-2">
         <h5>Uploaded Media</h5>
@@ -105,10 +105,11 @@ export default {
         return encodeFPCC(a.properties.name) === params.placename
       }
     })
-
     const place = await $axios.$get(
       getApiUrl(`placename/${geo_place.id}/?${now.getTime()}`)
     )
+    console.log('Place', place)
+    console.log('GeoPlace', geo_place)
     const isServer = !!process.server
     return {
       geo_place,
