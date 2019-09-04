@@ -453,15 +453,22 @@ export default {
 
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
-        const features = featuresDrawn.features
+        let features = featuresDrawn.features
         this.$store.commit('contribute/setDrawnFeatures', features)
 
-        if (features.length === 1) {
-          this.$store.commit(
-            'contribute/setLanguagesInFeature',
-            this.getLanguagesFromDraw(features)
-          )
+        if (features.length > 1) {
+          console.log('More than one feature drawn')
+          const featuresDrawn = draw.getAll()
+          featuresDrawn.features = [featuresDrawn.features[1]]
+          draw.set(featuresDrawn)
+          features = featuresDrawn.features
         }
+
+        this.$store.commit('contribute/setDrawnFeatures', features)
+        this.$store.commit(
+          'contribute/setLanguagesInFeature',
+          this.getLanguagesFromDraw(features)
+        )
       })
 
       map.on('draw.delete', e => {

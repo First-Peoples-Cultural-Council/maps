@@ -284,11 +284,6 @@ export default {
     data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     return data
   },
-  mounted() {
-    console.log('mounted, place=', this.place)
-    console.log('mounted, categories=', this.categories)
-    console.log('Modernizer', this)
-  },
   methods: {
     async uploadAudioFile(id, audio) {
       const data = new FormData()
