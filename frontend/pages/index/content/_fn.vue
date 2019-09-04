@@ -11,7 +11,7 @@
             <span class="font-weight-bold">{{ commDetails.name }}</span>
           </span>
         </h5>
-        <div class="badge-container">
+        <div class="badge-container d-none">
           <Badge
             content="Languages"
             :number="commDetails.languages.length"
@@ -85,6 +85,12 @@
           </div>
         </section>
       </template>
+      <Badge
+        content="Languages"
+        :number="commDetails.languages.length"
+        class="cursor-pointer ml-3 mr-3 hide-mobile"
+        type="language"
+      ></Badge>
       <b-row class="pr-3 pl-3">
         <b-col
           v-for="language in commDetails.languages"
@@ -321,5 +327,11 @@ export default {
   padding-right: 0.5em;
   color: var(--color-gray, #6f6f70);
   vertical-align: middle;
+}
+
+@media (max-width: 992px) {
+  .badge-container {
+    display: block !important;
+  }
 }
 </style>

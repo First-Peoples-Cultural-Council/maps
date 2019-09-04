@@ -327,11 +327,18 @@ export default {
         `${getApiUrl('user/login/')}?${token}`
       )
       if (user.success) {
+        console.log('User', user)
         this.$store.commit('user/setUser', user)
         this.$store.commit('user/setLoggedIn', true)
-        this.$router.push({
-          path: '/'
-        })
+        if (user.new === true) {
+          this.$router.push({
+            path: `/profile/edit/${user.id}`
+          })
+        } else {
+          this.$router.push({
+            path: '/'
+          })
+        }
       }
     }
     // initial zoom on index page
