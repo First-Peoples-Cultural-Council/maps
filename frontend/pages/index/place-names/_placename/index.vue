@@ -55,6 +55,21 @@
               :alt="media.name"
             />
           </li>
+          <li v-if="getGenericFileType(media.file_type) === 'audio'">
+            <audio controls>
+              <source
+                :src="getMediaUrl(media.media_file, isServer)"
+                :type="media.file_type"
+              />
+              <p>
+                Your browser doesn't support HTML5 audio. Here is a
+                <a :href="getMediaUrl(media.media_file, isServer)"
+                  >link to the audio</a
+                >
+                instead.
+              </p>
+            </audio>
+          </li>
           <li
             v-if="getGenericFileType(media.file_type) === 'other'"
             class="word-break-all"
@@ -78,7 +93,12 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  getMediaUrl,
+  getGenericFileType
+} from '@/plugins/utils.js'
 import FileUploader from '@/components/FileUploader.vue'
 
 export default {
@@ -154,35 +174,7 @@ export default {
       this.$router.push('/contribute?id=' + this.place.id)
     },
     getMediaUrl,
-    getGenericFileType(fileType) {
-      const imageTypes = {
-        'image/svg+xml': true,
-        'image/gif': true,
-        'image/jpeg': true,
-        'image/jpg': true,
-        'image/png': true,
-        'image/bmp': true
-      }
-
-      const audioTypes = {
-        'audio/mpeg': true,
-        'audio/basic': true,
-        'audio/mid': true,
-        'audio/x-wav': true,
-        'audio/x-mpegurl': true,
-        'audio/x-aiff': true
-      }
-
-      if (imageTypes[fileType]) {
-        return 'image'
-      }
-
-      if (audioTypes[fileType]) {
-        return 'audio'
-      }
-
-      return 'other'
-    }
+    getGenericFileType
   },
   head() {
     return {
