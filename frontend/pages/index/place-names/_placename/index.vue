@@ -49,7 +49,15 @@
           <li>Name: {{ media.name }}</li>
           <li>Description: {{ media.description }}</li>
           <li>File Type: {{ media.file_type }}</li>
-          <li class="word-break-all">Download: {{ media.media_file }}</li>
+          <li v-if="getGenericFileType(media.file_type) === 'image'">
+            <img :src="getMediaUrl(media.media_file)" :alt="media.name" />
+          </li>
+          <li
+            v-if="getGenericFileType(media.file_type) === 'other'"
+            class="word-break-all"
+          >
+            Download: {{ getMediaUrl(media.media_file) }}
+          </li>
         </ul>
       </section>
       <section class="m-1">
@@ -141,6 +149,41 @@ export default {
     },
     edit() {
       this.$router.push('/contribute?id=' + this.place.id)
+    },
+    getMediaUrl(media_file) {
+      if (this.isServer) {
+        return media_file.substring(12)
+      }
+      return media_file
+    },
+    getGenericFileType(fileType) {
+      const imageTypes = {
+        'image/svg+xml': true,
+        'image/gif': true,
+        'image/jpeg': true,
+        'image/jpg': true,
+        'image/png': true,
+        'image/bmp': true
+      }
+
+      const audioTypes = {
+        'audio/mpeg': true,
+        'audio/basic': true,
+        'audio/mid': true,
+        'audio/x-wav': true,
+        'audio/x-mpegurl': true,
+        'audio/x-aiff': true
+      }
+
+      if (imageTypes[fileType]) {
+        return 'image'
+      }
+
+      if (audioTypes[fileType]) {
+        return 'audio'
+      }
+
+      return 'other'
     }
   },
   head() {

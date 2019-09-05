@@ -330,7 +330,7 @@ export default {
     async submitContribute(e) {
       let id
       this.errors = []
-      if (!this.drawnFeatures.length && !this.place.geom) {
+      if (!this.drawnFeatures.length && !this.place) {
         this.errors.push('Please choose a location first.')
         return
       }
