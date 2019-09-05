@@ -8,117 +8,123 @@
         </h5>
       </template>
       <div>
-        <PlacesDetailCard
-          :id="place.id"
-          :name="place.name"
-          :server="isServer"
-          :audio-file="getMediaUrl(place.audio_file, isServer)"
-        ></PlacesDetailCard>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
-      </div>
-      <section class="mt-4 ml-4 mr-4">
-        <p v-if="place.creator" class="font-08">
-          Uploaded by
-          <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
-            getCreatorName()
-          }}</nuxt-link>
-          <b-button
-            v-if="uid === place.creator.id"
-            class="btn btn-primary ml-2 font-09"
-            size="sm"
-            variant="dark"
-            @click="edit"
-          >
-            Edit
-          </b-button>
-        </p>
-      </section>
-      <hr v-if="place.creator" />
-      <section class="mt-4 ml-4 mr-4">
-        <div v-if="place.description">
-          <h5 class="font-08 text-uppercase color-gray">Description</h5>
-          <p class="font-08">{{ place.description }}</p>
+        <div>
+          <PlacesDetailCard
+            :id="place.id"
+            :name="place.name"
+            :server="isServer"
+            :audio-file="getMediaUrl(place.audio_file, isServer)"
+          ></PlacesDetailCard>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-2"></Filters>
         </div>
-        <div v-if="place.category">
-          <h5 class="font-08 text-uppercase color-gray">Category</h5>
-          <p class="font-08">{{ place.category_obj.name }}</p>
-        </div>
-        <div v-if="place.community">
-          <h5 class="font-08 text-uppercase color-gray">Community</h5>
-          <p class="font-08">{{ place.community.name }}</p>
-        </div>
-        <div v-if="place.western_name">
-          <h5 class="font-08 text-uppercase color-gray">Western Name</h5>
-          <p class="font-08">{{ place.western_name }}</p>
-        </div>
-        <div v-if="place.other_names">
-          <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
-          <p class="font-08">{{ place.other_names }}</p>
-        </div>
-        <div v-if="place.status">
-          <h5 class="font-08 text-uppercase color-gray">Status</h5>
-          <p class="font-08">{{ place.status }}</p>
-        </div>
-      </section>
-      <hr />
-      <section v-if="medias && medias.length > 0" class="m-2 ml-4 mr-4">
-        <h5 class="font-08 text-uppercase color-gray mb-3">
-          {{ medias.length }} Uploaded Media
-        </h5>
+        <section class="mt-4 ml-4 mr-4">
+          <p v-if="place.creator" class="font-08">
+            Uploaded by
+            <nuxt-link
+              class="color-gray"
+              :to="'/profile/' + place.creator.id"
+              >{{ getCreatorName() }}</nuxt-link
+            >
+            <b-button
+              v-if="uid === place.creator.id"
+              class="btn btn-primary ml-2 font-09"
+              size="sm"
+              variant="dark"
+              @click="edit"
+            >
+              Edit
+            </b-button>
+          </p>
+        </section>
+        <hr v-if="place.creator" />
+        <section class="mt-4 ml-4 mr-4">
+          <div v-if="place.description">
+            <h5 class="font-08 text-uppercase color-gray">Description</h5>
+            <p class="font-08">{{ place.description }}</p>
+          </div>
+          <div v-if="place.category">
+            <h5 class="font-08 text-uppercase color-gray">Category</h5>
+            <p class="font-08">{{ place.category_obj.name }}</p>
+          </div>
+          <div v-if="place.community">
+            <h5 class="font-08 text-uppercase color-gray">Community</h5>
+            <p class="font-08">{{ place.community.name }}</p>
+          </div>
+          <div v-if="place.western_name">
+            <h5 class="font-08 text-uppercase color-gray">Western Name</h5>
+            <p class="font-08">{{ place.western_name }}</p>
+          </div>
+          <div v-if="place.other_names">
+            <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
+            <p class="font-08">{{ place.other_names }}</p>
+          </div>
+          <div v-if="place.status">
+            <h5 class="font-08 text-uppercase color-gray">Status</h5>
+            <p class="font-08">{{ place.status }}</p>
+          </div>
+        </section>
+        <hr />
+        <section v-if="medias && medias.length > 0" class="m-2 ml-4 mr-4">
+          <h5 class="font-08 text-uppercase color-gray mb-3">
+            {{ medias.length }} Uploaded Media
+          </h5>
 
-        <ul
-          v-for="media in medias"
-          :key="'media' + media.id"
-          class="m-0 p-0 mb-4 list-style-none up-media-list"
-        >
-          <li v-if="media.name">
-            <span class="font-08 color-gray">Name: </span>
-            <span class="font-08">{{ media.name }}</span>
-          </li>
-          <li v-if="media.description && media.description !== 'null'">
-            <span class="font-08 text-uppercase color-gray">Description:</span>
-            <span class="font-08">{{ media.description }}</span>
-          </li>
-          <li
-            v-if="getGenericFileType(media.file_type) === 'image'"
-            class="mt-2 d-flex justify-content-center"
+          <ul
+            v-for="media in medias"
+            :key="'media' + media.id"
+            class="m-0 p-0 mb-4 list-style-none up-media-list"
           >
-            <img
-              :src="getMediaUrl(media.media_file, isServer)"
-              :alt="media.name"
-              style="max-height: 300px; display: block; width: auto; height: 100%;"
-            />
-          </li>
-          <li v-if="getGenericFileType(media.file_type) === 'audio'">
-            <audio controls class="uploaded-audio">
-              <source
+            <li v-if="media.name">
+              <span class="font-08 color-gray">Name: </span>
+              <span class="font-08">{{ media.name }}</span>
+            </li>
+            <li v-if="media.description && media.description !== 'null'">
+              <span class="font-08 text-uppercase color-gray"
+                >Description:</span
+              >
+              <span class="font-08">{{ media.description }}</span>
+            </li>
+            <li
+              v-if="getGenericFileType(media.file_type) === 'image'"
+              class="mt-2 d-flex justify-content-center"
+            >
+              <img
                 :src="getMediaUrl(media.media_file, isServer)"
-                :type="media.file_type"
+                :alt="media.name"
+                style="max-height: 300px; display: block; width: auto; height: 100%;"
               />
-              <p>
-                Your browser doesn't support HTML5 audio. Here is a
-                <a :href="getMediaUrl(media.media_file, isServer)"
-                  >link to the audio</a
-                >
-                instead.
-              </p>
-            </audio>
-          </li>
-          <li
-            v-if="getGenericFileType(media.file_type) === 'other'"
-            class="word-break-all"
-          >
-            Download: {{ getMediaUrl(media.media_file, isServer) }}
-          </li>
-        </ul>
-      </section>
-      <section class="m-1">
-        <div v-if="isLoggedIn">
-          <h5 class="mt-4">Upload Media</h5>
-          <FileUploader :place-id="place.id"></FileUploader>
-        </div>
-      </section>
+            </li>
+            <li v-if="getGenericFileType(media.file_type) === 'audio'">
+              <audio controls class="uploaded-audio">
+                <source
+                  :src="getMediaUrl(media.media_file, isServer)"
+                  :type="media.file_type"
+                />
+                <p>
+                  Your browser doesn't support HTML5 audio. Here is a
+                  <a :href="getMediaUrl(media.media_file, isServer)"
+                    >link to the audio</a
+                  >
+                  instead.
+                </p>
+              </audio>
+            </li>
+            <li
+              v-if="getGenericFileType(media.file_type) === 'other'"
+              class="word-break-all"
+            >
+              Download: {{ getMediaUrl(media.media_file, isServer) }}
+            </li>
+          </ul>
+        </section>
+        <section class="m-1">
+          <div v-if="isLoggedIn">
+            <h5 class="mt-4">Upload Media</h5>
+            <FileUploader :place-id="place.id"></FileUploader>
+          </div>
+        </section>
+      </div>
     </DetailSideBar>
   </div>
 </template>

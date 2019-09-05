@@ -401,7 +401,11 @@ export default {
         await this.uploadAudioFile(id, audio)
       }
 
-      window.location = '/place-names/' + encodeFPCC(this.tname)
+      this.$router.push({
+        path: '/place-names/' + encodeFPCC(this.tname)
+      })
+
+      // window.location = '/place-names/' + encodeFPCC(this.tname)
     }
   },
   beforeRouteEnter(to, from, next) {
