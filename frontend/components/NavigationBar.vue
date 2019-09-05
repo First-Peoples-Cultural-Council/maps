@@ -80,7 +80,7 @@
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://countable.ca"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
                 class="d-block"
                 >Login</a
               >
@@ -123,11 +123,13 @@ export default {
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
     },
     async logout() {
-      await this.$axios.$get(`${getApiUrl('user/logout/')}`)
+      await this.$axios.$get(
+        `${getApiUrl('user/logout/')}?timestamp=${new Date().getTime()}`
+      )
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&logout_uri=https://countable.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca'
     },
     handleLogoClick() {
       this.$router.push({

@@ -248,7 +248,9 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     // Check if already logged in here
-    const user = await $axios.$get(`${getApiUrl('user/auth/')}`)
+    const user = await $axios.$get(
+      `${getApiUrl('user/auth/')}?timestamp=${new Date().getTime()}`
+    )
     if (user.is_authenticated) {
       store.commit('user/setUser', user.user)
       store.commit('user/setLoggedIn', true)
