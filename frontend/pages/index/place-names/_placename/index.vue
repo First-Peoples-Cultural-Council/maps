@@ -65,7 +65,13 @@
           </div>
         </section>
         <hr />
-        <section v-if="medias && medias.length > 0" class="m-2 ml-4 mr-4">
+        <section class="m-1 ml-4 mr-4">
+          <div v-if="isLoggedIn">
+            <h5 class="mt-4 font-08 text-uppercase color-gray">Upload Media</h5>
+            <FileUploader :place-id="place.id"></FileUploader>
+          </div>
+        </section>
+        <section v-if="medias && medias.length > 0" class="mt-4 ml-4 mr-4">
           <h5 class="font-08 text-uppercase color-gray mb-3">
             {{ medias.length }} Uploaded Media
           </h5>
@@ -117,12 +123,6 @@
               Download: {{ getMediaUrl(media.media_file, isServer) }}
             </li>
           </ul>
-        </section>
-        <section class="m-1 ml-4 mr-4">
-          <div v-if="isLoggedIn">
-            <h5 class="mt-4 font-08 text-uppercase color-gray">Upload Media</h5>
-            <FileUploader :place-id="place.id"></FileUploader>
-          </div>
         </section>
       </div>
     </DetailSideBar>
