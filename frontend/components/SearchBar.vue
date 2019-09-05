@@ -349,7 +349,9 @@ export default {
                 <h4>${data}</h4>
 
                 (TODO: add other stuff here.)
-                <button>contribute to this point.</button>
+                <a href="/contribute?lat=${geom.coordinates[1]}&lng=${
+                geom.coordinates[0]
+              }">contribute to this point.</a>
 
                 </div>`
             )

@@ -24,30 +24,22 @@
             </div>
             <div>
               <h4 class="text-uppercase contribute-title mr-2">
-                You are contributing to
+                Contribute
               </h4>
             </div>
             <section class="pl-2 pr-2">
-              <b-row no-gutters>
-                <b-col xl="6" class="pr-1"
-                  ><LanguageCard
-                    :go="false"
-                    variant="white"
-                    icon="small"
-                    :name="languageSelectedName ? languageSelectedName : 'None'"
-                  ></LanguageCard
-                ></b-col>
-                <!--
-                <b-col xl="6" class="pl-1"
-                  ><CommunityCard
-                    :go="false"
-                    variant="white"
-                    icon="small"
-                    name="diiɁdiitidq"
-                  ></CommunityCard
-                ></b-col>
-                -->
-              </b-row>
+              <div v-if="userCommunity && userCommunity.length > 0">
+                <b-row no-gutters>
+                  <b-col xl="6" class="pl-1"
+                    ><CommunityCard
+                      :go="false"
+                      variant="white"
+                      icon="small"
+                      :name="userCommunity[0].name"
+                    ></CommunityCard
+                  ></b-col>
+                </b-row>
+              </div>
             </section>
           </div>
           <section class="pr-3 pl-3">
@@ -166,16 +158,15 @@
 
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import LanguageCard from '@/components/languages/LanguageCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-// import MediaUploader from '@/components/MediaUploader.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
     DetailSideBar,
-    LanguageCard,
-    AudioRecorder
+    AudioRecorder,
+    CommunityCard
   },
   middleware: 'authenticated',
   data() {
@@ -226,6 +217,9 @@ export default {
     },
     languagesInFeature() {
       return this.$store.state.contribute.languagesInFeature
+    },
+    userCommunity() {
+      return this.$store.state.user.user.communities
     }
   },
   watch: {
@@ -345,7 +339,7 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        community: this.$store.state.user.user.communities[0].id || null,
+        community: this.userCommunity && this.userCommunity.id,
         language: this.languageSelected,
         category: this.categorySelected
       }
