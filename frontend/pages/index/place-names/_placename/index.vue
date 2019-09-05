@@ -118,9 +118,9 @@
             </li>
           </ul>
         </section>
-        <section class="m-1">
+        <section class="m-1 ml-4 mr-4">
           <div v-if="isLoggedIn">
-            <h5 class="mt-4">Upload Media</h5>
+            <h5 class="mt-4 font-08 text-uppercase color-gray">Upload Media</h5>
             <FileUploader :place-id="place.id"></FileUploader>
           </div>
         </section>
