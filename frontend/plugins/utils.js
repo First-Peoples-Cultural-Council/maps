@@ -22,3 +22,10 @@ export const getCookie = name => {
       .split(';')
       .shift()
 }
+
+export const getMediaUrl = (media_file, isServer) => {
+  if (isServer) {
+    return media_file.substring(12)
+  }
+  return media_file
+}

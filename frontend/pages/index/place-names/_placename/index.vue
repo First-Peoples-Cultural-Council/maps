@@ -12,7 +12,7 @@
           :id="place.id"
           :name="place.name"
           :server="isServer"
-          :audio-file="place.audio_file"
+          :audio-file="getMediaUrl(place.audio_file, isServer)"
         ></PlacesDetailCard>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
@@ -50,13 +50,16 @@
           <li>Description: {{ media.description }}</li>
           <li>File Type: {{ media.file_type }}</li>
           <li v-if="getGenericFileType(media.file_type) === 'image'">
-            <img :src="getMediaUrl(media.media_file)" :alt="media.name" />
+            <img
+              :src="getMediaUrl(media.media_file, isServer)"
+              :alt="media.name"
+            />
           </li>
           <li
             v-if="getGenericFileType(media.file_type) === 'other'"
             class="word-break-all"
           >
-            Download: {{ getMediaUrl(media.media_file) }}
+            Download: {{ getMediaUrl(media.media_file, isServer) }}
           </li>
         </ul>
       </section>
@@ -75,7 +78,7 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import FileUploader from '@/components/FileUploader.vue'
 
 export default {
@@ -150,12 +153,7 @@ export default {
     edit() {
       this.$router.push('/contribute?id=' + this.place.id)
     },
-    getMediaUrl(media_file) {
-      if (this.isServer) {
-        return media_file.substring(12)
-      }
-      return media_file
-    },
+    getMediaUrl,
     getGenericFileType(fileType) {
       const imageTypes = {
         'image/svg+xml': true,
