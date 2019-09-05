@@ -38,15 +38,15 @@
                   ></LanguageCard
                 ></b-col>
                 <!--
-              <b-col xl="6" class="pl-1"
-                ><CommunityCard
-                  :go="false"
-                  variant="white"
-                  icon="small"
-                  name="diiɁdiitidq"
-                ></CommunityCard
-              ></b-col>
-              -->
+                <b-col xl="6" class="pl-1"
+                  ><CommunityCard
+                    :go="false"
+                    variant="white"
+                    icon="small"
+                    name="diiɁdiitidq"
+                  ></CommunityCard
+                ></b-col>
+                -->
               </b-row>
             </section>
           </div>
@@ -167,7 +167,6 @@
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
-// import CommunityCard from '@/components/communities/CommunityCard.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 // import MediaUploader from '@/components/MediaUploader.vue'
 import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
@@ -176,7 +175,6 @@ export default {
   components: {
     DetailSideBar,
     LanguageCard,
-    // CommunityCard,
     AudioRecorder
   },
   middleware: 'authenticated',

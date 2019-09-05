@@ -33,7 +33,14 @@
       ></multiselect>
 
       <label for="community" class="contribute-title-one mb-1">Community</label>
-      <b-form-select v-model="community" :options="communities"></b-form-select>
+      <multiselect
+        v-model="community"
+        placeholder="Search or select a community"
+        label="name"
+        track-by="id"
+        :options="communities"
+      ></multiselect>
+
       <b-alert v-if="errors.length" show variant="warning" dismissible>
         <ul>
           <li v-for="err in errors" :key="err">{{ err }}</li>
@@ -57,7 +64,6 @@ export default {
       errors: [],
       user: {},
       language: null,
-      community: null,
       value: [],
       options: []
     }
@@ -69,8 +75,8 @@ export default {
     communities() {
       return this.$store.state.communities.communitySet.map(c => {
         return {
-          text: c.name,
-          value: c.id
+          name: c.name,
+          id: c.id
         }
       })
     },
@@ -97,7 +103,12 @@ export default {
       }
     })
 
-    return { user, options }
+    return {
+      user,
+      options,
+      value: user.languages,
+      community: user.communities[0]
+    }
   },
 
   mounted() {
@@ -111,13 +122,14 @@ export default {
       )
     },
     async save() {
+      const communityId = this.community ? [this.community.id] : []
       this.errors = []
       const data = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
         bio: this.user.bio,
         language_ids: this.value.map(lang => lang.id),
-        community_ids: [this.community]
+        community_ids: communityId
       }
       try {
         await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {
