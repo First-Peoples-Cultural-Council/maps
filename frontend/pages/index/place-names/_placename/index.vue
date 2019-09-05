@@ -1,5 +1,5 @@
 <template>
-  <div class="place-names-dynamic-container">
+  <no-ssr>
     <DetailSideBar>
       <template v-slot:badges>
         <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
@@ -132,7 +132,7 @@
         </section>
       </div>
     </DetailSideBar>
-  </div>
+  </no-ssr>
 </template>
 
 <script>
