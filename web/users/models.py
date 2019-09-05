@@ -47,7 +47,7 @@ class User(AbstractUser):
     )
 
     languages = models.ManyToManyField("language.Language")
-    bio = models.TextField(null=True, default="")
+    bio = models.TextField(null=True, blank=True, default="")
 
 
 # email = models.EmailField(
