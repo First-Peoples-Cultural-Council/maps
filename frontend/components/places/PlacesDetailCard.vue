@@ -21,11 +21,14 @@
               {{ name }}
             </h5>
           </div>
-          <div v-if="audioFile" class="d-inline-block">
-            <CardBadge
-              content="Pronounce"
-              @click.native.prevent.stop="handlePronounce"
-            ></CardBadge>
+          <div
+            v-if="audioFile"
+            class="d-inline-block"
+            @click.prevent.stop="handlePronounce"
+          >
+            <CardBadge content="Pronounce"></CardBadge>
+          </div>
+          <div class="d-inline-block">
             <CardBadge
               content="Edit"
               type="edit"
