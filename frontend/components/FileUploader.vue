@@ -31,8 +31,12 @@
           max-rows="6"
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
-        <b-button @click="handleUpload">Upload</b-button>
-        <b-button @click="resetToInitialState">Cancel</b-button>
+        <b-button variant="info" size="sm" @click="handleUpload"
+          >Upload</b-button
+        >
+        <b-button variant="danger" size="sm" @click="resetToInitialState"
+          >Cancel</b-button
+        >
       </div>
     </transition>
   </div>

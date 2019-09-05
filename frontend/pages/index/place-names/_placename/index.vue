@@ -118,9 +118,15 @@
             </li>
             <li
               v-if="getGenericFileType(media.file_type) === 'other'"
-              class="word-break-all"
+              class="word-break-all d-flex justify-content-center"
             >
-              Download: {{ getMediaUrl(media.media_file, isServer) }}
+              <b-button
+                variant="dark"
+                size="sm"
+                class="mt-2"
+                :href="getMediaUrl(media.media_file, isServer)"
+                >Download</b-button
+              >
             </li>
           </ul>
         </section>
