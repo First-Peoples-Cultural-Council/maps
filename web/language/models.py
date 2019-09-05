@@ -223,7 +223,11 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
+
     audio_file = models.FileField(null=True, blank=True)
+    audio_name = models.CharField(max_length=64, null=True, blank=True)
+    audio_description = models.TextField(null=True, blank=True, default="")
+    
     kind = models.CharField(max_length=15, default="")
 
     category = models.ForeignKey(

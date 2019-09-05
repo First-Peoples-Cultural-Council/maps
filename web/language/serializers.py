@@ -348,6 +348,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "geom",
             "other_names",
             "audio_file",
+            "audio_name",
+            "audio_description",
             "kind",
             "western_name",
             "community_only",
