@@ -53,6 +53,7 @@
             <img
               :src="getMediaUrl(media.media_file, isServer)"
               :alt="media.name"
+              style="max-height: 300px; display: block; width: auto; height: 100%;"
             />
           </li>
           <li v-if="getGenericFileType(media.file_type) === 'audio'">
@@ -154,6 +155,14 @@ export default {
   },
   mounted() {
     console.log('Mounted, place=', this.place)
+    this.$root.$on('fileUploaded', async r => {
+      this.place = await this.$axios.$get(
+        getApiUrl(
+          `placename/${this.geo_place.id}/?timestamp=${new Date().getTime()}`
+        )
+      )
+      console.log('new place from upload', this.place)
+    })
   },
   methods: {
     setupMap() {
