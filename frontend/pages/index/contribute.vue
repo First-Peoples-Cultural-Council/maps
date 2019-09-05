@@ -295,6 +295,12 @@ export default {
     data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     return data
   },
+  mounted() {
+    if (!this.isLoggedIn) {
+      window.location =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://countable.ca'
+    }
+  },
   methods: {
     async uploadAudioFile(id, audio) {
       const data = new FormData()
