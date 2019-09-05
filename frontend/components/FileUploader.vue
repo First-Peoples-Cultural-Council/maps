@@ -75,7 +75,7 @@ export default {
       try {
         const result = await this.uploadFile(formData)
         this.clearFiles()
-        this.$root.$emit('fileUploaded', this.file)
+        this.$root.$emit('fileUploaded', result)
         console.log(this)
         this.file = null
         console.log('Upload Result', result)

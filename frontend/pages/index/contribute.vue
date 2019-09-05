@@ -339,7 +339,8 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        community: this.userCommunity.length > 0 ? this.userCommunity.id : null,
+        community:
+          this.userCommunity.length > 0 ? this.userCommunity[0].id : null,
         language: this.languageSelected,
         category: this.categorySelected
       }

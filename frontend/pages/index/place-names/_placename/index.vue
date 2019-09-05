@@ -17,39 +17,73 @@
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </div>
-      <section class="ml-2 mr-2">
-        <h5>Description</h5>
-        <p>{{ place.description }}</p>
-        <p v-if="place.category">category: {{ place.category_obj.name }}</p>
-        <p v-if="place.community">community: {{ place.community.name }}</p>
-        <p v-if="place.western_name">western name: {{ place.western_name }}</p>
-        <p v-if="place.other_names">other names: {{ place.other_names }}</p>
-        <p v-if="place.status">status: {{ place.status }}</p>
-        <p v-if="place.creator">
-          uploaded by
+      <section class="mt-4 ml-4 mr-4">
+        <p v-if="place.creator" class="font-08">
+          Uploaded by
           <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
             getCreatorName()
           }}</nuxt-link>
-          <button
+          <b-button
             v-if="uid === place.creator.id"
-            class="btn btn-primary"
+            class="btn btn-primary ml-2 font-09"
+            size="sm"
+            variant="dark"
             @click="edit"
           >
             Edit
-          </button>
+          </b-button>
         </p>
       </section>
-      <section v-if="place.medias && place.medias.length > 0" class="m-2">
-        <h5>Uploaded Media</h5>
+      <hr v-if="place.creator" />
+      <section class="mt-4 ml-4 mr-4">
+        <div v-if="place.description">
+          <h5 class="font-08 text-uppercase color-gray">Description</h5>
+          <p class="font-08">{{ place.description }}</p>
+        </div>
+        <div v-if="place.category">
+          <h5 class="font-08 text-uppercase color-gray">Category</h5>
+          <p class="font-08">{{ place.category_obj.name }}</p>
+        </div>
+        <div v-if="place.community">
+          <h5 class="font-08 text-uppercase color-gray">Community</h5>
+          <p class="font-08">{{ place.community.name }}</p>
+        </div>
+        <div v-if="place.western_name">
+          <h5 class="font-08 text-uppercase color-gray">Western Name</h5>
+          <p class="font-08">{{ place.western_name }}</p>
+        </div>
+        <div v-if="place.other_names">
+          <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
+          <p class="font-08">{{ place.other_names }}</p>
+        </div>
+        <div v-if="place.status">
+          <h5 class="font-08 text-uppercase color-gray">Status</h5>
+          <p class="font-08">{{ place.status }}</p>
+        </div>
+      </section>
+      <hr />
+      <section v-if="medias && medias.length > 0" class="m-2 ml-4 mr-4">
+        <h5 class="font-08 text-uppercase color-gray mb-3">
+          {{ medias.length }} Uploaded Media
+        </h5>
+
         <ul
-          v-for="media in place.medias"
+          v-for="media in medias"
           :key="'media' + media.id"
-          class="m-0 p-0 mb-4"
+          class="m-0 p-0 mb-4 list-style-none up-media-list"
         >
-          <li>Name: {{ media.name }}</li>
-          <li>Description: {{ media.description }}</li>
-          <li>File Type: {{ media.file_type }}</li>
-          <li v-if="getGenericFileType(media.file_type) === 'image'">
+          <li v-if="media.name">
+            <span class="font-08 color-gray">Name: </span>
+            <span class="font-08">{{ media.name }}</span>
+          </li>
+          <li v-if="media.description && media.description !== 'null'">
+            <span class="font-08 text-uppercase color-gray">Description:</span>
+            <span class="font-08">{{ media.description }}</span>
+          </li>
+          <li
+            v-if="getGenericFileType(media.file_type) === 'image'"
+            class="mt-2 d-flex justify-content-center"
+          >
             <img
               :src="getMediaUrl(media.media_file, isServer)"
               :alt="media.name"
@@ -57,7 +91,7 @@
             />
           </li>
           <li v-if="getGenericFileType(media.file_type) === 'audio'">
-            <audio controls>
+            <audio controls class="uploaded-audio">
               <source
                 :src="getMediaUrl(media.media_file, isServer)"
                 :type="media.file_type"
@@ -146,24 +180,18 @@ export default {
     return {
       geo_place,
       place,
-      isServer
+      isServer,
+      medias: place.medias
     }
   },
   created() {
     this.setupMap()
+    this.$root.$on('fileUploaded', r => {
+      this.medias.push(r)
+    })
     // We don't always catch language routing updates, so also zoom to language on create.
   },
-  mounted() {
-    console.log('Mounted, place=', this.place)
-    this.$root.$on('fileUploaded', async r => {
-      this.place = await this.$axios.$get(
-        getApiUrl(
-          `placename/${this.geo_place.id}/?timestamp=${new Date().getTime()}`
-        )
-      )
-      console.log('new place from upload', this.place)
-    })
-  },
+
   methods: {
     setupMap() {
       this.$eventHub.whenMap(map => {
@@ -199,4 +227,14 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.up-media-list {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 1em !important;
+  border-radius: 0.5em;
+}
+.uploaded-audio {
+  width: 100%;
+  margin-top: 1em;
+}
+</style>
