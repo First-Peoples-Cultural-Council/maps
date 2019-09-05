@@ -200,30 +200,17 @@ class PlaceNameAPITests(BaseTestCase):
         response = self.client.get("/api/user/auth/")
         self.assertEqual(response.json()["is_authenticated"], True)
 
-        response = self.client.post(
-            "/api/placename/",
-            {
-                "name": "test place",
-                "point": {
-                    "type": "Point",
-                    "coordinates": [-132.14904785156, 54.020276150064],
-                },
-                "other_names": "string",
-                "western_name": "string",
-                "community_only": True,
-                "description": "string",
-                "community": self.community.id,
-                "language": self.language.id,
-            },
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        created_id = response.json()["id"]
+        placename = PlaceName()
+        placename.name = "test place"
+        placename.other_names = "string"
+        placename.western_name = "string"
+        placename.community_only = True
+        placename.description = "string"
+        placename.community = self.community
+        placename.language = self.language
+        placename.save()
 
-        place = PlaceName.objects.get(pk=created_id)
-        self.assertEqual(place.name, "test place")
-        self.assertEqual(place.community_id, self.community.id)
-        self.assertEqual(place.language_id, self.language.id)
+        created_id = placename.id
 
         # now update it.
         response = self.client.patch(
