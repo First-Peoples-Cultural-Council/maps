@@ -4,7 +4,15 @@ from rest_framework import status
 
 from users.models import User
 
-from .models import Language, PlaceName, Community, Champion, Media, Favourite
+from .models import (
+    Language, 
+    PlaceName, 
+    PlaceNameCategory, 
+    Community, 
+    Champion, 
+    Media, 
+    Favourite
+)
 
 
 class BaseTestCase(APITestCase):
@@ -112,6 +120,7 @@ class PlaceNameAPITests(BaseTestCase):
         super().setUp()
         self.community = Community.objects.create(name="Test Community")
         self.language = Language.objects.create(name="Test Language")
+        self.category = PlaceNameCategory.objects.create(name="Test Category", icon_name="icon")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -126,11 +135,31 @@ class PlaceNameAPITests(BaseTestCase):
         """
 		Ensure we can retrieve a newly created placename object.
 		"""
-        test_placename = PlaceName.objects.create(name="Test placename 001")
+        test_placename = PlaceName.objects.create(
+            name = "Test placename 001", 
+        )
         response = self.client.get(
             "/api/placename/{}/".format(test_placename.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Test placename 001")
+
+    def test_placename_detail_returned_fields(self):
+        """
+		Ensure we can retrieve a newly created placename object.
+		"""
+        test_placename = PlaceName.objects.create(
+            name = "Test placename 001", 
+            audio_name = "string",
+            audio_description = "string",
+        )
+        response = self.client.get(
+            "/api/placename/{}/".format(test_placename.id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Test placename 001")
+        self.assertEqual(response.data["audio_name"], "string")
+        self.assertEqual(response.data["audio_description"], "string")
 
     def test_placename_list_route_exists(self):
         """
@@ -160,14 +189,12 @@ class PlaceNameAPITests(BaseTestCase):
             "/api/placename/",
             {
                 "name": "test place",
-                "point": {
-                    "type": "Point",
-                    "coordinates": [-132.14904785156, 54.020276150064],
-                },
+                "kind": "string",
                 "other_names": "string",
                 "western_name": "string",
                 "community_only": True,
                 "description": "string",
+                "category": self.category.id,
                 "community": self.community.id,
                 "language": self.language.id,
             },
