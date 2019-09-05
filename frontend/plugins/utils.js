@@ -24,6 +24,9 @@ export const getCookie = name => {
 }
 
 export const getMediaUrl = (media_file, isServer) => {
+  if (!media_file) {
+    return null
+  }
   if (isServer) {
     if (media_file.includes('http://nginx')) {
       return media_file.replace('http://nginx', '')
