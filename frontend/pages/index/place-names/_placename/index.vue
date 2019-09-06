@@ -71,6 +71,7 @@
             <FileUploader :place-id="place.id"></FileUploader>
           </div>
         </section>
+
         <section v-if="medias && medias.length > 0" class="mt-4 ml-4 mr-4">
           <h5 class="font-08 text-uppercase color-gray mb-3">
             {{ medias.length }} Uploaded Media
@@ -99,8 +100,10 @@
                 :src="getMediaUrl(media.media_file, isServer)"
                 :alt="media.name"
                 style="max-height: 300px; display: block; width: auto; height: 100%;"
+                @click="handleImageClick($event, media)"
               />
             </li>
+
             <li v-if="getGenericFileType(media.file_type) === 'audio'">
               <audio controls class="uploaded-audio">
                 <source
@@ -124,7 +127,7 @@
                 variant="dark"
                 size="sm"
                 class="mt-2"
-                :href="getMediaUrl(media.media_file, isServer)"
+                :href="getMediaUrl(place.audio_file, isServer)"
                 >Download</b-button
               >
             </li>
@@ -140,6 +143,7 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+
 import {
   getApiUrl,
   encodeFPCC,
@@ -154,6 +158,9 @@ export default {
     Filters,
     DetailSideBar,
     FileUploader
+  },
+  data() {
+    return {}
   },
   computed: {
     mapinstance() {
@@ -195,6 +202,7 @@ export default {
       medias: place.medias
     }
   },
+  mounted() {},
   created() {
     this.setupMap()
     this.$root.$on('fileUploaded', r => {
@@ -202,8 +210,19 @@ export default {
     })
     // We don't always catch language routing updates, so also zoom to language on create.
   },
-
   methods: {
+    handleImageClick(e, media) {
+      require('basiclightbox/dist/basicLightbox.min.css')
+      const basicLightbox = require('basiclightbox')
+
+      basicLightbox
+        .create(
+          `
+		<img src="${getMediaUrl(media.media_file, this.isServer)}">
+	`
+        )
+        .show()
+    },
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
