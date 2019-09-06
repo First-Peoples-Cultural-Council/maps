@@ -93,9 +93,6 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    node: {
-      fs: 'empty'
-    },
     analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
