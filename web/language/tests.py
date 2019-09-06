@@ -182,7 +182,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename01 = PlaceName.objects.create(
             name = "test place01",
             other_names = "string",
-            western_name = "string",
+            common_name = "string",
             community_only = True,
             description = "string",
             community = self.community,
@@ -197,7 +197,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename02 = PlaceName.objects.create(
             name = "test place02",
             other_names = "string",
-            western_name = "string",
+            common_name = "string",
             community_only = True,
             description = "string",
             community = self.community,
@@ -212,7 +212,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename03 = PlaceName.objects.create(
             name = "test place03",
             other_names = "string",
-            western_name = "string",
+            common_name = "string",
             community_only = True,
             description = "string",
             community = self.community,
@@ -227,7 +227,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename04 = PlaceName.objects.create(
             name = "test place04",
             other_names = "string",
-            western_name = "string",
+            common_name = "string",
             community_only = True,
             description = "string",
             community = self.community,
@@ -252,7 +252,7 @@ class PlaceNameAPITests(BaseTestCase):
                 "name": "test place",
                 "kind": "string",
                 "other_names": "string",
-                "western_name": "string",
+                "common_name": "string",
                 "community_only": True,
                 "description": "string",
                 "category": self.category.id,
@@ -284,7 +284,7 @@ class PlaceNameAPITests(BaseTestCase):
         placename = PlaceName()
         placename.name = "test place"
         placename.other_names = "string"
-        placename.western_name = "string"
+        placename.common_name = "string"
         placename.community_only = True
         placename.description = "string"
         placename.community = self.community

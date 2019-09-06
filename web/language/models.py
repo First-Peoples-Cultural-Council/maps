@@ -233,7 +233,7 @@ class PlaceName(CulturalModel):
     category = models.ForeignKey(
         PlaceNameCategory, on_delete=models.SET_NULL, null=True
     )
-    western_name = models.CharField(max_length=64, blank=True)
+    common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.CharField(max_length=255, blank=True)
 

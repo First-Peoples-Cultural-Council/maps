@@ -351,7 +351,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "audio_name",
             "audio_description",
             "kind",
-            "western_name",
+            "common_name",
             "community_only",
             "description",
             "status",
