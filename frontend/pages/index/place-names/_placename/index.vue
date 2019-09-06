@@ -51,9 +51,9 @@
             <h5 class="font-08 text-uppercase color-gray">Community</h5>
             <p class="font-08">{{ place.community.name }}</p>
           </div>
-          <div v-if="place.western_name">
-            <h5 class="font-08 text-uppercase color-gray">Western Name</h5>
-            <p class="font-08">{{ place.western_name }}</p>
+          <div v-if="place.common_name">
+            <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
+            <p class="font-08">{{ place.common_name }}</p>
           </div>
           <div v-if="place.other_names">
             <h5 class="font-08 text-uppercase color-gray">Other Names</h5>

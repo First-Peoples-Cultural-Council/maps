@@ -274,7 +274,7 @@ export default {
       data = {
         place,
         tname: place.name,
-        wname: place.western_name,
+        wname: place.common_name,
         content: place.description,
         categorySelected: place.category
       }
@@ -345,7 +345,7 @@ export default {
 
       const data = {
         name: this.tname,
-        western_name: this.wname,
+        common_name: this.wname,
         description: this.content,
         community:
           this.userCommunity.length > 0 ? this.userCommunity[0].id : null,
