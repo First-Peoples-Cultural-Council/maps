@@ -448,50 +448,6 @@ export default {
     mapInit(map, e) {
       this.map = map
       this.$store.commit('mapinstance/set', map)
-
-      const draw = new MapboxDraw({
-        displayControlsDefault: false,
-        controls: {
-          polygon: true,
-          point: true,
-          trash: true,
-          line_string: true
-        }
-      })
-      map.addControl(draw, 'bottom-left')
-
-      map.on('draw.create', e => {
-        const featuresDrawn = draw.getAll()
-        let features = featuresDrawn.features
-        this.$store.commit('contribute/setDrawnFeatures', features)
-
-        if (features.length > 1) {
-          console.log('More than one feature drawn')
-          const featuresDrawn = draw.getAll()
-          featuresDrawn.features = [featuresDrawn.features[1]]
-          draw.set(featuresDrawn)
-          features = featuresDrawn.features
-        }
-
-        this.$store.commit('contribute/setDrawnFeatures', features)
-        this.$store.commit(
-          'contribute/setLanguagesInFeature',
-          this.getLanguagesFromDraw(features)
-        )
-      })
-
-      map.on('draw.delete', e => {
-        const featuresDrawn = draw.getAll()
-        const features = featuresDrawn.features
-        this.$store.commit('contribute/setDrawnFeatures', features)
-
-        if (features.length === 1 || features.length === 0) {
-          this.$store.commit(
-            'contribute/setLanguagesInFeature',
-            this.getLanguagesFromDraw(features)
-          )
-        }
-      })
     },
     /**
      * Handle clicks centrally so we can control precedence.
@@ -618,6 +574,51 @@ export default {
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
+
+      const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          point: true,
+          trash: true,
+          line_string: true
+        }
+      })
+      map.addControl(draw, 'bottom-left')
+
+      map.on('draw.create', e => {
+        const featuresDrawn = draw.getAll()
+        let features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length > 1) {
+          const featuresDrawn = draw.getAll()
+          featuresDrawn.features = [featuresDrawn.features[1]]
+          draw.set(featuresDrawn)
+          features = featuresDrawn.features
+        }
+
+        this.$store.commit('contribute/setDrawnFeatures', features)
+        this.$store.commit(
+          'contribute/setLanguagesInFeature',
+          this.getLanguagesFromDraw(features)
+        )
+      })
+
+      map.on('draw.delete', e => {
+        const featuresDrawn = draw.getAll()
+        const features = featuresDrawn.features
+        this.$store.commit('contribute/setDrawnFeatures', features)
+
+        if (features.length === 1 || features.length === 0) {
+          this.$store.commit(
+            'contribute/setLanguagesInFeature',
+            this.getLanguagesFromDraw(features)
+          )
+        }
+      })
+
+      map.draw = draw
 
       this.$eventHub.$emit('map-loaded', map)
     },

@@ -422,6 +422,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.$store.commit('contribute/setIsDrawMode', false)
+    this.$eventHub.whenMap(map => {
+      map.draw.changeMode('simple_select')
+      map.draw.deleteAll()
+    })
     next()
   }
 }
