@@ -251,6 +251,28 @@ class PlaceNameViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @method_decorator(never_cache)
+    @action(detail=False)
+    def list_to_verify(self, request):
+        # 'VERIFIED' PlaceNames do not need to the verified
+        queryset = self.get_queryset().exclude(status__exact=PlaceName.VERIFIED)
+
+        # Testing if user is VERIFIED        
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:                
+                user = User.objects.get(pk=int(request.user.id))
+
+                # Fetch all user's languages
+                languages = user.languages.all()
+
+                if languages:
+                    # Filter VERIFIED PlaceNames by user's languages 
+                    queryset = queryset.filter(language__in=languages)
+
+                    serializer = self.serializer_class(queryset, many=True)
+                    
+                    return Response(serializer.data)
+
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaCustomViewSet(
