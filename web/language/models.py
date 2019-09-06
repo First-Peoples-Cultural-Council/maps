@@ -266,7 +266,7 @@ class PlaceName(CulturalModel):
 class Media(BaseModel):
     description = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=16, default=None)
-    url = models.CharField(max_length=255, default=None, null=True)
+    url = models.URLField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"

@@ -379,7 +379,7 @@ class MediaAPITests(APITestCase):
 		"""
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 001", "file_type": "image"},
+            {"name": "Test media 001", "file_type": "image", "url": "https://google.com"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
