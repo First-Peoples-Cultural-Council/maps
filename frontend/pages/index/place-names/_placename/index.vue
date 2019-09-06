@@ -214,13 +214,8 @@ export default {
     handleImageClick(e, media) {
       require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
-
       basicLightbox
-        .create(
-          `
-		<img src="${getMediaUrl(media.media_file, this.isServer)}">
-	`
-        )
+        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`)
         .show()
     },
     setupMap() {

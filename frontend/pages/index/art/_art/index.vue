@@ -12,7 +12,10 @@
         :name="art.properties.name"
         :server="isServer"
       ></ArtsDetailCard>
-      <p class="pl-4 mt-3 color-gray font-08" v-html="artDetails.details"></p>
+      <div
+        class="pl-4 mt-3 color-gray font-08"
+        v-html="artDetails.details"
+      ></divf>
       <LanguageSeeAll
         content="See all details"
         class="mt-3"
