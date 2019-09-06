@@ -339,7 +339,8 @@ export default {
         name: this.tname,
         western_name: this.wname,
         description: this.content,
-        community: this.userCommunity && this.userCommunity.id,
+        community:
+          this.userCommunity.length > 0 ? this.userCommunity[0].id : null,
         language: this.languageSelected,
         category: this.categorySelected
       }
@@ -400,7 +401,11 @@ export default {
         await this.uploadAudioFile(id, audio)
       }
 
-      window.location = '/place-names/' + encodeFPCC(this.tname)
+      this.$router.push({
+        path: '/place-names/' + encodeFPCC(this.tname)
+      })
+
+      // window.location = '/place-names/' + encodeFPCC(this.tname)
     }
   },
   beforeRouteEnter(to, from, next) {

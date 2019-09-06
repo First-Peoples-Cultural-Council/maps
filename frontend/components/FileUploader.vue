@@ -3,38 +3,42 @@
     <b-form-file
       ref="fileUpload"
       v-model="file"
-      class=""
+      class="file-upload-input"
       placeholder="Choose a file or drop it here..."
       drop-placeholder="Drop file here..."
     ></b-form-file>
-    <div v-if="file">
-      <b-row>
-        <b-col xl="3">
-          <label for="file-name">Name: </label>
-        </b-col>
-        <b-col xl="9">
-          <b-form-input
-            id="file-name"
-            v-model="fileName"
-            placeholder="Enter Name"
-            required
-          ></b-form-input>
-        </b-col>
-      </b-row>
-      <b-form-textarea
-        id="textarea"
-        v-model="description"
-        placeholder="Enter description"
-        rows="3"
-        max-rows="6"
-        class="mt-2 mb-2"
-      ></b-form-textarea>
-      <b-button @click="handleUpload">Upload</b-button>
-      <b-button @click="resetToInitialState">Cancel</b-button>
-    </div>
-    <div v-if="errorMessage">
-      {{ errorMessage }}
-    </div>
+    <transition name="fade">
+      <div v-if="file" class="mt-4">
+        <div v-if="errorMessage">
+          <b-alert variant="warning" show>{{ errorMessage }}</b-alert>
+        </div>
+        <b-row>
+          <b-col xl="12">
+            <b-form-input
+              id="file-name"
+              v-model="fileName"
+              class="font-08"
+              placeholder="Enter Name (required)"
+              required
+            ></b-form-input>
+          </b-col>
+        </b-row>
+        <b-form-textarea
+          id="textarea"
+          v-model="description"
+          placeholder="Enter description"
+          rows="3"
+          max-rows="6"
+          class="mt-2 mb-2 font-08"
+        ></b-form-textarea>
+        <b-button variant="info" size="sm" @click="handleUpload"
+          >Upload</b-button
+        >
+        <b-button variant="danger" size="sm" @click="resetToInitialState"
+          >Cancel</b-button
+        >
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -70,16 +74,18 @@ export default {
       this.$refs.fileUpload.reset()
     },
     async handleUpload() {
-      console.log('Cookie', getCookie('csrftoken'))
+      console.log('File Name', this.fileName)
+      if (this.fileName === '' || !this.fileName) {
+        return (this.errorMessage = 'Please enter the name of the file')
+      }
       const formData = this.getFormData()
       try {
         const result = await this.uploadFile(formData)
         this.clearFiles()
+        this.$root.$emit('fileUploaded', result)
         this.file = null
-        console.log('Upload Result', result)
       } catch (e) {
         console.error(e)
-        this.errorMessage(e)
       }
     },
     getFormData() {
@@ -104,4 +110,15 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.file-upload-input {
+  font-size: 0.8em;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>

@@ -22,6 +22,17 @@
             </h5>
           </div>
         </div>
+        <div v-if="edit && id" class="d-inline-block">
+          <CardBadge
+            content="Edit"
+            type="edit"
+            @click.native="
+              $router.push({
+                path: `/profile/edit/${id}`
+              })
+            "
+          ></CardBadge>
+        </div>
       </template>
       <template v-slot:footer>
         <div
@@ -51,13 +62,13 @@
 
 <script>
 import Card from '@/components/Card.vue'
-// import CardBadge from '@/components/CardBadge.vue'
+import CardBadge from '@/components/CardBadge.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card
-    // CardBadge
+    Card,
+    CardBadge
   },
   props: {
     name: {
@@ -83,6 +94,14 @@ export default {
     link: {
       type: String,
       default: ''
+    },
+    edit: {
+      type: Boolean,
+      default: null
+    },
+    id: {
+      type: Number,
+      default: null
     }
   },
   data() {

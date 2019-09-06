@@ -1,5 +1,5 @@
 <template>
-  <div class="place-names-dynamic-container">
+  <no-ssr>
     <DetailSideBar>
       <template v-slot:badges>
         <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
@@ -8,66 +8,131 @@
         </h5>
       </template>
       <div>
-        <PlacesDetailCard
-          :id="place.id"
-          :name="place.name"
-          :server="isServer"
-          :audio-file="place.audio_file"
-        ></PlacesDetailCard>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
-      </div>
-      <section class="ml-2 mr-2">
-        <h5>Description</h5>
-        <p>{{ place.description }}</p>
-        <p v-if="place.category">category: {{ place.category_obj.name }}</p>
-        <p v-if="place.community">community: {{ place.community.name }}</p>
-        <p v-if="place.western_name">western name: {{ place.western_name }}</p>
-        <p v-if="place.other_names">other names: {{ place.other_names }}</p>
-        <p v-if="place.status">status: {{ place.status }}</p>
-        <p v-if="place.creator">
-          uploaded by
-          <nuxt-link class="color-gray" :to="'/profile/' + place.creator.id">{{
-            getCreatorName()
-          }}</nuxt-link>
-          <button
-            v-if="uid === place.creator.id"
-            class="btn btn-primary"
-            @click="edit"
-          >
-            Edit
-          </button>
-        </p>
-      </section>
-      <section v-if="place.medias && place.medias.length > 0" class="m-2">
-        <h5>Uploaded Media</h5>
-        <ul
-          v-for="media in place.medias"
-          :key="'media' + media.id"
-          class="m-0 p-0 mb-4"
-        >
-          <li>Name: {{ media.name }}</li>
-          <li>Description: {{ media.description }}</li>
-          <li>File Type: {{ media.file_type }}</li>
-          <li v-if="getGenericFileType(media.file_type) === 'image'">
-            <img :src="getMediaUrl(media.media_file)" :alt="media.name" />
-          </li>
-          <li
-            v-if="getGenericFileType(media.file_type) === 'other'"
-            class="word-break-all"
-          >
-            Download: {{ getMediaUrl(media.media_file) }}
-          </li>
-        </ul>
-      </section>
-      <section class="m-1">
-        <div v-if="isLoggedIn">
-          <h5 class="mt-4">Upload Media</h5>
-          <FileUploader :place-id="place.id"></FileUploader>
+        <div>
+          <PlacesDetailCard
+            :id="place.id"
+            :name="place.name"
+            :server="isServer"
+            :audio-file="getMediaUrl(place.audio_file, isServer)"
+          ></PlacesDetailCard>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-2"></Filters>
         </div>
-      </section>
+        <section class="mt-4 ml-4 mr-4">
+          <p v-if="place.creator" class="font-08">
+            Uploaded by
+            <nuxt-link
+              class="color-gray"
+              :to="'/profile/' + place.creator.id"
+              >{{ getCreatorName() }}</nuxt-link
+            >
+            <b-button
+              v-if="uid === place.creator.id"
+              class="btn btn-primary ml-2 font-09"
+              size="sm"
+              variant="dark"
+              @click="edit"
+            >
+              Edit
+            </b-button>
+          </p>
+        </section>
+        <hr v-if="place.creator" />
+        <section class="mt-4 ml-4 mr-4">
+          <div v-if="place.description">
+            <h5 class="font-08 text-uppercase color-gray">Description</h5>
+            <p class="font-08">{{ place.description }}</p>
+          </div>
+          <div v-if="place.category">
+            <h5 class="font-08 text-uppercase color-gray">Category</h5>
+            <p class="font-08">{{ place.category_obj.name }}</p>
+          </div>
+          <div v-if="place.community">
+            <h5 class="font-08 text-uppercase color-gray">Community</h5>
+            <p class="font-08">{{ place.community.name }}</p>
+          </div>
+          <div v-if="place.western_name">
+            <h5 class="font-08 text-uppercase color-gray">Western Name</h5>
+            <p class="font-08">{{ place.western_name }}</p>
+          </div>
+          <div v-if="place.other_names">
+            <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
+            <p class="font-08">{{ place.other_names }}</p>
+          </div>
+          <div v-if="place.status">
+            <h5 class="font-08 text-uppercase color-gray">Status</h5>
+            <p class="font-08">{{ place.status }}</p>
+          </div>
+        </section>
+        <hr />
+        <section class="m-1 ml-4 mr-4">
+          <div v-if="isLoggedIn">
+            <h5 class="mt-4 font-08 text-uppercase color-gray">Upload Media</h5>
+            <FileUploader :place-id="place.id"></FileUploader>
+          </div>
+        </section>
+        <section v-if="medias && medias.length > 0" class="mt-4 ml-4 mr-4">
+          <h5 class="font-08 text-uppercase color-gray mb-3">
+            {{ medias.length }} Uploaded Media
+          </h5>
+
+          <ul
+            v-for="media in medias"
+            :key="'media' + media.id"
+            class="m-0 p-0 mb-4 list-style-none up-media-list"
+          >
+            <li v-if="media.name">
+              <span class="font-08 color-gray">Name: </span>
+              <span class="font-08">{{ media.name }}</span>
+            </li>
+            <li v-if="media.description && media.description !== 'null'">
+              <span class="font-08 text-uppercase color-gray"
+                >Description:</span
+              >
+              <span class="font-08">{{ media.description }}</span>
+            </li>
+            <li
+              v-if="getGenericFileType(media.file_type) === 'image'"
+              class="mt-2 d-flex justify-content-center"
+            >
+              <img
+                :src="getMediaUrl(media.media_file, isServer)"
+                :alt="media.name"
+                style="max-height: 300px; display: block; width: auto; height: 100%;"
+              />
+            </li>
+            <li v-if="getGenericFileType(media.file_type) === 'audio'">
+              <audio controls class="uploaded-audio">
+                <source
+                  :src="getMediaUrl(media.media_file, isServer)"
+                  :type="media.file_type"
+                />
+                <p>
+                  Your browser doesn't support HTML5 audio. Here is a
+                  <a :href="getMediaUrl(media.media_file, isServer)"
+                    >link to the audio</a
+                  >
+                  instead.
+                </p>
+              </audio>
+            </li>
+            <li
+              v-if="getGenericFileType(media.file_type) === 'other'"
+              class="word-break-all d-flex justify-content-center"
+            >
+              <b-button
+                variant="dark"
+                size="sm"
+                class="mt-2"
+                :href="getMediaUrl(media.media_file, isServer)"
+                >Download</b-button
+              >
+            </li>
+          </ul>
+        </section>
+      </div>
     </DetailSideBar>
-  </div>
+  </no-ssr>
 </template>
 
 <script>
@@ -75,7 +140,12 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  getMediaUrl,
+  getGenericFileType
+} from '@/plugins/utils.js'
 import FileUploader from '@/components/FileUploader.vue'
 
 export default {
@@ -122,16 +192,18 @@ export default {
     return {
       geo_place,
       place,
-      isServer
+      isServer,
+      medias: place.medias
     }
   },
   created() {
     this.setupMap()
+    this.$root.$on('fileUploaded', r => {
+      this.medias.push(r)
+    })
     // We don't always catch language routing updates, so also zoom to language on create.
   },
-  mounted() {
-    console.log('Mounted, place=', this.place)
-  },
+
   methods: {
     setupMap() {
       this.$eventHub.whenMap(map => {
@@ -150,41 +222,8 @@ export default {
     edit() {
       this.$router.push('/contribute?id=' + this.place.id)
     },
-    getMediaUrl(media_file) {
-      if (this.isServer) {
-        return media_file.substring(12)
-      }
-      return media_file
-    },
-    getGenericFileType(fileType) {
-      const imageTypes = {
-        'image/svg+xml': true,
-        'image/gif': true,
-        'image/jpeg': true,
-        'image/jpg': true,
-        'image/png': true,
-        'image/bmp': true
-      }
-
-      const audioTypes = {
-        'audio/mpeg': true,
-        'audio/basic': true,
-        'audio/mid': true,
-        'audio/x-wav': true,
-        'audio/x-mpegurl': true,
-        'audio/x-aiff': true
-      }
-
-      if (imageTypes[fileType]) {
-        return 'image'
-      }
-
-      if (audioTypes[fileType]) {
-        return 'audio'
-      }
-
-      return 'other'
-    }
+    getMediaUrl,
+    getGenericFileType
   },
   head() {
     return {
@@ -200,4 +239,14 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.up-media-list {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 1em !important;
+  border-radius: 0.5em;
+}
+.uploaded-audio {
+  width: 100%;
+  margin-top: 1em;
+}
+</style>

@@ -27,6 +27,8 @@
             @click.prevent.stop="handlePronounce"
           >
             <CardBadge content="Pronounce"></CardBadge>
+          </div>
+          <div class="d-inline-block">
             <CardBadge
               content="Edit"
               type="edit"

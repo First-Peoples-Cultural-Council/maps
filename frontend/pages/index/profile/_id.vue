@@ -1,6 +1,11 @@
 <template>
   <DetailSideBar>
-    <UserDetailCard :name="getUserName()" type="none"></UserDetailCard>
+    <UserDetailCard
+      :id="user.id"
+      :name="getUserName()"
+      type="none"
+      :edit="isAdmin()"
+    ></UserDetailCard>
     <section class="ml-2 mr-2 mt-2">
       <div v-if="user.languages && user.languages.length > 0">
         <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
@@ -43,22 +48,11 @@
           :name="place.name"
           class="mt-3 hover-left-move"
           @click.native="
-            $router.push({ path: '/place-names/' + encodeFPCC(comm.name) })
+            $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
           "
         ></PlacesCard>
       </div>
     </section>
-
-    <ul>
-      <li v-for="placename in user.placename_set" :key="placename.id">
-        <nuxt-link :to="'/place-names/' + encodeFPCC(placename.name)">{{
-          placename.name
-        }}</nuxt-link>
-      </li>
-    </ul>
-    <button v-if="isAdmin()" class="btn btn-primary" @click="edit()">
-      edit
-    </button>
   </DetailSideBar>
 </template>
 
@@ -94,12 +88,6 @@ export default {
       return (
         this.user && (this.user.first_name || this.user.username.split('__')[0])
       )
-    },
-    edit() {
-      console.log(this.id)
-      this.$router.push({
-        path: `/profile/edit/${this.user.id}`
-      })
     },
     encodeFPCC
   }
