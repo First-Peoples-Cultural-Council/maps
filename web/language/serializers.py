@@ -330,13 +330,13 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = PlaceNameMediaSerializer(many=True, read_only=True)
     creator = PublicUserSerializer(read_only=True)
     community = serializers.PrimaryKeyRelatedField(
-        queryset=Community.objects.all(), allow_null=True
+        queryset=Community.objects.all(), allow_null=True, required=False
     )
     language = serializers.PrimaryKeyRelatedField(
-        queryset=Language.objects.all(), allow_null=True
+        queryset=Language.objects.all(), allow_null=True, required=False
     )
     category = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceNameCategory.objects.all(), allow_null=True
+        queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
     )
     category_obj = PlaceNameCategorySerializer(source="category", read_only=True)
 

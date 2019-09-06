@@ -304,6 +304,27 @@ class PlaceNameAPITests(BaseTestCase):
         place = PlaceName.objects.get(pk=created_id)
         self.assertEqual(place.status, PlaceName.FLAGGED)
 
+    def test_post_only_required_fields(self):
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        response = self.client.post(
+            "/api/placename/",
+            {
+                "name": "test place",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.name, "test place")
+
 
 class ChampionAPITests(APITestCase):
 
