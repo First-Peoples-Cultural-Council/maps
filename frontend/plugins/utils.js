@@ -1,5 +1,74 @@
+import { groupBy, uniqBy } from 'lodash'
+import { pointIntersects, intersects } from '../mixins/map'
+
 export const getApiUrl = path => {
   return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+}
+
+export const formatPoint = point => {
+  return {
+    lng: point[0],
+    lat: point[1]
+  }
+}
+
+export const formatLangBounds = lang => {
+  const sw = lang.bbox.coordinates[0][0]
+  const ne = lang.bbox.coordinates[0][2]
+  return {
+    _sw: {
+      lng: sw[0],
+      lat: sw[1]
+    },
+    _ne: {
+      lng: ne[0],
+      lat: ne[1]
+    }
+  }
+}
+
+export const filterLanguages = (
+  languageSet,
+  bounds,
+  mode = 'default',
+  point = null,
+  context
+) => {
+  if (mode === 'draw' && point) {
+    return languageSet.filter(lang => {
+      const langBounds = formatLangBounds(lang)
+      return pointIntersects(point, langBounds)
+    })
+  }
+
+  const filteredLanguages = languageSet.filter(lang => {
+    const langBounds = formatLangBounds(lang)
+    return intersects(bounds, langBounds)
+  })
+  context.$store.commit('languages/setLanguagesCount', filteredLanguages.length)
+  return groupBy(filteredLanguages, 'family.name')
+}
+
+export const getLanguagesFromDraw = (features, languageSet) => {
+  const languagesInFeature = []
+  features.map(feature => {
+    const geometry = feature.geometry
+    if (geometry.type === 'Point') {
+      const point = formatPoint(geometry.coordinates)
+      languagesInFeature.push(
+        ...filterLanguages(languageSet, null, 'draw', point, this)
+      )
+    }
+    if (geometry.type === 'Polygon') {
+      geometry.coordinates[0].map(coord => {
+        const point = formatPoint(coord)
+        languagesInFeature.push(
+          ...filterLanguages(languageSet, null, 'draw', point, this)
+        )
+      })
+    }
+  })
+  return uniqBy(languagesInFeature, 'name')
 }
 
 export const encodeFPCC = s => {

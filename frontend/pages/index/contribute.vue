@@ -160,7 +160,12 @@
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  getCookie,
+  encodeFPCC,
+  getLanguagesFromDraw
+} from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -181,7 +186,8 @@ export default {
       wname: '',
       errors: [],
       languageOptions: [],
-      languageSelectedName: null
+      languageSelectedName: null,
+      geom: []
     }
   },
 
@@ -256,8 +262,9 @@ export default {
     }
   },
 
-  async asyncData({ query, $axios, store, redirect }) {
+  async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
+
     if (query.id) {
       const now = new Date()
       const place = await $axios.$get(
@@ -286,6 +293,7 @@ export default {
         }
       }
     }
+
     data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     return data
   },
@@ -418,6 +426,25 @@ export default {
           document.querySelector('.mapbox-gl-draw_polygon').click()
         }
       })
+
+      const lat = vm.$route.query.lat
+      const lng = vm.$route.query.lng
+      if (lat && lng) {
+        vm.$eventHub.whenMap(map => {
+          map.draw.deleteAll()
+          map.draw.add({
+            type: 'Point',
+            coordinates: [parseFloat(lng), parseFloat(lat)]
+          })
+          const featuresDrawn = map.draw.getAll()
+          const features = featuresDrawn.features
+          vm.$store.commit('contribute/setDrawnFeatures', features)
+          vm.$store.commit(
+            'contribute/setLanguagesInFeature',
+            getLanguagesFromDraw(features, vm.languageSet)
+          )
+        })
+      }
     })
   },
   beforeRouteLeave(to, from, next) {

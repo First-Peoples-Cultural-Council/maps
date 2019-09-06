@@ -137,7 +137,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { groupBy, uniqBy } from 'lodash'
+import { groupBy } from 'lodash'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -153,15 +153,15 @@ import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import {
-  inBounds,
-  intersects,
-  zoomToIdealBox,
-  pointIntersects
-} from '@/mixins/map.js'
+import { inBounds, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  filterLanguages,
+  getLanguagesFromDraw
+} from '@/plugins/utils.js'
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
@@ -601,7 +601,7 @@ export default {
         this.$store.commit('contribute/setDrawnFeatures', features)
         this.$store.commit(
           'contribute/setLanguagesInFeature',
-          this.getLanguagesFromDraw(features)
+          getLanguagesFromDraw(features, this.languageSet)
         )
       })
 
@@ -613,7 +613,7 @@ export default {
         if (features.length === 1 || features.length === 0) {
           this.$store.commit(
             'contribute/setLanguagesInFeature',
-            this.getLanguagesFromDraw(features)
+            getLanguagesFromDraw(features, this.languageSet)
           )
         }
       })
@@ -651,7 +651,10 @@ export default {
     },
     updateData(map) {
       const bounds = map.getBounds()
-      this.$store.commit('languages/set', this.filterLanguages(bounds))
+      this.$store.commit(
+        'languages/set',
+        filterLanguages(this.languageSet, bounds, 'default', null, this)
+      )
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
       this.$store.commit('places/set', this.filterPlaces(bounds))
@@ -680,63 +683,7 @@ export default {
         // this.updateMarkers(map)
       }
     },
-    formatPoint(point) {
-      return {
-        lng: point[0],
-        lat: point[1]
-      }
-    },
-    formatLangBounds(lang) {
-      const sw = lang.bbox.coordinates[0][0]
-      const ne = lang.bbox.coordinates[0][2]
-      return {
-        _sw: {
-          lng: sw[0],
-          lat: sw[1]
-        },
-        _ne: {
-          lng: ne[0],
-          lat: ne[1]
-        }
-      }
-    },
-    getLanguagesFromDraw(features) {
-      const languagesInFeature = []
-      features.map(feature => {
-        const geometry = feature.geometry
-        if (geometry.type === 'Point') {
-          const point = this.formatPoint(geometry.coordinates)
-          languagesInFeature.push(...this.filterLanguages(null, 'draw', point))
-        }
-        if (geometry.type === 'Polygon') {
-          geometry.coordinates[0].map(coord => {
-            const point = this.formatPoint(coord)
-            languagesInFeature.push(
-              ...this.filterLanguages(null, 'draw', point)
-            )
-          })
-        }
-      })
-      return uniqBy(languagesInFeature, 'name')
-    },
-    filterLanguages(bounds, mode = 'default', point = null) {
-      if (mode === 'draw' && point) {
-        return this.languageSet.filter(lang => {
-          const langBounds = this.formatLangBounds(lang)
-          return pointIntersects(point, langBounds)
-        })
-      }
 
-      const filteredLanguages = this.languageSet.filter(lang => {
-        const langBounds = this.formatLangBounds(lang)
-        return intersects(bounds, langBounds)
-      })
-      this.$store.commit(
-        'languages/setLanguagesCount',
-        filteredLanguages.length
-      )
-      return groupBy(filteredLanguages, 'family.name')
-    },
     filterCommunities(bounds) {
       return this.communitySet.filter(comm => {
         if (comm.point !== null) {

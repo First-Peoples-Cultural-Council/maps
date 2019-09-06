@@ -186,8 +186,7 @@ export default {
     const place = await $axios.$get(
       getApiUrl(`placename/${geo_place.id}/?${now.getTime()}`)
     )
-    console.log('Place', place)
-    console.log('GeoPlace', geo_place)
+
     const isServer = !!process.server
     return {
       geo_place,
