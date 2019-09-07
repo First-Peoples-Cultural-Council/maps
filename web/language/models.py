@@ -272,6 +272,23 @@ class Media(BaseModel):
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
     )
 
+    # Choices Constants:
+    FLAGGED = "FL"
+    UNVERIFIED = "UN"
+    VERIFIED = "VE"
+    # Choices:
+    # first element: constant Python identifier
+    # second element: human-readable version
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (FLAGGED, "Flagged"),
+        (VERIFIED, "Verified"),
+    ]
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
+    )
+    status_reason = models.TextField(max_length=256, blank=True)
+
 
 class Favourite(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)

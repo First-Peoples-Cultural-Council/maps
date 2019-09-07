@@ -314,6 +314,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "url",
             "media_file",
             "placename",
+            "status",
         )
 
 

@@ -379,10 +379,17 @@ class MediaAPITests(APITestCase):
 		"""
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 001", "file_type": "image", "url": "https://google.com"},
+            {"name": "Test media 001", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.name, "Test media 001")
+        self.assertEqual(media.file_type, "image")
+        self.assertEqual(media.url, "https://google.com")
+        self.assertEqual(media.status, Media.UNVERIFIED)
 
     def test_media_delete(self):
         """
