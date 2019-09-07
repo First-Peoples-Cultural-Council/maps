@@ -202,11 +202,13 @@ class PlaceNameAPITests(BaseTestCase):
             description = "string",
             community = self.community,
             language = self.language1,
-            status=PlaceName.UNVERIFIED
+            status=PlaceName.UNVERIFIED,
+            status_reason = "string"
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 1
+        assert len(response.data[0]['status_reason']) > 0
         
         # FLAGGED Placename MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
         test_placename03 = PlaceName.objects.create(
@@ -217,7 +219,8 @@ class PlaceNameAPITests(BaseTestCase):
             description = "string",
             community = self.community,
             language = self.language1,
-            status=PlaceName.FLAGGED
+            status=PlaceName.FLAGGED,
+            status_reason = "string"
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -232,7 +235,8 @@ class PlaceNameAPITests(BaseTestCase):
             description = "string",
             community = self.community,
             language = self.language2,
-            status=PlaceName.UNVERIFIED
+            status=PlaceName.UNVERIFIED,
+            status_reason = "string"
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -355,7 +359,12 @@ class ChampionAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class MediaAPITests(APITestCase):
+class MediaAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.community = Community.objects.create(name="Test Community")
+        self.language1 = Language.objects.create(name="Test Language 01")
+        self.language2 = Language.objects.create(name="Test Language 02")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -390,6 +399,80 @@ class MediaAPITests(APITestCase):
         self.assertEqual(media.file_type, "image")
         self.assertEqual(media.url, "https://google.com")
         self.assertEqual(media.status, Media.UNVERIFIED)
+
+    def test_media_list_to_verify(self):
+        """
+		Ensure media list API brings newly created data which needs to be verified
+		"""
+        self.user.languages.add(self.language1)
+        self.user.save()
+
+        # Must be logged in to verify a media.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            language = self.language1,
+        )
+
+        # PlaceName out of the same language as the user (language admin)
+        placename2 = PlaceName.objects.create(
+            name = "test place02",
+            language = self.language2,
+        )
+
+        # VERIFIED Media MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        test_media01 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            status=Media.VERIFIED
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 0
+        
+        # UNVERIFIED Media MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        test_media02 = Media.objects.create(
+            name = "test media02",
+            file_type = "string",
+            placename = placename1,
+            status=Media.UNVERIFIED,
+            status_reason = "string"
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 1
+        assert len(response.data[0]['status_reason']) > 0
+        
+        # FLAGGED Media MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        test_media03 = Media.objects.create(
+            name = "test media03",
+            file_type = "string",
+            placename = placename1,
+            status=Media.FLAGGED,
+            status_reason = "string"
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 2
+        
+        # UNVERIFIED Media NOT MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        test_media04 = Media.objects.create(
+            name = "test media04",
+            file_type = "string",
+            placename = placename2,
+            status=Media.UNVERIFIED,
+            status_reason = "string"
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 2
 
     def test_media_delete(self):
         """

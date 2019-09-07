@@ -293,7 +293,7 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "kind", "category")
+        fields = ("name", "id", "kind", "category", "status", "status_reason")
 
 
 # Serializer only for composing PlaceName data
@@ -315,6 +315,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "media_file",
             "placename",
             "status",
+            "status_reason",
         )
 
 
@@ -356,6 +357,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "community_only",
             "description",
             "status",
+            "status_reason",
             "category",
             "category_obj",
             "medias",
