@@ -99,7 +99,7 @@
               <img
                 :src="getMediaUrl(media.media_file, isServer)"
                 :alt="media.name"
-                style="max-height: 300px; display: block; width: auto; height: 100%;"
+                style="max-width: 100%; display: block; width: auto; height: auto;"
                 @click="handleImageClick($event, media)"
               />
             </li>
