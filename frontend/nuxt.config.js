@@ -97,6 +97,7 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    extractCSS: false,
     analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
