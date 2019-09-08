@@ -13,12 +13,12 @@
         :server="isServer"
       ></ArtsDetailCard>
       <div
-        class="pl-4 mt-3 color-gray font-08"
+        class="p-4 m-0 pb-0 color-gray font-08"
         v-html="artDetails.details"
       ></div>
       <LanguageSeeAll
         content="See all details"
-        class="mt-3"
+        class="mt-0"
         @click.native="handleClick($event, artDetails.node_id)"
       >
       </LanguageSeeAll>

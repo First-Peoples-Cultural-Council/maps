@@ -348,7 +348,6 @@ export default {
               `<div class='popup-inner'>
                 <h4>${data}</h4>
 
-                (TODO: add other stuff here.)
                 <a href="/contribute?lat=${geom.coordinates[1]}&lng=${
                 geom.coordinates[0]
               }">contribute to this point.</a>
