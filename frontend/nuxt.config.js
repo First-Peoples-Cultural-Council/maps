@@ -86,7 +86,6 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
     '@nuxtjs/eslint-module',
     '@tui-nuxt/editor',
     'nuxt-vue-multiselect'
