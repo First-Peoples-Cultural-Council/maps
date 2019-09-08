@@ -15,7 +15,7 @@
       <div
         class="pl-4 mt-3 color-gray font-08"
         v-html="artDetails.details"
-      ></divf>
+      ></div>
       <LanguageSeeAll
         content="See all details"
         class="mt-3"

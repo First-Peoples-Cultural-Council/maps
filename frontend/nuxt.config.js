@@ -10,6 +10,11 @@ module.exports = {
   /*
    ** Headers of the page
    */
+  pwa: {
+    worbox: {
+      dev: true
+    }
+  },
   head: {
     script: [
       {
