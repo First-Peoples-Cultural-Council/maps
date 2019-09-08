@@ -12,7 +12,8 @@ module.exports = {
    */
   pwa: {
     worbox: {
-      dev: true
+      dev: true,
+      autoRegister: false
     }
   },
   head: {
