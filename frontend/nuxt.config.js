@@ -10,12 +10,6 @@ module.exports = {
   /*
    ** Headers of the page
    */
-  pwa: {
-    worbox: {
-      dev: true,
-      autoRegister: false
-    }
-  },
   head: {
     script: [
       {
@@ -73,11 +67,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [
-    '~/mixins/mixins.js',
-    '~/plugins/global',
-    { src: '~/plugins/lightbox', ssr: false }
-  ],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
