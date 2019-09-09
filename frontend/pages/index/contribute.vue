@@ -2,154 +2,162 @@
   <div>
     <client-only placeholder="Loading...">
       <DetailSideBar :width="500">
-        <div v-if="isLoggedIn">
-          <div class="contribute-header pt-3 pb-3">
-            <div class="text-center pl-2 pr-2">
-              <b-alert
-                v-if="drawnFeatures.length === 0 && !place"
-                show
-                variant="danger"
-                dismissible
-              >
-                Please select an area from the map
-              </b-alert>
-              <b-alert
-                v-if="drawnFeatures.length > 1 && !place"
-                show
-                variant="warning"
-                dismissible
-              >
-                You may only contribute to one area at a time
-              </b-alert>
-            </div>
-            <div>
-              <h4 class="text-uppercase contribute-title mr-2">
-                Contribute
-              </h4>
-            </div>
-            <section class="pl-2 pr-2">
-              <div v-if="userCommunity && userCommunity.length > 0">
-                <b-row no-gutters>
-                  <b-col xl="6" class="pl-1"
-                    ><CommunityCard
-                      :go="false"
-                      variant="white"
-                      icon="small"
-                      :name="userCommunity[0].name"
-                    ></CommunityCard
-                  ></b-col>
-                </b-row>
-              </div>
-            </section>
+        <div class="position-relative">
+          <div
+            v-if="drawnFeatures.length === 0 && !place"
+            class="required-overlay d-flex align-items-center justify-content-center"
+          >
+            <b-alert
+              v-if="drawnFeatures.length === 0 && !place"
+              show
+              variant="danger"
+            >
+              Please select an area from the map
+            </b-alert>
           </div>
-          <section class="pr-3 pl-3">
-            <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
-              >Traditional Name (required)</label
-            >
-            <b-form-input
-              id="traditionalName"
-              v-model="tname"
-              type="text"
-            ></b-form-input>
-
-            <div class="contribute-title-one mt-3 mb-0">
-              Pronounciation
-            </div>
-            <AudioRecorder class="mt-1"></AudioRecorder>
-
-            <label for="westernName" class="contribute-title-one mt-3 mb-1"
-              >Western Name</label
-            >
-            <b-form-input
-              id="westernName"
-              v-model="wname"
-              type="text"
-            ></b-form-input>
-
-            <b-row class="mt-3">
-              <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Language</label
-                >
-                <b-form-select
-                  v-model="languageSelected"
-                  :options="languageOptions"
-                ></b-form-select>
-              </b-col>
-              <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Category</label
-                >
-                <b-form-select
-                  v-model="categorySelected"
-                  :options="categoryOptions"
-                ></b-form-select>
-              </b-col>
-            </b-row>
-            <!-- Text Editor -->
-
-            <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
-            <TuiEditor
-              v-model="content"
-              mode="wysiwyg"
-              :options="{
-                hideModeSwitch: true,
-                toolbarItems: [
-                  'heading',
-                  'bold',
-                  'italic',
-                  'strike',
-                  'hr',
-                  'quote',
-                  'ul',
-                  'ol',
-                  'indent',
-                  'outdent',
-                  'link'
-                ]
-              }"
-              preview-style="vertical"
-              height="300px"
-            />
-
-            <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
-            <!--<MediaUploader></MediaUploader>-->
-          </section>
-
-          <hr />
-
-          <section class="pl-3 pr-3">
-            <b-row class="mt-3">
-              <b-col xl="12">
+          <div v-if="isLoggedIn">
+            <div class="contribute-header pt-3 pb-3">
+              <div class="text-center pl-2 pr-2">
                 <b-alert
-                  v-if="errors.length"
+                  v-if="drawnFeatures.length > 1 && !place"
                   show
                   variant="warning"
                   dismissible
                 >
-                  <ul>
-                    <li v-for="err in errors" :key="err">{{ err }}</li>
-                  </ul>
+                  You may only contribute to one area at a time
                 </b-alert>
-                <b-button block variant="danger" @click="submitContribute"
-                  >Submit</b-button
-                >
-              </b-col>
-            </b-row>
-          </section>
-        </div>
-        <div v-else>
-          <b-alert show variant="danger m-2 mt-5">
-            <h4 class="alert-heading">Please Log In</h4>
-            <p>
-              This feature requires you to be
-              <a
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
-                >logged in.</a
+              </div>
+              <div>
+                <h4 class="text-uppercase contribute-title mr-2">
+                  Contribute
+                </h4>
+              </div>
+              <section class="pl-2 pr-2">
+                <div v-if="userCommunity && userCommunity.length > 0">
+                  <b-row no-gutters>
+                    <b-col xl="6" class="pl-1"
+                      ><CommunityCard
+                        :go="false"
+                        variant="white"
+                        icon="small"
+                        :name="userCommunity[0].name"
+                      ></CommunityCard
+                    ></b-col>
+                  </b-row>
+                </div>
+              </section>
+            </div>
+            <section class="pr-3 pl-3">
+              <label
+                for="traditionalName"
+                class="contribute-title-one mt-3 mb-1"
+                >Traditional Name (required)</label
               >
-            </p>
+              <b-form-input
+                id="traditionalName"
+                v-model="tname"
+                type="text"
+              ></b-form-input>
+
+              <div class="contribute-title-one mt-3 mb-0">
+                Pronounciation
+              </div>
+              <AudioRecorder class="mt-1"></AudioRecorder>
+
+              <label for="westernName" class="contribute-title-one mt-3 mb-1"
+                >Western Name</label
+              >
+              <b-form-input
+                id="westernName"
+                v-model="wname"
+                type="text"
+              ></b-form-input>
+
+              <b-row class="mt-3">
+                <b-col xl="6">
+                  <label for="traditionalName" class="contribute-title-one mb-1"
+                    >Language</label
+                  >
+                  <b-form-select
+                    v-model="languageSelected"
+                    :options="languageOptions"
+                  ></b-form-select>
+                </b-col>
+                <b-col xl="6">
+                  <label for="traditionalName" class="contribute-title-one mb-1"
+                    >Category</label
+                  >
+                  <b-form-select
+                    v-model="categorySelected"
+                    :options="categoryOptions"
+                  ></b-form-select>
+                </b-col>
+              </b-row>
+              <!-- Text Editor -->
+
+              <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
+              <TuiEditor
+                v-model="content"
+                mode="wysiwyg"
+                :options="{
+                  hideModeSwitch: true,
+                  toolbarItems: [
+                    'heading',
+                    'bold',
+                    'italic',
+                    'strike',
+                    'hr',
+                    'quote',
+                    'ul',
+                    'ol',
+                    'indent',
+                    'outdent',
+                    'link'
+                  ]
+                }"
+                preview-style="vertical"
+                height="300px"
+              />
+
+              <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
+              <!--<MediaUploader></MediaUploader>-->
+            </section>
+
             <hr />
-          </b-alert>
+
+            <section class="pl-3 pr-3">
+              <b-row class="mt-3">
+                <b-col xl="12">
+                  <b-alert
+                    v-if="errors.length"
+                    show
+                    variant="warning"
+                    dismissible
+                  >
+                    <ul>
+                      <li v-for="err in errors" :key="err">{{ err }}</li>
+                    </ul>
+                  </b-alert>
+                  <b-button block variant="danger" @click="submitContribute"
+                    >Submit</b-button
+                  >
+                </b-col>
+              </b-row>
+            </section>
+          </div>
+          <div v-else>
+            <b-alert show variant="danger m-2 mt-5">
+              <h4 class="alert-heading">Please Log In</h4>
+              <p>
+                This feature requires you to be
+                <a
+                  href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
+                  >logged in.</a
+                >
+              </p>
+              <hr />
+            </b-alert>
+          </div>
         </div>
       </DetailSideBar>
     </client-only>
@@ -476,5 +484,14 @@ export default {
   font-size: 0.85em;
   padding: 0;
   margin: 0;
+}
+.required-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  right: 0;
 }
 </style>
