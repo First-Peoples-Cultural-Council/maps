@@ -400,6 +400,20 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.url, "https://google.com")
         self.assertEqual(media.status, Media.UNVERIFIED)
 
+    def test_repeated_names_for_media(self):
+        
+        test_media1 = Media.objects.create(
+            name = "test media",
+            file_type = "string",
+        )
+        
+        test_media2 = Media.objects.create(
+            name = "test media",
+            file_type = "string",
+        )
+
+        self.assertEqual(1, 1)
+
     def test_media_list_to_verify(self):
         """
 		Ensure media list API brings newly created data which needs to be verified
