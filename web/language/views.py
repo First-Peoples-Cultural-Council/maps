@@ -198,7 +198,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     #     serializer.save()
     #     return Response(serializer.data)
 
-    @action(detail=True)
+    @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
         placename = PlaceName.objects.get(pk=int(pk))
         placename.status = PlaceName.VERIFIED
@@ -303,6 +303,26 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     serializer = self.serializer_class(queryset, many=True)
                     
                     return Response(serializer.data)
+
+    @action(detail=True, methods=["patch"])
+    def verify(self, request, pk):
+        media = Media.objects.get(pk=int(pk))
+        media.status = Media.VERIFIED
+        media.status_reason = ""
+        media.save()
+
+        return Response({"message": "Verified!"})
+
+    @action(detail=True, methods=["patch"])
+    def flag(self, request, pk):
+        media = Media.objects.get(pk=int(pk))
+        if media.status == Media.VERIFIED:
+            return Response({"message": "Media has already been verified"})
+        else:
+            media.status = Media.FLAGGED
+            media.status_reason = request.data["status_reason"]
+            media.save()
+            return Response({"message": "Flagged!"})
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...

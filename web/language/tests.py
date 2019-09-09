@@ -474,6 +474,90 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 2
 
+    def test_verify_media(self):
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            language = self.language1,
+        )
+        
+        test_media = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            status=Media.FLAGGED
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/verify/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, Media.VERIFIED)
+
+    def test_flag_unverified_media(self):
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            language = self.language1,
+        )
+        
+        test_media = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            status=Media.UNVERIFIED
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/flag/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, Media.FLAGGED)
+
+    def test_flag_verified_media(self):
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            language = self.language1,
+        )
+        
+        test_media = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            status=Media.VERIFIED
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/flag/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, Media.VERIFIED)
+
     def test_media_delete(self):
         """
 		Ensure media API DELETE method API works
