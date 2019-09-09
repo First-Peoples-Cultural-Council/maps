@@ -8,9 +8,9 @@
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
-      <b-alert show class="p-1 pr-2 pl-2">
-        <div>You are currently in drawing mode</div>
-        <DrawingTools></DrawingTools>
+      <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
+        <div class="font-weight-bold">You are currently in drawing mode</div>
+        <DrawingTools class="mt-2"></DrawingTools>
       </b-alert>
     </div>
     <div class="map-loading">
@@ -714,6 +714,11 @@ export default {
 #map {
   width: 100%;
   height: 100%;
+}
+
+.draw-mode-container {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.75em !important;
 }
 
 .map-container {
