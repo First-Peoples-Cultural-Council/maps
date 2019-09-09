@@ -19,10 +19,21 @@
           </div>
         </b-list-group-item>-->
         <b-list-group-item button @click="handleClick($event, 'point')">
-          <div class="contribute-list-group-title">Add a point</div>
-          <div>
-            This option triggers drawing mode, where you will be able to select
-            a specific point to contribute
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                src="@/assets/images/add_point_icon_big.svg"
+                alt="Add a point"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add a point
+              </div>
+              This option triggers drawing mode, where you will be able to
+              select a specific point to contribute
+            </div>
           </div></b-list-group-item
         >
         <!--
