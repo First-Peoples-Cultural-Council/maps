@@ -1,5 +1,5 @@
 <template>
-  <no-ssr>
+  <client-only>
     <DetailSideBar>
       <template v-slot:badges>
         <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
@@ -14,30 +14,11 @@
             :name="place.name"
             :server="isServer"
             :audio-file="getMediaUrl(place.audio_file, isServer)"
+            :allow-edit="isPlaceOwner()"
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>
         </div>
-        <section class="mt-4 ml-4 mr-4">
-          <p v-if="place.creator" class="font-08">
-            Uploaded by
-            <nuxt-link
-              class="color-gray"
-              :to="'/profile/' + place.creator.id"
-              >{{ getCreatorName() }}</nuxt-link
-            >
-            <b-button
-              v-if="uid === place.creator.id"
-              class="btn btn-primary ml-2 font-09"
-              size="sm"
-              variant="dark"
-              @click="edit"
-            >
-              Edit
-            </b-button>
-          </p>
-        </section>
-        <hr v-if="place.creator" />
         <section class="mt-4 ml-4 mr-4">
           <div v-if="place.description">
             <h5 class="font-08 text-uppercase color-gray">Description</h5>
@@ -99,7 +80,8 @@
               <img
                 :src="getMediaUrl(media.media_file, isServer)"
                 :alt="media.name"
-                style="max-height: 300px; display: block; width: auto; height: 100%;"
+                style="max-width: 100%; display: block; width: auto; height: auto;"
+                class="cursor-pointer"
                 @click="handleImageClick($event, media)"
               />
             </li>
@@ -135,7 +117,7 @@
         </section>
       </div>
     </DetailSideBar>
-  </no-ssr>
+  </client-only>
 </template>
 
 <script>
@@ -211,11 +193,19 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    isPlaceOwner() {
+      if (this.place.creator) {
+        if (this.uid === this.place.creator.id) return true
+      }
+      return false
+    },
     handleImageClick(e, media) {
       require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
-        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`)
+        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`, {
+          closable: true
+        })
         .show()
     },
     setupMap() {
@@ -261,5 +251,18 @@ export default {
 .uploaded-audio {
   width: 100%;
   margin-top: 1em;
+}
+
+.basicLightbox:after {
+  content: '';
+  position: absolute;
+  top: 1.8rem;
+  right: 1.8rem;
+  width: 2em;
+  height: 2em;
+  background: url('/close.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
 }
 </style>

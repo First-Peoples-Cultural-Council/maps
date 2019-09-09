@@ -67,11 +67,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [
-    '~/mixins/mixins.js',
-    '~/plugins/global',
-    { src: '~/plugins/lightbox', ssr: false }
-  ],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
@@ -80,7 +76,6 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
     '@nuxtjs/eslint-module',
     '@tui-nuxt/editor',
     'nuxt-vue-multiselect'

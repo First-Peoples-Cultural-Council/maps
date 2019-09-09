@@ -18,7 +18,7 @@
               id="file-name"
               v-model="fileName"
               class="font-08"
-              placeholder="Enter Name (required)"
+              placeholder="Enter Title (required)"
               required
             ></b-form-input>
           </b-col>
@@ -74,7 +74,6 @@ export default {
       this.$refs.fileUpload.reset()
     },
     async handleUpload() {
-      console.log('File Name', this.fileName)
       if (this.fileName === '' || !this.fileName) {
         return (this.errorMessage = 'Please enter the name of the file')
       }
@@ -84,14 +83,13 @@ export default {
         this.clearFiles()
         this.$root.$emit('fileUploaded', result)
         this.file = null
-      } catch (e) {
-        console.error(e)
-      }
+        this.fileName = ''
+        this.description = ''
+      } catch (e) {}
     },
     getFormData() {
       const formData = new FormData()
       formData.append('name', this.fileName)
-      formData.append('description', '')
       formData.append('file_type', this.file.type)
       formData.append('description', this.description)
       formData.append('media_file', this.file)
