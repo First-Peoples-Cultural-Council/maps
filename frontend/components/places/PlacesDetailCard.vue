@@ -26,12 +26,16 @@
             class="d-inline-block"
             @click.prevent.stop="handlePronounce"
           >
-            <CardBadge content="Pronounce"></CardBadge>
+            <CardBadge
+              content="Pronounce"
+              :class="{ 'md-size-badge': variant === 'md' }"
+            ></CardBadge>
           </div>
           <div v-if="allowEdit" class="d-inline-block">
             <CardBadge
               content="Edit"
               type="edit"
+              :class="{ 'md-size-badge': variant === 'md' }"
               @click.native="handleEdit"
             ></CardBadge>
           </div>
@@ -94,6 +98,10 @@ export default {
     allowEdit: {
       type: Boolean,
       default: false
+    },
+    variant: {
+      type: String,
+      default: 'sm'
     }
   },
   data() {
@@ -176,5 +184,11 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
+}
+
+.md-size-badge {
+  margin-top: 0.25em;
+  font-size: 1em;
+  padding: 0.5em;
 }
 </style>
