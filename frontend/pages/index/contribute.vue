@@ -1,6 +1,6 @@
 <template>
   <div>
-    <no-ssr placeholder="Loading...">
+    <client-only placeholder="Loading...">
       <DetailSideBar :width="500">
         <div v-if="isLoggedIn">
           <div class="contribute-header pt-3 pb-3">
@@ -152,7 +152,7 @@
           </b-alert>
         </div>
       </DetailSideBar>
-    </no-ssr>
+    </client-only>
   </div>
 </template>
 

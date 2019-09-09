@@ -1,5 +1,5 @@
 <template>
-  <no-ssr>
+  <client-only>
     <DetailSideBar>
       <h4>Editing {{ getUserName() }}</h4>
 
@@ -48,7 +48,7 @@
       </b-alert>
       <button class="btn btn-primary" @click="save()">Save</button>
     </DetailSideBar>
-  </no-ssr>
+  </client-only>
 </template>
 
 <script>

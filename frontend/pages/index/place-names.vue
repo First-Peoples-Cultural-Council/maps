@@ -31,7 +31,7 @@
                 class="mt-3"
                 @click.native="
                   $router.push({
-                    path: `/place-names/${place.properties.name}`
+                    path: `/place-names/${encodeFPCC(place.properties.name)}`
                   })
                 "
               ></PlacesCard>
@@ -54,6 +54,7 @@ import SideBar from '@/components/SideBar.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -69,6 +70,9 @@ export default {
   },
   mounted() {
     console.log('placename router', this.$route)
+  },
+  methods: {
+    encodeFPCC
   },
   head() {
     return {

@@ -28,7 +28,7 @@
           >
             <CardBadge content="Pronounce"></CardBadge>
           </div>
-          <div class="d-inline-block">
+          <div v-if="allowEdit" class="d-inline-block">
             <CardBadge
               content="Edit"
               type="edit"
@@ -90,6 +90,10 @@ export default {
     id: {
       type: Number,
       default: null
+    },
+    allowEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
