@@ -2,21 +2,11 @@
   <div class="nav-container">
     <div v-if="email" class="user-container cursor-pointer" @click="profile">
       <nav class="navbar-icon-container">
-        <!-- <img
-          src="@/assets/images/menu_icon.svg"
+        <img
+          src="@/assets/images/user_icon_red.svg"
           alt="Menu"
-          class="navbar-icon"
-        /> -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
-          viewBox="0 0 40 40"
-        >
-          <path
-            d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.07 8.33 14.05 10 17.42 10c.78 0 1.53-.09 2.25-.26.21.71.33 1.47.33 2.26 0 4.41-3.59 8-8 8z"
-          />
-        </svg>
+          class="navbar-icon user_icon"
+        />
       </nav>
     </div>
     <div class="navbar-container cursor-pointer" @click="openNav">
@@ -241,6 +231,12 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.user_icon {
+  display: inline-block;
+  width: 23px;
+  height: 23px;
 }
 
 @media (max-width: 992px) {
