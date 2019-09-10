@@ -200,23 +200,32 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        placename = PlaceName.objects.get(pk=int(pk))
-        placename.status = PlaceName.VERIFIED
-        placename.status_reason = ""
-        placename.save()
+        try:
+            placename = PlaceName.objects.get(pk=int(pk))
+            placename.status = PlaceName.VERIFIED
+            placename.status_reason = ""
+            placename.save()
 
-        return Response({"message": "Verified!"})
+            return Response({"message": "Verified!"})
+        except PlaceName.DoesNotExist:
+            return Response({"message": "No PlaceName with the given id was found"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
-        placename = PlaceName.objects.get(pk=int(pk))
-        if placename.status == PlaceName.VERIFIED:
-            return Response({"message": "PlaceName has already been verified"})
-        else:
-            placename.status = PlaceName.FLAGGED
-            placename.status_reason = request.data["status_reason"]
-            placename.save()
-            return Response({"message": "Flagged!"})
+        try:
+            placename = PlaceName.objects.get(pk=int(pk))
+            if placename.status == PlaceName.VERIFIED:
+                return Response({"message": "PlaceName has already been verified"})
+            else:
+                if 'status_reason' in request.data.keys():
+                    placename.status = PlaceName.FLAGGED
+                    placename.status_reason = request.data["status_reason"]
+                    placename.save()
+                    return Response({"message": "Flagged!"})
+                else:
+                    return Response({"message": "Reason must be provided"})
+        except PlaceName.DoesNotExist:
+            return Response({"message": "No PlaceName with the given id was found"})
 
     @method_decorator(never_cache)
     def detail(self, request):
@@ -309,23 +318,32 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        media = Media.objects.get(pk=int(pk))
-        media.status = Media.VERIFIED
-        media.status_reason = ""
-        media.save()
+        try:
+            media = Media.objects.get(pk=int(pk))
+            media.status = Media.VERIFIED
+            media.status_reason = ""
+            media.save()
 
-        return Response({"message": "Verified!"})
+            return Response({"message": "Verified!"})
+        except Media.DoesNotExist:
+            return Response({"message": "No Media with the given id was found"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
-        media = Media.objects.get(pk=int(pk))
-        if media.status == Media.VERIFIED:
-            return Response({"message": "Media has already been verified"})
-        else:
-            media.status = Media.FLAGGED
-            media.status_reason = request.data["status_reason"]
-            media.save()
-            return Response({"message": "Flagged!"})
+        try:
+            media = Media.objects.get(pk=int(pk))
+            if media.status == Media.VERIFIED:
+                return Response({"message": "Media has already been verified"})
+            else:
+                if 'status_reason' in request.data.keys():
+                    media.status = Media.FLAGGED
+                    media.status_reason = request.data["status_reason"]
+                    media.save()
+                    return Response({"message": "Flagged!"})
+                else:
+                    return Response({"message": "Reason must be provided"})
+        except Media.DoesNotExist:
+            return Response({"message": "No Media with the given id was found"})
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
