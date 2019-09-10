@@ -74,7 +74,8 @@
                       $event,
                       key,
                       result.properties.name,
-                      result.geometry
+                      result.geometry,
+                      result
                     )
                   "
                 >
@@ -89,7 +90,8 @@
                       $event,
                       key,
                       result.place_name,
-                      result.geometry
+                      result.geometry,
+                      result
                     )
                   "
                 >
@@ -303,7 +305,8 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data, geom) {
+    handleResultClick(event, type, data, geom, result) {
+      console.log('Result', result)
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
@@ -339,18 +342,27 @@ export default {
           el.style = "background-image: url('https://i.imgur.com/MK4NUzI.png')"
           const mapboxgl = require('mapbox-gl')
 
+          let govLink = ''
+          let locationHtml = ''
+          if (type === 'Locations') {
+            govLink = `${result.properties.uri}.html`
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, click here: 
+                <a class="white-space-normal" href="${govLink}">${govLink}</a></div>`
+          }
           new mapboxgl.Marker(el).setLngLat(geom.coordinates).addTo(map)
           new mapboxgl.Popup({
             className: 'artPopUp'
           })
             .setLngLat(geom.coordinates)
             .setHTML(
-              `<div class='popup-inner'>
-                <h4>${data}</h4>
+              `<div class='popup-inner address-popup'>
+                <h4 class="font-1 font-weight-bold">${data}</h4>
 
-                <a href="/contribute?lat=${geom.coordinates[1]}&lng=${
-                geom.coordinates[0]
-              }">contribute to this point.</a>
+                ${locationHtml}
+                
+                <a class="d-block text-center" href="/contribute?lat=${
+                  geom.coordinates[1]
+                }&lng=${geom.coordinates[0]}">Contribute To This Point.</a>
 
                 </div>`
             )
@@ -363,6 +375,9 @@ export default {
 </script>
 
 <style>
+.address-popup {
+  border-radius: 0.5em;
+}
 .searchbar-container {
   position: fixed;
   top: 10px;

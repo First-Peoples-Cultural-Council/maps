@@ -782,6 +782,7 @@ export default {
   max-height: 300px;
   overflow-y: auto;
   padding: 1em;
+  overflow-x: hidden;
 }
 .artPopUp .mapboxgl-popup-content {
   padding: 0em 0em 0em 0em;
