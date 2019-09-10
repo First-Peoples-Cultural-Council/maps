@@ -82,7 +82,11 @@
         </div>
       </b-col>
       <b-col xl="2">
-        <div class="text-center cursor-pointer" @click="record">
+        <div
+          v-if="recordingSupport"
+          class="text-center cursor-pointer"
+          @click="record"
+        >
           <img
             class="d-inline-block"
             src="@/assets/images/record_audio_box.svg"
@@ -116,7 +120,8 @@ export default {
       audioChunks: [],
       audioUrl: null,
       audio: null,
-      audioErrorMessage: `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
+      audioErrorMessage: null,
+      recordingSupport: true
     }
   },
   computed: {
@@ -135,6 +140,7 @@ export default {
   },
   mounted() {
     if (!window.MediaRecorder) {
+      this.recordingSupport = false
       this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
     }
   },
