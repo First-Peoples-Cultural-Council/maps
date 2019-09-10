@@ -345,7 +345,7 @@ export default {
           let govLink = ''
           let locationHtml = ''
           if (type === 'Locations') {
-            govLink = `${result.properties.uri}.html`
+            govLink = `http://${result.properties.uri}.html`
             locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, click here: 
                 <a class="white-space-normal" href="${govLink}">${govLink}</a></div>`
           }

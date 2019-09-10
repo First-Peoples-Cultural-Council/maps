@@ -353,6 +353,7 @@ export default {
     return data
   },
   mounted() {
+    console.log('Window', window)
     if (!this.isLoggedIn) {
       window.location =
         'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca'

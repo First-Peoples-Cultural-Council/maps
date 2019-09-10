@@ -26,9 +26,13 @@
               to record the pronounciation or
               <span style="color: #C46257;">click here</span> to choose a file
               <span v-if="audioErrorMessage" class="d-block">
-                <b-alert class="m-0 mt-3" show variant="danger">{{
-                  audioErrorMessage
-                }}</b-alert>
+                <b-alert
+                  style="line-height: 1em;"
+                  class="m-0 mt-3"
+                  show
+                  variant="danger"
+                  >{{ audioErrorMessage }}</b-alert
+                >
               </span>
             </span>
             <span
@@ -112,7 +116,7 @@ export default {
       audioChunks: [],
       audioUrl: null,
       audio: null,
-      audioErrorMessage: null
+      audioErrorMessage: `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
     }
   },
   computed: {
@@ -129,7 +133,11 @@ export default {
     },
     audio(newAudio, oldAudio) {}
   },
-  mounted() {},
+  mounted() {
+    if (!window.MediaRecorder) {
+      this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
+    }
+  },
   methods: {
     triggerBrowse(e) {
       if (!this.recording) {
@@ -157,28 +165,34 @@ export default {
       if (!this.recording) {
         try {
           navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-            this.mediaRecorder = new MediaRecorder(stream)
-            this.mediaRecorder.start()
-            this.recording = true
+            try {
+              this.mediaRecorder = new MediaRecorder(stream)
 
-            this.mediaRecorder.addEventListener('dataavailable', event => {
-              this.audioChunks.push(event.data)
-            })
+              this.mediaRecorder.start()
+              this.recording = true
 
-            this.mediaRecorder.addEventListener('stop', () => {
-              if (this.mode !== 'single') {
-                this.audioChunksCollection.push(this.audioChunks)
-              }
-              this.$store.commit(
-                'contribute/setAudioBlob',
-                new Blob(this.audioChunks)
-              )
-              this.audioUrl = URL.createObjectURL(this.audioBlob)
-              this.audio = new Audio(this.audioUrl)
-            })
+              this.mediaRecorder.addEventListener('dataavailable', event => {
+                this.audioChunks.push(event.data)
+              })
+
+              this.mediaRecorder.addEventListener('stop', () => {
+                if (this.mode !== 'single') {
+                  this.audioChunksCollection.push(this.audioChunks)
+                }
+                this.$store.commit(
+                  'contribute/setAudioBlob',
+                  new Blob(this.audioChunks)
+                )
+                this.audioUrl = URL.createObjectURL(this.audioBlob)
+                this.audio = new Audio(this.audioUrl)
+              })
+            } catch (e) {
+              console.log('MediaRecorder does not work')
+              this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
+            }
           })
         } catch (e) {
-          this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or outdated browser`
+          this.audioErrorMessage = `Audio recording not supported. Reasons could be due to: insecure connection, declined permission or browser does not support this technology. Please upload a recording instead.`
         }
       } else {
         this.recording = false
