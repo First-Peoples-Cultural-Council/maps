@@ -94,18 +94,32 @@ export default {
       this.$refs.fileUpload.reset()
     },
     async handleUpload() {
+      let result
       if (this.fileName === '' || !this.fileName) {
         return (this.errorMessage = 'Please enter the name of the file')
       }
       const formData = this.getFormData()
+      const VALID_FILE_TYPES = [
+        'image/jpeg',
+        'image/png',
+        'application/pdf',
+        'audio/mpeg'
+      ]
+      if (this.file & !VALID_FILE_TYPES.includes(this.file.type)) {
+        alert('invalid file type, try uploading a PNG, JPG, audio file or PDF.')
+        return
+      }
       try {
-        const result = await this.uploadFile(formData)
-        this.clearFiles()
-        this.$root.$emit('fileUploaded', result)
-        this.file = null
-        this.fileName = ''
-        this.description = ''
-      } catch (e) {}
+        result = await this.uploadFile(formData)
+      } catch (e) {
+        console.warn('Error uploading files', e)
+        result = e.response
+      }
+      this.clearFiles()
+      this.$root.$emit('fileUploaded', result)
+      this.file = null
+      this.fileName = ''
+      this.description = ''
     },
     getFormData() {
       const formData = new FormData()
