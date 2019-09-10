@@ -260,13 +260,13 @@ class PlaceName(CulturalModel):
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
-    status_reason = models.TextField(max_length=256, blank=True)
+    status_reason = models.TextField(default="", blank=True)
 
 
 class Media(BaseModel):
     name = models.CharField(max_length=255, default="")
-    description = models.CharField(max_length=255, null=True, blank=True)
-    file_type = models.CharField(max_length=16, default=None)
+    description = models.TextField(default="", blank=True)
+    file_type = models.CharField(max_length=16, default=None, null=True)
     url = models.URLField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
     placename = models.ForeignKey(
@@ -288,7 +288,7 @@ class Media(BaseModel):
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
-    status_reason = models.TextField(max_length=256, blank=True)
+    status_reason = models.TextField(default="", blank=True)
 
 
 class Favourite(BaseModel):

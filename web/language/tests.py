@@ -368,12 +368,12 @@ class MediaAPITests(BaseTestCase):
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-    def test_media_detail_route_not_allowed(self):
-        """
-		Ensure media Detail API route does not exist
-		"""
-        response = self.client.get("/api/media/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    # def test_media_detail_route_not_allowed(self):
+    #     """
+	# 	Ensure media Detail API route does not exist
+	# 	"""
+    #     response = self.client.get("/api/media/0/", format="json")
+    #     self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_media_list_route_does_not_allowed(self):
         """
@@ -543,6 +543,7 @@ class MediaAPITests(BaseTestCase):
 
         media = Media.objects.get(pk=created_id)
         self.assertEqual(media.status, Media.FLAGGED)
+        self.assertEqual(media.status_reason, "test reason status")
 
     def test_flag_verified_media(self):
 
