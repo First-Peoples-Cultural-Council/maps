@@ -284,6 +284,44 @@ class PlaceNameAPITests(BaseTestCase):
         place = PlaceName.objects.get(pk=created_id)
         self.assertEqual(place.other_names, "updated other names")
 
+    def test_placename_verify(self):
+        placename = PlaceName()
+        placename.name = "test place"
+        placename.community = self.community
+        placename.language = self.language1
+        placename.save()
+
+        created_id = placename.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/placename/{}/verify/".format(created_id),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.status, PlaceName.VERIFIED)
+
+    def test_placename_reject(self):
+        placename = PlaceName()
+        placename.name = "test place"
+        placename.community = self.community
+        placename.language = self.language1
+        placename.save()
+
+        created_id = placename.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/placename/{}/reject/".format(created_id),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        place = PlaceName.objects.get(pk=created_id)
+        self.assertEqual(place.status, PlaceName.REJECTED)
+
     def test_placename_flag(self):
         placename = PlaceName()
         placename.name = "test place"
@@ -515,6 +553,34 @@ class MediaAPITests(BaseTestCase):
 
         media = Media.objects.get(pk=created_id)
         self.assertEqual(media.status, Media.VERIFIED)
+
+    def test_reject_media(self):
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            language = self.language1,
+        )
+        
+        test_media = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            status=Media.UNVERIFIED
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/reject/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, Media.REJECTED)
 
     def test_flag_unverified_media(self):
 

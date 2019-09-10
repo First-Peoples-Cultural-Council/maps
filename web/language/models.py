@@ -249,6 +249,7 @@ class PlaceName(CulturalModel):
     FLAGGED = "FL"
     UNVERIFIED = "UN"
     VERIFIED = "VE"
+    REJECTED = "RE"
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
@@ -256,6 +257,7 @@ class PlaceName(CulturalModel):
         (UNVERIFIED, "Unverified"),
         (FLAGGED, "Flagged"),
         (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
     ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
@@ -277,6 +279,7 @@ class Media(BaseModel):
     FLAGGED = "FL"
     UNVERIFIED = "UN"
     VERIFIED = "VE"
+    REJECTED = "RE"
     # Choices:
     # first element: constant Python identifier
     # second element: human-readable version
@@ -284,6 +287,7 @@ class Media(BaseModel):
         (UNVERIFIED, "Unverified"),
         (FLAGGED, "Flagged"),
         (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
     ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED

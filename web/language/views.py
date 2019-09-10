@@ -211,6 +211,18 @@ class PlaceNameViewSet(BaseModelViewSet):
             return Response({"message": "No PlaceName with the given id was found"})
 
     @action(detail=True, methods=["patch"])
+    def reject(self, request, pk):
+        try:
+            placename = PlaceName.objects.get(pk=int(pk))
+            placename.status = PlaceName.REJECTED
+            placename.status_reason = ""
+            placename.save()
+
+            return Response({"message": "Rejected!"})
+        except PlaceName.DoesNotExist:
+            return Response({"message": "No PlaceName with the given id was found"})
+
+    @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
         try:
             placename = PlaceName.objects.get(pk=int(pk))
@@ -325,6 +337,18 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             media.save()
 
             return Response({"message": "Verified!"})
+        except Media.DoesNotExist:
+            return Response({"message": "No Media with the given id was found"})
+
+    @action(detail=True, methods=["patch"])
+    def reject(self, request, pk):
+        try:
+            media = Media.objects.get(pk=int(pk))
+            media.status = Media.REJECTED
+            media.status_reason = ""
+            media.save()
+
+            return Response({"message": "Rejected!"})
         except Media.DoesNotExist:
             return Response({"message": "No Media with the given id was found"})
 
