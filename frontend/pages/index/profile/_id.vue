@@ -1,5 +1,5 @@
 <template>
-  <DetailSideBar>
+  <DetailSideBar :width="500">
     <UserDetailCard
       :id="user.id"
       :name="getUserName()"
