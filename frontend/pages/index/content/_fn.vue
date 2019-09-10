@@ -171,7 +171,7 @@ export default {
       return this.$store.state.mapinstance.mapInstance
     },
     commDetails() {
-      const filteredCommDetails = omit(this.communityDetail, ['name'])
+      const filteredCommDetails = omit(this.communityDetail)
       const details = filteredCommDetails
       return details
     },
