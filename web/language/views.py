@@ -275,7 +275,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaCustomViewSet(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet
+    mixins.CreateModelMixin, 
+    mixins.DestroyModelMixin, 
+    mixins.RetrieveModelMixin,
+    GenericViewSet
 ):
     pass
 
