@@ -53,6 +53,15 @@
                 class="contribute-title-one mt-3 mb-1"
                 >Traditional Name (required)</label
               >
+              <b-button
+                v-b-tooltip.hover.click.top="
+                  'What is this place called in your language? Enter the name or title in your language, using your alphabet.'
+                "
+                size="sm"
+                variant="dark"
+                style="padding: 0.05em 0.5em !important;"
+                >?</b-button
+              >
               <b-form-input
                 id="traditionalName"
                 v-model="tname"
@@ -61,11 +70,29 @@
 
               <div class="contribute-title-one mt-3 mb-0">
                 Pronounciation
+                <b-button
+                  v-b-tooltip.hover.click.top="
+                    'How do you pronounce this name? Upload an audio recording of the pronunciation. Say it 3 times in a row, with 1-2 seconds silence in between entries. You don\'t have to say it English after, but you can.'
+                  "
+                  size="sm"
+                  variant="dark"
+                  style="padding: 0.05em 0.5em !important;"
+                  >?</b-button
+                >
               </div>
               <AudioRecorder class="mt-1"></AudioRecorder>
 
               <label for="westernName" class="contribute-title-one mt-3 mb-1"
-                >Western Name</label
+                >Common Name</label
+              >
+              <b-button
+                v-b-tooltip.hover.click.top="
+                  'Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name.'
+                "
+                size="sm"
+                variant="dark"
+                style="padding: 0.05em 0.5em !important;"
+                >?</b-button
               >
               <b-form-input
                 id="westernName"
@@ -87,6 +114,15 @@
                   <label for="traditionalName" class="contribute-title-one mb-1"
                     >Category</label
                   >
+                  <b-button
+                    v-b-tooltip.hover.click.top="
+                      'What would this location be classified as? This will help users find it.'
+                    "
+                    size="sm"
+                    variant="dark"
+                    style="padding: 0.05em 0.5em !important;"
+                    >?</b-button
+                  >
                   <b-form-select
                     v-model="categorySelected"
                     :options="categoryOptions"
@@ -95,7 +131,18 @@
               </b-row>
               <!-- Text Editor -->
 
-              <h5 class="contribute-title-one mt-3 mb-1">Description</h5>
+              <h5 class="contribute-title-one mt-3 mb-1">
+                Description
+                <b-button
+                  v-b-tooltip.hover.click.top="
+                    'Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc.'
+                  "
+                  size="sm"
+                  variant="dark"
+                  style="padding: 0.05em 0.5em !important;"
+                  >?</b-button
+                >
+              </h5>
               <TuiEditor
                 v-model="content"
                 mode="wysiwyg"

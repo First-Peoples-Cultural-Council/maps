@@ -14,6 +14,16 @@
         </div>
         <b-row>
           <b-col xl="12">
+            <label class="font-08" for="file-name">Title</label>
+            <b-button
+              v-b-tooltip.hover.click.top="
+                'Give the file a title so that users know what it is.'
+              "
+              size="sm"
+              variant="dark"
+              style="padding: 0.05em 0.5em !important;"
+              >?</b-button
+            >
             <b-form-input
               id="file-name"
               v-model="fileName"
@@ -23,6 +33,16 @@
             ></b-form-input>
           </b-col>
         </b-row>
+        <label class="mt-3 font-08" for="textarea">Description</label>
+        <b-button
+          v-b-tooltip.hover.click.top="
+            'If the file needs more information, for example a description of what it includes or copyright information, add it here.'
+          "
+          size="sm"
+          variant="dark"
+          style="padding: 0.05em 0.5em !important;"
+          >?</b-button
+        >
         <b-form-textarea
           id="textarea"
           v-model="description"

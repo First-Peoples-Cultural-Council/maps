@@ -49,7 +49,18 @@
         <hr />
         <section class="m-1 ml-4 mr-4">
           <div v-if="isLoggedIn">
-            <h5 class="mt-4 font-08 text-uppercase color-gray">Upload Media</h5>
+            <h5 class="mt-4 font-08 text-uppercase color-gray">
+              Upload Media
+              <b-button
+                v-b-tooltip.hover.click.top="
+                  'Add relevant audio, images, links to YouTube videos, and PDF files. You can add multiple files.'
+                "
+                size="sm"
+                variant="dark"
+                style="padding: 0.05em 0.5em !important;"
+                >?</b-button
+              >
+            </h5>
             <FileUploader :place-id="place.id"></FileUploader>
           </div>
         </section>
@@ -65,8 +76,16 @@
             class="m-0 p-0 mb-4 list-style-none up-media-list"
           >
             <li v-if="media.name">
-              <span class="font-08 color-gray">Name: </span>
-              <span class="font-08">{{ media.name }}</span>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="font-08 color-gray"
+                    >Name: {{ media.name }}
+                  </span>
+                </div>
+                <div class="font-07 pl-2" @click="handleFlag($event, media)">
+                  Flag
+                </div>
+              </div>
             </li>
             <li v-if="media.description && media.description !== 'null'">
               <span class="font-08 text-uppercase color-gray"
@@ -131,7 +150,8 @@ import {
   getApiUrl,
   encodeFPCC,
   getMediaUrl,
-  getGenericFileType
+  getGenericFileType,
+  getCookie
 } from '@/plugins/utils.js'
 import FileUploader from '@/components/FileUploader.vue'
 
@@ -194,6 +214,18 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    async handleFlag(e, media) {
+      const result = await this.$axios.$patch(
+        `${getApiUrl(`media/${media.id}/flag/`)}`,
+        {},
+        {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }
+      )
+      console.log('Flag Result', result)
+    },
     isPlaceOwner() {
       if (this.place.creator) {
         if (this.uid === this.place.creator.id) return true
