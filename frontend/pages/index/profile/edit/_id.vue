@@ -1,52 +1,94 @@
 <template>
   <client-only>
-    <DetailSideBar>
-      <h4>Editing {{ getUserName() }}</h4>
+    <DetailSideBar :width="500">
+      <h4 class="profile-title pl-3 pr-3 color-gray font-weight-bold">
+        Edit Profile
+      </h4>
+      <section class="pl-3 pr-3">
+        <label
+          for="firstname"
+          class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
+          >First Name</label
+        >
+        <b-form-input
+          id="firstname"
+          v-model="user.first_name"
+          type="text"
+          class="font-08"
+        ></b-form-input>
 
-      <label for="westernName" class="contribute-title-one mt-3 mb-1"
-        >First Name</label
-      >
-      <b-form-input v-model="user.first_name" type="text"></b-form-input>
+        <label
+          for="lastname"
+          class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
+          >Last Name</label
+        >
+        <b-form-input
+          id="lastname"
+          v-model="user.last_name"
+          type="text"
+          class="font-08"
+        ></b-form-input>
 
-      <label for="westernName" class="contribute-title-one mt-3 mb-1"
-        >Last Name</label
-      >
-      <b-form-input v-model="user.last_name" type="text"></b-form-input>
+        <label
+          class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+          >Languages</label
+        >
+        <multiselect
+          v-model="value"
+          placeholder="Search or select a language"
+          label="name"
+          track-by="id"
+          :options="options"
+          :multiple="true"
+        ></multiselect>
 
-      <label for="westernName" class="contribute-title-one mt-3 mb-1"
-        >About you</label
-      >
-      <b-form-textarea
-        id="textarea"
-        v-model="user.bio"
-        placeholder="..."
-        rows="3"
-      ></b-form-textarea>
-      <label for="language" class="contribute-title-one mb-1">Language</label>
-      <multiselect
-        v-model="value"
-        placeholder="Search or select a language"
-        label="name"
-        track-by="id"
-        :options="options"
-        :multiple="true"
-      ></multiselect>
+        <label
+          class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+          >Community</label
+        >
+        <multiselect
+          v-model="community"
+          placeholder="Search or select a community"
+          label="name"
+          track-by="id"
+          :options="communities"
+        ></multiselect>
 
-      <label for="community" class="contribute-title-one mb-1">Community</label>
-      <multiselect
-        v-model="community"
-        placeholder="Search or select a community"
-        label="name"
-        track-by="id"
-        :options="communities"
-      ></multiselect>
+        <label
+          class="contribute-title-one mt-3 color-gray font-weight-bold font-09 mb-2"
+          >User Description</label
+        >
 
-      <b-alert v-if="errors.length" show variant="warning" dismissible>
-        <ul>
-          <li v-for="err in errors" :key="err">{{ err }}</li>
-        </ul>
-      </b-alert>
-      <button class="btn btn-primary" @click="save()">Save</button>
+        <TuiEditor
+          v-model="user.bio"
+          mode="wysiwyg"
+          :options="{
+            hideModeSwitch: true,
+            toolbarItems: [
+              'heading',
+              'bold',
+              'italic',
+              'strike',
+              'hr',
+              'quote',
+              'ul',
+              'ol',
+              'indent',
+              'outdent',
+              'link'
+            ]
+          }"
+          preview-style="vertical"
+          height="300px"
+        />
+
+        <b-alert v-if="errors.length" show variant="warning" dismissible>
+          <ul>
+            <li v-for="err in errors" :key="err">{{ err }}</li>
+          </ul>
+        </b-alert>
+        <button class="btn btn-primary mt-4" @click="save()">Save</button>
+      </section>
     </DetailSideBar>
   </client-only>
 </template>
@@ -65,7 +107,8 @@ export default {
       user: {},
       language: null,
       value: [],
-      options: []
+      options: [],
+      content: ''
     }
   },
   computed: {
@@ -158,5 +201,34 @@ export default {
 .multiselect__element span {
   word-break: break-all;
   white-space: normal;
+}
+
+.profile-title {
+  background-color: #efeae2;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+  font-size: 1.2em;
+}
+
+.multiselect__tag {
+  background-color: #c46157;
+}
+
+.multiselect__tag-icon:after {
+  color: white;
+}
+
+.multiselect__tag-icon:focus,
+.multiselect__tag-icon:hover {
+  background-color: #91433b;
+}
+
+.multiselect__option--highlight {
+  background-color: #c46157;
+}
+
+.multiselect__element span::after {
+  background-color: #c46157;
+  color: white;
 }
 </style>
