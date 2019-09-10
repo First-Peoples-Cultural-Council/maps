@@ -242,7 +242,7 @@ class PlaceName(CulturalModel):
         Language, null=True, default=None, on_delete=models.SET_NULL
     )
     community = models.ForeignKey(
-        Community, on_delete=models.SET_NULL, null=True, default=None
+        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
     )
 
     # Choices Constants:

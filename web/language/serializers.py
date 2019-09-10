@@ -214,10 +214,17 @@ class CommunityMemberSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "community")
 
 
+class CommunityPlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "category")
+
+
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
     languages = LanguageSerializer(read_only=True, many=True)
+    places = CommunityPlaceNameSerializer(many=True, read_only=True)
 
     # Atomic Writable APIs
     language_ids = serializers.PrimaryKeyRelatedField(
@@ -281,6 +288,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "language_ids",
             "champion_ids",
             "communitylink_ids",
+            "places",
         )
 
 
