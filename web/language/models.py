@@ -301,22 +301,6 @@ class Favourite(BaseModel):
     place = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
     media = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True)
 
-    def create_place_favourite(user_id, place_id):
-        favourite = Favourite()
-        favourite.user = User.objects.get(pk=user_id)
-        favourite.place = PlaceName.objects.get(pk=place_id)
-        favourite.save()
-
-        return favourite
-
-    def create_media_favourite(user_id, media_id):
-        favourite = Favourite()
-        favourite.user = User.objects.get(pk=user_id)
-        favourite.media = Media.objects.get(pk=media_id)
-        favourite.save()
-
-        return favourite
-
     def favourite_place_already_exists(user_id, place_id):
         favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)
         if favourite:
