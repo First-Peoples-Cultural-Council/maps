@@ -652,17 +652,11 @@ class MediaAPITests(BaseTestCase):
 
 class FavouriteAPITests(BaseTestCase):
     def setUp(self):
-        self.place = PlaceName.objects.create(name="Test media 001")
+        self.place = PlaceName.objects.create(name="Test place 001")
+        self.media = Media.objects.create(name="Test media 001")
         return super().setUp()
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    def test_favourite_detail_route_exists(self):
-        """
-		Ensure Favourite Detail API route exists
-		"""
-        response = self.client.get("/api/Favourite/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_favourite_detail(self):
         """
@@ -681,7 +675,7 @@ class FavouriteAPITests(BaseTestCase):
         response = self.client.get("/api/favourite/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_favourite_post(self):
+    def test_favourite_placename_post(self):
         """
     	Ensure Favourite API POST method API works
     	"""
@@ -692,12 +686,38 @@ class FavouriteAPITests(BaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_favourite_delete(self):
+    def test_favourite_placename_delete(self):
         """
 		Ensure Favourite API DELETE method API works
 		"""
         self.client.login(username="testuser001", password="password")
         test_favourite = Favourite.objects.create(user=self.user, place=self.place)
+        response = self.client.get(
+            "/api/favourite/{}/".format(test_favourite.id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.delete(
+            "/api/favourite/{}/".format(test_favourite.id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_favourite_media_post(self):
+        """
+    	Ensure Favourite API POST method API works
+    	"""
+        response = self.client.post(
+            "/api/favourite/",
+            {"media": self.media.id, "user": self.user.id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_favourite_media_delete(self):
+        """
+		Ensure Favourite API DELETE method API works
+		"""
+        self.client.login(username="testuser001", password="password")
+        test_favourite = Favourite.objects.create(user=self.user, media=self.media)
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
