@@ -51,15 +51,10 @@
           <div v-if="isLoggedIn">
             <h5 class="mt-4 font-08 text-uppercase color-gray">
               Upload Media
-              <b-button
-                v-b-tooltip.hover.click.top="
-                  'Add relevant audio, images, links to YouTube videos, and PDF files. You can add multiple files.'
-                "
-                size="sm"
-                variant="dark"
-                style="padding: 0.05em 0.5em !important;"
-                >?</b-button
-              >
+
+              <ToolTip
+                content="Add relevant audio, images, links to YouTube videos, and PDF files. You can add multiple files."
+              ></ToolTip>
             </h5>
             <FileUploader :place-id="place.id"></FileUploader>
           </div>
@@ -145,6 +140,7 @@ import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
+import ToolTip from '@/components/Tooltip.vue'
 
 import {
   getApiUrl,
@@ -160,7 +156,8 @@ export default {
     PlacesDetailCard,
     Filters,
     DetailSideBar,
-    FileUploader
+    FileUploader,
+    ToolTip
   },
   data() {
     return {}

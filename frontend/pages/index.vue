@@ -14,7 +14,8 @@
       </b-alert>
     </div>
     <div class="map-loading">
-      Loading Map <b-spinner type="grow" label="Spinning"></b-spinner>
+      Loading Map
+      <b-spinner type="grow" label="Spinning"></b-spinner>
     </div>
     <Mapbox
       :access-token="MAPBOX_ACCESS_TOKEN"
@@ -108,9 +109,7 @@
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
           <b-row>
-            <h5 class="language-family mt-3 pl-3 pr-3">
-              Communities
-            </h5>
+            <h5 class="language-family mt-3 pl-3 pr-3">Communities</h5>
             <b-col
               v-for="community in communities"
               :key="'community ' + community.name"
