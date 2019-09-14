@@ -83,16 +83,12 @@ class LanguageGeoAPITests(APITestCase):
     # Only the LIST operations exists in this API.
 
 
-class CommunityAPITests(APITestCase):
+class CommunityAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.community = Community.objects.create(name="Test Community")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    def test_community_detail_route_exists(self):
-        """
-		Ensure community Detail API route exists
-		"""
-        response = self.client.get("/api/community/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_community_detail(self):
         """
@@ -110,6 +106,26 @@ class CommunityAPITests(APITestCase):
 		"""
         response = self.client.get("/api/community/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_community_member_post(self):
+        """
+		Ensure we can retrieve a newly created community member object.
+		"""
+        response = self.client.post(
+            "/api/community/{}/create_membership/".format(self.community.id),
+            {
+                "user_id": self.user.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        # test_community = Community.objects.create(name="Test community 001")
+        # response = self.client.get(
+        #     "/api/community/{}/".format(test_community.id), format="json"
+        # )
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # def test_create_self_member(self):
     #     response = self.client.get("/api/community/create_self_membership")

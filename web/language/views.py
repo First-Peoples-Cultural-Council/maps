@@ -77,7 +77,7 @@ class LanguageViewSet(BaseModelViewSet):
         user.languages.add(language)
         user.save_m2m()
         # TODO: use relationship here instead.
-        # if LanguageMember.member_already_exists(user_id, language_id):
+        # if LanguageMember.member_exists(user_id, language_id):
         #     return Response({"message", "User is already a language member"})
         # else:
         #     member = LanguageMember.create_member(user_id, language_id)
@@ -101,10 +101,14 @@ class CommunityViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-    def create_membership(self, request):
-
-        user_id = int(request.data["user"]["id"])
-        community_id = int(request.data["community"]["id"])
+    @action(detail=True, methods=["post"])
+    def create_membership(self, request, pk):
+        if 'user_id' not in request.data.keys():
+            return Response({"message": "No User was sent in the request"})
+        if not pk:
+            return Response({"message": "No Community was sent in the request"})
+        user_id = int(request.data["user_id"])
+        community_id = int(pk)
         community = Community.objects.get(pk=community_id)
         user = User.objects.get(pk=user_id)
         user.communities.add(community)
@@ -122,7 +126,7 @@ class CommunityViewSet(BaseModelViewSet):
                         status=status.HTTP_401_UNAUTHORIZED,
                     )
                 community_id = int(request.data["community"]["id"])
-                if CommunityMember.member_already_exists(user_id, community_id):
+                if CommunityMember.member_exists(user_id, community_id):
                     return Response({"message", "User is already a community member"})
                 else:
                     member = CommunityMember.create_member(user_id, community_id)
@@ -139,7 +143,7 @@ class CommunityViewSet(BaseModelViewSet):
     def verify_membership(self, request):
         user_id = int(request.data["user"]["id"])
         community_id = int(request.data["community"]["id"])
-        if CommunityMember.member_already_exists(user_id, community_id):
+        if CommunityMember.member_exists(user_id, community_id):
             member = CommunityMember.objects.filter(user__id=user_id).filter(
                 community__id=community_id
             )
@@ -148,6 +152,30 @@ class CommunityViewSet(BaseModelViewSet):
             return Response({"message": "Verified!"})
         else:
             return Response({"message", "User is already a community member"})
+
+    @action(detail=False)
+    def reject_membership(self, request):
+        if 'user_id' not in request.data.keys():
+            return Response({"message": "No User was sent in the request"})
+        if 'community_id' not in request.data.keys():
+            return Response({"message": "No Community was sent in the request"})
+
+        user_id = int(request.data["user_id"])
+        community_id = int(request.data["community_id"])
+        try:            
+            if CommunityMember.member_exists(user_id, community_id):
+                member = CommunityMember.objects.filter(user__id=user_id).filter(
+                    community__id=community_id
+                )
+                CommunityMember.reject_member(member.id)
+
+                return Response({"message": "Rejected!"})
+            else:
+                return Response({"message", "Membership not found"})
+        except User.DoesNotExist:
+            return Response({"message": "No User with the given id was found"})
+        except Community.DoesNotExist:
+            return Response({"message": "No Community with the given id was found"})
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
