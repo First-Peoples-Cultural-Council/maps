@@ -190,6 +190,7 @@ class CommunityMember(models.Model):
         member = CommunityMember()
         member.user = User.objects.get(pk=user_id)
         member.community = Community.objects.get(pk=community_id)
+        member.status = CommunityMember.UNVERIFIED
         member.save()
 
         return member

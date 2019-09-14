@@ -2,13 +2,14 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from users.models import User
+from users.models import User, Administrator
 
 from .models import (
     Language, 
     PlaceName, 
     PlaceNameCategory, 
     Community, 
+    CommunityMember, 
     Champion, 
     Media, 
     Favourite
@@ -86,7 +87,9 @@ class LanguageGeoAPITests(APITestCase):
 class CommunityAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.community = Community.objects.create(name="Test Community")
+        self.community1 = Community.objects.create(name="Test Community 01")
+        self.community2 = Community.objects.create(name="Test Community 02")
+        self.language = Language.objects.create(name="Test Language")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -112,7 +115,7 @@ class CommunityAPITests(BaseTestCase):
 		Ensure we can retrieve a newly created community member object.
 		"""
         response = self.client.post(
-            "/api/community/{}/create_membership/".format(self.community.id),
+            "/api/community/{}/create_membership/".format(self.community1.id),
             {
                 "user_id": self.user.id,
             },
@@ -121,11 +124,192 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_id = response.json()["id"]
 
-        # test_community = Community.objects.create(name="Test community 001")
-        # response = self.client.get(
-        #     "/api/community/{}/".format(test_community.id), format="json"
-        # )
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_member_list_to_verify(self):
+        """
+		Ensure CommunityMember list API brings newly created data which needs to be verified
+		"""
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language, 
+            community=self.community1
+        )
+
+        user_member01 = User.objects.create(
+            username="testmember001",
+            first_name="Test",
+            last_name="member 001",
+            email="testmember001@countable.ca",
+        )
+
+        user_member02 = User.objects.create(
+            username="testmember002",
+            first_name="Test",
+            last_name="member 002",
+            email="testmember002@countable.ca",
+        )
+
+        user_member03 = User.objects.create(
+            username="testmember003",
+            first_name="Test",
+            last_name="member 003",
+            email="testmember003@countable.ca",
+        )
+
+        # Must be logged in to verify a CommunityMember.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        # VERIFIED CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        member_same01 = CommunityMember.objects.create(
+            user = user_member01,
+            community = self.community1,
+            status=CommunityMember.VERIFIED
+        )        
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 0
+        
+        # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
+        member_same02 = CommunityMember.create_member(user_member02.id, self.community1.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 1
+        
+        # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
+        member_same03 = CommunityMember.create_member(user_member03.id, self.community1.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 2
+        
+        # AFTER REJECTED CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        CommunityMember.reject_member(member_same02.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 1
+        
+        # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        CommunityMember.verify_member(member_same03.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 0
+        
+        # UNVERIFIED CommunityMember NOT MATCHING admin's community. It MUST NOT be returned by the route
+        member_diff = CommunityMember.create_member(user_member01.id, self.community2.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 0
+
+        # ADDING ANOTHER ADMIN, previously UNVERIFIED CommunityMember now MATCHES admin's community.
+        # It MUST be returned by the route
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language, 
+            community=self.community2
+        )
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert len(response.data) == 1
+        
+    def test_member_verify(self):
+        """
+		Ensure that CommunityMember can be VERIFIED
+		"""
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language, 
+            community=self.community1
+        )
+
+        user_member01 = User.objects.create(
+            username="testmember001",
+            first_name="Test",
+            last_name="member 001",
+            email="testmember001@countable.ca",
+        )
+
+        # Must be logged in to verify a CommunityMember.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
+        # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
+        member_same01 = CommunityMember.create_member(user_member01.id, self.community1.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # VERIFYING CommunityMember
+        response = self.client.patch(
+            "/api/community/verify_member/",
+            {
+                "user_id": user_member01.id,
+                "community_id": self.community1.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        member = CommunityMember.objects.get(pk=member_same01.id)
+        self.assertEqual(member.status, CommunityMember.VERIFIED)
+        
+        # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+       
+    def test_member_reject(self):
+        """
+		Ensure that CommunityMember can be REJECTED
+		"""
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language, 
+            community=self.community1
+        )
+
+        user_member01 = User.objects.create(
+            username="testmember001",
+            first_name="Test",
+            last_name="member 001",
+            email="testmember001@countable.ca",
+        )
+
+        # Must be logged in to verify a CommunityMember.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
+        # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
+        member_same01 = CommunityMember.create_member(user_member01.id, self.community1.id)
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # VERIFYING CommunityMember
+        response = self.client.patch(
+            "/api/community/reject_member/",
+            {
+                "user_id": user_member01.id,
+                "community_id": self.community1.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        member = CommunityMember.objects.get(pk=member_same01.id)
+        self.assertEqual(member.status, CommunityMember.REJECTED)
+        
+        # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        response = self.client.get("/api/community/list_member_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
     # def test_create_self_member(self):
     #     response = self.client.get("/api/community/create_self_membership")
@@ -194,7 +378,7 @@ class PlaceNameAPITests(BaseTestCase):
         response = self.client.get("/api/user/auth/")
         self.assertEqual(response.json()["is_authenticated"], True)
 
-        # VERIFIED Placename MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        # VERIFIED Placename MATCHING user's language. It MUST NOT be returned by the route
         test_placename01 = PlaceName.objects.create(
             name = "test place01",
             other_names = "string",
@@ -209,7 +393,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 0
         
-        # UNVERIFIED Placename MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        # UNVERIFIED Placename MATCHING user's language. It MUST be returned by the route
         test_placename02 = PlaceName.objects.create(
             name = "test place02",
             other_names = "string",
@@ -226,7 +410,7 @@ class PlaceNameAPITests(BaseTestCase):
         assert len(response.data) == 1
         assert len(response.data[0]['status_reason']) > 0
         
-        # FLAGGED Placename MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        # FLAGGED Placename MATCHING user's language. It MUST be returned by the route
         test_placename03 = PlaceName.objects.create(
             name = "test place03",
             other_names = "string",
@@ -242,7 +426,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 2
         
-        # UNVERIFIED Placename NOT MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        # UNVERIFIED Placename NOT MATCHING user's language. It MUST NOT be returned by the route
         test_placename04 = PlaceName.objects.create(
             name = "test place04",
             other_names = "string",
@@ -517,7 +701,7 @@ class MediaAPITests(BaseTestCase):
             language = self.language2,
         )
 
-        # VERIFIED Media MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        # VERIFIED Media MATCHING user's language. It MUST NOT be returned by the route
         test_media01 = Media.objects.create(
             name = "test media01",
             file_type = "string",
@@ -528,7 +712,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 0
         
-        # UNVERIFIED Media MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        # UNVERIFIED Media MATCHING user's language. It MUST be returned by the route
         test_media02 = Media.objects.create(
             name = "test media02",
             file_type = "string",
@@ -541,7 +725,7 @@ class MediaAPITests(BaseTestCase):
         assert len(response.data) == 1
         assert len(response.data[0]['status_reason']) > 0
         
-        # FLAGGED Media MATCHING user's language. IT MUST BE RETURNED BY THE ROUTE
+        # FLAGGED Media MATCHING user's language. It MUST be returned by the route
         test_media03 = Media.objects.create(
             name = "test media03",
             file_type = "string",
@@ -553,7 +737,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 2
         
-        # UNVERIFIED Media NOT MATCHING user's language. IT MUST NOT BE RETURNED BY THE ROUTE
+        # UNVERIFIED Media NOT MATCHING user's language. It MUST NOT be returned by the route
         test_media04 = Media.objects.create(
             name = "test media04",
             file_type = "string",

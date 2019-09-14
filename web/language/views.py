@@ -3,7 +3,7 @@ import sys
 from django.shortcuts import render
 from django.db.models import Q
 
-from users.models import User
+from users.models import User, Administrator
 from .models import (
     Language,
     PlaceName,
@@ -139,43 +139,67 @@ class CommunityViewSet(BaseModelViewSet):
     #         content = {"message": "User is not logged in"}
     #         return Response(content, status=status.HTTP_401_UNAUTHORIZED)
 
+    @method_decorator(never_cache)
     @action(detail=False)
-    def verify_membership(self, request):
-        user_id = int(request.data["user"]["id"])
-        community_id = int(request.data["community"]["id"])
-        if CommunityMember.member_exists(user_id, community_id):
-            member = CommunityMember.objects.filter(user__id=user_id).filter(
-                community__id=community_id
-            )
-            CommunityMember.verify_membership(member.id)
+    def list_member_to_verify(self, request):
+        # 'VERIFIED' 'REJECTED' members do not need to the verified
+        members = CommunityMember.objects.exclude(status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)        
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                # Getting the communities of the admin
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+                if admin_communities:                
+                    # Filter members by user's communities 
+                    members = members.filter(community__in=admin_communities)
+                    serializer = CommunityMemberSerializer(members, many=True)                    
+                    return Response(serializer.data)
+        return Response([])
 
-            return Response({"message": "Verified!"})
-        else:
-            return Response({"message", "User is already a community member"})
+    @action(detail=False, methods=["patch"])
+    def verify_member(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                user_id = int(request.data["user_id"])
+                community_id = int(request.data["community_id"])
+                if CommunityMember.member_exists(user_id, community_id):
+                    member = CommunityMember.objects.filter(user__id=user_id).filter(
+                        community__id=community_id
+                    )
+                    CommunityMember.verify_member(member[0].id)
 
-    @action(detail=False)
-    def reject_membership(self, request):
-        if 'user_id' not in request.data.keys():
-            return Response({"message": "No User was sent in the request"})
-        if 'community_id' not in request.data.keys():
-            return Response({"message": "No Community was sent in the request"})
+                    return Response({"message": "Verified!"})
+                else:
+                    return Response({"message", "User is already a community member"})
+        
+        return Response({"message", "Only Administrators can verify community members"})
 
-        user_id = int(request.data["user_id"])
-        community_id = int(request.data["community_id"])
-        try:            
-            if CommunityMember.member_exists(user_id, community_id):
-                member = CommunityMember.objects.filter(user__id=user_id).filter(
-                    community__id=community_id
-                )
-                CommunityMember.reject_member(member.id)
+    @action(detail=False, methods=["patch"])
+    def reject_member(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                if 'user_id' not in request.data.keys():
+                    return Response({"message": "No User was sent in the request"})
+                if 'community_id' not in request.data.keys():
+                    return Response({"message": "No Community was sent in the request"})
 
-                return Response({"message": "Rejected!"})
-            else:
-                return Response({"message", "Membership not found"})
-        except User.DoesNotExist:
-            return Response({"message": "No User with the given id was found"})
-        except Community.DoesNotExist:
-            return Response({"message": "No Community with the given id was found"})
+                user_id = int(request.data["user_id"])
+                community_id = int(request.data["community_id"])
+                try:            
+                    if CommunityMember.member_exists(user_id, community_id):
+                        member = CommunityMember.objects.filter(user__id=user_id).filter(
+                            community__id=community_id
+                        )
+                        CommunityMember.reject_member(member[0].id)
+
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message", "Membership not found"})
+                except User.DoesNotExist:
+                    return Response({"message": "No User with the given id was found"})
+                except Community.DoesNotExist:
+                    return Response({"message": "No Community with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject community members"})
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
