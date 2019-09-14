@@ -274,6 +274,9 @@ class Media(BaseModel):
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
     )
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="medias"
+    )
 
     # Choices Constants:
     FLAGGED = "FL"

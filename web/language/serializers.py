@@ -220,11 +220,19 @@ class CommunityPlaceNameSerializer(serializers.ModelSerializer):
         fields = ("name", "id", "category")
 
 
+# Serializer only for composing Community data
+class CommunityMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ("id", "name", "description", "file_type", "url", "media_file")
+
+
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
     languages = LanguageSerializer(read_only=True, many=True)
     places = CommunityPlaceNameSerializer(many=True, read_only=True)
+    medias = CommunityMediaSerializer(many=True, read_only=True)
 
     # Atomic Writable APIs
     language_ids = serializers.PrimaryKeyRelatedField(
@@ -289,6 +297,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "champion_ids",
             "communitylink_ids",
             "places",
+            "medias",
         )
 
 
@@ -322,6 +331,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "url",
             "media_file",
             "placename",
+            "community",
             "status",
             "status_reason",
         )
