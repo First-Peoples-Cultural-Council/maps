@@ -194,7 +194,7 @@ class CommunityMember(models.Model):
 
         return member
 
-    def member_already_exists(user_id, community_id):
+    def member_exists(user_id, community_id):
         member = CommunityMember.objects.filter(user__id=user_id).filter(
             community__id=community_id
         )
@@ -206,6 +206,11 @@ class CommunityMember(models.Model):
     def verify_member(id):
         member = CommunityMember.objects.get(pk=int(id))
         member.status = CommunityMember.VERIFIED
+        member.save()
+
+    def reject_member(id):
+        member = CommunityMember.objects.get(pk=int(id))
+        member.status = CommunityMember.REJECTED
         member.save()
 
     class Meta:
@@ -273,6 +278,9 @@ class Media(BaseModel):
     media_file = models.FileField(null=True, blank=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
+    )
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="medias"
     )
 
     # Choices Constants:

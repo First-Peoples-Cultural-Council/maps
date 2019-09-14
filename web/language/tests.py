@@ -83,16 +83,12 @@ class LanguageGeoAPITests(APITestCase):
     # Only the LIST operations exists in this API.
 
 
-class CommunityAPITests(APITestCase):
+class CommunityAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.community = Community.objects.create(name="Test Community")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    def test_community_detail_route_exists(self):
-        """
-		Ensure community Detail API route exists
-		"""
-        response = self.client.get("/api/community/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_community_detail(self):
         """
@@ -110,6 +106,26 @@ class CommunityAPITests(APITestCase):
 		"""
         response = self.client.get("/api/community/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_community_member_post(self):
+        """
+		Ensure we can retrieve a newly created community member object.
+		"""
+        response = self.client.post(
+            "/api/community/{}/create_membership/".format(self.community.id),
+            {
+                "user_id": self.user.id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        # test_community = Community.objects.create(name="Test community 001")
+        # response = self.client.get(
+        #     "/api/community/{}/".format(test_community.id), format="json"
+        # )
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # def test_create_self_member(self):
     #     response = self.client.get("/api/community/create_self_membership")
@@ -372,13 +388,6 @@ class ChampionAPITests(APITestCase):
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-    def test_champion_detail_route_exists(self):
-        """
-		Ensure champion Detail API route exists
-		"""
-        response = self.client.get("/api/champion/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_champion_detail(self):
         """
 		Ensure we can retrieve a newly created champion object.
@@ -420,13 +429,42 @@ class MediaAPITests(BaseTestCase):
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_media_post(self):
+    def test_media_post_with_community(self):
         """
 		Ensure media API POST method API works
 		"""
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 001", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED},
+            {"name": "Test media 002", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "community": self.community.id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.name, "Test media 002")
+        self.assertEqual(media.file_type, "image")
+        self.assertEqual(media.url, "https://google.com")
+        self.assertEqual(media.status, Media.UNVERIFIED)
+        self.assertEqual(media.community.id, self.community.id)
+
+    def test_media_post_with_placename(self):
+        """
+		Ensure media API POST method API works
+		"""
+        placename = PlaceName()
+        placename.name = "test place"
+        placename.other_names = "string"
+        placename.common_name = "string"
+        placename.community_only = True
+        placename.description = "string"
+        placename.community = self.community
+        placename.language = self.language1
+        placename.save()
+
+        response = self.client.post(
+            "/api/media/",
+            {"name": "Test media 001", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "placename": placename.id},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -437,6 +475,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.file_type, "image")
         self.assertEqual(media.url, "https://google.com")
         self.assertEqual(media.status, Media.UNVERIFIED)
+        self.assertEqual(media.placename.id, placename.id)
 
     def test_repeated_names_for_media(self):
         
