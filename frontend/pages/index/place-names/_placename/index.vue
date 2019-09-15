@@ -241,7 +241,18 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
+          if (this.geo_place.geometry.type === 'Point') {
+            zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
+          }
+          if (this.geo_place.geometry.type === 'Polygon') {
+            map.fitBounds(
+              [
+                this.geo_place.geometry.coordinates[0][0],
+                this.geo_place.geometry.coordinates[0][2]
+              ],
+              { padding: 30 }
+            )
+          }
         }
         map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })

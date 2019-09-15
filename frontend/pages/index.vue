@@ -700,8 +700,23 @@ export default {
     filterPlaces(bounds) {
       return this.placesSet.filter(place => {
         if (place.geometry !== null) {
-          const point = place.geometry.coordinates
-          return inBounds(bounds, point)
+          // console.log('Place', place)
+          if (place.geometry.type === 'Point') {
+            const point = place.geometry.coordinates
+            return inBounds(bounds, point)
+          }
+
+          if (place.geometry.type === 'Polygon') {
+            let isInBounds = false
+            place.geometry.coordinates.map(points => {
+              points.map(point => {
+                if (inBounds(bounds, point)) {
+                  isInBounds = true
+                }
+              })
+            })
+            return isInBounds
+          }
         }
       })
     }
