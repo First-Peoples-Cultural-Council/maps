@@ -40,7 +40,9 @@
                         :go="false"
                         variant="white"
                         icon="small"
-                        :name="userCommunity[0].name"
+                        :name="
+                          community ? community.name : userCommunity[0].name
+                        "
                       ></CommunityCard
                     ></b-col>
                   </b-row>
@@ -105,6 +107,38 @@
                     v-model="categorySelected"
                     :options="categoryOptions"
                   ></b-form-select>
+                </b-col>
+              </b-row>
+              <b-row class="mt-3 mb-1">
+                <b-col xl="12">
+                  <label for="traditionalName" class="contribute-title-one mb-1"
+                    >Community</label
+                  >
+                  <multiselect
+                    v-model="community"
+                    placeholder="Select a community"
+                    label="name"
+                    track-by="id"
+                    :options="communities"
+                  ></multiselect>
+                </b-col>
+              </b-row>
+              <b-row class="mt-3 mb-4">
+                <b-col xl="6" class="d-flex align-items-center">
+                  <label
+                    class="d-inline-block contribute-title-one"
+                    for="community-only"
+                    >Community Only?</label
+                  >
+                  <b-form-checkbox
+                    id="community-only"
+                    v-model="communityOnly"
+                    class="d-inline-block ml-2"
+                    name="community-only"
+                    value="accepted"
+                    unchecked-value="not_accepted"
+                  >
+                  </b-form-checkbox>
                 </b-col>
               </b-row>
               <!-- Text Editor -->
@@ -217,7 +251,9 @@ export default {
       errors: [],
       languageOptions: [],
       languageSelectedName: null,
-      geom: []
+      geom: [],
+      communityOnly: false,
+      community: null
     }
   },
 
@@ -256,6 +292,14 @@ export default {
     },
     userCommunity() {
       return this.$store.state.user.user.communities
+    },
+    communities() {
+      return this.$store.state.communities.communitySet.map(c => {
+        return {
+          name: c.name,
+          id: c.id
+        }
+      })
     }
   },
   watch: {
@@ -376,14 +420,21 @@ export default {
         return
       }
 
+      let community_id = null
+      if (this.community) {
+        community_id = this.community.id
+      } else if (this.userCommunity.length > 0) {
+        community_id = this.userCommunity[0].id
+      }
+
       const data = {
         name: this.tname,
         common_name: this.wname,
         description: this.content,
-        community:
-          this.userCommunity.length > 0 ? this.userCommunity[0].id : null,
+        community: community_id,
         language: this.languageSelected,
-        category: this.categorySelected
+        category: this.categorySelected,
+        community_only: this.communityOnly === 'accepted'
       }
       if (this.drawnFeatures.length) data.geom = this.drawnFeatures[0].geometry
 
@@ -518,5 +569,32 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 50;
   right: 0;
+}
+
+.multiselect__tag {
+  background-color: #c46157;
+}
+
+.multiselect__tag-icon:after {
+  color: white;
+}
+
+.multiselect__tag-icon:focus,
+.multiselect__tag-icon:hover {
+  background-color: #91433b;
+}
+
+.multiselect__option--highlight {
+  background-color: #c46157;
+}
+
+.multiselect__element span::after {
+  background-color: #c46157;
+  color: white;
+}
+
+.multiselect__element span {
+  word-break: break-all;
+  white-space: normal;
 }
 </style>
