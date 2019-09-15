@@ -713,8 +713,20 @@ export default {
               points.map(point => {
                 if (inBounds(bounds, point)) {
                   isInBounds = true
+                  return true
                 }
               })
+            })
+            return isInBounds
+          }
+
+          if (place.geometry.type === 'LineString') {
+            let isInBounds = false
+            place.geometry.coordinates.map(point => {
+              if (inBounds(bounds, point)) {
+                isInBounds = true
+                return true
+              }
             })
             return isInBounds
           }
