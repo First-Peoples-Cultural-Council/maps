@@ -5,11 +5,10 @@
       class="draw-tool draw-polygon"
       @click="setMode($event, 'polygon')"
     ></div>
-    <!--<div
+    <div
       class="draw-tool draw-line-string"
       @click="setMode($event, 'line_string')"
     ></div>
-    -->
     <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
   </div>
 </template>

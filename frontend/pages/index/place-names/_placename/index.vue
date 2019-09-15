@@ -253,6 +253,16 @@ export default {
               { padding: 30 }
             )
           }
+          if (this.geo_place.geometry.type === 'LineString') {
+            const coordinates = this.geo_place.geometry.coordinates
+            const mapboxgl = require('mapbox-gl')
+            const bounds = coordinates.reduce(function(bounds, coord) {
+              return bounds.extend(coord)
+            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
+            map.fitBounds(bounds, {
+              padding: 30
+            })
+          }
         }
         map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })

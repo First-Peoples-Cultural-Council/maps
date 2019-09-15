@@ -2,7 +2,7 @@
   <div>
     <client-only placeholder="Loading...">
       <DetailSideBar :width="500">
-        <div class="position-relative">
+        <div class="position-relative pb-3">
           <div
             v-if="drawnFeatures.length === 0 && !place"
             class="required-overlay d-flex align-items-center justify-content-center"
@@ -265,8 +265,8 @@ export default {
           document.querySelector('.mapbox-gl-draw_point').click()
         } else if (this.$route.query.mode === 'polygon') {
           document.querySelector('.mapbox-gl-draw_polygon').click()
-        } else {
-          document.querySelector('.mapbox-gl-draw_point').click()
+        } else if (this.$route.query.mode === 'line') {
+          document.querySelector('.mapbox-gl-draw_line').click()
         }
       })
     },

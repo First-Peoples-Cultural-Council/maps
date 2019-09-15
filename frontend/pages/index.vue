@@ -588,6 +588,7 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
+        console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
