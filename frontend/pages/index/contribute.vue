@@ -12,7 +12,7 @@
               show
               variant="danger"
             >
-              Please select an area from the map
+              Please draw at least one feature from the map
             </b-alert>
           </div>
           <div v-if="isLoggedIn">
@@ -263,8 +263,10 @@ export default {
       this.$eventHub.whenMap(map => {
         if (this.$route.query.mode === 'point') {
           document.querySelector('.mapbox-gl-draw_point').click()
-        } else {
+        } else if (this.$route.query.mode === 'polygon') {
           document.querySelector('.mapbox-gl-draw_polygon').click()
+        } else {
+          document.querySelector('.mapbox-gl-draw_point').click()
         }
       })
     },
