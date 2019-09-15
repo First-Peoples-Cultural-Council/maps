@@ -593,7 +593,8 @@ class ChampionAPITests(APITestCase):
 class MediaAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.community = Community.objects.create(name="Test Community")
+        self.community1 = Community.objects.create(name="Test Community 1")
+        self.community2 = Community.objects.create(name="Test Community 2")
         self.language1 = Language.objects.create(name="Test Language 01")
         self.language2 = Language.objects.create(name="Test Language 02")
 
@@ -619,7 +620,7 @@ class MediaAPITests(BaseTestCase):
 		"""
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 002", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "community": self.community.id},
+            {"name": "Test media 002", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "community": self.community1.id},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -630,7 +631,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.file_type, "image")
         self.assertEqual(media.url, "https://google.com")
         self.assertEqual(media.status, Media.UNVERIFIED)
-        self.assertEqual(media.community.id, self.community.id)
+        self.assertEqual(media.community.id, self.community1.id)
 
     def test_media_post_with_placename(self):
         """
@@ -642,7 +643,7 @@ class MediaAPITests(BaseTestCase):
         placename.common_name = "string"
         placename.community_only = True
         placename.description = "string"
-        placename.community = self.community
+        placename.community = self.community1
         placename.language = self.language1
         placename.save()
 
@@ -675,12 +676,15 @@ class MediaAPITests(BaseTestCase):
 
         self.assertEqual(1, 1)
 
-    def test_media_list_to_verify(self):
+    def test_list_to_verify(self):
         """
 		Ensure media list API brings newly created data which needs to be verified
 		"""
-        self.user.languages.add(self.language1)
-        self.user.save()
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language1, 
+            community=self.community1
+        )
 
         # Must be logged in to verify a media.
         self.assertTrue(self.client.login(username="testuser001", password="password"))
@@ -693,16 +697,18 @@ class MediaAPITests(BaseTestCase):
         placename1 = PlaceName.objects.create(
             name = "test place01",
             language = self.language1,
+            community = self.community1,
         )
 
         # PlaceName out of the same language as the user (language admin)
         placename2 = PlaceName.objects.create(
             name = "test place02",
             language = self.language2,
+            community = self.community1,
         )
 
-        # VERIFIED Media MATCHING user's language. It MUST NOT be returned by the route
-        test_media01 = Media.objects.create(
+        # VERIFIED Media MATCHING admin's language. It MUST NOT be returned by the route
+        media_same01 = Media.objects.create(
             name = "test media01",
             file_type = "string",
             placename = placename1,
@@ -710,10 +716,10 @@ class MediaAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 0
+        self.assertEqual(len(response.data), 0)
         
-        # UNVERIFIED Media MATCHING user's language. It MUST be returned by the route
-        test_media02 = Media.objects.create(
+        # UNVERIFIED Media MATCHING admin's language. It MUST be returned by the route
+        media_same02 = Media.objects.create(
             name = "test media02",
             file_type = "string",
             placename = placename1,
@@ -722,11 +728,11 @@ class MediaAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 1
+        self.assertEqual(len(response.data), 1)
         assert len(response.data[0]['status_reason']) > 0
         
-        # FLAGGED Media MATCHING user's language. It MUST be returned by the route
-        test_media03 = Media.objects.create(
+        # FLAGGED Media MATCHING admin's language. It MUST be returned by the route
+        media_diff01 = Media.objects.create(
             name = "test media03",
             file_type = "string",
             placename = placename1,
@@ -735,9 +741,9 @@ class MediaAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 2
+        self.assertEqual(len(response.data), 2)
         
-        # UNVERIFIED Media NOT MATCHING user's language. It MUST NOT be returned by the route
+        # UNVERIFIED Media NOT MATCHING admin's language. It MUST NOT be returned by the route
         test_media04 = Media.objects.create(
             name = "test media04",
             file_type = "string",
@@ -747,9 +753,46 @@ class MediaAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 2
+        self.assertEqual(len(response.data), 2)
+        
+        # UNVERIFIED Media MATCHING admin's community. It MUST be returned by the route
+        self.community1.languages.add(self.language1)
+        self.community1.save()
+
+        media_same03 = Media.objects.create(
+            name = "test media02",
+            file_type = "string",
+            community = self.community1,
+            status=Media.UNVERIFIED,
+            status_reason = "string"
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+        
+        # UNVERIFIED Media MATCHING admin's community. It MUST be returned by the route
+        self.community2.languages.add(self.language1)
+        self.community2.save()
+        
+        media_same04 = Media.objects.create(
+            name = "test media02",
+            file_type = "string",
+            community = self.community2,
+            status=Media.UNVERIFIED,
+            status_reason = "string"
+        )        
+        response = self.client.get("/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
 
     def test_verify_media(self):
+
+        # Must be logged in to verify a media.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
 
         # PlaceName in the same language as the user (language admin)
         placename1 = PlaceName.objects.create(
@@ -778,6 +821,13 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.status, Media.VERIFIED)
 
     def test_reject_media(self):
+
+        # Must be logged in to verify a media.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
 
         # PlaceName in the same language as the user (language admin)
         placename1 = PlaceName.objects.create(

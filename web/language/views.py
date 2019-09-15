@@ -367,42 +367,56 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         queryset = self.get_queryset().exclude(status__exact=Media.VERIFIED)
 
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated:                
-                user = User.objects.get(pk=int(request.user.id))
+            if request.user.is_authenticated:
+                admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
-                languages = user.languages.all()
-
-                if languages:
-                    # Filter Medias by user's languages 
-                    queryset = queryset.filter(placename__language__in=languages)
+                if admin_languages and admin_communities:
+                    # Filter Medias by admin's languages 
+                    queryset_places = queryset.filter(
+                        placename__language__in=admin_languages, placename__community__in=admin_communities
+                    )
+                    queryset_communities = queryset.filter(
+                        community__languages__in=admin_languages, community__in=admin_communities
+                    )
+                    queryset = queryset_communities.union(queryset_places)
 
                     serializer = self.serializer_class(queryset, many=True)
                     
                     return Response(serializer.data)
+        return Response([])
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            media.status = Media.VERIFIED
-            media.status_reason = ""
-            media.save()
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    media = Media.objects.get(pk=int(pk))
+                    media.status = Media.VERIFIED
+                    media.status_reason = ""
+                    media.save()
 
-            return Response({"message": "Verified!"})
-        except Media.DoesNotExist:
-            return Response({"message": "No Media with the given id was found"})
+                    return Response({"message": "Verified!"})
+                except Media.DoesNotExist:
+                    return Response({"message": "No Media with the given id was found"})
+        
+        return Response({"message", "Only Administrators can verify media"})
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            media.status = Media.REJECTED
-            media.status_reason = ""
-            media.save()
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    media = Media.objects.get(pk=int(pk))
+                    media.status = Media.REJECTED
+                    media.status_reason = ""
+                    media.save()
 
-            return Response({"message": "Rejected!"})
-        except Media.DoesNotExist:
-            return Response({"message": "No Media with the given id was found"})
+                    return Response({"message": "Rejected!"})
+                except Media.DoesNotExist:
+                    return Response({"message": "No Media with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject reject"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
