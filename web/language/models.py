@@ -270,6 +270,24 @@ class PlaceName(CulturalModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
+    def verify(id):
+        media = PlaceName.objects.get(pk=id)
+        media.status = PlaceName.VERIFIED
+        media.status_reason = ""
+        media.save()
+
+    def reject(id, status_reason):
+        media = PlaceName.objects.get(pk=id)
+        media.status = PlaceName.REJECTED
+        media.status_reason = status_reason
+        media.save()
+
+    def flag(id, status_reason):
+        media = PlaceName.objects.get(pk=id)
+        media.status = PlaceName.FLAGGED
+        media.status_reason = status_reason
+        media.save()
+
 
 class Media(BaseModel):
     name = models.CharField(max_length=255, default="")
@@ -302,6 +320,24 @@ class Media(BaseModel):
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
     status_reason = models.TextField(default="", blank=True)
+
+    def verify(id):
+        media = Media.objects.get(pk=id)
+        media.status = Media.VERIFIED
+        media.status_reason = ""
+        media.save()
+
+    def reject(id, status_reason):
+        media = Media.objects.get(pk=id)
+        media.status = Media.REJECTED
+        media.status_reason = status_reason
+        media.save()
+
+    def flag(id, status_reason):
+        media = Media.objects.get(pk=id)
+        media.status = Media.FLAGGED
+        media.status_reason = status_reason
+        media.save()
 
 
 class Favourite(BaseModel):

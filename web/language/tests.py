@@ -368,10 +368,13 @@ class PlaceNameAPITests(BaseTestCase):
         """
 		Ensure placename list API brings newly created data which needs to be verified
 		"""
-        self.user.languages.add(self.language1)
-        self.user.save()
+        admin = Administrator.objects.create(
+            user=self.user, 
+            language=self.language1, 
+            community=self.community
+        )
 
-        # Must be logged in to verify a place.
+        # Must be logged in to verify a media.
         self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
@@ -381,25 +384,17 @@ class PlaceNameAPITests(BaseTestCase):
         # VERIFIED Placename MATCHING user's language. It MUST NOT be returned by the route
         test_placename01 = PlaceName.objects.create(
             name = "test place01",
-            other_names = "string",
-            common_name = "string",
-            community_only = True,
-            description = "string",
             community = self.community,
             language = self.language1,
             status=PlaceName.VERIFIED
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 0
+        self.assertEqual(len(response.data), 0)
         
         # UNVERIFIED Placename MATCHING user's language. It MUST be returned by the route
         test_placename02 = PlaceName.objects.create(
             name = "test place02",
-            other_names = "string",
-            common_name = "string",
-            community_only = True,
-            description = "string",
             community = self.community,
             language = self.language1,
             status=PlaceName.UNVERIFIED,
@@ -407,16 +402,12 @@ class PlaceNameAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 1
+        self.assertEqual(len(response.data), 1)
         assert len(response.data[0]['status_reason']) > 0
         
         # FLAGGED Placename MATCHING user's language. It MUST be returned by the route
         test_placename03 = PlaceName.objects.create(
             name = "test place03",
-            other_names = "string",
-            common_name = "string",
-            community_only = True,
-            description = "string",
             community = self.community,
             language = self.language1,
             status=PlaceName.FLAGGED,
@@ -424,15 +415,11 @@ class PlaceNameAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 2
+        self.assertEqual(len(response.data), 2)
         
         # UNVERIFIED Placename NOT MATCHING user's language. It MUST NOT be returned by the route
         test_placename04 = PlaceName.objects.create(
             name = "test place04",
-            other_names = "string",
-            common_name = "string",
-            community_only = True,
-            description = "string",
             community = self.community,
             language = self.language2,
             status=PlaceName.UNVERIFIED,
@@ -440,7 +427,7 @@ class PlaceNameAPITests(BaseTestCase):
         )        
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) == 2
+        self.assertEqual(len(response.data), 2)
 
     def test_placename_post(self):
         # Must be logged in to submit a place.
@@ -485,6 +472,13 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.other_names, "updated other names")
 
     def test_placename_verify(self):
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
         placename = PlaceName()
         placename.name = "test place"
         placename.community = self.community
@@ -504,6 +498,13 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.status, PlaceName.VERIFIED)
 
     def test_placename_reject(self):
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
         placename = PlaceName()
         placename.name = "test place"
         placename.community = self.community
@@ -515,6 +516,7 @@ class PlaceNameAPITests(BaseTestCase):
         # now update it.
         response = self.client.patch(
             "/api/placename/{}/reject/".format(created_id),
+            {"status_reason": "test reason status"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -525,10 +527,6 @@ class PlaceNameAPITests(BaseTestCase):
     def test_placename_flag(self):
         placename = PlaceName()
         placename.name = "test place"
-        placename.other_names = "string"
-        placename.common_name = "string"
-        placename.community_only = True
-        placename.description = "string"
         placename.community = self.community
         placename.language = self.language1
         placename.save()

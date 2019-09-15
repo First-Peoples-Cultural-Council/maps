@@ -252,27 +252,30 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            placename.status = PlaceName.VERIFIED
-            placename.status_reason = ""
-            placename.save()
-
-            return Response({"message": "Verified!"})
-        except PlaceName.DoesNotExist:
-            return Response({"message": "No PlaceName with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    PlaceName.verify(int(pk))
+                    return Response({"message": "Verified!"})
+                except PlaceName.DoesNotExist:
+                    return Response({"message": "No PlaceName with the given id was found"})
+        
+        return Response({"message", "Only Administrators can verify contributions"})
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            placename.status = PlaceName.REJECTED
-            placename.status_reason = ""
-            placename.save()
-
-            return Response({"message": "Rejected!"})
-        except PlaceName.DoesNotExist:
-            return Response({"message": "No PlaceName with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    if 'status_reason' in request.data.keys():
+                        PlaceName.reject(int(pk), request.data["status_reason"])
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message": "Reason must be provided"})
+                except PlaceName.DoesNotExist:
+                    return Response({"message": "No PlaceName with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject contributions"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
@@ -282,9 +285,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 return Response({"message": "PlaceName has already been verified"})
             else:
                 if 'status_reason' in request.data.keys():
-                    placename.status = PlaceName.FLAGGED
-                    placename.status_reason = request.data["status_reason"]
-                    placename.save()
+                    PlaceName.flag(int(pk), request.data["status_reason"])
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})
@@ -331,19 +332,20 @@ class PlaceNameViewSet(BaseModelViewSet):
         queryset = self.get_queryset().exclude(status__exact=PlaceName.VERIFIED)
 
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated:                
-                user = User.objects.get(pk=int(request.user.id))
+            if request.user.is_authenticated:
+                admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
-                # Fetch all user's languages
-                languages = user.languages.all()
+                if admin_languages and admin_communities:
+                    # Filter Medias by admin's languages 
+                    queryset_places = queryset.filter(
+                        language__in=admin_languages, community__in=admin_communities
+                    )
 
-                if languages:
-                    # Filter PlaceNames by user's languages 
-                    queryset = queryset.filter(language__in=languages)
-
-                    serializer = self.serializer_class(queryset, many=True)
+                    serializer = self.serializer_class(queryset_places, many=True)
                     
                     return Response(serializer.data)
+        return Response([])
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
@@ -391,32 +393,27 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 try:
-                    media = Media.objects.get(pk=int(pk))
-                    media.status = Media.VERIFIED
-                    media.status_reason = ""
-                    media.save()
-
+                    Media.verify(int(pk))
                     return Response({"message": "Verified!"})
                 except Media.DoesNotExist:
                     return Response({"message": "No Media with the given id was found"})
         
-        return Response({"message", "Only Administrators can verify media"})
+        return Response({"message", "Only Administrators can verify contributions"})
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 try:
-                    media = Media.objects.get(pk=int(pk))
-                    media.status = Media.REJECTED
-                    media.status_reason = ""
-                    media.save()
-
-                    return Response({"message": "Rejected!"})
+                    if 'status_reason' in request.data.keys():
+                        Media.reject(int(pk), request.data["status_reason"])
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message": "Reason must be provided"})
                 except Media.DoesNotExist:
                     return Response({"message": "No Media with the given id was found"})
         
-        return Response({"message", "Only Administrators can reject reject"})
+        return Response({"message", "Only Administrators can reject contributions"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
@@ -426,9 +423,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 return Response({"message": "Media has already been verified"})
             else:
                 if 'status_reason' in request.data.keys():
-                    media.status = Media.FLAGGED
-                    media.status_reason = request.data["status_reason"]
-                    media.save()
+                    Media.flag(int(pk), request.data["status_reason"])
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})
