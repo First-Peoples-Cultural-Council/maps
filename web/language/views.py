@@ -3,7 +3,7 @@ import sys
 from django.shortcuts import render
 from django.db.models import Q
 
-from users.models import User
+from users.models import User, Administrator
 from .models import (
     Language,
     PlaceName,
@@ -114,68 +114,92 @@ class CommunityViewSet(BaseModelViewSet):
         user.communities.add(community)
         user.save_m2m()
 
+    # @action(detail=False)
+    # def create_self_membership(self, request):
+    #     if request.user.is_authenticated:
+    #         request = self.context.get("request")
+    #         if request and hasattr(request, "user"):
+    #             user_id = request.user.id
+    #             if user_id != request.GET.get("user")["id"]:
+    #                 return Response(
+    #                     {"message": "Can only add yourself, not others."},
+    #                     status=status.HTTP_401_UNAUTHORIZED,
+    #                 )
+    #             community_id = int(request.data["community"]["id"])
+    #             if CommunityMember.member_exists(user_id, community_id):
+    #                 return Response({"message", "User is already a community member"})
+    #             else:
+    #                 member = CommunityMember.create_member(user_id, community_id)
+    #                 serializer = CommunityMemberSerializer(member)
+    #                 return Response(serializer.data)
+    #         else:
+    #             content = {"message": "User is not logged in"}
+    #             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+    #     else:
+    #         content = {"message": "User is not logged in"}
+    #         return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+
+    @method_decorator(never_cache)
     @action(detail=False)
-    def create_self_membership(self, request):
-        if request.user.is_authenticated:
-            request = self.context.get("request")
-            if request and hasattr(request, "user"):
-                user_id = request.user.id
-                if user_id != request.GET.get("user")["id"]:
-                    return Response(
-                        {"message": "Can only add yourself, not others."},
-                        status=status.HTTP_401_UNAUTHORIZED,
-                    )
-                community_id = int(request.data["community"]["id"])
-                if CommunityMember.member_exists(user_id, community_id):
-                    return Response({"message", "User is already a community member"})
-                else:
-                    member = CommunityMember.create_member(user_id, community_id)
-                    serializer = CommunityMemberSerializer(member)
+    def list_member_to_verify(self, request):
+        # 'VERIFIED' 'REJECTED' members do not need to the verified
+        members = CommunityMember.objects.exclude(status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)        
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                # Getting the communities of the admin
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+                if admin_communities:                
+                    # Filter members by user's communities 
+                    members = members.filter(community__in=admin_communities)
+                    serializer = CommunityMemberSerializer(members, many=True)                    
                     return Response(serializer.data)
-            else:
-                content = {"message": "User is not logged in"}
-                return Response(content, status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            content = {"message": "User is not logged in"}
-            return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+        return Response([])
 
-    @action(detail=False)
-    def verify_membership(self, request):
-        user_id = int(request.data["user"]["id"])
-        community_id = int(request.data["community"]["id"])
-        if CommunityMember.member_exists(user_id, community_id):
-            member = CommunityMember.objects.filter(user__id=user_id).filter(
-                community__id=community_id
-            )
-            CommunityMember.verify_membership(member.id)
+    @action(detail=False, methods=["patch"])
+    def verify_member(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                user_id = int(request.data["user_id"])
+                community_id = int(request.data["community_id"])
+                if CommunityMember.member_exists(user_id, community_id):
+                    member = CommunityMember.objects.filter(user__id=user_id).filter(
+                        community__id=community_id
+                    )
+                    CommunityMember.verify_member(member[0].id)
 
-            return Response({"message": "Verified!"})
-        else:
-            return Response({"message", "User is already a community member"})
+                    return Response({"message": "Verified!"})
+                else:
+                    return Response({"message", "User is already a community member"})
+        
+        return Response({"message", "Only Administrators can verify community members"})
 
-    @action(detail=False)
-    def reject_membership(self, request):
-        if 'user_id' not in request.data.keys():
-            return Response({"message": "No User was sent in the request"})
-        if 'community_id' not in request.data.keys():
-            return Response({"message": "No Community was sent in the request"})
+    @action(detail=False, methods=["patch"])
+    def reject_member(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                if 'user_id' not in request.data.keys():
+                    return Response({"message": "No User was sent in the request"})
+                if 'community_id' not in request.data.keys():
+                    return Response({"message": "No Community was sent in the request"})
 
-        user_id = int(request.data["user_id"])
-        community_id = int(request.data["community_id"])
-        try:            
-            if CommunityMember.member_exists(user_id, community_id):
-                member = CommunityMember.objects.filter(user__id=user_id).filter(
-                    community__id=community_id
-                )
-                CommunityMember.reject_member(member.id)
+                user_id = int(request.data["user_id"])
+                community_id = int(request.data["community_id"])
+                try:            
+                    if CommunityMember.member_exists(user_id, community_id):
+                        member = CommunityMember.objects.filter(user__id=user_id).filter(
+                            community__id=community_id
+                        )
+                        CommunityMember.reject_member(member[0].id)
 
-                return Response({"message": "Rejected!"})
-            else:
-                return Response({"message", "Membership not found"})
-        except User.DoesNotExist:
-            return Response({"message": "No User with the given id was found"})
-        except Community.DoesNotExist:
-            return Response({"message": "No Community with the given id was found"})
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message", "Membership not found"})
+                except User.DoesNotExist:
+                    return Response({"message": "No User with the given id was found"})
+                except Community.DoesNotExist:
+                    return Response({"message": "No Community with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject community members"})
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
@@ -228,27 +252,30 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            placename.status = PlaceName.VERIFIED
-            placename.status_reason = ""
-            placename.save()
-
-            return Response({"message": "Verified!"})
-        except PlaceName.DoesNotExist:
-            return Response({"message": "No PlaceName with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    PlaceName.verify(int(pk))
+                    return Response({"message": "Verified!"})
+                except PlaceName.DoesNotExist:
+                    return Response({"message": "No PlaceName with the given id was found"})
+        
+        return Response({"message", "Only Administrators can verify contributions"})
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            placename.status = PlaceName.REJECTED
-            placename.status_reason = ""
-            placename.save()
-
-            return Response({"message": "Rejected!"})
-        except PlaceName.DoesNotExist:
-            return Response({"message": "No PlaceName with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    if 'status_reason' in request.data.keys():
+                        PlaceName.reject(int(pk), request.data["status_reason"])
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message": "Reason must be provided"})
+                except PlaceName.DoesNotExist:
+                    return Response({"message": "No PlaceName with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject contributions"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
@@ -258,9 +285,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 return Response({"message": "PlaceName has already been verified"})
             else:
                 if 'status_reason' in request.data.keys():
-                    placename.status = PlaceName.FLAGGED
-                    placename.status_reason = request.data["status_reason"]
-                    placename.save()
+                    PlaceName.flag(int(pk), request.data["status_reason"])
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})
@@ -307,19 +332,20 @@ class PlaceNameViewSet(BaseModelViewSet):
         queryset = self.get_queryset().exclude(status__exact=PlaceName.VERIFIED)
 
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated:                
-                user = User.objects.get(pk=int(request.user.id))
+            if request.user.is_authenticated:
+                admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
-                # Fetch all user's languages
-                languages = user.languages.all()
+                if admin_languages and admin_communities:
+                    # Filter Medias by admin's languages 
+                    queryset_places = queryset.filter(
+                        language__in=admin_languages, community__in=admin_communities
+                    )
 
-                if languages:
-                    # Filter PlaceNames by user's languages 
-                    queryset = queryset.filter(language__in=languages)
-
-                    serializer = self.serializer_class(queryset, many=True)
+                    serializer = self.serializer_class(queryset_places, many=True)
                     
                     return Response(serializer.data)
+        return Response([])
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
@@ -343,42 +369,51 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         queryset = self.get_queryset().exclude(status__exact=Media.VERIFIED)
 
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated:                
-                user = User.objects.get(pk=int(request.user.id))
+            if request.user.is_authenticated:
+                admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
-                languages = user.languages.all()
-
-                if languages:
-                    # Filter Medias by user's languages 
-                    queryset = queryset.filter(placename__language__in=languages)
+                if admin_languages and admin_communities:
+                    # Filter Medias by admin's languages 
+                    queryset_places = queryset.filter(
+                        placename__language__in=admin_languages, placename__community__in=admin_communities
+                    )
+                    queryset_communities = queryset.filter(
+                        community__languages__in=admin_languages, community__in=admin_communities
+                    )
+                    queryset = queryset_communities.union(queryset_places)
 
                     serializer = self.serializer_class(queryset, many=True)
                     
                     return Response(serializer.data)
+        return Response([])
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            media.status = Media.VERIFIED
-            media.status_reason = ""
-            media.save()
-
-            return Response({"message": "Verified!"})
-        except Media.DoesNotExist:
-            return Response({"message": "No Media with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    Media.verify(int(pk))
+                    return Response({"message": "Verified!"})
+                except Media.DoesNotExist:
+                    return Response({"message": "No Media with the given id was found"})
+        
+        return Response({"message", "Only Administrators can verify contributions"})
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            media.status = Media.REJECTED
-            media.status_reason = ""
-            media.save()
-
-            return Response({"message": "Rejected!"})
-        except Media.DoesNotExist:
-            return Response({"message": "No Media with the given id was found"})
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                try:
+                    if 'status_reason' in request.data.keys():
+                        Media.reject(int(pk), request.data["status_reason"])
+                        return Response({"message": "Rejected!"})
+                    else:
+                        return Response({"message": "Reason must be provided"})
+                except Media.DoesNotExist:
+                    return Response({"message": "No Media with the given id was found"})
+        
+        return Response({"message", "Only Administrators can reject contributions"})
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
@@ -388,9 +423,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 return Response({"message": "Media has already been verified"})
             else:
                 if 'status_reason' in request.data.keys():
-                    media.status = Media.FLAGGED
-                    media.status_reason = request.data["status_reason"]
-                    media.save()
+                    Media.flag(int(pk), request.data["status_reason"])
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})
