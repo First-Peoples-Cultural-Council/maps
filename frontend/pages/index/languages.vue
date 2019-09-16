@@ -91,23 +91,14 @@
         </section>
       </template>
     </SideBar>
-    <div
-      v-else-if="this.$route.name === 'index-languages-lang'"
-      :width="detailOneWidth"
-    >
+    <div v-else>
       <nuxt-child />
     </div>
-    <DetailSideBar v-else :width="detailTwoWidth">
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -121,7 +112,6 @@ export default {
     Accordion,
     Badge,
     LanguageCard,
-    DetailSideBar,
     CommunityCard,
     Filters
   },

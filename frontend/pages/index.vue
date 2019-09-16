@@ -4,7 +4,8 @@
     :class="{
       detailModeContainer:
         this.$route.name === 'index-contribute' ||
-        this.$route.name === 'index-languages-lang-details'
+        this.$route.name === 'index-languages-lang-details' ||
+        isDetailMode
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
@@ -130,7 +131,7 @@
         </section>
       </template>
     </SideBar>
-    <div v-else class="sb-new-alt-one">
+    <div v-else class="sb-new-alt-one" :class="{ 'sb-detail': isDetailMode }">
       <nuxt-child />
     </div>
   </div>
@@ -834,6 +835,9 @@ export default {
   height: 100%;
 }
 
+.sb-detail {
+  width: 500px;
+}
 @media (max-width: 992px) {
   .map-loading {
     margin-left: -90px;
