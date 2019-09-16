@@ -137,6 +137,15 @@ export default {
       language: result[0]
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.commit('sidebar/set', true)
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('sidebar/set', true)
+    next()
+  },
   mounted() {
     this.$store.commit('sidebar/set', true)
     this.$eventHub.whenMap(map => {

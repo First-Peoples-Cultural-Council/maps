@@ -4,7 +4,8 @@
     :class="{
       detailModeContainer:
         this.$route.name === 'index-contribute' ||
-        this.$route.name === 'index-languages-lang-details'
+        this.$route.name === 'index-languages-lang-details' ||
+        isDetailMode
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
@@ -130,7 +131,9 @@
         </section>
       </template>
     </SideBar>
-    <nuxt-child v-else />
+    <div v-else class="sb-new-alt-one" :class="{ 'sb-detail': isDetailMode }">
+      <nuxt-child />
+    </div>
   </div>
 </template>
 
@@ -588,6 +591,7 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
+        console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
@@ -700,8 +704,35 @@ export default {
     filterPlaces(bounds) {
       return this.placesSet.filter(place => {
         if (place.geometry !== null) {
-          const point = place.geometry.coordinates
-          return inBounds(bounds, point)
+          // console.log('Place', place)
+          if (place.geometry.type === 'Point') {
+            const point = place.geometry.coordinates
+            return inBounds(bounds, point)
+          }
+
+          if (place.geometry.type === 'Polygon') {
+            let isInBounds = false
+            place.geometry.coordinates.map(points => {
+              points.map(point => {
+                if (inBounds(bounds, point)) {
+                  isInBounds = true
+                  return true
+                }
+              })
+            })
+            return isInBounds
+          }
+
+          if (place.geometry.type === 'LineString') {
+            let isInBounds = false
+            place.geometry.coordinates.map(point => {
+              if (inBounds(bounds, point)) {
+                isInBounds = true
+                return true
+              }
+            })
+            return isInBounds
+          }
         }
       })
     }
@@ -794,6 +825,19 @@ export default {
   display: none !important;
 }
 
+.sb-new-alt-one {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 350px;
+  background-color: white;
+  z-index: 50;
+  height: 100%;
+}
+
+.sb-detail {
+  width: 500px;
+}
 @media (max-width: 992px) {
   .map-loading {
     margin-left: -90px;

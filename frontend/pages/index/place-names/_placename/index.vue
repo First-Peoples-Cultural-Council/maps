@@ -16,6 +16,7 @@
             :audio-file="getMediaUrl(place.audio_file, isServer)"
             :allow-edit="isPlaceOwner()"
             variant="md"
+            :delete-place="isPlaceOwner()"
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>
@@ -241,7 +242,28 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
+          if (this.geo_place.geometry.type === 'Point') {
+            zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
+          }
+          if (this.geo_place.geometry.type === 'Polygon') {
+            map.fitBounds(
+              [
+                this.geo_place.geometry.coordinates[0][0],
+                this.geo_place.geometry.coordinates[0][2]
+              ],
+              { padding: 30 }
+            )
+          }
+          if (this.geo_place.geometry.type === 'LineString') {
+            const coordinates = this.geo_place.geometry.coordinates
+            const mapboxgl = require('mapbox-gl')
+            const bounds = coordinates.reduce(function(bounds, coord) {
+              return bounds.extend(coord)
+            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
+            map.fitBounds(bounds, {
+              padding: 30
+            })
+          }
         }
         map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
       })

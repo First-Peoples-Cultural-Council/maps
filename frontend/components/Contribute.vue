@@ -36,15 +36,43 @@
             </div>
           </div></b-list-group-item
         >
-        <!--
-        <b-list-group-item button @click="handleClick($event, 'polygon')"
-          ><div class="contribute-list-group-title">Add a polygon</div>
-          <div>
-            This option triggers drawing mode, where you will be able to draw a
-            polygon to contribute
+        <b-list-group-item button @click="handleClick($event, 'polygon')">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                src="@/assets/images/add_area_icon_big.svg"
+                alt="Add an area"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an area
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a polygon to contribute
+            </div>
           </div></b-list-group-item
         >
-        -->
+
+        <b-list-group-item button @click="handleClick($event, 'line')">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                src="@/assets/images/add_area_icon_big.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add a line
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
       </b-list-group>
     </b-modal>
   </div>

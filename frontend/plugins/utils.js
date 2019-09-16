@@ -67,6 +67,14 @@ export const getLanguagesFromDraw = (features, languageSet) => {
         )
       })
     }
+    if (geometry.type === 'LineString') {
+      geometry.coordinates.map(coord => {
+        const point = formatPoint(coord)
+        languagesInFeature.push(
+          ...filterLanguages(languageSet, null, 'draw', point, this)
+        )
+      })
+    }
   })
   return uniqBy(languagesInFeature, 'name')
 }
