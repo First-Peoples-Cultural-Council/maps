@@ -1,158 +1,136 @@
 <template>
   <div>
-    <client-only>
-      <DetailSideBar>
-        <template v-slot:badges>
-          <h5
-            class="color-gray font-08 p-0 m-0"
-            style="margin-bottom: 0.2em !important;"
-          >
-            <span class="valign-middle header-mobile d-none">
-              Community:
-              <span class="font-weight-bold">{{ commDetails.name }}</span>
-            </span>
-          </h5>
-          <div class="badge-container d-none">
-            <Badge
-              content="Languages"
-              :number="commDetails.languages.length"
-              class="cursor-pointer"
-              type="language"
-            ></Badge>
-          </div>
-        </template>
-        <template v-slot:content>
-          <CommunityDetailCard
-            :name="commDetails.name"
-            :population="commDetails.population"
-            :server="isServer"
-            :audio-file="commDetails.audio_file"
-          ></CommunityDetailCard>
-          <hr class="sidebar-divider mt-0" />
-          <Filters class="mb-1"></Filters>
+    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
+    <CommunityDetailCard
+      :name="commDetails.name"
+      :population="commDetails.population"
+      :server="isServer"
+      :audio-file="commDetails.audio_file"
+    ></CommunityDetailCard>
+    <hr class="sidebar-divider mt-0" />
+    <Filters class="mb-1"></Filters>
+    <section class="pl-3 pr-3">
+      <div v-if="otherNames">
+        <h5 class="other-lang-names-title text-uppercase mt-4">
+          Other Community Names
+        </h5>
+        <LanguageDetailBadge
+          v-for="(name, index) in otherNames"
+          :key="index"
+          :content="name"
+          class="mr-2"
+        ></LanguageDetailBadge>
+      </div>
+      <ul class="list-style-none m-0 p-0 mt-2">
+        <li>
+          <span class="font-08 color-gray">Email:</span>
+          <span class="font-08 font-weight-bold color-gray">
+            {{ commDetails.email || 'N/A' }}
+          </span>
+        </li>
+        <li>
+          <span class="font-08 color-gray">Website:</span>
+          <span class="font-08 font-weight-bold color-gray">
+            {{ commDetails.website || 'N/A' }}
+          </span>
+        </li>
+        <li>
+          <span class="font-08 color-gray">Phone #:</span>
+          <span class="font-08 font-weight-bold color-gray">
+            {{ commDetails.phone || 'N/A' }}
+          </span>
+        </li>
+        <li>
+          <span class="font-08 color-gray">Alternate Phone #:</span>
+          <span class="font-08 font-weight-bold color-gray">
+            {{ commDetails.alt_phone || 'N/A' }}
+          </span>
+        </li>
+        <li>
+          <span class="font-08 color-gray">Fax #:</span>
+          <span class="font-08 font-weight-bold color-gray">
+            {{ commDetails.fax || 'N/A' }}
+          </span>
+        </li>
+      </ul>
+      <div class="mt-3">
+        <b-table
+          hover
+          :items="lna"
+          responsive
+          small
+          table-class="lna-table"
+          thead-class="lna-table-thead"
+          tbody-class="lna-table-tbody"
+        ></b-table>
+      </div>
+    </section>
+    <section class="pl-3 pr-3">
+      <Badge
+        v-if="commDetails.languages && commDetails.languages.length > 0"
+        content="Languages"
+        :number="commDetails.languages.length"
+        class="cursor-pointer"
+        type="language"
+        :mode="getBadgeStatus(mode, 'lang')"
+        @click.native.prevent="handleBadge($event, 'lang')"
+      ></Badge>
+      <Badge
+        v-if="commDetails.places && commDetails.places.length > 0"
+        content="Points Of Interest"
+        :number="commDetails.places.length"
+        class="cursor-pointer mb-1"
+        bgcolor="#c46156"
+        type="poi"
+        :mode="getBadgeStatus(mode, 'place')"
+        @click.native.prevent="handleBadge($event, 'place')"
+      ></Badge>
 
-          <section class="pl-3 pr-3">
-            <h5 class="other-lang-names-title text-uppercase mt-4">
-              Other Community Names
-            </h5>
-            <LanguageDetailBadge
-              v-for="(name, index) in otherNames"
-              :key="index"
-              :content="name"
-              class="mr-2"
-            ></LanguageDetailBadge>
-            <ul class="list-style-none m-0 p-0 mt-2">
-              <li>
-                <span class="font-08 color-gray">Email:</span>
-                <span class="font-08 font-weight-bold color-gray">
-                  {{ commDetails.email || 'N/A' }}
-                </span>
-              </li>
-              <li>
-                <span class="font-08 color-gray">Website:</span>
-                <span class="font-08 font-weight-bold color-gray">
-                  {{ commDetails.website || 'N/A' }}
-                </span>
-              </li>
-              <li>
-                <span class="font-08 color-gray">Phone #:</span>
-                <span class="font-08 font-weight-bold color-gray">
-                  {{ commDetails.phone || 'N/A' }}
-                </span>
-              </li>
-              <li>
-                <span class="font-08 color-gray">Alternate Phone #:</span>
-                <span class="font-08 font-weight-bold color-gray">
-                  {{ commDetails.alt_phone || 'N/A' }}
-                </span>
-              </li>
-              <li>
-                <span class="font-08 color-gray">Fax #:</span>
-                <span class="font-08 font-weight-bold color-gray">
-                  {{ commDetails.fax || 'N/A' }}
-                </span>
-              </li>
-            </ul>
-            <div class="mt-3">
-              <b-table
-                hover
-                :items="lna"
-                responsive
-                small
-                table-class="lna-table"
-                thead-class="lna-table-thead"
-                tbody-class="lna-table-tbody"
-              ></b-table>
-            </div>
-          </section>
-        </template>
-        <section class="pl-3 pr-3">
-          <Badge
-            v-if="commDetails.languages && commDetails.languages.length > 0"
-            content="Languages"
-            :number="commDetails.languages.length"
-            class="cursor-pointer"
-            type="language"
-            :mode="getBadgeStatus(mode, 'lang')"
-            @click.native.prevent="handleBadge($event, 'lang')"
-          ></Badge>
-          <Badge
-            v-if="commDetails.places && commDetails.places.length > 0"
-            content="Points Of Interest"
-            :number="commDetails.places.length"
-            class="cursor-pointer mb-1"
-            bgcolor="#c46156"
-            type="poi"
-            :mode="getBadgeStatus(mode, 'place')"
-            @click.native.prevent="handleBadge($event, 'place')"
-          ></Badge>
-        </section>
-        <b-row class="pr-3 pl-3">
-          <b-col
-            v-for="language in commDetails.languages"
-            :key="'language' + language.id"
-            lg="12"
-            xl="12"
-            md="6"
-            sm="6"
+      <b-row>
+        <b-col
+          v-for="language in commDetails.languages"
+          :key="'language' + language.id"
+          lg="12"
+          xl="12"
+          md="6"
+          sm="6"
+        >
+          <LanguageCard
+            v-if="mode !== 'place'"
+            class="mt-3 hover-left-move"
+            :name="language.name"
+            :color="language.color"
+            @click.native.prevent="
+              handleCardClick($event, language.name, 'lang')
+            "
+          ></LanguageCard>
+          <div
+            v-if="
+              commDetails.places &&
+                commDetails.places.length > 0 &&
+                mode !== 'lang'
+            "
           >
-            <LanguageCard
-              v-if="mode !== 'place'"
+            <PlaceCard
+              v-for="(place, index) in commDetails.places"
+              :key="`placescomm${index}`"
               class="mt-3 hover-left-move"
-              :name="language.name"
-              :color="language.color"
+              :name="place.name"
               @click.native.prevent="
-                handleCardClick($event, language.name, 'lang')
-              "
-            ></LanguageCard>
-            <div
-              v-if="
-                commDetails.places &&
-                  commDetails.places.length > 0 &&
-                  mode !== 'lang'
+                handleCardClick($event, place.name, 'place')
               "
             >
-              <PlaceCard
-                v-for="(place, index) in commDetails.places"
-                :key="`placescomm${index}`"
-                class="mt-3 hover-left-move"
-                :name="place.name"
-                @click.native.prevent="
-                  handleCardClick($event, place.name, 'place')
-                "
-              >
-              </PlaceCard>
-            </div>
-          </b-col>
-        </b-row>
-      </DetailSideBar>
-    </client-only>
+            </PlaceCard>
+          </div>
+        </b-col>
+      </b-row>
+    </section>
   </div>
 </template>
 
 <script>
 import { values, omit } from 'lodash'
-import DetailSideBar from '@/components/DetailSideBar.vue'
+import Logo from '@/components/Logo.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
@@ -163,13 +141,14 @@ import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import PlaceCard from '@/components/places/PlacesCard.vue'
 export default {
   components: {
-    DetailSideBar,
+    // DetailSideBar,
     CommunityDetailCard,
     LanguageDetailBadge,
     Filters,
     LanguageCard,
     Badge,
-    PlaceCard
+    PlaceCard,
+    Logo
   },
   data() {
     return {
@@ -240,7 +219,11 @@ export default {
       })
     },
     otherNames() {
-      return this.commDetails.other_names.split(',')
+      if (this.commDetails.other_names) {
+        return this.commDetails.other_names.split(',')
+      } else {
+        return null
+      }
     }
   },
   watch: {
@@ -262,6 +245,7 @@ export default {
     const isServer = !!process.server
 
     return {
+      mode: 'All',
       communityDetail,
       isServer,
       community,

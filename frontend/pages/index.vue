@@ -130,7 +130,9 @@
         </section>
       </template>
     </SideBar>
-    <nuxt-child v-else />
+    <div v-else class="sb-new-alt-one">
+      <nuxt-child />
+    </div>
   </div>
 </template>
 
@@ -820,6 +822,16 @@ export default {
 
 .mapbox-gl-draw_ctrl-draw-btn {
   display: none !important;
+}
+
+.sb-new-alt-one {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 350px;
+  background-color: white;
+  z-index: 50;
+  height: 100%;
 }
 
 @media (max-width: 992px) {
