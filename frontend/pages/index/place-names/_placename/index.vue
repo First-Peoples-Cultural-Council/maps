@@ -16,6 +16,7 @@
             :audio-file="getMediaUrl(place.audio_file, isServer)"
             :allow-edit="isPlaceOwner()"
             variant="md"
+            :delete-place="isPlaceOwner()"
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>

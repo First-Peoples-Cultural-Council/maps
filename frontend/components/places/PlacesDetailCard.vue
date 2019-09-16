@@ -39,6 +39,14 @@
               @click.native="handleEdit"
             ></CardBadge>
           </div>
+          <div v-if="deletePlace" class="d-inline-block">
+            <CardBadge
+              content="Delete"
+              type="delete"
+              :class="{ 'md-size-badge': variant === 'md' }"
+              @click.native="modalShow = true"
+            ></CardBadge>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -59,12 +67,17 @@
         </div>
       </template>
     </Card>
+    <b-modal v-model="modalShow" hide-header @ok="handleDelete"
+      >Are you sure you want to delete this place?</b-modal
+    >
   </div>
 </template>
 
 <script>
 import Card from '@/components/Card.vue'
 import CardBadge from '@/components/CardBadge.vue'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
+
 export default {
   components: {
     Card,
@@ -102,11 +115,16 @@ export default {
     variant: {
       type: String,
       default: 'sm'
+    },
+    deletePlace: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      modalShow: false
     }
   },
   methods: {
@@ -135,6 +153,15 @@ export default {
           id: this.id
         }
       })
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(`${getApiUrl(`placename/${this.id}`)}`, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+      this.modalShow = false
     }
   }
 }
