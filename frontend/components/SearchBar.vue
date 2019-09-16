@@ -35,7 +35,15 @@
             class="search-row"
           >
             <div v-if="results.length > 0" class="mb-3">
-              <h5 class="search-result-group font-1 pl-3 pr-3">{{ key }}</h5>
+              <h5
+                v-if="key === 'Locations'"
+                class="search-result-group font-1 pl-3 pr-3"
+              >
+                Locations from the BC Geographical Names Database
+              </h5>
+              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+                {{ key }}
+              </h5>
               <div
                 v-for="(result, index) in results"
                 :key="index"
