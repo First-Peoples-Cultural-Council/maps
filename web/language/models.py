@@ -345,6 +345,8 @@ class Favourite(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)
     place = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
     media = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True)
+    favourite_type = models.CharField(max_length=16, null=True, blank=True, default="")
+    description = models.CharField(max_length=255, null=True, blank=True, default="")
 
     def favourite_place_already_exists(user_id, place_id):
         favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)

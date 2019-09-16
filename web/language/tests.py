@@ -923,21 +923,33 @@ class MediaAPITests(BaseTestCase):
 
 class FavouriteAPITests(BaseTestCase):
     def setUp(self):
+        super().setUp()
         self.place = PlaceName.objects.create(name="Test place 001")
         self.media = Media.objects.create(name="Test media 001")
-        return super().setUp()
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
-    def test_favourite_detail(self):
+    def test_detail_with_placename(self):
         """
 		Ensure we can retrieve a newly created Favourite object.
 		"""
-        test_favourite = Favourite.objects.create(user=self.user, place=self.place)
+        test_favourite = Favourite.objects.create(user=self.user, place=self.place, name="test favourite")
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['place']['id'], self.place.id)
+
+    def test_detail_with_placename(self):
+        """
+		Ensure we can retrieve a newly created Favourite object.
+		"""
+        test_favourite = Favourite.objects.create(user=self.user, media=self.media, name="test favourite")
+        response = self.client.get(
+            "/api/favourite/{}/".format(test_favourite.id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['media']['id'], self.media.id)
 
     def test_favourite_list_route_exists(self):
         """
@@ -952,7 +964,7 @@ class FavouriteAPITests(BaseTestCase):
     	"""
         response = self.client.post(
             "/api/favourite/",
-            {"place": self.place.id, "user": self.user.id},
+            {"place": self.place.id, "user": self.user.id, "name": "test favourite"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -978,7 +990,7 @@ class FavouriteAPITests(BaseTestCase):
     	"""
         response = self.client.post(
             "/api/favourite/",
-            {"media": self.media.id, "user": self.user.id},
+            {"media": self.media.id, "user": self.user.id, "name": "test favourite"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

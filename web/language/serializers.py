@@ -337,13 +337,28 @@ class MediaSerializer(serializers.ModelSerializer):
         )
 
 
+# Serializer only for composing Favourite data
+class FavouritePlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "other_names", "id")
+
+
+# Serializer only for composing Favourite data
+class FavouriteMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ("id", "name", "description", "file_type", "url", "media_file")
+
+
 class FavouriteSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
-    media = MediaSerializer(read_only=True)
+    media = FavouriteMediaSerializer(read_only=True)
+    place = FavouritePlaceNameSerializer(read_only=True)
 
     class Meta:
         model = Favourite
-        fields = ("id", "media", "user")
+        fields = ("id", "name", "media", "user", "place", "favourite_type", "description")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
