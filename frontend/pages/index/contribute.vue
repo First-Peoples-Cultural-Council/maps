@@ -506,8 +506,10 @@ export default {
       vm.$eventHub.whenMap(map => {
         if (vm.$route.query.mode === 'point') {
           document.querySelector('.mapbox-gl-draw_point').click()
-        } else {
+        } else if (vm.$route.query.mode === 'polygon') {
           document.querySelector('.mapbox-gl-draw_polygon').click()
+        } else if (vm.$route.query.mode === 'line') {
+          document.querySelector('.mapbox-gl-draw_line').click()
         }
       })
 
