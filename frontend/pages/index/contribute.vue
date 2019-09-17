@@ -509,6 +509,7 @@ export default {
         } else if (vm.$route.query.mode === 'polygon') {
           document.querySelector('.mapbox-gl-draw_polygon').click()
         } else if (vm.$route.query.mode === 'line') {
+          console.log('It got here')
           document.querySelector('.mapbox-gl-draw_line').click()
         }
       })

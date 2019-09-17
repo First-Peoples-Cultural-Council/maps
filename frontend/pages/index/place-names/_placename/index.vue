@@ -78,9 +78,7 @@
                     >Name: {{ media.name }}
                   </span>
                 </div>
-                <div class="font-07 pl-2" @click="handleFlag($event, media)">
-                  Flag
-                </div>
+                <FlagModal :id="media.id"></FlagModal>
               </div>
             </li>
             <li v-if="media.description && media.description !== 'null'">
@@ -142,13 +140,12 @@ import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import ToolTip from '@/components/Tooltip.vue'
-
+import FlagModal from '@/components/Flag/FlagModal.vue'
 import {
   getApiUrl,
   encodeFPCC,
   getMediaUrl,
-  getGenericFileType,
-  getCookie
+  getGenericFileType
 } from '@/plugins/utils.js'
 import FileUploader from '@/components/FileUploader.vue'
 
@@ -158,7 +155,8 @@ export default {
     Filters,
     DetailSideBar,
     FileUploader,
-    ToolTip
+    ToolTip,
+    FlagModal
   },
   data() {
     return {}
@@ -212,18 +210,6 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
-    async handleFlag(e, media) {
-      const result = await this.$axios.$patch(
-        `${getApiUrl(`media/${media.id}/flag/`)}`,
-        {},
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-      console.log('Flag Result', result)
-    },
     isPlaceOwner() {
       if (this.place.creator) {
         if (this.uid === this.place.creator.id) return true
