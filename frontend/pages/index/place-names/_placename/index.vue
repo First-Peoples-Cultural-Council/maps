@@ -20,6 +20,12 @@
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>
+          <FlagModal
+            :id="place.id"
+            class="ml-4 mr-4"
+            type="placename"
+            title="Flag Point Of Interest"
+          ></FlagModal>
         </div>
         <section class="mt-4 ml-4 mr-4">
           <div v-if="place.description">

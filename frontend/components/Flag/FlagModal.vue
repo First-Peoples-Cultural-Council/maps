@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-inline-block cursor-pointer" @click="modalShow = true">
-      Flag
+      {{ title || 'Flag' }}
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert
@@ -37,6 +37,14 @@ export default {
     id: {
       default: null,
       type: Number
+    },
+    type: {
+      default: 'media',
+      type: String
+    },
+    title: {
+      default: null,
+      type: String
     }
   },
   data() {
@@ -82,7 +90,7 @@ export default {
         return false
       }
       const result = await this.$axios.$patch(
-        `${getApiUrl(`media/${id}/flag/`)}`,
+        `${getApiUrl(`${this.type}/${id}/flag/`)}`,
         {
           status_reason: reason
         },
