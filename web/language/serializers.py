@@ -358,7 +358,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favourite
-        fields = ("id", "name", "media", "user", "place", "favourite_type", "description")
+        fields = ("id", "name", "media", "user", "place", "favourite_type", "description", "point", "zoom")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
