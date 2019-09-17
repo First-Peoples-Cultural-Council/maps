@@ -27,7 +27,15 @@
             title="Flag Point Of Interest"
           ></FlagModal>
         </div>
-        <section class="mt-4 ml-4 mr-4">
+        <section class="mt-3 ml-4 mr-4">
+          <div v-if="place.community" class="mb-4">
+            <CommunityCard
+              :name="community.name"
+              @click.native="
+                $router.push({ path: `/content/${encodeFPCC(community.name)}` })
+              "
+            ></CommunityCard>
+          </div>
           <div v-if="place.description">
             <h5 class="font-08 text-uppercase color-gray">Description</h5>
             <p class="font-08">{{ place.description }}</p>
@@ -36,10 +44,7 @@
             <h5 class="font-08 text-uppercase color-gray">Category</h5>
             <p class="font-08">{{ place.category_obj.name }}</p>
           </div>
-          <div v-if="place.community">
-            <h5 class="font-08 text-uppercase color-gray">Community</h5>
-            <p class="font-08">{{ place.community.name }}</p>
-          </div>
+
           <div v-if="place.common_name">
             <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
             <p class="font-08">{{ place.common_name }}</p>
@@ -147,6 +152,8 @@ import Filters from '@/components/Filters.vue'
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import ToolTip from '@/components/Tooltip.vue'
 import FlagModal from '@/components/Flag/FlagModal.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
+
 import {
   getApiUrl,
   encodeFPCC,
@@ -162,7 +169,8 @@ export default {
     DetailSideBar,
     FileUploader,
     ToolTip,
-    FlagModal
+    FlagModal,
+    CommunityCard
   },
   data() {
     return {}
@@ -199,12 +207,18 @@ export default {
       getApiUrl(`placename/${geo_place.id}/?${now.getTime()}`)
     )
 
+    let community = null
+    if (place.community) {
+      community = await $axios.$get(getApiUrl(`community/${place.community}/`))
+    }
+
     const isServer = !!process.server
     return {
       geo_place,
       place,
       isServer,
-      medias: place.medias
+      medias: place.medias,
+      community
     }
   },
   mounted() {},
@@ -216,6 +230,7 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    encodeFPCC,
     isPlaceOwner() {
       if (this.place.creator) {
         if (this.uid === this.place.creator.id) return true
