@@ -4,6 +4,13 @@
       Flag
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
+      <b-alert
+        v-if="errorMessage"
+        show
+        variant="danger"
+        class="font-08 padding-05"
+        >{{ errorMessage }}</b-alert
+      >
       <h5 class="font-08">Select a reason</h5>
       <b-form-select
         v-model="selected"
@@ -43,11 +50,17 @@ export default {
         { value: 'c', text: 'Other' }
       ],
       text: '',
-      flagged: false
+      flagged: false,
+      errorMessage: null
     }
   },
   methods: {
     async handleSubmit(e) {
+      e.preventDefault()
+      if (!this.selected) {
+        this.errorMessage = 'Please select an option'
+        return false
+      }
       console.log('Handle Submit')
       e.preventDefault()
       const reason =
@@ -56,9 +69,13 @@ export default {
           : this.options.find(o => o.value === this.selected).text
       console.log('Reason', reason)
       const result = await this.submitFlag(this.id, reason)
-      if (result === '"Flagged!"') {
+      this.modalShow = false
+      if (result.message === 'Flagged!') {
+        this.$root.$emit('notification', {
+          content: 'Flag Succeeded. Thanks!',
+          time: 3000
+        })
       }
-      // this.modalShow = false
     },
     async submitFlag(id, reason) {
       if (!id) {

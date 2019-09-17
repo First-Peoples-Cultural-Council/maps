@@ -134,6 +134,7 @@
     <div v-else class="sb-new-alt-one" :class="{ 'sb-detail': isDetailMode }">
       <nuxt-child />
     </div>
+    <ModalNotification></ModalNotification>
   </div>
 </template>
 
@@ -158,6 +159,7 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
+import ModalNotification from '@/components/ModalNotification.vue'
 import {
   getApiUrl,
   encodeFPCC,
@@ -195,7 +197,8 @@ export default {
     Filters,
     Logo,
     Contribute,
-    DrawingTools
+    DrawingTools,
+    ModalNotification
   },
   data() {
     return {
