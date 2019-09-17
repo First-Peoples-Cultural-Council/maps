@@ -5,6 +5,7 @@
       :name="getUserName()"
       type="none"
       :edit="isAdmin()"
+      :approval="true"
     ></UserDetailCard>
     <section class="ml-2 mr-2 mt-2">
       <div v-if="user.languages && user.languages.length > 0">

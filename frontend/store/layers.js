@@ -56,7 +56,7 @@ export const mutations = {
     const toggleLayer = state.layers.find(l => l.id === layer.id)
     toggleLayer.active = !toggleLayer.active
     if (toggleLayer.name === 'Sleeping Languages') {
-      if (toggleLayer.active) {
+      if (!toggleLayer.active) {
         layer.layerNames.map(l => {
           map.setFilter(l, ['!', ['get', 'sleeping']])
         })

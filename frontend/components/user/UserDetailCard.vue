@@ -33,6 +33,17 @@
             "
           ></CardBadge>
         </div>
+        <div v-if="approval && id" class="d-inline-block">
+          <CardBadge
+            content="Approval"
+            type="edit"
+            @click.native="
+              $router.push({
+                path: `/profile/approvals`
+              })
+            "
+          ></CardBadge>
+        </div>
       </template>
       <template v-slot:footer>
         <div
@@ -102,6 +113,10 @@ export default {
     id: {
       type: Number,
       default: null
+    },
+    approval: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
