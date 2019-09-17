@@ -12,6 +12,8 @@ from .models import (
     LNA,
     LNAData,
     Media,
+    Favourite,
+    Notification,
 )
 
 
@@ -31,5 +33,7 @@ admin.site.register(LanguageFamily)
 admin.site.register(Community)
 admin.site.register(CommunityMember)
 admin.site.register(Media)
+admin.site.register(Favourite)
+admin.site.register(Notification)
 admin.site.register(LNA)
 admin.site.register(LNAData, LNADataAdmin)

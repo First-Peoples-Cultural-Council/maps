@@ -13,6 +13,7 @@ from .models import (
     PlaceNameCategory,
     Media,
     Favourite,
+    Notification,
     CommunityLanguageStats,
 )
 
@@ -37,6 +38,7 @@ from .serializers import (
     ChampionSerializer,
     MediaSerializer,
     FavouriteSerializer,
+    NotificationSerializer,
     CommunityLanguageStatsSerializer,
 )
 
@@ -455,6 +457,14 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
     #         favourite = Favourite.create_favourite(user_id, media_id)
     #         serializer = FavouriteSerializer(favourite)
     #         return Response(serializer.data)
+
+
+class NotificationViewSet(BaseModelViewSet):
+    serializer_class = NotificationSerializer
+    queryset = Notification.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class LanguageGeoList(generics.ListAPIView):
