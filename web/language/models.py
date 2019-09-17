@@ -366,6 +366,16 @@ class Favourite(BaseModel):
             return False
 
 
+class Notification(BaseModel):
+    user = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+    language = models.ForeignKey(
+        Language, null=True, default=None, on_delete=models.SET_NULL
+    )
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True, default=None
+    )
+
+
 class Champion(BaseModel):
     bio = models.TextField(default="")
     job = models.CharField(max_length=255, default="")

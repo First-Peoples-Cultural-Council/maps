@@ -13,6 +13,7 @@ from .views import (
     ChampionViewSet,
     MediaViewSet,
     FavouriteViewSet,
+    NotificationViewSet,
     CommunityLanguageStatsViewSet,
 )
 
@@ -30,6 +31,7 @@ router.register(r"placename", PlaceNameViewSet, basename="placename")
 # Only application usage
 router.register(r"media", MediaViewSet, basename="media")
 router.register(r"favourite", FavouriteViewSet, basename="favourite")
+router.register(r"notification", NotificationViewSet, basename="notification")
 
 urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
