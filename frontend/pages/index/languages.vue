@@ -59,7 +59,10 @@
                   <LanguageCard
                     class="mt-3 hover-left-move"
                     :name="language.name"
-                    :color="language.color"
+                    :color="
+                      (language.family && language.family.color) ||
+                        language.color
+                    "
                     @click.native.prevent="
                       handleCardClick($event, language.name, 'lang')
                     "
