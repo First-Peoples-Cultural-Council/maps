@@ -62,6 +62,37 @@
           </ul>
         </div>
       </div>
+      <div v-if="usersToVerify && usersToVerify.length > 0">
+        <h5>Users Waiting For Verification</h5>
+        <div v-for="utv in usersToVerify" :key="`utv${utv.id}`">
+          <ul>
+            <li>UserName: {{ utv.user.username }}</li>
+            <li>First Name: {{ utv.user.first_name }}</li>
+            <li>Last Name: {{ utv.user.last_name }}</li>
+            <li>Community: {{ utv.community.name }}</li>
+            <li>
+              <b-button
+                @click="
+                  handleUser($event, utv, {
+                    verify: 'verify'
+                  })
+                "
+                >Verify</b-button
+              >
+            </li>
+            <li>
+              <b-button
+                @click="
+                  handleUser($event, utv, {
+                    reject: 'reject'
+                  })
+                "
+                >Reject</b-button
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -87,12 +118,39 @@ export default {
     const mediaToVerify = await $axios.$get(
       `${getApiUrl('media/list_to_verify/')}`
     )
+
+    const usersToVerify = await $axios.$get(
+      `${getApiUrl('community/list_member_to_verify/')}`
+    )
     return {
       placesToVerify,
-      mediaToVerify
+      mediaToVerify,
+      usersToVerify
     }
   },
   methods: {
+    async handleUser(e, tv, { verify, reject }) {
+      const url = {
+        verify: getApiUrl('community/verify_member/'),
+        reject: getApiUrl('community/reject_member/')
+      }
+      const result = await this.$axios.$patch(
+        url[verify || reject],
+        {
+          user_id: tv.user.id,
+          community_id: tv.community.id
+        },
+        {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }
+      )
+      if (result.message === 'Verified!' || result.messsage === 'Rejected!') {
+        this.usersToVerify = this.usersToVerify.filter(u => u.id !== tv.id)
+      }
+      console.log('Result', result)
+    },
     async handleApproval(e, tv, { verify, reject, type }) {
       const mode = verify ? 'verify' : 'reject'
       const result = await this.$axios.$patch(
