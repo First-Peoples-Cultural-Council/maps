@@ -4,7 +4,7 @@
       ref="fileUpload"
       v-model="file"
       class="file-upload-input"
-      placeholder="Choose a file or drop it here..."
+      :placeholder="placeholder"
       drop-placeholder="Drop file here..."
     ></b-form-file>
     <transition name="fade">
@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import { getCookie } from '@/plugins/utils.js'
 import ToolTip from '@/components/Tooltip.vue'
 
 export default {
@@ -61,9 +60,17 @@ export default {
     ToolTip
   },
   props: {
-    placeId: {
+    id: {
       default: null,
       type: Number
+    },
+    type: {
+      default: 'placename',
+      type: String
+    },
+    placeholder: {
+      default: 'Choose a file or drop it here',
+      type: String
     }
   },
   data() {
@@ -93,27 +100,15 @@ export default {
         return (this.errorMessage = 'Please enter the name of the file')
       }
       const formData = this.getFormData()
-      const VALID_FILE_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'application/pdf',
-        'audio/mpeg'
-      ]
-      if (this.file & !VALID_FILE_TYPES.includes(this.file.type)) {
-        alert('invalid file type, try uploading a PNG, JPG, audio file or PDF.')
-        return
-      }
+
       try {
         result = await this.uploadFile(formData)
       } catch (e) {
         console.warn('Error uploading files', e)
         result = e.response
       }
-      this.clearFiles()
+      this.resetToInitialState()
       this.$root.$emit('fileUploaded', result)
-      this.file = null
-      this.fileName = ''
-      this.description = ''
     },
     getFormData() {
       const formData = new FormData()
@@ -121,15 +116,11 @@ export default {
       formData.append('file_type', this.file.type)
       formData.append('description', this.description)
       formData.append('media_file', this.file)
-      formData.append('placename', this.placeId)
+      formData.append(`${this.type}`, this.id)
       return formData
     },
     async uploadFile(formData) {
-      const result = await this.$axios.$post(`/api/media/`, formData, {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      })
+      const result = await this.$store.dispatch('file/uploadMedia', formData)
       return result
     }
   }
