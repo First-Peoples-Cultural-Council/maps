@@ -7,6 +7,16 @@
         <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`">
           <ul>
             <li>Name: {{ ptv.name }}</li>
+            <li>
+              <b-button @click="handlePlace($event, ptv, { verify: true })"
+                >Verify</b-button
+              >
+            </li>
+            <li>
+              <b-button @click="handlePlace($event, ptv, { reject: true })"
+                >Reject</b-button
+              >
+            </li>
           </ul>
         </div>
       </div>
@@ -23,7 +33,7 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -46,6 +56,29 @@ export default {
     return {
       placesToVerify,
       mediaToVerify
+    }
+  },
+  methods: {
+    async handlePlace(e, ptv, { verify, reject }) {
+      const mode = verify ? 'verify' : 'reject'
+      const result = await this.$axios.$patch(
+        `${getApiUrl(`placename/${ptv.id}/${mode}/`)}`,
+        {
+          status_reason: mode
+        },
+        {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }
+      )
+      console.log('Result', result)
+      if (
+        result &&
+        (result.message === 'Verified!' || result.message === 'Rejected!')
+      ) {
+        this.placesToVerify = this.placesToVerify.filter(p => p.id !== ptv.id)
+      }
     }
   }
 }
