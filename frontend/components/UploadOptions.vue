@@ -18,16 +18,17 @@
       <b-list-group-item
         class="flex-column align-items-start"
         @click="
-          chooseUploadType($event, { comp: 'FileUploader', mode: 'photo' })
+          chooseUploadType($event, {
+            comp: 'AudioRecorder',
+            mode: 'externalAudio'
+          })
         "
       >
         <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1">Upload A Photo</h5>
+          <h5 class="mb-1">Record/Upload Audio</h5>
         </div>
 
-        <small class="text-muted"
-          >Add a significant photo pertaining to this area</small
-        >
+        <small class="text-muted">Record or upload a recording</small>
       </b-list-group-item>
     </b-list-group>
   </div>

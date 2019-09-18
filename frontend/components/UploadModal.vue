@@ -29,6 +29,7 @@
               :id="id"
               :type="type"
               :placeholder="placeholder"
+              :mode="mode"
             ></component>
           </transition>
         </b-col>
@@ -37,12 +38,14 @@
   </div>
 </template>
 <script>
-import FileUploader from '@/components/FileUploader'
+import FileUploader from '@/components/FileUploader.vue'
+import AudioRecorder from '@/components/AudioRecorder.vue'
 import UploadOptions from '@/components/UploadOptions.vue'
 export default {
   components: {
     FileUploader,
-    UploadOptions
+    UploadOptions,
+    AudioRecorder
   },
   props: {
     id: {
@@ -58,7 +61,7 @@ export default {
     return {
       modalShow: false,
       view: 'UploadOptions',
-      placeholder: 'Drop a photo',
+      placeholder: 'Drop or select photo',
       mode: null
     }
   },

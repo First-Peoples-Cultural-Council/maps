@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row no-gutters>
-      <b-col xl="10" class="pr-1">
+      <b-col lg="10" xl="10" class="pr-1">
         <b-form-file
           ref="fileUpload"
           v-model="file"
@@ -24,7 +24,8 @@
                 class="d-inline-block valign-middle"
               />
               to record the pronounciation or
-              <span style="color: #C46257;">click here</span> to choose a file
+              <span style="color: #C46257;">click here</span> to choose an audio
+              file
               <span v-if="audioErrorMessage" class="d-block">
                 <b-alert
                   style="line-height: 1em;"
@@ -81,7 +82,7 @@
           </div>
         </div>
       </b-col>
-      <b-col xl="2">
+      <b-col lg="2" xl="2">
         <div
           v-if="recordingSupport"
           class="text-center cursor-pointer"
@@ -93,6 +94,11 @@
             alt="Record"
           />
         </div>
+      </b-col>
+    </b-row>
+    <b-row v-if="mode === 'externalAudio' && (audio || file)">
+      <b-col xl="12">
+        External Audio
       </b-col>
     </b-row>
   </div>
