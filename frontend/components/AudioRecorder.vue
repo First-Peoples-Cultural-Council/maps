@@ -98,7 +98,33 @@
     </b-row>
     <b-row v-if="mode === 'externalAudio' && (audio || file)">
       <b-col xl="12">
-        External Audio
+        <label class="font-08" for="file-name">Title</label>
+
+        <ToolTip
+          content="Give the file a title so that users know what it is."
+        ></ToolTip>
+        <b-form-input
+          id="file-name"
+          v-model="fileName"
+          class="font-08"
+          placeholder="Enter Title (required)"
+          required
+        ></b-form-input>
+
+        <label class="mt-3 font-08" for="textarea">Description</label>
+
+        <ToolTip
+          content="If the file needs more information, for example a description of what it includes or copyright information, add it here."
+        ></ToolTip>
+        <b-form-textarea
+          id="textarea"
+          v-model="description"
+          placeholder="Enter description"
+          rows="3"
+          max-rows="6"
+          class="mt-2 mb-2 font-08"
+        ></b-form-textarea>
+        <b-button variant="dark" size="sm">Upload</b-button>
       </b-col>
     </b-row>
   </div>
