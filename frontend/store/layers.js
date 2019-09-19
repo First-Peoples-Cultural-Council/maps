@@ -26,7 +26,7 @@ export const state = () => ({
         'fn-lang-area-outlines-fade',
         'fn-lang-areas-fill'
       ],
-      active: true
+      active: false
     },
     {
       name: 'Reserves',
