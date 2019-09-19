@@ -54,6 +54,7 @@
 
 <script>
 import ToolTip from '@/components/Tooltip.vue'
+import { getFormData } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -103,21 +104,36 @@ export default {
 
       try {
         result = await this.uploadFile(formData)
+        if (result.status && result.status !== 'failed') {
+          this.$root.$emit('fileUploaded', result)
+        } else {
+          this.$root.$emit('notification', {
+            content: 'File Upload Failed, please try again',
+            time: 1500,
+            danger: true
+          })
+        }
       } catch (e) {
         console.warn('Error uploading files', e)
         result = e.response
+        this.$root.$emit('notification', {
+          content: 'File Upload Failed, please try again',
+          time: 1500,
+          danger: true
+        })
       }
       this.resetToInitialState()
-      this.$root.$emit('fileUploaded', result)
     },
+
     getFormData() {
-      const formData = new FormData()
-      formData.append('name', this.fileName)
-      formData.append('file_type', this.file.type)
-      formData.append('description', this.description)
-      formData.append('media_file', this.file)
-      formData.append(`${this.type}`, this.id)
-      return formData
+      return getFormData({
+        name: this.fileName,
+        file_type: this.file.type,
+        description: this.description,
+        media_file: this.file,
+        type: this.type,
+        id: this.id
+      })
     },
     async uploadFile(formData) {
       const result = await this.$store.dispatch('file/uploadMedia', formData)

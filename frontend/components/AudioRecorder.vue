@@ -101,20 +101,25 @@
         <label class="font-08" for="file-name">Title</label>
 
         <ToolTip
-          content="Give the file a title so that users know what it is."
+          content="Give this audio a title so that users know what it is."
         ></ToolTip>
         <b-form-input
           id="file-name"
-          v-model="fileName"
+          v-model="title"
           class="font-08"
+          :state="titleState"
+          aria-describedby="title-help title-feedback"
           placeholder="Enter Title (required)"
           required
         ></b-form-input>
+        <b-form-invalid-feedback id="title-feedback">
+          Title is required
+        </b-form-invalid-feedback>
 
         <label class="mt-3 font-08" for="textarea">Description</label>
 
         <ToolTip
-          content="If the file needs more information, for example a description of what it includes or copyright information, add it here."
+          content="If the audio file needs more information, for example a description of what it includes or copyright information, add it here."
         ></ToolTip>
         <b-form-textarea
           id="textarea"
@@ -124,7 +129,9 @@
           max-rows="6"
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
-        <b-button variant="dark" size="sm">Upload</b-button>
+        <b-button variant="dark" size="sm" @click="externalAudioUpload"
+          >Upload</b-button
+        >
       </b-col>
     </b-row>
   </div>
@@ -132,19 +139,33 @@
 
 <script>
 import AudioComponent from '@/components/Audio.vue'
+import ToolTip from '@/components/Tooltip.vue'
+import { getFormData } from '@/plugins/utils.js'
 
 export default {
   components: {
-    AudioComponent
+    AudioComponent,
+    ToolTip
   },
   props: {
     mode: {
       default: 'single',
       type: String
+    },
+    id: {
+      default: null,
+      type: Number
+    },
+    type: {
+      default: 'placename',
+      type: String
     }
   },
   data() {
     return {
+      title: null,
+      titleState: null,
+      description: null,
       file: null,
       recording: false,
       mediaRecorder: null,
@@ -177,6 +198,50 @@ export default {
     }
   },
   methods: {
+    async externalAudioUpload(e) {
+      if (!this.title) {
+        this.titleState = false
+        return
+      }
+
+      const file =
+        this.file ||
+        (this.audioChunks && this.blobToFile(new Blob(this.audioChunks)))
+      const file_type = this.file
+        ? this.file.type
+        : this.mediaRecorder.mimeType.split(';')[0]
+
+      console.log(
+        'External Audio Test',
+        this.title,
+        file_type,
+        this.description,
+        file,
+        this.type,
+        this.id
+      )
+      const formData = getFormData({
+        name: this.title,
+        file_type,
+        description: this.description,
+        media_file: file,
+        type: this.type,
+        id: this.id
+      })
+
+      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      if (result.id) {
+        this.$root.$emit('fileUploaded', result)
+      }
+
+      this.clearFiles()
+      this.resetFile()
+    },
+    blobToFile(blob) {
+      blob.lastModifiedDate = new Date()
+      blob.name = this.title
+      return blob
+    },
     triggerBrowse(e) {
       if (!this.recording) {
         this.$refs.fileUpload.$el.children[0].click()
@@ -208,7 +273,6 @@ export default {
 
               this.mediaRecorder.start()
               this.recording = true
-
               this.mediaRecorder.addEventListener('dataavailable', event => {
                 this.audioChunks.push(event.data)
               })

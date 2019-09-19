@@ -131,7 +131,8 @@ export const audioTypes = {
   'audio/x-wav': true,
   'audio/x-mpegurl': true,
   'audio/x-aiff': true,
-  'audio/mp3': true
+  'audio/mp3': true,
+  'audio/webm': true
 }
 
 export const fileTypes = {
@@ -148,4 +149,22 @@ export const getGenericFileType = fileType => {
   }
 
   return 'other'
+}
+
+export const getFormData = ({
+  name,
+  file_type,
+  description,
+  type,
+  id,
+  media_file
+}) => {
+  const formData = new FormData()
+  formData.append('name', name)
+  formData.append('file_type', file_type)
+  formData.append('description', description)
+  formData.append('media_file', media_file)
+  formData.append(type, id)
+
+  return formData
 }

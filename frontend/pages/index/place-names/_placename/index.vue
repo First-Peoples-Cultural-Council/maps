@@ -67,7 +67,7 @@
             ></ToolTip>
           </h5>
 
-          <UploadTool :id="place.id" type="placenames"></UploadTool>
+          <UploadTool :id="place.id" type="placename"></UploadTool>
 
           <div class="mt-4 mb-4"></div>
           <FileUploader :id="place.id" type="placename"></FileUploader>
