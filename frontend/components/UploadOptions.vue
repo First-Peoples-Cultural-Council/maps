@@ -36,8 +36,8 @@
         class="flex-column align-items-start"
         @click="
           chooseUploadType($event, {
-            comp: 'AudioRecorder',
-            mode: 'externalAudio'
+            comp: 'NoteUploader',
+            mode: 'note'
           })
         "
       >

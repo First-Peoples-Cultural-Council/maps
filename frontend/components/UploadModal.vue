@@ -41,11 +41,13 @@
 import FileUploader from '@/components/FileUploader.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import UploadOptions from '@/components/UploadOptions.vue'
+import NoteUploader from '@/components/NoteUploader.vue'
 export default {
   components: {
     FileUploader,
     UploadOptions,
-    AudioRecorder
+    AudioRecorder,
+    NoteUploader
   },
   props: {
     id: {

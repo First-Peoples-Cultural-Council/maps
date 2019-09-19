@@ -151,14 +151,18 @@ export const getGenericFileType = fileType => {
   return 'other'
 }
 
-export const getFormData = ({
-  name,
-  file_type,
-  description,
-  type,
-  id,
-  media_file
-}) => {
+export const getFormData = (
+  { name, file_type, description, type, id, media_file },
+  note
+) => {
+  if (note) {
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('file_type', file_type)
+    formData.append('description', description)
+    formData.append(type, id)
+    return formData
+  }
   const formData = new FormData()
   formData.append('name', name)
   formData.append('file_type', file_type)

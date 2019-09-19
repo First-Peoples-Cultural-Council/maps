@@ -229,9 +229,23 @@ export default {
         id: this.id
       })
 
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
-      if (result.id) {
-        this.$root.$emit('fileUploaded', result)
+      try {
+        const result = await this.$store.dispatch('file/uploadMedia', formData)
+        if (
+          result.request.status === 201 &&
+          result.request.statusText === 'Created'
+        ) {
+          this.$root.$emit('fileUploaded', result.data)
+        } else {
+          throw result
+        }
+      } catch (e) {
+        console.error(e)
+        this.$root.$emit('notification', {
+          content: 'Audio Upload Failed, please try again',
+          time: 1500,
+          danger: true
+        })
       }
 
       this.clearFiles()

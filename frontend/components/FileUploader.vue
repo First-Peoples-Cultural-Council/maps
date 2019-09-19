@@ -104,18 +104,16 @@ export default {
 
       try {
         result = await this.uploadFile(formData)
-        if (result.status && result.status !== 'failed') {
-          this.$root.$emit('fileUploaded', result)
+        if (
+          result.request.status === 201 &&
+          result.request.statusText === 'Created'
+        ) {
+          this.$root.$emit('fileUploaded', result.data)
         } else {
-          this.$root.$emit('notification', {
-            content: 'File Upload Failed, please try again',
-            time: 1500,
-            danger: true
-          })
+          throw result
         }
       } catch (e) {
-        console.warn('Error uploading files', e)
-        result = e.response
+        console.error(e)
         this.$root.$emit('notification', {
           content: 'File Upload Failed, please try again',
           time: 1500,
