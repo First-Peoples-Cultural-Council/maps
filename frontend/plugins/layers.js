@@ -3,6 +3,7 @@ const addLangLayers = map => {
     {
       id: 'fn-lang-areas-fill',
       type: 'fill',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {
@@ -27,6 +28,7 @@ const addLangLayers = map => {
     {
       id: 'fn-lang-area-outlines-fade',
       type: 'line',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {
@@ -75,6 +77,7 @@ const addLangLayers = map => {
     {
       id: 'fn-lang-area-outlines-1',
       type: 'line',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {

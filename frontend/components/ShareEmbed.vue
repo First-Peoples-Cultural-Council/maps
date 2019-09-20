@@ -12,10 +12,14 @@
       <div class="share-embed-modal-contents">
         <h4>Share</h4>
         <p>
-          <code id="urlShare">{{ url }}</code>
+          <code id="urlShare" data-clipboard-text="This will be copied">{{
+            url
+          }}</code>
           <b-button
+            id="urlshare-button"
             size="sm"
-            class="d-block mt-2"
+            class="d-block mt-2 clipboard"
+            data-clipboard-target="#urlShare"
             variant="primary"
             @click="copyToClip($event, 'url')"
             >Click To Copy</b-button
@@ -27,8 +31,9 @@
         </p>
         <b-button
           size="sm"
-          class="d-block mt-2"
+          class="d-block mt-2 clipboard"
           variant="primary"
+          data-clipboard-target="#iframeShare"
           @click="copyToClip($event, 'iframe')"
           >Click To Copy</b-button
         >
@@ -79,21 +84,9 @@ export default {
   },
   methods: {
     copyToClip(e, data) {
-      let innerText = ''
-      if (data === 'url') {
-        innerText = document.getElementById('urlShare').textContent
-      } else if (data === 'iframe') {
-        innerText = document.getElementById('iframeShare').textContent
-      }
-
-      const tempInput = document.createElement('input')
-      const modal = document.getElementById('share-embed-modal')
-      tempInput.type = 'text'
-      tempInput.value = innerText
-      modal.appendChild(tempInput)
-      tempInput.select()
-      document.execCommand('Copy')
-      modal.removeChild(tempInput)
+      const ClipboardJS = require('clipboard')
+      const clipboard = new ClipboardJS('.clipboard')
+      console.log('Clipboard', clipboard)
     }
   }
 }

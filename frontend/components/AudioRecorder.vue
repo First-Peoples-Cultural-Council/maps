@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row no-gutters>
-      <b-col xl="10" class="pr-1">
+      <b-col lg="10" xl="10" class="pr-1">
         <b-form-file
           ref="fileUpload"
           v-model="file"
@@ -24,7 +24,8 @@
                 class="d-inline-block valign-middle"
               />
               to record the pronounciation or
-              <span style="color: #C46257;">click here</span> to choose a file
+              <span style="color: #C46257;">click here</span> to choose an audio
+              file
               <span v-if="audioErrorMessage" class="d-block">
                 <b-alert
                   style="line-height: 1em;"
@@ -81,7 +82,7 @@
           </div>
         </div>
       </b-col>
-      <b-col xl="2">
+      <b-col lg="2" xl="2">
         <div
           v-if="recordingSupport"
           class="text-center cursor-pointer"
@@ -95,24 +96,76 @@
         </div>
       </b-col>
     </b-row>
+    <b-row v-if="mode === 'externalAudio' && (audio || file)">
+      <b-col xl="12">
+        <label class="font-08" for="file-name">Title</label>
+
+        <ToolTip
+          content="Give this audio a title so that users know what it is."
+        ></ToolTip>
+        <b-form-input
+          id="file-name"
+          v-model="title"
+          class="font-08"
+          :state="titleState"
+          aria-describedby="title-help title-feedback"
+          placeholder="Enter Title (required)"
+          required
+        ></b-form-input>
+        <b-form-invalid-feedback id="title-feedback">
+          Title is required
+        </b-form-invalid-feedback>
+
+        <label class="mt-3 font-08" for="textarea">Description</label>
+
+        <ToolTip
+          content="If the audio file needs more information, for example a description of what it includes or copyright information, add it here."
+        ></ToolTip>
+        <b-form-textarea
+          id="textarea"
+          v-model="description"
+          placeholder="Enter description"
+          rows="3"
+          max-rows="6"
+          class="mt-2 mb-2 font-08"
+        ></b-form-textarea>
+        <b-button variant="dark" size="sm" @click="externalAudioUpload"
+          >Upload</b-button
+        >
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
 import AudioComponent from '@/components/Audio.vue'
+import ToolTip from '@/components/Tooltip.vue'
+import { getFormData } from '@/plugins/utils.js'
 
 export default {
   components: {
-    AudioComponent
+    AudioComponent,
+    ToolTip
   },
   props: {
     mode: {
       default: 'single',
       type: String
+    },
+    id: {
+      default: null,
+      type: Number
+    },
+    type: {
+      default: 'placename',
+      type: String
     }
   },
   data() {
     return {
+      title: null,
+      titleState: null,
+      description: null,
       file: null,
       recording: false,
       mediaRecorder: null,
@@ -145,6 +198,64 @@ export default {
     }
   },
   methods: {
+    async externalAudioUpload(e) {
+      if (!this.title) {
+        this.titleState = false
+        return
+      }
+
+      const file =
+        this.file ||
+        (this.audioChunks && this.blobToFile(new Blob(this.audioChunks)))
+      const file_type = this.file
+        ? this.file.type
+        : this.mediaRecorder.mimeType.split(';')[0]
+
+      console.log(
+        'External Audio Test',
+        this.title,
+        file_type,
+        this.description,
+        file,
+        this.type,
+        this.id
+      )
+      const formData = getFormData({
+        name: this.title,
+        file_type,
+        description: this.description,
+        media_file: file,
+        type: this.type,
+        id: this.id
+      })
+
+      try {
+        const result = await this.$store.dispatch('file/uploadMedia', formData)
+        if (
+          result.request.status === 201 &&
+          result.request.statusText === 'Created'
+        ) {
+          this.$root.$emit('fileUploaded', result.data)
+        } else {
+          throw result
+        }
+      } catch (e) {
+        console.error(e)
+        this.$root.$emit('notification', {
+          content: 'Audio Upload Failed, please try again',
+          time: 1500,
+          danger: true
+        })
+      }
+
+      this.clearFiles()
+      this.resetFile()
+    },
+    blobToFile(blob) {
+      blob.lastModifiedDate = new Date()
+      blob.name = this.title
+      return blob
+    },
     triggerBrowse(e) {
       if (!this.recording) {
         this.$refs.fileUpload.$el.children[0].click()
@@ -176,7 +287,6 @@ export default {
 
               this.mediaRecorder.start()
               this.recording = true
-
               this.mediaRecorder.addEventListener('dataavailable', event => {
                 this.audioChunks.push(event.data)
               })
