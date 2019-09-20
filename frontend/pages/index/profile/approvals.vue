@@ -4,9 +4,21 @@
     <div v-if="user && user.is_staff">
       <div v-if="placesToVerify && placesToVerify.length > 0">
         <h5>Places Waiting For Verification</h5>
-        <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`">
+        <div
+          v-for="ptv in placesToVerify"
+          :key="`ptv${ptv.id}`"
+          class="pr-2 pl-2"
+        >
+          <PlacesCard
+            :name="ptv.name"
+            class="mb-2"
+            @click.native="
+              $router.push({
+                path: `/place-names/${encodeFPCC(ptv.name)}`
+              })
+            "
+          ></PlacesCard>
           <ul>
-            <li>Name: {{ ptv.name }}</li>
             <li>
               <b-button
                 @click="
@@ -98,11 +110,13 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import PlacesCard from '@/components/places/PlacesCard.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    PlacesCard
   },
   computed: {
     user() {
@@ -129,6 +143,7 @@ export default {
     }
   },
   methods: {
+    encodeFPCC,
     async handleUser(e, tv, { verify, reject }) {
       const url = {
         verify: getApiUrl('community/verify_member/'),

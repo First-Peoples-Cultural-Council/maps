@@ -106,6 +106,7 @@ export const getMediaUrl = (media_file, isServer) => {
   }
   if (isServer) {
     if (media_file.includes('http://nginx')) {
+      console.log('MEdia File', media_file)
       return media_file.replace('http://nginx', '')
     }
 
@@ -139,6 +140,10 @@ export const fileTypes = {
   'application/pdf': true
 }
 
+export const noteType = {
+  text: true
+}
+
 export const getGenericFileType = fileType => {
   if (imageTypes[fileType]) {
     return 'image'
@@ -146,6 +151,10 @@ export const getGenericFileType = fileType => {
 
   if (audioTypes[fileType]) {
     return 'audio'
+  }
+
+  if (noteType[fileType]) {
+    return 'note'
   }
 
   return 'other'

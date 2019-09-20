@@ -59,18 +59,7 @@
       <hr />
       <section class="m-1 ml-4 mr-4">
         <div v-if="isLoggedIn">
-          <h5 class="mt-4 font-08 text-uppercase color-gray">
-            Upload Media
-
-            <ToolTip
-              content="Add relevant audio, images, links to YouTube videos, and PDF files. You can add multiple files."
-            ></ToolTip>
-          </h5>
-
           <UploadTool :id="place.id" type="placename"></UploadTool>
-
-          <div class="mt-4 mb-4"></div>
-          <FileUploader :id="place.id" type="placename"></FileUploader>
         </div>
       </section>
 
@@ -79,64 +68,10 @@
           {{ medias.length }} Uploaded Media
         </h5>
 
-        <ul
-          v-for="media in medias"
-          :key="'media' + media.id"
-          class="m-0 p-0 mb-4 list-style-none up-media-list"
-        >
-          <li v-if="media.name">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <span class="font-08 color-gray">Name: {{ media.name }} </span>
-              </div>
-              <FlagModal :id="media.id"></FlagModal>
-            </div>
-          </li>
-          <li v-if="media.description && media.description !== 'null'">
-            <span class="font-08 text-uppercase color-gray">Description:</span>
-            <span class="font-08">{{ media.description }}</span>
-          </li>
-          <li
-            v-if="getGenericFileType(media.file_type) === 'image'"
-            class="mt-2 d-flex justify-content-center"
-          >
-            <img
-              :src="getMediaUrl(media.media_file, isServer)"
-              :alt="media.name"
-              style="max-width: 100%; display: block; width: auto; height: auto;"
-              class="cursor-pointer"
-              @click="handleImageClick($event, media)"
-            />
-          </li>
-
-          <li v-if="getGenericFileType(media.file_type) === 'audio'">
-            <audio controls class="uploaded-audio">
-              <source
-                :src="getMediaUrl(media.media_file, isServer)"
-                :type="media.file_type"
-              />
-              <p>
-                Your browser doesn't support HTML5 audio. Here is a
-                <a :href="getMediaUrl(media.media_file, isServer)"
-                  >link to the audio</a
-                >
-                instead.
-              </p>
-            </audio>
-          </li>
-          <li
-            v-if="getGenericFileType(media.file_type) === 'other'"
-            class="word-break-all d-flex justify-content-center"
-          >
-            <b-button
-              variant="dark"
-              size="sm"
-              class="mt-2"
-              :href="getMediaUrl(place.audio_file, isServer)"
-              >Download</b-button
-            >
-          </li>
-        </ul>
+        <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
+          <Media :media="media" :server="isServer"></Media>
+          <hr class="mb-2" />
+        </div>
       </section>
     </div>
   </div>
@@ -146,11 +81,11 @@
 import PlacesDetailCard from '@/components/places/PlacesDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import ToolTip from '@/components/Tooltip.vue'
 import FlagModal from '@/components/Flag/FlagModal.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Logo from '@/components/Logo.vue'
 import UploadTool from '@/components/UploadTool.vue'
+import Media from '@/components/Media.vue'
 
 import {
   getApiUrl,
@@ -158,18 +93,16 @@ import {
   getMediaUrl,
   getGenericFileType
 } from '@/plugins/utils.js'
-import FileUploader from '@/components/FileUploader.vue'
 
 export default {
   components: {
     PlacesDetailCard,
     Filters,
-    FileUploader,
-    ToolTip,
     FlagModal,
     CommunityCard,
     Logo,
-    UploadTool
+    UploadTool,
+    Media
   },
   data() {
     return {
