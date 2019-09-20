@@ -134,6 +134,7 @@ class Community(CulturalModel):
 
     class Meta:
         verbose_name_plural = "Communities"
+        ordering = ["name"]
 
 
 class CommunityLink(models.Model):
@@ -295,6 +296,7 @@ class Media(BaseModel):
     file_type = models.CharField(max_length=16, default=None, null=True)
     url = models.URLField(max_length=255, default=None, null=True)
     media_file = models.FileField(null=True, blank=True)
+    community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
     )

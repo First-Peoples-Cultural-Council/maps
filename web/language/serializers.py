@@ -323,6 +323,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "file_type",
             "url",
             "media_file",
+            "community_only",
             "placename",
             "community",
             "status",

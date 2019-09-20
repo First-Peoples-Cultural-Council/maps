@@ -60,3 +60,6 @@ class Administrator(models.Model):
     community = models.ForeignKey(
         "language.Community", on_delete=models.CASCADE, default=None
     )
+
+    def __str__(self):
+        return 'User {}: language "{}", community "{}"'.format(self.user.username, self.language.name, self.community.name)

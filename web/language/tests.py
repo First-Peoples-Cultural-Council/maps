@@ -619,7 +619,14 @@ class MediaAPITests(BaseTestCase):
 		"""
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 002", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "community": self.community1.id},
+            {
+                "name": "Test media 002", 
+                "file_type": "image", 
+                "url": "https://google.com", 
+                "status" : Media.UNVERIFIED, 
+                "community": self.community1.id,
+                "community_only" : True, 
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -648,7 +655,14 @@ class MediaAPITests(BaseTestCase):
 
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 001", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "placename": placename.id},
+            {
+                "name": "Test media 001", 
+                "file_type": "image", 
+                "url": "https://google.com", 
+                "status" : Media.UNVERIFIED, 
+                "placename": placename.id,
+                "community_only" : True, 
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
