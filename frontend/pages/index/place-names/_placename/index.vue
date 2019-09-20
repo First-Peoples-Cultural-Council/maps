@@ -18,14 +18,20 @@
         ></PlacesDetailCard>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
-        <FlagModal
-          :id="place.id"
-          class="ml-4 mr-4"
-          type="placename"
-          title="Flag Point Of Interest"
-        ></FlagModal>
       </div>
       <section class="mt-3 ml-4 mr-4">
+        <div v-if="place.status === 'FL'" class="mb-2">
+          <b-badge variant="danger">Flagged</b-badge>
+        </div>
+        <div v-if="place.status === 'UN'" class="mb-2">
+          <b-badge variant="info">Unverified</b-badge>
+          <FlagModal
+            :id="place.id"
+            class="float-right"
+            type="placename"
+            title="Flag Point Of Interest"
+          ></FlagModal>
+        </div>
         <div v-if="place.community" class="mb-4">
           <CommunityCard
             :name="community.name"
@@ -50,10 +56,6 @@
         <div v-if="place.other_names">
           <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
           <p class="font-08">{{ place.other_names }}</p>
-        </div>
-        <div v-if="place.status">
-          <h5 class="font-08 text-uppercase color-gray">Status</h5>
-          <p class="font-08">{{ place.status }}</p>
         </div>
       </section>
       <hr />
@@ -130,7 +132,7 @@ export default {
     // TODO: it's better to call /placename_by_name or something (new back-end api)
     const now = new Date()
     const places = (await $axios.$get(
-      getApiUrl('placename-geo/?timestamp=' + now.getTime())
+      getApiUrl('placename-geo?timestamp=' + now.getTime())
     )).features
     const geo_place = places.find(a => {
       if (a.properties.name) {
@@ -138,7 +140,7 @@ export default {
       }
     })
     const place = await $axios.$get(
-      getApiUrl(`placename/${geo_place.id}/?${now.getTime()}`)
+      getApiUrl(`placename/${geo_place.id}?timestamp=${now.getTime()}`)
     )
 
     let community = null

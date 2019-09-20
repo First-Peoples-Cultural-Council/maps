@@ -125,21 +125,28 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const placesToVerify = await $axios.$get(
-      `${getApiUrl('placename/list_to_verify/')}`
-    )
+    const results = await Promise.all([
+      $axios.$get(
+        `${getApiUrl(
+          `placename/list_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      ),
+      $axios.$get(
+        `${getApiUrl(
+          `media/list_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      ),
+      $axios.$get(
+        `${getApiUrl(
+          `community/list_member_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      )
+    ])
 
-    const mediaToVerify = await $axios.$get(
-      `${getApiUrl('media/list_to_verify/')}`
-    )
-
-    const usersToVerify = await $axios.$get(
-      `${getApiUrl('community/list_member_to_verify/')}`
-    )
     return {
-      placesToVerify,
-      mediaToVerify,
-      usersToVerify
+      placesToVerify: results[0],
+      mediaToVerify: results[1],
+      usersToVerify: results[2]
     }
   },
   methods: {

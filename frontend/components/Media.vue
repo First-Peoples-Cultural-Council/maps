@@ -1,15 +1,18 @@
 <template>
   <div>
+    <div v-if="media.status === 'UN'" class="font-08">
+      <b-alert variant="warning" show>Unverified Media</b-alert>
+    </div>
     <div v-if="media.name" class="font-08 color-gray">
       <span>Name: </span>
-      <span>{{ media.name }}</span>
+      <span class="word-break-all">{{ media.name }}</span>
       <span v-if="flag" class="float-right cursor-pointer">
-        <FlagModal :id="media.id"></FlagModal>
+        <FlagModal :id="media.id" style="font-size: 1rem;"></FlagModal>
       </span>
     </div>
     <div v-if="media.description" class="font-08 color-gray">
       <span>Description: </span>
-      <span>{{ media.description }}</span>
+      <span class="word-break-all">{{ media.description }}</span>
     </div>
     <div v-if="getGenericFileType(media.file_type) === 'image'">
       <img
