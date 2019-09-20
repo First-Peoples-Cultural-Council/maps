@@ -134,6 +134,7 @@ class Community(CulturalModel):
 
     class Meta:
         verbose_name_plural = "Communities"
+        ordering = ["name"]
 
 
 class CommunityLink(models.Model):
