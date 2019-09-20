@@ -1,7 +1,10 @@
 <template>
   <div>
     <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <div v-if="user && user.is_staff">
+    <div v-if="user && user.is_staff" class="ml-3 mr-3">
+      <div v-if="nothingToVerify" class="mt-2">
+        <b-alert show>Nothing to approve</b-alert>
+      </div>
       <div v-if="placesToVerify && placesToVerify.length > 0">
         <h5>Places Waiting For Verification</h5>
         <div
@@ -45,33 +48,35 @@
         </div>
       </div>
       <div v-if="mediaToVerify && mediaToVerify.length > 0">
-        <h5>Media Waiting For Verification</h5>
+        <h5 class="color-dark-gray">Media Waiting For Verification</h5>
         <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`">
-          <ul>
-            <li>Name: {{ mtv.name }}</li>
-            <li>
-              <b-button
-                @click="
-                  handleApproval($event, mtv, {
-                    verify: true,
-                    type: 'media'
-                  })
-                "
-                >Verify</b-button
-              >
-            </li>
-            <li>
-              <b-button
-                @click="
-                  handleApproval($event, mtv, {
-                    reject: true,
-                    type: 'media'
-                  })
-                "
-                >Reject</b-button
-              >
-            </li>
-          </ul>
+          <div>
+            <Media :media="mtv"></Media>
+
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="
+                handleApproval($event, mtv, {
+                  verify: true,
+                  type: 'media'
+                })
+              "
+              >Verify</b-button
+            >
+
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="
+                handleApproval($event, mtv, {
+                  reject: true,
+                  type: 'media'
+                })
+              "
+              >Reject</b-button
+            >
+          </div>
         </div>
       </div>
       <div v-if="usersToVerify && usersToVerify.length > 0">
@@ -112,16 +117,25 @@
 import Logo from '@/components/Logo.vue'
 import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
+import Media from '@/components/Media.vue'
 
 export default {
   components: {
     Logo,
-    PlacesCard
+    PlacesCard,
+    Media
   },
   computed: {
     user() {
       const user = this.$store.state.user.user
       return user
+    },
+    nothingToVerify() {
+      return (
+        this.placesToVerify.length === 0 &&
+        this.mediaToVerify.length === 0 &&
+        this.usersToVerify.length === 0
+      )
     }
   },
   async asyncData({ params, $axios, store }) {
@@ -146,7 +160,8 @@ export default {
     return {
       placesToVerify: results[0],
       mediaToVerify: results[1],
-      usersToVerify: results[2]
+      usersToVerify: results[2],
+      isServer: !!process.server
     }
   },
   methods: {

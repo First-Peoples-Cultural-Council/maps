@@ -161,7 +161,7 @@ export const getGenericFileType = fileType => {
 }
 
 export const getFormData = (
-  { name, file_type, description, type, id, media_file },
+  { name, file_type, description, type, id, media_file, community_only },
   note
 ) => {
   if (note) {
@@ -170,6 +170,10 @@ export const getFormData = (
     formData.append('file_type', file_type)
     formData.append('description', description)
     formData.append(type, id)
+
+    if (community_only) {
+      formData.append('community_only', community_only)
+    }
     return formData
   }
   const formData = new FormData()
@@ -178,6 +182,10 @@ export const getFormData = (
   formData.append('description', description)
   formData.append('media_file', media_file)
   formData.append(type, id)
+
+  if (community_only) {
+    formData.append('community_only', community_only)
+  }
 
   return formData
 }

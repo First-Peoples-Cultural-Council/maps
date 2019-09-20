@@ -2,7 +2,7 @@
   <div>
     <b-list-group>
       <b-list-group-item
-        class="flex-column align-items-start"
+        class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, { comp: 'FileUploader', mode: 'photo' })
         "
@@ -17,7 +17,7 @@
       </b-list-group-item>
 
       <b-list-group-item
-        class="flex-column align-items-start"
+        class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
             comp: 'AudioRecorder',
@@ -33,7 +33,7 @@
       </b-list-group-item>
 
       <b-list-group-item
-        class="flex-column align-items-start"
+        class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
             comp: 'NoteUploader',
@@ -51,7 +51,7 @@
       </b-list-group-item>
 
       <b-list-group-item
-        class="flex-column align-items-start"
+        class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
             comp: 'AudioRecorder',

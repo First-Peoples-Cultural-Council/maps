@@ -29,7 +29,6 @@
           </b-col>
         </b-row>
         <label class="mt-3 font-08" for="textarea">Description</label>
-
         <ToolTip
           content="If the file needs more information, for example a description of what it includes or copyright information, add it here."
         ></ToolTip>
@@ -41,6 +40,9 @@
           max-rows="6"
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
+
+        <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
+
         <b-button variant="info" size="sm" @click="handleUpload"
           >Upload</b-button
         >
@@ -55,10 +57,12 @@
 <script>
 import ToolTip from '@/components/Tooltip.vue'
 import { getFormData } from '@/plugins/utils.js'
+import CommunityOnly from '@/components/CommunityOnly.vue'
 
 export default {
   components: {
-    ToolTip
+    ToolTip,
+    CommunityOnly
   },
   props: {
     id: {
@@ -80,7 +84,8 @@ export default {
       file: null,
       description: null,
       errorMessage: null,
-      successMessage: null
+      successMessage: null,
+      commonly: 'not_accepted'
     }
   },
   methods: {
@@ -130,7 +135,8 @@ export default {
         description: this.description,
         media_file: this.file,
         type: this.type,
-        id: this.id
+        id: this.id,
+        community_only: this.commonly === 'accepted'
       })
     },
     async uploadFile(formData) {

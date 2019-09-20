@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-if="media.status === 'UN'" class="font-08">
-      <b-alert variant="warning" show>Unverified Media</b-alert>
+      <b-alert variant="warning" show class="d-inline-block p-1"
+        >Unverified Media</b-alert
+      >
     </div>
     <div v-if="media.name" class="font-08 color-gray">
       <span>Name: </span>
@@ -16,7 +18,7 @@
     </div>
     <div v-if="getGenericFileType(media.file_type) === 'image'">
       <img
-        class="media-image"
+        class="media-image cursor-pointer"
         :src="getMediaUrl(media.media_file, server)"
         :alt="media.name"
         @click="handleImageClick($event, media)"
