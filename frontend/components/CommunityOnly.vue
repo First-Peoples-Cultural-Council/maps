@@ -14,8 +14,9 @@
       unchecked-value="not_accepted"
       @input="$emit('update:commonly', commonly)"
     >
-    </b-form-checkbox></div
-></template>
+    </b-form-checkbox>
+  </div>
+</template>
 <script>
 export default {
   data() {

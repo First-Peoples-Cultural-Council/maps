@@ -33,14 +33,20 @@
       This is required
     </b-form-invalid-feedback>
 
-    <b-button size="sm" variant="dark" class="mt-3" @click="handleNoteUpload"
+    <CommunityOnly class="mt-3" :commonly.sync="commonly"></CommunityOnly>
+
+    <b-button size="sm" variant="dark" class="mt-2" @click="handleNoteUpload"
       >Upload</b-button
     >
   </div>
 </template>
 <script>
 import { getFormData } from '@/plugins/utils.js'
+import CommunityOnly from '@/components/CommunityOnly.vue'
 export default {
+  components: {
+    CommunityOnly
+  },
   props: {
     id: {
       default: null,
@@ -56,7 +62,8 @@ export default {
       title: null,
       text: null,
       titlestate: null,
-      textstate: null
+      textstate: null,
+      commonly: null
     }
   },
   methods: {
@@ -85,7 +92,8 @@ export default {
           description: this.text,
           file_type: 'text',
           type: this.type,
-          id: this.id
+          id: this.id,
+          community_only: this.commonly === 'accepted'
         },
         true
       )
