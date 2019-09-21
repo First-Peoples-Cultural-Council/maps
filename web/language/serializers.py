@@ -314,6 +314,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
 
 
 class MediaSerializer(serializers.ModelSerializer):
+    creator = PublicUserSerializer(read_only=True)
     class Meta:
         model = Media
         fields = (
@@ -328,6 +329,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "community",
             "status",
             "status_reason",
+            "creator",
         )
 
 

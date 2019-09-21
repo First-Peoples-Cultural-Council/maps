@@ -303,6 +303,7 @@ class Media(BaseModel):
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="medias"
     )
+    creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
 
     # Choices Constants:
     FLAGGED = "FL"

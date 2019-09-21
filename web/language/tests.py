@@ -617,6 +617,13 @@ class MediaAPITests(BaseTestCase):
         """
 		Ensure media API POST method API works
 		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
         response = self.client.post(
             "/api/media/",
             {
@@ -643,6 +650,13 @@ class MediaAPITests(BaseTestCase):
         """
 		Ensure media API POST method API works
 		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
         placename = PlaceName()
         placename.name = "test place"
         placename.other_names = "string"
