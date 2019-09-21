@@ -10,6 +10,7 @@
       hide-header
       hide-footer
     >
+      {{ type }}
       <b-row no-gutters>
         <b-col lg="12" xl="12">
           <transition name="component-fade" mode="out-in">

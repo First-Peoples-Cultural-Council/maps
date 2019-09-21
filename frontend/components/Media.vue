@@ -5,6 +5,16 @@
         >Unverified Media</b-alert
       >
     </div>
+    <div v-if="media.status === 'VE'" class="font-08">
+      <b-alert variant="primary" show class="d-inline-block p-1"
+        >Verified Media</b-alert
+      >
+    </div>
+    <div v-if="media.status === 'FL'" class="font-08">
+      <b-alert variant="primary" show class="d-inline-block p-1"
+        >Flagged Media</b-alert
+      >
+    </div>
     <div v-if="media.name" class="font-08 color-gray">
       <span>Name: </span>
       <span class="word-break-all">{{ media.name }}</span>

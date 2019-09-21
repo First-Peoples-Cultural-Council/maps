@@ -32,6 +32,15 @@
             title="Flag Point Of Interest"
           ></FlagModal>
         </div>
+        <div v-if="place.status === 'UN'" class="mb-2">
+          <b-badge variant="primary">Verified</b-badge>
+          <FlagModal
+            :id="place.id"
+            class="float-right"
+            type="placename"
+            title="Flag Point Of Interest"
+          ></FlagModal>
+        </div>
         <div v-if="place.community" class="mb-4">
           <CommunityCard
             :name="community.name"
