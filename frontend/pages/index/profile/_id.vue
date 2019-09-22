@@ -52,6 +52,23 @@
             $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
           "
         ></PlacesCard>
+        <div v-if="savedLocations.length > 0">
+          <h5
+            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+          >
+            Saved Locations
+          </h5>
+          <div v-for="sl in savedLocations" :key="`sl${sl.id}`">
+            <div v-if="sl.name">Name: {{ sl.name }}</div>
+            <div v-if="sl.description">Description: {{ sl.description }}</div>
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="handleLocation($event, sl)"
+              >Go To Location</b-button
+            >
+          </div>
+        </div>
       </div>
     </section>
   </DetailSideBar>
@@ -63,6 +80,7 @@ import UserDetailCard from '@/components/user/UserDetailCard.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
+import { zoomToPoint } from '@/mixins/map.js'
 
 export default {
   components: {
@@ -71,12 +89,21 @@ export default {
     LanguageDetailBadge,
     PlacesCard
   },
+  computed: {
+    savedLocations() {
+      return this.favourites.filter(f => f.favourite_type === 'saved_location')
+    }
+  },
   async asyncData({ params, $axios, store }) {
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
+
+    const favourites = await $axios.$get(
+      getApiUrl(`favourite?timestamp${new Date().getTime()}/`)
+    )
     console.log('User', user)
-    return { user }
+    return { user, favourites }
   },
   mounted() {
     console.log('mounted, user=', this.user)
@@ -89,6 +116,15 @@ export default {
       return (
         this.user && (this.user.first_name || this.user.username.split('__')[0])
       )
+    },
+    handleLocation(e, sl) {
+      this.$eventHub.whenMap(map => {
+        zoomToPoint({
+          map,
+          geom: sl.point,
+          zoom: sl.zoom
+        })
+      })
     },
     encodeFPCC
   }

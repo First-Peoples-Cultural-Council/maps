@@ -36,7 +36,9 @@ export default {
         this.modalShow = true
         setTimeout(() => {
           this.modalShow = false
-          this.danger = false
+          setTimeout(() => {
+            this.danger = false
+          }, 1000)
         }, params.time)
       }
     })
