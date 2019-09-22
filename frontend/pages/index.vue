@@ -10,7 +10,6 @@
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
       <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <div class="font-weight-bold">You are currently in drawing mode</div>
         <DrawingTools class="mt-2"></DrawingTools>
       </b-alert>
     </div>
