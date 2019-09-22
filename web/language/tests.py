@@ -617,9 +617,23 @@ class MediaAPITests(BaseTestCase):
         """
 		Ensure media API POST method API works
 		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 002", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "community": self.community1.id},
+            {
+                "name": "Test media 002", 
+                "file_type": "image", 
+                "url": "https://google.com", 
+                "status" : Media.UNVERIFIED, 
+                "community": self.community1.id,
+                "community_only" : True, 
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -636,6 +650,13 @@ class MediaAPITests(BaseTestCase):
         """
 		Ensure media API POST method API works
 		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
         placename = PlaceName()
         placename.name = "test place"
         placename.other_names = "string"
@@ -648,7 +669,14 @@ class MediaAPITests(BaseTestCase):
 
         response = self.client.post(
             "/api/media/",
-            {"name": "Test media 001", "file_type": "image", "url": "https://google.com", "status" : Media.UNVERIFIED, "placename": placename.id},
+            {
+                "name": "Test media 001", 
+                "file_type": "image", 
+                "url": "https://google.com", 
+                "status" : Media.UNVERIFIED, 
+                "placename": placename.id,
+                "community_only" : True, 
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

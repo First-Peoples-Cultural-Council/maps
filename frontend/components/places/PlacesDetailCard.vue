@@ -162,6 +162,9 @@ export default {
         }
       })
       this.modalShow = false
+      this.$router.push({
+        path: `/place-names`
+      })
     }
   }
 }

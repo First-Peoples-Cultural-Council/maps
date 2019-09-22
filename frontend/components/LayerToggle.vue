@@ -29,11 +29,6 @@ export default {
       return this.layer.active
     }
   },
-  mounted() {
-    if (this.layer.name === 'Sleeping Languages') {
-      this.toggleLayer()
-    }
-  },
   methods: {
     toggleLayer() {
       this.$eventHub.whenMap(map => {

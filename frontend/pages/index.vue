@@ -836,6 +836,7 @@ export default {
   background-color: white;
   z-index: 50;
   height: 100%;
+  overflow-y: auto;
 }
 
 .sb-detail {

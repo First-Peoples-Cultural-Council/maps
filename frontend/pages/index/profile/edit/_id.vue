@@ -87,7 +87,16 @@
             <li v-for="err in errors" :key="err">{{ err }}</li>
           </ul>
         </b-alert>
-        <button class="btn btn-primary mt-4" @click="save()">Save</button>
+        <b-button class="btn btn-primary mt-4" variant="primary" @click="save"
+          >Save</b-button
+        >
+        <b-button
+          class="btn btn-primary mt-4"
+          variant="danger"
+          @click="handleCancel"
+        >
+          Cancel
+        </b-button>
       </section>
     </DetailSideBar>
   </client-only>
@@ -150,7 +159,8 @@ export default {
       user,
       options,
       value: user.languages,
-      community: user.communities[0]
+      community: user.communities[0],
+      isServer: !!process.server
     }
   },
 
@@ -159,6 +169,15 @@ export default {
   },
 
   methods: {
+    handleCancel() {
+      if (this.isServer) {
+        this.$router.push({
+          path: `/profile/${this.user.id}`
+        })
+      } else {
+        this.$router.go(-1)
+      }
+    },
     getUserName() {
       return (
         this.user && (this.user.first_name || this.user.username.split('__')[0])

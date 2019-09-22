@@ -106,6 +106,7 @@ export const getMediaUrl = (media_file, isServer) => {
   }
   if (isServer) {
     if (media_file.includes('http://nginx')) {
+      console.log('MEdia File', media_file)
       return media_file.replace('http://nginx', '')
     }
 
@@ -115,27 +116,35 @@ export const getMediaUrl = (media_file, isServer) => {
   }
   return media_file
 }
+export const imageTypes = {
+  'image/svg+xml': true,
+  'image/gif': true,
+  'image/jpeg': true,
+  'image/jpg': true,
+  'image/png': true,
+  'image/bmp': true
+}
+
+export const audioTypes = {
+  'audio/mpeg': true,
+  'audio/basic': true,
+  'audio/mid': true,
+  'audio/x-wav': true,
+  'audio/x-mpegurl': true,
+  'audio/x-aiff': true,
+  'audio/mp3': true,
+  'audio/webm': true
+}
+
+export const fileTypes = {
+  'application/pdf': true
+}
+
+export const noteType = {
+  text: true
+}
 
 export const getGenericFileType = fileType => {
-  const imageTypes = {
-    'image/svg+xml': true,
-    'image/gif': true,
-    'image/jpeg': true,
-    'image/jpg': true,
-    'image/png': true,
-    'image/bmp': true
-  }
-
-  const audioTypes = {
-    'audio/mpeg': true,
-    'audio/basic': true,
-    'audio/mid': true,
-    'audio/x-wav': true,
-    'audio/x-mpegurl': true,
-    'audio/x-aiff': true,
-    'audio/mp3': true
-  }
-
   if (imageTypes[fileType]) {
     return 'image'
   }
@@ -144,5 +153,39 @@ export const getGenericFileType = fileType => {
     return 'audio'
   }
 
+  if (noteType[fileType]) {
+    return 'note'
+  }
+
   return 'other'
+}
+
+export const getFormData = (
+  { name, file_type, description, type, id, media_file, community_only },
+  note
+) => {
+  if (note) {
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('file_type', file_type)
+    formData.append('description', description)
+    formData.append(type, id)
+
+    if (community_only) {
+      formData.append('community_only', community_only)
+    }
+    return formData
+  }
+  const formData = new FormData()
+  formData.append('name', name)
+  formData.append('file_type', file_type)
+  formData.append('description', description)
+  formData.append('media_file', media_file)
+  formData.append(type, id)
+
+  if (community_only) {
+    formData.append('community_only', community_only)
+  }
+
+  return formData
 }

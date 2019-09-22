@@ -32,22 +32,6 @@
                   Contribute
                 </h4>
               </div>
-              <section class="pl-2 pr-2">
-                <div v-if="userCommunity && userCommunity.length > 0">
-                  <b-row no-gutters>
-                    <b-col xl="6" class="pl-1"
-                      ><CommunityCard
-                        :go="false"
-                        variant="white"
-                        icon="small"
-                        :name="
-                          community ? community.name : userCommunity[0].name
-                        "
-                      ></CommunityCard
-                    ></b-col>
-                  </b-row>
-                </div>
-              </section>
             </div>
             <section class="pr-3 pl-3">
               <label
@@ -221,7 +205,6 @@
 <script>
 import DetailSideBar from '@/components/DetailSideBar.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-import CommunityCard from '@/components/communities/CommunityCard.vue'
 import ToolTip from '@/components/Tooltip.vue'
 import {
   getApiUrl,
@@ -234,7 +217,6 @@ export default {
   components: {
     DetailSideBar,
     AudioRecorder,
-    CommunityCard,
     ToolTip
   },
   middleware: 'authenticated',
@@ -253,7 +235,9 @@ export default {
       languageSelectedName: null,
       geom: [],
       communityOnly: false,
-      community: null
+      community:
+        this.$store.state.user.user.communities &&
+        this.$store.state.user.user.communities[0]
     }
   },
 
@@ -303,6 +287,9 @@ export default {
     }
   },
   watch: {
+    userCommunity(newComm) {
+      console.log('Community Updated', newComm)
+    },
     '$route.query.mode'() {
       this.$eventHub.whenMap(map => {
         if (this.$route.query.mode === 'point') {
@@ -423,8 +410,6 @@ export default {
       let community_id = null
       if (this.community) {
         community_id = this.community.id
-      } else if (this.userCommunity.length > 0) {
-        community_id = this.userCommunity[0].id
       }
 
       const data = {
@@ -509,7 +494,6 @@ export default {
         } else if (vm.$route.query.mode === 'polygon') {
           document.querySelector('.mapbox-gl-draw_polygon').click()
         } else if (vm.$route.query.mode === 'line') {
-          console.log('It got here')
           document.querySelector('.mapbox-gl-draw_line').click()
         }
       })

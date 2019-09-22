@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-inline-block cursor-pointer" @click="modalShow = true">
-      {{ title || 'Flag' }}
+      <b-badge variant="danger">{{ title || 'Flag' }}</b-badge>
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert

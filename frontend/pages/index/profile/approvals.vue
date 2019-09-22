@@ -1,12 +1,27 @@
 <template>
   <div>
     <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <div v-if="user && user.is_staff">
+    <div v-if="user && user.is_staff" class="ml-3 mr-3">
+      <div v-if="nothingToVerify" class="mt-2">
+        <b-alert show>Nothing to approve</b-alert>
+      </div>
       <div v-if="placesToVerify && placesToVerify.length > 0">
         <h5>Places Waiting For Verification</h5>
-        <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`">
+        <div
+          v-for="ptv in placesToVerify"
+          :key="`ptv${ptv.id}`"
+          class="pr-2 pl-2"
+        >
+          <PlacesCard
+            :name="ptv.name"
+            class="mb-2"
+            @click.native="
+              $router.push({
+                path: `/place-names/${encodeFPCC(ptv.name)}`
+              })
+            "
+          ></PlacesCard>
           <ul>
-            <li>Name: {{ ptv.name }}</li>
             <li>
               <b-button
                 @click="
@@ -33,33 +48,35 @@
         </div>
       </div>
       <div v-if="mediaToVerify && mediaToVerify.length > 0">
-        <h5>Media Waiting For Verification</h5>
+        <h5 class="color-dark-gray">Media Waiting For Verification</h5>
         <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`">
-          <ul>
-            <li>Name: {{ mtv.name }}</li>
-            <li>
-              <b-button
-                @click="
-                  handleApproval($event, mtv, {
-                    verify: true,
-                    type: 'media'
-                  })
-                "
-                >Verify</b-button
-              >
-            </li>
-            <li>
-              <b-button
-                @click="
-                  handleApproval($event, mtv, {
-                    reject: true,
-                    type: 'media'
-                  })
-                "
-                >Reject</b-button
-              >
-            </li>
-          </ul>
+          <div>
+            <Media :media="mtv"></Media>
+
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="
+                handleApproval($event, mtv, {
+                  verify: true,
+                  type: 'media'
+                })
+              "
+              >Verify</b-button
+            >
+
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="
+                handleApproval($event, mtv, {
+                  reject: true,
+                  type: 'media'
+                })
+              "
+              >Reject</b-button
+            >
+          </div>
         </div>
       </div>
       <div v-if="usersToVerify && usersToVerify.length > 0">
@@ -98,37 +115,57 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import PlacesCard from '@/components/places/PlacesCard.vue'
+import Media from '@/components/Media.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    PlacesCard,
+    Media
   },
   computed: {
     user() {
       const user = this.$store.state.user.user
       return user
+    },
+    nothingToVerify() {
+      return (
+        this.placesToVerify.length === 0 &&
+        this.mediaToVerify.length === 0 &&
+        this.usersToVerify.length === 0
+      )
     }
   },
   async asyncData({ params, $axios, store }) {
-    const placesToVerify = await $axios.$get(
-      `${getApiUrl('placename/list_to_verify/')}`
-    )
+    const results = await Promise.all([
+      $axios.$get(
+        `${getApiUrl(
+          `placename/list_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      ),
+      $axios.$get(
+        `${getApiUrl(
+          `media/list_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      ),
+      $axios.$get(
+        `${getApiUrl(
+          `community/list_member_to_verify?timestamp=${new Date().getTime()}/`
+        )}`
+      )
+    ])
 
-    const mediaToVerify = await $axios.$get(
-      `${getApiUrl('media/list_to_verify/')}`
-    )
-
-    const usersToVerify = await $axios.$get(
-      `${getApiUrl('community/list_member_to_verify/')}`
-    )
     return {
-      placesToVerify,
-      mediaToVerify,
-      usersToVerify
+      placesToVerify: results[0],
+      mediaToVerify: results[1],
+      usersToVerify: results[2],
+      isServer: !!process.server
     }
   },
   methods: {
+    encodeFPCC,
     async handleUser(e, tv, { verify, reject }) {
       const url = {
         verify: getApiUrl('community/verify_member/'),

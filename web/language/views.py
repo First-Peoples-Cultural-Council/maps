@@ -364,6 +364,9 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     serializer_class = MediaSerializer
     queryset = Media.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):

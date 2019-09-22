@@ -125,6 +125,24 @@
         </b-col>
       </b-row>
     </section>
+    <section>
+      <div v-if="isLoggedIn">
+        <hr />
+        <UploadTool
+          :id="community.id"
+          class="m-1 ml-4 mr-4 mb-3"
+          type="community"
+        ></UploadTool>
+        <div
+          v-for="media in commDetails.medias"
+          :key="'media' + media.id"
+          class="mb-4"
+        >
+          <Media class="ml-4 mr-4" :media="media" :server="isServer"></Media>
+          <hr class="mb-2" />
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -139,6 +157,9 @@ import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import PlaceCard from '@/components/places/PlacesCard.vue'
+import UploadTool from '@/components/UploadTool.vue'
+import Media from '@/components/Media.vue'
+
 export default {
   components: {
     // DetailSideBar,
@@ -148,7 +169,9 @@ export default {
     LanguageCard,
     Badge,
     PlaceCard,
-    Logo
+    Logo,
+    UploadTool,
+    Media
   },
   data() {
     return {
@@ -182,6 +205,9 @@ export default {
   },
 
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     communities() {
       return this.$store.state.communities.communitySet
     },
@@ -234,12 +260,14 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $route }) {
-    const communities = await $axios.$get(getApiUrl(`community/`))
+    const communities = await $axios.$get(
+      getApiUrl(`community?timestamp=${new Date().getTime()}/`)
+    )
     const community = communities.find(
       comm => encodeFPCC(comm.name) === params.fn
     )
     const communityDetail = await $axios.$get(
-      getApiUrl(`community/${community.id}/`)
+      getApiUrl(`community/${community.id}?timestamp=${new Date().getTime()}/`)
     )
 
     const isServer = !!process.server
@@ -272,6 +300,11 @@ export default {
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
+  },
+  mounted() {
+    this.$root.$on('fileUploaded', r => {
+      this.commDetails.medias.push(r)
+    })
   },
   methods: {
     setupMap() {
