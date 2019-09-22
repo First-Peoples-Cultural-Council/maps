@@ -1,7 +1,7 @@
 <template>
   <b-row no-gutters>
     <b-col xl="10">
-w
+      w
       <div class="mediaUploadArea cursor-pointer" @click="triggerBrowse">
         <p class="m-0 p-0">
           <span v-if="!recording">

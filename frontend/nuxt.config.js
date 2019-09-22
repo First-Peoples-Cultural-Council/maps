@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 
 module.exports = {
+  dev: process.env.NODE_ENV !== 'production',
+
   mode: 'universal',
   server: {
     port: 80, // default: 3000

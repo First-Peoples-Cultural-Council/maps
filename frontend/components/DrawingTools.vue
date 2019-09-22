@@ -1,20 +1,40 @@
 <template>
-  <div class="dt-container d-flex align-items-center justify-content-center">
-    <div class="draw-tool draw-point" @click="setMode($event, 'point')"></div>
-    <div
-      class="draw-tool draw-polygon"
-      @click="setMode($event, 'polygon')"
-    ></div>
-    <div
-      class="draw-tool draw-line-string"
-      @click="setMode($event, 'line_string')"
-    ></div>
-    <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
+  <div>
+    <div class="font-weight-bold">
+      Click the map to draw a {{ drawMode
+      }}<span v-if="drawMode !== 'point'">, double-click when done</span>.
+    </div>
+    <div class="dt-container d-flex align-items-center justify-content-center">
+      <div
+        v-if="drawMode === 'point'"
+        class="draw-tool draw-point"
+        @click="setMode($event, 'point')"
+      ></div>
+      <div
+        v-if="drawMode === 'polygon'"
+        class="draw-tool draw-polygon"
+        @click="setMode($event, 'polygon')"
+      ></div>
+      <div
+        v-if="drawMode === 'line'"
+        class="draw-tool draw-line-string"
+        @click="setMode($event, 'line_string')"
+      ></div>
+      <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      drawMode: this.$route.query.mode || ''
+    }
+  },
+  mounted() {
+    this.setMode(null, this.drawMode)
+  },
   methods: {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {

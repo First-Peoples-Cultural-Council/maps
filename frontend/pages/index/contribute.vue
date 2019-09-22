@@ -361,10 +361,10 @@ export default {
     return data
   },
   mounted() {
-    console.log('Window', window)
     if (!this.isLoggedIn) {
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=' +
+        window.location
     }
   },
   methods: {
@@ -477,12 +477,12 @@ export default {
       if (audio) {
         await this.uploadAudioFile(id, audio)
       }
-
-      this.$router.push({
-        path: '/place-names/' + encodeFPCC(this.tname)
+      this.$eventHub.whenMap(map => {
+        map.getSource('places1').setData('/api/placename-geo/')
+        this.$router.push({
+          path: '/place-names/' + encodeFPCC(this.tname)
+        })
       })
-
-      // window.location = '/place-names/' + encodeFPCC(this.tname)
     }
   },
   beforeRouteEnter(to, from, next) {

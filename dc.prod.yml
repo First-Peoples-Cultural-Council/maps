@@ -19,3 +19,4 @@ services:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
       - HOST=https://maps-dev.fpcc.ca
+      - NODE_ENV=production
