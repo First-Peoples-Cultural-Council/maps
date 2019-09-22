@@ -196,6 +196,40 @@ export default {
 
     map.addLayer(
       {
+        id: 'fn-places-lines',
+        type: 'line',
+        source: 'places1',
+        minzoom: 5,
+        layout: {
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#987',
+          'line-width': 1,
+          'line-dasharray': [0, 2]
+        }
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places-poly',
+        type: 'fill',
+        source: 'places1',
+        minzoom: 5,
+        layout: {},
+        paint: {
+          'fill-color': '#987',
+          'fill-opacity': 0.2
+        },
+        filter: ['==', '$type', 'Polygon']
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
         minzoom: 6,
         id: 'fn-arts',
         type: 'symbol',
