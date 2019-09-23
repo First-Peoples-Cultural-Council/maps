@@ -1,22 +1,25 @@
 <template>
   <div>
-    <div class="font-weight-bold">
+    <div v-if="drawMode !== 'existing'" class="font-weight-bold">
       Click the map to draw a {{ drawMode
       }}<span v-if="drawMode !== 'point'">, double-click when done</span>.
     </div>
+    <div v-if="drawMode === 'existing'" class="font-weight-bold">
+      You may draw new geometry to replace the existing one.
+    </div>
     <div class="dt-container d-flex align-items-center justify-content-center">
       <div
-        v-if="drawMode === 'point'"
+        v-if="drawMode === 'point' || drawMode === 'existing'"
         class="draw-tool draw-point"
         @click="setMode($event, 'point')"
       ></div>
       <div
-        v-if="drawMode === 'polygon'"
+        v-if="drawMode === 'polygon' || drawMode === 'existing'"
         class="draw-tool draw-polygon"
         @click="setMode($event, 'polygon')"
       ></div>
       <div
-        v-if="drawMode === 'line'"
+        v-if="drawMode === 'line' || drawMode === 'existing'"
         class="draw-tool draw-line-string"
         @click="setMode($event, 'line_string')"
       ></div>

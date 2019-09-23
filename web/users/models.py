@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
 
-# from language.models import Language, Community
+import datetime
 
 
 class UserManager(BaseUserManager):
@@ -41,7 +41,11 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     objects = UserManager()
-
+    last_notified = models.DateTimeField(
+        auto_now_add=True
+    )
+    picture = models.URLField(max_length=255, null=True)
+    notification_frequency = models.IntegerField(default=7)
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
     )
@@ -51,9 +55,7 @@ class User(AbstractUser):
 
 
 class Administrator(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=None
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     language = models.ForeignKey(
         "language.Language", on_delete=models.CASCADE, default=None
     )
@@ -62,4 +64,6 @@ class Administrator(models.Model):
     )
 
     def __str__(self):
-        return 'User {}: language "{}", community "{}"'.format(self.user.username, self.language.name, self.community.name)
+        return 'User {}: language "{}", community "{}"'.format(
+            self.user.username, self.language.name, self.community.name
+        )

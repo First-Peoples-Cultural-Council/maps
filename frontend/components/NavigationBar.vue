@@ -3,7 +3,14 @@
     <div v-if="email" class="user-container cursor-pointer" @click="profile">
       <nav class="navbar-icon-container">
         <img
+          v-if="!picture"
           src="@/assets/images/user_icon_red.svg"
+          alt="Menu"
+          class="navbar-icon user_icon"
+        />
+        <img
+          v-if="picture"
+          :src="picture"
           alt="Menu"
           class="navbar-icon user_icon"
         />
@@ -70,7 +77,7 @@
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
                 class="d-block"
                 >Login</a
               >
@@ -106,6 +113,9 @@ export default {
     },
     email() {
       return this.$store.state.user.user && this.$store.state.user.user.email
+    },
+    picture() {
+      return this.$store.state.user.user && this.$store.state.user.user.picture
     }
   },
   methods: {
@@ -119,7 +129,7 @@ export default {
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     },
     handleLogoClick() {
       this.$router.push({

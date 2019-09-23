@@ -82,6 +82,15 @@
           height="300px"
         />
 
+        <label
+          class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+          >Notifications</label
+        >
+        <b-form-select
+          v-model="user.notification_frequency"
+          :options="notification_options"
+        ></b-form-select>
+
         <b-alert v-if="errors.length" show variant="warning" dismissible>
           <ul>
             <li v-for="err in errors" :key="err">{{ err }}</li>
@@ -117,7 +126,11 @@ export default {
       language: null,
       value: [],
       options: [],
-      content: ''
+      content: '',
+      notification_options: [
+        { text: 'on', value: 7 },
+        { text: 'off', value: -1 }
+      ]
     }
   },
   computed: {
@@ -191,7 +204,8 @@ export default {
         last_name: this.user.last_name,
         bio: this.user.bio,
         language_ids: this.value.map(lang => lang.id),
-        community_ids: communityId
+        community_ids: communityId,
+        notification_frequency: this.user.notification_frequency
       }
       try {
         await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {

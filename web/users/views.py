@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User
+from .models import User, Administrator
 
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
@@ -50,6 +50,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
+                    picture=result['picture'],
+                    first_name=result['given_name'],
+                    last_name=result['family_name']
                 )
                 user.save()
                 is_new = True
@@ -66,7 +69,13 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         context = {}
         if request.user.is_authenticated:
             return Response(
-                {"is_authenticated": True, "user": UserSerializer(request.user).data}
+                {
+                    "is_authenticated": True,
+                    "user": UserSerializer(request.user).data,
+                    "administration_list": Administrator.objects.filter(
+                        user=request.user
+                    ).count(),
+                }
             )
         else:
             return Response({"is_authenticated": False})

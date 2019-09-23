@@ -62,11 +62,13 @@ class UserSerializer(serializers.ModelSerializer):
             "placename_set",
             "community_ids",
             "language_ids",
+            "notification_frequency",
+            "picture",
         )
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "username", "first_name", "last_name")
+        fields = ("id", "username", "first_name", "last_name", "picture")
 

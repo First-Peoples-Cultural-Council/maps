@@ -98,7 +98,9 @@ curl --request POST --header "Content-Type: application/json" --header "Authoriz
     --data '{"name":"Heiltsuk Nation New","champion_ids": [22], "language_ids":[27],"sleeping":false,"other_names":"Heiltsuk,Bella Bella,Heiltsuk-Oweekala","regions":"","audio_file":null, "english_name":"","other_names":"Heiltsuk Band","internet_speed":"","population":0,"point":{"type":"Point","coordinates":[-128.145551,52.160363]},"email":"admin@example.net","website":"http://www.bellabella.net","phone":"","alt_phone":"(250) 999-9999","fax":"(250) 999-9999"}' http://maps-dev.fpcc.ca/api/community/
 ```
 
-To add some stats: ```
+To add some stats:
+
+```
 curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --data '{ "fluent_speakers": 2, "semi_speakers": 3, "active_learners": 4, "language": 18, "community":255}' http://maps-dev.fpcc.ca/api/stats/
 
 ```
@@ -111,19 +113,23 @@ curl --request PATCH --header "Content-Type: application/json" \
  --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
  --data '{"language_ids": [18]}' http://maps-dev.fpcc.ca/api/community/255/
 
-````
+```
 
-Even though what is returned includes the entire language object inline, not just its ID: ```
+Even though what is returned includes the entire language object inline, not just its ID:
+
+```
 {"id":253,"name":"Halfway River First Nations","languages":[{"name":"Dakelh (ᑕᗸᒡ)","id":18,"color":"RGB(0, 208, 104)","bbox"... }]}
 
-````
+```
 
-Lastly, to upload an audio file to a language or other object, make a separate PATCH request, not using JSON, but just the default raw for encoding: ```
+Lastly, to upload an audio file to a language or other object, make a separate PATCH request, not using JSON, but just the default raw for encoding:
+
+```
 curl --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --request PATCH -sS http://localhost/api/language/18/ -F 'audio_file=@./test.mp3'
 
 ```
 
-*The API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope.*
+_The API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope._
 
 ## Contributing
 
@@ -180,7 +186,7 @@ To test frontend:
 
 ```
 
-        docker-compose exec frontend yarn run test
+docker-compose exec frontend yarn run test
 
 ```
 
@@ -188,12 +194,26 @@ To test backend API:
 
 ```
 
-        docker-compose exec web python manage.py test
+docker-compose exec web python manage.py test
 
 ```
 
-```
+### Notifications
+
+The system sends users notifications weekly, including:
+
+- new contributions (places and media) in their profile's selected language/community.
+- when other users "favourite" their contributions.
+- requests to approve/verify contributions (only language admins receive this)
+
+The user is only notified of each event once, as determined by their `last_notified` attribute (see web/users/models.py).
+
+To send a test notification email:
 
 ```
 
+docker-compose exec web python manage.py test_notifications --email <email of user> --days <number of days>
+
 ```
+
+Specifying a number days (integer) will always force-send updates the specified number of days of updates, regardless of whether those updates have already been sent.
