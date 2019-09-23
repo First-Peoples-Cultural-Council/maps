@@ -1,4 +1,4 @@
-import { getCookie } from '@/plugins/utils.js'
+import { getCookie, getApiUrl } from '@/plugins/utils.js'
 
 export const state = () => ({
   user: null,
@@ -22,12 +22,29 @@ export const actions = {
         'X-CSRFToken': getCookie('csrftoken')
       }
     }
-
     try {
       const result = await this.$axios.post(`/api/favourite/`, data, headers)
       return result
     } catch (e) {
       return { error: e, status: 'failed' }
     }
+  },
+
+  async approve({ commit }, data) {
+    console.log('Data', data)
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const mode = data.verify ? 'verify' : 'reject'
+    const result = await this.$axios.patch(
+      `${getApiUrl(`${data.type}/${data.tv.id}/${mode}/`)}`,
+      {
+        status_reason: mode
+      },
+      headers
+    )
+    return result
   }
 }

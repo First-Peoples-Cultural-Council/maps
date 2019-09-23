@@ -411,7 +411,8 @@ export default {
         community: community_id,
         language: this.languageSelected,
         category: this.categorySelected,
-        community_only: this.communityOnly === 'accepted'
+        community_only: this.communityOnly === 'accepted',
+        status: 'UN'
       }
       if (this.drawnFeatures.length) data.geom = this.drawnFeatures[0].geometry
 
