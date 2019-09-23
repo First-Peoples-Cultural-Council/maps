@@ -1,4 +1,5 @@
 export const state = () => ({
+  drawMode: null,
   isDrawMode: false,
   mode: null,
   drawnFeatures: [],
@@ -10,6 +11,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+  setDrawMode(state, drawMode) {
+    state.drawMode = drawMode
+  },
   setMode(state, mode) {
     state.mode = mode
   },

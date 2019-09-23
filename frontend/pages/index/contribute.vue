@@ -285,11 +285,11 @@ export default {
     '$route.query.mode'() {
       this.$eventHub.whenMap(map => {
         if (this.$route.query.mode === 'point') {
-          document.querySelector('.mapbox-gl-draw_point').click()
+          this.$root.$emit('mode_change_draw', 'point')
         } else if (this.$route.query.mode === 'polygon') {
-          document.querySelector('.mapbox-gl-draw_polygon').click()
+          this.$root.$emit('mode_change_draw', 'polygon')
         } else if (this.$route.query.mode === 'line') {
-          document.querySelector('.mapbox-gl-draw_line').click()
+          this.$root.$emit('mode_change_draw', 'line_string')
         }
       })
     },
@@ -481,15 +481,17 @@ export default {
     next(vm => {
       vm.$store.commit('sidebar/set', true)
       vm.$store.commit('contribute/setIsDrawMode', true)
-      vm.$eventHub.whenMap(map => {
-        if (vm.$route.query.mode === 'point') {
-          document.querySelector('.mapbox-gl-draw_point').click()
-        } else if (vm.$route.query.mode === 'polygon') {
-          document.querySelector('.mapbox-gl-draw_polygon').click()
-        } else if (vm.$route.query.mode === 'line') {
-          document.querySelector('.mapbox-gl-draw_line').click()
-        }
-      })
+
+      if (vm.$route.query.mode === 'point') {
+        vm.$store.commit('contribute/setDrawMode', 'point')
+        vm.$root.$emit('mode_change_draw', 'point')
+      } else if (vm.$route.query.mode === 'polygon') {
+        vm.$store.commit('contribute/setDrawMode', 'polygon')
+        vm.$root.$emit('mode_change_draw', 'polygon')
+      } else if (vm.$route.query.mode === 'line') {
+        vm.$store.commit('contribute/setDrawMode', 'line_string')
+        vm.$root.$emit('mode_change_draw', 'line_string')
+      }
 
       const lat = vm.$route.query.lat
       const lng = vm.$route.query.lng

@@ -39,19 +39,19 @@ export default {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
         if (data === 'point') {
-          document.querySelector('.mapbox-gl-draw_point').click()
+          this.$root.$emit('mode_change_draw', 'point')
         }
 
         if (data === 'polygon') {
-          document.querySelector('.mapbox-gl-draw_polygon').click()
+          this.$root.$emit('mode_change_draw', 'polygon')
         }
 
         if (data === 'trash') {
-          document.querySelector('.mapbox-gl-draw_trash').click()
+          this.$root.$emit('mode_change_draw', 'trash')
         }
 
         if (data === 'line_string') {
-          document.querySelector('.mapbox-gl-draw_line').click()
+          this.$root.$emit('mode_change_draw', 'line_string')
         }
       })
     }
