@@ -46,15 +46,14 @@ class NotificationAPITests(BaseTestCase):
         test_notification = Notification.objects.create(
             name = "Test notification 001",
             language = self.language1,
-            community = self.community1
         )
         response = self.client.get(
             "/api/notification/{}/".format(test_notification.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["name"], "Test notification 001")
-        self.assertEqual(response.data["language"]['id'], self.language1.id)
-        self.assertEqual(response.data["community"]['id'], self.community1.id)
+        self.assertEqual(response.data['language']['id2'], self.language1.id)
+        self.assertEqual(response.data['community']['id'], self.community1.id)
 
     def test_notification_list(self):
         """
