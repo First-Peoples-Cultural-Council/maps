@@ -1,6 +1,8 @@
 <template>
   <client-only>
-    <DetailSideBar :width="500">
+    <div>
+      <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
+
       <h4 class="profile-title pl-3 pr-3 color-gray font-weight-bold">
         Edit Profile
       </h4>
@@ -98,17 +100,17 @@
           Cancel
         </b-button>
       </section>
-    </DetailSideBar>
+    </div>
   </client-only>
 </template>
 
 <script>
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
-    DetailSideBar
+    Logo
   },
   data() {
     return {
@@ -140,6 +142,15 @@ export default {
         }
       })
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.commit('sidebar/set', true)
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('sidebar/set', false)
+    next()
   },
   async asyncData({ params, $axios, store }) {
     const now = new Date()
