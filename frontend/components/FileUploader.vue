@@ -36,6 +36,7 @@
           id="textarea"
           v-model="description"
           placeholder="Enter description"
+          aria-describedby="title-help title-feedback"
           rows="3"
           max-rows="6"
           class="mt-2 mb-2 font-08"

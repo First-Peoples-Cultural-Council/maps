@@ -2,10 +2,7 @@
   <div
     class="map-container"
     :class="{
-      detailModeContainer:
-        this.$route.name === 'index-contribute' ||
-        this.$route.name === 'index-languages-lang-details' ||
-        isDetailMode
+      detailModeContainer: isDetailMode
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
@@ -222,6 +219,9 @@ export default {
     }
   },
   computed: {
+    drawMode() {
+      return this.$store.state.contribute.drawMode
+    },
     communities() {
       return this.$store.state.communities.communities
     },
@@ -589,6 +589,44 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
+
+      let drawInit = false
+      const self = this
+      map.on('draw.render', e => {
+        if (!drawInit) {
+          drawInit = true
+
+          if (this.drawMode === 'point') {
+            draw.changeMode('draw_point')
+          }
+
+          if (this.drawMode === 'polygon') {
+            draw.changeMode('draw_polygon')
+          }
+
+          if (this.drawMode === 'line_string') {
+            draw.changeMode('draw_line_string')
+          }
+
+          self.$root.$on('mode_change_draw', data => {
+            console.log('This got called')
+            if (data === 'point') {
+              draw.changeMode('draw_point')
+            }
+            if (data === 'polygon') {
+              draw.changeMode('draw_polygon')
+            }
+
+            if (data === 'trash') {
+              draw.trash()
+            }
+
+            if (data === 'line_string') {
+              draw.changeMode('draw_line_string')
+            }
+          })
+        }
+      })
 
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()

@@ -37,6 +37,41 @@
           @click="copyToClip($event, 'iframe')"
           >Click To Copy</b-button
         >
+        <div v-if="isLoggedIn">
+          <h4 class="mt-4">Save Current Location</h4>
+          <label class="font-08" for="savetitle">Title</label>
+
+          <b-form-input
+            id="savetitle"
+            v-model="saveTitle"
+            class="font-08"
+            placeholder="Enter Title (required)"
+            :state="stateTitle"
+            required
+          ></b-form-input>
+          <b-form-invalid-feedback id="title-feedback">
+            Title is required
+          </b-form-invalid-feedback>
+
+          <label class="mt-3 font-08" for="savedescription">Description</label>
+
+          <b-form-textarea
+            id="savedescription"
+            v-model="saveDescription"
+            placeholder="Enter description"
+            rows="3"
+            max-rows="6"
+            class="mt-2 mb-2 font-08"
+          ></b-form-textarea>
+          <b-button
+            size="sm"
+            class="d-block mt-2 clipboard"
+            variant="primary"
+            data-clipboard-target="#iframeShare"
+            @click="handleSave"
+            >Save Location</b-button
+          >
+        </div>
       </div>
     </b-modal>
   </div>
@@ -46,10 +81,16 @@
 export default {
   data() {
     return {
-      origin: ''
+      origin: '',
+      saveTitle: null,
+      saveDescription: null,
+      stateTitle: null
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     lat() {
       return this.$store.state.mapinstance.lat
     },
@@ -87,6 +128,45 @@ export default {
       const ClipboardJS = require('clipboard')
       const clipboard = new ClipboardJS('.clipboard')
       console.log('Clipboard', clipboard)
+    },
+    async handleSave() {
+      if (!this.saveTitle) {
+        this.stateTitle = false
+        return false
+      }
+
+      const point = {
+        type: 'Point',
+        coordinates: [this.lng, this.lat]
+      }
+
+      const data = {
+        name: this.saveTitle,
+        favourite_type: 'saved_location',
+        description: this.saveDescription,
+        point,
+        zoom: parseInt(this.zoom)
+      }
+
+      const result = await this.$store.dispatch('user/saveLocation', data)
+      if (result.status === 'failed') {
+        this.$root.$emit('notification', {
+          content: 'Location save failed',
+          time: 1500,
+          danger: true
+        })
+        return false
+      }
+      if (
+        result.request.status === 201 &&
+        result.request.statusText === 'Created'
+      ) {
+        this.$root.$emit('notification', {
+          content: 'Location Has Been Saved Successfully',
+          time: 1500
+        })
+        return true
+      }
     }
   }
 }
