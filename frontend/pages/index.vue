@@ -2,10 +2,7 @@
   <div
     class="map-container"
     :class="{
-      detailModeContainer:
-        this.$route.name === 'index-contribute' ||
-        this.$route.name === 'index-languages-lang-details' ||
-        isDetailMode
+      detailModeContainer: isDetailMode
     }"
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
