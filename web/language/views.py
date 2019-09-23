@@ -116,31 +116,6 @@ class CommunityViewSet(BaseModelViewSet):
         user.communities.add(community)
         user.save_m2m()
 
-    # @action(detail=False)
-    # def create_self_membership(self, request):
-    #     if request.user.is_authenticated:
-    #         request = self.context.get("request")
-    #         if request and hasattr(request, "user"):
-    #             user_id = request.user.id
-    #             if user_id != request.GET.get("user")["id"]:
-    #                 return Response(
-    #                     {"message": "Can only add yourself, not others."},
-    #                     status=status.HTTP_401_UNAUTHORIZED,
-    #                 )
-    #             community_id = int(request.data["community"]["id"])
-    #             if CommunityMember.member_exists(user_id, community_id):
-    #                 return Response({"message", "User is already a community member"})
-    #             else:
-    #                 member = CommunityMember.create_member(user_id, community_id)
-    #                 serializer = CommunityMemberSerializer(member)
-    #                 return Response(serializer.data)
-    #         else:
-    #             content = {"message": "User is not logged in"}
-    #             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
-    #     else:
-    #         content = {"message": "User is not logged in"}
-    #         return Response(content, status=status.HTTP_401_UNAUTHORIZED)
-
     @method_decorator(never_cache)
     @action(detail=False)
     def list_member_to_verify(self, request):
@@ -235,22 +210,6 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
-
-    # def create(self, request):
-    #     community_id = int(request.data["community"]["id"])
-    #     language_id = int(request.data["language"]["id"])
-
-    #     community = Community.objects.get(pk=community_id)
-    #     language = Language.objects.get(pk=language_id)
-
-    #     serializer = PlaceNameSerializer(data=request.data)
-    #     serializer.language = language
-    #     serializer.community = community
-
-    #     serializer.is_valid(raise_exception=True)
-
-    #     serializer.save()
-    #     return Response(serializer.data)
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
@@ -451,16 +410,6 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
     serializer_class = FavouriteSerializer
     queryset = Favourite.objects.all()
 
-    # def create(self, request):
-    #     user_id = int(request.data["user"]["id"])
-    #     media_id = int(request.data["media"]["id"])
-    #     if Favourite.favourite_already_exists(user_id, media_id):
-    #         return Response({"message", "Media is already a user's favorite"})
-    #     else:
-    #         favourite = Favourite.create_favourite(user_id, media_id)
-    #         serializer = FavouriteSerializer(favourite)
-    #         return Response(serializer.data)
-
 
 class NotificationViewSet(BaseModelViewSet):
     serializer_class = NotificationSerializer
@@ -496,4 +445,3 @@ class PlaceNameGeoList(generics.ListAPIView):
             )
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
-

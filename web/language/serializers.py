@@ -345,8 +345,6 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
-    community = CommunitySerializer(read_only=True)
-    language = LanguageSerializer(read_only=True)
 
     class Meta:
         model = Notification
