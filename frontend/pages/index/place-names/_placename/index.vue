@@ -32,7 +32,7 @@
             title="Flag Point Of Interest"
           ></FlagModal>
         </div>
-        <div v-if="place.status === 'UN'" class="mb-2">
+        <div v-if="place.status === 'VE'" class="mb-2">
           <b-badge variant="primary">Verified</b-badge>
           <FlagModal
             :id="place.id"
@@ -40,6 +40,38 @@
             type="placename"
             title="Flag Point Of Interest"
           ></FlagModal>
+        </div>
+        <div v-if="isPTV">
+          <b-row no-gutters class="mt-2 mb-4">
+            <b-col xl="6" class="pr-1">
+              <b-button
+                variant="dark"
+                block
+                size="sm"
+                @click="
+                  handleApproval($event, place, {
+                    verify: true,
+                    type: 'placename'
+                  })
+                "
+                >Verify</b-button
+              >
+            </b-col>
+            <b-col xl="6" class="pl-1">
+              <b-button
+                variant="danger"
+                block
+                size="sm"
+                @click="
+                  handleApproval($event, place, {
+                    reject: true,
+                    type: 'placename'
+                  })
+                "
+                >Reject</b-button
+              >
+            </b-col>
+          </b-row>
         </div>
         <div v-if="place.community" class="mb-4">
           <CommunityCard
@@ -130,6 +162,9 @@ export default {
     uid() {
       const user = this.$store.state.user.user
       return user && user.id
+    },
+    isPTV() {
+      return this.ptv.find(p => p.id === this.place.id)
     }
   },
   watch: {
@@ -157,13 +192,16 @@ export default {
       community = await $axios.$get(getApiUrl(`community/${place.community}/`))
     }
 
+    const ptv = await $axios.$get(getApiUrl('placename/list_to_verify/'))
+
     const isServer = !!process.server
     return {
       geo_place,
       place,
       isServer,
       medias: place.medias,
-      community
+      community,
+      ptv
     }
   },
   mounted() {},
@@ -176,6 +214,22 @@ export default {
   },
   methods: {
     encodeFPCC,
+    async handleApproval(e, tv, { verify, reject, type }) {
+      const data = {
+        tv,
+        verify,
+        reject,
+        type
+      }
+      const result = await this.$store.dispatch('user/approve', data)
+      if (result.request && result.request.status === 200) {
+        if (type === 'placename') {
+          this.ptv = this.ptv.filter(p => p.id !== tv.id)
+        }
+      } else {
+        console.error(result)
+      }
+    },
     isPlaceOwner() {
       if (this.place.creator) {
         if (this.uid === this.place.creator.id) return true

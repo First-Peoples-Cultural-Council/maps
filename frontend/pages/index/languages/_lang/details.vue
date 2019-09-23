@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
     <div class="color-row" :style="'background-color: ' + languageColor"></div>
 
     <LanguageDetailCard
@@ -95,12 +96,14 @@ import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
     LanguageDetailCard,
     LanguageDetailBadge,
-    LanguageSeeAll
+    LanguageSeeAll,
+    Logo
   },
   data() {},
   computed: {
@@ -143,7 +146,7 @@ export default {
     })
   },
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('sidebar/set', true)
+    this.$store.commit('sidebar/set', false)
     next()
   },
   mounted() {

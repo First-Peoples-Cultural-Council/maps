@@ -1,5 +1,5 @@
 <template>
-  <DetailSideBar :width="500">
+  <div>
     <UserDetailCard
       :id="user.id"
       :name="getUserName()"
@@ -71,11 +71,10 @@
         </div>
       </div>
     </section>
-  </DetailSideBar>
+  </div>
 </template>
 
 <script>
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import UserDetailCard from '@/components/user/UserDetailCard.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
@@ -84,7 +83,6 @@ import { zoomToPoint } from '@/mixins/map.js'
 
 export default {
   components: {
-    DetailSideBar,
     UserDetailCard,
     LanguageDetailBadge,
     PlacesCard
@@ -93,6 +91,15 @@ export default {
     savedLocations() {
       return this.favourites.filter(f => f.favourite_type === 'saved_location')
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.commit('sidebar/set', true)
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('sidebar/set', false)
+    next()
   },
   async asyncData({ params, $axios, store }) {
     const user = await $axios.$get(

@@ -1,11 +1,11 @@
 <template>
-  <DetailSideBar>
-    <template v-slot:badges>
-      <h5 class="color-gray font-08 p-0 m-0 header-mobile d-none">
-        {{ art.properties.art_type | titleCase }}:
-        <span class="font-weight-bold">{{ art.properties.name }}</span>
-      </h5>
-    </template>
+  <div>
+    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
+
+    <h5 class="color-gray font-08 p-0 m-0 header-mobile d-none">
+      {{ art.properties.art_type | titleCase }}:
+      <span class="font-weight-bold">{{ art.properties.name }}</span>
+    </h5>
     <div>
       <ArtsDetailCard
         :arttype="art.properties.art_type"
@@ -24,7 +24,7 @@
       </LanguageSeeAll>
       <Filters class="mb-2 mt-2"></Filters>
     </div>
-  </DetailSideBar>
+  </div>
 </template>
 
 <script>
@@ -33,15 +33,15 @@ import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
     ArtsDetailCard,
     LanguageSeeAll,
     Filters,
-    DetailSideBar
+    Logo
   },
   filters: {
     titleCase(str) {

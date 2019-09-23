@@ -118,6 +118,9 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {
+      config.node = {
+        fs: 'empty'
+      }
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',

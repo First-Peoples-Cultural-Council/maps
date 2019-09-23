@@ -20,12 +20,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d"
+SECRET_KEY = os.environ.get("SECRET_KEY", "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # env var, DEBUG=0 for False, DEBUG=1 for True.
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
+HOST = os.environ.get("HOST", 'maps-dev.fpcc.ca')
 ALLOWED_HOSTS = ["*"]
 
 MEDIA_ROOT = "media/"
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_swagger",
     "rest_framework_gis",
+    "django_apscheduler",
     "language",
     "firstvoices",
     "arts",
@@ -161,10 +163,3 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
-
-## jwt cognito
-
-# AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
-# AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
-
-# https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://maps-dev.fpcc.ca

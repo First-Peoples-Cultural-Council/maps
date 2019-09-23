@@ -1,22 +1,25 @@
 <template>
   <div>
-    <div class="font-weight-bold">
+    <div v-if="drawMode !== 'existing'" class="font-weight-bold">
       Click the map to draw a {{ drawMode
       }}<span v-if="drawMode !== 'point'">, double-click when done</span>.
     </div>
+    <div v-if="drawMode === 'existing'" class="font-weight-bold">
+      You may draw new geometry to replace the existing one.
+    </div>
     <div class="dt-container d-flex align-items-center justify-content-center">
       <div
-        v-if="drawMode === 'point'"
+        v-if="drawMode === 'point' || drawMode === 'existing'"
         class="draw-tool draw-point"
         @click="setMode($event, 'point')"
       ></div>
       <div
-        v-if="drawMode === 'polygon'"
+        v-if="drawMode === 'polygon' || drawMode === 'existing'"
         class="draw-tool draw-polygon"
         @click="setMode($event, 'polygon')"
       ></div>
       <div
-        v-if="drawMode === 'line'"
+        v-if="drawMode === 'line' || drawMode === 'existing'"
         class="draw-tool draw-line-string"
         @click="setMode($event, 'line_string')"
       ></div>
@@ -39,19 +42,19 @@ export default {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
         if (data === 'point') {
-          document.querySelector('.mapbox-gl-draw_point').click()
+          this.$root.$emit('mode_change_draw', 'point')
         }
 
         if (data === 'polygon') {
-          document.querySelector('.mapbox-gl-draw_polygon').click()
+          this.$root.$emit('mode_change_draw', 'polygon')
         }
 
         if (data === 'trash') {
-          document.querySelector('.mapbox-gl-draw_trash').click()
+          this.$root.$emit('mode_change_draw', 'trash')
         }
 
         if (data === 'line_string') {
-          document.querySelector('.mapbox-gl-draw_line').click()
+          this.$root.$emit('mode_change_draw', 'line_string')
         }
       })
     }

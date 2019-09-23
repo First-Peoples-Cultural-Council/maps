@@ -43,20 +43,11 @@
         </section>
       </template>
     </SideBar>
-    <DetailSideBar
-      v-else-if="this.$route.name === 'index-heritages-heritage'"
-      :width="detailOneWidth"
-    >
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
@@ -66,7 +57,6 @@ import { encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
     SideBar,
-    DetailSideBar,
     PlacesCard,
     Badge,
     Filters,
