@@ -23,6 +23,13 @@
         class="d-inline-block p-1 font-08"
         >Flagged Media</b-alert
       >
+      <b-alert
+        v-else-if="media.status === 'RE'"
+        variant="danger"
+        show
+        class="d-inline-block p-1 font-08"
+        >Rejected Media</b-alert
+      >
       <div class="float-right">
         <DeleteMedia :id="media.id"></DeleteMedia>
       </div>

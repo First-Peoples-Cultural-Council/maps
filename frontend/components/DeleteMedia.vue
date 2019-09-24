@@ -31,7 +31,7 @@ export default {
 
         if (result.request && result.request.status === 204) {
           this.showModal = false
-          this.$root.$emit('mediaDeleted', this.id)
+          this.$root.$emit('media_deleted', this.id)
           this.$root.$emit('notification', {
             content: 'Media Deleted Successfully',
             time: 2000
@@ -41,8 +41,9 @@ export default {
         }
       } catch (e) {
         this.$root.$emit('notification', {
-          content: 'Media Deleted Successfully',
-          time: 2000
+          content: 'Fail deleting media',
+          time: 2000,
+          danger: true
         })
       }
     }

@@ -3,7 +3,10 @@ import { getCookie, getApiUrl } from '@/plugins/utils.js'
 export const state = () => ({
   user: null,
   isLoggedIn: false,
-  notifications: null
+  notifications: null,
+  mediaToVerify: null,
+  placesToVerify: null,
+  membersToVerify: null
 })
 
 export const mutations = {
@@ -17,6 +20,15 @@ export const mutations = {
 
   setNotification(state, notifications) {
     state.notifications = notifications
+  },
+  setMediaToVerify(state, mtv) {
+    state.mediaToVerify = mtv
+  },
+  setPlacesToVerify(state, ptv) {
+    state.placesToVerify = ptv
+  },
+  setMembersToVerify(state, utv) {
+    state.membersToVerify = utv
   }
 }
 
@@ -101,6 +113,34 @@ export const actions = {
       headers
     )
 
+    return result
+  },
+
+  async getPlacesToVerify({ commit }, data) {
+    const result = await this.$axios.$get(
+      `${getApiUrl(
+        `placename/list_to_verify?timestamp=${new Date().getTime()}/`
+      )}`
+    )
+    commit('setPlacesToVerify', result)
+    return result
+  },
+
+  async getMediaToVerify({ commit }, data) {
+    const result = await this.$axios.$get(
+      `${getApiUrl(`media/list_to_verify?timestamp=${new Date().getTime()}/`)}`
+    )
+    commit('setMediaToVerify', result)
+    return result
+  },
+
+  async getMembersToVerify({ commit }, data) {
+    const result = await this.$axios.$get(
+      `${getApiUrl(
+        `community/list_member_to_verify?timestamp=${new Date().getTime()}/`
+      )}`
+    )
+    commit('setMembersToVerify', result)
     return result
   }
 }

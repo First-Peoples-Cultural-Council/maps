@@ -136,6 +136,15 @@ export default {
     Media
   },
   computed: {
+    placesToVerify() {
+      return this.$store.state.user.placesToVerify
+    },
+    usersToVerify() {
+      return this.$store.state.user.membersToVerify
+    },
+    mediaToVerify() {
+      return this.$store.state.user.mediaToVerify
+    },
     user() {
       const user = this.$store.state.user.user
       return user
@@ -148,31 +157,22 @@ export default {
       )
     }
   },
-  async asyncData({ params, $axios, store }) {
-    const results = await Promise.all([
-      $axios.$get(
-        `${getApiUrl(
-          `placename/list_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      ),
-      $axios.$get(
-        `${getApiUrl(
-          `media/list_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      ),
-      $axios.$get(
-        `${getApiUrl(
-          `community/list_member_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      )
-    ])
-
+  asyncData({ params, $axios, store }) {
     return {
-      placesToVerify: results[0],
-      mediaToVerify: results[1],
-      usersToVerify: results[2],
       isServer: !!process.server
     }
+  },
+  async fetch({ store }) {
+    await Promise.all([
+      store.dispatch('user/getPlacesToVerify'),
+      store.dispatch('user/getMediaToVerify'),
+      store.dispatch('user/getMembersToVerify')
+    ])
+  },
+  created() {
+    this.$root.$on('media_deleted', id => {
+      this.$store.dispatch('user/getMediaToVerify')
+    })
   },
   methods: {
     encodeFPCC,
@@ -208,10 +208,10 @@ export default {
       const result = await this.$store.dispatch('user/approve', data)
       if (result.request && result.request.status === 200) {
         if (type === 'placename') {
-          this.placesToVerify = this.placesToVerify.filter(p => p.id !== tv.id)
+          this.$store.dispatch('user/getPlacesToVerify')
         }
         if (type === 'media') {
-          this.mediaToVerify = this.mediaToVerify.filter(m => m.id !== tv.id)
+          this.$store.dispatch('user/getMediaToVerify')
         }
       }
     }

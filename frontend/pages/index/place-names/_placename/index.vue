@@ -124,7 +124,7 @@
         class="mt-4 ml-4 mr-4"
       >
         <h5 class="font-08 text-uppercase color-gray mb-3">
-          {{ medias.length }} Uploaded Media
+          {{ mediasFiltered.length }} Uploaded Media
         </h5>
 
         <div
@@ -176,9 +176,14 @@ export default {
     creator() {
       return this.place.creator
     },
+    medias() {
+      return this.$store.state.places.medias
+    },
+
     mediasFiltered() {
       return this.medias.filter(m => m.status === 'VE')
     },
+
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
@@ -213,6 +218,10 @@ export default {
       getApiUrl(`placename/${geo_place.id}?timestamp=${now.getTime()}`)
     )
 
+    await store.dispatch('places/getPlaceMedias', {
+      id: geo_place.id
+    })
+
     let community = null
     if (place.community) {
       community = await $axios.$get(getApiUrl(`community/${place.community}/`))
@@ -225,17 +234,25 @@ export default {
       geo_place,
       place,
       isServer,
-      medias: place.medias,
       community,
       ptv
     }
   },
-  mounted() {},
+  mounted() {
+    this.$root.$on('fileUploaded', r => {
+      this.$store.dispatch('places/getPlaceMedias', {
+        id: this.place.id
+      })
+    })
+
+    this.$root.$on('media_deleted', r => {
+      this.$store.dispatch('places/getPlaceMedias', {
+        id: this.place.id
+      })
+    })
+  },
   created() {
     this.setupMap()
-    this.$root.$on('fileUploaded', r => {
-      this.medias.push(r)
-    })
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
