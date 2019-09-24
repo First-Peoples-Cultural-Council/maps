@@ -256,6 +256,18 @@ export default {
     audioFile() {
       return this.$store.state.contribute.audioFile
     },
+    isStaff() {
+      if (!this.$store.state.user.user) {
+        return null
+      }
+      return this.$store.state.user.user.is_staff
+    },
+    isSuperUser() {
+      if (!this.$store.state.user.user) {
+        return null
+      }
+      return this.$store.state.user.user.is_superuser
+    },
 
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
@@ -350,6 +362,7 @@ export default {
     }
 
     data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
+    data.isServer = !!process.server
     return data
   },
   mounted() {
@@ -404,6 +417,11 @@ export default {
         community_id = this.community.id
       }
 
+      let status = 'UN'
+      if (this.isStaff || this.isSuperUser) {
+        status = 'VE'
+      }
+
       const data = {
         name: this.tname,
         common_name: this.wname,
@@ -412,9 +430,17 @@ export default {
         language: this.languageSelected,
         category: this.categorySelected,
         community_only: this.communityOnly === 'accepted',
-        status: 'UN'
+        status
       }
-      if (this.drawnFeatures.length) data.geom = this.drawnFeatures[0].geometry
+      if (this.drawnFeatures.length) {
+        data.geom = this.drawnFeatures[0].geometry
+      }
+
+      const headers = {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
 
       if (this.$route.query.id) {
         id = this.$route.query.id
@@ -422,15 +448,10 @@ export default {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
             data,
-            {
-              headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-              }
-            }
+            headers
           )
           id = modified.id
         } catch (e) {
-          console.warn('ERROR in update', e.response)
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
               return e[0] + ': ' + e[1]
@@ -440,11 +461,11 @@ export default {
         }
       } else {
         try {
-          const created = await this.$axios.$post('/api/placename/', data, {
-            headers: {
-              'X-CSRFToken': getCookie('csrftoken')
-            }
-          })
+          const created = await this.$axios.$post(
+            '/api/placename/',
+            data,
+            headers
+          )
           id = created.id
         } catch (e) {
           console.error(Object.entries(e.response.data))
@@ -470,11 +491,23 @@ export default {
       if (audio) {
         await this.uploadAudioFile(id, audio)
       }
+
       this.$eventHub.whenMap(map => {
         map.getSource('places1').setData('/api/placename-geo/')
-        this.$router.push({
-          path: '/place-names/' + encodeFPCC(this.tname)
-        })
+        if (status === 'VE') {
+          this.$router.push({
+            path: '/place-names/' + encodeFPCC(this.tname)
+          })
+        } else if (status === 'UN') {
+          this.$root.$emit('notification', {
+            content:
+              'Your contribution has been submitted and admins will have to review before it can shown',
+            time: 4000
+          })
+          this.$router.push({
+            path: '/'
+          })
+        }
       })
     }
   },
@@ -482,16 +515,24 @@ export default {
     next(vm => {
       vm.$store.commit('sidebar/set', true)
       vm.$store.commit('contribute/setIsDrawMode', true)
-
       if (vm.$route.query.mode === 'point') {
-        vm.$store.commit('contribute/setDrawMode', 'point')
-        vm.$root.$emit('mode_change_draw', 'point')
+        if (vm.isServer) {
+          vm.$store.commit('contribute/setDrawMode', 'point')
+        } else {
+          vm.$root.$emit('mode_change_draw', 'point')
+        }
       } else if (vm.$route.query.mode === 'polygon') {
-        vm.$store.commit('contribute/setDrawMode', 'polygon')
-        vm.$root.$emit('mode_change_draw', 'polygon')
+        if (vm.isServer) {
+          vm.$store.commit('contribute/setDrawMode', 'polygon')
+        } else {
+          vm.$root.$emit('mode_change_draw', 'polygon')
+        }
       } else if (vm.$route.query.mode === 'line') {
-        vm.$store.commit('contribute/setDrawMode', 'line_string')
-        vm.$root.$emit('mode_change_draw', 'line_string')
+        if (vm.isServer) {
+          vm.$store.commit('contribute/setDrawMode', 'line_string')
+        } else {
+          vm.$root.$emit('mode_change_draw', 'line_string')
+        }
       }
 
       const lat = vm.$route.query.lat
