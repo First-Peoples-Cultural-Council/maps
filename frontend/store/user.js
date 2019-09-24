@@ -98,7 +98,6 @@ export const actions = {
     }
     const result = await this.$axios.delete(
       getApiUrl(`media/${data.id}/`),
-      {},
       headers
     )
 
