@@ -2,7 +2,8 @@ import { getCookie, getApiUrl } from '@/plugins/utils.js'
 
 export const state = () => ({
   user: null,
-  isLoggedIn: false
+  isLoggedIn: false,
+  notifications: null
 })
 
 export const mutations = {
@@ -12,6 +13,10 @@ export const mutations = {
 
   setLoggedIn(state, loggedIn) {
     state.isLoggedIn = loggedIn
+  },
+
+  setNotification(state, notifications) {
+    state.notifications = notifications
   }
 }
 
@@ -45,6 +50,43 @@ export const actions = {
       },
       headers
     )
+    return result
+  },
+
+  async addNotification({ commit }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.post(
+      getApiUrl(`notification/`),
+      data,
+      headers
+    )
+    return result
+  },
+
+  async getNotifications({ commit }, data) {
+    let result = null
+    if (data.isServer) {
+      result = await this.$axios.get(
+        getApiUrl(`notification?timestamp=${new Date().getTime()}/`)
+      )
+    } else {
+      const headers = {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
+      result = await this.$axios.get(
+        getApiUrl(`notification?timestamp=${new Date().getTime()}/`),
+        {},
+        headers
+      )
+    }
+
+    commit('setNotification', result.data)
     return result
   }
 }

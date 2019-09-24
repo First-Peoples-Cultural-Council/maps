@@ -1,19 +1,31 @@
 <template>
   <div>
-    <div v-if="media.status === 'UN'" class="font-08">
-      <b-alert variant="warning" show class="d-inline-block p-1"
+    <div>
+      <b-alert
+        v-if="media.status === 'UN'"
+        variant="warning"
+        show
+        class="d-inline-block p-1 font-08"
         >Unverified Media</b-alert
       >
-    </div>
-    <div v-if="media.status === 'VE'" class="font-08">
-      <b-alert variant="primary" show class="d-inline-block p-1"
+      <b-alert
+        v-else-if="media.status === 'VE'"
+        variant="primary"
+        show
+        class="d-inline-block p-1 font-08"
+      >
         >Verified Media</b-alert
       >
-    </div>
-    <div v-if="media.status === 'FL'" class="font-08">
-      <b-alert variant="primary" show class="d-inline-block p-1"
+      <b-alert
+        v-else-if="media.status === 'FL'"
+        variant="primary"
+        show
+        class="d-inline-block p-1 font-08"
         >Flagged Media</b-alert
       >
+      <div class="float-right">
+        <DeleteMedia :id="media.id"></DeleteMedia>
+      </div>
     </div>
     <div v-if="media.name" class="font-08 color-gray">
       <span>Name: </span>
@@ -70,11 +82,12 @@
 </template>
 <script>
 import FlagModal from '@/components/Flag/FlagModal.vue'
-
+import DeleteMedia from '@/components/DeleteMedia.vue'
 import { getGenericFileType, getMediaUrl } from '@/plugins/utils.js'
 export default {
   components: {
-    FlagModal
+    FlagModal,
+    DeleteMedia
   },
   props: {
     media: {

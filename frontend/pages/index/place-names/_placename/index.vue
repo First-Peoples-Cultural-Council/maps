@@ -108,6 +108,7 @@
           <UploadTool :id="place.id" type="placename"></UploadTool>
         </div>
       </section>
+
       <section
         v-if="mediasFiltered && mediasFiltered.length > 0"
         class="mt-4 ml-4 mr-4"
@@ -116,7 +117,11 @@
           {{ medias.length }} Uploaded Media
         </h5>
 
-        <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
+        <div
+          v-for="media in mediasFiltered"
+          :key="'media' + media.id"
+          class="mb-4"
+        >
           <Media :media="media" :server="isServer"></Media>
           <hr class="mb-2" />
         </div>
@@ -159,7 +164,7 @@ export default {
   },
   computed: {
     mediasFiltered() {
-      return this.medias.filter(m => !(m.status !== 'UN' || m.status !== 'FL'))
+      return this.medias.filter(m => m.status === 'VE')
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
