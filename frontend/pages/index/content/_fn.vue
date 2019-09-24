@@ -10,8 +10,14 @@
     <hr class="sidebar-divider mt-0" />
     <Filters class="mb-1"></Filters>
     <section class="pl-3 pr-3">
+      <Notification
+        v-if="!subscribed && isLoggedIn"
+        :id="community.id"
+        type="community"
+        class="mt-3"
+      ></Notification>
       <div v-if="otherNames">
-        <h5 class="other-lang-names-title text-uppercase mt-4">
+        <h5 class="other-lang-names-title text-uppercase mt-2">
           Other Community Names
         </h5>
         <LanguageDetailBadge
@@ -159,6 +165,7 @@ import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import PlaceCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
@@ -171,7 +178,8 @@ export default {
     PlaceCard,
     Logo,
     UploadTool,
-    Media
+    Media,
+    Notification
   },
   data() {
     return {
@@ -213,6 +221,12 @@ export default {
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
+    },
+    subscribed() {
+      return this.notifications.find(n => n.community === this.community.id)
+    },
+    notifications() {
+      return this.$store.state.user.notifications
     },
     commDetails() {
       const filteredCommDetails = omit(this.communityDetail)
@@ -297,6 +311,11 @@ export default {
       }
     }
   },
+  async fetch({ store }) {
+    await store.dispatch('user/getNotifications', {
+      isServer: !!process.server
+    })
+  },
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
@@ -304,6 +323,12 @@ export default {
   mounted() {
     this.$root.$on('fileUploaded', r => {
       this.commDetails.medias.push(r)
+    })
+
+    this.$root.$on('notificationadded', d => {
+      this.$store.dispatch('user/getNotifications', {
+        isServer: this.isServer
+      })
     })
   },
   methods: {
