@@ -9,7 +9,6 @@
   </div>
 </template>
 <script>
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
 export default {
   props: {
     id: {
@@ -26,15 +25,9 @@ export default {
     async handleDelete(e) {
       e.preventDefault()
       try {
-        const result = await this.$axios.delete(
-          getApiUrl(`media/${this.id}/`),
-          {},
-          {
-            headers: {
-              'X-CSRFToken': getCookie('csrftoken')
-            }
-          }
-        )
+        const result = await this.$store.dispatch('user/deleteMedia', {
+          id: this.id
+        })
         console.log('Result', result)
         this.showModal = false
       } catch (e) {}

@@ -20,6 +20,16 @@
         <Filters class="mb-2"></Filters>
       </div>
       <section class="mt-3 ml-4 mr-4">
+        <div
+          v-if="creator"
+          class="cursor-pointer"
+          @click="handleCreatorClick($event, creator)"
+        >
+          <b-badge variant="primary"
+            >Uploaded By: <a>{{ creator.username }}</a></b-badge
+          >
+        </div>
+
         <div v-if="place.status === 'FL'" class="mb-2">
           <b-badge variant="danger">Flagged</b-badge>
         </div>
@@ -163,6 +173,9 @@ export default {
     }
   },
   computed: {
+    creator() {
+      return this.place.creator
+    },
     mediasFiltered() {
       return this.medias.filter(m => m.status === 'VE')
     },
@@ -226,6 +239,11 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    handleCreatorClick(e, creator) {
+      this.$router.push({
+        path: `/profile/${creator.id}`
+      })
+    },
     encodeFPCC,
     async handleApproval(e, tv, { verify, reject, type }) {
       const data = {

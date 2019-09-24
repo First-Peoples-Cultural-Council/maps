@@ -88,5 +88,20 @@ export const actions = {
 
     commit('setNotification', result.data)
     return result
+  },
+
+  async deleteMedia({ commit }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.delete(
+      getApiUrl(`media/${data.id}/`),
+      {},
+      headers
+    )
+
+    return result
   }
 }

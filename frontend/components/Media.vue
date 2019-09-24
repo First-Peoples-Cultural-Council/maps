@@ -14,7 +14,7 @@
         show
         class="d-inline-block p-1 font-08"
       >
-        >Verified Media</b-alert
+        Verified Media</b-alert
       >
       <b-alert
         v-else-if="media.status === 'FL'"
