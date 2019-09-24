@@ -34,7 +34,7 @@
     </div>
     <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
     <div class="top-bar-container">
-      <SearchBar></SearchBar>
+      <SearchBar class="hide-mobile"></SearchBar>
       <NavigationBar></NavigationBar>
     </div>
     <SideBar v-if="this.$route.name === 'index'">
@@ -131,6 +131,9 @@
       <nuxt-child />
     </div>
     <ModalNotification></ModalNotification>
+    <transition name="fade">
+      <SearchOverlay :show="showSearchOverlay"></SearchOverlay>
+    </transition>
   </div>
 </template>
 
@@ -156,6 +159,8 @@ import { inBounds, zoomToIdealBox } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
+import SearchOverlay from '@/components/SearchOverlay.vue'
+
 import {
   getApiUrl,
   encodeFPCC,
@@ -179,6 +184,7 @@ let markersOnScreen = {}
 
 export default {
   components: {
+    SearchOverlay,
     Mapbox,
     SearchBar,
     NavigationBar,
@@ -198,6 +204,7 @@ export default {
   },
   data() {
     return {
+      showSearchOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -328,6 +335,12 @@ export default {
     next()
   },
   async mounted() {
+    this.$root.$on('showSearchOverlay', d => {
+      this.showSearchOverlay = true
+    })
+    this.$root.$on('closeSearchOverlay', d => {
+      this.showSearchOverlay = false
+    })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
       const token = this.$route.hash.replace('#', '')
@@ -381,6 +394,7 @@ export default {
         this.$route.name === 'index-first-nations'
       )
     },
+
     artsClusterImage(props, coords, map) {
       const html = `<svg class="markerCluster" xmlns="http://www.w3.org/2000/svg" width="54" height="53" viewBox="0 0 54 53"><defs><style>.a{fill:#fff;}.b{fill:#515350;}.c{fill:#b45339;}</style></defs><g transform="translate(-470 -452)"><circle class="a" cx="22.5" cy="22.5" r="22.5" transform="translate(470 460)"/><circle class="b" cx="20.5" cy="20.5" r="20.5" transform="translate(472 462)"/><circle class="a" cx="13.5" cy="13.5" r="13.5" transform="translate(497 452)"/><path class="c" d="M6989.312,282a11.31,11.31,0,1,0,11.309,11.31A11.311,11.311,0,0,0,6989.312,282Zm-8.654,6.817a.362.362,0,0,1,.5-.479,4.74,4.74,0,0,0,5-.428,4.148,4.148,0,0,1,6.021,1.149.468.468,0,0,1-.594.67,4.9,4.9,0,0,0-5.02.219C6984.084,291.716,6981.76,291.029,6980.657,288.817Zm14,4.09c-1.689-.242-4.229-.243-4.229,1.932v.828a.4.4,0,0,1-.4.395h-.636a.394.394,0,0,1-.395-.395v-.828c0-2.126-2.6-2.173-4.409-1.948a.174.174,0,0,1-.077-.337,15.241,15.241,0,0,1,10.233.019A.174.174,0,0,1,6994.661,292.907Zm-.027,2.136h-2.9a.245.245,0,0,1-.188-.4c.56-.668,1.848-1.766,3.279,0A.247.247,0,0,1,6994.633,295.042Zm-7.119,0h-2.929a.24.24,0,0,1-.185-.392c.557-.668,1.856-1.792,3.3,0A.24.24,0,0,1,6987.514,295.042Zm.677,3.261a1.426,1.426,0,1,1,1.426,1.427A1.425,1.425,0,0,1,6988.191,298.3Zm1.875,3.035a.181.181,0,0,1-.032-.359,6.421,6.421,0,0,0,4.893-3.81.181.181,0,0,1,.349.087C6995.026,299.007,6993.994,301.539,6990.066,301.338Zm8.381-10.352c-2.423,1.035-4.361-.6-5.569-2.669a5.777,5.777,0,0,0-2.654-2.289.349.349,0,0,1,.162-.667c1.855.111,3.091.948,4.326,2.955a4.26,4.26,0,0,0,3.611,1.947A.375.375,0,0,1,6998.447,290.986Z" transform="translate(-6478.949 172.052)"/></g><text x="42%" y="65%" text-anchor="middle" fill="white" font-size="0.9em" font-weight="Bold">${
         props.point_count
@@ -900,11 +914,12 @@ export default {
     position: fixed;
     top: 0px;
     left: 0;
-    text-align: center;
+    padding: 0.2em;
     width: 100%;
-    display: table;
     z-index: 100;
-    padding-left: 90px;
+    background-color: white;
+    height: 50px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.05);
   }
 
   .popover {
@@ -920,7 +935,6 @@ export default {
 
 @media (max-width: 574px) {
   .top-bar-container {
-    padding-left: 50px;
   }
 }
 </style>

@@ -1,7 +1,33 @@
 <template>
   <div class="searchbar-container">
     <div class="searchbar-input-container">
+      <div v-if="mobile" class="searchbar-mobile-header">
+        <div class="search-mobile-icon">
+          <img src="@/assets/images/search_icon.svg" alt="Search" />
+        </div>
+        <div class="search-mobile-input">
+          <b-form-input
+            id="search-input"
+            v-model="searchQuery"
+            type="text"
+            class="search-input"
+            placeholder="Search for a language, community, or place name..."
+            autocomplete="off"
+            @update="handleSearchUpdate"
+            @focus="handleInputFocus"
+          >
+          </b-form-input>
+        </div>
+        <div class="search-mobile-close-icon">
+          <img
+            src="@/assets/images/close_icon.svg"
+            alt="Close"
+            @click="$root.$emit('closeSearchOverlay', true)"
+          />
+        </div>
+      </div>
       <b-form-input
+        v-else
         id="search-input"
         v-model="searchQuery"
         type="search"
@@ -12,7 +38,106 @@
         @focus="handleInputFocus"
       >
       </b-form-input>
+      <div v-if="mobile">
+        <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
+          Search Term: {{ searchQuery }}
+        </h5>
+        <div v-if="isSearchEmpty" class="nosearch-results p-3">
+          <Contact
+            error="No search results were found"
+            subject="FPCC Map: Didn't find what I was looking for (search)"
+          ></Contact>
+        </div>
+        <div v-else class="pt-2">
+          <div
+            v-for="(results, key) in searchResults"
+            :key="key"
+            class="search-row"
+          >
+            <div v-if="results.length > 0" class="mb-3">
+              <h5
+                v-if="key === 'Locations'"
+                class="search-result-group font-1 pl-3 pr-3"
+              >
+                Locations from the BC Geographical Names Database
+              </h5>
+              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+                {{ key }}
+              </h5>
+              <div
+                v-for="(result, index) in results"
+                :key="index"
+                class="search-results pl-3 pr-3"
+              >
+                <h5
+                  v-if="key === 'Languages' || key === 'Communities'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="handleResultClick($event, key, result.name)"
+                >
+                  {{ result.name }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Places'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.properties.name)
+                  "
+                >
+                  {{ result.properties.name }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Arts'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.properties.name)
+                  "
+                >
+                  {{ result.properties.name }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Locations'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.properties.name,
+                      result.geometry,
+                      result
+                    )
+                  "
+                >
+                  {{ result.properties.name }} -
+                  {{ result.properties.feature.relativeLocation }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Address'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.place_name,
+                      result.geometry,
+                      result
+                    )
+                  "
+                >
+                  {{ result.place_name }}
+                </h5>
+              </div>
+              <hr />
+            </div>
+          </div>
+          <div>
+            <Contact
+              subject="FPCC Map: Didn't find what I was looking for (search)"
+            ></Contact>
+          </div>
+        </div>
+      </div>
       <b-popover
+        v-else
         target="search-input"
         placement="bottom"
         :show.sync="show"
@@ -131,6 +256,12 @@ const Fuse = require('fuse.js')
 export default {
   components: {
     Contact
+  },
+  props: {
+    mobile: {
+      default: false,
+      type: Boolean
+    }
   },
   data() {
     return {
@@ -314,7 +445,9 @@ export default {
       }
     },
     handleResultClick(event, type, data, geom, result) {
-      console.log('Result', result)
+      if (this.mobile) {
+        this.$root.$emit('closeSearchOverlay')
+      }
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
@@ -442,15 +575,52 @@ export default {
 }
 
 @media (max-width: 992px) {
+  .searchbar-input-container {
+    flex-direction: column;
+  }
   .searchbar-container {
     top: 0;
-    width: auto;
     position: static;
     display: inline-block;
-    display: table-cell;
-    width: 70%;
-    padding-left: 0.5em;
-    vertical-align: middle;
+    width: 100%;
+    padding: 0 0.5em;
+  }
+
+  .searchbar-icon {
+    display: none;
+  }
+
+  .searchbar-mobile-header {
+    display: flex;
+    align-items: center;
+    padding: 0.25em;
+    line-height: 0.8em;
+  }
+
+  .search-mobile-input {
+    flex: 1 1 auto;
+  }
+
+  .search-mobile-input #search-input {
+    border: 0;
+    font-size: 0.8em;
+    border-radius: 0;
+    outline: none;
+    padding: 0;
+  }
+
+  .search-mobile-input #search-input:focus {
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .search-mobile-icon {
+    padding-right: 1em;
+  }
+
+  .search-mobile-close-icon {
+    padding-left: 1em;
   }
 }
 </style>

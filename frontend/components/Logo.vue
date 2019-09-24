@@ -52,29 +52,4 @@ export default {
 .style-two-container {
   text-align: center;
 }
-
-@media (max-width: 992px) {
-  .logo img {
-    width: 100%;
-  }
-
-  .logo {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 50;
-    width: 80px;
-    height: 80px;
-  }
-}
-
-@media (max-width: 574px) {
-  .logo img {
-    width: 100%;
-  }
-  .logo {
-    width: 40px;
-    height: 50px;
-  }
-}
 </style>
