@@ -49,10 +49,12 @@
           </b-row>
         </div>
       </div>
+
       <div v-if="mediaToVerify && mediaToVerify.length > 0">
         <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
         <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
           <div>
+            Place {{ mtv.place }}
             <Media :media="mtv"></Media>
             <b-row no-gutters class="mt-2">
               <b-col xl="6" class="pr-1">

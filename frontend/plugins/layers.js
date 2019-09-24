@@ -192,7 +192,8 @@ export default {
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
-        }
+        },
+        filter: ['!=', ['get', 'status'], 'UN']
       },
       'fn-nations'
     )

@@ -23,6 +23,15 @@
         <div v-if="place.status === 'FL'" class="mb-2">
           <b-badge variant="danger">Flagged</b-badge>
         </div>
+        <div v-if="place.status === 'RE'" class="mb-2">
+          <b-badge variant="info">Rejected</b-badge>
+          <FlagModal
+            :id="place.id"
+            class="float-right"
+            type="placename"
+            title="Flag Point Of Interest"
+          ></FlagModal>
+        </div>
         <div v-if="place.status === 'UN'" class="mb-2">
           <b-badge variant="info">Unverified</b-badge>
           <FlagModal
@@ -34,12 +43,6 @@
         </div>
         <div v-if="place.status === 'VE'" class="mb-2">
           <b-badge variant="primary">Verified</b-badge>
-          <FlagModal
-            :id="place.id"
-            class="float-right"
-            type="placename"
-            title="Flag Point Of Interest"
-          ></FlagModal>
         </div>
         <div v-if="isPTV">
           <b-row no-gutters class="mt-2 mb-4">
@@ -105,8 +108,10 @@
           <UploadTool :id="place.id" type="placename"></UploadTool>
         </div>
       </section>
-
-      <section v-if="medias && medias.length > 0" class="mt-4 ml-4 mr-4">
+      <section
+        v-if="mediasFiltered && mediasFiltered.length > 0"
+        class="mt-4 ml-4 mr-4"
+      >
         <h5 class="font-08 text-uppercase color-gray mb-3">
           {{ medias.length }} Uploaded Media
         </h5>
@@ -153,6 +158,9 @@ export default {
     }
   },
   computed: {
+    mediasFiltered() {
+      return this.medias.filter(m => !(m.status !== 'UN' || m.status !== 'FL'))
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },

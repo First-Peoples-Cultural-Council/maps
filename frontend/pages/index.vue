@@ -265,7 +265,9 @@ export default {
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
       $axios.$get(getApiUrl('community/')),
-      $axios.$get(getApiUrl('placename-geo/')),
+      $axios.$get(
+        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
+      ),
       $axios.$get(getApiUrl('arts'))
     ])
 
@@ -743,8 +745,10 @@ export default {
     },
     filterPlaces(bounds) {
       return this.placesSet.filter(place => {
+        if (place.properties.status === 'UN') {
+          return false
+        }
         if (place.geometry !== null) {
-          // console.log('Place', place)
           if (place.geometry.type === 'Point') {
             const point = place.geometry.coordinates
             return inBounds(bounds, point)
