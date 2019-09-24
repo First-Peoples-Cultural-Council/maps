@@ -48,7 +48,7 @@
     </section>
     <Filters class="mb-1 mt-2"></Filters>
     <Notification
-      v-if="!subscribed"
+      v-if="!subscribed && isLoggedIn"
       :id="language.id"
       type="language"
       class="ml-3 mr-3 mt-2"
@@ -281,6 +281,9 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     subscribed() {
       return this.notifications.find(n => n.language === this.language.id)
     },
