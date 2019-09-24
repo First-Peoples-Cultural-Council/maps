@@ -28,9 +28,23 @@ export default {
         const result = await this.$store.dispatch('user/deleteMedia', {
           id: this.id
         })
-        console.log('Result', result)
-        this.showModal = false
-      } catch (e) {}
+
+        if (result.request && result.request.status === 204) {
+          this.showModal = false
+          this.$root.$emit('mediaDeleted', this.id)
+          this.$root.$emit('notification', {
+            content: 'Media Deleted Successfully',
+            time: 2000
+          })
+        } else {
+          throw result
+        }
+      } catch (e) {
+        this.$root.$emit('notification', {
+          content: 'Media Deleted Successfully',
+          time: 2000
+        })
+      }
     }
   }
 }
