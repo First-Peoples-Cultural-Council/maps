@@ -33,10 +33,6 @@
       <Contribute class="hide-mobile contribute-control"></Contribute>
     </div>
     <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
-    <div class="top-bar-container">
-      <SearchBar class="hide-mobile"></SearchBar>
-      <NavigationBar></NavigationBar>
-    </div>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <div v-html="ie"></div>
@@ -131,8 +127,15 @@
       <nuxt-child />
     </div>
     <ModalNotification></ModalNotification>
-    <transition name="fade">
-      <SearchOverlay :show="showSearchOverlay"></SearchOverlay>
+    <transition name="fade-topbar" mode="out-in">
+      <SearchOverlay
+        v-if="showSearchOverlay"
+        :show="showSearchOverlay"
+      ></SearchOverlay>
+      <div v-else class="top-bar-container shadow-sm">
+        <SearchBar class="hide-mobile"></SearchBar>
+        <NavigationBar></NavigationBar>
+      </div>
     </transition>
   </div>
 </template>
@@ -898,6 +901,9 @@ export default {
   width: 500px;
 }
 @media (max-width: 992px) {
+  .sb-new-alt-one {
+    width: 0;
+  }
   .map-loading {
     margin-left: -90px;
   }
@@ -919,7 +925,6 @@ export default {
     z-index: 100;
     background-color: white;
     height: 50px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.05);
   }
 
   .popover {
@@ -936,5 +941,13 @@ export default {
 @media (max-width: 574px) {
   .top-bar-container {
   }
+}
+
+.fade-topbar-enter-active,
+.fade-topbar-leave-active {
+  transition: opacity 0.15s;
+}
+.fade-topbar-enter, .fade-topbar-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
