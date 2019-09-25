@@ -2,7 +2,7 @@
   <div class="w-100">
     <div
       v-if="!mobileContent"
-      class="d-flex justify-content-between align-items-center pl-2 pr-2"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
     >
       <div>
         Point Of Interest:
@@ -16,7 +16,8 @@
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div>
         <div
-          class="text-center"
+          class="text-center d-none"
+          :class="{ 'content-mobile': mobileContent }"
           @click="$store.commit('sidebar/setMobileContent', false)"
         >
           <img
@@ -205,7 +206,7 @@ export default {
     },
 
     mediasFiltered() {
-      return this.medias.filter(m => m.status === 'VE')
+      return this.medias.filter(m => m.status !== 'FL')
     },
 
     mapinstance() {
@@ -398,5 +399,11 @@ export default {
 
 .content-mobile {
   display: block !important;
+}
+
+@media (max-width: 992px) {
+  .content-mobile-title {
+    display: flex !important;
+  }
 }
 </style>
