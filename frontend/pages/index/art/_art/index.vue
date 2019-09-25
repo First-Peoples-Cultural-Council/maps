@@ -87,22 +87,19 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         const mapboxgl = require('mapbox-gl')
+        if (this.$route.hash.length <= 1) {
+          zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+        }
+        const el = document.createElement('div')
+        el.className = 'marker art-marker'
+        el.style =
+          "background-image: url('/" +
+          this.art.properties.art_type +
+          "_icon.svg')"
 
-        this.$eventHub.whenMap(map => {
-          if (this.$route.hash.length <= 1) {
-            zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
-          }
-          const el = document.createElement('div')
-          el.className = 'marker art-marker'
-          el.style =
-            "background-image: url('/" +
-            this.art.properties.art_type +
-            "_icon.svg')"
-
-          new mapboxgl.Marker(el)
-            .setLngLat(this.art.geometry.coordinates)
-            .addTo(map)
-        })
+        new mapboxgl.Marker(el)
+          .setLngLat(this.art.geometry.coordinates)
+          .addTo(map)
       })
     }
   },

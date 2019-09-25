@@ -111,16 +111,17 @@
                 mode !== 'lang'
             "
           >
-            <PlaceCard
+            <PlacesCard
               v-for="(place, index) in commDetails.places"
               :key="`placescomm${index}`"
               class="mt-3 hover-left-move"
               :name="place.name"
+              :place="{ properties: place }"
               @click.native.prevent="
                 handleCardClick($event, place.name, 'place')
               "
             >
-            </PlaceCard>
+            </PlacesCard>
           </div>
         </b-col>
       </b-row>
@@ -156,7 +157,7 @@ import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
-import PlaceCard from '@/components/places/PlacesCard.vue'
+import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 
@@ -168,7 +169,7 @@ export default {
     Filters,
     LanguageCard,
     Badge,
-    PlaceCard,
+    PlacesCard,
     Logo,
     UploadTool,
     Media

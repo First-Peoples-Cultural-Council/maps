@@ -344,7 +344,6 @@ export default {
       if (type === 'Locations' || type === 'Address') {
         this.$eventHub.whenMap(map => {
           zoomToPoint({ map, geom, zoom: 11 })
-          console.log('GEOM', geom)
           const el = document.createElement('div')
           el.className = 'marker search-marker'
           el.style = "background-image: url('https://i.imgur.com/MK4NUzI.png')"

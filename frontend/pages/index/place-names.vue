@@ -27,7 +27,7 @@
               sm="6"
             >
               <PlacesCard
-                :name="place.properties.name"
+                :place="place"
                 class="mt-3"
                 @click.native="
                   $router.push({

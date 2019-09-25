@@ -268,6 +268,7 @@ export default {
       paint: {
         'text-halo-width': 2,
         'text-halo-blur': 2,
+        'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25],
         'text-halo-color': [
           'let',
           'rgba',

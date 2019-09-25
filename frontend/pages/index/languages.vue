@@ -84,6 +84,7 @@
                 <CommunityCard
                   class="mt-3 hover-left-move"
                   :name="community.name"
+                  :community="community"
                   @click.native.prevent="
                     handleCardClick($event, community.name, 'comm')
                   "

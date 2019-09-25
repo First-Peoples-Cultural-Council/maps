@@ -1,4 +1,5 @@
 import Vue from 'vue'
+const _markers = []
 Vue.prototype.$eventHub = new Vue({}) // Global event bus
 
 Vue.prototype.$eventHub.whenMap = function(fn) {
@@ -8,6 +9,23 @@ Vue.prototype.$eventHub.whenMap = function(fn) {
     this.$on('map-loaded', fn)
   }
 }
+Vue.prototype.$eventHub.revealArea = function(where) {
+  this.whenMap(map => {
+    const mapboxgl = require('mapbox-gl')
+
+    const el = document.createElement('div')
+    el.className = 'marker hover-marker'
+    const marker = new mapboxgl.Marker(el).setLngLat(where)
+    marker.addTo(map)
+    _markers.push(marker)
+  })
+}
+Vue.prototype.$eventHub.doneReveal = function() {
+  for (let i = 0; i < _markers.length; i++) {
+    const marker = _markers[i]
+    marker.remove()
+  }
+}
 
 Vue.prototype.$eventHub.$on('map-loaded', function(map) {
   this.map = map
@@ -15,6 +33,7 @@ Vue.prototype.$eventHub.$on('map-loaded', function(map) {
 
 Vue.prototype.$eventHub.$on('route-changed', function(route) {
   if (this.map) {
+    this.doneReveal() // hide the little magnifier element when routing, it's dependent on a hover and the map position.
     // hide the highlight box if we navigate away from a language detail.
     if (
       route.name !== 'index-languages-lang' ||

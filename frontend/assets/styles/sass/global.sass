@@ -76,6 +76,25 @@ body,
   border-radius: 50%
   background: white
   border: 2px solid white
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+
+.hover-marker
+  width: 20px
+  height: 20px
+  border-radius: 25%
+  background: #eee;
+  border: 1px solid black
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+
+@keyframes pulsate
+  0%
+    opacity: 0.2;
+  50%
+    opacity: 0.7;
+  100%
+    opacity: 0.2;
 
 .search-marker
   width: 40px

@@ -115,6 +115,7 @@
             >
               <CommunityCard
                 :name="community.name"
+                :community="community"
                 class="mt-3 hover-left-move"
                 @click.native="handleCardClick($event, community.name, 'comm')"
               ></CommunityCard>
@@ -139,7 +140,7 @@
               sm="6"
             >
               <PlacesCard
-                :name="place.properties.name"
+                :place="place"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, place.properties.name, 'places')
@@ -167,8 +168,7 @@
             >
               <ArtsCard
                 class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
                 "
@@ -196,8 +196,7 @@
             >
               <ArtsCard
                 class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
                 "
@@ -225,8 +224,7 @@
             >
               <ArtsCard
                 class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
                 "

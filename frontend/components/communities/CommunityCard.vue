@@ -53,6 +53,12 @@ export default {
     Card
   },
   props: {
+    community: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
     name: {
       type: String,
       default: ''
@@ -85,9 +91,11 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
+      this.$eventHub.revealArea(this.community.point.coordinates)
     },
     handleMouseLeave() {
       this.hover = false
+      this.$eventHub.doneReveal()
     }
   }
 }

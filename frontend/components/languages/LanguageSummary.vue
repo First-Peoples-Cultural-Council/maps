@@ -50,20 +50,26 @@ export default {
   word-break: break-word;
 }
 .languageSummary th {
+  hyphens: auto;
   font-size: 0.7em;
-  padding: 0 0.5em;
+  padding: 0 0.15em 0 0.25em;
   vertical-align: top;
   color: var(--color-gray, #6f6f70);
   border-left: 1px solid rgba(0, 0, 0, 0.2);
   font-weight: 500;
   padding-right: 1em;
 }
+.languageSummary th:first-child,
+.languageSummary td:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
 .languageSummary td {
   font-size: 0.8em;
   color: var(--color-gray, #6f6f70);
   font-weight: bold;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 0 0.5em;
+  padding: 0 0.15em 0 0.25em;
   padding-right: 1em;
   padding-top: 0.5em;
 }

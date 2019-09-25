@@ -34,7 +34,7 @@
               sm="6"
             >
               <PlacesCard
-                :name="place.properties.name"
+                :place="place"
                 class="mt-3 hover-left-move"
                 @click.native="handleCardClick($event, place.properties.name)"
               ></PlacesCard>

@@ -13,7 +13,7 @@
           class="pr-2 pl-2"
         >
           <PlacesCard
-            :name="ptv.name"
+            :name="{ properties: { name: ptv.name } }"
             class="mb-2"
             @click.native="
               $router.push({

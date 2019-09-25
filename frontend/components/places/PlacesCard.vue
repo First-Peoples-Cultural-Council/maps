@@ -22,7 +22,7 @@
               Point Of Interest
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
-              {{ name }}
+              {{ place.properties.name }}
             </h5>
           </div>
         </div>
@@ -44,9 +44,11 @@ export default {
     Card
   },
   props: {
-    name: {
-      type: String,
-      default: ''
+    place: {
+      type: Object,
+      default: () => {
+        return { properties: {} }
+      }
     },
     color: {
       type: String,
@@ -61,9 +63,19 @@ export default {
   methods: {
     handleMouseOver() {
       this.hover = true
+      // in some cases, we list places without full geometry, no marker shown.
+      if (!this.place.geometry) return
+      // TODO: we need a centroid in this case.
+      if (this.place.geometry.coordinates.length > 2) return
+      this.$eventHub.revealArea(this.place.geometry.coordinates)
     },
     handleMouseLeave() {
       this.hover = false
+      // in some cases, we list places without full geometry, no marker shown.
+      if (!this.place.geometry) return
+      // TODO: we need a centroid in this case.
+      if (this.place.geometry.coordinates.length > 2) return
+      this.$eventHub.doneReveal()
     }
   }
 }

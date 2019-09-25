@@ -46,7 +46,7 @@
         <PlacesCard
           v-for="place in user.placename_set"
           :key="`place${place.id}`"
-          :name="place.name"
+          :place="{ properties: place }"
           class="mt-3 hover-left-move"
           @click.native="
             $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
