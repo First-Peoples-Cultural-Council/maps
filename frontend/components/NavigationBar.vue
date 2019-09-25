@@ -28,6 +28,16 @@
       <img src="@/assets/images/symbol@2x.png" alt="Menu" class="mobile-logo" />
     </div>
     <div class="mobile-search-container">
+      <div
+        class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openShareEmbed')"
+      >
+        <img
+          src="@/assets/images/share_icon_red.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
       <div class="navbar-icon-container cursor-pointer" @click="showSearch">
         <img
           src="@/assets/images/search_icon.svg"
@@ -125,7 +135,8 @@ export default {
   components: {},
   data() {
     return {
-      navigationOpen: false
+      navigationOpen: false,
+      show: false
     }
   },
   computed: {
