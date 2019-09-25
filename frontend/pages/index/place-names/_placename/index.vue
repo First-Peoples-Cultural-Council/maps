@@ -1,141 +1,160 @@
 <template>
-  <div>
-    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <h5 class="color-gray font-08 p-0 m-0 d-none header-mobile">
-      Point Of Interest:
-      <span class="font-weight-bold">{{ place.name }}</span>
-    </h5>
-    <div>
+  <div class="w-100">
+    <div
+      v-if="!mobileContent"
+      class="d-flex justify-content-between align-items-center pl-2 pr-2"
+    >
       <div>
-        <PlacesDetailCard
-          :id="place.id"
-          :name="place.name"
-          :server="isServer"
-          :audio-file="getMediaUrl(place.audio_file, isServer)"
-          :allow-edit="isPlaceOwner()"
-          variant="md"
-          :delete-place="isPlaceOwner()"
-        ></PlacesDetailCard>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
+        Point Of Interest:
+        <span class="font-weight-bold">{{ place.name }}</span>
       </div>
-      <section class="mt-3 ml-4 mr-4">
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div>
         <div
-          v-if="creator"
-          class="cursor-pointer"
-          @click="handleCreatorClick($event, creator)"
+          class="text-center"
+          @click="$store.commit('sidebar/setMobileContent', false)"
         >
-          <b-badge variant="primary"
-            >Uploaded By: <a>{{ creator.username }}</a></b-badge
+          <img
+            class="d-inline-block"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
+        </div>
+        <div>
+          <PlacesDetailCard
+            :id="place.id"
+            :name="place.name"
+            :server="isServer"
+            :audio-file="getMediaUrl(place.audio_file, isServer)"
+            :allow-edit="isPlaceOwner()"
+            variant="md"
+            :delete-place="isPlaceOwner()"
+          ></PlacesDetailCard>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-2"></Filters>
+        </div>
+        <section class="mt-3 ml-4 mr-4">
+          <div
+            v-if="creator"
+            class="cursor-pointer"
+            @click="handleCreatorClick($event, creator)"
           >
-        </div>
+            <b-badge variant="primary"
+              >Uploaded By: <a>{{ creator.username }}</a></b-badge
+            >
+          </div>
 
-        <div v-if="place.status === 'FL'" class="mb-2">
-          <b-badge variant="danger">Flagged</b-badge>
-        </div>
-        <div v-if="place.status === 'RE'" class="mb-2">
-          <b-badge variant="info">Rejected</b-badge>
-          <FlagModal
-            :id="place.id"
-            class="float-right"
-            type="placename"
-            title="Flag Point Of Interest"
-          ></FlagModal>
-        </div>
-        <div v-if="place.status === 'UN'" class="mb-2">
-          <b-badge variant="info">Unverified</b-badge>
-          <FlagModal
-            :id="place.id"
-            class="float-right"
-            type="placename"
-            title="Flag Point Of Interest"
-          ></FlagModal>
-        </div>
-        <div v-if="place.status === 'VE'" class="mb-2">
-          <b-badge variant="primary">Verified</b-badge>
-        </div>
-        <div v-if="isPTV">
-          <b-row no-gutters class="mt-2 mb-4">
-            <b-col xl="6" class="pr-1">
-              <b-button
-                variant="dark"
-                block
-                size="sm"
-                @click="
-                  handleApproval($event, place, {
-                    verify: true,
-                    type: 'placename'
-                  })
-                "
-                >Verify</b-button
-              >
-            </b-col>
-            <b-col xl="6" class="pl-1">
-              <b-button
-                variant="danger"
-                block
-                size="sm"
-                @click="
-                  handleApproval($event, place, {
-                    reject: true,
-                    type: 'placename'
-                  })
-                "
-                >Reject</b-button
-              >
-            </b-col>
-          </b-row>
-        </div>
-        <div v-if="place.community" class="mb-4">
-          <CommunityCard
-            :name="community.name"
-            @click.native="
-              $router.push({ path: `/content/${encodeFPCC(community.name)}` })
-            "
-          ></CommunityCard>
-        </div>
-        <div v-if="place.description">
-          <h5 class="font-08 text-uppercase color-gray">Description</h5>
-          <p class="font-08">{{ place.description }}</p>
-        </div>
-        <div v-if="place.category">
-          <h5 class="font-08 text-uppercase color-gray">Category</h5>
-          <p class="font-08">{{ place.category_obj.name }}</p>
-        </div>
+          <div v-if="place.status === 'FL'" class="mb-2">
+            <b-badge variant="danger">Flagged</b-badge>
+          </div>
+          <div v-if="place.status === 'RE'" class="mb-2">
+            <b-badge variant="info">Rejected</b-badge>
+            <FlagModal
+              :id="place.id"
+              class="float-right"
+              type="placename"
+              title="Flag Point Of Interest"
+            ></FlagModal>
+          </div>
+          <div v-if="place.status === 'UN'" class="mb-2">
+            <b-badge variant="info">Unverified</b-badge>
+            <FlagModal
+              :id="place.id"
+              class="float-right"
+              type="placename"
+              title="Flag Point Of Interest"
+            ></FlagModal>
+          </div>
+          <div v-if="place.status === 'VE'" class="mb-2">
+            <b-badge variant="primary">Verified</b-badge>
+          </div>
+          <div v-if="isPTV">
+            <b-row no-gutters class="mt-2 mb-4">
+              <b-col xl="6" class="pr-1">
+                <b-button
+                  variant="dark"
+                  block
+                  size="sm"
+                  @click="
+                    handleApproval($event, place, {
+                      verify: true,
+                      type: 'placename'
+                    })
+                  "
+                  >Verify</b-button
+                >
+              </b-col>
+              <b-col xl="6" class="pl-1">
+                <b-button
+                  variant="danger"
+                  block
+                  size="sm"
+                  @click="
+                    handleApproval($event, place, {
+                      reject: true,
+                      type: 'placename'
+                    })
+                  "
+                  >Reject</b-button
+                >
+              </b-col>
+            </b-row>
+          </div>
+          <div v-if="place.community" class="mb-4">
+            <CommunityCard
+              :name="community.name"
+              @click.native="
+                $router.push({ path: `/content/${encodeFPCC(community.name)}` })
+              "
+            ></CommunityCard>
+          </div>
+          <div v-if="place.description">
+            <h5 class="font-08 text-uppercase color-gray">Description</h5>
+            <p class="font-08">{{ place.description }}</p>
+          </div>
+          <div v-if="place.category">
+            <h5 class="font-08 text-uppercase color-gray">Category</h5>
+            <p class="font-08">{{ place.category_obj.name }}</p>
+          </div>
 
-        <div v-if="place.common_name">
-          <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
-          <p class="font-08">{{ place.common_name }}</p>
-        </div>
-        <div v-if="place.other_names">
-          <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
-          <p class="font-08">{{ place.other_names }}</p>
-        </div>
-      </section>
-      <hr />
-      <section class="m-1 ml-4 mr-4">
-        <div v-if="isLoggedIn">
-          <UploadTool :id="place.id" type="placename"></UploadTool>
-        </div>
-      </section>
+          <div v-if="place.common_name">
+            <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
+            <p class="font-08">{{ place.common_name }}</p>
+          </div>
+          <div v-if="place.other_names">
+            <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
+            <p class="font-08">{{ place.other_names }}</p>
+          </div>
+        </section>
+        <hr />
+        <section class="m-1 ml-4 mr-4">
+          <div v-if="isLoggedIn">
+            <UploadTool :id="place.id" type="placename"></UploadTool>
+          </div>
+        </section>
 
-      <section
-        v-if="mediasFiltered && mediasFiltered.length > 0"
-        class="mt-4 ml-4 mr-4"
-      >
-        <h5 class="font-08 text-uppercase color-gray mb-3">
-          {{ mediasFiltered.length }} Uploaded Media
-        </h5>
-
-        <div
-          v-for="media in mediasFiltered"
-          :key="'media' + media.id"
-          class="mb-4"
+        <section
+          v-if="mediasFiltered && mediasFiltered.length > 0"
+          class="mt-4 ml-4 mr-4"
         >
-          <Media :media="media" :server="isServer"></Media>
-          <hr class="mb-2" />
-        </div>
-      </section>
+          <h5 class="font-08 text-uppercase color-gray mb-3">
+            {{ mediasFiltered.length }} Uploaded Media
+          </h5>
+
+          <div
+            v-for="media in mediasFiltered"
+            :key="'media' + media.id"
+            class="mb-4"
+          >
+            <Media :media="media" :server="isServer"></Media>
+            <hr class="mb-2" />
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -169,10 +188,14 @@ export default {
   },
   data() {
     return {
-      showUploadModal: false
+      showUploadModal: false,
+      closeOverlayContent: false
     }
   },
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     creator() {
       return this.place.creator
     },
@@ -370,5 +393,9 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
+}
+
+.content-mobile {
+  display: block !important;
 }
 </style>

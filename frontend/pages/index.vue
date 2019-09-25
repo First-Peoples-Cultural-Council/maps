@@ -32,7 +32,6 @@
       <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
       <Contribute class="hide-mobile contribute-control"></Contribute>
     </div>
-    <Logo :logo-alt="3" class="mobile-logo d-none"></Logo>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <div v-html="ie"></div>
@@ -123,7 +122,17 @@
         </section>
       </template>
     </SideBar>
-    <div v-else class="sb-new-alt-one" :class="{ 'sb-detail': isDetailMode }">
+    <div
+      v-else-if="routesToNotRenderChild()"
+      class="sb-new-alt-one"
+      :class="{
+        'sb-detail': isDetailMode,
+        'mobile-content-open': mobileContent
+      }"
+    >
+      <nuxt-child class="w-100" />
+    </div>
+    <div v-else>
       <nuxt-child />
     </div>
     <ModalNotification></ModalNotification>
@@ -150,7 +159,6 @@ import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
-import Logo from '@/components/Logo.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
@@ -200,7 +208,6 @@ export default {
     ResetMap,
     Zoom,
     Filters,
-    Logo,
     Contribute,
     DrawingTools,
     ModalNotification
@@ -229,6 +236,9 @@ export default {
     }
   },
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     drawMode() {
       return this.$store.state.contribute.drawMode
     },
@@ -373,6 +383,13 @@ export default {
     }
   },
   methods: {
+    routesToNotRenderChild() {
+      return !(
+        this.$route.name === 'index-languages' ||
+        this.$route.name === 'index-heritages' ||
+        this.$route.name === 'index-arts'
+      )
+    },
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
@@ -892,7 +909,7 @@ export default {
   left: 0;
   width: 350px;
   background-color: white;
-  z-index: 50;
+  z-index: 1000;
   height: 100%;
   overflow-y: auto;
 }
@@ -902,7 +919,15 @@ export default {
 }
 @media (max-width: 992px) {
   .sb-new-alt-one {
-    width: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: unset;
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
   }
   .map-loading {
     margin-left: -90px;
@@ -938,16 +963,17 @@ export default {
   }
 }
 
-@media (max-width: 574px) {
-  .top-bar-container {
-  }
-}
-
 .fade-topbar-enter-active,
 .fade-topbar-leave-active {
   transition: opacity 0.15s;
 }
 .fade-topbar-enter, .fade-topbar-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.mobile-content-open {
+  height: 100%;
+  top: 0;
+  align-items: baseline;
 }
 </style>
