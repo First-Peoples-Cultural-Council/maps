@@ -114,7 +114,8 @@ class CommunityViewSet(BaseModelViewSet):
         community = Community.objects.get(pk=community_id)
         user = User.objects.get(pk=user_id)
         user.communities.add(community)
-        user.save_m2m()
+        user.save()
+        return Response({"message": "Membership created"})
 
     @method_decorator(never_cache)
     @action(detail=False)
