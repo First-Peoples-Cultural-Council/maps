@@ -107,7 +107,7 @@
           <div v-if="place.community" class="mb-4">
             <CommunityCard
               :name="community.name"
-            :community="community"
+              :community="community"
               @click.native="
                 $router.push({ path: `/content/${encodeFPCC(community.name)}` })
               "
