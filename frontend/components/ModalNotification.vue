@@ -27,7 +27,6 @@ export default {
   },
   mounted() {
     this.$root.$on('notification', params => {
-      console.log('This got called')
       if (this.modalShow === false) {
         if (params.danger) {
           this.danger = true

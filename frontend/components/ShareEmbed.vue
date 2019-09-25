@@ -1,8 +1,9 @@
 <template>
   <div class="share-embed-container">
-    <h5 v-b-modal="'share-embed-modal'">Share & Embed</h5>
+    <h5 v-if="!hideButton" v-b-modal="'share-embed-modal'">Share & Embed</h5>
     <b-modal
       id="share-embed-modal"
+      v-model="show"
       ok-title="Close"
       :ok-only="true"
       :hide-header="true"
@@ -79,12 +80,19 @@
 
 <script>
 export default {
+  props: {
+    hideButton: {
+      default: false,
+      type: Boolean
+    }
+  },
   data() {
     return {
       origin: '',
       saveTitle: null,
       saveDescription: null,
-      stateTitle: null
+      stateTitle: null,
+      show: false
     }
   },
   computed: {
@@ -122,6 +130,12 @@ export default {
   },
   mounted() {
     this.origin = window.location.origin
+    this.$root.$on('openShareEmbed', d => {
+      this.show = true
+    })
+    this.$root.$on('closeShareEmbed', d => {
+      this.show = false
+    })
   },
   methods: {
     copyToClip(e, data) {

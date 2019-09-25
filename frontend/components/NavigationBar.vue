@@ -1,6 +1,10 @@
 <template>
   <div class="nav-container">
-    <div v-if="email" class="user-container cursor-pointer" @click="profile">
+    <div
+      v-if="email"
+      class="user-container cursor-pointer hide-mobile"
+      @click="profile"
+    >
       <nav class="navbar-icon-container">
         <img
           v-if="!picture"
@@ -16,14 +20,40 @@
         />
       </nav>
     </div>
-    <div class="navbar-container cursor-pointer" @click="openNav">
-      <nav class="navbar-icon-container">
+
+    <div
+      class="d-none cursor-pointer mobile-logo-container"
+      @click="$router.push({ path: '/' })"
+    >
+      <img src="@/assets/images/symbol@2x.png" alt="Menu" class="mobile-logo" />
+    </div>
+    <div class="mobile-search-container">
+      <div
+        class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openShareEmbed')"
+      >
         <img
-          src="@/assets/images/menu_icon.svg"
-          alt="Menu"
+          src="@/assets/images/share_icon_red.svg"
+          alt="Search"
           class="navbar-icon"
         />
-      </nav>
+      </div>
+      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
+        <img
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
+      <div class="navbar-container cursor-pointer" @click="openNav">
+        <nav class="navbar-icon-container">
+          <img
+            src="@/assets/images/menu_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+        </nav>
+      </div>
     </div>
     <transition name="fade">
       <div v-if="navigationOpen" class="navigation">
@@ -102,9 +132,11 @@
 import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
+  components: {},
   data() {
     return {
-      navigationOpen: false
+      navigationOpen: false,
+      show: false
     }
   },
   computed: {
@@ -119,6 +151,9 @@ export default {
     }
   },
   methods: {
+    showSearch() {
+      this.$root.$emit('showSearchOverlay', true)
+    },
     profile() {
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
     },
@@ -250,18 +285,51 @@ export default {
 }
 
 @media (max-width: 992px) {
+  .searchbar-mobile {
+    flex: 10 1 auto;
+  }
   .nav-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-icon-container {
+    padding-right: 1em;
+  }
+
+  .navbar-icon-container .navbar-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .mobile-logo {
     display: inline-block;
-    display: table-cell;
-    width: 15%;
-    vertical-align: middle;
+    height: 100%;
+  }
+
+  .mobile-logo-container {
+    display: inline-block !important;
+    height: 100%;
+  }
+
+  .mobile-search-container {
+    display: flex;
   }
 
   .navbar-container {
-    position: static;
     display: inline-block;
-    padding: 0.8em;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: static;
+    background-color: white;
+    border: 0;
+    top: unset;
+    left: unset;
+    right: unset;
+    bottom: unset;
+    z-index: unset;
+    padding: 0;
+    margin: 0;
   }
 
   .navigation {

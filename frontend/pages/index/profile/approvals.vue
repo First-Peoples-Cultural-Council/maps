@@ -5,13 +5,9 @@
       <div v-if="nothingToVerify" class="mt-2">
         <b-alert show>Nothing to approve</b-alert>
       </div>
-      <div v-if="placesToVerify && placesToVerify.length > 0">
-        <h5>Places Waiting For Verification</h5>
-        <div
-          v-for="ptv in placesToVerify"
-          :key="`ptv${ptv.id}`"
-          class="pr-2 pl-2"
-        >
+      <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
+        <h5 class="font-1 color-dark-gray">Places Waiting For Verification</h5>
+        <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
           <PlacesCard
             :name="{ properties: { name: ptv.name } }"
             class="mb-2"
@@ -21,9 +17,12 @@
               })
             "
           ></PlacesCard>
-          <ul>
-            <li>
+          <b-row no-gutters>
+            <b-col xs="6" class="pr-1">
               <b-button
+                block
+                variant="dark"
+                size="sm"
                 @click="
                   handleApproval($event, ptv, {
                     verify: true,
@@ -32,9 +31,12 @@
                 "
                 >Verify</b-button
               >
-            </li>
-            <li>
+            </b-col>
+            <b-col xs="6" class="pl-1">
               <b-button
+                block
+                variant="danger"
+                size="sm"
                 @click="
                   handleApproval($event, ptv, {
                     reject: true,
@@ -43,39 +45,47 @@
                 "
                 >Reject</b-button
               >
-            </li>
-          </ul>
+            </b-col>
+          </b-row>
         </div>
       </div>
+
       <div v-if="mediaToVerify && mediaToVerify.length > 0">
-        <h5 class="color-dark-gray">Media Waiting For Verification</h5>
-        <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`">
+        <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
+        <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
           <div>
+            Place {{ mtv.place }}
             <Media :media="mtv"></Media>
-
-            <b-button
-              variant="dark"
-              size="sm"
-              @click="
-                handleApproval($event, mtv, {
-                  verify: true,
-                  type: 'media'
-                })
-              "
-              >Verify</b-button
-            >
-
-            <b-button
-              variant="dark"
-              size="sm"
-              @click="
-                handleApproval($event, mtv, {
-                  reject: true,
-                  type: 'media'
-                })
-              "
-              >Reject</b-button
-            >
+            <b-row no-gutters class="mt-2">
+              <b-col xl="6" class="pr-1">
+                <b-button
+                  variant="dark"
+                  block
+                  size="sm"
+                  @click="
+                    handleApproval($event, mtv, {
+                      verify: true,
+                      type: 'media'
+                    })
+                  "
+                  >Verify</b-button
+                >
+              </b-col>
+              <b-col xl="6" class="pl-1">
+                <b-button
+                  variant="danger"
+                  block
+                  size="sm"
+                  @click="
+                    handleApproval($event, mtv, {
+                      reject: true,
+                      type: 'media'
+                    })
+                  "
+                  >Reject</b-button
+                >
+              </b-col>
+            </b-row>
           </div>
         </div>
       </div>
@@ -126,6 +136,15 @@ export default {
     Media
   },
   computed: {
+    placesToVerify() {
+      return this.$store.state.user.placesToVerify
+    },
+    usersToVerify() {
+      return this.$store.state.user.membersToVerify
+    },
+    mediaToVerify() {
+      return this.$store.state.user.mediaToVerify
+    },
     user() {
       const user = this.$store.state.user.user
       return user
@@ -138,31 +157,22 @@ export default {
       )
     }
   },
-  async asyncData({ params, $axios, store }) {
-    const results = await Promise.all([
-      $axios.$get(
-        `${getApiUrl(
-          `placename/list_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      ),
-      $axios.$get(
-        `${getApiUrl(
-          `media/list_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      ),
-      $axios.$get(
-        `${getApiUrl(
-          `community/list_member_to_verify?timestamp=${new Date().getTime()}/`
-        )}`
-      )
-    ])
-
+  asyncData({ params, $axios, store }) {
     return {
-      placesToVerify: results[0],
-      mediaToVerify: results[1],
-      usersToVerify: results[2],
       isServer: !!process.server
     }
+  },
+  async fetch({ store }) {
+    await Promise.all([
+      store.dispatch('user/getPlacesToVerify'),
+      store.dispatch('user/getMediaToVerify'),
+      store.dispatch('user/getMembersToVerify')
+    ])
+  },
+  created() {
+    this.$root.$on('media_deleted', id => {
+      this.$store.dispatch('user/getMediaToVerify')
+    })
   },
   methods: {
     encodeFPCC,
@@ -189,29 +199,19 @@ export default {
       console.log('Result', result)
     },
     async handleApproval(e, tv, { verify, reject, type }) {
-      const mode = verify ? 'verify' : 'reject'
-      const result = await this.$axios.$patch(
-        `${getApiUrl(`${type}/${tv.id}/${mode}/`)}`,
-        {
-          status_reason: mode
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
+      const data = {
+        tv,
+        verify,
+        reject,
+        type
+      }
+      const result = await this.$store.dispatch('user/approve', data)
+      if (result.request && result.request.status === 200) {
+        if (type === 'placename') {
+          this.$store.dispatch('user/getPlacesToVerify')
         }
-      )
-      console.log('Result', result)
-      if (
-        result &&
-        (result.message === 'Verified!' || result.message === 'Rejected!')
-      ) {
-        if (type === 'placename ') {
-          this.placesToVerify = this.placesToVerify.filter(p => p.id !== tv.id)
-        }
-
         if (type === 'media') {
-          this.mediaToVerify = this.mediaToVerify.filter(m => m.id !== tv.id)
+          this.$store.dispatch('user/getMediaToVerify')
         }
       }
     }

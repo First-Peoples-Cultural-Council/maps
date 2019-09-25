@@ -47,6 +47,12 @@
       ></LanguageSeeAll>
     </section>
     <Filters class="mb-1 mt-2"></Filters>
+    <Notification
+      v-if="!subscribed && isLoggedIn"
+      :id="language.id"
+      type="language"
+      class="ml-3 mr-3 mt-2"
+    ></Notification>
     <div class="badge-container mt-2 ml-3 mr-3">
       <Badge
         content="Communities"
@@ -251,6 +257,7 @@ import Filters from '@/components/Filters.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
@@ -263,7 +270,8 @@ export default {
     ArtsCard,
     Filters,
     Badge,
-    Logo
+    Logo,
+    Notification
   },
   data() {
     return {
@@ -271,6 +279,15 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    subscribed() {
+      return this.notifications.find(n => n.language === this.language.id)
+    },
+    notifications() {
+      return this.$store.state.user.notifications
+    },
     publicArts() {
       return this.arts
         ? this.arts.filter(art => art.properties.art_type === 'public_art')
@@ -334,6 +351,11 @@ export default {
       isServer
     }
   },
+  async fetch({ store }) {
+    await store.dispatch('user/getNotifications', {
+      isServer: !!process.server
+    })
+  },
   mounted() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
@@ -343,8 +365,15 @@ export default {
         selectLanguage({ map, lang: this.language })
       }
     })
+
+    this.$root.$on('notificationadded', d => {
+      this.$store.dispatch('user/getNotifications', {
+        isServer: this.isServer
+      })
+    })
   },
   methods: {
+    handleNotificationAdded() {},
     handleMoreDetails() {
       this.$router.push({
         path: `${encodeFPCC(this.$route.params.lang)}/details`

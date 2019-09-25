@@ -1,0 +1,82 @@
+<template>
+  <div>
+    <b-button variant="dark" size="sm" @click="modalShow = true"
+      >Be Notified</b-button
+    >
+    <b-modal v-model="modalShow" hide-header @ok="handleNotification">
+      <label for="notify-name" class="font-weight-bold font-08 color-dark-gray"
+        >Enter a name for this notification</label
+      >
+      <b-form-input
+        id="notify-name"
+        v-model="name"
+        type="text"
+        placeholder="Enter a name"
+        :state="notifyState"
+        class="font-08"
+        aria-describedby="input-notify-help"
+      ></b-form-input>
+
+      <b-form-invalid-feedback id="input-notify-help">
+        Name is required
+      </b-form-invalid-feedback>
+    </b-modal>
+  </div>
+</template>
+<script>
+export default {
+  props: {
+    id: {
+      default: null,
+      type: Number
+    },
+    type: {
+      default: null,
+      type: String
+    }
+  },
+  data() {
+    return {
+      modalShow: false,
+      name: null,
+      notifyState: null
+    }
+  },
+  methods: {
+    async handleNotification(e) {
+      e.preventDefault()
+
+      if (!this.id || !this.type) {
+        this.modalShow = false
+        return false
+      }
+      if (!this.name) {
+        this.notifyState = false
+        return false
+      }
+
+      const data = {
+        name: this.name
+      }
+      if (this.type === 'community') {
+        data.community = this.id
+        data.language = null
+      } else if (this.type === 'language') {
+        data.language = this.id
+        data.community = null
+      }
+
+      try {
+        const result = await this.$store.dispatch('user/addNotification', data)
+        console.log('Notification Result', result)
+        if (result.request && result.request.status === 201) {
+          console.log('It Got here')
+          this.$root.$emit('notificationadded', result.data)
+        }
+      } catch (e) {}
+      this.modalShow = false
+    }
+  }
+}
+</script>
+<style></style>

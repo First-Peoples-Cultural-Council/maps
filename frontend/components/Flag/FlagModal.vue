@@ -77,6 +77,7 @@ export default {
           : this.options.find(o => o.value === this.selected).text
       console.log('Reason', reason)
       const result = await this.submitFlag(this.id, reason)
+      console.log('Result', result)
       this.modalShow = false
       if (result.message === 'Flagged!') {
         this.$root.$emit('notification', {

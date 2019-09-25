@@ -190,7 +190,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names", "id", "audio_file")
+        fields = ("name", "other_names", "id", "audio_file", "status")
         geo_field = "geom"
 
 
@@ -315,6 +315,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
 
 class MediaSerializer(serializers.ModelSerializer):
     creator = PublicUserSerializer(read_only=True)
+    placename_obj = PlaceNameLightSerializer(source="placename", read_only=True)
     class Meta:
         model = Media
         fields = (
@@ -326,6 +327,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "media_file",
             "community_only",
             "placename",
+            "placename_obj",
             "community",
             "status",
             "status_reason",
@@ -345,8 +347,6 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
-    community = CommunitySerializer(read_only=True)
-    language = LanguageSerializer(read_only=True)
 
     class Meta:
         model = Notification
