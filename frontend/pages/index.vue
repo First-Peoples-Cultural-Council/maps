@@ -7,7 +7,10 @@
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
       <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <DrawingTools class="mt-2"></DrawingTools>
+        <DrawingTools
+          :draw-mode="$route.query.mode"
+          class="mt-2"
+        ></DrawingTools>
       </b-alert>
     </div>
     <div class="map-loading">
