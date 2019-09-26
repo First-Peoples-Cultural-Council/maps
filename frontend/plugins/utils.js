@@ -145,6 +145,9 @@ export const noteType = {
 }
 
 export const getGenericFileType = fileType => {
+  if (fileType === 'youtube') {
+    return 'youtube'
+  }
   if (imageTypes[fileType]) {
     return 'image'
   }
@@ -161,7 +164,7 @@ export const getGenericFileType = fileType => {
 }
 
 export const getFormData = (
-  { name, file_type, description, type, id, media_file, community_only },
+  { name, file_type, description, type, id, media_file, community_only, url },
   note
 ) => {
   if (note) {
@@ -173,6 +176,9 @@ export const getFormData = (
 
     if (community_only) {
       formData.append('community_only', community_only)
+    }
+    if (url) {
+      formData.append('url', url)
     }
     return formData
   }
@@ -188,4 +194,9 @@ export const getFormData = (
   }
 
   return formData
+}
+
+export const getYoutubeId = link => {
+  /* eslint-disable */
+  return link.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/)
 }

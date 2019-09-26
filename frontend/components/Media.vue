@@ -76,6 +76,20 @@
     </div>
 
     <div
+      v-if="getGenericFileType(media.file_type) === 'youtube'"
+      class="word-break-all d-flex justify-content-center"
+    >
+      <iframe
+        width="100%"
+        height="315px"
+        :src="`https://www.youtube.com/embed/${getYoutubeId(media.url)[2]}`"
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <div
       v-if="getGenericFileType(media.file_type) === 'other'"
       class="word-break-all d-flex justify-content-center"
     >
@@ -97,7 +111,11 @@
 <script>
 import FlagModal from '@/components/Flag/FlagModal.vue'
 import DeleteMedia from '@/components/DeleteMedia.vue'
-import { getGenericFileType, getMediaUrl } from '@/plugins/utils.js'
+import {
+  getGenericFileType,
+  getMediaUrl,
+  getYoutubeId
+} from '@/plugins/utils.js'
 export default {
   components: {
     FlagModal,
@@ -123,6 +141,7 @@ export default {
   },
 
   methods: {
+    getYoutubeId,
     getGenericFileType,
     getMediaUrl,
     handleImageClick(e, media) {
