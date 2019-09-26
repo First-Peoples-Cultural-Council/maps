@@ -1,90 +1,119 @@
 <template>
-  <div>
-    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <div class="color-row" :style="'background-color: ' + languageColor"></div>
+  <div class="W-100">
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
+        Language:
+        <span class="font-weight-bold">{{ language.name }}</span>
+      </div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
 
-    <LanguageDetailCard
-      :color="languageColor"
-      :name="this.$route.params.lang"
-      :detail="true"
-      audio-file=""
-      :link="language.fv_archive_link"
-    ></LanguageDetailCard>
-    <section class="pl-3 pr-3">
-      <h5 class="other-lang-names-title text-uppercase mt-4">
-        Other Language Names
-      </h5>
-      <LanguageDetailBadge
-        v-for="(name, index) in otherNames"
-        :key="index"
-        :content="name"
-        class="mr-2"
-      ></LanguageDetailBadge>
-      <table v-if="language.sub_family" class="lang-detail-table mt-3">
-        <thead>
-          <tr>
-            <th>Language Family</th>
-            <th>Language Sub Family</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <LanguageDetailBadge
-                :content="language.sub_family.name"
-              ></LanguageDetailBadge>
-            </td>
-            <td>
-              <LanguageDetailBadge
-                :content="language.sub_family.family.name"
-              ></LanguageDetailBadge>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="language.dialect_set.length > 0">
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
+      >
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+
+      <div
+        class="color-row"
+        :style="'background-color: ' + languageColor"
+      ></div>
+
+      <LanguageDetailCard
+        :color="languageColor"
+        :name="this.$route.params.lang"
+        :detail="true"
+        audio-file=""
+        :link="language.fv_archive_link"
+      ></LanguageDetailCard>
+      <section class="pl-3 pr-3">
         <h5 class="other-lang-names-title text-uppercase mt-4">
-          Dialect
+          Other Language Names
         </h5>
         <LanguageDetailBadge
-          v-for="(dialect, index) in language.dialect_set"
+          v-for="(name, index) in otherNames"
           :key="index"
-          :content="dialect.name"
+          :content="name"
           class="mr-2"
         ></LanguageDetailBadge>
-      </div>
-      <div class="lang-notes mt-3 color-gray font-08">
-        {{ language.notes || '' }}
-      </div>
-      <div class="lang-statement"></div>
-      <div v-if="language.languagelink_set.length > 0" class="lang-links mt-4">
-        <h5 class="text-uppercase color-gray font-08">Links</h5>
-        <ul class="list-style-none p-0 m-0 font-08">
-          <li v-for="(link, index) in language.languagelink_set" :key="index">
-            <a class="color-gold word-break-all" :href="link.url">{{
-              link.title
-            }}</a>
-          </li>
-        </ul>
-      </div>
-      <div v-if="language.fv_archive_link" class="mt-4">
-        <LanguageSeeAll
-          :content="`Learn ${language.name} on FirstVoices`"
-          @click.native="handleClick($event, language.fv_archive_link)"
-        ></LanguageSeeAll>
-      </div>
-      <div class="mt-3">
-        <b-table
-          hover
-          :items="lna"
-          responsive
-          small
-          table-class="lna-table"
-          thead-class="lna-table-thead"
-          tbody-class="lna-table-tbody"
-        ></b-table>
-      </div>
-    </section>
+        <table v-if="language.sub_family" class="lang-detail-table mt-3">
+          <thead>
+            <tr>
+              <th>Language Family</th>
+              <th>Language Sub Family</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <LanguageDetailBadge
+                  :content="language.sub_family.name"
+                ></LanguageDetailBadge>
+              </td>
+              <td>
+                <LanguageDetailBadge
+                  :content="language.sub_family.family.name"
+                ></LanguageDetailBadge>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-if="language.dialect_set.length > 0">
+          <h5 class="other-lang-names-title text-uppercase mt-4">
+            Dialect
+          </h5>
+          <LanguageDetailBadge
+            v-for="(dialect, index) in language.dialect_set"
+            :key="index"
+            :content="dialect.name"
+            class="mr-2"
+          ></LanguageDetailBadge>
+        </div>
+        <div class="lang-notes mt-3 color-gray font-08">
+          {{ language.notes || '' }}
+        </div>
+        <div class="lang-statement"></div>
+        <div
+          v-if="language.languagelink_set.length > 0"
+          class="lang-links mt-4"
+        >
+          <h5 class="text-uppercase color-gray font-08">Links</h5>
+          <ul class="list-style-none p-0 m-0 font-08">
+            <li v-for="(link, index) in language.languagelink_set" :key="index">
+              <a class="color-gold word-break-all" :href="link.url">{{
+                link.title
+              }}</a>
+            </li>
+          </ul>
+        </div>
+        <div v-if="language.fv_archive_link" class="mt-4">
+          <LanguageSeeAll
+            :content="`Learn ${language.name} on FirstVoices`"
+            @click.native="handleClick($event, language.fv_archive_link)"
+          ></LanguageSeeAll>
+        </div>
+        <div class="mt-3">
+          <b-table
+            hover
+            :items="lna"
+            responsive
+            small
+            table-class="lna-table"
+            thead-class="lna-table-thead"
+            tbody-class="lna-table-tbody"
+          ></b-table>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -107,6 +136,9 @@ export default {
   },
   data() {},
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     ...mapState({
       mapinstance: state => state.mapinstance.mapInstance,
       otherNames() {

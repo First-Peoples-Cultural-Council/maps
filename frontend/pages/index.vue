@@ -919,6 +919,10 @@ export default {
   width: 500px;
 }
 @media (max-width: 992px) {
+  .content-mobile-title {
+    display: flex !important;
+  }
+
   .sb-new-alt-one {
     position: fixed;
     bottom: 0;
@@ -962,6 +966,10 @@ export default {
   .detailModeContainer {
     padding-left: 0px !important;
   }
+
+  .content-mobile.mobile-close {
+    display: block !important;
+  }
 }
 
 .fade-topbar-enter-active,
@@ -976,5 +984,12 @@ export default {
   height: 100%;
   top: 0;
   align-items: baseline;
+}
+
+.content-mobile {
+  display: block !important;
+}
+.mobile-close {
+  display: none !important;
 }
 </style>

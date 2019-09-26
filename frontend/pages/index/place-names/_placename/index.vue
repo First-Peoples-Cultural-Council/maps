@@ -16,7 +16,7 @@
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div>
         <div
-          class="text-center d-none"
+          class="text-center d-none mobile-close"
           :class="{ 'content-mobile': mobileContent }"
           @click="$store.commit('sidebar/setMobileContent', false)"
         >
@@ -477,15 +477,5 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
-}
-
-.content-mobile {
-  display: block !important;
-}
-
-@media (max-width: 992px) {
-  .content-mobile-title {
-    display: flex !important;
-  }
 }
 </style>
