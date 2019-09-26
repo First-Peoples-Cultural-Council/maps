@@ -277,10 +277,11 @@ export default {
   async asyncData({ params, $axios, store }) {
     // Check if already logged in here
     const user = await $axios.$get(
-      `${getApiUrl('user/auth/')}?timestamp=${new Date().getTime()}`
+      `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
     if (user.is_authenticated) {
       store.commit('user/setUser', user.user)
+      store.commit('user/setPicture', user.user.picture)
       store.commit('user/setLoggedIn', true)
     }
     return user
@@ -365,8 +366,7 @@ export default {
         `${getApiUrl('user/login/')}?${token}`
       )
       if (user.success) {
-        console.log('User', user)
-        this.$store.commit('user/setUser', user)
+        this.$store.dispatch('user/setLoggedInUser')
         this.$store.commit('user/setLoggedIn', true)
         if (user.new === true) {
           this.$router.push({

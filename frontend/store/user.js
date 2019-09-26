@@ -2,6 +2,7 @@ import { getCookie, getApiUrl } from '@/plugins/utils.js'
 
 export const state = () => ({
   user: null,
+  picture: null,
   isLoggedIn: false,
   notifications: null,
   mediaToVerify: null,
@@ -12,6 +13,10 @@ export const state = () => ({
 export const mutations = {
   setUser(state, user) {
     state.user = Object.assign({}, user)
+  },
+
+  setPicture(state, pic) {
+    state.picture = pic
   },
 
   setLoggedIn(state, loggedIn) {
@@ -140,6 +145,16 @@ export const actions = {
       )}`
     )
     commit('setMembersToVerify', result)
+    return result
+  },
+
+  async setLoggedInUser({ commit }, data) {
+    const result = await this.$axios.$get(
+      `${getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)}`
+    )
+    console.log('Dispatch Result', result)
+    commit('setUser', result.user)
+    commit('setPicture', result.user.picture)
     return result
   }
 }

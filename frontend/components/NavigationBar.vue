@@ -140,6 +140,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
@@ -157,11 +158,16 @@ export default {
     email() {
       return this.$store.state.user.user && this.$store.state.user.user.email
     },
-    picture() {
-      return this.$store.state.user.user && this.$store.state.user.user.picture
+    ...mapState({
+      picture: state => state.user.picture
+    }),
+    user() {
+      return this.$store.state.user.user
     }
   },
-  mounted() {},
+  mounted() {
+    console.log('Picture', this.picture)
+  },
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
