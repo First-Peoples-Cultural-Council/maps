@@ -48,7 +48,6 @@ export const actions = {
   },
 
   async approve({ commit }, data) {
-    console.log('Data', data)
     const headers = {
       headers: {
         'X-CSRFToken': getCookie('csrftoken')

@@ -9,7 +9,7 @@
         <h5 class="font-1 color-dark-gray">Places Waiting For Verification</h5>
         <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
           <PlacesCard
-            :name="{ properties: { name: ptv.name } }"
+            :place="{ properties: { name: ptv.name } }"
             class="mb-2"
             @click.native="
               $router.push({

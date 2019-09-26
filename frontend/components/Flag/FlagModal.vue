@@ -1,7 +1,14 @@
 <template>
   <div>
     <div class="d-inline-block cursor-pointer" @click="modalShow = true">
-      <b-badge variant="danger">{{ title || 'Flag' }}</b-badge>
+      <b-badge variant="danger">
+        <img
+          src="@/assets/images/flag_icon.svg"
+          alt="Flag"
+          class="d-inline-block mr-1"
+          style="height: 15px; width: 15px;"
+        />{{ title || 'Flag' }}</b-badge
+      >
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert
@@ -69,17 +76,15 @@ export default {
         this.errorMessage = 'Please select an option'
         return false
       }
-      console.log('Handle Submit')
       e.preventDefault()
       const reason =
         this.selected === 'c'
           ? this.text
           : this.options.find(o => o.value === this.selected).text
-      console.log('Reason', reason)
       const result = await this.submitFlag(this.id, reason)
-      console.log('Result', result)
       this.modalShow = false
       if (result.message === 'Flagged!') {
+        this.$root.$emit(`${this.type}_flagged`, result)
         this.$root.$emit('notification', {
           content: 'Flag Succeeded. Thanks!',
           time: 3000

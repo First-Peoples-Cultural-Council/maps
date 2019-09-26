@@ -419,7 +419,7 @@ export default {
 
       let status = 'UN'
       if (this.isStaff || this.isSuperUser) {
-        status = 'VE'
+        status = 'UN'
       }
 
       const data = {
@@ -494,20 +494,10 @@ export default {
 
       this.$eventHub.whenMap(map => {
         map.getSource('places1').setData('/api/placename-geo/')
-        if (status === 'VE') {
-          this.$router.push({
-            path: '/place-names/' + encodeFPCC(this.tname)
-          })
-        } else if (status === 'UN') {
-          this.$root.$emit('notification', {
-            content:
-              'Your contribution has been submitted and admins will have to review before it can shown',
-            time: 4000
-          })
-          this.$router.push({
-            path: '/'
-          })
-        }
+
+        this.$router.push({
+          path: '/place-names/' + encodeFPCC(this.tname)
+        })
       })
     }
   },

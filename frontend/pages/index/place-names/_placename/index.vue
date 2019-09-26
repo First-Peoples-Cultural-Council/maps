@@ -58,7 +58,7 @@
               :id="place.id"
               class="float-right"
               type="placename"
-              title="Flag Point Of Interest"
+              title="Report"
             ></FlagModal>
           </div>
           <div v-if="place.status === 'UN'" class="mb-2">
@@ -67,7 +67,7 @@
               :id="place.id"
               class="float-right"
               type="placename"
-              title="Flag Point Of Interest"
+              title="Report"
             ></FlagModal>
           </div>
           <div v-if="place.status === 'VE'" class="mb-2">
@@ -152,7 +152,11 @@
             :key="'media' + media.id"
             class="mb-4"
           >
-            <Media :media="media" :server="isServer"></Media>
+            <Media
+              :media="media"
+              :server="isServer"
+              :delete="media.creator && media.creator.id === user.id"
+            ></Media>
             <hr class="mb-2" />
           </div>
         </section>
@@ -204,11 +208,36 @@ export default {
     medias() {
       return this.$store.state.places.medias
     },
-
     mediasFiltered() {
-      return this.medias.filter(m => m.status !== 'FL')
-    },
+      return this.medias.filter(m => {
+        if (this.isStaff) {
+          return true
+        }
 
+        if (this.isSuperUser) {
+          return true
+        }
+
+        if (this.user.id === m.creator.id) {
+          return true
+        }
+
+        if (m.status !== 'FL' && m.status !== 'RE') {
+          return true
+        }
+
+        return false
+      })
+    },
+    isStaff() {
+      return this.user.is_staff
+    },
+    isSuperUser() {
+      return this.user.is_superuser
+    },
+    user() {
+      return this.$store.state.user.user
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
@@ -274,6 +303,19 @@ export default {
       this.$store.dispatch('places/getPlaceMedias', {
         id: this.place.id
       })
+    })
+
+    this.$root.$on('media_flagged', r => {
+      this.$store.dispatch('places/getPlaceMedias', {
+        id: this.place.id
+      })
+    })
+
+    this.$root.$on('placename_flagged', async r => {
+      const result = await this.$store.dispatch('places/getPlace', {
+        id: this.place.id
+      })
+      this.place = result
     })
   },
   created() {

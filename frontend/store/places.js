@@ -22,15 +22,18 @@ export const mutations = {
 
 export const actions = {
   async getPlaceMedias({ commit }, data) {
-    console.log(
-      'API TEXT',
-      getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
-    )
     const result = await this.$axios.$get(
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
     console.log('Dispatch', result.medias)
     commit('setMedias', result.medias)
+    return result
+  },
+
+  async getPlace({ commit }, data) {
+    const result = await this.$axios.$get(
+      getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
+    )
     return result
   }
 }

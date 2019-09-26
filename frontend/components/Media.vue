@@ -30,7 +30,7 @@
         class="d-inline-block p-1 font-08"
         >Rejected Media</b-alert
       >
-      <div class="float-right">
+      <div v-if="this.delete" class="float-right">
         <DeleteMedia :id="media.id"></DeleteMedia>
       </div>
     </div>
@@ -38,14 +38,21 @@
       <span>Name: </span>
       <span class="word-break-all">{{ media.name }}</span>
       <span v-if="flag" class="float-right cursor-pointer">
-        <FlagModal :id="media.id" style="font-size: 1rem;"></FlagModal>
+        <FlagModal
+          :id="media.id"
+          title="Report"
+          style="font-size: 1rem;"
+        ></FlagModal>
       </span>
     </div>
     <div v-if="media.description" class="font-08 color-gray">
       <span>Description: </span>
       <span class="word-break-all">{{ media.description }}</span>
     </div>
-    <div v-if="getGenericFileType(media.file_type) === 'image'">
+    <div
+      v-if="getGenericFileType(media.file_type) === 'image'"
+      class="d-flex justify-content-center"
+    >
       <img
         class="media-image cursor-pointer"
         :src="getMediaUrl(media.media_file, server)"
@@ -106,6 +113,10 @@ export default {
       type: Boolean
     },
     server: {
+      default: false,
+      type: Boolean
+    },
+    delete: {
       default: false,
       type: Boolean
     }
