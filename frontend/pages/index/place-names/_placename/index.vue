@@ -58,7 +58,6 @@
               ></FlagModal>
             </div>
           </div>
-
           <div v-if="isPTV">
             <b-row no-gutters class="mt-2 mb-4">
               <b-col xl="6" class="pr-1">
@@ -124,7 +123,6 @@
             <UploadTool :id="place.id" type="placename"></UploadTool>
           </div>
         </section>
-
         <section
           v-if="mediasFiltered && mediasFiltered.length > 0"
           class="mt-4 ml-4 mr-4"
@@ -141,8 +139,40 @@
             <Media
               :media="media"
               :server="isServer"
-              :delete="media.creator && media.creator.id === user.id"
+              :delete="isMediaCreator(media, user)"
             ></Media>
+            <div v-if="isMTV(media, mediaToVerify)">
+              <b-row no-gutters class="mt-2">
+                <b-col xl="6" class="pr-1">
+                  <b-button
+                    variant="dark"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, media, {
+                        verify: true,
+                        type: 'media'
+                      })
+                    "
+                    >Verify</b-button
+                  >
+                </b-col>
+                <b-col xl="6" class="pl-1">
+                  <b-button
+                    variant="danger"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, media, {
+                        reject: true,
+                        type: 'media'
+                      })
+                    "
+                    >Reject</b-button
+                  >
+                </b-col>
+              </b-row>
+            </div>
             <hr class="mb-2" />
           </div>
         </section>
@@ -193,6 +223,9 @@ export default {
     },
     medias() {
       return this.$store.state.places.medias
+    },
+    mediaToVerify() {
+      return this.$store.state.user.mediaToVerify
     },
     mediasFiltered() {
       return this.medias.filter(m => {
@@ -271,6 +304,7 @@ export default {
     }
 
     await store.dispatch('user/getPlacesToVerify')
+    await store.dispatch('user/getMediaToVerify')
 
     const isServer = !!process.server
     return {
@@ -311,6 +345,13 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    isMTV(media, mtv) {
+      return mtv.find(m => m.id === media.id)
+    },
+    isMediaCreator(media, user) {
+      console.log('Media', media)
+      console.log('User', user)
+    },
     handleCreatorClick(e, creator) {
       this.$router.push({
         path: `/profile/${creator.id}`
@@ -332,6 +373,12 @@ export default {
             id: this.place.id
           })
           this.place = result
+        }
+        if (type === 'media') {
+          this.$store.dispatch('user/getMediaToVerify')
+          this.$store.dispatch('places/getPlaceMedias', {
+            id: this.place.id
+          })
         }
       } else {
         console.error(result)
