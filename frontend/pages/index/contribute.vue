@@ -337,13 +337,25 @@ export default {
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
-
+      let community = null
+      if (place.community) {
+        community = await $axios.$get(
+          getApiUrl(`community/${place.community}/?` + now.getTime())
+        )
+        community = {
+          name: community.name,
+          id: place.community
+        }
+      }
       data = {
         place,
         tname: place.name,
         wname: place.common_name,
         content: place.description,
         categorySelected: place.category
+      }
+      if (community) {
+        data.community = community
       }
       if (place.language) {
         try {

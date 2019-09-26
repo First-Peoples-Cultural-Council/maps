@@ -250,6 +250,9 @@ export default {
     },
     isPTV() {
       return this.ptv.find(p => p.id === this.place.id)
+    },
+    ptv() {
+      return this.$store.state.user.placesToVerify
     }
   },
   watch: {
@@ -281,15 +284,14 @@ export default {
       community = await $axios.$get(getApiUrl(`community/${place.community}/`))
     }
 
-    const ptv = await $axios.$get(getApiUrl('placename/list_to_verify/'))
+    await store.dispatch('user/getPlacesToVerify')
 
     const isServer = !!process.server
     return {
       geo_place,
       place,
       isServer,
-      community,
-      ptv
+      community
     }
   },
   mounted() {
@@ -339,7 +341,11 @@ export default {
       const result = await this.$store.dispatch('user/approve', data)
       if (result.request && result.request.status === 200) {
         if (type === 'placename') {
-          this.ptv = this.ptv.filter(p => p.id !== tv.id)
+          this.$store.dispatch('user/getPlacesToVerify')
+          const result = await this.$store.dispatch('places/getPlace', {
+            id: this.place.id
+          })
+          this.place = result
         }
       } else {
         console.error(result)
