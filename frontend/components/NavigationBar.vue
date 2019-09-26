@@ -1,24 +1,26 @@
 <template>
   <div class="nav-container">
-    <div
-      v-if="email"
-      class="user-container cursor-pointer hide-mobile"
-      @click="profile"
-    >
-      <nav class="navbar-icon-container">
-        <img
-          v-if="!picture"
-          src="@/assets/images/user_icon_red.svg"
-          alt="Menu"
-          class="navbar-icon user_icon"
-        />
-        <img
-          v-if="picture"
-          :src="picture"
-          alt="Menu"
-          class="navbar-icon user_icon"
-        />
-      </nav>
+    <div>
+      <div
+        v-if="email"
+        class="user-container cursor-pointer hide-mobile"
+        @click="profile"
+      >
+        <nav class="navbar-icon-container">
+          <img
+            v-if="!picture"
+            src="@/assets/images/user_icon_red.svg"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+          <img
+            v-if="picture"
+            :src="picture"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+        </nav>
+      </div>
       <div class="navbar-container cursor-pointer" @click="openNav">
         <nav class="navbar-icon-container">
           <img
@@ -159,6 +161,7 @@ export default {
       return this.$store.state.user.user && this.$store.state.user.user.picture
     }
   },
+  mounted() {},
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
