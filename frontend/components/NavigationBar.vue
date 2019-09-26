@@ -100,9 +100,9 @@
             <li>
               <nuxt-link
                 class="color-gray"
-                to="/place-names"
+                to="/heritages"
                 @click.native="resetMap"
-                >Place-names</nuxt-link
+                >Heritages</nuxt-link
               >
             </li>
             <li>

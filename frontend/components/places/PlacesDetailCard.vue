@@ -164,7 +164,7 @@ export default {
     handleReturn() {
       if (this.server) {
         this.$router.push({
-          path: '/place-names'
+          path: '/heritages'
         })
       } else {
         this.$router.go(-1)
@@ -188,7 +188,7 @@ export default {
       })
       this.modalShow = false
       this.$router.push({
-        path: `/place-names`
+        path: `/heritages`
       })
     }
   }
