@@ -19,6 +19,15 @@
           class="navbar-icon user_icon"
         />
       </nav>
+      <div class="navbar-container cursor-pointer" @click="openNav">
+        <nav class="navbar-icon-container">
+          <img
+            src="@/assets/images/menu_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+        </nav>
+      </div>
     </div>
 
     <div
@@ -27,7 +36,7 @@
     >
       <img src="@/assets/images/symbol@2x.png" alt="Menu" class="mobile-logo" />
     </div>
-    <div class="mobile-search-container">
+    <div class="d-none mobile-search-container">
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openShareEmbed')"
@@ -315,7 +324,7 @@ export default {
   }
 
   .mobile-search-container {
-    display: flex;
+    display: flex !important;
   }
 
   .navbar-container {

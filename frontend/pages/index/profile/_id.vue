@@ -5,7 +5,7 @@
       :name="getUserName()"
       type="none"
       :edit="isAdmin()"
-      :approval="true"
+      :approval="isStaff || isSuperUser"
     ></UserDetailCard>
     <section class="ml-2 mr-2 mt-2">
       <div v-if="user.languages && user.languages.length > 0">
@@ -90,6 +90,12 @@ export default {
   computed: {
     savedLocations() {
       return this.favourites.filter(f => f.favourite_type === 'saved_location')
+    },
+    isStaff() {
+      return this.$store.state.user.user.is_staff
+    },
+    isSuperUser() {
+      return this.$store.state.user.user.is_superuser
     }
   },
   beforeRouteEnter(to, from, next) {

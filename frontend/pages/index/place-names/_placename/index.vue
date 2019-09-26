@@ -58,7 +58,7 @@
               ></FlagModal>
             </div>
           </div>
-          <div v-if="isPTV">
+          <div v-if="isPTV" class="mt-2">
             <b-row no-gutters class="mt-2 mb-4">
               <b-col xl="6" class="pr-1">
                 <b-button
@@ -319,6 +319,7 @@ export default {
       this.$store.dispatch('places/getPlaceMedias', {
         id: this.place.id
       })
+      this.$store.dispatch('user/getMediaToVerify')
     })
 
     this.$root.$on('media_deleted', r => {
