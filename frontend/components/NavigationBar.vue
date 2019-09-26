@@ -1,6 +1,6 @@
 <template>
   <div class="nav-container">
-    <div>
+    <div class="hide-mobile">
       <div
         v-if="email"
         class="user-container cursor-pointer hide-mobile"
@@ -21,7 +21,7 @@
           />
         </nav>
       </div>
-      <div class="navbar-container cursor-pointer" @click="openNav">
+      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
         <nav class="navbar-icon-container">
           <img
             src="@/assets/images/menu_icon.svg"
