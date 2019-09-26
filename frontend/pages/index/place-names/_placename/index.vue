@@ -34,45 +34,31 @@
             :allow-edit="isPlaceOwner()"
             variant="md"
             :delete-place="isPlaceOwner()"
+            :status="place.status"
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>
         </div>
         <section class="mt-3 ml-4 mr-4">
-          <div
-            v-if="creator"
-            class="cursor-pointer"
-            @click="handleCreatorClick($event, creator)"
-          >
-            <b-badge variant="primary"
-              >Uploaded By: <a>{{ creator.username }}</a></b-badge
+          <div>
+            <div
+              v-if="creator"
+              class="cursor-pointer mb-2"
+              @click="handleCreatorClick($event, creator)"
             >
+              <b-badge variant="primary"
+                >Uploaded By: <a>{{ creator.username }}</a></b-badge
+              >
+            </div>
+            <div>
+              <FlagModal
+                :id="place.id"
+                type="placename"
+                title="Report"
+              ></FlagModal>
+            </div>
           </div>
 
-          <div v-if="place.status === 'FL'" class="mb-2">
-            <b-badge variant="danger">Flagged</b-badge>
-          </div>
-          <div v-if="place.status === 'RE'" class="mb-2">
-            <b-badge variant="info">Rejected</b-badge>
-            <FlagModal
-              :id="place.id"
-              class="float-right"
-              type="placename"
-              title="Report"
-            ></FlagModal>
-          </div>
-          <div v-if="place.status === 'UN'" class="mb-2">
-            <b-badge variant="info">Unverified</b-badge>
-            <FlagModal
-              :id="place.id"
-              class="float-right"
-              type="placename"
-              title="Report"
-            ></FlagModal>
-          </div>
-          <div v-if="place.status === 'VE'" class="mb-2">
-            <b-badge variant="primary">Verified</b-badge>
-          </div>
           <div v-if="isPTV">
             <b-row no-gutters class="mt-2 mb-4">
               <b-col xl="6" class="pr-1">
