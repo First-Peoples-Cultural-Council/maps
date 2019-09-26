@@ -74,6 +74,10 @@ export default {
       this.modalShow = true
     })
 
+    this.$root.$on('closeUploadModal', () => {
+      this.modalShow = false
+    })
+
     this.$root.$on('uploadModeChosen', ({ comp, mode }) => {
       this.view = comp
       this.mode = mode

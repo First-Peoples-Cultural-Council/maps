@@ -53,6 +53,13 @@
     <b-button size="sm" variant="dark" class="mt-2" @click="handleYoutubeUpload"
       >Upload</b-button
     >
+    <b-button
+      size="sm"
+      variant="dark"
+      class="mt-2"
+      @click="$root.$emit('closeUploadModal')"
+      >Cancel</b-button
+    >
   </div>
 </template>
 <script>
