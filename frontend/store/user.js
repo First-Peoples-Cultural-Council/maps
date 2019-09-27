@@ -106,7 +106,7 @@ export const actions = {
     return result
   },
 
-  async deleteMedia({ commit }, data) {
+  async deleteMedia({ commit, dispatch }, data) {
     const headers = {
       headers: {
         'X-CSRFToken': getCookie('csrftoken')
@@ -116,6 +116,27 @@ export const actions = {
       getApiUrl(`media/${data.id}/`),
       headers
     )
+    if (data.type === 'placename') {
+      await dispatch(
+        'places/getPlaceMedias',
+        {
+          id: data.type_id
+        },
+        { root: true }
+      )
+      await dispatch('user/getMediaToVerify', {}, { root: true })
+    }
+
+    if (data.type === 'community') {
+      await dispatch(
+        'places/getPlaceMedias',
+        {
+          id: data.type_id
+        },
+        { root: true }
+      )
+      await dispatch('user/getMediaToVerify', {}, { root: true })
+    }
 
     return result
   },
@@ -155,6 +176,41 @@ export const actions = {
     console.log('Dispatch Result', result)
     commit('setUser', result.user)
     commit('setPicture', result.user.picture)
+    return result
+  },
+
+  async flagContent({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+
+    const result = await this.$axios.$patch(
+      `${getApiUrl(`${data.type}/${data.id}/flag/`)}`,
+      {
+        status_reason: data.reason
+      },
+      headers
+    )
+
+    if (data.type === 'placename') {
+      await dispatch(
+        'places/getPlace',
+        {
+          id: data.id
+        },
+        { root: true }
+      )
+    } else if (data.type === 'media') {
+      await dispatch(
+        'places/getPlaceMedias',
+        {
+          id: data.belongid
+        },
+        { root: true }
+      )
+    }
     return result
   }
 }

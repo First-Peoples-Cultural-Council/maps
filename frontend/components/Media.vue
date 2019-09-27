@@ -31,7 +31,7 @@
         >Rejected Media</b-alert
       >
       <div v-if="this.delete" class="float-right">
-        <DeleteMedia :id="media.id"></DeleteMedia>
+        <DeleteMedia :id="media.id" :media="media"></DeleteMedia>
       </div>
     </div>
     <div v-if="media.name" class="font-08 color-gray">
@@ -42,6 +42,7 @@
           :id="media.id"
           title="Report"
           style="font-size: 1rem;"
+          :media="media"
         ></FlagModal>
       </span>
     </div>
@@ -137,6 +138,10 @@ export default {
     delete: {
       default: false,
       type: Boolean
+    },
+    type: {
+      default: null,
+      type: String
     }
   },
 

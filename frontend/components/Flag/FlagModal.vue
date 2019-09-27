@@ -38,7 +38,6 @@
   </div>
 </template>
 <script>
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
 export default {
   props: {
     id: {
@@ -52,6 +51,10 @@ export default {
     title: {
       default: null,
       type: String
+    },
+    media: {
+      default: null,
+      type: Object
     }
   },
   data() {
@@ -84,7 +87,6 @@ export default {
       const result = await this.submitFlag(this.id, reason)
       this.modalShow = false
       if (result.message === 'Flagged!') {
-        this.$root.$emit(`${this.type}_flagged`, result)
         this.$root.$emit('notification', {
           content: 'Flag Succeeded. Thanks!',
           time: 3000
@@ -95,17 +97,22 @@ export default {
       if (!id) {
         return false
       }
-      const result = await this.$axios.$patch(
-        `${getApiUrl(`${this.type}/${id}/flag/`)}`,
-        {
-          status_reason: reason
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
+
+      const data = {
+        id,
+        type: this.type,
+        reason
+      }
+
+      if (this.media.placename) {
+        data.belongs = 'placename'
+        data.belongid = this.media.placename
+      } else if (this.media.community) {
+        data.belongs = 'community'
+        data.belongid = this.media.community
+      }
+
+      const result = await this.$store.dispatch('user/flagContent', data)
       return result
     }
   }

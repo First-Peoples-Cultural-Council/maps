@@ -90,12 +90,14 @@
               </b-col>
             </b-row>
           </div>
-          <div v-if="place.community" class="mb-4">
+          <div v-if="placeCommunity" class="mb-4">
             <CommunityCard
-              :name="community.name"
-              :community="community"
+              :name="placeCommunity.name"
+              :community="placeCommunity"
               @click.native="
-                $router.push({ path: `/content/${encodeFPCC(community.name)}` })
+                $router.push({
+                  path: `/content/${encodeFPCC(placeCommunity.name)}`
+                })
               "
             ></CommunityCard>
           </div>
@@ -140,6 +142,7 @@
               :media="media"
               :server="isServer"
               :delete="isMediaCreator(media, user)"
+              type="placename"
             ></Media>
             <div v-if="isMTV(media, mediaToVerify)">
               <b-row no-gutters class="mt-2">
@@ -215,6 +218,12 @@ export default {
     }
   },
   computed: {
+    placeCommunity() {
+      return this.$store.state.places.placeCommunity
+    },
+    place() {
+      return this.$store.state.places.place
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -290,18 +299,14 @@ export default {
         return encodeFPCC(a.properties.name) === params.placename
       }
     })
-    const place = await $axios.$get(
-      getApiUrl(`placename/${geo_place.id}?timestamp=${now.getTime()}`)
-    )
+
+    await store.dispatch('places/getPlace', {
+      id: geo_place.id
+    })
 
     await store.dispatch('places/getPlaceMedias', {
       id: geo_place.id
     })
-
-    let community = null
-    if (place.community) {
-      community = await $axios.$get(getApiUrl(`community/${place.community}/`))
-    }
 
     await store.dispatch('user/getPlacesToVerify')
     await store.dispatch('user/getMediaToVerify')
@@ -309,9 +314,7 @@ export default {
     const isServer = !!process.server
     return {
       geo_place,
-      place,
-      isServer,
-      community
+      isServer
     }
   },
   mounted() {
@@ -320,25 +323,6 @@ export default {
         id: this.place.id
       })
       this.$store.dispatch('user/getMediaToVerify')
-    })
-
-    this.$root.$on('media_deleted', r => {
-      this.$store.dispatch('places/getPlaceMedias', {
-        id: this.place.id
-      })
-    })
-
-    this.$root.$on('media_flagged', r => {
-      this.$store.dispatch('places/getPlaceMedias', {
-        id: this.place.id
-      })
-    })
-
-    this.$root.$on('placename_flagged', async r => {
-      const result = await this.$store.dispatch('places/getPlace', {
-        id: this.place.id
-      })
-      this.place = result
     })
   },
   created() {
@@ -350,8 +334,7 @@ export default {
       return mtv.find(m => m.id === media.id)
     },
     isMediaCreator(media, user) {
-      console.log('Media', media)
-      console.log('User', user)
+      return user.id === media.creator
     },
     handleCreatorClick(e, creator) {
       this.$router.push({
@@ -370,10 +353,9 @@ export default {
       if (result.request && result.request.status === 200) {
         if (type === 'placename') {
           this.$store.dispatch('user/getPlacesToVerify')
-          const result = await this.$store.dispatch('places/getPlace', {
+          await this.$store.dispatch('places/getPlace', {
             id: this.place.id
           })
-          this.place = result
         }
         if (type === 'media') {
           this.$store.dispatch('user/getMediaToVerify')

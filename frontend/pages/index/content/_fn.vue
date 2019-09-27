@@ -166,7 +166,12 @@
             :key="'media' + media.id"
             class="mb-4"
           >
-            <Media class="ml-4 mr-4" :media="media" :server="isServer"></Media>
+            <Media
+              class="ml-4 mr-4"
+              :media="media"
+              :server="isServer"
+              type="community"
+            ></Media>
             <hr class="mb-2" />
           </div>
         </div>
