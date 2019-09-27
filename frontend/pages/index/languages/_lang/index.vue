@@ -72,6 +72,7 @@
       <Notification
         v-if="!subscribed && isLoggedIn"
         :id="language.id"
+        :is-server="isServer"
         type="language"
         class="ml-3 mr-3 mt-2"
       ></Notification>
@@ -392,12 +393,6 @@ export default {
       } else {
         selectLanguage({ map, lang: this.language })
       }
-    })
-
-    this.$root.$on('notificationadded', d => {
-      this.$store.dispatch('user/getNotifications', {
-        isServer: this.isServer
-      })
     })
   },
   methods: {

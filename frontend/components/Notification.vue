@@ -33,6 +33,10 @@ export default {
     type: {
       default: null,
       type: String
+    },
+    isServer: {
+      default: false,
+      type: Boolean
     }
   },
   data() {
@@ -70,8 +74,11 @@ export default {
         const result = await this.$store.dispatch('user/addNotification', data)
         console.log('Notification Result', result)
         if (result.request && result.request.status === 201) {
-          console.log('It Got here')
-          this.$root.$emit('notificationadded', result.data)
+          this.$store.dispatch('user/getNotifications', {
+            isServer: this.isServer
+          })
+          // console.log('It Got here')
+          // this.$root.$emit('notificationadded', result.data)
         }
       } catch (e) {}
       this.modalShow = false

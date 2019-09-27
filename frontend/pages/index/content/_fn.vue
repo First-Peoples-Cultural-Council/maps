@@ -33,6 +33,7 @@
         <Notification
           v-if="!subscribed && isLoggedIn"
           :id="community.id"
+          :is-server="isServer"
           type="community"
           class="mt-3"
         ></Notification>
@@ -348,12 +349,6 @@ export default {
   mounted() {
     this.$root.$on('fileUploaded', r => {
       this.commDetails.medias.push(r)
-    })
-
-    this.$root.$on('notificationadded', d => {
-      this.$store.dispatch('user/getNotifications', {
-        isServer: this.isServer
-      })
     })
   },
   methods: {
