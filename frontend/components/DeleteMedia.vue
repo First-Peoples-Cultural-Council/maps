@@ -47,7 +47,6 @@ export default {
 
         if (result.request && result.request.status === 204) {
           this.showModal = false
-          this.$root.$emit('media_deleted', this.id)
           this.$root.$emit('notification', {
             content: 'Media Deleted Successfully',
             time: 2000

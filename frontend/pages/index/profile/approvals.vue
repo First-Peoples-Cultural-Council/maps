@@ -169,11 +169,6 @@ export default {
       store.dispatch('user/getMembersToVerify')
     ])
   },
-  created() {
-    this.$root.$on('media_deleted', id => {
-      this.$store.dispatch('user/getMediaToVerify')
-    })
-  },
   methods: {
     encodeFPCC,
     async handleUser(e, tv, { verify, reject }) {
