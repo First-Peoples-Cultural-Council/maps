@@ -48,9 +48,9 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['place']['id'], self.place.id)
+        self.assertEqual(response.data['place'], self.place.id)
 
-    def test_detail_with_placename(self):
+    def test_detail_with_media(self):
         """
 		Ensure we can retrieve a newly created Favourite object.
 		"""
@@ -59,7 +59,7 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['media']['id'], self.media.id)
+        self.assertEqual(response.data['media'], self.media.id)
 
     def test_favourite_list_route_exists(self):
         """
@@ -78,6 +78,13 @@ class FavouriteAPITests(BaseTestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        response = self.client.get(
+            "/api/favourite/{}/".format(created_id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['place'], self.place.id)
 
     def test_favourite_placename_delete(self):
         """
@@ -104,6 +111,13 @@ class FavouriteAPITests(BaseTestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        response = self.client.get(
+            "/api/favourite/{}/".format(created_id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['media'], self.media.id)
 
     def test_favourite_media_delete(self):
         """

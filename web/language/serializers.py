@@ -337,9 +337,6 @@ class MediaSerializer(serializers.ModelSerializer):
 
 class FavouriteSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
-    media = MediaLightSerializer(read_only=True)
-    place = PlaceNameLightSerializer(read_only=True)
-
     class Meta:
         model = Favourite
         fields = ("id", "name", "media", "user", "place", "favourite_type", "description", "point", "zoom")
