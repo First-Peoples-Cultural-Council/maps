@@ -662,4 +662,10 @@ export default {
   word-break: break-all;
   white-space: normal;
 }
+
+@media (max-width: 992px) {
+  .required-overlay {
+    align-items: stretch !important;
+  }
+}
 </style>
