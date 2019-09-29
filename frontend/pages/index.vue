@@ -921,6 +921,14 @@ export default {
 .sb-detail {
   width: 500px;
 }
+
+.content-mobile > div {
+  cursor: pointer;
+}
+
+.content-mobile-title > div {
+  cursor: pointer;
+}
 @media (max-width: 992px) {
   .content-mobile-title {
     display: flex !important;
