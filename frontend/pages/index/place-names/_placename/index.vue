@@ -52,6 +52,7 @@
             </div>
             <div class="d-flex align-items-center">
               <FlagModal
+                v-if="place.status !== 'FL' && place.status !== 'VE'"
                 :id="place.id"
                 class="d-inline-block"
                 type="placename"
