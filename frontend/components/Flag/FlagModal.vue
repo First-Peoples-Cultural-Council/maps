@@ -2,12 +2,13 @@
   <div>
     <div class="d-inline-block cursor-pointer" @click="modalShow = true">
       <b-badge variant="danger">
-        <img
-          src="@/assets/images/flag_icon.svg"
-          alt="Flag"
+        <MdFlagIcon
           class="d-inline-block mr-1"
-          style="height: 15px; width: 15px;"
-        />{{ title || 'Flag' }}</b-badge
+          w="15"
+          h="15"
+          style="fill: white;"
+        ></MdFlagIcon
+        >{{ title || 'Flag' }}</b-badge
       >
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
@@ -38,7 +39,11 @@
   </div>
 </template>
 <script>
+import MdFlagIcon from 'vue-ionicons/dist/md-flag.vue'
 export default {
+  components: {
+    MdFlagIcon
+  },
   props: {
     id: {
       default: null,
