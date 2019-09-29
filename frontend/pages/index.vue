@@ -1006,4 +1006,11 @@ export default {
 .mobile-close {
   display: none !important;
 }
+
+@media (max-width: 574px) {
+  .drawing-mode-container > div {
+    width: 75%;
+    font-size: 0.8em;
+  }
+}
 </style>
