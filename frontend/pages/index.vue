@@ -930,6 +930,9 @@ export default {
   cursor: pointer;
 }
 @media (max-width: 992px) {
+  .drawing-mode-container {
+    padding-left: 0;
+  }
   .content-mobile-title {
     display: flex !important;
   }

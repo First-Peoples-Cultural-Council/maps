@@ -41,6 +41,16 @@
     <div class="d-none mobile-search-container">
       <div
         class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openContributeModal')"
+      >
+        <img
+          src="@/assets/images/plus_medium_red.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
+      <div
+        class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openShareEmbed')"
       >
         <img
