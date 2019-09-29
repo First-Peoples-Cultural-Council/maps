@@ -7,13 +7,8 @@ from users.models import User, Administrator
 from language.models import (
     Language, 
     PlaceName, 
-    PlaceNameCategory, 
     Community, 
-    CommunityMember, 
-    Champion, 
     Media, 
-    Favourite,
-    Notification,
 )
 
 
@@ -40,13 +35,6 @@ class MediaAPITests(BaseTestCase):
         self.language2 = Language.objects.create(name="Test Language 02")
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    # def test_media_detail_route_not_allowed(self):
-    #     """
-	# 	Ensure media Detail API route does not exist
-	# 	"""
-    #     response = self.client.get("/api/media/0/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_media_list_route_does_not_allowed(self):
         """
