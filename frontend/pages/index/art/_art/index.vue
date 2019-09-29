@@ -30,9 +30,18 @@
           :server="isServer"
         ></ArtsDetailCard>
         <div
+          v-if="artDetails.details"
           class="p-4 m-0 pb-0 color-gray font-08"
           v-html="artDetails.details"
         ></div>
+        <div class="ml-3 mr-3 mt-3">
+          <p class="font-08">
+            [ Extracted from the
+            <a href="https://www.fp-artsmap.ca/" target="_blank"
+              >First People's Arts Map </a
+            >]
+          </p>
+        </div>
         <LanguageSeeAll
           content="See all details"
           class="mt-0"

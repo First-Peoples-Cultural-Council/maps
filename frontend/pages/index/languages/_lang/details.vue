@@ -112,6 +112,16 @@
             tbody-class="lna-table-tbody"
           ></b-table>
         </div>
+        <p>
+          Source:
+          <a
+            :href="
+              `http://www.fpcc.ca/files/PDF/FPCC-LanguageReport-180716-WEB.pdf`
+            "
+            target="_blank"
+            >Report on the status of B.C. First Nations Languages 2018</a
+          >
+        </p>
       </section>
     </div>
   </div>
