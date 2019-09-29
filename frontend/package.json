@@ -40,7 +40,8 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sass-loader": "^7.1.0",
-    "vue-audio-recorder": "^3.0.1"
+    "vue-audio-recorder": "^3.0.1",
+    "vue-ionicons": "^3.0.4"
   },
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.5.5",

@@ -38,6 +38,7 @@ export const mutations = {
 }
 
 export const actions = {
+  async favorite({ commit }, data) {},
   async saveLocation({ commit }, data) {
     const headers = {
       headers: {

@@ -50,12 +50,14 @@
                 >Uploaded By: <a>{{ creator.username }}</a></b-badge
               >
             </div>
-            <div>
+            <div class="d-flex align-items-center">
               <FlagModal
                 :id="place.id"
+                class="d-inline-block"
                 type="placename"
                 title="Report"
               ></FlagModal>
+              <Favourite class="d-inline-block ml-2"></Favourite>
             </div>
           </div>
           <div v-if="isPTV" class="mt-2">
@@ -193,6 +195,7 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Logo from '@/components/Logo.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
+import Favourite from '@/components/Favourite.vue'
 
 import {
   getApiUrl,
@@ -209,7 +212,8 @@ export default {
     CommunityCard,
     Logo,
     UploadTool,
-    Media
+    Media,
+    Favourite
   },
   data() {
     return {
