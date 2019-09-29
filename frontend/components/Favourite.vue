@@ -1,5 +1,5 @@
 <template>
-  <div class="cursor-pointer">
+  <div class="cursor-pointer" @click="handleFavourite">
     <MdHeartIcon
       w="30"
       h="30"
