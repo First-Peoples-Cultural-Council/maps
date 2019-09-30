@@ -89,6 +89,12 @@
                 @click="handleLocation($event, sl)"
                 >Go To Location</b-button
               >
+              <b-button
+                variant="dark"
+                size="sm"
+                @click="removeLocation($event, sl)"
+                >Remove Location</b-button
+              >
             </div>
           </div>
         </div>
@@ -122,6 +128,9 @@ export default {
     },
     isSuperUser() {
       return this.$store.state.user.user.is_superuser
+    },
+    favourites() {
+      return this.$store.state.places.favourites
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -133,16 +142,15 @@ export default {
     this.$store.commit('sidebar/set', false)
     next()
   },
-  async asyncData({ params, $axios, store }) {
+  async asyncData({ params, $axios, store, dispatch }) {
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
 
-    const favourites = await $axios.$get(
-      getApiUrl(`favourite?timestamp${new Date().getTime()}/`)
-    )
+    await store.dispatch('places/getFavourites')
+
     console.log('User', user)
-    return { user, favourites }
+    return { user }
   },
   mounted() {
     console.log('mounted, user=', this.user)
@@ -164,6 +172,16 @@ export default {
           zoom: sl.zoom
         })
       })
+    },
+    async removeLocation(e, sl) {
+      const data = {
+        favourite: sl
+      }
+      const result = await this.$store.dispatch(
+        'user/removeSavedLocation',
+        data
+      )
+      console.log('Location Remove Result', result)
     },
     encodeFPCC
   }
