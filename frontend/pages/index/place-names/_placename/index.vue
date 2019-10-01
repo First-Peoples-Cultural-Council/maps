@@ -58,7 +58,15 @@
                 type="placename"
                 title="Report"
               ></FlagModal>
-              <Favourite class="d-inline-block ml-2"></Favourite>
+              <div v-if="isLoggedIn">
+                <Favourite
+                  :id="place.id"
+                  :favourited="isFavourited"
+                  :favourite="favourite"
+                  type="placename"
+                  class="d-inline-block ml-2"
+                ></Favourite>
+              </div>
             </div>
           </div>
           <div v-if="isPTV" class="mt-2">
@@ -223,6 +231,15 @@ export default {
     }
   },
   computed: {
+    isFavourited() {
+      return !!this.favourites.find(f => f.place === this.place.id)
+    },
+    favourite() {
+      return this.favourites.find(f => f.place === this.place.id)
+    },
+    favourites() {
+      return this.$store.state.places.favourites
+    },
     placeCommunity() {
       return this.$store.state.places.placeCommunity
     },
@@ -305,16 +322,17 @@ export default {
       }
     })
 
-    await store.dispatch('places/getPlace', {
-      id: geo_place.id
-    })
-
-    await store.dispatch('places/getPlaceMedias', {
-      id: geo_place.id
-    })
-
-    await store.dispatch('user/getPlacesToVerify')
-    await store.dispatch('user/getMediaToVerify')
+    await Promise.all([
+      store.dispatch('places/getPlace', {
+        id: geo_place.id
+      }),
+      store.dispatch('places/getPlaceMedias', {
+        id: geo_place.id
+      }),
+      store.dispatch('places/getFavourites'),
+      store.dispatch('user/getPlacesToVerify'),
+      store.dispatch('user/getMediaToVerify')
+    ])
 
     const isServer = !!process.server
     return {

@@ -7,7 +7,8 @@ export const state = () => ({
   notifications: null,
   mediaToVerify: null,
   placesToVerify: null,
-  membersToVerify: null
+  membersToVerify: null,
+  savedLocations: null
 })
 
 export const mutations = {
@@ -167,6 +168,20 @@ export const actions = {
       )}`
     )
     commit('setMembersToVerify', result)
+    return result
+  },
+
+  async removeSavedLocation({ dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.delete(
+      getApiUrl(`favourite/${data.favourite.id}`),
+      headers
+    )
+    await dispatch('places/getFavourites', {}, { root: true })
     return result
   },
 
