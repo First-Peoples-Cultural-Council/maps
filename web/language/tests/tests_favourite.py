@@ -85,6 +85,7 @@ class FavouriteAPITests(BaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['place'], self.place.id)
+        self.assertEqual(response.data['placename_obj']['id'], self.place.id)
 
     def test_favourite_placename_delete(self):
         """
@@ -118,6 +119,7 @@ class FavouriteAPITests(BaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['media'], self.media.id)
+        self.assertEqual(response.data['media_obj']['id'], self.media.id)
 
     def test_favourite_media_delete(self):
         """
