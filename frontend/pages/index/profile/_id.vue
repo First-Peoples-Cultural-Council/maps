@@ -11,7 +11,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile pb-4" :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -105,13 +105,11 @@
             </h5>
             <div v-for="f in placeFavourites" :key="`fav${f.id}`">
               <PlacesCard
-                v-for="place in user.placename_set"
-                :key="`place${place.id}`"
-                :place="{ properties: place }"
+                :place="{ properties: f.placename_obj }"
                 class="mt-3 hover-left-move"
                 @click.native="
                   $router.push({
-                    path: '/place-names/' + encodeFPCC(place.name)
+                    path: '/place-names/' + encodeFPCC(f.placename_obj.name)
                   })
                 "
               ></PlacesCard>
