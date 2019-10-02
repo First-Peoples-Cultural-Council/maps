@@ -90,6 +90,14 @@
             thead-class="lna-table-thead"
             tbody-class="lna-table-tbody"
           ></b-table>
+          <client-only>
+            <div v-for="(l, index) in lna" :key="`chartlna${index}`">
+              <PieChart
+                :chartdata="extractChartData(l)"
+                :options="options"
+              ></PieChart>
+            </div>
+          </client-only>
         </div>
       </section>
       <section class="pl-3 pr-3">
@@ -194,7 +202,7 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Notification from '@/components/Notification.vue'
-
+import PieChart from '@/components/PieChart.vue'
 export default {
   components: {
     // DetailSideBar,
@@ -207,36 +215,16 @@ export default {
     Logo,
     UploadTool,
     Media,
-    Notification
+    Notification,
+    PieChart
   },
   data() {
     return {
       mode: 'All',
-      chartOptions: {
-        labelInterpolationFnc(value) {
-          return value[0]
-        }
-      },
-      responsiveOptions: [
-        [
-          'screen and (min-width: 640px)',
-          {
-            chartPadding: 30,
-            labelOffset: 100,
-            labelDirection: 'explode',
-            labelInterpolationFnc(value) {
-              return value
-            }
-          }
-        ],
-        [
-          'screen and (min-width: 1024px)',
-          {
-            labelOffset: 80,
-            chartPadding: 20
-          }
-        ]
-      ]
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
     }
   },
 
@@ -357,6 +345,23 @@ export default {
     })
   },
   methods: {
+    extractChartData(l) {
+      return {
+        name: l.language,
+        labels: ['Fluent', 'Some', 'Learner'],
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
+            data: [
+              parseFloat(l.fluent_speakers) / 100,
+              parseFloat(l.some_speakers) / 100,
+              parseFloat(l.learners) / 100
+            ]
+          }
+        ]
+      }
+    },
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
