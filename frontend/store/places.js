@@ -1,14 +1,25 @@
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export const state = () => ({
+  place: null,
+  placeCommunity: null,
   places: [],
   placesSet: [],
-  medias: []
+  medias: [],
+  favourites: []
 })
 
 export const mutations = {
   set(state, places) {
     state.places = places
+  },
+
+  setPlace(state, place) {
+    state.place = place
+  },
+
+  setPlaceCommunity(state, placeComm) {
+    state.placeCommunity = placeComm
   },
 
   setStore(state, placesSet) {
@@ -17,20 +28,82 @@ export const mutations = {
 
   setMedias(state, medias) {
     state.medias = medias
+  },
+
+  setFavourites(state, favourites) {
+    state.favourites = favourites
   }
 }
 
 export const actions = {
   async getPlaceMedias({ commit }, data) {
-    console.log(
-      'API TEXT',
-      getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
-    )
     const result = await this.$axios.$get(
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
     console.log('Dispatch', result.medias)
     commit('setMedias', result.medias)
+    return result
+  },
+
+  async getPlace({ commit, dispatch }, data) {
+    const result = await this.$axios.$get(
+      getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
+    )
+    commit('setPlace', result)
+    if (result.community) {
+      dispatch(
+        'places/getPlaceCommunity',
+        {
+          id: result.community
+        },
+        {
+          root: true
+        }
+      )
+    }
+    return result
+  },
+
+  async getPlaceCommunity({ commit }, data) {
+    const result = await this.$axios.$get(getApiUrl(`community/${data.id}/`))
+    commit('setPlaceCommunity', result)
+    return result
+  },
+
+  async getFavourites({ commit }, data) {
+    const result = await this.$axios.$get(
+      getApiUrl(`favourite?timestamp=${new Date().getTime()}/`)
+    )
+    commit('setFavourites', result)
+    return result
+  },
+
+  async setFavourite({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.post(
+      getApiUrl(`favourite/`),
+      data,
+      headers
+    )
+    await dispatch('places/getFavourites', {}, { root: true })
+    return result
+  },
+
+  async removeFavourite({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.delete(
+      getApiUrl(`favourite/${data.favourite.id}`),
+      headers
+    )
+    await dispatch('places/getFavourites', {}, { root: true })
     return result
   }
 }

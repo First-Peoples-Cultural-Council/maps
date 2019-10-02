@@ -7,7 +7,10 @@
   >
     <div v-if="isDrawMode" class="drawing-mode-container">
       <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <DrawingTools class="mt-2"></DrawingTools>
+        <DrawingTools
+          :draw-mode="$route.query.mode"
+          class="mt-2"
+        ></DrawingTools>
       </b-alert>
     </div>
     <div class="map-loading">
@@ -274,10 +277,11 @@ export default {
   async asyncData({ params, $axios, store }) {
     // Check if already logged in here
     const user = await $axios.$get(
-      `${getApiUrl('user/auth/')}?timestamp=${new Date().getTime()}`
+      `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
     if (user.is_authenticated) {
       store.commit('user/setUser', user.user)
+      store.commit('user/setPicture', user.user.picture)
       store.commit('user/setLoggedIn', true)
     }
     return user
@@ -362,8 +366,7 @@ export default {
         `${getApiUrl('user/login/')}?${token}`
       )
       if (user.success) {
-        console.log('User', user)
-        this.$store.commit('user/setUser', user)
+        this.$store.dispatch('user/setLoggedInUser')
         this.$store.commit('user/setLoggedIn', true)
         if (user.new === true) {
           this.$router.push({
@@ -918,7 +921,22 @@ export default {
 .sb-detail {
   width: 500px;
 }
+
+.content-mobile > div {
+  cursor: pointer;
+}
+
+.content-mobile-title > div {
+  cursor: pointer;
+}
 @media (max-width: 992px) {
+  .drawing-mode-container {
+    padding-left: 0;
+  }
+  .content-mobile-title {
+    display: flex !important;
+  }
+
   .sb-new-alt-one {
     position: fixed;
     bottom: 0;
@@ -962,6 +980,10 @@ export default {
   .detailModeContainer {
     padding-left: 0px !important;
   }
+
+  .content-mobile.mobile-close {
+    display: block !important;
+  }
 }
 
 .fade-topbar-enter-active,
@@ -976,5 +998,19 @@ export default {
   height: 100%;
   top: 0;
   align-items: baseline;
+}
+
+.content-mobile {
+  display: block !important;
+}
+.mobile-close {
+  display: none !important;
+}
+
+@media (max-width: 574px) {
+  .drawing-mode-container > div {
+    width: 75%;
+    font-size: 0.8em;
+  }
 }
 </style>

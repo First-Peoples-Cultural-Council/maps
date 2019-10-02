@@ -14,6 +14,10 @@ export default {
     id: {
       default: null,
       type: Number
+    },
+    media: {
+      default: null,
+      type: Object
     }
   },
   data() {
@@ -24,14 +28,25 @@ export default {
   methods: {
     async handleDelete(e) {
       e.preventDefault()
+
+      let type = null
+      let type_id = null
+      if (this.media.placename) {
+        type = 'placename'
+        type_id = this.media.placename
+      } else if (this.media.community) {
+        type = 'community'
+        type_id = this.community
+      }
       try {
         const result = await this.$store.dispatch('user/deleteMedia', {
-          id: this.id
+          id: this.id,
+          type,
+          type_id
         })
 
         if (result.request && result.request.status === 204) {
           this.showModal = false
-          this.$root.$emit('media_deleted', this.id)
           this.$root.$emit('notification', {
             content: 'Media Deleted Successfully',
             time: 2000

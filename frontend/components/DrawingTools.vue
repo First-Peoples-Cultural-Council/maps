@@ -30,10 +30,14 @@
 
 <script>
 export default {
-  data() {
-    return {
-      drawMode: this.$route.query.mode || ''
+  props: {
+    drawMode: {
+      default: null,
+      type: String
     }
+  },
+  data() {
+    return {}
   },
   mounted() {
     this.setMode(null, this.drawMode)

@@ -2,7 +2,7 @@
   <div class="w-100">
     <div
       v-if="!mobileContent"
-      class="d-flex justify-content-between align-items-center pl-2 pr-2"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
     >
       <div>
         Point Of Interest:
@@ -16,7 +16,8 @@
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div>
         <div
-          class="text-center"
+          class="text-center d-none mobile-close"
+          :class="{ 'content-mobile': mobileContent }"
           @click="$store.commit('sidebar/setMobileContent', false)"
         >
           <img
@@ -33,46 +34,42 @@
             :allow-edit="isPlaceOwner()"
             variant="md"
             :delete-place="isPlaceOwner()"
+            :status="place.status"
           ></PlacesDetailCard>
           <hr class="sidebar-divider" />
           <Filters class="mb-2"></Filters>
         </div>
         <section class="mt-3 ml-4 mr-4">
-          <div
-            v-if="creator"
-            class="cursor-pointer"
-            @click="handleCreatorClick($event, creator)"
-          >
-            <b-badge variant="primary"
-              >Uploaded By: <a>{{ creator.username }}</a></b-badge
+          <div>
+            <div
+              v-if="creator"
+              class="cursor-pointer mb-2"
+              @click="handleCreatorClick($event, creator)"
             >
+              <b-badge variant="primary"
+                >Uploaded By: <a>{{ creator.username }}</a></b-badge
+              >
+            </div>
+            <div class="d-flex align-items-center">
+              <FlagModal
+                v-if="place.status !== 'FL' && place.status !== 'VE'"
+                :id="place.id"
+                class="d-inline-block"
+                type="placename"
+                title="Report"
+              ></FlagModal>
+              <div v-if="isLoggedIn">
+                <Favourite
+                  :id="place.id"
+                  :favourited="isFavourited"
+                  :favourite="favourite"
+                  type="placename"
+                  class="d-inline-block ml-2"
+                ></Favourite>
+              </div>
+            </div>
           </div>
-
-          <div v-if="place.status === 'FL'" class="mb-2">
-            <b-badge variant="danger">Flagged</b-badge>
-          </div>
-          <div v-if="place.status === 'RE'" class="mb-2">
-            <b-badge variant="info">Rejected</b-badge>
-            <FlagModal
-              :id="place.id"
-              class="float-right"
-              type="placename"
-              title="Flag Point Of Interest"
-            ></FlagModal>
-          </div>
-          <div v-if="place.status === 'UN'" class="mb-2">
-            <b-badge variant="info">Unverified</b-badge>
-            <FlagModal
-              :id="place.id"
-              class="float-right"
-              type="placename"
-              title="Flag Point Of Interest"
-            ></FlagModal>
-          </div>
-          <div v-if="place.status === 'VE'" class="mb-2">
-            <b-badge variant="primary">Verified</b-badge>
-          </div>
-          <div v-if="isPTV">
+          <div v-if="isPTV" class="mt-2">
             <b-row no-gutters class="mt-2 mb-4">
               <b-col xl="6" class="pr-1">
                 <b-button
@@ -104,12 +101,14 @@
               </b-col>
             </b-row>
           </div>
-          <div v-if="place.community" class="mb-4">
+          <div v-if="placeCommunity" class="mb-4">
             <CommunityCard
-              :name="community.name"
-              :community="community"
+              :name="placeCommunity.name"
+              :community="placeCommunity"
               @click.native="
-                $router.push({ path: `/content/${encodeFPCC(community.name)}` })
+                $router.push({
+                  path: `/content/${encodeFPCC(placeCommunity.name)}`
+                })
               "
             ></CommunityCard>
           </div>
@@ -137,7 +136,6 @@
             <UploadTool :id="place.id" type="placename"></UploadTool>
           </div>
         </section>
-
         <section
           v-if="mediasFiltered && mediasFiltered.length > 0"
           class="mt-4 ml-4 mr-4"
@@ -151,7 +149,44 @@
             :key="'media' + media.id"
             class="mb-4"
           >
-            <Media :media="media" :server="isServer"></Media>
+            <Media
+              :media="media"
+              :server="isServer"
+              :delete="isMediaCreator(media, user)"
+              type="placename"
+            ></Media>
+            <div v-if="isMTV(media, mediaToVerify)">
+              <b-row no-gutters class="mt-2">
+                <b-col xl="6" class="pr-1">
+                  <b-button
+                    variant="dark"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, media, {
+                        verify: true,
+                        type: 'media'
+                      })
+                    "
+                    >Verify</b-button
+                  >
+                </b-col>
+                <b-col xl="6" class="pl-1">
+                  <b-button
+                    variant="danger"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, media, {
+                        reject: true,
+                        type: 'media'
+                      })
+                    "
+                    >Reject</b-button
+                  >
+                </b-col>
+              </b-row>
+            </div>
             <hr class="mb-2" />
           </div>
         </section>
@@ -169,6 +204,7 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Logo from '@/components/Logo.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
+import Favourite from '@/components/Favourite.vue'
 
 import {
   getApiUrl,
@@ -185,7 +221,8 @@ export default {
     CommunityCard,
     Logo,
     UploadTool,
-    Media
+    Media,
+    Favourite
   },
   data() {
     return {
@@ -194,6 +231,21 @@ export default {
     }
   },
   computed: {
+    isFavourited() {
+      return !!this.favourites.find(f => f.place === this.place.id)
+    },
+    favourite() {
+      return this.favourites.find(f => f.place === this.place.id)
+    },
+    favourites() {
+      return this.$store.state.places.favourites
+    },
+    placeCommunity() {
+      return this.$store.state.places.placeCommunity
+    },
+    place() {
+      return this.$store.state.places.place
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -203,11 +255,39 @@ export default {
     medias() {
       return this.$store.state.places.medias
     },
-
-    mediasFiltered() {
-      return this.medias.filter(m => m.status === 'VE')
+    mediaToVerify() {
+      return this.$store.state.user.mediaToVerify
     },
+    mediasFiltered() {
+      return this.medias.filter(m => {
+        if (this.isStaff) {
+          return true
+        }
 
+        if (this.isSuperUser) {
+          return true
+        }
+
+        if (this.user.id === m.creator.id) {
+          return true
+        }
+
+        if (m.status !== 'FL' && m.status !== 'RE') {
+          return true
+        }
+
+        return false
+      })
+    },
+    isStaff() {
+      return this.user.is_staff
+    },
+    isSuperUser() {
+      return this.user.is_superuser
+    },
+    user() {
+      return this.$store.state.user.user
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
@@ -220,6 +300,9 @@ export default {
     },
     isPTV() {
       return this.ptv.find(p => p.id === this.place.id)
+    },
+    ptv() {
+      return this.$store.state.user.placesToVerify
     }
   },
   watch: {
@@ -238,28 +321,23 @@ export default {
         return encodeFPCC(a.properties.name) === params.placename
       }
     })
-    const place = await $axios.$get(
-      getApiUrl(`placename/${geo_place.id}?timestamp=${now.getTime()}`)
-    )
 
-    await store.dispatch('places/getPlaceMedias', {
-      id: geo_place.id
-    })
-
-    let community = null
-    if (place.community) {
-      community = await $axios.$get(getApiUrl(`community/${place.community}/`))
-    }
-
-    const ptv = await $axios.$get(getApiUrl('placename/list_to_verify/'))
+    await Promise.all([
+      store.dispatch('places/getPlace', {
+        id: geo_place.id
+      }),
+      store.dispatch('places/getPlaceMedias', {
+        id: geo_place.id
+      }),
+      store.dispatch('places/getFavourites'),
+      store.dispatch('user/getPlacesToVerify'),
+      store.dispatch('user/getMediaToVerify')
+    ])
 
     const isServer = !!process.server
     return {
       geo_place,
-      place,
-      isServer,
-      community,
-      ptv
+      isServer
     }
   },
   mounted() {
@@ -267,12 +345,7 @@ export default {
       this.$store.dispatch('places/getPlaceMedias', {
         id: this.place.id
       })
-    })
-
-    this.$root.$on('media_deleted', r => {
-      this.$store.dispatch('places/getPlaceMedias', {
-        id: this.place.id
-      })
+      this.$store.dispatch('user/getMediaToVerify')
     })
   },
   created() {
@@ -280,6 +353,12 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
+    isMTV(media, mtv) {
+      return mtv.find(m => m.id === media.id)
+    },
+    isMediaCreator(media, user) {
+      return user.id === media.creator
+    },
     handleCreatorClick(e, creator) {
       this.$router.push({
         path: `/profile/${creator.id}`
@@ -296,7 +375,16 @@ export default {
       const result = await this.$store.dispatch('user/approve', data)
       if (result.request && result.request.status === 200) {
         if (type === 'placename') {
-          this.ptv = this.ptv.filter(p => p.id !== tv.id)
+          this.$store.dispatch('user/getPlacesToVerify')
+          await this.$store.dispatch('places/getPlace', {
+            id: this.place.id
+          })
+        }
+        if (type === 'media') {
+          this.$store.dispatch('user/getMediaToVerify')
+          this.$store.dispatch('places/getPlaceMedias', {
+            id: this.place.id
+          })
         }
       } else {
         console.error(result)
@@ -394,9 +482,5 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
-}
-
-.content-mobile {
-  display: block !important;
 }
 </style>

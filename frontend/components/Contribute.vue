@@ -80,6 +80,11 @@
 
 <script>
 export default {
+  mounted() {
+    this.$root.$on('openContributeModal', d => {
+      this.showModal()
+    })
+  },
   methods: {
     handleClick(e, data) {
       this.hideModal()

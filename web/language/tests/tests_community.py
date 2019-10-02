@@ -3,17 +3,12 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from users.models import User, Administrator
+from django.contrib.gis.geos import GEOSGeometry, Point
 
 from language.models import (
     Language, 
-    PlaceName, 
-    PlaceNameCategory, 
     Community, 
     CommunityMember, 
-    Champion, 
-    Media, 
-    Favourite,
-    Notification,
 )
 
 
@@ -38,17 +33,33 @@ class CommunityAPITests(BaseTestCase):
         self.community2 = Community.objects.create(name="Test Community 02")
         self.language = Language.objects.create(name="Test Language")
 
+        self.FAKE_GEOM = """
+            {
+                "type": "Point",
+                "coordinates": [
+                    -126.3482666015625,
+                    54.74840576223716
+                ]
+            }"""
+
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
     def test_community_detail(self):
         """
 		Ensure we can retrieve a newly created community object.
 		"""
-        test_community = Community.objects.create(name="Test community 001")
+
+        point = GEOSGeometry(self.FAKE_GEOM)
+        test_community = Community(name="Test community 001")
+        test_community.point = point
+        test_community.save()
+
         response = self.client.get(
             "/api/community/{}/".format(test_community.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], test_community.id)
+        self.assertEqual(response.data["name"], "Test community 001")
 
     def test_community_list_route_exists(self):
         """
@@ -61,6 +72,13 @@ class CommunityAPITests(BaseTestCase):
         """
 		Ensure we can retrieve a newly created community member object.
 		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
         response = self.client.post(
             "/api/community/{}/create_membership/".format(self.community1.id),
             {
@@ -68,8 +86,7 @@ class CommunityAPITests(BaseTestCase):
             },
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        created_id = response.json()["id"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_member_list_to_verify(self):
         """

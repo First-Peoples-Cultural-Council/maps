@@ -30,22 +30,30 @@
         class="d-inline-block p-1 font-08"
         >Rejected Media</b-alert
       >
-      <div class="float-right">
-        <DeleteMedia :id="media.id"></DeleteMedia>
+      <div v-if="this.delete" class="float-right">
+        <DeleteMedia :id="media.id" :media="media"></DeleteMedia>
       </div>
     </div>
     <div v-if="media.name" class="font-08 color-gray">
       <span>Name: </span>
       <span class="word-break-all">{{ media.name }}</span>
       <span v-if="flag" class="float-right cursor-pointer">
-        <FlagModal :id="media.id" style="font-size: 1rem;"></FlagModal>
+        <FlagModal
+          :id="media.id"
+          title="Report"
+          style="font-size: 1rem;"
+          :media="media"
+        ></FlagModal>
       </span>
     </div>
     <div v-if="media.description" class="font-08 color-gray">
       <span>Description: </span>
       <span class="word-break-all">{{ media.description }}</span>
     </div>
-    <div v-if="getGenericFileType(media.file_type) === 'image'">
+    <div
+      v-if="getGenericFileType(media.file_type) === 'image'"
+      class="d-flex justify-content-center"
+    >
       <img
         class="media-image cursor-pointer"
         :src="getMediaUrl(media.media_file, server)"
@@ -66,6 +74,20 @@
           instead.
         </p>
       </audio>
+    </div>
+
+    <div
+      v-if="getGenericFileType(media.file_type) === 'youtube'"
+      class="word-break-all d-flex justify-content-center"
+    >
+      <iframe
+        width="100%"
+        height="315px"
+        :src="`https://www.youtube.com/embed/${getYoutubeId(media.url)[2]}`"
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
     </div>
 
     <div
@@ -90,7 +112,11 @@
 <script>
 import FlagModal from '@/components/Flag/FlagModal.vue'
 import DeleteMedia from '@/components/DeleteMedia.vue'
-import { getGenericFileType, getMediaUrl } from '@/plugins/utils.js'
+import {
+  getGenericFileType,
+  getMediaUrl,
+  getYoutubeId
+} from '@/plugins/utils.js'
 export default {
   components: {
     FlagModal,
@@ -108,10 +134,19 @@ export default {
     server: {
       default: false,
       type: Boolean
+    },
+    delete: {
+      default: false,
+      type: Boolean
+    },
+    type: {
+      default: null,
+      type: String
     }
   },
 
   methods: {
+    getYoutubeId,
     getGenericFileType,
     getMediaUrl,
     handleImageClick(e, media) {

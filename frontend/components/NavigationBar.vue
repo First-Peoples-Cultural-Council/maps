@@ -1,24 +1,35 @@
 <template>
   <div class="nav-container">
-    <div
-      v-if="email"
-      class="user-container cursor-pointer hide-mobile"
-      @click="profile"
-    >
-      <nav class="navbar-icon-container">
-        <img
-          v-if="!picture"
-          src="@/assets/images/user_icon_red.svg"
-          alt="Menu"
-          class="navbar-icon user_icon"
-        />
-        <img
-          v-if="picture"
-          :src="picture"
-          alt="Menu"
-          class="navbar-icon user_icon"
-        />
-      </nav>
+    <div class="hide-mobile">
+      <div
+        v-if="email"
+        class="user-container cursor-pointer hide-mobile"
+        @click="profile"
+      >
+        <nav class="navbar-icon-container">
+          <img
+            v-if="!picture"
+            src="@/assets/images/user_icon_red.svg"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+          <img
+            v-if="picture"
+            :src="picture"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+        </nav>
+      </div>
+      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
+        <nav class="navbar-icon-container">
+          <img
+            src="@/assets/images/menu_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+        </nav>
+      </div>
     </div>
 
     <div
@@ -27,7 +38,17 @@
     >
       <img src="@/assets/images/symbol@2x.png" alt="Menu" class="mobile-logo" />
     </div>
-    <div class="mobile-search-container">
+    <div class="d-none mobile-search-container">
+      <div
+        class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openContributeModal')"
+      >
+        <img
+          src="@/assets/images/plus_medium_red.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openShareEmbed')"
@@ -91,9 +112,9 @@
             <li>
               <nuxt-link
                 class="color-gray"
-                to="/place-names"
+                to="/heritages"
                 @click.native="resetMap"
-                >Place-names</nuxt-link
+                >Heritages</nuxt-link
               >
             </li>
             <li>
@@ -129,6 +150,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
@@ -146,9 +168,15 @@ export default {
     email() {
       return this.$store.state.user.user && this.$store.state.user.user.email
     },
-    picture() {
-      return this.$store.state.user.user && this.$store.state.user.user.picture
+    ...mapState({
+      picture: state => state.user.picture
+    }),
+    user() {
+      return this.$store.state.user.user
     }
+  },
+  mounted() {
+    console.log('Picture', this.picture)
   },
   methods: {
     showSearch() {
@@ -315,7 +343,7 @@ export default {
   }
 
   .mobile-search-container {
-    display: flex;
+    display: flex !important;
   }
 
   .navbar-container {

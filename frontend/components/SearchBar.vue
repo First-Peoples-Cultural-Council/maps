@@ -1,5 +1,8 @@
 <template>
-  <div class="searchbar-container">
+  <div
+    class="searchbar-container"
+    :class="{ 'searchbar-container-detail': isDetailMode }"
+  >
     <div class="searchbar-input-container">
       <div v-if="mobile" class="searchbar-mobile-header">
         <div class="search-mobile-icon">
@@ -279,6 +282,9 @@ export default {
     }
   },
   computed: {
+    isDetailMode() {
+      return this.$store.state.sidebar.isDetailMode
+    },
     communities() {
       return this.$store.state.communities.communitySet
     },
@@ -521,8 +527,11 @@ export default {
 .searchbar-container {
   position: fixed;
   top: 10px;
-  left: calc(50% - 250px);
+  left: calc(50% - 200px);
   width: 500px;
+}
+.searchbar-container-detail {
+  left: 45%;
 }
 .searchbar-input-container {
   display: flex;
@@ -571,6 +580,20 @@ export default {
 
 .search-input::placeholder {
   color: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1200px) {
+  .searchbar-container {
+    position: fixed;
+    top: 10px;
+    left: 40%;
+    width: 400px;
+  }
+
+  .searchbar-container-detail {
+    left: 55%;
+    width: 300px;
+  }
 }
 
 @media (max-width: 992px) {

@@ -1,28 +1,55 @@
 <template>
-  <div>
-    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
+  <div class="w-100">
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
+        {{ art.properties.art_type | titleCase }}:
+        <span class="font-weight-bold">{{ art.properties.name }}</span>
+      </div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
 
-    <h5 class="color-gray font-08 p-0 m-0 header-mobile d-none">
-      {{ art.properties.art_type | titleCase }}:
-      <span class="font-weight-bold">{{ art.properties.name }}</span>
-    </h5>
-    <div>
-      <ArtsDetailCard
-        :arttype="art.properties.art_type"
-        :name="art.properties.name"
-        :server="isServer"
-      ></ArtsDetailCard>
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div
-        class="p-4 m-0 pb-0 color-gray font-08"
-        v-html="artDetails.details"
-      ></div>
-      <LanguageSeeAll
-        content="See all details"
-        class="mt-0"
-        @click.native="handleClick($event, artDetails.node_id)"
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
       >
-      </LanguageSeeAll>
-      <Filters class="mb-2 mt-2"></Filters>
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+
+      <div>
+        <ArtsDetailCard
+          :arttype="art.properties.art_type"
+          :name="art.properties.name"
+          :server="isServer"
+        ></ArtsDetailCard>
+        <div
+          v-if="artDetails.details"
+          class="p-4 m-0 pb-0 color-gray font-08"
+          v-html="artDetails.details"
+        ></div>
+        <div class="ml-3 mr-3 mt-3">
+          <p class="font-08">
+            [ Extracted from the
+            <a href="https://www.fp-artsmap.ca/" target="_blank"
+              >First People's Arts Map </a
+            >]
+          </p>
+        </div>
+        <LanguageSeeAll
+          content="See all details"
+          class="mt-0"
+          @click.native="handleClick($event, artDetails.node_id)"
+        >
+        </LanguageSeeAll>
+        <Filters class="mb-2 mt-2"></Filters>
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +76,9 @@ export default {
     }
   },
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
     }

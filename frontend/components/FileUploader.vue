@@ -46,10 +46,14 @@
 
         <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
 
-        <b-button variant="info" size="sm" @click="handleUpload"
+        <b-button variant="dark" size="sm" @click="handleUpload"
           >Upload</b-button
         >
-        <b-button variant="danger" size="sm" @click="resetToInitialState"
+        <b-button
+          size="sm"
+          variant="dark"
+          class=""
+          @click="$root.$emit('closeUploadModal')"
           >Cancel</b-button
         >
       </div>

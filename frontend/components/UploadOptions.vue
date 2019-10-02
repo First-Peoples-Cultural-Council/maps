@@ -54,8 +54,8 @@
         class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
-            comp: 'AudioRecorder',
-            mode: 'externalAudio'
+            comp: 'YoutubeUploader',
+            mode: 'standard'
           })
         "
       >

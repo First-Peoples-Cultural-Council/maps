@@ -135,6 +135,13 @@
         <b-button variant="dark" size="sm" @click="externalAudioUpload"
           >Upload</b-button
         >
+        <b-button
+          size="sm"
+          variant="dark"
+          class=""
+          @click="$root.$emit('closeUploadModal')"
+          >Cancel</b-button
+        >
       </b-col>
     </b-row>
   </div>

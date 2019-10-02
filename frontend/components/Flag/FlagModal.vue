@@ -1,7 +1,15 @@
 <template>
   <div>
     <div class="d-inline-block cursor-pointer" @click="modalShow = true">
-      <b-badge variant="danger">{{ title || 'Flag' }}</b-badge>
+      <b-badge variant="danger">
+        <MdFlagIcon
+          class="d-inline-block mr-1"
+          w="15"
+          h="15"
+          style="fill: white;"
+        ></MdFlagIcon
+        >{{ title || 'Flag' }}</b-badge
+      >
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert
@@ -31,8 +39,11 @@
   </div>
 </template>
 <script>
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import MdFlagIcon from 'vue-ionicons/dist/md-flag.vue'
 export default {
+  components: {
+    MdFlagIcon
+  },
   props: {
     id: {
       default: null,
@@ -45,6 +56,10 @@ export default {
     title: {
       default: null,
       type: String
+    },
+    media: {
+      default: null,
+      type: Object
     }
   },
   data() {
@@ -69,15 +84,12 @@ export default {
         this.errorMessage = 'Please select an option'
         return false
       }
-      console.log('Handle Submit')
       e.preventDefault()
       const reason =
         this.selected === 'c'
           ? this.text
           : this.options.find(o => o.value === this.selected).text
-      console.log('Reason', reason)
       const result = await this.submitFlag(this.id, reason)
-      console.log('Result', result)
       this.modalShow = false
       if (result.message === 'Flagged!') {
         this.$root.$emit('notification', {
@@ -90,17 +102,22 @@ export default {
       if (!id) {
         return false
       }
-      const result = await this.$axios.$patch(
-        `${getApiUrl(`${this.type}/${id}/flag/`)}`,
-        {
-          status_reason: reason
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
+
+      const data = {
+        id,
+        type: this.type,
+        reason
+      }
+
+      if (this.media.placename) {
+        data.belongs = 'placename'
+        data.belongid = this.media.placename
+      } else if (this.media.community) {
+        data.belongs = 'community'
+        data.belongid = this.media.community
+      }
+
+      const result = await this.$store.dispatch('user/flagContent', data)
       return result
     }
   }

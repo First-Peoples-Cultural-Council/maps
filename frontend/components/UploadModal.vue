@@ -42,12 +42,14 @@ import FileUploader from '@/components/FileUploader.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import UploadOptions from '@/components/UploadOptions.vue'
 import NoteUploader from '@/components/NoteUploader.vue'
+import YoutubeUploader from '@/components/YoutubeUpload.vue'
 export default {
   components: {
     FileUploader,
     UploadOptions,
     AudioRecorder,
-    NoteUploader
+    NoteUploader,
+    YoutubeUploader
   },
   props: {
     id: {
@@ -70,6 +72,10 @@ export default {
   mounted() {
     this.$root.$on('openUploadModal', () => {
       this.modalShow = true
+    })
+
+    this.$root.$on('closeUploadModal', () => {
+      this.modalShow = false
     })
 
     this.$root.$on('uploadModeChosen', ({ comp, mode }) => {

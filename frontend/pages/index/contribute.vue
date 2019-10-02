@@ -1,194 +1,229 @@
 <template>
   <div>
-    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <div class="position-relative pb-3">
-      <div
-        v-if="drawnFeatures.length === 0 && !place"
-        class="required-overlay d-flex align-items-center justify-content-center"
-      >
-        <b-alert
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
+        <b-badge
           v-if="drawnFeatures.length === 0 && !place"
           show
           variant="danger"
+          class="p-2"
         >
           Please draw at least one feature from the map
-        </b-alert>
+        </b-badge>
+        <b-badge v-else show variant="primary" class="p-2">
+          Expand to fill out the form
+        </b-badge>
       </div>
-      <div v-if="isLoggedIn">
-        <div class="contribute-header pt-3 pb-3">
-          <div class="text-center pl-2 pr-2">
-            <b-alert
-              v-if="drawnFeatures.length > 1 && !place"
-              show
-              variant="warning"
-              dismissible
-            >
-              You may only contribute to one area at a time
-            </b-alert>
-          </div>
-          <div>
-            <h4 class="text-uppercase contribute-title mr-2">
-              Contribute
-            </h4>
-          </div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <div
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
+      >
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div class="position-relative pb-3">
+        <div
+          v-if="drawnFeatures.length === 0 && !place"
+          class="required-overlay d-flex align-items-center justify-content-center"
+        >
+          <b-alert
+            v-if="drawnFeatures.length === 0 && !place"
+            show
+            variant="danger"
+          >
+            Please draw at least one feature from the map
+          </b-alert>
         </div>
-        <section class="pr-3 pl-3">
-          <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
-            >Traditional Name (required)</label
-          >
-          <ToolTip
-            content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
-          ></ToolTip>
-          <b-form-input
-            id="traditionalName"
-            v-model="tname"
-            type="text"
-          ></b-form-input>
-
-          <div class="contribute-title-one mt-3 mb-0">
-            Pronounciation
-            <ToolTip
-              content="How do you pronounce this name? Upload an audio recording of the pronunciation. Say it 3 times in a row, with 1-2 seconds silence in between entries. You don't have to say it English after, but you can."
-            ></ToolTip>
+        <div v-if="isLoggedIn">
+          <div class="contribute-header pt-3 pb-3">
+            <div class="text-center pl-2 pr-2">
+              <b-alert
+                v-if="drawnFeatures.length > 1 && !place"
+                show
+                variant="warning"
+                dismissible
+              >
+                You may only contribute to one area at a time
+              </b-alert>
+            </div>
+            <div>
+              <h4 class="text-uppercase contribute-title mr-2">
+                Contribute
+              </h4>
+            </div>
           </div>
-          <AudioRecorder class="mt-1"></AudioRecorder>
+          <section class="pr-3 pl-3">
+            <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
+              >Traditional Name (required)</label
+            >
+            <ToolTip
+              content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
+            ></ToolTip>
+            <b-form-input
+              id="traditionalName"
+              v-model="tname"
+              type="text"
+            ></b-form-input>
 
-          <label for="westernName" class="contribute-title-one mt-3 mb-1"
-            >Common Name</label
-          >
+            <div class="contribute-title-one mt-3 mb-0">
+              Pronounciation
+              <ToolTip
+                content="How do you pronounce this name? Upload an audio recording of the pronunciation. Say it 3 times in a row, with 1-2 seconds silence in between entries. You don't have to say it English after, but you can."
+              ></ToolTip>
+            </div>
+            <AudioRecorder class="mt-1"></AudioRecorder>
 
-          <ToolTip
-            content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
-          ></ToolTip>
-          <b-form-input
-            id="westernName"
-            v-model="wname"
-            type="text"
-          ></b-form-input>
+            <label for="westernName" class="contribute-title-one mt-3 mb-1"
+              >Common Name</label
+            >
 
-          <b-row class="mt-3">
-            <b-col xl="6">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Language</label
-              >
-              <b-form-select
-                v-model="languageSelected"
-                :options="languageOptions"
-              ></b-form-select>
-            </b-col>
-            <b-col xl="6">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Category</label
-              >
+            <ToolTip
+              content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+            ></ToolTip>
+            <b-form-input
+              id="westernName"
+              v-model="wname"
+              type="text"
+            ></b-form-input>
+
+            <b-row class="mt-3">
+              <b-col xl="6">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Language</label
+                >
+                <b-form-select
+                  v-model="languageSelected"
+                  :options="languageOptions"
+                ></b-form-select>
+              </b-col>
+              <b-col xl="6">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Category</label
+                >
+
+                <ToolTip
+                  content="What would this location be classified as? This will help users find it."
+                ></ToolTip>
+                <b-form-select
+                  v-model="categorySelected"
+                  :options="categoryOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3 mb-1">
+              <b-col xl="12">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Community</label
+                >
+                <multiselect
+                  v-model="community"
+                  placeholder="Select a community"
+                  label="name"
+                  track-by="id"
+                  :options="communities"
+                ></multiselect>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3 mb-4">
+              <b-col xl="6" class="d-flex align-items-center">
+                <label
+                  class="d-inline-block contribute-title-one"
+                  for="community-only"
+                  >Community Only?</label
+                >
+                <b-form-checkbox
+                  id="community-only"
+                  v-model="communityOnly"
+                  class="d-inline-block ml-2"
+                  name="community-only"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                </b-form-checkbox>
+              </b-col>
+            </b-row>
+            <!-- Text Editor -->
+
+            <h5 class="contribute-title-one mt-3 mb-1">
+              Description
 
               <ToolTip
-                content="What would this location be classified as? This will help users find it."
+                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
               ></ToolTip>
-              <b-form-select
-                v-model="categorySelected"
-                :options="categoryOptions"
-              ></b-form-select>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3 mb-1">
-            <b-col xl="12">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Community</label
-              >
-              <multiselect
-                v-model="community"
-                placeholder="Select a community"
-                label="name"
-                track-by="id"
-                :options="communities"
-              ></multiselect>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3 mb-4">
-            <b-col xl="6" class="d-flex align-items-center">
-              <label
-                class="d-inline-block contribute-title-one"
-                for="community-only"
-                >Community Only?</label
-              >
-              <b-form-checkbox
-                id="community-only"
-                v-model="communityOnly"
-                class="d-inline-block ml-2"
-                name="community-only"
-                value="accepted"
-                unchecked-value="not_accepted"
-              >
-              </b-form-checkbox>
-            </b-col>
-          </b-row>
-          <!-- Text Editor -->
+            </h5>
+            <client-only>
+              <TuiEditor
+                v-model="content"
+                mode="wysiwyg"
+                :options="{
+                  hideModeSwitch: true,
+                  toolbarItems: [
+                    'heading',
+                    'bold',
+                    'italic',
+                    'strike',
+                    'hr',
+                    'quote',
+                    'ul',
+                    'ol',
+                    'indent',
+                    'outdent',
+                    'link'
+                  ]
+                }"
+                preview-style="vertical"
+                height="300px"
+              />
+            </client-only>
 
-          <h5 class="contribute-title-one mt-3 mb-1">
-            Description
+            <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
+            <!--<MediaUploader></MediaUploader>-->
+          </section>
 
-            <ToolTip
-              content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
-            ></ToolTip>
-          </h5>
-          <client-only>
-            <TuiEditor
-              v-model="content"
-              mode="wysiwyg"
-              :options="{
-                hideModeSwitch: true,
-                toolbarItems: [
-                  'heading',
-                  'bold',
-                  'italic',
-                  'strike',
-                  'hr',
-                  'quote',
-                  'ul',
-                  'ol',
-                  'indent',
-                  'outdent',
-                  'link'
-                ]
-              }"
-              preview-style="vertical"
-              height="300px"
-            />
-          </client-only>
-
-          <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
-          <!--<MediaUploader></MediaUploader>-->
-        </section>
-
-        <hr />
-
-        <section class="pl-3 pr-3">
-          <b-row class="mt-3">
-            <b-col xl="12">
-              <b-alert v-if="errors.length" show variant="warning" dismissible>
-                <ul>
-                  <li v-for="err in errors" :key="err">{{ err }}</li>
-                </ul>
-              </b-alert>
-              <b-button block variant="danger" @click="submitContribute"
-                >Submit</b-button
-              >
-            </b-col>
-          </b-row>
-        </section>
-      </div>
-      <div v-else>
-        <b-alert show variant="danger m-2 mt-5">
-          <h4 class="alert-heading">Please Log In</h4>
-          <p>
-            This feature requires you to be
-            <a
-              href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
-              >logged in.</a
-            >
-          </p>
           <hr />
-        </b-alert>
+
+          <section class="pl-3 pr-3">
+            <b-row class="mt-3">
+              <b-col xl="12">
+                <b-alert
+                  v-if="errors.length"
+                  show
+                  variant="warning"
+                  dismissible
+                >
+                  <ul>
+                    <li v-for="err in errors" :key="err">{{ err }}</li>
+                  </ul>
+                </b-alert>
+                <b-button block variant="danger" @click="submitContribute"
+                  >Submit</b-button
+                >
+              </b-col>
+            </b-row>
+          </section>
+        </div>
+        <div v-else>
+          <b-alert show variant="danger m-2 mt-5">
+            <h4 class="alert-heading">Please Log In</h4>
+            <p>
+              This feature requires you to be
+              <a
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
+                >logged in.</a
+              >
+            </p>
+            <hr />
+          </b-alert>
+        </div>
       </div>
     </div>
   </div>
@@ -234,6 +269,9 @@ export default {
   },
 
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     categoryOptions() {
       return this.categories
         ? this.categories.map(c => {
@@ -337,13 +375,25 @@ export default {
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
-
+      let community = null
+      if (place.community) {
+        community = await $axios.$get(
+          getApiUrl(`community/${place.community}/?` + now.getTime())
+        )
+        community = {
+          name: community.name,
+          id: place.community
+        }
+      }
       data = {
         place,
         tname: place.name,
         wname: place.common_name,
         content: place.description,
         categorySelected: place.category
+      }
+      if (community) {
+        data.community = community
       }
       if (place.language) {
         try {
@@ -419,7 +469,7 @@ export default {
 
       let status = 'UN'
       if (this.isStaff || this.isSuperUser) {
-        status = 'VE'
+        status = 'UN'
       }
 
       const data = {
@@ -494,20 +544,10 @@ export default {
 
       this.$eventHub.whenMap(map => {
         map.getSource('places1').setData('/api/placename-geo/')
-        if (status === 'VE') {
-          this.$router.push({
-            path: '/place-names/' + encodeFPCC(this.tname)
-          })
-        } else if (status === 'UN') {
-          this.$root.$emit('notification', {
-            content:
-              'Your contribution has been submitted and admins will have to review before it can shown',
-            time: 4000
-          })
-          this.$router.push({
-            path: '/'
-          })
-        }
+
+        this.$router.push({
+          path: '/place-names/' + encodeFPCC(this.tname)
+        })
       })
     }
   },
@@ -621,5 +661,11 @@ export default {
 .multiselect__element span {
   word-break: break-all;
   white-space: normal;
+}
+
+@media (max-width: 992px) {
+  .required-overlay {
+    align-items: stretch !important;
+  }
 }
 </style>

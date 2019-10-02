@@ -1,85 +1,67 @@
 <template>
   <div>
-    <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-    <div v-if="user && user.is_staff" class="ml-3 mr-3">
-      <div v-if="nothingToVerify" class="mt-2">
-        <b-alert show>Nothing to approve</b-alert>
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
+        <b-badge variant="primary">Expand To See Approvals</b-badge>
       </div>
-      <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
-        <h5 class="font-1 color-dark-gray">Places Waiting For Verification</h5>
-        <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
-          <PlacesCard
-            :name="{ properties: { name: ptv.name } }"
-            class="mb-2"
-            @click.native="
-              $router.push({
-                path: `/place-names/${encodeFPCC(ptv.name)}`
-              })
-            "
-          ></PlacesCard>
-          <b-row no-gutters>
-            <b-col xs="6" class="pr-1">
-              <b-button
-                block
-                variant="dark"
-                size="sm"
-                @click="
-                  handleApproval($event, ptv, {
-                    verify: true,
-                    type: 'placename'
-                  })
-                "
-                >Verify</b-button
-              >
-            </b-col>
-            <b-col xs="6" class="pl-1">
-              <b-button
-                block
-                variant="danger"
-                size="sm"
-                @click="
-                  handleApproval($event, ptv, {
-                    reject: true,
-                    type: 'placename'
-                  })
-                "
-                >Reject</b-button
-              >
-            </b-col>
-          </b-row>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <div
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
+      >
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div v-if="user && user.is_staff" class="ml-3 mr-3">
+        <div v-if="nothingToVerify" class="mt-2">
+          <b-alert show>Nothing to approve</b-alert>
         </div>
-      </div>
-
-      <div v-if="mediaToVerify && mediaToVerify.length > 0">
-        <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
-        <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
-          <div>
-            Place {{ mtv.place }}
-            <Media :media="mtv"></Media>
-            <b-row no-gutters class="mt-2">
-              <b-col xl="6" class="pr-1">
+        <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
+          <h5 class="font-1 color-dark-gray">
+            Places Waiting For Verification
+          </h5>
+          <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
+            <PlacesCard
+              :place="{ properties: { name: ptv.name } }"
+              class="mb-2"
+              @click.native="
+                $router.push({
+                  path: `/place-names/${encodeFPCC(ptv.name)}`
+                })
+              "
+            ></PlacesCard>
+            <b-row no-gutters>
+              <b-col xs="6" class="pr-1">
                 <b-button
-                  variant="dark"
                   block
+                  variant="dark"
                   size="sm"
                   @click="
-                    handleApproval($event, mtv, {
+                    handleApproval($event, ptv, {
                       verify: true,
-                      type: 'media'
+                      type: 'placename'
                     })
                   "
                   >Verify</b-button
                 >
               </b-col>
-              <b-col xl="6" class="pl-1">
+              <b-col xs="6" class="pl-1">
                 <b-button
-                  variant="danger"
                   block
+                  variant="danger"
                   size="sm"
                   @click="
-                    handleApproval($event, mtv, {
+                    handleApproval($event, ptv, {
                       reject: true,
-                      type: 'media'
+                      type: 'placename'
                     })
                   "
                   >Reject</b-button
@@ -88,36 +70,76 @@
             </b-row>
           </div>
         </div>
-      </div>
-      <div v-if="usersToVerify && usersToVerify.length > 0">
-        <h5>Users Waiting For Verification</h5>
-        <div v-for="utv in usersToVerify" :key="`utv${utv.id}`">
-          <ul>
-            <li>UserName: {{ utv.user.username }}</li>
-            <li>First Name: {{ utv.user.first_name }}</li>
-            <li>Last Name: {{ utv.user.last_name }}</li>
-            <li>Community: {{ utv.community.name }}</li>
-            <li>
-              <b-button
-                @click="
-                  handleUser($event, utv, {
-                    verify: 'verify'
-                  })
-                "
-                >Verify</b-button
-              >
-            </li>
-            <li>
-              <b-button
-                @click="
-                  handleUser($event, utv, {
-                    reject: 'reject'
-                  })
-                "
-                >Reject</b-button
-              >
-            </li>
-          </ul>
+
+        <div v-if="mediaToVerify && mediaToVerify.length > 0">
+          <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
+          <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
+            <div>
+              Place {{ mtv.place }}
+              <Media :media="mtv"></Media>
+              <b-row no-gutters class="mt-2">
+                <b-col xl="6" class="pr-1">
+                  <b-button
+                    variant="dark"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, mtv, {
+                        verify: true,
+                        type: 'media'
+                      })
+                    "
+                    >Verify</b-button
+                  >
+                </b-col>
+                <b-col xl="6" class="pl-1">
+                  <b-button
+                    variant="danger"
+                    block
+                    size="sm"
+                    @click="
+                      handleApproval($event, mtv, {
+                        reject: true,
+                        type: 'media'
+                      })
+                    "
+                    >Reject</b-button
+                  >
+                </b-col>
+              </b-row>
+            </div>
+          </div>
+        </div>
+        <div v-if="usersToVerify && usersToVerify.length > 0">
+          <h5>Users Waiting For Verification</h5>
+          <div v-for="utv in usersToVerify" :key="`utv${utv.id}`">
+            <ul>
+              <li>UserName: {{ utv.user.username }}</li>
+              <li>First Name: {{ utv.user.first_name }}</li>
+              <li>Last Name: {{ utv.user.last_name }}</li>
+              <li>Community: {{ utv.community.name }}</li>
+              <li>
+                <b-button
+                  @click="
+                    handleUser($event, utv, {
+                      verify: 'verify'
+                    })
+                  "
+                  >Verify</b-button
+                >
+              </li>
+              <li>
+                <b-button
+                  @click="
+                    handleUser($event, utv, {
+                      reject: 'reject'
+                    })
+                  "
+                  >Reject</b-button
+                >
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -136,6 +158,9 @@ export default {
     Media
   },
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     placesToVerify() {
       return this.$store.state.user.placesToVerify
     },
@@ -168,11 +193,6 @@ export default {
       store.dispatch('user/getMediaToVerify'),
       store.dispatch('user/getMembersToVerify')
     ])
-  },
-  created() {
-    this.$root.$on('media_deleted', id => {
-      this.$store.dispatch('user/getMediaToVerify')
-    })
   },
   methods: {
     encodeFPCC,

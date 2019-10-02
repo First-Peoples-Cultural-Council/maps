@@ -13,9 +13,12 @@
         <div>
           <div>
             <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+              class="font-08 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
               {{ type }}
+              <b-badge :variant="getVariant(status)">{{
+                status | filterStatus
+              }}</b-badge>
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
@@ -83,6 +86,16 @@ export default {
     Card,
     CardBadge
   },
+  filters: {
+    filterStatus(d) {
+      return {
+        UN: 'Unverified',
+        RE: 'Rejected',
+        VE: 'Verified',
+        FL: 'Flagged'
+      }[d]
+    }
+  },
   props: {
     name: {
       type: String,
@@ -119,6 +132,10 @@ export default {
     deletePlace: {
       type: Boolean,
       default: false
+    },
+    status: {
+      default: '',
+      type: String
     }
   },
   data() {
@@ -128,6 +145,14 @@ export default {
     }
   },
   methods: {
+    getVariant(status) {
+      return {
+        UN: 'info',
+        RE: 'danger',
+        VE: 'primary',
+        FL: 'danger'
+      }[status]
+    },
     handlePronounce() {
       this.audio = this.audio || new Audio(this.audioFile)
       if (this.audio.paused) {
@@ -139,7 +164,7 @@ export default {
     handleReturn() {
       if (this.server) {
         this.$router.push({
-          path: '/place-names'
+          path: '/heritages'
         })
       } else {
         this.$router.go(-1)
@@ -163,7 +188,7 @@ export default {
       })
       this.modalShow = false
       this.$router.push({
-        path: `/place-names`
+        path: `/heritages`
       })
     }
   }
