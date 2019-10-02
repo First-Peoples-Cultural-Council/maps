@@ -20,7 +20,7 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div v-if="user && user.is_staff" class="ml-3 mr-3">
+      <div v-if="user" class="ml-3 mr-3">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>

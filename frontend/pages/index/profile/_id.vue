@@ -97,6 +97,26 @@
               >
             </div>
           </div>
+          <div>
+            <h5
+              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+            >
+              Favourites
+            </h5>
+            <div v-for="f in placeFavourites" :key="`fav${f.id}`">
+              <PlacesCard
+                v-for="place in user.placename_set"
+                :key="`place${place.id}`"
+                :place="{ properties: place }"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  $router.push({
+                    path: '/place-names/' + encodeFPCC(place.name)
+                  })
+                "
+              ></PlacesCard>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -131,6 +151,9 @@ export default {
     },
     favourites() {
       return this.$store.state.places.favourites
+    },
+    placeFavourites() {
+      return this.favourites.filter(f => f.favourite_type === 'favourite')
     }
   },
   beforeRouteEnter(to, from, next) {
