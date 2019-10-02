@@ -165,7 +165,7 @@ export default {
       const result = await this.$store.dispatch('user/saveLocation', data)
       if (result.status === 'failed') {
         this.$root.$emit('notification', {
-          content: 'Location save failed',
+          content: result.message || 'Location save failed (unspecified error)',
           time: 1500,
           danger: true
         })
