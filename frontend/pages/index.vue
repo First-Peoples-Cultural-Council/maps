@@ -5,6 +5,7 @@
       detailModeContainer: isDetailMode
     }"
   >
+    <LogInOverlay v-if="loggingIn"></LogInOverlay>
     <div v-if="isDrawMode" class="drawing-mode-container">
       <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
         <DrawingTools
@@ -175,6 +176,7 @@ import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
+import LogInOverlay from '@/components/LogInOverlay.vue'
 
 import {
   getApiUrl,
@@ -214,10 +216,12 @@ export default {
     Filters,
     Contribute,
     DrawingTools,
-    ModalNotification
+    ModalNotification,
+    LogInOverlay
   },
   data() {
     return {
+      loggingIn: false,
       showSearchOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
@@ -274,7 +278,7 @@ export default {
       return this.$store.state.contribute.isDrawMode
     }
   },
-  async asyncData({ params, $axios, store }) {
+  async asyncData({ params, $axios, store, hash }) {
     // Check if already logged in here
     const user = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
@@ -361,23 +365,29 @@ export default {
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
-      const token = this.$route.hash.replace('#', '')
-      const user = await this.$axios.$get(
-        `${getApiUrl('user/login/')}?${token}`
-      )
-      if (user.success) {
-        this.$store.dispatch('user/setLoggedInUser')
-        this.$store.commit('user/setLoggedIn', true)
-        if (user.new === true) {
-          this.$router.push({
-            path: `/profile/edit/${user.id}`
-          })
-        } else {
-          this.$router.push({
-            path: '/'
-          })
+      this.loggingIn = true
+      try {
+        const token = this.$route.hash.replace('#', '')
+        const user = await this.$axios.$get(
+          `${getApiUrl('user/login/')}?${token}`
+        )
+        if (user.success) {
+          this.$store.dispatch('user/setLoggedInUser')
+          this.$store.commit('user/setLoggedIn', true)
+          if (user.new === true) {
+            this.$router.push({
+              path: `/profile/edit/${user.id}`
+            })
+          } else {
+            this.$router.push({
+              path: '/'
+            })
+          }
         }
+      } catch (e) {
+        this.loggingIn = false
       }
+      this.loggingIn = false
     }
     // initial zoom on index page
     if (this.$route.path === '/' && !this.$route.hash) {
