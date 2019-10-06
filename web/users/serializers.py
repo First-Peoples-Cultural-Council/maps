@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User
+from .models import User, Administrator
 
 from language.models import Language, Community, PlaceName
 
@@ -23,10 +23,17 @@ class PlaceNameUserSerializer(serializers.ModelSerializer):
         fields = ("name", "id")
 
 
+class AdministratorUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Administrator
+        fields = ("id", )
+
+
 class UserSerializer(serializers.ModelSerializer):
     communities = CommunityUserSerializer(read_only=True, many=True)
     languages = LanguageUserSerializer(read_only=True, many=True)
     placename_set = PlaceNameUserSerializer(read_only=True, many=True)
+    administrator_set = AdministratorUserSerializer(read_only=True, many=True)
 
     community_ids = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -60,6 +67,7 @@ class UserSerializer(serializers.ModelSerializer):
             "communities",
             "languages",
             "placename_set",
+            "administrator_set",
             "community_ids",
             "language_ids",
             "notification_frequency",
