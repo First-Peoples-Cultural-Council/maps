@@ -72,6 +72,8 @@ class FavouriteAPITests(BaseTestCase):
         """
     	Ensure Favourite API POST method API works
     	"""
+        self.client.login(username="testuser001", password="password")
+        
         response = self.client.post(
             "/api/favourite/",
             {"place": self.place.id, "user": self.user.id, "name": "test favourite"},
@@ -87,11 +89,32 @@ class FavouriteAPITests(BaseTestCase):
         self.assertEqual(response.data['place'], self.place.id)
         self.assertEqual(response.data['placename_obj']['id'], self.place.id)
 
+    def test_favourite_placename_redundant_post(self):
+        """
+    	Ensure Favourite API POST method API works
+    	"""
+        self.client.login(username="testuser001", password="password")
+        
+        response = self.client.post(
+            "/api/favourite/",
+            {"place": self.place.id, "user": self.user.id, "name": "test favourite"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        response = self.client.post(
+            "/api/favourite/",
+            {"place": self.place.id, "user": self.user.id, "name": "test favourite"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
     def test_favourite_placename_delete(self):
         """
 		Ensure Favourite API DELETE method API works
 		"""
         self.client.login(username="testuser001", password="password")
+        
         test_favourite = Favourite.objects.create(user=self.user, place=self.place)
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
@@ -106,6 +129,13 @@ class FavouriteAPITests(BaseTestCase):
         """
     	Ensure Favourite API POST method API works
     	"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
         response = self.client.post(
             "/api/favourite/",
             {"media": self.media.id, "user": self.user.id, "name": "test favourite"},
@@ -120,6 +150,31 @@ class FavouriteAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['media'], self.media.id)
         self.assertEqual(response.data['media_obj']['id'], self.media.id)
+
+    def test_favourite_media_redundant_post(self):
+        """
+    	Ensure Favourite API POST method API works
+    	"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        response = self.client.post(
+            "/api/favourite/",
+            {"media": self.media.id, "user": self.user.id, "name": "test favourite"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(
+            "/api/favourite/",
+            {"media": self.media.id, "user": self.user.id, "name": "test favourite"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
     def test_favourite_media_delete(self):
         """
