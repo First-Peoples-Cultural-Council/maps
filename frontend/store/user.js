@@ -1,7 +1,8 @@
 import { getCookie, getApiUrl } from '@/plugins/utils.js'
 
 export const state = () => ({
-  user: null,
+  // initial value to allow inspection of this object pre-init.
+  user: {},
   picture: null,
   isLoggedIn: false,
   notifications: null,

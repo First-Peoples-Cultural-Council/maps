@@ -12,37 +12,39 @@ def _format_fpcc(s):
 
     s = s.strip().lower()
     s = re.sub(
-        s,
         r"\\|\/|>|<|\?|\)|\(|~|!|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|'|\"",
         "",
+        s,
     )
-    s = re.sub(s, r"\s+", "-")
+    s = re.sub(r"\s+", "-", s)
     return s
 
 
 def get_new_media_messages(new_medias):
     messages = []
     if new_medias.count():
-        messages.append("<h3>New Media</h3><ul>")
+        messages.append("<h3>New Media in Your Languages and Communities</h3><ul>")
         for media in new_medias:
             if media.placename:
-                name = media.placename.name
-                link = "https://{}/place-names/{}".format(
-                    settings.HOST, _format_fpcc(media.placename.name)
-                )
+                link = _place_link(media.placename)
             elif media.community:
-                name = media.community.name
-                link = "https://{}/community/{}".format(
-                    settings.HOST, media.community.id
-                )
+                link = _comm_link(media.community)
             else:
-                name = "(Orphaned Media)"
-                link = "#"
+                link = "(Orphaned Media)"
+            preview = ''
+            kind = 'media'
+            if 'image' in media.file_type:
+                link = ""
+                kind = "image"
+                preview = "<br><img src='{}/static/{}' width=100 style='width:100px;height:auto'/>".format(settings.HOST, media.media_file)
+            if media.url:
+                link = media.url
+                kind = "video"
             messages.append(
                 """
-                <li>{} has new media ({}) - <a href="{}">{}</a></li>
+                <li>The location {} has a new media uploaded. {}</li>
             """.format(
-                    name, media.file_type, link, media.description
+                    link, preview
                 )
             )
 
@@ -50,18 +52,21 @@ def get_new_media_messages(new_medias):
     return messages
 
 
-def get_new_places_messages(new_places):
+def get_new_places_messages(new_places, scope="New Places"):
     messages = []
     if new_places.count():
-        messages.append("<h3>New Places</h3><ul>")
+        messages.append("<h3>{}</h3><ul>".format(scope))
         for place in new_places:
-            link = "https://{}/place-names/{}".format(settings.HOST, place.id)
-
+            link = _place_link(place)
+            if place.creator:
+                creator_name = str(place.creator)
+            else:
+                creator_name = "Someone"
             messages.append(
                 """
-                <li><a href="{}">{}</a></li>
+                <li>{} uploaded a new place: {}.</li>
             """.format(
-                    link, place.name
+                    creator_name, link
                 )
             )
         messages.append("</ul>")
@@ -74,41 +79,84 @@ def get_my_favourites_messages(my_favourites):
         messages.append("<h3>New Favourites</h3><ul>")
         for fav in my_favourites:
             if fav.place:
+                link = _place_link(fav.place)
                 messages.append(
                     """
-                    <li>your place was favourited! <a href="{}">{}</a></li>
+                    <li>your place was favourited! {}</li>
                 """.format(
-                        fav.place.id, fav.place.name
+                        link
                     )
                 )
             else:
+                link = _place_link(fav.media.placename)
                 messages.append(
                     """
-                    <li>your contribution was favourited! <a href="{}">{}</a></li>
+                    <li>your contribution was favourited! {}</li>
                 """.format(
-                        fav.media.placename.id, fav.media.placename.name
+                        link
                     )
                 )
         messages.append("</ul>")
     return messages
 
 
+def _lang_link(l):
+    return '<a href="{}/language/{}">{}</a>'.format(
+        settings.HOST, _format_fpcc(l.name), l.name
+    )
+
+
+def _comm_link(c):
+    return '<a href="{}/community/{}">{}</a>'.format(
+        settings.HOST, _format_fpcc(c.name), c.name
+    )
+
+
+def _place_link(p):
+    return '<a href="{}/place-names/{}">{}</a>'.format(
+        settings.HOST, _format_fpcc(p.name), p.name
+    )
+
+
 def notify(user, since=None):
     since = since or user.last_notified
     print("Calculating notifications for", user)
-    messages = []
+    messages = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
+
+    languages = user.languages.all()
+    communities = user.communities.all()
+    if languages.count():
+        messages.append(
+            "<p>You are receiving updates related to the following languages: {}</p>".format(
+                ",".join([_lang_link(l) for l in languages])
+            )
+        )
+    if communities.count():
+        messages.append(
+            "<p>You are receiving updates related to the following communities: {}</p>".format(
+                ",".join([_comm_link(c) for c in communities])
+            )
+        )
+    # TODO, only send if the user is verified.
+    for language in languages:
+        new_places = PlaceName.objects.filter(language=language, created__gte=since)
+        messages += get_new_places_messages(
+            new_places, "New Places for the {} Language".format(language.name)
+        )
+
+    # TODO: only send if the user is verified.
+    for community in communities:
+        new_places = PlaceName.objects.filter(community=community, created__gte=since)
+        messages += get_new_places_messages(
+            new_places, "New Places in {}".format(community.name)
+        )
+
     new_medias = Media.objects.filter(
         Q(placename__language__in=user.languages.all())
         | Q(placename__community__in=user.communities.all()),
         created__gte=since,
     )
     messages += get_new_media_messages(new_medias)
-
-    new_places = PlaceName.objects.filter(
-        Q(language__in=user.languages.all()) | Q(community__in=user.communities.all()),
-        created__gte=since,
-    )
-    messages += get_new_places_messages(new_places)
 
     my_favourites = Favourite.objects.filter(
         Q(media__creator=user) | Q(place__creator=user), created__gte=since
@@ -118,13 +166,20 @@ def notify(user, since=None):
     if len(messages):
         html = "\n".join(messages)
         html += """
-        <p>If you'd like to unsubscribe, change your notification settings <a href="https://{}/profile/{}">here</a>.
+        <p>If you'd like to unsubscribe, change your notification settings <a href="{}/profile/edit/{}">here</a>.</p>
         """.format(
             settings.HOST, user.id
         )
         print(html)
-        #
-        # send_mail(html, "New stuff from FPCC this week!", to=user.email)
+        if user.email in [a[1] for a in settings.ADMINS]:
+            print("sending to ", user.email)
+            send_mail(
+                "Your Updates on the First Peoples' Language Map",
+                html,
+                "info@fpcc.ca",
+                [user.email],
+                html_message=html,
+            )
     else:
         print("No new information for this person.")
 

@@ -53,6 +53,11 @@ class User(AbstractUser):
     languages = models.ManyToManyField("language.Language")
     bio = models.TextField(null=True, blank=True, default="")
 
+    def __str__(self):
+        if self.first_name:
+            return "{} {}".format(self.first_name, self.last_name).strip()
+        else:
+            return "Someone Anonymous"
 
 class Administrator(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)

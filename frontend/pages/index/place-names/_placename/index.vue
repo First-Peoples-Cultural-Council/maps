@@ -267,8 +267,7 @@ export default {
         if (this.isSuperUser) {
           return true
         }
-
-        if (this.user.id === m.creator.id) {
+        if (!m.creator || this.user.id === m.creator.id) {
           return true
         }
 
