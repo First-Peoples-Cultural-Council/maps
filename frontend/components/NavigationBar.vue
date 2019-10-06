@@ -176,7 +176,7 @@ export default {
     }
   },
   mounted() {
-    console.log('Picture', this.picture)
+    console.log('mounted')
   },
   methods: {
     showSearch() {

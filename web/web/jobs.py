@@ -10,7 +10,19 @@ scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
 
 
-@register_job(scheduler, "interval", seconds=300, replace_existing=True)
+@register_job(
+    scheduler,
+    "cron",
+    # second="*",
+    misfire_grace_time=60
+    * 60
+    * 20,  # This is set to 20 hours to give plenty of time to run missed jobs the same day, but avoid them overrunning into the following day.
+    second=0,
+    minute=0,
+    hour=2,
+    day="*",
+    replace_existing=True,
+)
 def notifier_job():
     send()
 

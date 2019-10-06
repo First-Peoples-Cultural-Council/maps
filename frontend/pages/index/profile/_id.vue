@@ -99,6 +99,7 @@
           </div>
           <div>
             <h5
+              v-if="placeFavourites.length"
               class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
             >
               Favourites
@@ -142,7 +143,7 @@ export default {
       return this.favourites.filter(f => f.favourite_type === 'saved_location')
     },
     isStaff() {
-      return this.$store.state.user.user.is_staff
+      return (this.$store.state.user.user || {}).is_staff
     },
     isSuperUser() {
       return this.$store.state.user.user.is_superuser

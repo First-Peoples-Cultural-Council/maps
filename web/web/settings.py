@@ -26,14 +26,20 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6
 # env var, DEBUG=0 for False, DEBUG=1 for True.
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
-HOST = os.environ.get("HOST", 'maps-dev.fpcc.ca')
+HOST = os.environ.get("HOST", 'https://maps-dev.fpcc.ca')
+
 ALLOWED_HOSTS = ["*"]
 
 MEDIA_ROOT = "media/"
 MEDIA_URL = "/media/"
 APPEND_SLASH = True
 
-ADMINS = (("Denis", "denis@countable.ca"), ("Clark", "clark@countable.ca"))
+ADMINS = (
+    ("Denis", "denis@countable.ca"),
+    ("Clark", "clark@countable.ca"),
+    ("Aaron", "aaron@countable.ca"),
+    ("Daniel", "daniel@fpcc.ca"),
+    )
 SERVER_EMAIL = "info@fpcc.ca"
 
 INSTALLED_APPS = [
