@@ -200,7 +200,7 @@ class PlaceNameGeoList(generics.ListAPIView):
             # 2.3) everything from where user is Administrator (language/community pair)
             admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
             admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
-
+                
             if admin_languages and admin_communities:
                 # Filter PlaceNames by admin's languages 
                 queryset_admin = queryset.filter(
@@ -208,7 +208,7 @@ class PlaceNameGeoList(generics.ListAPIView):
                 )
                 queryset = queryset_user.union(queryset_community).union(queryset_admin)
             else: #user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community).union(queryset_admin)
+                queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
             queryset = queryset.filter(
