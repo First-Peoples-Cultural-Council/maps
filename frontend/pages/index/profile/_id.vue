@@ -27,6 +27,22 @@
         :approval="isLangAdmin"
       ></UserDetailCard>
       <section class="ml-2 mr-2 mt-2">
+        <div
+          v-if="
+            isLoggedIn &&
+              user.languages &&
+              user.languages.length === 0 &&
+              user.communities &&
+              user.communities.length === 0
+          "
+        >
+          <b-alert variant="danger" show
+            >Please select your community or language by clicking
+            <router-link :to="`/profile/edit/${user.id}`"
+              >here</router-link
+            ></b-alert
+          >
+        </div>
         <div v-if="user.languages && user.languages.length > 0">
           <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
             Spoken Languages
@@ -136,6 +152,9 @@ export default {
     PlacesCard
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     isLangAdmin() {
       return this.$store.state.user.user.administrator_set.length > 0
     },

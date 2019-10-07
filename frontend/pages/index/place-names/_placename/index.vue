@@ -340,7 +340,6 @@ export default {
   },
   methods: {
     isMTV(media, mtv) {
-      places / getPlaceMedias
       return mtv.find(m => m.id === media.id)
     },
     isMediaCreator(media, user) {

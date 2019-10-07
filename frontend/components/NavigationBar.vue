@@ -6,6 +6,16 @@
         class="user-container cursor-pointer hide-mobile"
         @click="profile"
       >
+        <div
+          v-if="
+            isLoggedIn &&
+              user.languages &&
+              user.languages.length === 0 &&
+              user.communities &&
+              user.communities.length === 0
+          "
+          class="notify-badge"
+        ></div>
         <nav class="navbar-icon-container">
           <img
             v-if="!picture"
@@ -258,6 +268,15 @@ export default {
 </script>
 
 <style>
+.notify-badge {
+  position: absolute;
+  top: 2.5px;
+  right: 2.5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
+}
 .navbar-container,
 .user-container {
   position: fixed;
