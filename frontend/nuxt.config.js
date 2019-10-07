@@ -70,7 +70,14 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
+  plugins: [
+    '~/mixins/mixins.js',
+    '~/plugins/global',
+    {
+      src: '~/plugins/scrolllock',
+      ssr: false
+    }
+  ],
   /*
    ** Nuxt.js modules
    */
@@ -95,6 +102,11 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    filenames: {
+      app: '[chunkhash].js',
+      vendor: '[chunkhash].js',
+      chunk: '[hash].js'
+    },
     extractCSS: false,
     analyze: true,
     plugins: [

@@ -401,7 +401,7 @@ export default {
       return !(
         this.$route.name === 'index-languages' ||
         this.$route.name === 'index-heritages' ||
-        this.$route.name === 'index-arts'
+        this.$route.name === 'index-art'
       )
     },
     handleCardClick($event, name, type) {
