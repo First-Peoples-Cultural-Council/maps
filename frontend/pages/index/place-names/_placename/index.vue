@@ -86,18 +86,7 @@
                 >
               </b-col>
               <b-col xl="6" class="pl-1">
-                <b-button
-                  variant="danger"
-                  block
-                  size="sm"
-                  @click="
-                    handleApproval($event, place, {
-                      reject: true,
-                      type: 'placename'
-                    })
-                  "
-                  >Reject</b-button
-                >
+                <Reject :id="place.id" type="placename"></Reject>
               </b-col>
             </b-row>
           </div>
@@ -172,18 +161,7 @@
                   >
                 </b-col>
                 <b-col xl="6" class="pl-1">
-                  <b-button
-                    variant="danger"
-                    block
-                    size="sm"
-                    @click="
-                      handleApproval($event, media, {
-                        reject: true,
-                        type: 'media'
-                      })
-                    "
-                    >Reject</b-button
-                  >
+                  <Reject :id="media.id" type="media" :media="media"></Reject>
                 </b-col>
               </b-row>
             </div>
@@ -205,6 +183,7 @@ import Logo from '@/components/Logo.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Favourite from '@/components/Favourite.vue'
+import Reject from '@/components/RejectModal.vue'
 
 import {
   getApiUrl,
@@ -222,7 +201,8 @@ export default {
     Logo,
     UploadTool,
     Media,
-    Favourite
+    Favourite,
+    Reject
   },
   data() {
     return {

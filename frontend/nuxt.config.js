@@ -70,14 +70,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [
-    '~/mixins/mixins.js',
-    '~/plugins/global',
-    {
-      src: '~/plugins/scrolllock',
-      ssr: false
-    }
-  ],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
@@ -102,13 +95,6 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    filenames: {
-      app: '[chunkhash].js',
-      vendor: '[chunkhash].js',
-      chunk: '[hash].js'
-    },
-    extractCSS: false,
-    analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'

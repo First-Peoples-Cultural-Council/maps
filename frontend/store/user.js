@@ -196,6 +196,46 @@ export const actions = {
     return result
   },
 
+  async rejectContent({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const url =
+      data.type === 'community'
+        ? `${getApiUrl(`${data.type}/${data.id}/reject_member/`)}`
+        : `${getApiUrl(`${data.type}/${data.id}/reject/`)}`
+
+    const result = await this.$axios.patch(
+      url,
+      {
+        status_reason: data.reason
+      },
+      headers
+    )
+
+    if (data.type === 'placename') {
+      await dispatch('user/getPlacesToVerify', {}, { root: true })
+      await dispatch('places/getPlace', data, { root: true })
+    }
+
+    if (data.type === 'media') {
+      await dispatch('user/getMediaToVerify', {}, { root: true })
+      await dispatch(
+        'places/getPlaceMedias',
+        { id: data.media.placename },
+        { root: true }
+      )
+    }
+
+    if (data.type === 'community') {
+      await dispatch('user/getMembersToVerify', {}, { root: true })
+    }
+
+    return result
+  },
+
   async flagContent({ commit, dispatch }, data) {
     const headers = {
       headers: {

@@ -20,7 +20,7 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div v-if="user" class="ml-3 mr-3">
+      <div v-if="isLangAdmin" class="ml-3 mr-3">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>
@@ -41,8 +41,8 @@
             <b-row no-gutters>
               <b-col xs="6" class="pr-1">
                 <b-button
-                  block
                   variant="dark"
+                  block
                   size="sm"
                   @click="
                     handleApproval($event, ptv, {
@@ -54,18 +54,7 @@
                 >
               </b-col>
               <b-col xs="6" class="pl-1">
-                <b-button
-                  block
-                  variant="danger"
-                  size="sm"
-                  @click="
-                    handleApproval($event, ptv, {
-                      reject: true,
-                      type: 'placename'
-                    })
-                  "
-                  >Reject</b-button
-                >
+                <Reject :id="ptv.id" type="placename"></Reject>
               </b-col>
             </b-row>
           </div>
@@ -78,7 +67,7 @@
               Place {{ mtv.place }}
               <Media :media="mtv"></Media>
               <b-row no-gutters class="mt-2">
-                <b-col xl="6" class="pr-1">
+                <b-col xs="6" class="pr-1">
                   <b-button
                     variant="dark"
                     block
@@ -93,18 +82,7 @@
                   >
                 </b-col>
                 <b-col xl="6" class="pl-1">
-                  <b-button
-                    variant="danger"
-                    block
-                    size="sm"
-                    @click="
-                      handleApproval($event, mtv, {
-                        reject: true,
-                        type: 'media'
-                      })
-                    "
-                    >Reject</b-button
-                  >
+                  <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
                 </b-col>
               </b-row>
             </div>
@@ -129,14 +107,7 @@
                 >
               </li>
               <li>
-                <b-button
-                  @click="
-                    handleUser($event, utv, {
-                      reject: 'reject'
-                    })
-                  "
-                  >Reject</b-button
-                >
+                <Reject :id="utv.id" type="community"></Reject>
               </li>
             </ul>
           </div>
@@ -150,14 +121,19 @@ import Logo from '@/components/Logo.vue'
 import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
+import Reject from '@/components/RejectModal.vue'
 
 export default {
   components: {
     Logo,
     PlacesCard,
-    Media
+    Media,
+    Reject
   },
   computed: {
+    isLangAdmin() {
+      return this.$store.state.user.user.administrator_set.length > 0
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
