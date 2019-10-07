@@ -247,6 +247,10 @@ export default {
         if (this.isSuperUser) {
           return true
         }
+
+        if (this.isLangAdmin) {
+          return true
+        }
         if (!m.creator || this.user.id === m.creator.id) {
           return true
         }
@@ -260,6 +264,9 @@ export default {
     },
     isStaff() {
       return this.user.is_staff
+    },
+    isLangAdmin() {
+      return this.$store.state.user.user.administrator_set.length > 0
     },
     isSuperUser() {
       return this.user.is_superuser
@@ -333,6 +340,7 @@ export default {
   },
   methods: {
     isMTV(media, mtv) {
+      places / getPlaceMedias
       return mtv.find(m => m.id === media.id)
     },
     isMediaCreator(media, user) {

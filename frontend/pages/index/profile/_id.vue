@@ -24,7 +24,7 @@
         :name="getUserName()"
         type="none"
         :edit="isAdmin()"
-        :approval="isStaff || isSuperUser"
+        :approval="isLangAdmin"
       ></UserDetailCard>
       <section class="ml-2 mr-2 mt-2">
         <div v-if="user.languages && user.languages.length > 0">
@@ -136,6 +136,9 @@ export default {
     PlacesCard
   },
   computed: {
+    isLangAdmin() {
+      return this.$store.state.user.user.administrator_set.length > 0
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
