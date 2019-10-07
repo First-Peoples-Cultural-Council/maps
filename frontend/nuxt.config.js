@@ -70,7 +70,14 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
+  plugins: [
+    '~/mixins/mixins.js',
+    '~/plugins/global',
+    {
+      src: '~/plugins/scrolllock',
+      ssr: false
+    }
+  ],
   /*
    ** Nuxt.js modules
    */
