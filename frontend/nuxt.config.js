@@ -95,6 +95,11 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    filenames: {
+      app: '[chunkhash].js',
+      vendor: '[chunkhash].js',
+      chunk: '[hash].js'
+    },
     extractCSS: false,
     analyze: true,
     plugins: [
