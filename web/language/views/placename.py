@@ -208,7 +208,7 @@ class PlaceNameGeoList(generics.ListAPIView):
                 )
                 queryset = queryset_user.union(queryset_community).union(queryset_admin)
             else: #user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community).union(queryset_admin)
+                queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
             queryset = queryset.filter(
