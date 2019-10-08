@@ -11,11 +11,11 @@ export const selectLanguage = ({ map, lang }) => {
 
 export const zoomToIdealBox = ({ map }) => {
   const bbox = [
-    [-142.921875, 46.800059446787316],
-    [-108.9951171875, 62.568120480921074]
+    [-143.921875, 45.800059446787316],
+    [-107.9951171875, 63.568120480921074]
   ]
   const bounds = [bbox[0], bbox[1]]
-  map.fitBounds(bounds, { padding: 10 })
+  map.fitBounds(bounds)
 }
 
 export const zoomToPoint = ({ map, geom, zoom }) => {

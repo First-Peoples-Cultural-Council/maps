@@ -220,17 +220,24 @@ export default {
     LogInOverlay
   },
   data() {
+    const bbox = [
+      [-143.921875, 45.800059446787316],
+      [-107.9951171875, 63.568120480921074]
+    ]
+    const bounds = [bbox[0], bbox[1]]
     return {
       loggingIn: false,
       showSearchOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx/draft', // hero
-        center: [-125, 55],
+        style:
+          'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx?optimize=true', // hero
+        // center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
-        zoom: 4
+        // zoom: 4
+        bounds
       },
       mode: 'All',
       map: {},
