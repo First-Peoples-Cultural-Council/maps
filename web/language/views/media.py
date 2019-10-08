@@ -118,3 +118,70 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     return Response({"message": "Reason must be provided"})
         except Media.DoesNotExist:
             return Response({"message": "No Media with the given id was found"})
+
+    # Users can contribute this data, so never cache it.
+    @method_decorator(never_cache)
+    def list(self, request):
+        queryset = self.get_queryset()
+        
+        user_logged_in = False
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                user_logged_in = True
+                
+        # 1) if NO USER is logged in, only show VERIFIED (or no status) content
+        # 2) if USER IS LOGGED IN, show:
+        # 2.1) user's contribution regardless the status
+        # 2.2) community_only content from user's communities. Rules:
+        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+        # 2.2.2) is COMMUNITY ONLY
+        # 2.3) everything from where user is Administrator (language/community pair)
+        
+        if user_logged_in:
+            
+            # 2.1) user's contribution regardless the status
+            queryset_user = queryset.filter(creator__id = request.user.id)
+
+            # 2.2) community_only content from user's communities
+            user_communities = CommunityMember.objects.filter(
+                user__id=int(request.user.id)
+            ).filter(
+                status__exact=CommunityMember.VERIFIED
+            ).values('community')
+            
+            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+            # 2.2.2) is COMMUNITY ONLY
+            queryset_community = queryset.filter(
+                Q(community_only=False, status__exact=Media.VERIFIED)
+                | Q(community_only=False, status__isnull=True)
+                | Q(community_only__isnull=True, status__exact=Media.VERIFIED)
+                | Q(community_only__isnull=True, status__isnull=True)
+                | Q(community__in=user_communities)
+                | Q(placename__community__in=user_communities)
+            )
+            
+            # 2.3) everything from where user is Administrator (language/community pair)
+            admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+            print(admin_languages)
+            admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+            print(admin_communities)
+                
+            if admin_languages and admin_communities:
+                # Filter Medias by admin's languages 
+                qry_adm_community = queryset.filter(
+                    community__languages__in=admin_languages, community__in=admin_communities
+                )
+                qry_adm_places = queryset.filter(
+                    placename__language__in=admin_languages, placename__community__in=admin_communities
+                )
+                queryset = queryset_user.union(queryset_community).union(qry_adm_community).union(qry_adm_places)
+            else: #user is not Administrator of anything
+                queryset = queryset_user.union(queryset_community)
+
+        else: #no user is logged in
+            queryset = queryset.filter(
+                Q(status=Media.VERIFIED) | Q(status__isnull=True)
+            )
+            
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)

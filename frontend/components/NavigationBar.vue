@@ -2,10 +2,20 @@
   <div class="nav-container">
     <div class="hide-mobile">
       <div
-        v-if="email"
+        v-if="isLoggedIn"
         class="user-container cursor-pointer hide-mobile"
         @click="profile"
       >
+        <div
+          v-if="
+            isLoggedIn &&
+              user.languages &&
+              user.languages.length === 0 &&
+              user.communities &&
+              user.communities.length === 0
+          "
+          class="notify-badge"
+        ></div>
         <nav class="navbar-icon-container">
           <img
             v-if="!picture"
@@ -87,10 +97,37 @@
           />
         </div>
         <div class="nav-body">
+          <nuxt-link
+            v-if="isLoggedIn"
+            class="color-gray d-none user-mobile text-center"
+            :to="`/profile/${userid}`"
+            @click.native="resetMap"
+          >
+            <div class="text-center d-inline-block">
+              <img
+                v-if="!picture"
+                src="@/assets/images/user_icon_red.svg"
+                alt="Menu"
+                class="navbar-icon user_icon d-inline-block"
+              />
+              <img
+                v-if="picture"
+                :src="picture"
+                alt="Menu"
+                class="navbar-icon user_icon d-inline-block"
+              />
+            </div>
+          </nuxt-link>
+
           <ul class="nav-links p-0 m-0 list-style-none">
             <li>
               <nuxt-link class="color-gray" to="/" @click.native="handleNavLink"
                 >Home</nuxt-link
+              >
+            </li>
+            <li v-if="isLoggedIn">
+              <nuxt-link class="color-gray" :to="`/profile/${userid}`"
+                >Profile</nuxt-link
               >
             </li>
             <li>
@@ -162,6 +199,12 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    userid() {
+      return this.$store.state.user.user.id
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
     },
@@ -225,6 +268,15 @@ export default {
 </script>
 
 <style>
+.notify-badge {
+  position: absolute;
+  top: 2.5px;
+  right: 2.5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
+}
 .navbar-container,
 .user-container {
   position: fixed;
@@ -273,6 +325,7 @@ export default {
 }
 .nav-links {
   display: inline-block;
+  text-align: center;
 }
 .nav-links li {
   margin-right: 1em;
@@ -315,6 +368,18 @@ export default {
 @media (max-width: 992px) {
   .searchbar-mobile {
     flex: 10 1 auto;
+  }
+
+  .user-mobile {
+    display: block !important;
+  }
+
+  .user_icon {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.5em;
+    width: 80px;
+    height: 80px;
+    border-radius: 0.5em;
   }
   .nav-container {
     height: 100%;

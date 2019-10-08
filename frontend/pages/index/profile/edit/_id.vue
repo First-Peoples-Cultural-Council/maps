@@ -254,6 +254,7 @@ export default {
             'X-CSRFToken': getCookie('csrftoken')
           }
         })
+        await this.$store.dispatch('user/setLoggedInUser')
       } catch (e) {
         console.warn(e.response)
         this.errors = this.errors.concat(

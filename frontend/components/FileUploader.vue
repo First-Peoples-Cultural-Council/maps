@@ -42,8 +42,6 @@
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
 
-        {{ type }}
-
         <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
 
         <b-button variant="dark" size="sm" @click="handleUpload"

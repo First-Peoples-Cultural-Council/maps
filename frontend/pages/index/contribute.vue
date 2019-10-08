@@ -294,6 +294,9 @@ export default {
     audioFile() {
       return this.$store.state.contribute.audioFile
     },
+    isLangAdmin() {
+      return this.$store.state.user.user.administrator_set.length > 0
+    },
     isStaff() {
       if (!this.$store.state.user.user) {
         return null
@@ -468,7 +471,7 @@ export default {
       }
 
       let status = 'UN'
-      if (this.isStaff || this.isSuperUser) {
+      if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
         status = 'UN'
       }
 
