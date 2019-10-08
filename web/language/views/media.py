@@ -55,7 +55,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @action(detail=False)
     def list_to_verify(self, request):
         # 'VERIFIED' Media do not need to the verified
-        queryset = self.get_queryset().exclude(status__exact=Media.VERIFIED)
+        queryset = self.get_queryset().exclude(status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)
 
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:

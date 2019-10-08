@@ -132,7 +132,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     @action(detail=False)
     def list_to_verify(self, request):
         # 'VERIFIED' PlaceNames do not need to the verified
-        queryset = self.get_queryset().exclude(status__exact=PlaceName.VERIFIED)
+        queryset = self.get_queryset().exclude(status__exact=PlaceName.VERIFIED).exclude(status__exact=PlaceName.REJECTED)
 
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
@@ -176,6 +176,8 @@ class PlaceNameGeoList(generics.ListAPIView):
         # 2.3) everything from where user is Administrator (language/community pair)
         
         if user_logged_in:
+
+            queryset_default = self.get_queryset()
             
             # 2.1) user's contribution regardless the status
             queryset_user = queryset.filter(creator__id = request.user.id)
