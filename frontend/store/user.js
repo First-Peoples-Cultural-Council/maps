@@ -196,16 +196,25 @@ export const actions = {
     return result
   },
 
+  async rejectMember({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const url = `${getApiUrl('community/reject_member/')}`
+    const result = await this.$axios.patch(url, data, headers)
+    await dispatch('user/getMembersToVerify', {}, { root: true })
+    return result
+  },
+
   async rejectContent({ commit, dispatch }, data) {
     const headers = {
       headers: {
         'X-CSRFToken': getCookie('csrftoken')
       }
     }
-    const url =
-      data.type === 'community'
-        ? `${getApiUrl(`${data.type}/${data.id}/reject_member/`)}`
-        : `${getApiUrl(`${data.type}/${data.id}/reject/`)}`
+    const url = `${getApiUrl(`${data.type}/${data.id}/reject/`)}`
 
     const result = await this.$axios.patch(
       url,
@@ -227,10 +236,6 @@ export const actions = {
         { id: data.media.placename },
         { root: true }
       )
-    }
-
-    if (data.type === 'community') {
-      await dispatch('user/getMembersToVerify', {}, { root: true })
     }
 
     return result

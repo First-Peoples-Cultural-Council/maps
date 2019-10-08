@@ -2,8 +2,8 @@
   <div>
     <div class="cursor-pointer" @click="modalShow = true">
       <b-button block variant="danger" size="sm" @click="modalShow = true"
-        >Reject</b-button
-      >
+        >Reject
+      </b-button>
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert
@@ -50,6 +50,10 @@ export default {
     media: {
       default: null,
       type: Object
+    },
+    member: {
+      default: null,
+      type: Object
     }
   },
   data() {
@@ -84,6 +88,13 @@ export default {
       console.log('Result', result)
     },
     async submitReject(e, reason) {
+      if (this.type === 'community') {
+        const result = await this.$store.dispatch('user/rejectMember', {
+          user_id: this.member.user.id,
+          community_id: this.member.community.id
+        })
+        return result
+      }
       const data = {
         id: this.id,
         type: this.type,
