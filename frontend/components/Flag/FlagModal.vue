@@ -109,10 +109,10 @@ export default {
         reason
       }
 
-      if (this.media.placename) {
+      if (this.media && this.media.placename) {
         data.belongs = 'placename'
         data.belongid = this.media.placename
-      } else if (this.media.community) {
+      } else if (this.media && this.media.community) {
         data.belongs = 'community'
         data.belongid = this.media.community
       }
