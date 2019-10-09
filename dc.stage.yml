@@ -32,6 +32,4 @@ services:
 volumes:
     pg-data:
         driver: local
-    static:
-        driver: local
 
