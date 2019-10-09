@@ -31,3 +31,8 @@ services:
 networks:
     back-tier:
         driver: bridge
+
+volumes:
+    static:
+        driver: local
+
