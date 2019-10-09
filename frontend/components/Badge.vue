@@ -67,7 +67,7 @@ export default {
     return {
       showModal: false,
       categories: [],
-      selected: []
+      selected: this.$store.state.places.filterCategories
     }
   },
   computed: {
@@ -107,13 +107,12 @@ export default {
       e.preventDefault()
       if (this.selected.length === 0) {
         this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
+        this.$store.commit('places/setFilterCategories', this.selected)
+        this.$root.$emit('updatePlacesCategory', this.selected)
       } else {
-        console.log(
-          'Filtered',
-          this.badgePlaces.filter(bp => {
-            return this.selected.find(s => s === bp.category)
-          })
-        )
+        this.$store.commit('places/setFilterCategories', this.selected)
+        this.$root.$emit('updatePlacesCategory', this.selected)
+
         this.$store.commit(
           'places/setFilteredBadgePlaces',
           this.badgePlaces.filter(bp => {

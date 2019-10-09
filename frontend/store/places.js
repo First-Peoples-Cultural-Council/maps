@@ -8,7 +8,8 @@ export const state = () => ({
   medias: [],
   favourites: [],
   badgePlaces: [],
-  filteredBadgePlaces: []
+  filteredBadgePlaces: [],
+  filterCategories: []
 })
 
 export const mutations = {
@@ -42,6 +43,10 @@ export const mutations = {
 
   setFilteredBadgePlaces(state, fplaces) {
     state.filteredBadgePlaces = fplaces
+  },
+
+  setFilterCategories(state, fcategories) {
+    state.filterCategories = fcategories
   }
 }
 
