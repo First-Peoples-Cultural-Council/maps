@@ -4,6 +4,7 @@
       class="badge"
       :style="'background-color: ' + bgcolor"
       :class="'badge-' + mode"
+      @click="handleClick"
     >
       <span class="badge-icon">
         <img :src="getImage" alt="Icon" />
@@ -11,10 +12,24 @@
       <span class="badge-content">{{ content }}</span>
       <span class="badge-number">{{ number }}</span>
     </b-badge>
+
+    <b-modal v-model="showModal" hide-header @ok="handleOk">
+      <h5>Additional Criteria</h5>
+      <b-form-checkbox
+        v-for="option in categories"
+        :key="option.id"
+        v-model="selected"
+        :value="option.id"
+      >
+        {{ option.name }}
+      </b-form-checkbox>
+    </b-modal>
   </div>
 </template>
 
 <script>
+import { getApiUrl } from '@/plugins/utils.js'
+
 export default {
   props: {
     content: {
@@ -40,9 +55,25 @@ export default {
     mode: {
       type: String,
       default: 'neutral'
+    },
+    places: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
+  data() {
+    return {
+      showModal: false,
+      categories: [],
+      selected: []
     }
   },
   computed: {
+    badgePlaces() {
+      return this.$store.state.places.badgePlaces
+    },
     getImage() {
       return {
         language: '/language_icon_white.svg',
@@ -52,6 +83,48 @@ export default {
         part: '/public_art_icon_white.svg',
         poi: '/poi_icon_white.svg'
       }[this.type]
+    }
+  },
+  methods: {
+    async handleClick() {
+      if (this.type !== 'poi') return false
+
+      if (this.mode === 'active') {
+        this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
+        return false
+      }
+      const url = getApiUrl('placenamecategory/')
+
+      if (this.categories.length === 0) {
+        const result = await this.$axios.$get(url)
+        this.categories = result
+      }
+
+      this.showModal = true
+    },
+
+    handleOk(e) {
+      e.preventDefault()
+      if (this.selected.length === 0) {
+        this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
+      } else {
+        console.log(
+          'Filtered',
+          this.badgePlaces.filter(bp => {
+            return this.selected.find(s => s === bp.category)
+          })
+        )
+        this.$store.commit(
+          'places/setFilteredBadgePlaces',
+          this.badgePlaces.filter(bp => {
+            return this.selected.find(s => s === bp.category)
+          })
+        )
+      }
+
+      this.showModal = false
+
+      console.log('Ok!')
     }
   }
 }

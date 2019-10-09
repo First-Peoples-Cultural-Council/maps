@@ -6,7 +6,9 @@ export const state = () => ({
   places: [],
   placesSet: [],
   medias: [],
-  favourites: []
+  favourites: [],
+  badgePlaces: [],
+  filteredBadgePlaces: []
 })
 
 export const mutations = {
@@ -32,6 +34,14 @@ export const mutations = {
 
   setFavourites(state, favourites) {
     state.favourites = favourites
+  },
+
+  setBadgePlaces(state, bplaces) {
+    state.badgePlaces = bplaces
+  },
+
+  setFilteredBadgePlaces(state, fplaces) {
+    state.filteredBadgePlaces = fplaces
   }
 }
 

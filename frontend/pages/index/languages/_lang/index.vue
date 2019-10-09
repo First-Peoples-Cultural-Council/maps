@@ -163,7 +163,7 @@
           >
             <b-row>
               <b-col
-                v-for="place in places"
+                v-for="place in filteredPlaces"
                 :key="'place' + place.id"
                 lg="12"
                 xl="12"
@@ -305,6 +305,9 @@ export default {
     }
   },
   computed: {
+    filteredPlaces() {
+      return this.$store.state.places.filteredBadgePlaces
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -371,6 +374,9 @@ export default {
     console.log('RegExp Url')
 
     const isServer = !!process.server
+
+    store.commit('places/setBadgePlaces', result[2].features)
+    store.commit('places/setFilteredBadgePlaces', result[2].features)
 
     return {
       language: result[0],
