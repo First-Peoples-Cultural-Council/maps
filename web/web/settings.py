@@ -102,7 +102,8 @@ DATABASES = {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": "postgres",
         "USER": "postgres",
-        "HOST": "db",
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+        "HOST": os.environ.get("DATABASE_HOST", "db"),
         "PORT": 5432,
     }
 }
@@ -151,7 +152,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
 
-
+# We are using more granular permissions inside the views.
 # REST_FRAMEWORK = {
 #     "DEFAULT_PERMISSION_CLASSES": [
 #         "web.permissions.IsAdminOrReadOnly",
