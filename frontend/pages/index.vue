@@ -283,6 +283,9 @@ export default {
     },
     isDrawMode() {
       return this.$store.state.contribute.isDrawMode
+    },
+    catToFilter() {
+      return this.$store.state.places.filterCategories
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -364,6 +367,20 @@ export default {
     next()
   },
   async mounted() {
+    this.$root.$on('updatePlacesCategory', d => {
+      this.$eventHub.whenMap(map => {
+        if (this.catToFilter.length === 0) {
+          this.$store.commit('places/set', this.filterPlaces(map.getBounds()))
+        } else {
+          this.$store.commit(
+            'places/set',
+            this.filterPlaces(map.getBounds()).filter(p => {
+              return this.catToFilter.find(s => s === p.properties.category)
+            })
+          )
+        }
+      })
+    })
     this.$root.$on('showSearchOverlay', d => {
       this.showSearchOverlay = true
     })
@@ -757,7 +774,17 @@ export default {
       )
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
-      this.$store.commit('places/set', this.filterPlaces(bounds))
+
+      if (this.catToFilter.length === 0) {
+        this.$store.commit('places/set', this.filterPlaces(bounds))
+      } else {
+        this.$store.commit(
+          'places/set',
+          this.filterPlaces(bounds).filter(p => {
+            return this.catToFilter.find(s => s === p.properties.category)
+          })
+        )
+      }
     },
     updateMapState(map) {
       if (this.isMainPage()) {

@@ -107,7 +107,7 @@
                 >
               </li>
               <li>
-                <Reject :id="utv.id" type="community"></Reject>
+                <Reject :id="utv.id" type="community" :member="utv"></Reject>
               </li>
             </ul>
           </div>

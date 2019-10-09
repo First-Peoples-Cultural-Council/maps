@@ -163,7 +163,7 @@
           >
             <b-row>
               <b-col
-                v-for="place in places"
+                v-for="place in filteredPlaces"
                 :key="'place' + place.id"
                 lg="12"
                 xl="12"
@@ -171,11 +171,10 @@
                 sm="6"
               >
                 <PlacesCard
-                  :place="place"
+                  :name="place.name"
+                  :place="{ properties: place }"
                   class="mt-3 hover-left-move"
-                  @click.native="
-                    handleCardClick($event, place.properties.name, 'places')
-                  "
+                  @click.native="handleCardClick($event, place.name, 'places')"
                 ></PlacesCard>
               </b-col>
             </b-row>
@@ -305,6 +304,9 @@ export default {
     }
   },
   computed: {
+    filteredPlaces() {
+      return this.$store.state.places.filteredBadgePlaces
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -362,21 +364,24 @@ export default {
     const languageId = language.id
 
     const result = await Promise.all([
-      $axios.$get(getApiUrl(`language/${languageId}`)),
+      $axios.$get(
+        getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
+      ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`)),
       $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
 
     console.log('RegExp Url')
 
     const isServer = !!process.server
+    store.commit('places/setBadgePlaces', result[0].places)
+    store.commit('places/setFilteredBadgePlaces', result[0].places)
 
     return {
       language: result[0],
       communities: result[1],
-      places: result[2].features,
-      arts: result[3].features,
+      places: result[0].places,
+      arts: result[2].features,
       isServer
     }
   },

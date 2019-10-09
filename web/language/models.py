@@ -246,7 +246,7 @@ class PlaceName(CulturalModel):
 
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
-        Language, null=True, default=None, on_delete=models.SET_NULL
+        Language, null=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"

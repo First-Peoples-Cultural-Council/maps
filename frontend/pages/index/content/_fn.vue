@@ -113,11 +113,12 @@
         <Badge
           v-if="commDetails.places && commDetails.places.length > 0"
           content="Points Of Interest"
-          :number="commDetails.places.length"
+          :number="filteredPlaces.length"
           class="cursor-pointer mb-1"
           bgcolor="#c46156"
           type="poi"
           :mode="getBadgeStatus(mode, 'place')"
+          :places="commDetails.places"
           @click.native.prevent="handleBadge($event, 'place')"
         ></Badge>
 
@@ -147,7 +148,7 @@
               "
             >
               <PlacesCard
-                v-for="(place, index) in commDetails.places"
+                v-for="(place, index) in filteredPlaces"
                 :key="`placescomm${index}`"
                 class="mt-3 hover-left-move"
                 :name="place.name"
@@ -232,6 +233,12 @@ export default {
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
+    badgePlaces() {
+      return this.$store.state.places.badgePlaces
+    },
+    filteredPlaces() {
+      return this.$store.state.places.filteredBadgePlaces
+    },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
@@ -302,7 +309,8 @@ export default {
     const communityDetail = await $axios.$get(
       getApiUrl(`community/${community.id}?timestamp=${new Date().getTime()}/`)
     )
-
+    store.commit('places/setBadgePlaces', communityDetail.places)
+    store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     const isServer = !!process.server
 
     return {
