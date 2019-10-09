@@ -104,8 +104,14 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
             "active_learners",
         )
 
+class PlaceNameLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "category", "other_names")
+
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
+    places = PlaceNameLightSerializer(many=True, read_only=True)
     family = LanguageFamilySerializer(read_only=True)
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
@@ -129,6 +135,8 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         source="languagelink_set",
         required=False,
     )
+    
+
 
     def to_representation(self, value):
         rep = super().to_representation(value)
@@ -170,6 +178,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "family_id",
             "champion_ids",
             "languagelink_ids",
+            "places"
         )
 
 
@@ -214,11 +223,6 @@ class CommunityMemberSerializer(serializers.ModelSerializer):
         model = CommunityMember
         fields = ("id", "user", "community")
 
-
-class PlaceNameLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceName
-        fields = ("name", "id", "category", "other_names")
 
 
 class MediaLightSerializer(serializers.ModelSerializer):
