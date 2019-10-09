@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./wait-for-it.sh db:5432
+./wait-for-it.sh ${DATABASE_HOST:=db}:5432
 
 python3 manage.py migrate
 python3 manage.py collectstatic --noinput
