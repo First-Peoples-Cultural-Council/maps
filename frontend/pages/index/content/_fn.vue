@@ -31,11 +31,13 @@
       <Filters class="mb-3"></Filters>
       <section class="pl-3 pr-3">
         <Notification
-          v-if="!subscribed && isLoggedIn"
+          v-if="isLoggedIn"
           :id="community.id"
           :is-server="isServer"
           type="community"
-          class="mt-3"
+          class="mt-3 mb-3"
+          :unsubscribe="!!subscribed"
+          :subscription="subscribed"
         ></Notification>
         <div v-if="otherNames">
           <h5 class="other-lang-names-title text-uppercase mt-">

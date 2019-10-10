@@ -86,6 +86,19 @@ export const actions = {
     return result
   },
 
+  async removeNotification({ commit }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const result = await this.$axios.delete(
+      getApiUrl(`notification/${data.id}/`),
+      headers
+    )
+    return result
+  },
+
   async getNotifications({ commit }, data) {
     let result = null
     if (data.isServer) {

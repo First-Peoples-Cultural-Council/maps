@@ -1,8 +1,15 @@
 <template>
   <div>
-    <b-button variant="dark" size="sm" @click="modalShow = true"
-      >Be Notified</b-button
-    >
+    <b-button
+      v-if="!unsubscribe"
+      variant="dark"
+      size="sm"
+      @click="modalShow = true"
+      >Be Notified
+    </b-button>
+    <b-button v-else variant="dark" size="sm" @click="unsub"
+      >Unsubscribe
+    </b-button>
     <b-modal v-model="modalShow" hide-header @ok="handleNotification">
       <label for="notify-name" class="font-weight-bold font-08 color-dark-gray"
         >Enter a name for this notification</label
@@ -37,6 +44,14 @@ export default {
     isServer: {
       default: false,
       type: Boolean
+    },
+    unsubscribe: {
+      default: false,
+      type: Boolean
+    },
+    subscription: {
+      default: null,
+      type: Object
     }
   },
   data() {
@@ -47,6 +62,25 @@ export default {
     }
   },
   methods: {
+    async unsub() {
+      const data = {
+        id: this.subscription.id
+      }
+      try {
+        const result = await this.$store.dispatch(
+          'user/removeNotification',
+          data
+        )
+        console.log('Unsub Result', result)
+        if (result.request && result.request.status === 204) {
+          this.$store.dispatch('user/getNotifications', {
+            isServer: this.isServer
+          })
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
     async handleNotification(e) {
       e.preventDefault()
 
@@ -72,7 +106,6 @@ export default {
 
       try {
         const result = await this.$store.dispatch('user/addNotification', data)
-        console.log('Notification Result', result)
         if (result.request && result.request.status === 201) {
           this.$store.dispatch('user/getNotifications', {
             isServer: this.isServer
