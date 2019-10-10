@@ -8,12 +8,6 @@ services:
             - static:/static
         networks:
             - back-tier
-    db:
-        image: mdillon/postgis
-        volumes:
-            - pg-data:/var/lib/postgresql/data
-        networks:
-            - back-tier
 
     frontend:
         image: node
@@ -33,12 +27,12 @@ services:
             - static:/static
             - ./web/media:/media
 
-volumes:
-    pg-data:
-        driver: local
-    static:
-        driver: local
 
 networks:
     back-tier:
         driver: bridge
+
+volumes:
+    static:
+        driver: local
+
