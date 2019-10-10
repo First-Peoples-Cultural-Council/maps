@@ -25,7 +25,6 @@
       @map-init="mapInit"
       @map-load="mapLoaded"
       @map-click="mapClicked"
-      @map-touchend="mapClicked"
       @map-zoomend="mapZoomEnd"
       @map-moveend="mapMoveEnd"
       @map-sourcedata="mapSourceData"
@@ -251,6 +250,9 @@ export default {
     }
   },
   computed: {
+    isMobile() {
+      return this.$store.state.app.isMobile
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -367,6 +369,11 @@ export default {
     next()
   },
   async mounted() {
+    this.setMobile(window.innerWidth)
+
+    window.addEventListener('resize', () => {
+      this.setMobile(window.innerWidth)
+    })
     this.$root.$on('updatePlacesCategory', d => {
       this.$eventHub.whenMap(map => {
         if (this.catToFilter.length === 0) {
@@ -421,6 +428,13 @@ export default {
     }
   },
   methods: {
+    setMobile(screenSizeOnLand) {
+      if (screenSizeOnLand <= 992 && this.isMobile === false) {
+        this.$store.commit('app/setMobile', true)
+      } else if (screenSizeOnLand > 992 && this.isMobile === true) {
+        this.$store.commit('app/setMobile', false)
+      }
+    },
     routesToNotRenderChild() {
       return !(
         this.$route.name === 'index-languages' ||
@@ -531,8 +545,7 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
-      console.log('Click Disabled', this.isDrawMode)
-      if (this.isDrawMode) {
+      if (this.isDrawMode || this.isMobile) {
         return
       }
 
