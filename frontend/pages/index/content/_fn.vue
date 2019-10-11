@@ -91,13 +91,34 @@
             table-class="lna-table"
             thead-class="lna-table-thead"
             tbody-class="lna-table-tbody"
+            @row-clicked="handleRowClick"
           ></b-table>
           <client-only>
-            <div v-for="(l, index) in lna" :key="`chartlna${index}`">
-              <PieChart
-                :chartdata="extractChartData(l)"
-                :options="options"
-              ></PieChart>
+            <div v-if="showCollapse" class="mb-3">
+              <b-button
+                block
+                variant="light"
+                class="font-08"
+                @click="handleRowClick"
+                >Hide Charts</b-button
+              >
+            </div>
+            <div v-else class="mb-3">
+              <b-button
+                block
+                variant="light"
+                class="font-08"
+                @click="handleRowClick"
+                >Show Charts</b-button
+              >
+            </div>
+            <div v-if="showCollapse">
+              <div v-for="(l, index) in lna" :key="`chartlna${index}`">
+                <PieChart
+                  :chartdata="extractChartData(l)"
+                  :options="options"
+                ></PieChart>
+              </div>
             </div>
           </client-only>
         </div>
@@ -227,7 +248,8 @@ export default {
       options: {
         responsive: true,
         maintainAspectRatio: false
-      }
+      },
+      showCollapse: false
     }
   },
 
@@ -355,6 +377,10 @@ export default {
     })
   },
   methods: {
+    handleRowClick() {
+      console.log('Handle Row Click')
+      this.showCollapse = !this.showCollapse
+    },
     extractChartData(l) {
       return {
         name: l.language,
