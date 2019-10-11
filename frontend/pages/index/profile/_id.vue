@@ -239,13 +239,21 @@ export default {
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
-    console.log('Param ID', params.id)
-    console.log('User Id', user.id)
+
+    const authUser = await $axios.$get(
+      getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
+    )
+    let isOwner = false
+    if (authUser.is_authenticated === true) {
+      if (parseInt(params.id) === authUser.user.id) {
+        isOwner = true
+      }
+    }
     await store.dispatch('user/getNotifications', {
       isServer: !!process.server
     })
     await store.dispatch('places/getFavourites')
-    return { user, isOwner: parseInt(params.id) === user.id }
+    return { user, isOwner }
   },
   mounted() {
     console.log('mounted, user=', this.user)
