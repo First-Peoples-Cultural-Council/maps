@@ -70,8 +70,10 @@
       </section>
       <Filters class="mb-1 mt-2"></Filters>
       <Notification
-        v-if="!subscribed && isLoggedIn"
+        v-if="isLoggedIn"
         :id="language.id"
+        :unsubscribe="!!subscribed"
+        :subscription="subscribed"
         :is-server="isServer"
         type="language"
         class="ml-3 mr-3 mt-2"

@@ -840,7 +840,7 @@ export default {
     },
     filterPlaces(bounds) {
       return this.placesSet.filter(place => {
-        if (place.properties.status === 'UN') {
+        if (place.properties.status === 'FL') {
           return false
         }
         if (place.geometry !== null) {
@@ -1062,6 +1062,9 @@ export default {
 }
 .mobile-close {
   display: none !important;
+}
+.sb-new-alt-one {
+  overflow-x: hidden;
 }
 
 @media (max-width: 574px) {
