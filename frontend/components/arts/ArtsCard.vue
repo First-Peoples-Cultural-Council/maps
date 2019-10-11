@@ -30,7 +30,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ art.properties.art_type }}
+              {{ art.properties.art_type | art_type }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ art.properties.name }}
@@ -53,6 +53,14 @@ import Card from '@/components/Card.vue'
 export default {
   components: {
     Card
+  },
+  filters: {
+    art_type(d) {
+      if (d === 'public_art') {
+        return 'Public Art'
+      }
+      return d
+    }
   },
   props: {
     art: {
