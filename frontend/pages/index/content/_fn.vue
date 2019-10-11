@@ -247,7 +247,29 @@ export default {
       mode: 'All',
       options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        legend: {
+          labels: {
+            filter(legendItem, chartData) {
+              console.log('Legend Item', legendItem)
+              if (legendItem.index === 3) {
+                return false
+              }
+              return true
+            }
+          }
+        },
+        tooltips: {
+          callbacks: {
+            label(tooltipItems, data) {
+              console.log('Data', data)
+              console.log('tool', tooltipItems)
+              return `${data.labels[tooltipItems.index]}: ${(
+                data.datasets[0].data[tooltipItems.index] * 100
+              ).toFixed(1) + '%'}`
+            }
+          }
+        }
       },
       showCollapse: false
     }
@@ -382,18 +404,21 @@ export default {
       this.showCollapse = !this.showCollapse
     },
     extractChartData(l) {
+      const fluent_speakers = parseFloat(l.fluent_speakers) / 100
+      const some_speakers = parseFloat(l.some_speakers) / 100
+      const learners = parseFloat(l.learners) / 100
+      const others =
+        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
+        100
+      console.log('Others', others)
       return {
         name: l.language,
-        labels: ['Fluent', 'Some', 'Learner'],
+        labels: ['Fluent', 'Some', 'Learner', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
-            data: [
-              parseFloat(l.fluent_speakers) / 100,
-              parseFloat(l.some_speakers) / 100,
-              parseFloat(l.learners) / 100
-            ]
+            backgroundColor: ['#2ecc71', '#3498db', '#95a5a6', '#efefef'],
+            data: [fluent_speakers, some_speakers, learners, others]
           }
         ]
       }
