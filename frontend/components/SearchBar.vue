@@ -356,7 +356,7 @@ export default {
         ['name']
       )
 
-      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
+      const placeFuzzy = this.fuzzySearch(this.places, this.searchQuery, [
         {
           name: 'properties.name',
           weight: 0.3
@@ -366,6 +366,7 @@ export default {
           weight: 0.7
         }
       ])
+      this.placesResults = placeFuzzy.filter(p => p.properties.status !== 'FL')
 
       this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
         'properties.name'
