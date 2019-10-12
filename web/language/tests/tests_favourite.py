@@ -68,6 +68,26 @@ class FavouriteAPITests(BaseTestCase):
         response = self.client.get("/api/favourite/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_favourite_post(self):
+        """
+    	Ensure Favourite API POST method API works
+    	"""
+        self.client.login(username="testuser001", password="password")
+        
+        response = self.client.post(
+            "/api/favourite/",
+            {"user": self.user.id, "name": "test favourite"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.json()["id"]
+
+        response = self.client.get(
+            "/api/favourite/{}/".format(created_id), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], "test favourite")
+
     def test_favourite_placename_post(self):
         """
     	Ensure Favourite API POST method API works
