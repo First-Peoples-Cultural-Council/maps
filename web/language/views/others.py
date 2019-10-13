@@ -63,6 +63,9 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
     serializer_class = FavouriteSerializer
     queryset = Favourite.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def create(self, request, *args, **kwargs):
         if 'place' in request.data.keys() or 'media' in request.data.keys():
 
@@ -86,7 +89,7 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
                 else:
                     return super(FavouriteViewSet, self).create(request, *args, **kwargs)
         else:
-            return super(FavouriteViewSet, self).create(request, *args, **kwargs)    
+            return super(FavouriteViewSet, self).create(request, *args, **kwargs)
 
 
     # def create(self, request, *args, **kwargs):

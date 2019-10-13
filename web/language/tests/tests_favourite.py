@@ -1,4 +1,7 @@
 from django.test import TestCase
+
+from django.contrib.gis.geos import GEOSGeometry, Point
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -36,6 +39,15 @@ class FavouriteAPITests(BaseTestCase):
         super().setUp()
         self.place = PlaceName.objects.create(name="Test place 001")
         self.media = Media.objects.create(name="Test media 001")
+        self.FAKE_GEOM = """
+            {
+                "type": "Point",
+                "coordinates": [
+                    -126.3482666015625,
+                    54.74840576223716
+                ]
+            }"""
+        self.point = GEOSGeometry(self.FAKE_GEOM)
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -43,18 +55,42 @@ class FavouriteAPITests(BaseTestCase):
         """
 		Ensure we can retrieve a newly created Favourite object.
 		"""
-        test_favourite = Favourite.objects.create(user=self.user, place=self.place, name="test favourite")
+        test_favourite = Favourite.objects.create(
+            name="test favourite",
+            user=self.user, 
+            place=self.place, 
+            favourite_type="favourite", 
+            description="description", 
+            point = self.point,
+            zoom=10,
+        )
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], "test favourite")
+        self.assertEqual(response.data['user']['id'], self.user.id)
         self.assertEqual(response.data['place'], self.place.id)
+        self.assertEqual(response.data['favourite_type'], "favourite")
+        self.assertEqual(response.data['description'], "description")
+        self.assertEqual(response.data['point']['coordinates'][0], self.point.x)
+        self.assertEqual(response.data['point']['coordinates'][1], self.point.y)
+        self.assertEqual(response.data['zoom'], 10)
 
     def test_detail_with_media(self):
         """
 		Ensure we can retrieve a newly created Favourite object.
 		"""
-        test_favourite = Favourite.objects.create(user=self.user, media=self.media, name="test favourite")
+
+        test_favourite = Favourite.objects.create(
+            name="test favourite",
+            user=self.user, 
+            media=self.media,
+            favourite_type="favourite", 
+            description="description", 
+            point = self.point,
+            zoom=10,            
+        )
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
@@ -72,11 +108,18 @@ class FavouriteAPITests(BaseTestCase):
         """
     	Ensure Favourite API POST method API works
     	"""
+        # Must be logged in
         self.client.login(username="testuser001", password="password")
-        
+
         response = self.client.post(
             "/api/favourite/",
-            {"user": self.user.id, "name": "test favourite"},
+            {
+                "name": "test favourite",
+                "favourite_type": "favourite", 
+                "description": "description", 
+                "point": self.FAKE_GEOM,
+                "zoom":10,
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -87,6 +130,12 @@ class FavouriteAPITests(BaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], "test favourite")
+        self.assertEqual(response.data['user']['id'], self.user.id)
+        self.assertEqual(response.data['favourite_type'], "favourite")
+        self.assertEqual(response.data['description'], "description")
+        self.assertEqual(response.data['point']['coordinates'][0], self.point.x)
+        self.assertEqual(response.data['point']['coordinates'][1], self.point.y)
+        self.assertEqual(response.data['zoom'], 10)
 
     def test_favourite_placename_post(self):
         """
@@ -106,6 +155,7 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(created_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['id'], self.user.id)
         self.assertEqual(response.data['place'], self.place.id)
         self.assertEqual(response.data['placename_obj']['id'], self.place.id)
 
@@ -168,6 +218,7 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(created_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['id'], self.user.id)
         self.assertEqual(response.data['media'], self.media.id)
         self.assertEqual(response.data['media_obj']['id'], self.media.id)
 
