@@ -58,15 +58,15 @@
                 type="placename"
                 title="Report"
               ></FlagModal>
-              <div v-if="isLoggedIn">
-                <Favourite
-                  :id="place.id"
-                  :favourited="isFavourited"
-                  :favourite="favourite"
-                  type="placename"
-                  class="d-inline-block ml-2"
-                ></Favourite>
-              </div>
+              <Favourite
+                v-if="isLoggedIn"
+                :id="place.id"
+                :favourited="isFavourited"
+                :favourite="favourite"
+                :num-favourites="place.favourites.length"
+                type="placename"
+                class="d-inline-block ml-2"
+              ></Favourite>
             </div>
           </div>
           <div v-if="isPTV" class="mt-2">

@@ -4,12 +4,19 @@
     :class="{ favourited: favourited }"
     @click="handleFavourite"
   >
-    <MdHeartIcon
-      w="30"
-      h="30"
-      class="heart-place-icon"
-      :class="{ favourited: favourited }"
-    ></MdHeartIcon>
+    <b-badge
+      variant="warning"
+      class="d-flex align-items-center favourite-badge mt-1"
+      ><MdHeartIcon
+        w="15"
+        h="15"
+        class="heart-place-icon mr-1"
+        :class="{ favourited: favourited }"
+      ></MdHeartIcon>
+      <span v-if="favourited">Favourited</span>
+      <span v-else>Favourite</span>
+      <span v-if="numFavourites" class="ml-1">({{ numFavourites }})</span>
+    </b-badge>
   </div>
 </template>
 <script>
@@ -34,6 +41,10 @@ export default {
     favourite: {
       default: null,
       type: Object
+    },
+    numFavourites: {
+      default: null,
+      type: Number
     }
   },
   methods: {
@@ -53,6 +64,7 @@ export default {
         )
         console.log('Result', result)
       }
+      await this.$store.dispatch('places/getPlace', { id: this.id })
     }
   }
 }
@@ -73,5 +85,8 @@ export default {
 
 .favourited {
   fill: #dc3545;
+}
+
+.favourite-badge {
 }
 </style>

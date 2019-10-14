@@ -30,6 +30,7 @@
         <div
           v-if="
             isLoggedIn &&
+              isOwner &&
               user.languages &&
               user.languages.length === 0 &&
               user.communities &&
@@ -74,104 +75,101 @@
             "
           ></LanguageDetailBadge>
         </div>
-        <div
-          v-if="user.placename_set && user.placename_set.length > 0"
-          class="mt-3"
-        >
-          <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
-            Contributions
+
+        <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
+          Contributions
+        </h5>
+        <PlacesCard
+          v-for="place in user.placename_set"
+          :key="`place${place.id}`"
+          :place="{ properties: place }"
+          class="mt-3 hover-left-move"
+          @click.native="
+            $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
+          "
+        ></PlacesCard>
+        <div v-if="savedLocations.length > 0 && isOwner">
+          <h5
+            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+          >
+            Saved Locations
           </h5>
-          <PlacesCard
-            v-for="place in user.placename_set"
-            :key="`place${place.id}`"
-            :place="{ properties: place }"
-            class="mt-3 hover-left-move"
-            @click.native="
-              $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
-            "
-          ></PlacesCard>
-          <div v-if="savedLocations.length > 0 && isOwner">
-            <h5
-              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+          <div v-for="sl in savedLocations" :key="`sl${sl.id}`">
+            <div v-if="sl.name">Name: {{ sl.name }}</div>
+            <div v-if="sl.description">Description: {{ sl.description }}</div>
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="handleLocation($event, sl)"
+              >Go To Location</b-button
             >
-              Saved Locations
-            </h5>
-            <div v-for="sl in savedLocations" :key="`sl${sl.id}`">
-              <div v-if="sl.name">Name: {{ sl.name }}</div>
-              <div v-if="sl.description">Description: {{ sl.description }}</div>
-              <b-button
-                variant="dark"
-                size="sm"
-                @click="handleLocation($event, sl)"
-                >Go To Location</b-button
-              >
-              <b-button
-                variant="dark"
-                size="sm"
-                @click="removeLocation($event, sl)"
-                >Remove Location</b-button
-              >
-            </div>
+            <b-button
+              variant="dark"
+              size="sm"
+              @click="removeLocation($event, sl)"
+              >Remove Location</b-button
+            >
           </div>
-          <div v-if="isOwner">
-            <h5
-              v-if="placeFavourites.length"
-              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
-            >
-              Favourites
-            </h5>
-            <div v-for="f in placeFavourites" :key="`fav${f.id}`">
-              <PlacesCard
-                :place="{ properties: f.placename_obj }"
-                class="mt-3 hover-left-move"
-                @click.native="
+        </div>
+
+        <div v-if="isOwner">
+          <h5
+            v-if="placeFavourites.length"
+            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+          >
+            Favourites
+          </h5>
+          <div v-for="f in placeFavourites" :key="`fav${f.id}`">
+            <PlacesCard
+              :place="{ properties: f.placename_obj }"
+              class="mt-3 hover-left-move"
+              @click.native="
+                $router.push({
+                  path: '/place-names/' + encodeFPCC(f.placename_obj.name)
+                })
+              "
+            ></PlacesCard>
+          </div>
+        </div>
+        <div v-if="isOwner && notifications && notifications.length > 0">
+          <h5
+            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+          >
+            Notifications ({{ notifications.length }})
+          </h5>
+          <div
+            v-for="(notification, index) in notifications"
+            :key="`notification${index}`"
+            class="mt-2"
+          >
+            Name: {{ notification.name }}
+            <div v-if="notification.language">
+              <LanguageCard
+                class="mb-3 hover-left-move"
+                :name="notification.language_obj.name"
+                :color="notification.language_obj.color"
+                @click.native.prevent="
                   $router.push({
-                    path: '/place-names/' + encodeFPCC(f.placename_obj.name)
+                    path: `/languages/${encodeFPCC(
+                      notification.language_obj.name
+                    )}`
                   })
                 "
-              ></PlacesCard>
+              ></LanguageCard>
             </div>
-          </div>
-          <div v-if="isOwner && notifications && notifications.length > 0">
-            <h5
-              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
-            >
-              Notifications ({{ notifications.length }})
-            </h5>
-            <div
-              v-for="(notification, index) in notifications"
-              :key="`notification${index}`"
-              class="mt-2"
-            >
-              Name: {{ notification.name }}
-              <div v-if="notification.language">
-                <LanguageCard
-                  class="mb-3 hover-left-move"
-                  :name="notification.language_obj.name"
-                  :color="notification.language_obj.color"
-                  @click.native.prevent="
-                    $router.push({
-                      path: `/languages/${encodeFPCC(
-                        notification.language_obj.name
-                      )}`
-                    })
-                  "
-                ></LanguageCard>
-              </div>
-              <div v-if="notification.community">
-                <CommunityCard
-                  class="mt-3 hover-left-move"
-                  :name="notification.community_obj.name"
-                  :community="notification.community_obj"
-                  @click.native.prevent="
-                    $router.push({
-                      path: `/content/${encodeFPCC(
-                        notification.community_obj.name
-                      )}`
-                    })
-                  "
-                ></CommunityCard>
-              </div>
+            <div v-if="notification.community">
+              <CommunityCard
+                class="mt-3 hover-left-move"
+                :name="notification.community_obj.name"
+                :community="notification.community_obj"
+                @click.native.prevent="
+                  $router.push({
+                    path: `/content/${encodeFPCC(
+                      notification.community_obj.name
+                    )}`
+                  })
+                "
+              ></CommunityCard>
             </div>
           </div>
         </div>
