@@ -370,6 +370,14 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "user", "language", "community","language_obj", "community_obj")
 
 
+class FavouritePlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favourite
+        fields = (
+            "id", 
+        )
+
+
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = MediaLightSerializer(many=True, read_only=True)
     creator = PublicUserSerializer(read_only=True)
@@ -383,6 +391,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
     )
     category_obj = PlaceNameCategorySerializer(source="category", read_only=True)
+    favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
@@ -406,5 +415,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "community",
             "language",
             "creator",
+            "favourites",
         )
         depth = 1

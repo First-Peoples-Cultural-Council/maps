@@ -346,7 +346,9 @@ class Media(BaseModel):
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)
-    place = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+    place = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True, related_name="favourites"
+    )
     media = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True)
 
     favourite_type = models.CharField(max_length=16, null=True, blank=True, default="")
