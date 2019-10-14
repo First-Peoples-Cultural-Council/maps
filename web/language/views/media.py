@@ -129,7 +129,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             if request.user.is_authenticated:
                 user_logged_in = True
                 
-        # 1) if NO USER is logged in, only show VERIFIED (or no status) content
+        # 1) if NO USER is logged in, only show VERIFIED or UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, show:
         # 2.1) user's contribution regardless the status
         # 2.2) community_only content from user's communities. Rules:
@@ -153,8 +153,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
                 Q(community_only=False, status__exact=Media.VERIFIED)
+                | Q(community_only=False, status__exact=Media.UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
                 | Q(community_only__isnull=True, status__exact=Media.VERIFIED)
+                | Q(community_only__isnull=True, status__exact=Media.UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
                 | Q(placename__community__in=user_communities)
@@ -162,9 +164,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             
             # 2.3) everything from where user is Administrator (language/community pair)
             admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
-            print(admin_languages)
             admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
-            print(admin_communities)
                 
             if admin_languages and admin_communities:
                 # Filter Medias by admin's languages 
@@ -174,13 +174,22 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 qry_adm_places = queryset.filter(
                     placename__language__in=admin_languages, placename__community__in=admin_communities
                 )
-                queryset = queryset_user.union(queryset_community).union(qry_adm_community).union(qry_adm_places)
+                if qry_adm_community and qry_adm_places:
+                    queryset = queryset_user.union(queryset_community).union(qry_adm_community).union(qry_adm_places)
+                elif qry_adm_community:
+                    queryset = queryset_user.union(queryset_community).union(qry_adm_community)
+                elif qry_adm_places:
+                    queryset = queryset_user.union(qry_adm_community).union(qry_adm_places)
+                else:
+                    queryset = queryset_user.union(qry_adm_community)
             else: #user is not Administrator of anything
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
             queryset = queryset.filter(
-                Q(status=Media.VERIFIED) | Q(status__isnull=True)
+                Q(status__exact=Media.VERIFIED) 
+                | Q(status__exact=Media.UNVERIFIED) 
+                | Q(status__isnull=True)
             )
             
         serializer = self.serializer_class(queryset, many=True)
