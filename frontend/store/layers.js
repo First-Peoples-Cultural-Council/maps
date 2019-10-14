@@ -1,7 +1,7 @@
 export const state = () => ({
   layers: [
     {
-      name: 'Western Names',
+      name: 'Common Names',
       id: 1,
       layerNames: [
         'settlement-subdivision-label',
