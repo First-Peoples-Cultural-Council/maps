@@ -193,7 +193,7 @@ export default {
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
-        filter: ['!=', ['get', 'status'], 'UN']
+        filter: ['!=', ['get', 'status'], 'FL']
       },
       'fn-nations'
     )

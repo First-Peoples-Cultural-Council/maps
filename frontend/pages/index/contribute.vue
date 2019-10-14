@@ -421,8 +421,7 @@ export default {
   mounted() {
     if (!this.isLoggedIn) {
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=' +
-        window.location
+        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     }
   },
   methods: {
@@ -580,6 +579,7 @@ export default {
 
       const lat = vm.$route.query.lat
       const lng = vm.$route.query.lng
+      vm.wname = vm.$route.query.cname
       if (lat && lng) {
         vm.$eventHub.whenMap(map => {
           map.draw.deleteAll()

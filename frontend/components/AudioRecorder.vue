@@ -90,6 +90,7 @@
         >
           <img
             class="d-inline-block"
+            :class="{ 'recording-image': recording }"
             src="@/assets/images/record_audio_box.svg"
             alt="Record"
           />
@@ -346,5 +347,19 @@ export default {
   font-weight: bold;
   border-radius: 0.5em;
   text-align: center;
+}
+
+.recording-image {
+  animation: expand 2s infinite;
+}
+
+@keyframes expand {
+  from {
+    transform: scale(0.1);
+  }
+
+  to {
+    transform: scale(1);
+  }
 }
 </style>

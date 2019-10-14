@@ -90,7 +90,7 @@
               $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
             "
           ></PlacesCard>
-          <div v-if="savedLocations.length > 0">
+          <div v-if="savedLocations.length > 0 && isOwner">
             <h5
               class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
             >
@@ -113,7 +113,7 @@
               >
             </div>
           </div>
-          <div>
+          <div v-if="isOwner">
             <h5
               v-if="placeFavourites.length"
               class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
@@ -132,6 +132,48 @@
               ></PlacesCard>
             </div>
           </div>
+          <div v-if="isOwner && notifications && notifications.length > 0">
+            <h5
+              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+            >
+              Notifications ({{ notifications.length }})
+            </h5>
+            <div
+              v-for="(notification, index) in notifications"
+              :key="`notification${index}`"
+              class="mt-2"
+            >
+              Name: {{ notification.name }}
+              <div v-if="notification.language">
+                <LanguageCard
+                  class="mb-3 hover-left-move"
+                  :name="notification.language_obj.name"
+                  :color="notification.language_obj.color"
+                  @click.native.prevent="
+                    $router.push({
+                      path: `/languages/${encodeFPCC(
+                        notification.language_obj.name
+                      )}`
+                    })
+                  "
+                ></LanguageCard>
+              </div>
+              <div v-if="notification.community">
+                <CommunityCard
+                  class="mt-3 hover-left-move"
+                  :name="notification.community_obj.name"
+                  :community="notification.community_obj"
+                  @click.native.prevent="
+                    $router.push({
+                      path: `/content/${encodeFPCC(
+                        notification.community_obj.name
+                      )}`
+                    })
+                  "
+                ></CommunityCard>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -144,12 +186,16 @@ import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
+import LanguageCard from '@/components/languages/LanguageCard.vue'
+import CommunityCard from '@/components/communities/CommunityCard.vue'
 
 export default {
   components: {
     UserDetailCard,
     LanguageDetailBadge,
-    PlacesCard
+    PlacesCard,
+    LanguageCard,
+    CommunityCard
   },
   computed: {
     isLoggedIn() {
@@ -175,6 +221,9 @@ export default {
     },
     placeFavourites() {
       return this.favourites.filter(f => f.favourite_type === 'favourite')
+    },
+    notifications() {
+      return this.$store.state.user.notifications
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -191,15 +240,26 @@ export default {
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
 
+    const authUser = await $axios.$get(
+      getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
+    )
+    let isOwner = false
+    if (authUser.is_authenticated === true) {
+      if (parseInt(params.id) === authUser.user.id) {
+        isOwner = true
+      }
+    }
+    await store.dispatch('user/getNotifications', {
+      isServer: !!process.server
+    })
     await store.dispatch('places/getFavourites')
-
-    console.log('User', user)
-    return { user }
+    return { user, isOwner }
   },
   mounted() {
     console.log('mounted, user=', this.user)
   },
   methods: {
+    encodeFPCC,
     isAdmin() {
       return this.user && this.user.id === this.$store.state.user.user.id
     },
@@ -226,8 +286,7 @@ export default {
         data
       )
       console.log('Location Remove Result', result)
-    },
-    encodeFPCC
+    }
   }
 }
 </script>

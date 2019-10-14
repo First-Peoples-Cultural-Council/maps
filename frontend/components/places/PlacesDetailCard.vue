@@ -16,9 +16,18 @@
               class="font-08 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
               {{ type }}
-              <b-badge :variant="getVariant(status)">{{
+              <b-badge id="tooltip-target-1" :variant="getVariant(status)">{{
                 status | filterStatus
               }}</b-badge>
+              <b-tooltip
+                v-if="status === 'UN'"
+                target="tooltip-target-1"
+                triggers="hover"
+              >
+                This content has not been verified by a community member or
+                FPCC. Please use "Report" it if it needs to be corrected or
+                removed
+              </b-tooltip>
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}

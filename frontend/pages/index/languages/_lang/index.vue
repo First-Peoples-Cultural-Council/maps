@@ -22,18 +22,6 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
 
-      <div class="header-mobile d-none">
-        <h5
-          class="color-gray font-08 p-0 m-0"
-          style="margin-bottom: 0.2em !important;"
-        >
-          Language:
-          <span class="font-weight-bold language-title">{{
-            language.name
-          }}</span>
-        </h5>
-      </div>
-
       <div class="color-row" :style="'background-color: ' + languageColor">
         &nbsp;
       </div>
@@ -70,8 +58,10 @@
       </section>
       <Filters class="mb-1 mt-2"></Filters>
       <Notification
-        v-if="!subscribed && isLoggedIn"
+        v-if="isLoggedIn"
         :id="language.id"
+        :unsubscribe="!!subscribed"
+        :subscription="subscribed"
         :is-server="isServer"
         type="language"
         class="ml-3 mr-3 mt-2"

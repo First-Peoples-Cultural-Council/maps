@@ -362,10 +362,12 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
+    language_obj = LanguageSerializer(source="language", read_only=True)
+    community_obj = CommunitySerializer(source="community", read_only=True)
 
     class Meta:
         model = Notification
-        fields = ("id", "name", "user", "language", "community")
+        fields = ("id", "name", "user", "language", "community","language_obj", "community_obj")
 
 
 class PlaceNameDetailSerializer(serializers.ModelSerializer):

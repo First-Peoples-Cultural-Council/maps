@@ -356,7 +356,7 @@ export default {
         ['name']
       )
 
-      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
+      const placeFuzzy = this.fuzzySearch(this.places, this.searchQuery, [
         {
           name: 'properties.name',
           weight: 0.3
@@ -366,6 +366,7 @@ export default {
           weight: 0.7
         }
       ])
+      this.placesResults = placeFuzzy.filter(p => p.properties.status !== 'FL')
 
       this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
         'properties.name'
@@ -492,8 +493,8 @@ export default {
           let locationHtml = ''
           if (type === 'Locations') {
             govLink = `http://${result.properties.uri}.html`
-            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, click here: 
-                <a class="white-space-normal" href="${govLink}">${govLink}</a></div>`
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
+                <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
           new mapboxgl.Marker(el).setLngLat(geom.coordinates).addTo(map)
           new mapboxgl.Popup({
@@ -508,7 +509,9 @@ export default {
                 
                 <a class="d-block text-center" href="/contribute?lat=${
                   geom.coordinates[1]
-                }&lng=${geom.coordinates[0]}">Contribute To This Point.</a>
+                }&lng=${
+                geom.coordinates[0]
+              }&cname=${data}">Contribute To This Point.</a>
 
                 </div>`
             )
