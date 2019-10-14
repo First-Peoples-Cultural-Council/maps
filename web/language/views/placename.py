@@ -129,12 +129,14 @@ class PlaceNameViewSet(BaseModelViewSet):
                 status__exact=CommunityMember.VERIFIED
             ).values('community')
             
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
                 Q(community_only=False, status__exact=PlaceName.VERIFIED)
+                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
                 | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
+                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
@@ -157,7 +159,9 @@ class PlaceNameViewSet(BaseModelViewSet):
 
         else: #no user is logged in
             queryset = queryset.filter(
-                Q(status=PlaceName.VERIFIED) | Q(status__isnull=True)
+                Q(status__exact=PlaceName.VERIFIED) 
+                | Q(status__exact=PlaceName.UNVERIFIED) 
+                | Q(status__isnull=True)
             )
             
         if "lang" in request.GET:
@@ -231,8 +235,10 @@ class PlaceNameGeoList(generics.ListAPIView):
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
                 Q(community_only=False, status__exact=PlaceName.VERIFIED)
+                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
                 | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
+                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
@@ -255,7 +261,9 @@ class PlaceNameGeoList(generics.ListAPIView):
 
         else: #no user is logged in
             queryset = queryset.filter(
-                Q(status=PlaceName.VERIFIED) | Q(status__isnull=True)
+                Q(status__exact=PlaceName.VERIFIED) 
+                | Q(status__exact=PlaceName.UNVERIFIED) 
+                | Q(status__isnull=True)
             )
             
         if "lang" in request.GET:
