@@ -8,7 +8,7 @@
         Community:
         <span class="font-weight-bold">{{ commDetails.name }}</span>
       </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
+      <div>
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>

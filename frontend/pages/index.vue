@@ -1040,6 +1040,7 @@ export default {
 
   .content-mobile.mobile-close {
     display: block !important;
+    padding: 0.5em;
   }
 }
 
