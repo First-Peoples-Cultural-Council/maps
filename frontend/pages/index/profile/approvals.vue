@@ -65,7 +65,7 @@
           <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
             <div>
               Place {{ mtv.place }}
-              <Media :media="mtv"></Media>
+              <Media :media="mtv" :community-only="mtv.community_only"></Media>
               <b-row no-gutters class="mt-2">
                 <b-col xs="6" class="pr-1">
                   <b-button
