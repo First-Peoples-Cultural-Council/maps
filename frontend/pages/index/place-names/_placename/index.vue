@@ -49,8 +49,14 @@
               <b-badge variant="primary"
                 >Uploaded By: <a>{{ creator.username }}</a></b-badge
               >
+              <b-badge
+                v-if="place.community_only"
+                variant="success"
+                class="ml-1 mt-1"
+                >Community Only</b-badge
+              >
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mb-2">
               <FlagModal
                 v-if="place.status !== 'FL' && place.status !== 'VE'"
                 :id="place.id"
@@ -142,6 +148,7 @@
               :media="media"
               :server="isServer"
               :delete="isMediaCreator(media, user)"
+              :community-only="media.community_only"
               type="placename"
             ></Media>
             <div v-if="isMTV(media, mediaToVerify)">

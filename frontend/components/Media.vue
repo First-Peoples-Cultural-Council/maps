@@ -30,6 +30,13 @@
         class="d-inline-block p-1 font-08"
         >Rejected Media</b-alert
       >
+      <b-alert
+        v-if="communityOnly"
+        variant="success"
+        show
+        class="d-inline-block p-1 font-08"
+        >Community Only</b-alert
+      >
       <div v-if="this.delete" class="float-right">
         <DeleteMedia :id="media.id" :media="media"></DeleteMedia>
       </div>
@@ -142,6 +149,10 @@ export default {
     type: {
       default: null,
       type: String
+    },
+    communityOnly: {
+      default: false,
+      type: Boolean
     }
   },
 

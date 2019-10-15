@@ -228,7 +228,7 @@ class CommunityMemberSerializer(serializers.ModelSerializer):
 class MediaLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
-        fields = ("id", "name", "description", "file_type", "url", "media_file", "status", "creator", "placename", "community")
+        fields = ("id", "name", "description", "file_type", "url", "media_file", "status", "creator", "placename", "community", "community_only")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
