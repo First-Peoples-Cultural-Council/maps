@@ -76,8 +76,11 @@
           ></LanguageDetailBadge>
         </div>
 
-        <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
-          Contributions
+        <h5
+          v-if="user.placename_set.length > 0"
+          class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-2"
+        >
+          Contributions ({{ user.placename_set.length }})
         </h5>
         <PlacesCard
           v-for="place in user.placename_set"
@@ -92,7 +95,7 @@
           <h5
             class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
           >
-            Saved Locations
+            Saved Locations ({{ savedLocations.length }})
           </h5>
           <div v-for="sl in savedLocations" :key="`sl${sl.id}`">
             <div v-if="sl.name">Name: {{ sl.name }}</div>
@@ -117,7 +120,7 @@
             v-if="placeFavourites.length"
             class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
           >
-            Favourites
+            Favourites ({{ placeFavourites.length }})
           </h5>
           <div v-for="f in placeFavourites" :key="`fav${f.id}`">
             <PlacesCard
