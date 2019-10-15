@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { Nuxt, Builder } from 'nuxt'
-// import regeneratorRuntime from 'regenerator-runtime'
+import regeneratorRuntime from 'regenerator-runtime'
 import { JSDOM } from 'jsdom'
 import { uniqBy } from 'lodash'
 // import { JestEnvironment } from '@jest/environment'
