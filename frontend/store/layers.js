@@ -39,7 +39,7 @@ export const state = () => ({
       active: false
     },
     {
-      name: 'Provincial Borders',
+      name: 'Borders',
       id: 4,
       layerNames: ['admin'],
       active: true
