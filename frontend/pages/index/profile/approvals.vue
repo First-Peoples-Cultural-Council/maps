@@ -81,7 +81,7 @@
                     >Verify</b-button
                   >
                 </b-col>
-                <b-col xl="6" class="pl-1">
+                <b-col xs="6" class="pl-1">
                   <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
                 </b-col>
               </b-row>

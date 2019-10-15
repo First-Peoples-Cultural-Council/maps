@@ -77,7 +77,7 @@
           </div>
           <div v-if="isPTV" class="mt-2">
             <b-row no-gutters class="mt-2 mb-4">
-              <b-col xl="6" class="pr-1">
+              <b-col xs="6" class="pr-1">
                 <b-button
                   variant="dark"
                   block
@@ -91,7 +91,7 @@
                   >Verify</b-button
                 >
               </b-col>
-              <b-col xl="6" class="pl-1">
+              <b-col xs="6" class="pl-1">
                 <Reject :id="place.id" type="placename"></Reject>
               </b-col>
             </b-row>
@@ -165,7 +165,7 @@
             ></Media>
             <div v-if="isMTV(media, mediaToVerify)">
               <b-row no-gutters class="mt-2">
-                <b-col xl="6" class="pr-1">
+                <b-col xs="6" class="pr-1">
                   <b-button
                     variant="dark"
                     block
@@ -179,7 +179,7 @@
                     >Verify</b-button
                   >
                 </b-col>
-                <b-col xl="6" class="pl-1">
+                <b-col xs="6" class="pl-1">
                   <Reject :id="media.id" type="media" :media="media"></Reject>
                 </b-col>
               </b-row>
