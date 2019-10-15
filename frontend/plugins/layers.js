@@ -1,4 +1,15 @@
 const addLangLayers = map => {
+  map.addLayer({
+    id: 'satelite',
+    type: 'raster',
+    source: {
+      type: 'raster',
+      url: 'mapbox://mapbox.satellite'
+    },
+    layout: {
+      visibility: 'none'
+    }
+  })
   map.addLayer(
     {
       id: 'fn-lang-areas-fill',

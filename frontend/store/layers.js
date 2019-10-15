@@ -43,6 +43,12 @@ export const state = () => ({
       id: 4,
       layerNames: ['admin'],
       active: true
+    },
+    {
+      name: 'Satelite',
+      id: 5,
+      layerNames: ['satelite'],
+      active: false
     }
   ]
 })

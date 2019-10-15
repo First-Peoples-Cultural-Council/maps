@@ -189,9 +189,7 @@ export default {
           }
         }
       )
-      if (result.message === 'Verified!' || result.messsage === 'Rejected!') {
-        this.usersToVerify = this.usersToVerify.filter(u => u.id !== tv.id)
-      }
+      await this.$store.dispatch('user/getMembersToVerify')
       console.log('Result', result)
     },
     async handleApproval(e, tv, { verify, reject, type }) {
