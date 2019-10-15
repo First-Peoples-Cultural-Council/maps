@@ -55,7 +55,6 @@
           </b-form-invalid-feedback>
 
           <label class="mt-3 font-08" for="savedescription">Description</label>
-
           <b-form-textarea
             id="savedescription"
             v-model="saveDescription"
@@ -146,6 +145,16 @@ export default {
     async handleSave() {
       if (!this.saveTitle) {
         this.stateTitle = false
+        return false
+      }
+
+      if (!this.lng || !this.lat) {
+        this.$root.$emit('notification', {
+          content:
+            'Latitude or Longitude is not defined. Please wait until the map has stopped moving',
+          time: 1500,
+          danger: true
+        })
         return false
       }
 
