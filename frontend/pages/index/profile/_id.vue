@@ -24,7 +24,7 @@
         :name="getUserName()"
         type="none"
         :edit="isAdmin()"
-        :approval="isLangAdmin"
+        :approval="isLangAdmin && isOwner"
       ></UserDetailCard>
       <section class="ml-2 mr-2 mt-2">
         <div
