@@ -107,6 +107,18 @@
               "
             ></CommunityCard>
           </div>
+          <div v-if="placeLanguage" class="mb-4">
+            <LanguageCard
+              class="hover-left-move"
+              :name="placeLanguage.name"
+              :color="placeLanguage.color"
+              @click.native.prevent="
+                $router.push({
+                  path: `/languages/${encodeFPCC(placeLanguage.name)}`
+                })
+              "
+            ></LanguageCard>
+          </div>
           <div v-if="place.description">
             <h5 class="font-08 text-uppercase color-gray">Description</h5>
             <p class="font-08">{{ place.description }}</p>
@@ -191,6 +203,7 @@ import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Favourite from '@/components/Favourite.vue'
 import Reject from '@/components/RejectModal.vue'
+import LanguageCard from '@/components/languages/LanguageCard.vue'
 
 import {
   getApiUrl,
@@ -209,7 +222,8 @@ export default {
     UploadTool,
     Media,
     Favourite,
-    Reject
+    Reject,
+    LanguageCard
   },
   data() {
     return {
@@ -226,6 +240,9 @@ export default {
     },
     favourites() {
       return this.$store.state.places.favourites
+    },
+    placeLanguage() {
+      return this.$store.state.places.placeLanguage
     },
     placeCommunity() {
       return this.$store.state.places.placeCommunity

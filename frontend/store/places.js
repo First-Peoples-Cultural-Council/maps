@@ -3,6 +3,7 @@ import { getApiUrl, getCookie } from '@/plugins/utils.js'
 export const state = () => ({
   place: null,
   placeCommunity: null,
+  placeLanguage: null,
   places: [],
   placesSet: [],
   medias: [],
@@ -47,6 +48,10 @@ export const mutations = {
 
   setFilterCategories(state, fcategories) {
     state.filterCategories = fcategories
+  },
+
+  setPlaceLanguage(state, language) {
+    state.placeLanguage = language
   }
 }
 
@@ -66,10 +71,22 @@ export const actions = {
     )
     commit('setPlace', result)
     if (result.community) {
-      dispatch(
+      await dispatch(
         'places/getPlaceCommunity',
         {
           id: result.community
+        },
+        {
+          root: true
+        }
+      )
+    }
+
+    if (result.language) {
+      await dispatch(
+        'places/getPlaceLanguage',
+        {
+          id: result.language
         },
         {
           root: true
@@ -82,6 +99,12 @@ export const actions = {
   async getPlaceCommunity({ commit }, data) {
     const result = await this.$axios.$get(getApiUrl(`community/${data.id}/`))
     commit('setPlaceCommunity', result)
+    return result
+  },
+
+  async getPlaceLanguage({ commit }, data) {
+    const result = await this.$axios.$get(getApiUrl(`language/${data.id}/`))
+    commit('setPlaceLanguage', result)
     return result
   },
 
