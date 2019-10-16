@@ -48,17 +48,20 @@ export default {
         if (result.request && result.request.status === 204) {
           this.showModal = false
           this.$root.$emit('notification', {
-            content: 'Media Deleted Successfully',
-            time: 2000
+            title: 'Success',
+            message: 'Media Deleted Successfully',
+            time: 2000,
+            variant: 'success'
           })
         } else {
           throw result
         }
       } catch (e) {
         this.$root.$emit('notification', {
-          content: 'Fail deleting media',
+          title: 'Failed',
+          message: 'Failed to Delete Media',
           time: 2000,
-          danger: true
+          variant: 'danger'
         })
       }
     }

@@ -138,9 +138,10 @@ export default {
       } catch (e) {
         console.error(e)
         this.$root.$emit('notification', {
-          content: 'Note/Text Upload Failed, please try again',
+          title: 'Failed',
+          message: 'Note/Text Upload Failed, please try again',
           time: 1500,
-          danger: true
+          variant: 'danger'
         })
       }
       this.resetState()

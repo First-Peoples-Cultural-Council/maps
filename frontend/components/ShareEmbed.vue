@@ -150,10 +150,11 @@ export default {
 
       if (!this.lng || !this.lat) {
         this.$root.$emit('notification', {
-          content:
+          title: 'Failed To Save Location',
+          message:
             'Latitude or Longitude is not defined. Please wait until the map has stopped moving',
           time: 1500,
-          danger: true
+          variant: 'danger'
         })
         return false
       }
@@ -174,9 +175,10 @@ export default {
       const result = await this.$store.dispatch('user/saveLocation', data)
       if (result.status === 'failed') {
         this.$root.$emit('notification', {
-          content: result.message || 'Location save failed (unspecified error)',
+          title: 'Failed',
+          message: 'Location save failed (unspecified error)',
           time: 1500,
-          danger: true
+          variant: 'danger'
         })
         return false
       }
@@ -185,8 +187,10 @@ export default {
         result.request.statusText === 'Created'
       ) {
         this.$root.$emit('notification', {
-          content: 'Location Has Been Saved Successfully',
-          time: 1500
+          title: 'Success',
+          message: 'Location has been saved sucessfully',
+          time: 1500,
+          variant: 'success'
         })
         return true
       }

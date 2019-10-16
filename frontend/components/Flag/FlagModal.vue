@@ -93,8 +93,10 @@ export default {
       this.modalShow = false
       if (result.message === 'Flagged!') {
         this.$root.$emit('notification', {
-          content: 'Flag Succeeded. Thanks!',
-          time: 3000
+          title: 'Success',
+          message: 'Flagged sucessfully',
+          time: 1500,
+          variant: 'success'
         })
       }
     },

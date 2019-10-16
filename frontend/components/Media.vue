@@ -18,7 +18,7 @@
       >
       <b-alert
         v-else-if="media.status === 'FL'"
-        variant="primary"
+        variant="danger"
         show
         class="d-inline-block p-1 font-08"
         >Flagged Media</b-alert
