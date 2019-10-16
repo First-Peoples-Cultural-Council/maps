@@ -42,10 +42,13 @@
             <div
               v-for="(familyLanguages, family) in languages"
               :key="'langfamily' + family"
+              class="language-family-container mt-3 shadow-sm"
             >
-              <h5 class="language-family mt-3">
-                Language Family:
-                {{ family === 'undefined' ? 'No Family' : family }}
+              <h5 class="language-family mt-0">
+                <span class="language-family-header">Language Family:</span>
+                <span class="language-family-title">{{
+                  family === 'undefined' ? 'No Family' : family
+                }}</span>
               </h5>
               <b-row>
                 <b-col
@@ -57,7 +60,7 @@
                   sm="6"
                 >
                   <LanguageCard
-                    class="mt-3 hover-left-move"
+                    class="mt-2 hover-left-move"
                     :name="language.name"
                     :color="
                       (language.family && language.family.color) ||
