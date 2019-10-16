@@ -33,6 +33,17 @@ class BaseTestCase(APITestCase):
         self.user.set_password("password")
         self.user.save()
 
+        self.user2 = User.objects.create(
+            username="testuser002",
+            first_name="Test2",
+            last_name="user 002",
+            email="test2@countable.ca",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.user2.set_password("password")
+        self.user2.save()
+
 
 class FavouriteAPITests(BaseTestCase):
     def setUp(self):
@@ -97,12 +108,84 @@ class FavouriteAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['media'], self.media.id)
 
-    def test_favourite_list_route_exists(self):
+    def test_favourite_list_unauthorized_access(self):
         """
 		Ensure Favourite list API route exists
 		"""
         response = self.client.get("/api/favourite/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # def test_favourite_list_different_users(self):
+    #     """
+	# 	Ensure Favourite API DELETE method API works
+	# 	"""
+    #     # Must be logged in
+    #     self.client.login(username="testuser001", password="password")
+
+    #     # No data so far for the user
+    #     response = self.client.get("/api/favourite/", format="json")
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 0)
+        
+    #     # Creating an object which BELONGS to the user
+    #     # GET must return one object
+    #     response = self.client.post(
+    #         "/api/favourite/",
+    #         {
+    #             "name": "test favourite",
+    #             "favourite_type": "favourite", 
+    #             "description": "description", 
+    #             "point": self.FAKE_GEOM,
+    #             "place": self.place.id,
+    #             "media": self.media.id,
+    #             "zoom":10,
+    #         },
+    #         format="json",
+    #     )
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     created_id1 = response.json()["id"]
+
+    #     response2 = self.client.get("/api/favourite/", format="json")
+    #     self.assertEqual(response2.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response2.data), 1)
+        
+    #     # # Creating an object which DOES NOT BELONG to the user
+    #     # # GET must return one object
+    #     # test_favourite2 = Favourite.objects.create(
+    #     #     user=self.user2, place=self.place
+    #     # )
+    #     # response = self.client.get("/api/favourite/", format="json")
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # self.assertEqual(len(response.data), 1)
+        
+    #     # # Creating an object which BELONGS to the user
+    #     # # GET must return two objects
+    #     # test_favourite3 = Favourite.objects.create(
+    #     #     user=self.user, place=self.place
+    #     # )
+    #     # response = self.client.get("/api/favourite/", format="json")
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # self.assertEqual(len(response.data), 2)
+
+    #     # # Deleting the object which BELONGS to the user
+    #     # # GET must return one object
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # response = self.client.delete(
+    #     #     "/api/favourite/{}/".format(created_id1), format="json"
+    #     # )
+    #     # response = self.client.get("/api/favourite/", format="json")
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # self.assertEqual(len(response.data), 1)
+
+    #     # # Deleting the object which BELONGS to the user
+    #     # # GET must return zero objects
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # response = self.client.delete(
+    #     #     "/api/favourite/{}/".format(test_favourite3.id), format="json"
+    #     # )
+    #     # response = self.client.get("/api/favourite/", format="json")
+    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     # self.assertEqual(len(response.data), 0)
 
     def test_favourite_post(self):
         """
