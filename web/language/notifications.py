@@ -101,13 +101,13 @@ def get_my_favourites_messages(my_favourites):
 
 
 def _lang_link(l):
-    return '<a href="{}/language/{}">{}</a>'.format(
+    return '<a href="{}/languages/{}">{}</a>'.format(
         settings.HOST, _format_fpcc(l.name), l.name
     )
 
 
 def _comm_link(c):
-    return '<a href="{}/community/{}">{}</a>'.format(
+    return '<a href="{}/content/{}">{}</a>'.format(
         settings.HOST, _format_fpcc(c.name), c.name
     )
 
