@@ -1,19 +1,5 @@
 <template>
   <div>
-    <b-modal
-      id="notify-modal"
-      v-model="modalShow"
-      class="text-align-center"
-      hide-header
-      hide-footer
-    >
-      <div class="font-09 color-dark-gray">
-        <b-alert v-if="!danger" show class="m-0">{{ content }}</b-alert>
-        <b-alert v-else show class="m-0" variant="danger">{{
-          content
-        }}</b-alert>
-      </div>
-    </b-modal>
     <b-toast
       id="my-toast"
       :variant="variant"
@@ -34,9 +20,6 @@
 export default {
   data() {
     return {
-      modalShow: false,
-      content: null,
-      danger: false,
       autoHideDelay: 1500,
       title: null,
       message: null,
