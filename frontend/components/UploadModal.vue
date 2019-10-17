@@ -86,8 +86,10 @@ export default {
     this.$root.$on('fileUploaded', () => {
       this.modalShow = false
       this.$root.$emit('notification', {
-        content: 'Media uploaded successfully! Thanks!',
-        time: 1000
+        title: 'Success',
+        message: 'Media Successfully uploaded',
+        time: 2000,
+        variant: 'success'
       })
     })
 

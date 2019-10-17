@@ -96,6 +96,7 @@ export default {
 <style scoped>
 .language-card {
   cursor: pointer;
+  background-color: white;
 }
 .language-icon-container {
   background-color: black;

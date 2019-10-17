@@ -74,10 +74,13 @@
           <div
             v-for="(familyLanguages, family) in languages"
             :key="'langfamily' + family"
+            class="language-family-container mt-3 shadow-sm"
           >
-            <h5 class="language-family mt-3">
-              Language Family:
-              {{ family === 'undefined' ? 'No Family' : family }}
+            <h5 class="language-family mt-0">
+              <span class="language-family-header">Language Family:</span>
+              <span class="language-family-title">{{
+                family === 'undefined' ? 'No Family' : family
+              }}</span>
             </h5>
             <b-row>
               <b-col
@@ -89,7 +92,7 @@
                 sm="6"
               >
                 <LanguageCard
-                  class="mt-3 hover-left-move"
+                  class="mb-2 hover-left-move"
                   :name="language.name"
                   :color="
                     (language.family && language.family.color) || language.color
@@ -104,7 +107,7 @@
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
           <b-row>
-            <h5 class="language-family mt-3 pl-3 pr-3">Communities</h5>
+            <h5 class="language-family mt-4 pl-3 pr-3">Communities</h5>
             <b-col
               v-for="community in communities"
               :key="'community ' + community.name"
@@ -934,9 +937,18 @@ export default {
   opacity: 0.5;
 }
 
+.language-family-container {
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 1em 0.5em;
+  border-radius: 0.5em;
+}
 .language-family {
   color: var(--color-darkgray, #454545);
-  font-size: 0.9em;
+  font-size: 0.8em;
+}
+
+.language-family-title {
+  font-weight: bold;
 }
 
 .no-scroll-accordion #inner-collapse {

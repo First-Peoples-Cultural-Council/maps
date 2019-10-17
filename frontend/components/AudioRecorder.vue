@@ -257,9 +257,10 @@ export default {
       } catch (e) {
         console.error(e)
         this.$root.$emit('notification', {
-          content: 'Audio Upload Failed, please try again',
-          time: 1500,
-          danger: true
+          title: 'Failed',
+          message: 'Audio Upload Failed, please try again',
+          time: 2000,
+          variant: 'danger'
         })
       }
 

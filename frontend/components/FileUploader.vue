@@ -125,9 +125,10 @@ export default {
       } catch (e) {
         console.error(e)
         this.$root.$emit('notification', {
-          content: 'File Upload Failed, please try again',
+          title: 'Failed',
+          message: 'File Upload Failed, please try again',
           time: 1500,
-          danger: true
+          variant: 'danger'
         })
       }
       this.resetToInitialState()

@@ -1,45 +1,38 @@
 <template>
   <div>
-    <b-modal
-      id="notify-modal"
-      v-model="modalShow"
-      class="text-align-center"
-      hide-header
-      hide-footer
+    <b-toast
+      id="my-toast"
+      :variant="variant"
+      solid
+      :auto-hide-delay="autoHideDelay"
     >
-      <div class="font-09 color-dark-gray">
-        <b-alert v-if="!danger" show class="m-0">{{ content }}</b-alert>
-        <b-alert v-else show class="m-0" variant="danger">{{
-          content
-        }}</b-alert>
-      </div>
-    </b-modal>
+      <template v-slot:toast-title>
+        <div class="d-flex flex-grow-1 align-items-baseline">
+          <strong class="mr-auto">{{ title }}</strong>
+          <small class="text-muted mr-2">{{ message }}</small>
+        </div>
+      </template>
+      This is the content of the toast. It is short and to the point.
+    </b-toast>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      modalShow: false,
-      content: null,
-      danger: false
+      autoHideDelay: 1500,
+      title: null,
+      message: null,
+      variant: 'primary'
     }
   },
   mounted() {
     this.$root.$on('notification', params => {
-      if (this.modalShow === false) {
-        if (params.danger) {
-          this.danger = true
-        }
-        this.content = params.content
-        this.modalShow = true
-        setTimeout(() => {
-          this.modalShow = false
-          setTimeout(() => {
-            this.danger = false
-          }, 1000)
-        }, params.time)
-      }
+      this.$bvToast.toast(params.message || '', {
+        title: params.title,
+        variant: params.variant,
+        autoHideDelay: params.time || 1500
+      })
     })
   }
 }
