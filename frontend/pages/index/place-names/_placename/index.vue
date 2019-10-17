@@ -231,6 +231,7 @@ export default {
       closeOverlayContent: false
     }
   },
+  watchQuery: true,
   computed: {
     isFavourited() {
       return !!this.favourites.find(f => f.place === this.place.id)
@@ -290,7 +291,10 @@ export default {
       return this.user.is_staff
     },
     isLangAdmin() {
-      return this.$store.state.user.user.administrator_set.length > 0
+      return (
+        this.$store.state.user.user.administrator_set &&
+        this.$store.state.user.user.administrator_set.length > 0
+      )
     },
     isSuperUser() {
       return this.user.is_superuser
@@ -317,7 +321,10 @@ export default {
   },
   watch: {
     place(newPlace, oldPlace) {
-      if (newPlace !== oldPlace) this.setupMap()
+      if (newPlace !== oldPlace) {
+        console.log('new Place', newPlace)
+        this.setupMap(newPlace.geom)
+      }
     }
   },
   async asyncData({ params, $axios, store }) {
@@ -339,10 +346,13 @@ export default {
       store.dispatch('places/getPlaceMedias', {
         id: geo_place.id
       }),
-      store.dispatch('places/getFavourites'),
       store.dispatch('user/getPlacesToVerify'),
       store.dispatch('user/getMediaToVerify')
     ])
+
+    if (store.state.user.isLoggedIn) {
+      await Promise.all([store.dispatch('places/getFavourites')])
+    }
 
     const isServer = !!process.server
     return {
@@ -359,7 +369,7 @@ export default {
     })
   },
   created() {
-    this.setupMap()
+    this.setupMap(this.geo_place.geometry)
     // We don't always catch language routing updates, so also zoom to language on create.
   },
   methods: {
@@ -415,23 +425,19 @@ export default {
         })
         .show()
     },
-    setupMap() {
+    setupMap(geom) {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          if (this.geo_place.geometry.type === 'Point') {
-            zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
+          if (geom.type === 'Point') {
+            zoomToPoint({ map, geom, zoom: 13 })
           }
-          if (this.geo_place.geometry.type === 'Polygon') {
-            map.fitBounds(
-              [
-                this.geo_place.geometry.coordinates[0][0],
-                this.geo_place.geometry.coordinates[0][2]
-              ],
-              { padding: 30 }
-            )
+          if (geom.type === 'Polygon') {
+            map.fitBounds([geom.coordinates[0][0], geom.coordinates[0][2]], {
+              padding: 30
+            })
           }
-          if (this.geo_place.geometry.type === 'LineString') {
-            const coordinates = this.geo_place.geometry.coordinates
+          if (geom.type === 'LineString') {
+            const coordinates = geom.coordinates
             const mapboxgl = require('mapbox-gl')
             const bounds = coordinates.reduce(function(bounds, coord) {
               return bounds.extend(coord)
