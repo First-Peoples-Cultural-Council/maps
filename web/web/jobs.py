@@ -28,6 +28,8 @@ def notifier_job():
 
 
 register_events(scheduler)
-if "gunicorn" in "".join(sys.argv) or "runserver" in sys.argv:
+
+# uncomment the end of this line to test scheduling on dev envs.
+if "gunicorn" in "".join(sys.argv):  # or "runserver" in sys.argv:
     scheduler.start()
     print("Scheduler started!")
