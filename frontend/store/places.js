@@ -80,6 +80,8 @@ export const actions = {
           root: true
         }
       )
+    } else {
+      commit('setPlaceCommunity', null)
     }
 
     if (result.language) {
@@ -92,6 +94,8 @@ export const actions = {
           root: true
         }
       )
+    } else {
+      commit('setPlaceLanguage', null)
     }
     return result
   },

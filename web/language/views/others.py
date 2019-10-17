@@ -42,6 +42,19 @@ class NotificationViewSet(BaseModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @method_decorator(never_cache)
+    def list(self, request):
+        queryset = self.get_queryset()
+        
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                queryset = queryset.filter(user__id = request.user.id)
+                serializer = self.serializer_class(queryset, many=True)
+                return Response(serializer.data)        
+
+        return Response({"message": "Only logged in users can view theirs favourites"}, 
+                        status=status.HTTP_401_UNAUTHORIZED)
+
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
 class FavouriteCustomViewSet(
@@ -52,11 +65,6 @@ class FavouriteCustomViewSet(
     GenericViewSet,
 ):
     pass
-
-
-class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
-    serializer_class = FavouriteSerializer
-    queryset = Favourite.objects.all()
 
 
 class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
@@ -91,68 +99,15 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
         else:
             return super(FavouriteViewSet, self).create(request, *args, **kwargs)
 
+    @method_decorator(never_cache)
+    def list(self, request):
+        queryset = self.get_queryset()
+        
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                queryset = queryset.filter(user__id = request.user.id)
+                serializer = self.serializer_class(queryset, many=True)
+                return Response(serializer.data)        
 
-    # def create(self, request, *args, **kwargs):
-    #     print("User " + str(request.user.id))
-    #     if 'media' in request.data.keys():
-    #         media_id = int(request.data["media"])
-
-    #         # Check if the favourite already exists
-    #         if Favourite.favourite_media_already_exists(request.user.id, media_id):
-    #             print('Conflict media ' + str(media_id))
-    #             return Response({"message": "This media is already a favourite"}, 
-    #                             status=status.HTTP_409_CONFLICT)
-    #         else:
-    #             print('Saving media ' + str(media_id))
-    #             return super(FavouriteViewSet, self).create(request, *args, **kwargs)
-    #     elif 'place' in request.data.keys():
-    #         placename_id = int(request.data["place"])
-
-    #         # Check if the favourite already exists
-    #         if Favourite.favourite_place_already_exists(request.user.id, placename_id):
-    #             print('Conflict place ' + str(placename_id))
-    #             return Response({"message": "This placename is already a favourite"}, 
-    #                             status=status.HTTP_409_CONFLICT)
-    #         else:
-    #             print('Saving place ' + str(placename_id))
-    #             return super(FavouriteViewSet, self).create(request, *args, **kwargs)
-    #     else:
-    #         print('Saving')
-    #         return super(FavouriteViewSet, self).create(request, *args, **kwargs)
-
-    # def perform_create(self, serializer):
-    #     if self.request and hasattr(self.request, "user"):
-    #         if self.request.user.is_authenticated:
-    #             user_id = self.request.user.id
-    #             print("User id: " + str(user_id))
-    #             if 'media' in self.request.data.keys():
-    #                 media_id = int(self.request.data["media"])
-    #                 print("Media id: " + str(media_id))
-
-    #                 # Check if the favourite already exists
-    #                 if Favourite.favourite_media_already_exists(user_id, media_id):
-    #                     return Response({"message": "This media is already a favourite"}, 
-    #                                     status=status.HTTP_409_CONFLICT)                                        
-    #                 else:
-    #                     print('Saving')
-    #                     serializer.save(user=self.request.user)
-    #             elif 'place' in self.request.data.keys():
-    #                 placename_id = int(self.request.data["place"])
-    #                 print("Place id: " + str(placename_id))
-                    
-    #                 # Check if the favourite already exists
-    #                 if Favourite.favourite_place_already_exists(user_id, placename_id):
-    #                     return Response({"message": "This placename is already a favourite"}, 
-    #                                     status=status.HTTP_409_CONFLICT)
-    #                 else:
-    #                     print('Saving')
-    #                     serializer.save(user=self.request.user)
-    #             else:
-    #                 print('Saving')
-    #                 serializer.save(user=self.request.user)
-    #         else:
-    #             return Response({"message", "User must be logged in"}, 
-    #                             status=status.HTTP_403_FORBIDDEN)
-    #     else:
-    #         return Response({"message", "User must be logged in"}, 
-    #                         status=status.HTTP_403_FORBIDDEN)
+        return Response({"message": "Only logged in users can view theirs favourites"}, 
+                        status=status.HTTP_401_UNAUTHORIZED)
