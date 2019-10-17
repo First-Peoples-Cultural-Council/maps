@@ -204,7 +204,9 @@ export default {
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
-        filter: ['!=', ['get', 'status'], 'FL']
+        // [cvo] View permissions on frontend is not secure should be done in the API instead.
+        // filter: ['!=', ['get', 'status'], 'FL']
+        filter: ['!=', '$type', 'Polygon']
       },
       'fn-nations'
     )
@@ -222,7 +224,8 @@ export default {
           'line-color': '#987',
           'line-width': 1,
           'line-dasharray': [0, 2]
-        }
+        },
+        filter: ['==', '$type', 'LineString']
       },
       'fn-nations'
     )
@@ -239,6 +242,32 @@ export default {
           'fill-opacity': 0.2
         },
         filter: ['==', '$type', 'Polygon']
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places-geom-labels',
+        type: 'symbol',
+        minzoom: 5,
+        source: 'places1',
+        layout: {
+          'text-field': ['to-string', ['get', 'name']],
+          'text-size': 14,
+          'text-font': ['FreeSans Medium']
+        },
+        paint: {
+          'text-halo-width': 2,
+          'text-halo-blur': 2,
+          'text-halo-color': '#ba9',
+          'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
+        },
+        filter: [
+          'any',
+          ['==', '$type', 'LineString'],
+          ['==', '$type', 'Polygon']
+        ]
       },
       'fn-nations'
     )
@@ -312,6 +341,7 @@ export default {
       }
     })
 
+    // deprecated, remove and replace with marker.
     map.addLayer({
       id: 'fn-nations-highlighted',
       type: 'symbol',
@@ -334,29 +364,7 @@ export default {
       }
     })
 
-    // map.addLayer({
-    //   id: 'fn-arts-highlighted',
-    //   type: 'symbol',
-    //   source: 'arts1',
-    //   layout: {
-    //     'text-optional': true,
-    //     'symbol-spacing': 50,
-    //     'icon-image': '{art_type}_icon',
-    //     'icon-size': 0.25,
-    //     'text-field': '{name}',
-    //     'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-    //     'text-size': 15,
-    //     'text-offset': [0, 0.6],
-    //     'text-anchor': 'top'
-    //   },
-    //   paint: {
-    //     'text-color': 'hsl(347, 0%, 0%)',
-    //     'text-halo-width': 2,
-    //     'text-halo-blur': 2,
-    //     'text-halo-color': 'hsl(53, 50%, 70%)'
-    //   }
-    // })
-
+    // deprecated, remove and replace with marker.
     map.addLayer({
       id: 'fn-places-highlighted',
       type: 'symbol',
@@ -377,12 +385,12 @@ export default {
         'text-halo-width': 2,
         'text-halo-blur': 2,
         'text-halo-color': 'hsl(53, 50%, 70%)'
-      }
+      },
+      filter: ['!=', '$type', 'Polygon']
     })
 
     map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
     map.setFilter('fn-places-highlighted', ['in', 'name', ''])
-    map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
@@ -402,6 +410,8 @@ export default {
     map.on('mouseleave', 'fn-places', e => {
       map.getCanvas().style.cursor = 'default'
     })
+
+    // Layer feature precedence controls, in correct order for your reference:
     //       'text-optional': true,
     //       'icon-optional': true,
     //       'text-ignore-placemnt': true,

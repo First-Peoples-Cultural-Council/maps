@@ -1,10 +1,13 @@
 from users.models import User
-from language.models import PlaceName, Media, Favourite
+import datetime
+
+from language.models import PlaceName, Media, Favourite, CommunityMember
+
 from django.db.models import Q
 from django.core.mail import send_mail
-import datetime
 from django.utils import timezone
 from django.conf import settings
+
 import re
 
 
@@ -121,42 +124,75 @@ def _place_link(p):
 def notify(user, since=None):
     since = since or user.last_notified
     print("Calculating notifications for", user)
-    messages = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
+    intro = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
 
     languages = user.languages.all()
-    communities = user.communities.all()
+    communities = []
+    communities_awaiting_verification = []
+    for membership in CommunityMember.objects.filter(user=user):
+        if membership.status == CommunityMember.VERIFIED:
+            communities.append(membership.community)
+        else:
+            communities_awaiting_verification.append(membership.community)
     if languages.count():
-        messages.append(
+        intro.append(
             "<p>You are receiving updates related to the following languages: {}</p>".format(
                 ",".join([_lang_link(l) for l in languages])
             )
         )
-    if communities.count():
-        messages.append(
+    if len(communities):
+        intro.append(
             "<p>You are receiving updates related to the following communities: {}</p>".format(
                 ",".join([_comm_link(c) for c in communities])
             )
         )
-    # TODO, only send if the user is verified.
+    if len(communities_awaiting_verification):
+        intro.append(
+            "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
+                ",".join([_comm_link(c) for c in communities_awaiting_verification])
+            )
+        )
+    messages = []
+    # If somethe user is a member of a language, notify them of all the public places in their language of interest.
     for language in languages:
-        new_places = PlaceName.objects.filter(language=language, created__gte=since)
+        new_places = PlaceName.objects.filter(
+            ~Q(community__in=communities+communities_awaiting_verification), # don't double-show items in their community.
+            language=language,
+            community_only=False, created__gte=since)
         messages += get_new_places_messages(
             new_places, "New Places for the {} Language".format(language.name)
         )
 
-    # TODO: only send if the user is verified.
+    # all placenames, shared with verified members.
     for community in communities:
         new_places = PlaceName.objects.filter(community=community, created__gte=since)
         messages += get_new_places_messages(
             new_places, "New Places in {}".format(community.name)
         )
 
-    new_medias = Media.objects.filter(
-        Q(placename__language__in=user.languages.all())
-        | Q(placename__community__in=user.communities.all()),
+    # public placenames.
+    for community in communities_awaiting_verification:
+        new_places = PlaceName.objects.filter(community=community, created__gte=since, community_only=False)
+        messages += get_new_places_messages(
+            new_places, "New Places in {} (public updates only)".format(community.name)
+        )
+
+
+    # all media, shared only with verified members.
+    new_medias_private = Media.objects.filter(
+        Q(placename__community__in=communities),
         created__gte=since,
     )
-    messages += get_new_media_messages(new_medias)
+    messages += get_new_media_messages(new_medias_private)
+
+
+    # public media. Show public stuff to anyone who has signed up.
+    new_medias_public = Media.objects.filter(
+        Q(placename__language__in=languages) | Q(placename__community__in=communities_awaiting_verification),
+        Q(community_only=False) & Q(placename__community_only=False), # public items.
+        created__gte=since,
+    )
+    messages += get_new_media_messages(new_medias_public)
 
     my_favourites = Favourite.objects.filter(
         Q(media__creator=user) | Q(place__creator=user), created__gte=since
@@ -164,7 +200,7 @@ def notify(user, since=None):
     messages += get_my_favourites_messages(my_favourites)
 
     if len(messages):
-        html = "\n".join(messages)
+        html = "\n".join(intro + messages)
         html += """
         <p>If you'd like to unsubscribe, change your notification settings <a href="{}/profile/edit/{}">here</a>.</p>
         """.format(
@@ -181,7 +217,7 @@ def notify(user, since=None):
                 html_message=html,
             )
     else:
-        print("No new information for this person.")
+        print("No new information for this person.", intro)
 
 
 def send():
