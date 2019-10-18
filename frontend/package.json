@@ -17,6 +17,7 @@
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/markdownit": "^1.2.7",
     "@nuxtjs/pwa": "^2.6.0",
     "@tui-nuxt/editor": "^1.0.0-alpha.6",
     "basiclightbox": "^5.0.2",
