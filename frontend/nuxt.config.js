@@ -80,9 +80,13 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
+    '@nuxtjs/markdownit',
     '@tui-nuxt/editor',
     'nuxt-vue-multiselect'
   ],
+  markdownit: {
+    injected: true
+  },
   tui: {
     editor: {}
   },
