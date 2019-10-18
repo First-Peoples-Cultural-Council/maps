@@ -39,6 +39,7 @@
 
 <script>
 import Card from '@/components/Card.vue'
+
 export default {
   components: {
     Card
@@ -67,7 +68,7 @@ export default {
       if (!this.place.geometry) return
       // TODO: we need a centroid in this case.
       if (this.place.geometry.coordinates.length > 2) return
-      this.$eventHub.revealArea(this.place.geometry.coordinates)
+      this.$eventHub.revealArea(this.place.geometry)
     },
     handleMouseLeave() {
       this.hover = false

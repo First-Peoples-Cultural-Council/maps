@@ -627,7 +627,7 @@ export default {
 
       if (!done)
         features.forEach(feature => {
-          if (feature.layer.id === 'fn-lang-areas-shaded') {
+          if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })

@@ -5,7 +5,7 @@ export const state = () => ({
   user: {},
   picture: null,
   isLoggedIn: false,
-  notifications: null,
+  notifications: [],
   mediaToVerify: null,
   placesToVerify: null,
   membersToVerify: null,

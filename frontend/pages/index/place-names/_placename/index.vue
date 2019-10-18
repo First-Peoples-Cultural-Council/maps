@@ -422,6 +422,7 @@ export default {
             zoomToPoint({ map, geom: this.geo_place.geometry, zoom: 13 })
           }
           if (this.geo_place.geometry.type === 'Polygon') {
+            // assume bbox.
             map.fitBounds(
               [
                 this.geo_place.geometry.coordinates[0][0],
@@ -441,7 +442,15 @@ export default {
             })
           }
         }
-        map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
+        // map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
+
+        const mapboxgl = require('mapbox-gl')
+        const el = document.createElement('div')
+        el.className = 'marker place-marker'
+        el.style = "background-image: url('/poi_icon.svg')"
+        new mapboxgl.Marker(el)
+          .setLngLat(this.geo_place.geometry.coordinates)
+          .addTo(map)
       })
     },
     getCreatorName() {

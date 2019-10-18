@@ -432,11 +432,19 @@ export default {
         if (this.$route.hash.length <= 1) {
           zoomToPoint({ map, geom: this.community.point, zoom: 11 })
         }
-        map.setFilter('fn-nations-highlighted', [
-          '==',
-          'name',
-          this.community.name
-        ])
+        // map.setFilter('fn-nations-highlighted', [
+        //   '==',
+        //   'name',
+        //   this.community.name
+        // ])
+        const mapboxgl = require('mapbox-gl')
+        const el = document.createElement('div')
+        el.className = 'marker place-marker'
+        el.style = "background-image: url('/community_icon_white.svg')"
+        console.log(this.community.point, 'PT')
+        new mapboxgl.Marker(el)
+          .setLngLat(this.community.point.coordinates)
+          .addTo(map)
       })
     },
     handleCardClick($event, name, type) {

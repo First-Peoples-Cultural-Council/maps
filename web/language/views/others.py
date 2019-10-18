@@ -108,6 +108,6 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
                 queryset = queryset.filter(user__id = request.user.id)
                 serializer = self.serializer_class(queryset, many=True)
                 return Response(serializer.data)        
-
-        return Response({"message": "Only logged in users can view theirs favourites"}, 
-                        status=status.HTTP_401_UNAUTHORIZED)
+        return Response([])
+        # return Response({"message": "Only logged in users can view theirs favourites"}, 
+        #                 status=status.HTTP_401_UNAUTHORIZED)
