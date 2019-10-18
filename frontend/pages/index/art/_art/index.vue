@@ -60,7 +60,7 @@ import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 
 export default {
@@ -116,20 +116,11 @@ export default {
     },
     setupMap() {
       this.$eventHub.whenMap(map => {
-        const mapboxgl = require('mapbox-gl')
         if (this.$route.hash.length <= 1) {
           zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
         }
-        const el = document.createElement('div')
-        el.className = 'marker art-marker'
-        el.style =
-          "background-image: url('/" +
-          this.art.properties.art_type +
-          "_icon.svg')"
-
-        new mapboxgl.Marker(el)
-          .setLngLat(this.art.geometry.coordinates)
-          .addTo(map)
+        const icon = this.art.properties.art_type + '_icon.svg'
+        makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
       })
     }
   },

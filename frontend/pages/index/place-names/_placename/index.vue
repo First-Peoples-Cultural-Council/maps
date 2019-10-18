@@ -209,7 +209,8 @@ import {
   getApiUrl,
   encodeFPCC,
   getMediaUrl,
-  getGenericFileType
+  getGenericFileType,
+  makeMarker
 } from '@/plugins/utils.js'
 
 export default {
@@ -447,15 +448,12 @@ export default {
             })
           }
         }
-        // map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
 
-        const mapboxgl = require('mapbox-gl')
-        const el = document.createElement('div')
-        el.className = 'marker place-marker'
-        el.style = "background-image: url('/poi_icon.svg')"
-        new mapboxgl.Marker(el)
-          .setLngLat(this.geo_place.geometry.coordinates)
-          .addTo(map)
+        makeMarker(
+          this.geo_place.geometry,
+          'poi_icon.svg',
+          'place-marker'
+        ).addTo(map)
       })
     },
     getCreatorName() {

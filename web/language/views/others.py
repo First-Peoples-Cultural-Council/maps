@@ -107,7 +107,7 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
             if request.user.is_authenticated:
                 queryset = queryset.filter(user__id = request.user.id)
                 serializer = self.serializer_class(queryset, many=True)
-                return Response(serializer.data)        
+                return Response(serializer.data)
+        # Unauthenticated users have zero favourites, instead of returning 401 because it
+        # simplifies client implementations.      
         return Response([])
-        # return Response({"message": "Only logged in users can view theirs favourites"}, 
-        #                 status=status.HTTP_401_UNAUTHORIZED)
