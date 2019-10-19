@@ -387,11 +387,11 @@ export default {
     }
   },
   async fetch({ store }) {
-    if (store.state.user.isLoggedIn) {
+    try {
       await store.dispatch('user/getNotifications', {
         isServer: !!process.server
       })
-    }
+    } catch (e) {}
   },
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.

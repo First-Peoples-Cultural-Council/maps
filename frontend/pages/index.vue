@@ -548,12 +548,12 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
-      if (this.isDrawMode || this.isMobile) {
+      if (this.isDrawMode) {
         return
       }
 
       const features = map.queryRenderedFeatures(e.point)
-
+      console.log('Map Clicked')
       let done = false
       features.forEach(feature => {
         if (feature && feature.properties && feature.properties.name) {

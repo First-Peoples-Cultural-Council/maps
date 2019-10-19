@@ -348,11 +348,12 @@ export default {
     const languageName = params.lang
 
     const languages = await $axios.$get(getApiUrl(`language/`))
+
     const language = languages.find(
       lang => encodeFPCC(lang.name) === languageName
     )
     const languageId = language.id
-
+    const isServer = !!process.server
     const result = await Promise.all([
       $axios.$get(
         getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
@@ -361,9 +362,14 @@ export default {
       $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
 
+    try {
+      await store.dispatch('user/getNotifications', {
+        isServer: !!process.server
+      })
+    } catch (e) {}
+
     console.log('RegExp Url')
 
-    const isServer = !!process.server
     store.commit('places/setBadgePlaces', result[0].places)
     store.commit('places/setFilteredBadgePlaces', result[0].places)
 
