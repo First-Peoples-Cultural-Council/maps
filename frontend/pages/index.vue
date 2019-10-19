@@ -625,7 +625,7 @@ export default {
         }
       })
 
-      if (!done)
+      if (!done && !this.isMobile)
         features.forEach(feature => {
           if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
