@@ -548,12 +548,12 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
-      if (this.isDrawMode) {
+      if (this.isDrawMode || this.isMobile) {
         return
       }
 
       const features = map.queryRenderedFeatures(e.point)
-      console.log('Map Clicked')
+
       let done = false
       features.forEach(feature => {
         if (feature && feature.properties && feature.properties.name) {
@@ -625,9 +625,9 @@ export default {
         }
       })
 
-      if (!done && !this.isMobile)
+      if (!done)
         features.forEach(feature => {
-          if (feature.layer.id === 'fn-lang-areas-fill') {
+          if (feature.layer.id === 'fn-lang-areas-shaded') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
