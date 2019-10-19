@@ -1,5 +1,5 @@
 <template>
-  <div class="logo cursor-pointer" @click.prevent="handleLogoClick">
+  <div class="logo cursor-pointer h-100" @click.prevent="handleLogoClick">
     <div v-if="logoAlt === 1">
       <img
         src="../assets/images/symbol_text_background.png"
@@ -18,6 +18,13 @@
         alt="Language Map Of British Columbia"
       />
     </div>
+    <div v-else-if="logoAlt === 4" class="h-100">
+      <img
+        src="@/assets/images/symbol@2x.png"
+        alt="Menu"
+        class="mobile-logo h-100"
+      />
+    </div>
   </div>
 </template>
 
@@ -31,7 +38,6 @@ export default {
   },
   methods: {
     handleLogoClick() {
-      console.log('Clicked')
       this.$store.commit('mapinstance/setForceReset', true)
       if (this.$route.name === 'index') {
         this.$root.$emit('resetMap')

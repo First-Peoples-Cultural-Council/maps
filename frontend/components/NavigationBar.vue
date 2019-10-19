@@ -42,11 +42,8 @@
       </div>
     </div>
 
-    <div
-      class="d-none cursor-pointer mobile-logo-container"
-      @click="$router.push({ path: '/' })"
-    >
-      <img src="@/assets/images/symbol@2x.png" alt="Menu" class="mobile-logo" />
+    <div class="d-none cursor-pointer mobile-logo-container">
+      <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
       <div
@@ -160,9 +157,12 @@
 <script>
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
 
 export default {
-  components: {},
+  components: {
+    Logo
+  },
   data() {
     return {
       navigationOpen: false,

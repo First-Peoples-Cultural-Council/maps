@@ -24,6 +24,7 @@
       :nav-control="{ show: false }"
       @map-init="mapInit"
       @map-load="mapLoaded"
+      @map-touchend="mapClicked"
       @map-click="mapClicked"
       @map-zoomend="mapZoomEnd"
       @map-moveend="mapMoveEnd"
@@ -548,7 +549,7 @@ export default {
      * Handle clicks centrally so we can control precedence.
      */
     mapClicked(map, e) {
-      if (this.isDrawMode || this.isMobile) {
+      if (this.isDrawMode) {
         return
       }
 
@@ -625,9 +626,9 @@ export default {
         }
       })
 
-      if (!done)
+      if (!done && !this.isMobile)
         features.forEach(feature => {
-          if (feature.layer.id === 'fn-lang-areas-fill') {
+          if (feature.layer.id === 'fn-lang-areas-shaded') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
