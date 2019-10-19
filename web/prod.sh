@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# make uploaded files accessible
+umask 0000
+
 ./wait-for-it.sh ${DATABASE_HOST:=db}:5432
 
 python3 manage.py migrate
