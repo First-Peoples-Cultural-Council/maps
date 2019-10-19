@@ -91,7 +91,7 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      this.$eventHub.revealArea(this.community.point.coordinates)
+      this.$eventHub.revealArea(this.community.point)
     },
     handleMouseLeave() {
       this.hover = false

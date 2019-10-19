@@ -223,7 +223,7 @@ import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
@@ -432,11 +432,8 @@ export default {
         if (this.$route.hash.length <= 1) {
           zoomToPoint({ map, geom: this.community.point, zoom: 11 })
         }
-        map.setFilter('fn-nations-highlighted', [
-          '==',
-          'name',
-          this.community.name
-        ])
+        const icon = 'community_icon.svg'
+        makeMarker(this.community.point, icon, 'place-marker').addTo(map)
       })
     },
     handleCardClick($event, name, type) {

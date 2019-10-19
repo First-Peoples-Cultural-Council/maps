@@ -120,38 +120,9 @@
           </nuxt-link>
 
           <ul class="nav-links p-0 m-0 list-style-none">
-            <li>
-              <nuxt-link class="color-gray" to="/" @click.native="handleNavLink"
-                >Home</nuxt-link
-              >
-            </li>
             <li v-if="isLoggedIn">
               <nuxt-link class="color-gray" :to="`/profile/${userid}`"
                 >Profile</nuxt-link
-              >
-            </li>
-            <li>
-              <nuxt-link
-                class="color-gray"
-                to="/languages"
-                @click.native="resetMap"
-                >Languages</nuxt-link
-              >
-            </li>
-            <li>
-              <nuxt-link
-                class="color-gray"
-                to="/first-nations"
-                @click.native="resetMap"
-                >First Nations</nuxt-link
-              >
-            </li>
-            <li>
-              <nuxt-link
-                class="color-gray"
-                to="/heritages"
-                @click.native="resetMap"
-                >Heritages</nuxt-link
               >
             </li>
             <li>

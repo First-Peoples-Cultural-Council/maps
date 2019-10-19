@@ -84,7 +84,7 @@ export default {
       this.hover = true
       // in some cases, we list places without full geometry, no marker shown.
       if (!this.art.geometry) return
-      this.$eventHub.revealArea(this.art.geometry.coordinates)
+      this.$eventHub.revealArea(this.art.geometry)
     },
     handleMouseLeave() {
       this.hover = false

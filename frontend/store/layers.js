@@ -24,7 +24,8 @@ export const state = () => ({
       layerNames: [
         'fn-lang-area-outlines-1',
         'fn-lang-area-outlines-fade',
-        'fn-lang-areas-fill'
+        'fn-lang-areas-fill',
+        'fn-lang-labels'
       ],
       active: false
     },

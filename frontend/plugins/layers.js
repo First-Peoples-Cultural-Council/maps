@@ -109,19 +109,7 @@ const addLangLayers = map => {
     },
     'fn-nations'
   )
-  map.addLayer(
-    {
-      id: 'fn-lang-areas-shaded',
-      type: 'fill',
-      source: 'langs1',
-      layout: {},
-      paint: {
-        'fill-color': 'black',
-        'fill-opacity': 0.001
-      }
-    },
-    'fn-nations'
-  )
+
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 }
 
@@ -301,6 +289,7 @@ export default {
       id: 'fn-lang-labels',
       type: 'symbol',
       source: 'langs1',
+      filter: ['!', ['get', 'sleeping']],
       layout: {
         'text-field': ['to-string', ['get', 'name']],
         'text-size': 16,
@@ -340,57 +329,6 @@ export default {
         ]
       }
     })
-
-    // deprecated, remove and replace with marker.
-    map.addLayer({
-      id: 'fn-nations-highlighted',
-      type: 'symbol',
-      source: 'communities1',
-      layout: {
-        'text-size': 15,
-        'icon-image': 'community',
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-        'text-padding': 0,
-        'text-offset': [0, 1.7],
-        'icon-size': 0.25,
-        'text-field': ['to-string', ['get', 'name']],
-        'icon-padding': 0
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': 'hsl(53, 50%, 70%)'
-      }
-    })
-
-    // deprecated, remove and replace with marker.
-    map.addLayer({
-      id: 'fn-places-highlighted',
-      type: 'symbol',
-      source: 'places1',
-      layout: {
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': 'point_of_interest_icon',
-        'icon-size': 0.25,
-        'text-field': '{name}',
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-        'text-size': 15,
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': 'hsl(53, 50%, 70%)'
-      },
-      filter: ['!=', '$type', 'Polygon']
-    })
-
-    map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
-    map.setFilter('fn-places-highlighted', ['in', 'name', ''])
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'

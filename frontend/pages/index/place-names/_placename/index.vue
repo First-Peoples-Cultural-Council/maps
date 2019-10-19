@@ -209,7 +209,8 @@ import {
   getApiUrl,
   encodeFPCC,
   getMediaUrl,
-  getGenericFileType
+  getGenericFileType,
+  makeMarker
 } from '@/plugins/utils.js'
 
 export default {
@@ -447,7 +448,12 @@ export default {
             })
           }
         }
-        map.setFilter('fn-places-highlighted', ['==', 'name', this.place.name])
+
+        makeMarker(
+          this.geo_place.geometry,
+          'poi_icon.svg',
+          'place-marker'
+        ).addTo(map)
       })
     },
     getCreatorName() {

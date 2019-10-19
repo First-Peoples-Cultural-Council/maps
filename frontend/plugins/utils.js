@@ -12,6 +12,23 @@ export const formatPoint = point => {
   }
 }
 
+export const geomToLatLng = geometry => {
+  if (geometry.type === 'Point') {
+    return geometry.coordinates
+  } else {
+    return geometry.coordinates[0][0]
+  }
+}
+
+export const makeMarker = (geom, icon, class_name) => {
+  const mapboxgl = require('mapbox-gl')
+  const el = document.createElement('div')
+  el.className = 'marker art-marker'
+  // el.className = class_name ? 'marker' : 'marker ' + class_name
+  el.style = `background-image: url('/${icon}')`
+  return new mapboxgl.Marker(el).setLngLat(geomToLatLng(geom))
+}
+
 export const formatLangBounds = lang => {
   const sw = lang.bbox.coordinates[0][0]
   const ne = lang.bbox.coordinates[0][2]
