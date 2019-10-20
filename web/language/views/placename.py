@@ -109,11 +109,11 @@ class PlaceNameViewSet(BaseModelViewSet):
             if request.user.is_authenticated:
                 user_logged_in = True
                 
-        # 1) if NO USER is logged in, only show VERIFIED (or no status) content
-        # 2) if USER IS LOGGED IN, show:
+        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
+        # 2) if USER IS LOGGED IN, shows:
         # 2.1) user's contribution regardless the status
         # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
         # 2.2.2) is COMMUNITY ONLY
         # 2.3) everything from where user is Administrator (language/community pair)
         
@@ -211,11 +211,11 @@ class PlaceNameGeoList(generics.ListAPIView):
             if request.user.is_authenticated:
                 user_logged_in = True
                 
-        # 1) if NO USER is logged in, only show VERIFIED (or no status) content
+        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, show:
         # 2.1) user's contribution regardless the status
         # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
         # 2.2.2) is COMMUNITY ONLY
         # 2.3) everything from where user is Administrator (language/community pair)
         
@@ -231,7 +231,7 @@ class PlaceNameGeoList(generics.ListAPIView):
                 status__exact=CommunityMember.VERIFIED
             ).values('community')
             
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED or NULL
+            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
                 Q(community_only=False, status__exact=PlaceName.VERIFIED)
