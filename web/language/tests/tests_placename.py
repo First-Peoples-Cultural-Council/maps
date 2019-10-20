@@ -35,9 +35,21 @@ class PlaceNameAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.community = Community.objects.create(name="Test Community")
+        self.community2 = Community.objects.create(name="Test Community 02")
         self.language1 = Language.objects.create(name="Test Language 01")
         self.language2 = Language.objects.create(name="Test Language 02")
         self.category = PlaceNameCategory.objects.create(name="Test Category", icon_name="icon")
+        
+        self.user2 = User.objects.create(
+            username="testuser002",
+            first_name="Test2",
+            last_name="user 002",
+            email="test2@countable.ca",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.user2.set_password("password")
+        self.user2.save()
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -71,14 +83,310 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.data["audio_name"], "string")
         self.assertEqual(response.data["audio_description"], "string")
 
-    def test_placename_list(self):
+    def test_placename_list_not_logged_in(self):
         """
 		Ensure placename list API brings newly created data
 		"""
-        test_placename = PlaceName.objects.create(name="Test placename 001")
+        # VERIFIED Placename
+        test_placename01 = PlaceName.objects.create(
+            name = "test place01",
+            community = self.community,
+            language = self.language1,
+            status=PlaceName.VERIFIED
+        )
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        assert len(response.data) > 0
+        self.assertEqual(len(response.data), 1)
+
+        # UNVERIFIED Placename
+        test_placename02 = PlaceName.objects.create(
+            name = "test place02",
+            community = self.community,
+            language = self.language1,
+            status=PlaceName.UNVERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # REJECTED Placename
+        test_placename03 = PlaceName.objects.create(
+            name = "test place03",
+            community = self.community,
+            language = self.language1,
+            status=PlaceName.REJECTED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # FLAGGED Placename
+        test_placename04 = PlaceName.objects.create(
+            name = "test place04",
+            community = self.community,
+            language = self.language1,
+            status=PlaceName.FLAGGED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_placename_list_logged_in_creator(self):
+        """
+		Ensure placename list API brings newly created data
+		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # VERIFIED Placename
+        test_placename01 = PlaceName.objects.create(
+            name = "test place01",
+            creator = self.user,
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # UNVERIFIED Placename
+        test_placename02 = PlaceName.objects.create(
+            name = "test place02",
+            creator = self.user,
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.UNVERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # REJECTED Placename
+        test_placename03 = PlaceName.objects.create(
+            name = "test place03",
+            creator=self.user,
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.REJECTED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+        # FLAGGED Placename
+        test_placename04 = PlaceName.objects.create(
+            name = "test place04",
+            creator=self.user,
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.FLAGGED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+        # REJECTED Placename from another user
+        test_placename05 = PlaceName.objects.create(
+            name = "test place05",
+            creator = self.user2,
+            community = self.community,
+            language = self.language1,
+            status=PlaceName.REJECTED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+    def test_placename_list_logged_in_member(self):
+        """
+		Ensure placename list API brings newly created data
+		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # VERIFIED COMMUNITY_ONLY Placename
+        test_placename01 = PlaceName.objects.create(
+            name = "test place01",
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.VERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # VERIFIED CommunityMember MATCHING users's community
+        member_same01 = CommunityMember.objects.create(
+            user = self.user,
+            community = self.community,
+            status=CommunityMember.UNVERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # After the community member is VERIFIED
+        member_same01.status=CommunityMember.VERIFIED
+        member_same01.save()
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # UNVERIFIED COMMUNITY_ONLY Placename
+        test_placename02 = PlaceName.objects.create(
+            name = "test place02",
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.UNVERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # REJECTED COMMUNITY_ONLY Placename
+        test_placename03 = PlaceName.objects.create(
+            name = "test place03",
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.REJECTED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+        # FLAGGED COMMUNITY_ONLY Placename
+        test_placename04 = PlaceName.objects.create(
+            name = "test place04",
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.FLAGGED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+        # VERIFIED COMMUNITY_ONLY Placename from another community
+        test_placename05 = PlaceName.objects.create(
+            name = "test place05",
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.VERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+    def test_placename_list_logged_in_administrator(self):
+        """
+		Ensure placename list API brings newly created data
+		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # VERIFIED COMMUNITY_ONLY Placename
+        test_placename01 = PlaceName.objects.create(
+            name = "test place01",
+            community = self.community,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.VERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+        # Administrator of the pair language/community
+        admin = Administrator.objects.create(
+            user=self.user, 
+            community=self.community,
+            language=self.language1, 
+        )
+
+        # After the user became an Administrator
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # UNVERIFIED COMMUNITY_ONLY Placename
+        test_placename02 = PlaceName.objects.create(
+            name = "test place02",
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.UNVERIFIED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # After changing the placename to the Administrator community
+        test_placename02.community = self.community
+        test_placename02.save()
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # REJECTED COMMUNITY_ONLY Placename
+        test_placename03 = PlaceName.objects.create(
+            name = "test place03",
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.REJECTED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # After changing the placename to the Administrator community
+        test_placename03.community = self.community
+        test_placename03.save()
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+        # FLAGGED COMMUNITY_ONLY Placename
+        test_placename04 = PlaceName.objects.create(
+            name = "test place04",
+            community = self.community2,
+            language = self.language1,
+            community_only = True,
+            status=PlaceName.FLAGGED
+        )
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+        # After changing the placename to the Administrator community
+        test_placename04.community = self.community
+        test_placename04.save()
+
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
 
     def test_placename_list_to_verify(self):
         """
@@ -103,7 +411,7 @@ class PlaceNameAPITests(BaseTestCase):
             community = self.community,
             language = self.language1,
             status=PlaceName.VERIFIED
-        )        
+        )
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
