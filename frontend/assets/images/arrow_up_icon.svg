@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="15.392" height="9.304" viewBox="0 0 15.392 9.304">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #c46257;
+      }
+    </style>
+  </defs>
+  <path id="arrow_up_icon" class="cls-1" d="M1.608,0,0,1.608,4.939,6.547,5.979,7.7,0,13.784l1.608,1.608L9.3,7.7Z" transform="translate(0 9.304) rotate(-90)"/>
+</svg>

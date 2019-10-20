@@ -1,0 +1,11 @@
+Django==2.2.4
+django_rest_swagger==2.2.0
+PyMySQL==0.9.3
+django_markdownx==2.0.28
+djangorestframework==3.10.3
+psycopg2==2.8.3
+djangorestframework-gis==0.14
+gunicorn==19.9.0
+gevent==1.4.0
+cognitojwt==1.1.0
+django-apscheduler==0.3.0

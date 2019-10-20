@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: mdillon/postgis
+      volumes:
+        - pg-data:/var/lib/postgresql/data
+      networks:
+        - back-tier
+
+  nginx:
+    ports:
+      - 8080:80
+
+  web:
+    environment:
+      - ARTSMAP_HOST=ratpack.sebastiantech.ca
+      - ARTSMAP_DB=fpcc_artsmap_prod
+      - ARTSMAP_USER=
+      - ARTSMAP_PW=
+      - FPLM_HOST=maps.fpcc.ca
+      - FPLM_DB=fpmaps_d7_live
+      - FPLM_USER=
+      - FPLM_PW=
+    command: ./prod.sh
+  frontend:
+    command: bash -c "yarn && yarn build && yarn start"
+    environment:
+      - HOST=http://maps-dev.fpcc.ca:8080
+
+volumes:
+    pg-data:
+        driver: local
+

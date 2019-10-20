@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+    web:
+        build: ./web
+        volumes:
+            - ./web:/code
+            - static:/static
+        networks:
+            - back-tier
+
+    frontend:
+        image: node
+        volumes:
+            - ./frontend:/code
+        networks:
+            - back-tier
+        working_dir: /code/
+        command: ./command.sh
+
+    nginx:
+        networks:
+            - back-tier
+        image: nginx:1.13
+        volumes:
+            - ./nginx/conf.d:/etc/nginx/conf.d
+            - static:/static
+            - ./web/media:/media
+
+
+networks:
+    back-tier:
+        driver: bridge
+
+volumes:
+    static:
+        driver: local
+

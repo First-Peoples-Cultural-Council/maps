@@ -1,0 +1,605 @@
+[{
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.64,53.97]}",
+            "popup": "\u003Ca href=\u0022\/kitamaat\u0022\u003EKitamaat Village Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.67,53.93]}",
+            "popup": "\u003Ca href=\u0022\/content\/nee-tahi-buhn-indian-band\u0022\u003ENee-Tahi-Buhn Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.496132,52.685657]}",
+            "popup": "\u003Ca href=\u0022\/content\/%CA%94esdilagh\u0022\u003E\u0294Esdilagh\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.704671,50.829225]}",
+            "popup": "\u003Ca href=\u0022\/content\/sexqeltq%C3%ADn-adams-lake\u0022\u003ESexqeltq\u00edn (Adams Lake)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.066667,49.283333]}",
+            "popup": "\u003Ca href=\u0022\/content\/ahousaht\u0022\u003EAhousaht\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.997999,49.147883]}",
+            "popup": "\u003Ca href=\u0022\/content\/aitchelitz-first-nation\u0022\u003EAitchelitz First Nation \u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.064853,52.112068]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsi-del-del\u0022\u003ETsi Del Del\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.322376,50.72043]}",
+            "popup": "\u003Ca href=\u0022\/content\/ashcroft-indian-band\u0022\u003EAshcroft Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.603283,48.341991]}",
+            "popup": "\u003Ca href=\u0022\/content\/scianew-beecher-bay\u0022\u003EScia\u0026#039;new (Beecher Bay)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.139179,56.762252]}",
+            "popup": "\u003Ca href=\u0022\/content\/blueberry-river-first-nations\u0022\u003EBlueberry River First Nations\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.322,50.7753]}",
+            "popup": "\u003Ca href=\u0022\/content\/stuxwt%C3%A9ws-bonaparte\u0022\u003ESt\u0026#039;uxwt\u00e9ws (Bonaparte)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.485035,49.963092]}",
+            "popup": "\u003Ca href=\u0022\/content\/boothroyd-band\u0022\u003EBoothroyd Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.45235,49.877864]}",
+            "popup": "\u003Ca href=\u0022\/content\/boston-bar-first-nation\u0022\u003EBoston Bar First Nation \u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.964765,50.770176]}",
+            "popup": "\u003Ca href=\u0022\/content\/nxw%C3%ADsten-bridge-river\u0022\u003ENxw\u00edsten (Bridge River)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.767365,54.234083]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsil-kaz-koh-burns-lake\u0022\u003ETs\u0026#039;il Kaz Koh (Burns Lake)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.989415,49.3113]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsleil-waututh-nation-0\u0022\u003ETsleil-Waututh Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.247016,50.039943]}",
+            "popup": "\u003Ca href=\u0022\/content\/wei-wai-kum-first-nation\u0022\u003EWei Wai Kum First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.600328,51.672786]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsqescenemc-canim-lake\u0022\u003ETsq\u0026#039;escenemc (Canim Lake)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.234758,51.638908]}",
+            "popup": "\u003Ca href=\u0022\/content\/canoe-creek\u0022\u003ECanoe Creek\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.209929,50.041855]}",
+            "popup": "\u003Ca href=\u0022\/content\/we-wai-kai-first-nation\u0022\u003EWe Wai Kai First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.934096,50.674308]}",
+            "popup": "\u003Ca href=\u0022\/content\/sekw%E2%80%99el%E2%80%99w%C3%A1s-cayoose-creek\u0022\u003ESekw\u2019el\u2019w\u00e1s (Cayoose Creek)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.442475,49.382993]}",
+            "popup": "\u003Ca href=\u0022\/content\/chawathil-first-nation\u0022\u003EChawathil First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.753566,49.189934]}",
+            "popup": "\u003Ca href=\u0022\/content\/cheam-first-nation\u0022\u003ECheam First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.792563,49.247409]}",
+            "popup": "\u003Ca href=\u0022\/content\/chehalis-indian-band\u0022\u003EChehalis Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.854656,49.016593]}",
+            "popup": "\u003Ca href=\u0022\/content\/stzuminus-first-nation\u0022\u003EStz\u0026#039;uminus First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.771431,54.018417]}",
+            "popup": "\u003Ca href=\u0022\/content\/cheslatta-carrier-nation\u0022\u003ECheslatta Carrier Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.783954,50.109014]}",
+            "popup": "\u003Ca href=\u0022\/content\/coldwater\u0022\u003EColdwater\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.991313,49.692481]}",
+            "popup": "\u003Ca href=\u0022\/content\/k%C3%B3moks-first-nation\u0022\u003EK\u0026#039;\u00f3moks First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.474551,50.435748]}",
+            "popup": "\u003Ca href=\u0022\/content\/cooks-ferry\u0022\u003ECook\u0026#039;s Ferry\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.712194,48.772671]}",
+            "popup": "\u003Ca href=\u0022\/content\/cowichan-tribes\u0022\u003ECowichan Tribes\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.939437,50.59691]}",
+            "popup": "\u003Ca href=\u0022\/content\/da%CC%B1naxda%CC%B1xw-a%CC%B1waetla%CC%B1la%CC%B1\u0022\u003EDa\u0331\u0026#039;naxda\u0331\u0026#039;xw \/ A\u0331waetla\u0331la\u0331\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.486391,59.923837]}",
+            "popup": "\u003Ca href=\u0022\/content\/daylu-dena-council\u0022\u003EDaylu Dena Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-130.209443,58.207808]}",
+            "popup": "\u003Ca href=\u0022\/content\/dease-river-first-nation\u0022\u003EDease River First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.669873,48.809223]}",
+            "popup": "\u003Ca href=\u0022\/content\/ditidaht-first-nation\u0022\u003EDitidaht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.794702,56.4926]}",
+            "popup": "\u003Ca href=\u0022\/content\/doig-river-first-nation\u0022\u003EDoig  River First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.081111,49.174372]}",
+            "popup": "\u003Ca href=\u0022\/content\/douglas-first-nation\u0022\u003EDouglas First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.859345,49.984998]}",
+            "popup": "\u003Ca href=\u0022\/content\/%CA%94ii%E1%B8%A5atis-ehattesaht\u0022\u003E\u0294ii\u1e25atis (Ehattesaht)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.14374,52.128008]}",
+            "popup": "\u003Ca href=\u0022\/content\/esketemc\u0022\u003EEsketemc\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.426903,48.441255]}",
+            "popup": "\u003Ca href=\u0022\/content\/sxime%C6%9Ae%C6%9A-esquimalt\u0022\u003ESXIME\u023dE\u023d (Esquimalt)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.663214,58.775837]}",
+            "popup": "\u003Ca href=\u0022\/content\/fort-nelson-first-nation\u0022\u003EFort Nelson First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.674802,55.256489]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitanmaax-band-council\u0022\u003EGitanmaax Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.02599,55.111906]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitanyow-band-council\u0022\u003EGitanyow Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.666667,55.233333]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitsegukla-band-council\u0022\u003EGitsegukla Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.067759,55.09952]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitwangak-band-council\u0022\u003EGitwangak Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-130.433219,53.79448]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitxaala-nation\u0022\u003EGitxaala Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.674549,55.312394]}",
+            "popup": "\u003Ca href=\u0022\/content\/sik-edakh-glen-vowell\u0022\u003ESik-edakh (Glen Vowell)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.496759,50.734148]}",
+            "popup": "\u003Ca href=\u0022\/content\/gwasala-nakwaxdaxw-first-nation\u0022\u003EGwa\u0026#039;sala-\u0026#039;Nakwaxda\u0026#039;xw First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.376158,50.682539]}",
+            "popup": "\u003Ca href=\u0022\/content\/gwawa%CA%BCenux%CC%B1w\u0022\u003EGwawa\u02bcenux\u0331w\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.591578,55.247553]}",
+            "popup": "\u003Ca href=\u0022\/content\/hagwilget-village\u0022\u003EHagwilget Village\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.696533,48.875036]}",
+            "popup": "\u003Ca href=\u0022\/content\/halalt-first-nation\u0022\u003EHalalt First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.647123,53.974585]}",
+            "popup": "\u003Ca href=\u0022\/content\/haisla\u0022\u003EHaisla\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.808989,56.730259]}",
+            "popup": "\u003Ca href=\u0022\/content\/halfway-river-first-nations\u0022\u003EHalfway River First Nations\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.25351,53.423919]}",
+            "popup": "\u003Ca href=\u0022\/content\/gitgaat-nation\u0022\u003EGitga\u0026#039;at Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.145551,52.160363]}",
+            "popup": "\u003Ca href=\u0022\/content\/heiltsuk-nation\u0022\u003EHeiltsuk Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.272027,49.368206]}",
+            "popup": "\u003Ca href=\u0022\/content\/hesquiaht\u0022\u003EHesquiaht\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.586667,51.091389]}",
+            "popup": "\u003Ca href=\u0022\/content\/llenlleneyten-high-bar\u0022\u003ELlenlleney\u0026#039;ten (High Bar)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.243551,49.951572]}",
+            "popup": "\u003Ca href=\u0022\/content\/homalco-first-nation\u0022\u003EHomalco First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.825175,49.265582]}",
+            "popup": "\u003Ca href=\u0022\/content\/hupacasath\u0022\u003EHupacasath\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.142608,48.833366]}",
+            "popup": "\u003Ca href=\u0022\/content\/huu-ay-aht\u0022\u003EHuu-ay-aht\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.983333,57.833333]}",
+            "popup": "\u003Ca href=\u0022\/content\/iskut-first-nation\u0022\u003EIskut First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.34913,50.069314]}",
+            "popup": "\u003Ca href=\u0022\/content\/kayukth-chektles7eth\u0022\u003EKa:\u0026#039;yu:\u0026#039;k\u0026#039;t\u0026#039;h\u0026#039; \/ Che:k:tles7et\u0026#039;h\u0026#039;\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.299102,50.682532]}",
+            "popup": "\u003Ca href=\u0022\/content\/tkemlups-kamloops\u0022\u003ETk\u0026#039;emlups (Kamloops)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.581413,50.233253]}",
+            "popup": "\u003Ca href=\u0022\/content\/kanaka-bar-indian-band\u0022\u003EKanaka Bar Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.677769,49.202096]}",
+            "popup": "\u003Ca href=\u0022\/content\/katzie-first-nation\u0022\u003EKatzie First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.691748,55.35075]}",
+            "popup": "\u003Ca href=\u0022\/content\/anspa-yaxw-kispiox\u0022\u003EAnspa yaxw (Kispiox)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.526963,52.590337]}",
+            "popup": "\u003Ca href=\u0022\/content\/kitasooxaixais-nation\u0022\u003EKitasoo\/Xaixais Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.173515,53.929386]}",
+            "popup": "\u003Ca href=\u0022\/content\/kitselas-first-nation\u0022\u003EKitselas First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.588081,54.517637]}",
+            "popup": "\u003Ca href=\u0022\/content\/kitsumkalum-band-council\u0022\u003EKitsumkalum Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.916667,50.116667]}",
+            "popup": "\u003Ca href=\u0022\/content\/klahoose-first-nation\u0022\u003EKlahoose First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.511102,52.973361]}",
+            "popup": "\u003Ca href=\u0022\/content\/lhooskuz-dene-nation\u0022\u003ELhoosk\u0026#039;uz Dene Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.784451,53.918598]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwadacha\u0022\u003EKwadacha\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.407601,50.694847]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwakiutl-band-council\u0022\u003EKwakiutl Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.585946,49.162674]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwantlen-first-nation\u0022\u003EKwantlen First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.950135,49.171767]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwaw-kwaw-apilt-first-nation\u0022\u003EKwaw-kwaw-apilt First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.254285,50.030677]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwiakah-first-nation\u0022\u003EKwiakah First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.600309,50.695955]}",
+            "popup": "\u003Ca href=\u0022\/content\/k%CC%B1wikwa%CC%B1sutinux%CC%B1-ha%CC%B1xwa-mis\u0022\u003EK\u0331wikwa\u0331sutinux\u0331  \/ Ha\u0331\u0026#039;xwa-mis\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.80658,49.243879]}",
+            "popup": "\u003Ca href=\u0022\/content\/kwikwetlem-first-nation\u0022\u003EKwikwetlem First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.758363,54.238409]}",
+            "popup": "\u003Ca href=\u0022\/content\/lake-babine-nation\u0022\u003ELake Babine Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.054167,48.825833]}",
+            "popup": "\u003Ca href=\u0022\/content\/lake-cowichan-first-nation\u0022\u003ELake Cowichan First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-130.431908,54.550636]}",
+            "popup": "\u003Ca href=\u0022\/content\/lax-kwalaams-band\u0022\u003ELax Kw\u0026#039;alaams Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.028914,49.204394]}",
+            "popup": "\u003Ca href=\u0022\/content\/leq%C3%A1mel-first-nation\u0022\u003ELeq\u0026#039;\u00e1:mel First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.622734,54.003664]}",
+            "popup": "\u003Ca href=\u0022\/content\/lheidli-tenneh-band\u0022\u003ELheidli T\u0026#039;enneh Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-128.703116,60.065433]}",
+            "popup": "\u003Ca href=\u0022\/content\/liard-first-nation\u0022\u003ELiard First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.694672,50.817125]}",
+            "popup": "\u003Ca href=\u0022\/content\/skwlax-little-shuswap\u0022\u003ESkwlax (Little Shuswap)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-116.498333,49.036944]}",
+            "popup": "\u003Ca href=\u0022\/content\/yaqan-nu%CA%94kiy-lower-kootenay\u0022\u003Eyaqan nu\u0294kiy (Lower Kootenay)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.813389,50.118515]}",
+            "popup": "\u003Ca href=\u0022\/content\/lower-nicola-indian-band\u0022\u003ELower Nicola Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.826151,49.205055]}",
+            "popup": "\u003Ca href=\u0022\/content\/lower-similkameen-indian-band\u0022\u003ELower Similkameen Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.69494,48.874814]}",
+            "popup": "\u003Ca href=\u0022\/content\/lyackson-first-nation\u0022\u003ELyackson First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.577486,50.237468]}",
+            "popup": "\u003Ca href=\u0022\/content\/lytton-first-nation\u0022\u003ELytton First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.546451,48.637369]}",
+            "popup": "\u003Ca href=\u0022\/content\/m%C3%A1lexe%C6%9A-malahat\u0022\u003EM\u00c1LEXE\u023d (Malahat)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.253724,50.030629]}",
+            "popup": "\u003Ca href=\u0022\/content\/mama%CC%B1lilik%CC%B1a%CC%B1la-qweqwasotem\u0022\u003EMama\u0331lilik\u0331a\u0331la \/ Qwe\u0026#039;Qwa\u0026#039;Sot\u0026#039;Em\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.294187,49.110683]}",
+            "popup": "\u003Ca href=\u0022\/content\/matsqui-first-nation\u0022\u003EMatsqui First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.043873,54.993075]}",
+            "popup": "\u003Ca href=\u0022\/content\/mcleod-lake\u0022\u003EMcLeod Lake\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-130.326017,54.313018]}",
+            "popup": "\u003Ca href=\u0022\/content\/metlakatla-band-council\u0022\u003EMetlakatla Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.269792,54.893185]}",
+            "popup": "\u003Ca href=\u0022\/content\/witset-first-nation\u0022\u003EWitset First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.721341,50.318251]}",
+            "popup": "\u003Ca href=\u0022\/content\/lilwat-nation\u0022\u003ELil\u0026#039;wat Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.049235,49.778232]}",
+            "popup": "\u003Ca href=\u0022\/content\/mowachaht-muchalaht\u0022\u003EMowachaht \/ Muchalaht\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.197439,49.226703]}",
+            "popup": "\u003Ca href=\u0022\/content\/x%CA%B7m%C9%99%CE%B8k%CA%B7%C9%99y%CC%93%C9%99m-musqueam\u0022\u003Ex\u02b7m\u0259\u03b8k\u02b7\u0259y\u0313\u0259m (Musqueam)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.552796,54.061971]}",
+            "popup": "\u003Ca href=\u0022\/content\/nadleh-whuten\u0022\u003ENadleh Whut\u0026#039;en\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.255661,54.438839]}",
+            "popup": "\u003Ca href=\u0022\/content\/nakazdli-band\u0022\u003ENak\u0026#039;azdli Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.916397,50.58266]}",
+            "popup": "\u003Ca href=\u0022\/content\/%CA%BCna%CC%B1m%C7%A5is-first-nation\u0022\u003E\u02bcNa\u0331m\u01e5is First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.493297,52.977637]}",
+            "popup": "\u003Ca href=\u0022\/content\/nazko-first-nation\u0022\u003ENazko First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.716902,50.773478]}",
+            "popup": "\u003Ca href=\u0022\/content\/neskonlith\u0022\u003ENeskonlith\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.577,50.225]}",
+            "popup": "\u003Ca href=\u0022\/content\/nicomen-indian-band\u0022\u003ENicomen Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.95486,54.994657]}",
+            "popup": "\u003Ca href=\u0022\/content\/gingolx-village-government\u0022\u003EGingolx Village Government\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.221334,55.191753]}",
+            "popup": "\u003Ca href=\u0022\/content\/nisgaa-village-gitwinksihlkw\u0022\u003ENisga\u0026#039;a Village of Gitwinksihlkw \u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.58121,55.032217]}",
+            "popup": "\u003Ca href=\u0022\/content\/laxgaltsap-village-government\u0022\u003ELaxgalts\u0026#039;ap Village Government\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-129.07833,55.20578]}",
+            "popup": "\u003Ca href=\u0022\/content\/new-aiyansh-village\u0022\u003ENew Aiyansh Village\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.793075,50.126034]}",
+            "popup": "\u003Ca href=\u0022\/content\/nooaitch\u0022\u003ENooaitch\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.478883,50.553902]}",
+            "popup": "\u003Ca href=\u0022\/content\/nquatqua\u0022\u003EN\u0026#039;Quatqua\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.378224,50.030571]}",
+            "popup": "\u003Ca href=\u0022\/content\/nuchatlaht-first-nation\u0022\u003ENuchatlaht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.748767,52.551529]}",
+            "popup": "\u003Ca href=\u0022\/content\/nuxalk-nation\u0022\u003ENuxalk Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.345779,50.261402]}",
+            "popup": "\u003Ca href=\u0022\/content\/okanagan-indian-band\u0022\u003EOkanagan Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.125,54.027222]}",
+            "popup": "\u003Ca href=\u0022\/content\/old-masset-village-council\u0022\u003EOld Masset Village Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.28,50.7259]}",
+            "popup": "\u003Ca href=\u0022\/content\/oregon-jack-creek-band\u0022\u003EOregon Jack Creek Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.550249,49.173898]}",
+            "popup": "\u003Ca href=\u0022\/content\/osoyoos-indian-band\u0022\u003EOsoyoos Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.224862,51.680376]}",
+            "popup": "\u003Ca href=\u0022\/content\/wuikinuxv-nation\u0022\u003EWuikinuxv Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.422299,48.552966]}",
+            "popup": "\u003Ca href=\u0022\/content\/pacheedaht-first-nation\u0022\u003EPacheedaht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.458092,48.627842]}",
+            "popup": "\u003Ca href=\u0022\/content\/bo%E1%B8%B1e%C4%87en-pauquachin\u0022\u003EBO\u1e30E\u0106EN (Pauquachin)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.717128,48.922331]}",
+            "popup": "\u003Ca href=\u0022\/content\/penelakut-tribe\u0022\u003EPenelakut Tribe\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.599229,49.452805]}",
+            "popup": "\u003Ca href=\u0022\/content\/penticton-indian-band\u0022\u003EPenticton Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.658092,49.299746]}",
+            "popup": "\u003Ca href=\u0022\/content\/peters-band\u0022\u003EPeters Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.959983,49.134135]}",
+            "popup": "\u003Ca href=\u0022\/content\/popkum-first-nation\u0022\u003EPopkum First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.713265,58.109949]}",
+            "popup": "\u003Ca href=\u0022\/content\/prophet-river-first-nation\u0022\u003EProphet River First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.02457,49.236492]}",
+            "popup": "\u003Ca href=\u0022\/content\/qayqayt-first-nation\u0022\u003EQayqayt First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.615836,49.393913]}",
+            "popup": "\u003Ca href=\u0022\/content\/qualicum-first-nation\u0022\u003EQualicum First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.582293,50.59979]}",
+            "popup": "\u003Ca href=\u0022\/content\/g%CC%B1usgimukw-quatsino-first-nation\u0022\u003EG\u0331usgimukw (Quatsino First Nation)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.4511,52.954897]}",
+            "popup": "\u003Ca href=\u0022\/content\/lhtako-dene-nation\u0022\u003ELhtako Dene Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.010533,54.01451]}",
+            "popup": "\u003Ca href=\u0022\/content\/saikuz-first-nation\u0022\u003ESaik\u0026#039;uz First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.080395,49.174136]}",
+            "popup": "\u003Ca href=\u0022\/content\/samahquam-nation\u0022\u003ESamahquam Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.629503,55.69538]}",
+            "popup": "\u003Ca href=\u0022\/content\/saulteau-first-nations\u0022\u003ESaulteau First Nations\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.027044,49.264792]}",
+            "popup": "\u003Ca href=\u0022\/content\/scowlitz-first-nation\u0022\u003EScowlitz First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.765741,49.240141]}",
+            "popup": "\u003Ca href=\u0022\/content\/seabird-island-indian-band\u0022\u003ESeabird Island Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.756889,49.474004]}",
+            "popup": "\u003Ca href=\u0022\/content\/sechelt-indian-band\u0022\u003ESechelt Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.77069,49.010614]}",
+            "popup": "\u003Ca href=\u0022\/content\/semyome-semiahmoo\u0022\u003ESEMYOME (Semiahmoo)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.062334,50.741062]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsal%C3%A1lh-seton-lake\u0022\u003ETsal\u0026#039;\u00e1lh (Seton Lake)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.779685,50.10926]}",
+            "popup": "\u003Ca href=\u0022\/content\/shackan\u0022\u003EShackan\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-116.028423,50.504375]}",
+            "popup": "\u003Ca href=\u0022\/content\/kenpesqt-shuswap\u0022\u003EKenpesq\u0026#039;t (Shuswap)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.990644,49.177721]}",
+            "popup": "\u003Ca href=\u0022\/content\/skway-first-nation\u0022\u003ESkway First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.606668,49.342992]}",
+            "popup": "\u003Ca href=\u0022\/content\/shxwowhamel-first-nation\u0022\u003EShxw\u0026#039;owhamel First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.139405,51.186928]}",
+            "popup": "\u003Ca href=\u0022\/content\/simpcw\u0022\u003ESimpcw\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.581692,50.233375]}",
+            "popup": "\u003Ca href=\u0022\/content\/siska-indian-band\u0022\u003ESiska Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.409089,49.937605]}",
+            "popup": "\u003Ca href=\u0022\/content\/skatin-nations\u0022\u003ESkatin Nations\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.847624,50.751563]}",
+            "popup": "\u003Ca href=\u0022\/content\/skeetchestn\u0022\u003ESkeetchestn\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-132.011618,53.248159]}",
+            "popup": "\u003Ca href=\u0022\/content\/skidegate-band-council\u0022\u003ESkidegate Band Council\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.766667,54.016667]}",
+            "popup": "\u003Ca href=\u0022\/content\/skin-tyee-nation\u0022\u003ESkin Tyee Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.003911,49.120906]}",
+            "popup": "\u003Ca href=\u0022\/content\/skowkale-first-nation\u0022\u003ESkowkale First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.572379,50.187677]}",
+            "popup": "\u003Ca href=\u0022\/content\/skuppah-indian-band\u0022\u003ESkuppah Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.972313,49.177881]}",
+            "popup": "\u003Ca href=\u0022\/content\/skwah-first-nation\u0022\u003ESkwah First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.607755,49.897946]}",
+            "popup": "\u003Ca href=\u0022\/content\/sliammon-first-nation\u0022\u003ESliammon First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.086704,49.246277]}",
+            "popup": "\u003Ca href=\u0022\/content\/snaw-naw-first-nation\u0022\u003ESnaw-Naw-As First Nation \u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.929869,49.15158]}",
+            "popup": "\u003Ca href=\u0022\/content\/snuneymuxw-first-nation\u0022\u003ESnuneymuxw First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.123529,52.268393]}",
+            "popup": "\u003Ca href=\u0022\/content\/xatsull-soda-creek\u0022\u003EXats\u0026#039;ull (Soda Creek)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.426264,48.44728]}",
+            "popup": "\u003Ca href=\u0022\/content\/songhees-nation\u0022\u003ESonghees Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.964248,49.079689]}",
+            "popup": "\u003Ca href=\u0022\/content\/soowahlie-indian-band\u0022\u003ESoowahlie Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.138466,50.551313]}",
+            "popup": "\u003Ca href=\u0022\/content\/splatsin\u0022\u003ESplats\u0026#039;in\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.429172,49.561062]}",
+            "popup": "\u003Ca href=\u0022\/content\/spuzzum-first-nation\u0022\u003ESpuzzum First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.078383,49.311924]}",
+            "popup": "\u003Ca href=\u0022\/content\/squamish-nation\u0022\u003ESquamish Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.980951,49.158324]}",
+            "popup": "\u003Ca href=\u0022\/content\/squiala-first-nation\u0022\u003ESquiala First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-115.758794,49.568002]}",
+            "popup": "\u003Ca href=\u0022\/content\/%CA%94aq%CC%93am-st-marys-band\u0022\u003E\u0294aq\u0313am (St. Mary\u0026#039;s Band)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.849555,54.05623]}",
+            "popup": "\u003Ca href=\u0022\/content\/stellaten-first-nation\u0022\u003EStellat\u0026#039;en First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.080383,51.806382]}",
+            "popup": "\u003Ca href=\u0022\/content\/yunesitin\u0022\u003EYunesit\u0026#039;in\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.195856,49.055468]}",
+            "popup": "\u003Ca href=\u0022\/content\/sumas-first-nation\u0022\u003ESumas First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-131.159156,57.90293]}",
+            "popup": "\u003Ca href=\u0022\/content\/tahltan-nation\u0022\u003ETahltan Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.73253,53.913367]}",
+            "popup": "\u003Ca href=\u0022\/content\/takla-lake-first-nation\u0022\u003ETakla Lake First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-133.689524,59.578028]}",
+            "popup": "\u003Ca href=\u0022\/content\/taku-river-tlingit-first-nation\u0022\u003ETaku River Tlingit First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.942234,50.678105]}",
+            "popup": "\u003Ca href=\u0022\/content\/t%E2%80%99%C3%ADt%E2%80%99q%E2%80%99et-first-nation\u0022\u003ET\u2019\u00edt\u2019q\u2019et First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.91211,49.173333]}",
+            "popup": "\u003Ca href=\u0022\/content\/tla-o-qui-aht-first-nation\u0022\u003ETla-o-qui-aht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.934156,50.915548]}",
+            "popup": "\u003Ca href=\u0022\/content\/t%CC%95%C5%82at%CC%95%C5%82asik%CC%95%CC%B1wala\u0022\u003ET\u0315\u0142at\u0315\u0142asik\u0315\u0331wala\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.723674,54.655855]}",
+            "popup": "\u003Ca href=\u0022\/content\/tl%E2%80%99azt%E2%80%99en-nation\u0022\u003ETl\u2019azt\u2019en Nation \u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.277992,52.082986]}",
+            "popup": "\u003Ca href=\u0022\/content\/tletinqox-tin-government-office\u0022\u003ETl\u0026#039;etinqox-T\u0026#039;in Government Office\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.246662,49.950523]}",
+            "popup": "\u003Ca href=\u0022\/content\/%C5%82awit%CA%BCsis-tlowitsis\u0022\u003E\u0141awit\u02bcsis (Tlowitsis)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-115.083811,49.099084]}",
+            "popup": "\u003Ca href=\u0022\/content\/%CA%94akink%CC%93um%C7%82asnuq%C7%82i%CA%94it-tobacco-plains-band\u0022\u003E\u0294akink\u0313um\u01c2asnuq\u01c2i\u0294it (Tobacco Plains Band)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.50915,51.958737]}",
+            "popup": "\u003Ca href=\u0022\/content\/tl%E2%80%99esqox\u0022\u003ETl\u2019esqox\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.557106,48.945081]}",
+            "popup": "\u003Ca href=\u0022\/content\/toquaht-first-nation\u0022\u003EToquaht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.404747,48.575229]}",
+            "popup": "\u003Ca href=\u0022\/content\/w%CC%B1jo%C6%9Ae%C6%9Ap-tsartlip\u0022\u003EW\u0331JO\u023dE\u023dP (Tsartlip)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-126.182678,50.977258]}",
+            "popup": "\u003Ca href=\u0022\/content\/dzawada%CC%B1%CA%BCenux%CC%B1w-tsawataineuk\u0022\u003EDzawada\u0331\u02bcenux\u0331w (Tsawataineuk)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.416143,48.594972]}",
+            "popup": "\u003Ca href=\u0022\/content\/s%E2%B1%A6%C3%A1utw%CC%B1-tsawout\u0022\u003ES\u023e\u00c1UTW\u0331 (Tsawout)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.098162,49.03802]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsawwassen-first-nation\u0022\u003ETsawwassen First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.742437,53.90748]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsay-keh-dene\u0022\u003ETsay Keh Dene\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-124.849213,49.265408]}",
+            "popup": "\u003Ca href=\u0022\/content\/tseshaht-first-nation\u0022\u003ETseshaht First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.452918,48.665304]}",
+            "popup": "\u003Ca href=\u0022\/content\/w%CC%B1si%E1%B8%B5em-tseycum\u0022\u003EW\u0331SI\u1e34EM (Tseycum)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.828755,50.882798]}",
+            "popup": "\u003Ca href=\u0022\/content\/tskwaylaxw\u0022\u003ETs\u0026#039;kw\u0026#039;aylaxw\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.70788,48.386336]}",
+            "popup": "\u003Ca href=\u0022\/content\/tsou-ke-nation\u0022\u003ET\u0026#039;Sou-ke Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.957355,49.11139]}",
+            "popup": "\u003Ca href=\u0022\/content\/tzeachten-first-nation\u0022\u003ETzeachten First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.119673,48.800336]}",
+            "popup": "\u003Ca href=\u0022\/content\/uchucklesaht-tribe\u0022\u003EUchucklesaht Tribe\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.535375,48.944172]}",
+            "popup": "\u003Ca href=\u0022\/content\/ucluelet-first-nation\u0022\u003EUcluelet First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-125.316667,52.466667]}",
+            "popup": "\u003Ca href=\u0022\/content\/ulkatchoten\u0022\u003EUlkatchot\u0026#039;en\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.443619,49.379979]}",
+            "popup": "\u003Ca href=\u0022\/content\/union-bar-band\u0022\u003EUnion Bar Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.282641,50.143035]}",
+            "popup": "\u003Ca href=\u0022\/content\/upper-nicola-band\u0022\u003EUpper Nicola Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.824477,49.205307]}",
+            "popup": "\u003Ca href=\u0022\/content\/upper-similkameen-indian-band\u0022\u003EUpper Similkameen Indian Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.733333,55.833333]}",
+            "popup": "\u003Ca href=\u0022\/content\/west-moberly-first-nations\u0022\u003EWest Moberly First Nations\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-119.532736,49.883744]}",
+            "popup": "\u003Ca href=\u0022\/content\/westbank-first-nation\u0022\u003EWestbank First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-127.168554,54.782355]}",
+            "popup": "\u003Ca href=\u0022\/content\/wetsuweten-first-nation\u0022\u003EWet\u0026#039;suwet\u0026#039;en First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-120.251652,50.966485]}",
+            "popup": "\u003Ca href=\u0022\/content\/pelltiqt-whispering-pinesclinton\u0022\u003EPellt\u0026#039;iq\u0026#039;t (Whispering Pines\/Clinton)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.954304,52.089713]}",
+            "popup": "\u003Ca href=\u0022\/content\/texelcemc-williams-lake\u0022\u003ET\u0026#039;exelcemc (Williams Lake)\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.864321,50.734703]}",
+            "popup": "\u003Ca href=\u0022\/content\/xaxlip-first-nation\u0022\u003EXaxli\u0026#039;p First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-123.842341,51.48353]}",
+            "popup": "\u003Ca href=\u0022\/content\/xeni-gwetin\u0022\u003EXeni Gwet\u0026#039;in\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.010926,49.079808]}",
+            "popup": "\u003Ca href=\u0022\/content\/yakweakwioose-band\u0022\u003EYakweakwioose Band\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-121.42608,49.56221]}",
+            "popup": "\u003Ca href=\u0022\/content\/skawahlook-first-nation\u0022\u003ESkawahlook First Nation\u003C\/a\u003E"
+        }, {
+            "geoJSON": "{\u0022type\u0022:\u0022Point\u0022,\u0022coordinates\u0022:[-122.757295,53.920497]}",
+            "popup": "\u003Ca href=\u0022\/content\/yekooche-first-nation\u0022\u003EYekooche First Nation\u003C\/a\u003E"
+        }]
+

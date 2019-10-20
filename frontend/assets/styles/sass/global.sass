@@ -1,0 +1,117 @@
+html,
+body,
+#__nuxt,
+#__layout
+    width: 100%
+    height: 100%
+
+html,
+body,
+.popover
+    font-family: 'Lato', sans-serif
+
+\:root
+    --color-red: #C46257
+    --color-gray: #6f6f70
+    --color-darkgray: #454545
+    --color-gold: #AD8450
+    --sidebar-width: 375px
+    --detail-sidebar-width: 500px
+    --color-beige: #F4EEE9
+    --searchbar-width: 500px
+
+
+.font-1
+    font-size: 1em
+
+.font-09
+    font-size: 0.9em
+
+.font-08
+    font-size: 0.8em
+
+.font-07
+    font-size: 0.7em
+
+.color-dark-gray
+    color: var(--color-dark-gray, #454545)
+.color-gray
+    color: var(--color-gray, #707070)
+
+.color-gold
+    color: var(--color-gold, #AD8450)
+
+.hover-left-move
+    transition: transform 0.1s ease-in
+.hover-left-move:hover
+    transform: translateX(10px)
+
+.cursor-pointer
+    cursor: pointer
+
+.padding-05 
+    padding: 0.5rem
+
+.list-style-none
+    list-style: none
+
+.word-break-all
+    word-break: break-all
+
+.vertical-center-translate
+    position: relative
+    top: 50%
+    transform: translateY(-50%)
+
+.valign-middle
+    vertical-align: middle
+
+@media (max-width: 992px)
+    .hide-mobile
+        display: none !important
+
+.art-marker, .place-marker, .nation-marker
+  width: 35px
+  height: 35px
+  border-radius: 50%
+  background: white
+  border: 2px solid white
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+
+.hover-marker
+  width: 30px
+  height: 30px
+  padding: 5px
+  border-radius: 25%
+  border: 1px solid white
+  background-color: #c46156
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+
+@keyframes pulsate
+  0%
+    opacity: 0.2;
+  50%
+    opacity: 0.7;
+  100%
+    opacity: 0.2;
+
+.search-marker
+  width: 40px
+  height: 50px;
+
+.marker
+  cursor: pointer
+  background-size: cover
+
+.ds-container
+  overflow: hidden
+
+@media (max-width: 992px) 
+  .header-mobile 
+    display: block !important
+
+
+  
+
