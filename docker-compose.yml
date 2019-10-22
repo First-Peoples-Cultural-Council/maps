@@ -21,7 +21,7 @@ services:
     nginx:
         networks:
             - back-tier
-        image: nginx:1.13
+        build: ./nginx
         volumes:
             - ./nginx/conf.d:/etc/nginx/conf.d
             - static:/static
