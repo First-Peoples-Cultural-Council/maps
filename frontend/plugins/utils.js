@@ -1,4 +1,5 @@
 import { groupBy, uniqBy } from 'lodash'
+import $axios from '@nuxtjs/axios'
 import { pointIntersects, intersects } from '../mixins/map'
 
 export const getApiUrl = path => {
@@ -165,6 +166,10 @@ export const getGenericFileType = fileType => {
   if (fileType === 'youtube') {
     return 'youtube'
   }
+
+  if (fileType === 'vimeo') {
+    return 'vimeo'
+  }
   if (imageTypes[fileType]) {
     return 'image'
   }
@@ -217,3 +222,11 @@ export const getYoutubeId = link => {
   /* eslint-disable */
   return link.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/)
 }
+
+export const getVimeoEmbed = async link => {
+  const result = $axios.$get(`https://vimeo.com/api/oembed.json?url=${link}`)
+  console.log('Result', result)
+  return result.video_id
+}
+
+
