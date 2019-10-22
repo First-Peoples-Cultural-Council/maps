@@ -216,6 +216,7 @@ def notify(user, since=None):
                 [user.email],
                 html_message=html,
             )
+            return html
     else:
         print("No new information for this person.", intro)
 
