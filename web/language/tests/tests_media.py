@@ -8,6 +8,7 @@ from language.models import (
     Language, 
     PlaceName, 
     Community, 
+    CommunityMember, 
     Media, 
 )
 
@@ -102,7 +103,7 @@ class MediaAPITests(BaseTestCase):
 
     def test_media_list_logged_in_creator(self):
         """
-		Ensure placename list API brings newly created data
+		Ensure media list API brings newly created data of a CREATOR (who creates a media)
 		"""
         # Must be logged in to submit a place.
         self.assertTrue(self.client.login(username="testuser001", password="password"))
@@ -191,93 +192,121 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 4)
 
-    # def test_placename_list_logged_in_member(self):
-    #     """
-	# 	Ensure placename list API brings newly created data
-	# 	"""
-    #     # Must be logged in to submit a place.
-    #     self.assertTrue(self.client.login(username="testuser001", password="password"))
+    def test_media_list_logged_in_member(self):
+        """
+		Ensure media list API brings newly created data for a COMMUNITY MEMBER
+		"""
+        # Must be logged in to submit a place.
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 0)
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
-    #     # VERIFIED COMMUNITY_ONLY Placename
-    #     test_placename01 = PlaceName.objects.create(
-    #         name = "test place01",
-    #         community = self.community,
-    #         language = self.language1,
-    #         community_only = True,
-    #         status=PlaceName.VERIFIED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 0)
+        # VERIFIED Placename
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            community = self.community1,
+            language = self.language1,
+            status=PlaceName.VERIFIED
+        )
+        
+        # VERIFIED COMMUNITY_ONLY Media
+        media01 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
-    #     # VERIFIED CommunityMember MATCHING users's community
-    #     member_same01 = CommunityMember.objects.create(
-    #         user = self.user,
-    #         community = self.community,
-    #         status=CommunityMember.UNVERIFIED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 0)
+        # UNVERIFIED CommunityMember MATCHING users's community
+        member_same01 = CommunityMember.objects.create(
+            user = self.user,
+            community = self.community1,
+            status=CommunityMember.UNVERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
-    #     # After the community member is VERIFIED
-    #     member_same01.status=CommunityMember.VERIFIED
-    #     member_same01.save()
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 1)
+        # After the community member is VERIFIED
+        member_same01.status=CommunityMember.VERIFIED
+        member_same01.save()
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
-    #     # UNVERIFIED COMMUNITY_ONLY Placename
-    #     test_placename02 = PlaceName.objects.create(
-    #         name = "test place02",
-    #         community = self.community,
-    #         language = self.language1,
-    #         community_only = True,
-    #         status=PlaceName.UNVERIFIED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 2)
+        # UNVERIFIED COMMUNITY_ONLY Media
+        media02 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
-    #     # REJECTED COMMUNITY_ONLY Placename
-    #     test_placename03 = PlaceName.objects.create(
-    #         name = "test place03",
-    #         community = self.community,
-    #         language = self.language1,
-    #         community_only = True,
-    #         status=PlaceName.REJECTED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 3)
+        # REJECTED COMMUNITY_ONLY Media
+        media03 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
 
-    #     # FLAGGED COMMUNITY_ONLY Placename
-    #     test_placename04 = PlaceName.objects.create(
-    #         name = "test place04",
-    #         community = self.community,
-    #         language = self.language1,
-    #         community_only = True,
-    #         status=PlaceName.FLAGGED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 4)
+        # FLAGGED COMMUNITY_ONLY Media
+        media04 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
 
-    #     # VERIFIED COMMUNITY_ONLY Placename from another community
-    #     test_placename05 = PlaceName.objects.create(
-    #         name = "test place05",
-    #         community = self.community2,
-    #         language = self.language1,
-    #         community_only = True,
-    #         status=PlaceName.VERIFIED
-    #     )
-    #     response = self.client.get("/api/placename/", format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 4)
+        # VERIFIED Media from another community
+        media05 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            community = self.community2,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+        # VERIFIED Placename from another community
+        placename2 = PlaceName.objects.create(
+            name = "test place02",
+            community = self.community2,
+            language = self.language1,
+            status=PlaceName.VERIFIED
+        )
+
+        # VERIFIED Media from another placename from another community
+        media06 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename2,
+            community_only = True,
+            status=Media.VERIFIED
+        )
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
 
     # def test_placename_list_logged_in_administrator(self):
     #     """
