@@ -228,7 +228,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
-        # VERIFIED CommunityMember MATCHING users's community
+        # UNVERIFIED CommunityMember MATCHING users's community
         member_same01 = CommunityMember.objects.create(
             user = self.user,
             community = self.community,
