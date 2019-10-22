@@ -301,6 +301,7 @@ export default {
     },
     isSearchEmpty() {
       return (
+        this.searchQuery.length !== 0 &&
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
