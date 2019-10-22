@@ -625,10 +625,10 @@ export default {
           done = true
         }
       })
-
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          if (feature.layer.id === 'fn-lang-areas-shaded') {
+          console.log('Feature', feature)
+          if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
