@@ -12,7 +12,8 @@ services:
   nginx:
     ports:
       - 8080:80
-
+    environment:
+      - CACHE_LIFE=2s
   web:
     environment:
       - ARTSMAP_HOST=ratpack.sebastiantech.ca
