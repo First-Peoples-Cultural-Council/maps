@@ -47,7 +47,7 @@
               @click="handleCreatorClick($event, creator)"
             >
               <b-badge variant="primary"
-                >Uploaded By: <a>{{ creator.username }}</a></b-badge
+                >Uploaded By: <a>{{ getCreatorName() }}</a></b-badge
               >
               <b-badge
                 v-if="place.community_only"
@@ -457,10 +457,21 @@ export default {
       })
     },
     getCreatorName() {
-      return (
-        this.place.creator.first_name ||
-        this.place.creator.username.split('__')[0]
-      )
+      if (!this.creator.first_name && !this.creator.last_name) {
+        return this.creator.username.split('__')[0]
+      }
+
+      if (this.creator.first_name && !this.creator.last_name) {
+        return this.creator.first_name
+      }
+
+      if (!this.creator.first_name && this.creator.last_name) {
+        return this.creator.last_name
+      }
+
+      if (this.creator.first_name && this.creator.last_name) {
+        return `${this.creator.first_name} ${this.creator.last_name}`
+      }
     },
     edit() {
       this.$router.push('/contribute?id=' + this.place.id)
