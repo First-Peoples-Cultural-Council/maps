@@ -1,0 +1,151 @@
+from django.test import TestCase
+from django.core import mail
+from django.utils import timezone
+
+import os
+from datetime import timedelta
+import re
+
+from language.notifications import (
+    notify
+)
+from users.models import User
+from language.models import (
+    Language, 
+    Community,
+    PlaceName,
+    Media,
+    CommunityMember,
+    Favourite,
+)
+
+
+class EmailTests(TestCase):
+
+    def setUp(self):
+        self.from_email = 'info@fpcc.ca'
+        self.to = 'denis@countable.ca'
+
+        self.user = User.objects.create(
+            username = "testuser001",
+            first_name = "Test",
+            last_name = "user 001",
+            email = self.to,
+            is_staff = True,
+            is_superuser = True,
+        )
+        self.user.set_password("password")
+        self.user.save()
+
+        self.user2 = User.objects.create(
+            username = "testuser002",
+            first_name = "Test2",
+            last_name = "user 002",
+            email = "test@countable.ca",
+        )
+
+    def test_notify(self):
+
+        language1 = Language.objects.create(name="Test language 001")
+        self.user.languages.add(language1)
+        self.user.save()
+
+        community1 = Community.objects.create(name="Test community 001")
+        communitymember1 = CommunityMember.objects.create(
+            user = self.user,
+            community = community1,
+            status=CommunityMember.VERIFIED
+        )
+
+        community2 = Community.objects.create(name="Test community 002")
+        communitymember2 = CommunityMember.objects.create(
+            user = self.user,
+            community = community2,
+            status=CommunityMember.UNVERIFIED
+        )
+
+        placename1 = PlaceName.objects.create(
+            name = "test place01",
+            community = community1,
+            language = language1,
+            creator=self.user,
+            status=PlaceName.VERIFIED,
+        )
+
+        placename2 = PlaceName.objects.create(
+            name = "test place02",
+            community = community1,
+            language = language1,
+            status=PlaceName.VERIFIED,
+        )
+
+        media1 = Media.objects.create(
+            name = "test media01",
+            file_type = "string",
+            placename = placename1,
+            creator=self.user,
+            status=Media.VERIFIED,
+        )
+
+        # Another user made a Favourite out of the created placename
+        test_favourite_place = Favourite.objects.create(
+            name="test favourite",
+            user=self.user2, 
+            place=placename1, 
+            favourite_type="favourite", 
+            description="description", 
+        )
+
+        # Another user made a Favourite out of the created media
+        test_favourite_media = Favourite.objects.create(
+            name="test favourite",
+            user=self.user2, 
+            media=media1,
+            favourite_type="favourite", 
+            description="description", 
+        )
+
+        user = User.objects.get(email=self.user.email)
+        body = notify(user, timezone.now() - timedelta(days=7))
+
+        # Testing if the language create was referenced in the email
+        assert body.count(language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(community1.name) > 0
+
+        # Testing if the placename create was sent in the email
+        assert body.count(placename1.name) > 0
+
+        # Testing Community memberships not verified yet
+        self.assertEqual(body.count("You are still awaiting membership verification"), 1)
+
+        # Testing if the placename was not sent more than once
+        self.assertEqual(body.count("Someone uploaded a new place:"), 1)
+
+        # Testing if the media was not sent more than once
+        self.assertEqual(body.count("has a new media uploaded"), 1)
+
+        # Testing if the placename favourite was sent in the email
+        self.assertEqual(body.count("your place was favourited!"), 1)
+
+        # Testing if the media favourite was sent in the email
+        self.assertEqual(body.count("your contribution was favourited!"), 1)
+
+
+    # def test_send_mail(self):
+    #     # Use Django send_mail function to construct a message
+    #     # Note that you don't have to use this function at all.
+    #     # Any other way of sending an email in Django would work just fine. 
+    #     mail.send_mail(
+    #         'Subject here',
+    #         'Here is the message body.',
+    #         self.from_email,
+    #         [self.to]
+    #     )
+        
+    #     assert len(mail.outbox) == 1
+    #     assert mail.outbox[0].subject == 'Subject here'
+    #     assert mail.outbox[0].body == 'Here is the message body.'
+    #     assert mail.outbox[0].from_email == self.from_email
+    #     assert mail.outbox[0].to == [self.to]
