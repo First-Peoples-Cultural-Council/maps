@@ -278,7 +278,9 @@ export default {
       placesResults: [],
       artsResults: [],
       locationResults: [],
-      addressResults: []
+      addressResults: [],
+      popup: null,
+      marker: null
     }
   },
   computed: {
@@ -452,6 +454,14 @@ export default {
       }
     },
     handleResultClick(event, type, data, geom, result) {
+      if (this.popup) {
+        this.popup.remove()
+        this.popup = null
+      }
+      if (this.marker) {
+        this.marker.remove()
+        this.marker = null
+      }
       if (this.mobile) {
         this.$root.$emit('closeSearchOverlay')
       }
@@ -482,7 +492,9 @@ export default {
       }
 
       if (type === 'Locations' || type === 'Address') {
+        const self = this
         this.$eventHub.whenMap(map => {
+          self.$router.push({ path: '/languages' })
           zoomToPoint({ map, geom, zoom: 11 })
           const el = document.createElement('div')
           el.className = 'marker search-marker'
@@ -496,8 +508,11 @@ export default {
             locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
                 <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
-          new mapboxgl.Marker(el).setLngLat(geom.coordinates).addTo(map)
-          new mapboxgl.Popup({
+
+          self.marker = new mapboxgl.Marker(el)
+            .setLngLat(geom.coordinates)
+            .addTo(map)
+          self.popup = new mapboxgl.Popup({
             className: 'artPopUp'
           })
             .setLngLat(geom.coordinates)
