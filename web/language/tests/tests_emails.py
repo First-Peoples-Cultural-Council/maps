@@ -10,8 +10,9 @@ from language.notifications import (
     notify,
     inform_placename_rejected_or_flagged,
     inform_media_rejected_or_flagged,
+    inform_media_to_be_verified,
 )
-from users.models import User
+from users.models import User, Administrator
 from language.models import (
     Language, 
     Community,
@@ -207,6 +208,53 @@ class EmailTests(TestCase):
         assert body.count(reason) > 0
         assert body.count("flagged") > 0
         assert body.count("rejected") == 0
+        
+
+    def test_inform_media_to_be_verified(self):
+
+        admin = Administrator.objects.create(
+            user = self.user,
+            language = self.language1,
+            community = self.community1,
+        )
+
+        self.media1.status = Media.UNVERIFIED
+        self.media1.status_reason = "wrong media"
+        self.media1.save()
+
+        body = inform_media_to_be_verified(self.media1.id)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the media create was sent in the email
+        assert body.count(self.media1.name) > 0
+
+        assert body.count(self.media1.status_reason) > 0
+        assert body.count("created") > 0
+        assert body.count("flagged") == 0
+
+        self.media1.status = Media.FLAGGED
+        self.media1.status_reason = "wrong media"
+        self.media1.save()
+
+        body = inform_media_to_be_verified(self.media1.id)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the media create was sent in the email
+        assert body.count(self.media1.name) > 0
+
+        assert body.count(self.media1.status_reason) > 0
+        assert body.count("flagged") > 0
+        assert body.count("created") == 0
 
 
         # def test_send_mail(self):
