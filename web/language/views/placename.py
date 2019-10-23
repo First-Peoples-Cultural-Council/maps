@@ -16,6 +16,9 @@ from language.models import (
     Notification,
     CommunityLanguageStats,
 )
+from language.notifications import (
+    inform_placename_rejection,
+)
 
 from django.views.decorators.cache import never_cache
 from rest_framework import viewsets, generics, mixins, status
@@ -72,6 +75,10 @@ class PlaceNameViewSet(BaseModelViewSet):
                 try:
                     if 'status_reason' in request.data.keys():
                         PlaceName.reject(int(pk), request.data["status_reason"])
+
+                        #Notifying the creator
+                        inform_placename_rejection(int(pk), request.data["status_reason"])
+
                         return Response({"message": "Rejected!"})
                     else:
                         return Response({"message": "Reason must be provided"})

@@ -23,7 +23,7 @@ class BaseTestCase(APITestCase):
             username="testuser001",
             first_name="Test",
             last_name="user 001",
-            email="test@countable.ca",
+            email="denis@countable.ca",
             is_staff=True,
             is_superuser=True,
         )
@@ -531,6 +531,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         placename = PlaceName()
         placename.name = "test place"
+        placename.creator = self.user
         placename.community = self.community
         placename.language = self.language1
         placename.save()

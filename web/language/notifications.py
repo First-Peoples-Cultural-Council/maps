@@ -235,3 +235,55 @@ def send():
         user.last_notified = now
         user.save()
 
+
+def inform_placename_rejection(placename_id, rejection_reason):
+
+    #Getting the PlaceName
+    placename = PlaceName.objects.get(pk=placename_id)
+
+    #Getting user
+    creator = placename.creator
+
+    intro = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
+
+    message = ""
+    if placename.language and placename.language.name:
+        if placename.community and placename.community.name:
+            message += "<p>Your contribution to the language {} and community {} has been rejected.</p>".format(
+                _lang_link(placename.language), _comm_link(placename.community)
+            )
+        else:
+            message += "<p>Your contribution to the language {} has been rejected.</p>".format(
+                _lang_link(placename.language)
+            )
+    else:
+        if placename.community and placename.community.name:
+            message += "<p>Your contribution to the community {} has been rejected.</p>".format(
+                _comm_link(placename.community)
+            )
+        else:
+            message += "<p>Your contribution has been rejected.</p>"
+    
+    if placename.name:
+        message += "<p>Contribution: {}</p>".format(placename.name)
+    
+    message += "<p>Reason: {}</p>".format(rejection_reason)
+
+    message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+
+    # if the creator is a system admin
+    if creator.email in [a[1] for a in settings.ADMINS]:
+        message = intro + message
+    
+    print("sending to ", creator.email)
+    print(message)    
+    
+    send_mail(
+        "Your contribution has been rejected on the First Peoples' Language Map",
+        message,
+        "info@fpcc.ca",
+        [creator.email],
+        html_message=message,
+    )
+    return message
+        
