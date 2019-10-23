@@ -18,6 +18,7 @@ from language.models import (
 )
 from language.notifications import (
     inform_placename_rejected_or_flagged,
+    inform_placename_to_be_verified,
 )
 
 from django.views.decorators.cache import never_cache
@@ -99,6 +100,12 @@ class PlaceNameViewSet(BaseModelViewSet):
             else:
                 if 'status_reason' in request.data.keys():
                     PlaceName.flag(int(pk), request.data["status_reason"])
+
+                    #Notifying Administrators
+                    try:
+                        inform_placename_to_be_verified(int(pk))
+                    except Exception as e:
+                        pass
 
                     #Notifying the creator
                     try:

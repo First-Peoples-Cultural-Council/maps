@@ -9,6 +9,7 @@ import re
 from language.notifications import (
     notify,
     inform_placename_rejected_or_flagged,
+    inform_placename_to_be_verified,
     inform_media_rejected_or_flagged,
     inform_media_to_be_verified,
 )
@@ -172,6 +173,53 @@ class EmailTests(TestCase):
         assert body.count(reason) > 0
         assert body.count("flagged") > 0
         assert body.count("rejected") == 0
+
+
+    def test_inform_placename_to_be_verified(self):
+
+        admin = Administrator.objects.create(
+            user = self.user,
+            language = self.language1,
+            community = self.community1,
+        )
+
+        self.placename1.status = PlaceName.UNVERIFIED
+        self.placename1.status_reason = "wrong media"
+        self.placename1.save()
+
+        body = inform_placename_to_be_verified(self.placename1.id)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the placename create was sent in the email
+        assert body.count(self.placename1.name) > 0
+
+        assert body.count(self.placename1.status_reason) > 0
+        assert body.count("created") > 0
+        assert body.count("flagged") == 0
+
+        self.placename1.status = PlaceName.FLAGGED
+        self.placename1.status_reason = "wrong media"
+        self.placename1.save()
+
+        body = inform_placename_to_be_verified(self.placename1.id)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the placename create was sent in the email
+        assert body.count(self.placename1.name) > 0
+
+        assert body.count(self.placename1.status_reason) > 0
+        assert body.count("created") == 0
+        assert body.count("flagged") > 0
 
 
     def test_inform_media_rejected_or_flagged(self):

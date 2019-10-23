@@ -296,6 +296,77 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     return message
 
 
+def inform_placename_to_be_verified(placename_id):
+
+    #Getting the PlaceName
+    placename = PlaceName.objects.get(pk=placename_id)
+
+    intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
+
+    # Defining the label for the status
+    state = ""
+    if placename.status == PlaceName.UNVERIFIED:
+        state = "created"
+    else:
+        state = "flagged"
+
+    # To store the pair language/community to search for an Administrator later
+    language = None
+    community = None
+
+    # Building the message
+    message = ""
+    if placename.language and placename.language.name:
+        if placename.community and placename.community.name:
+            message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
+                _lang_link(placename.language), _comm_link(placename.community), state
+            )
+            # Storing the pair language/community of the contribution
+            language = placename.language
+            community = placename.community
+        else:
+            message += "<p>A contribution at {} Language has been {}.</p>".format(
+                _lang_link(placename.language), state
+            )
+    else:
+        if placename.community and placename.community.name:
+            message += "<p>A contribution at {} Community has been {}.</p>".format(
+                _comm_link(placename.community), state
+            )
+        else:
+            message += "<p>A contribution has been {}.</p>".format(state)
+    
+    if placename.name:
+        message += "<p>Contribution: {}</p>".format(placename.name)
+    
+    message += "<p>Reason: {}</p>".format(placename.status_reason)
+
+    # If we could get a language and community form the contribution
+    if language and community:
+        
+        # Checking if there is a Administrator for the pair language/community
+        administrators = Administrator.objects.filter(language=language, community=community)
+
+        # If there are Administrators for the pair language/community
+        if administrators:
+            for administrator in administrators:
+                # if the administrator is a system admin
+                if administrator.user.email in [a[1] for a in settings.ADMINS]:
+                    message = intro + message
+                
+                print("sending to ", administrator.user.email)
+                print(message)    
+                
+                send_mail(
+                    "A contribution has been {} on the First Peoples' Language Map".format(state),
+                    message,
+                    "info@fpcc.ca",
+                    [administrator.user.email],
+                    html_message=message,
+                )
+                return message
+
+
 def inform_media_rejected_or_flagged(media_id, reason, status):
 
     #Getting the Media
@@ -369,9 +440,6 @@ def inform_media_to_be_verified(media_id):
 
     #Getting the Media
     media = Media.objects.get(pk=media_id)
-
-    #Getting user
-    creator = media.creator
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
 
