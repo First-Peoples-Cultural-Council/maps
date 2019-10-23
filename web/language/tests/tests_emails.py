@@ -8,7 +8,7 @@ import re
 
 from language.notifications import (
     notify,
-    inform_placename_rejection,
+    inform_placename_rejected_or_flagged,
 )
 from users.models import User
 from language.models import (
@@ -76,71 +76,40 @@ class EmailTests(TestCase):
         )
 
 
-    # def test_notify(self):
+    def test_notify(self):
 
-    #     communitymember1 = CommunityMember.objects.create(
-    #         user = self.user,
-    #         community = self.community1,
-    #         status=CommunityMember.VERIFIED
-    #     )
+        communitymember1 = CommunityMember.objects.create(
+            user = self.user,
+            community = self.community1,
+            status=CommunityMember.VERIFIED
+        )
 
-    #     communitymember2 = CommunityMember.objects.create(
-    #         user = self.user,
-    #         community = self.community2,
-    #         status=CommunityMember.UNVERIFIED
-    #     )
+        communitymember2 = CommunityMember.objects.create(
+            user = self.user,
+            community = self.community2,
+            status=CommunityMember.UNVERIFIED
+        )
 
-    #     # Another user made a Favourite out of the created placename
-    #     test_favourite_place = Favourite.objects.create(
-    #         name="test favourite",
-    #         user=self.user2, 
-    #         place=self.placename1, 
-    #         favourite_type="favourite", 
-    #         description="description", 
-    #     )
+        # Another user made a Favourite out of the created placename
+        test_favourite_place = Favourite.objects.create(
+            name="test favourite",
+            user=self.user2, 
+            place=self.placename1, 
+            favourite_type="favourite", 
+            description="description", 
+        )
 
-    #     # Another user made a Favourite out of the created media
-    #     test_favourite_media = Favourite.objects.create(
-    #         name="test favourite",
-    #         user=self.user2, 
-    #         media=self.media1,
-    #         favourite_type="favourite", 
-    #         description="description", 
-    #     )
+        # Another user made a Favourite out of the created media
+        test_favourite_media = Favourite.objects.create(
+            name="test favourite",
+            user=self.user2, 
+            media=self.media1,
+            favourite_type="favourite", 
+            description="description", 
+        )
 
-    #     user = User.objects.get(email=self.user.email)
-    #     body = notify(user, timezone.now() - timedelta(days=7))
-
-    #     # Testing if the language create was referenced in the email
-    #     assert body.count(self.language1.name) > 0
-
-    #     # Testing if the community create was referenced in the email
-    #     assert body.count(self.community1.name) > 0
-
-    #     # Testing if the placename create was sent in the email
-    #     assert body.count(self.placename1.name) > 0
-
-    #     # Testing Community memberships not verified yet
-    #     self.assertEqual(body.count("You are still awaiting membership verification"), 1)
-
-    #     # Testing if the placename was not sent more than once
-    #     self.assertEqual(body.count("Someone uploaded a new place:"), 1)
-
-    #     # Testing if the media was not sent more than once
-    #     self.assertEqual(body.count("has a new media uploaded"), 1)
-
-    #     # Testing if the placename favourite was sent in the email
-    #     self.assertEqual(body.count("your place was favourited!"), 1)
-
-    #     # Testing if the media favourite was sent in the email
-    #     self.assertEqual(body.count("your contribution was favourited!"), 1)
-
-
-    def test_inform_placename_rejection(self):
-
-        rejection_reason = "wrong place"
-
-        body = inform_placename_rejection(self.placename1.id, rejection_reason)
+        user = User.objects.get(email=self.user.email)
+        body = notify(user, timezone.now() - timedelta(days=7))
 
         # Testing if the language create was referenced in the email
         assert body.count(self.language1.name) > 0
@@ -151,6 +120,56 @@ class EmailTests(TestCase):
         # Testing if the placename create was sent in the email
         assert body.count(self.placename1.name) > 0
 
+        # Testing Community memberships not verified yet
+        self.assertEqual(body.count("You are still awaiting membership verification"), 1)
+
+        # Testing if the placename was not sent more than once
+        self.assertEqual(body.count("Someone uploaded a new place:"), 1)
+
+        # Testing if the media was not sent more than once
+        self.assertEqual(body.count("has a new media uploaded"), 1)
+
+        # Testing if the placename favourite was sent in the email
+        self.assertEqual(body.count("your place was favourited!"), 1)
+
+        # Testing if the media favourite was sent in the email
+        self.assertEqual(body.count("your contribution was favourited!"), 1)
+
+
+    def test_inform_placename_rejected_or_flagged(self):
+
+        reason = "wrong place"
+
+        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, PlaceName.REJECTED)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the placename create was sent in the email
+        assert body.count(self.placename1.name) > 0
+
+        assert body.count(reason) > 0
+        assert body.count("rejected") > 0
+        assert body.count("flagged") == 0
+
+
+        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, PlaceName.FLAGGED)
+
+        # Testing if the language create was referenced in the email
+        assert body.count(self.language1.name) > 0
+
+        # Testing if the community create was referenced in the email
+        assert body.count(self.community1.name) > 0
+
+        # Testing if the placename create was sent in the email
+        assert body.count(self.placename1.name) > 0
+
+        assert body.count(reason) > 0
+        assert body.count("flagged") > 0
+        assert body.count("rejected") == 0
 
         # def test_send_mail(self):
         #     # Use Django send_mail function to construct a message

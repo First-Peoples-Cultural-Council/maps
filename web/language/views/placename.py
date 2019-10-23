@@ -17,7 +17,7 @@ from language.models import (
     CommunityLanguageStats,
 )
 from language.notifications import (
-    inform_placename_rejection,
+    inform_placename_rejected_or_flagged,
 )
 
 from django.views.decorators.cache import never_cache
@@ -77,7 +77,10 @@ class PlaceNameViewSet(BaseModelViewSet):
                         PlaceName.reject(int(pk), request.data["status_reason"])
 
                         #Notifying the creator
-                        inform_placename_rejection(int(pk), request.data["status_reason"])
+                        try:
+                            inform_placename_rejected_or_flagged(int(pk), request.data["status_reason"], PlaceName.REJECTED)
+                        except Exception as e:
+                            pass
 
                         return Response({"message": "Rejected!"})
                     else:
@@ -96,6 +99,13 @@ class PlaceNameViewSet(BaseModelViewSet):
             else:
                 if 'status_reason' in request.data.keys():
                     PlaceName.flag(int(pk), request.data["status_reason"])
+
+                    #Notifying the creator
+                    try:
+                        inform_placename_rejected_or_flagged(int(pk), request.data["status_reason"], PlaceName.FLAGGED)
+                    except Exception as e:
+                        pass
+
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})

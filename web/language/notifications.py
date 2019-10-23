@@ -236,7 +236,7 @@ def send():
         user.save()
 
 
-def inform_placename_rejection(placename_id, rejection_reason):
+def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
     #Getting the PlaceName
     placename = PlaceName.objects.get(pk=placename_id)
@@ -244,30 +244,36 @@ def inform_placename_rejection(placename_id, rejection_reason):
     #Getting user
     creator = placename.creator
 
-    intro = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
+    intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
+
+    state = ""
+    if status == PlaceName.REJECTED:
+        state = "rejected"
+    else:
+        state = "flagged"
 
     message = ""
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
-            message += "<p>Your contribution to the language {} and community {} has been rejected.</p>".format(
-                _lang_link(placename.language), _comm_link(placename.community)
+            message += "<p>Your contribution to the language {} and community {} has been {}.</p>".format(
+                _lang_link(placename.language), _comm_link(placename.community), state
             )
         else:
-            message += "<p>Your contribution to the language {} has been rejected.</p>".format(
-                _lang_link(placename.language)
+            message += "<p>Your contribution to the language {} has been {}.</p>".format(
+                _lang_link(placename.language), state
             )
     else:
         if placename.community and placename.community.name:
-            message += "<p>Your contribution to the community {} has been rejected.</p>".format(
-                _comm_link(placename.community)
+            message += "<p>Your contribution to the community {} has been {}.</p>".format(
+                _comm_link(placename.community), state
             )
         else:
-            message += "<p>Your contribution has been rejected.</p>"
+            message += "<p>Your contribution has been {}.</p>".format(state)
     
     if placename.name:
         message += "<p>Contribution: {}</p>".format(placename.name)
     
-    message += "<p>Reason: {}</p>".format(rejection_reason)
+    message += "<p>Reason: {}</p>".format(reason)
 
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
 
@@ -279,7 +285,7 @@ def inform_placename_rejection(placename_id, rejection_reason):
     print(message)    
     
     send_mail(
-        "Your contribution has been rejected on the First Peoples' Language Map",
+        "Your contribution has been {} on the First Peoples' Language Map".format(state),
         message,
         "info@fpcc.ca",
         [creator.email],

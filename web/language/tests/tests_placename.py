@@ -23,7 +23,7 @@ class BaseTestCase(APITestCase):
             username="testuser001",
             first_name="Test",
             last_name="user 001",
-            email="denis@countable.ca",
+            email="test@countable.ca",
             is_staff=True,
             is_superuser=True,
         )
@@ -550,8 +550,10 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.status, PlaceName.REJECTED)
 
     def test_placename_flag(self):
+        
         placename = PlaceName()
         placename.name = "test place"
+        placename.creator = self.user
         placename.community = self.community
         placename.language = self.language1
         placename.save()
