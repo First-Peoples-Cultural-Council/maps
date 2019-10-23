@@ -36,13 +36,10 @@ Your Django app is served at `http://localhost/api`
 
 Your Vue app is served at `http://localhost`. The front-end won't work properly unless you have a realistic dataset. In this project, the database is quite small, we suggest using a production snapshot for development, because this gives better dev/prod parity for easier development. The other option is to populate tables using a script (an example is provided for migrating out of Druapl) or create your data manually in the Django admin.
 
-Acquire a database dump. If the file is `db.sql`, do:
+Acquire a database dump. If the file is `db.sql` in your repo root, do:
 
 ```
-docker-compose down
-docker-compose up -d db
-docker cp db.sql fplm_db_1:/tmp/
-docker-compose exec db psql -f /tmp/db.sql -U postgres postgres
+./docs/restore-pg
 ```
 
 ## Public API
@@ -138,7 +135,7 @@ To work on a feature locally, configure your editor to use the `black` code styl
 
 ```
 
-docker-compose exec frontend lint --fix
+docker-compose exec frontend yarn lint --fix
 
 ```
 
