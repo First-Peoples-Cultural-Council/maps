@@ -1,4 +1,4 @@
-from users.models import User
+from users.models import User, Administrator
 import datetime
 
 from language.models import PlaceName, Media, Favourite, CommunityMember
@@ -246,25 +246,27 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
 
+    # Defining the label for the status
     state = ""
     if status == PlaceName.REJECTED:
         state = "rejected"
     else:
         state = "flagged"
 
+    # Building the message
     message = ""
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
-            message += "<p>Your contribution to the language {} and community {} has been {}.</p>".format(
+            message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
                 _lang_link(placename.language), _comm_link(placename.community), state
             )
         else:
-            message += "<p>Your contribution to the language {} has been {}.</p>".format(
+            message += "<p>Your contribution to {} Language has been {}.</p>".format(
                 _lang_link(placename.language), state
             )
     else:
         if placename.community and placename.community.name:
-            message += "<p>Your contribution to the community {} has been {}.</p>".format(
+            message += "<p>Your contribution to {} Community has been {}.</p>".format(
                 _comm_link(placename.community), state
             )
         else:
@@ -296,7 +298,7 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
 def inform_media_rejected_or_flagged(media_id, reason, status):
 
-    #Getting the PlaceName
+    #Getting the Media
     media = Media.objects.get(pk=media_id)
 
     #Getting user
@@ -304,34 +306,35 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
 
+    # Defining the label for the status
     state = ""
-    if status == media.REJECTED:
+    if status == Media.REJECTED:
         state = "rejected"
     else:
         state = "flagged"
 
+    # Building the message
     message = ""
-
     if media.placename:
         if media.placename.language and media.placename.language.name:
             if media.placename.community and media.placename.community.name:
-                message += "<p>Your contribution to the language {} and community {} has been {}.</p>".format(
+                message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
                     _lang_link(media.placename.language), _comm_link(media.placename.community), state
                 )
             else:
-                message += "<p>Your contribution to the language {} has been {}.</p>".format(
+                message += "<p>Your contribution to {} Language has been {}.</p>".format(
                     _lang_link(media.placename.language), state
                 )
         else:
             if media.placename.community and media.placename.community.name:
-                message += "<p>Your contribution to the community {} has been {}.</p>".format(
+                message += "<p>Your contribution to {} Community has been {}.</p>".format(
                     _comm_link(media.placename.community), state
                 )
             else:
                 message += "<p>Your contribution has been {}.</p>".format(state)
     else:
         if media.community and media.community.name:
-            message += "<p>Your contribution to the community {} has been {}.</p>".format(
+            message += "<p>Your contribution to {} Community has been {}.</p>".format(
                 _comm_link(media.community), state
             )
         else:
@@ -360,4 +363,91 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         html_message=message,
     )
     return message
+
+
+def inform_media_to_be_verified(media_id):
+
+    #Getting the Media
+    media = Media.objects.get(pk=media_id)
+
+    #Getting user
+    creator = media.creator
+
+    intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
+
+    # Defining the label for the status
+    state = ""
+    if media.status == Media.UNVERIFIED:
+        state = "created"
+    else:
+        state = "flagged"
+
+    # To store the pair language/community to search for an Administrator later
+    language = None
+    community = None
+
+    # Building the message
+    message = ""
+    if media.placename:
+        if media.placename.language and media.placename.language.name:
+            if media.placename.community and media.placename.community.name:
+                message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
+                    _lang_link(media.placename.language), _comm_link(media.placename.community), state
+                )
+
+                # Storing the pair language/community of the contribution
+                language = media.placename.language
+                community = media.placename.community
+            else:
+                message += "<p>A contribution at {} Language has been {}.</p>".format(
+                    _lang_link(media.placename.language), state
+                )
+                language = media.placename.language
+        else:
+            if media.placename.community and media.placename.community.name:
+                message += "<p>A contribution at {} Community has been {}.</p>".format(
+                    _comm_link(media.placename.community), state
+                )
+                community = media.placename.community
+            else:
+                message += "<p>A contribution has been {}.</p>".format(state)
+    else:
+        if media.community and media.community.name:
+            message += "<p>A contribution at {} Community has been {}.</p>".format(
+                _comm_link(media.community), state
+            )
+            community = media.community
+        else:
+            message += "<p>A contribution has been {}.</p>".format(state)
+
+    
+    if media.name:
+        message += "<p>Contribution: {}</p>".format(media.name)
+    
+    message += "<p>Reason: {}</p>".format(media.status_reason)
+
+    # If we could get a language and community form the contribution
+    if language and community:
+        
+        # Checking if there is a Administrator for the pair language/community
+        administrators = Administrator.objects.filter(language=language, community=community)
+
+        # If there are Administrators for the pair language/community
+        if administrators:
+            for administrator in administrators:
+                # if the administrator is a system admin
+                if administrator.user.email in [a[1] for a in settings.ADMINS]:
+                    message = intro + message
+                
+                print("sending to ", administrator.user.email)
+                print(message)    
+                
+                send_mail(
+                    "A contribution has been {} on the First Peoples' Language Map".format(state),
+                    message,
+                    "info@fpcc.ca",
+                    [administrator.user.email],
+                    html_message=message,
+                )
+                return message
         
