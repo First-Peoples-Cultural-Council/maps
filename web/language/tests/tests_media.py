@@ -684,6 +684,7 @@ class MediaAPITests(BaseTestCase):
         
         test_media = Media.objects.create(
             name = "test media01",
+            creator = self.user,
             file_type = "string",
             placename = placename1,
             status=Media.UNVERIFIED
@@ -712,6 +713,7 @@ class MediaAPITests(BaseTestCase):
         
         test_media = Media.objects.create(
             name = "test media01",
+            creator = self.user,
             file_type = "string",
             placename = placename1,
             status=Media.UNVERIFIED
@@ -741,6 +743,7 @@ class MediaAPITests(BaseTestCase):
         
         test_media = Media.objects.create(
             name = "test media01",
+            creator = self.user,
             file_type = "string",
             placename = placename1,
             status=Media.VERIFIED

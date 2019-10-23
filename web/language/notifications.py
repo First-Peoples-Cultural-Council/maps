@@ -292,4 +292,72 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
         html_message=message,
     )
     return message
+
+
+def inform_media_rejected_or_flagged(media_id, reason, status):
+
+    #Getting the PlaceName
+    media = Media.objects.get(pk=media_id)
+
+    #Getting user
+    creator = media.creator
+
+    intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
+
+    state = ""
+    if status == media.REJECTED:
+        state = "rejected"
+    else:
+        state = "flagged"
+
+    message = ""
+
+    if media.placename:
+        if media.placename.language and media.placename.language.name:
+            if media.placename.community and media.placename.community.name:
+                message += "<p>Your contribution to the language {} and community {} has been {}.</p>".format(
+                    _lang_link(media.placename.language), _comm_link(media.placename.community), state
+                )
+            else:
+                message += "<p>Your contribution to the language {} has been {}.</p>".format(
+                    _lang_link(media.placename.language), state
+                )
+        else:
+            if media.placename.community and media.placename.community.name:
+                message += "<p>Your contribution to the community {} has been {}.</p>".format(
+                    _comm_link(media.placename.community), state
+                )
+            else:
+                message += "<p>Your contribution has been {}.</p>".format(state)
+    else:
+        if media.community and media.community.name:
+            message += "<p>Your contribution to the community {} has been {}.</p>".format(
+                _comm_link(media.community), state
+            )
+        else:
+            message += "<p>Your contribution has been {}.</p>".format(state)
+
+    
+    if media.name:
+        message += "<p>Contribution: {}</p>".format(media.name)
+    
+    message += "<p>Reason: {}</p>".format(reason)
+
+    message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+
+    # if the creator is a system admin
+    if creator.email in [a[1] for a in settings.ADMINS]:
+        message = intro + message
+    
+    print("sending to ", creator.email)
+    print(message)    
+    
+    send_mail(
+        "Your contribution has been {} on the First Peoples' Language Map".format(state),
+        message,
+        "info@fpcc.ca",
+        [creator.email],
+        html_message=message,
+    )
+    return message
         
