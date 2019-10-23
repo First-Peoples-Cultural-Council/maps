@@ -669,7 +669,7 @@ export default {
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
-
+      MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
       const draw = new MapboxDraw({
         displayControlsDefault: false,
         controls: {
