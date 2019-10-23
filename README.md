@@ -39,6 +39,8 @@ Your Vue app is served at `http://localhost`. The front-end won't work properly 
 Acquire a database dump. If the file is `db.sql`, do:
 
 ```
+docker-compose down
+docker-compose up -d db
 docker cp db.sql fplm_db_1:/tmp/
 docker-compose exec db psql -f /tmp/db.sql -U postgres postgres
 ```
