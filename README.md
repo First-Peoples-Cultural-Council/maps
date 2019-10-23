@@ -34,15 +34,14 @@ docker-compose up
 
 Your Django app is served at `http://localhost/api`
 
-To create a superuser, do this from the shell.
-
-```
-docker-compose exec web ./setup.sh
-```
-
-You can visit the Django admin at `http://localhost/admin` and sign in with your superuser. The username is `admin`, password is `pass`.
-
 Your Vue app is served at `http://localhost`. The front-end won't work properly unless you have a realistic dataset. In this project, the database is quite small, we suggest using a production snapshot for development, because this gives better dev/prod parity for easier development. The other option is to populate tables using a script (an example is provided for migrating out of Druapl) or create your data manually in the Django admin.
+
+Acquire a database dump. If the file is `db.sql`, do:
+
+```
+docker cp db.sql fplm_db_1:/tmp/
+docker-compose exec db psql -f /tmp/db.sql -U postgres postgres
+```
 
 ## Public API
 
@@ -172,7 +171,7 @@ If you want this field to be editable in the admin, this will happen by default.
 The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
 The `develop` branch id deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
 
-## Restoring data
+## Bootstrapping data (Not necessary to run again)
 
 This project was originally ported from a Drupal database, and we have a somewhat generic way of getting things out of Drupal the first time. Doing this requires populating the old database secrets in your docker-compose.override.yml
 
