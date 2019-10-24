@@ -70,6 +70,7 @@ curl http://maps-dev.fpcc.ca/api/community/18/
 
 ## Updating Domain Data Via API
 
+API Documentation is available at localhost/api/docs
 Three endpoints are available to update directly, via API: `/api/language/`, `/api/community`, and `api/stats`.
 
 First, you should authenticate your API client as an FPCC admin user. For example using `curl`:
