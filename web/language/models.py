@@ -13,6 +13,11 @@ class LanguageFamily(BaseModel):
 
 
 class Recording(models.Model):
+
+    def __str__(self):
+        return str(self.audio_file)
+
+    audio_file = models.FileField(null=True, blank=True)
     speaker = models.CharField(max_length=255)
     recorder = models.CharField(max_length=255)
     created = models.DateTimeField("date created", auto_now_add=True)
