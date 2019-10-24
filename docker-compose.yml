@@ -25,9 +25,11 @@ services:
         networks:
             - back-tier
         working_dir: /code/
-        command: "./wait-for-it.sh -t 30 frontend:80 -- yarn testp"
+        user: root
+        command: "./wait-for-it.sh -t 30 frontend:80 -- yarn test"
         depends_on:
             - frontend
+     
         
 
     nginx:
