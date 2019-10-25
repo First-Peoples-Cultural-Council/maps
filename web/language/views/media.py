@@ -16,6 +16,10 @@ from language.models import (
     Notification,
     CommunityLanguageStats,
 )
+from language.notifications import (
+    inform_media_rejected_or_flagged,
+    inform_media_to_be_verified,
+)
 
 from django.views.decorators.cache import never_cache
 from rest_framework import viewsets, generics, mixins, status
@@ -96,6 +100,13 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 try:
                     if 'status_reason' in request.data.keys():
                         Media.reject(int(pk), request.data["status_reason"])
+
+                        #Notifying the creator
+                        try:
+                            inform_media_rejected_or_flagged(int(pk), request.data["status_reason"], Media.REJECTED)
+                        except Exception as e:
+                            pass
+
                         return Response({"message": "Rejected!"})
                     else:
                         return Response({"message": "Reason must be provided"})
@@ -113,6 +124,19 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             else:
                 if 'status_reason' in request.data.keys():
                     Media.flag(int(pk), request.data["status_reason"])
+
+                    #Notifying Administrators
+                    try:
+                        inform_media_to_be_verified(int(pk))
+                    except Exception as e:
+                        pass
+
+                    #Notifying the creator
+                    try:
+                        inform_media_rejected_or_flagged(int(pk), request.data["status_reason"], Media.FLAGGED)
+                    except Exception as e:
+                        pass
+                    
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+filename=${1:-db.sql}
+
+docker cp $filename "$(docker-compose ps -q db)":/tmp/
+docker-compose stop
+docker-compose up -d db
+docker-compose exec db dropdb -U postgres postgres
+docker-compose exec db createdb -U postgres postgres
+docker-compose exec db psql -U postgres -f /tmp/$filename postgres
+
