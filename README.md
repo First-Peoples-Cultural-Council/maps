@@ -206,7 +206,7 @@ This project was originally ported from a Drupal database, and we have a somewha
 
 To test frontend:
 
-The docker container is by default on sleep. Need to comment out `command: sleep 1000000` then restart the container.
+The docker container is by default on sleep. Need to comment out `command: sleep 1000000` on `docker-compose.override.yml` then restart the container.
 The test container is dependant on the frontend and the web container, and make sure these are running
 
 ```
