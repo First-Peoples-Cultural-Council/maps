@@ -29,7 +29,11 @@ services:
     environment:
       - HOST=http://maps-dev.fpcc.ca:8080
 
+  test:
+    command: sleep 1000000
+
 volumes:
     pg-data:
         driver: local
+
 

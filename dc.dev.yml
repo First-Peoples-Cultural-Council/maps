@@ -28,6 +28,9 @@ services:
             - FPLM_USER=
             - FPLM_PW=
 
+    test:
+        command: sleep 1000000
+
 
 volumes:
     pg-data:
