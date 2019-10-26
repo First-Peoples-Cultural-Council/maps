@@ -39,7 +39,7 @@ describe('on the index page', () => {
 
     const communityNamesApi = communitiesApi.map(comm => comm.name.trim())
     expect(communitiesRendered.sort()).toEqual(communityNamesApi.sort())
-  })
+  }, 30000)
 
   test('all languages is accurate', async () => {
     const languagesRendered = _.uniq(
@@ -62,7 +62,7 @@ describe('on the index page', () => {
 
     const languageNamesApi = languagesApi.map(lang => lang.name.trim())
     expect(languagesRendered.sort()).toEqual(languageNamesApi.sort())
-  })
+  }, 30000)
 })
 
 afterAll(() => browser.close())
