@@ -142,25 +142,25 @@ docker-compose exec frontend yarn lint --fix
 
 Vscode settings for automatic linting
 ```
-        "eslint.validate": [
-          {
-            "language": "vue",
-            "autoFix": true
-          },
-          {
-            "language": "javascript",
-            "autoFix": true
-          },
-          {
-            "language": "javascriptreact",
-            "autoFix": true
-          }
-        ],
-        "eslint.autoFixOnSave": true,
-        "editor.formatOnSave": false,
-        "vetur.validation.template": false,
-        "editor.fontSize": 16,
-        "terminal.integrated.scrollback": 50000
+"eslint.validate": [
+    {
+    "language": "vue",
+    "autoFix": true
+    },
+    {
+    "language": "javascript",
+    "autoFix": true
+    },
+    {
+    "language": "javascriptreact",
+    "autoFix": true
+    }
+],
+"eslint.autoFixOnSave": true,
+"editor.formatOnSave": false,
+"vetur.validation.template": false,
+"editor.fontSize": 16,
+"terminal.integrated.scrollback": 50000
 ```
 
 ### Example, add a new database field.
@@ -206,9 +206,12 @@ This project was originally ported from a Drupal database, and we have a somewha
 
 To test frontend:
 
+The docker container is by default on sleep. Need to comment out `command: sleep 1000000` then restart the container.
+The test container is dependant on the frontend and the web container, and make sure these are running
+
 ```
 
-docker-compose exec frontend yarn run test
+docker-compose up test
 
 ```
 
