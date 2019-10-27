@@ -65,6 +65,21 @@
 
         <small class="text-muted">Embed A Youtube Video</small>
       </b-list-group-item>
+      <b-list-group-item
+        class="flex-column align-items-start cursor-pointer"
+        @click="
+          chooseUploadType($event, {
+            comp: 'VimeoUploader',
+            mode: 'standard'
+          })
+        "
+      >
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">Embed A Vimeo Video</h5>
+        </div>
+
+        <small class="text-muted">Embed A Vimeo Video</small>
+      </b-list-group-item>
     </b-list-group>
   </div>
 </template>

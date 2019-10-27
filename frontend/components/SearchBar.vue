@@ -75,27 +75,43 @@
                 <h5
                   v-if="key === 'Languages' || key === 'Communities'"
                   class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.name)"
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
-                  {{ result.name }}
+                  <div
+                    v-html="highlightSearch(result.item.name, result.matches)"
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Places'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Locations'"
@@ -180,27 +196,43 @@
                 <h5
                   v-if="key === 'Languages' || key === 'Communities'"
                   class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.name)"
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
-                  {{ result.name }}
+                  <div
+                    v-html="highlightSearch(result.item.name, result.matches)"
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Places'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Locations'"
@@ -278,7 +310,9 @@ export default {
       placesResults: [],
       artsResults: [],
       locationResults: [],
-      addressResults: []
+      addressResults: [],
+      popup: null,
+      marker: null
     }
   },
   computed: {
@@ -299,6 +333,7 @@ export default {
     },
     isSearchEmpty() {
       return (
+        this.searchQuery.length !== 0 &&
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
@@ -324,7 +359,24 @@ export default {
   beforeDestroy() {
     document.removeEventListener('click', this.clicked)
   },
+
   methods: {
+    generateHighlightedText(s, indices) {
+      return indices
+        .reduce((str, [start, end]) => {
+          str[start] = `<span class="font-weight-bold">${str[start]}`
+          str[end] = `${str[end]}</span>`
+          return str
+        }, s.split(''))
+        .join('')
+    },
+    highlightSearch(s, matches) {
+      if (!matches || matches.length === 0) {
+        return s
+      }
+
+      return this.generateHighlightedText(s, matches[0].indices)
+    },
     handleSearchUpdate: debounce(async function() {
       if (this.searchQuery === '') {
         this.show = false
@@ -366,7 +418,9 @@ export default {
           weight: 0.7
         }
       ])
-      this.placesResults = placeFuzzy.filter(p => p.properties.status !== 'FL')
+      this.placesResults = placeFuzzy.filter(
+        p => p.item.properties.status !== 'FL'
+      )
 
       this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
         'properties.name'
@@ -397,6 +451,8 @@ export default {
     }, 500),
     fuzzySearch(data, query, keys) {
       const options = {
+        includeMatches: true,
+        includeScore: true,
         shouldSort: true,
         threshold: 0.3,
         location: 0,
@@ -406,9 +462,15 @@ export default {
         keys
       }
 
-      const fuse = new Fuse(data, options)
-      const result = fuse.search(query)
-      return result
+      try {
+        const fuse = new Fuse(data, options)
+        const result = fuse.search(query)
+        console.log('Fuse Result', result)
+
+        return result
+      } catch (e) {
+        return []
+      }
     },
     // filterBasedOnTitle(data = [], query = '', mode = 0) {
     //   if (data.length === 0) {
@@ -452,6 +514,14 @@ export default {
       }
     },
     handleResultClick(event, type, data, geom, result) {
+      if (this.popup) {
+        this.popup.remove()
+        this.popup = null
+      }
+      if (this.marker) {
+        this.marker.remove()
+        this.marker = null
+      }
       if (this.mobile) {
         this.$root.$emit('closeSearchOverlay')
       }
@@ -482,7 +552,9 @@ export default {
       }
 
       if (type === 'Locations' || type === 'Address') {
+        const self = this
         this.$eventHub.whenMap(map => {
+          self.$router.push({ path: '/languages' })
           zoomToPoint({ map, geom, zoom: 11 })
           const el = document.createElement('div')
           el.className = 'marker search-marker'
@@ -496,8 +568,11 @@ export default {
             locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
                 <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
-          new mapboxgl.Marker(el).setLngLat(geom.coordinates).addTo(map)
-          new mapboxgl.Popup({
+
+          self.marker = new mapboxgl.Marker(el)
+            .setLngLat(geom.coordinates)
+            .addTo(map)
+          self.popup = new mapboxgl.Popup({
             className: 'artPopUp'
           })
             .setLngLat(geom.coordinates)

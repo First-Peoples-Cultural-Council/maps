@@ -625,10 +625,10 @@ export default {
           done = true
         }
       })
-
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          if (feature.layer.id === 'fn-lang-areas-shaded') {
+          console.log('Feature', feature)
+          if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
@@ -669,7 +669,7 @@ export default {
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
-
+      MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
       const draw = new MapboxDraw({
         displayControlsDefault: false,
         controls: {

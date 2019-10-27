@@ -36,7 +36,7 @@
             >
               {{ arttype | art_type }}
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
               {{ name }}
             </h5>
           </div>

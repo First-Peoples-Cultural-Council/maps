@@ -18,6 +18,9 @@ services:
       - NODE_ENV=development
       - HOST=http://localhost
 
+  test:
+      command: sleep 1000000
+
   web:
     environment:
       - ARTSMAP_HOST=ratpack.sebastiantech.ca

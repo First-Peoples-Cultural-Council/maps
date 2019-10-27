@@ -2,12 +2,20 @@
   <div>
     <b-button
       v-if="!unsubscribe"
+      block
       variant="dark"
       size="sm"
+      class="rounded-pill"
       @click="modalShow = true"
       >Be Notified
     </b-button>
-    <b-button v-else variant="dark" size="sm" @click="unsub"
+    <b-button
+      v-else
+      class="rounded-pill"
+      block
+      variant="dark"
+      size="sm"
+      @click="unsub"
       >Unsubscribe
     </b-button>
     <b-modal v-model="modalShow" hide-header @ok="handleNotification">

@@ -26,3 +26,5 @@ services:
       - HOST=https://maps-dev.fpcc.ca
       - NODE_ENV=production
     restart: always
+  test:
+    command: sleep 1000000
