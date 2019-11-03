@@ -54,8 +54,7 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
@@ -73,8 +72,7 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
@@ -92,8 +90,7 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')

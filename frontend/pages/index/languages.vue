@@ -42,10 +42,13 @@
             <div
               v-for="(familyLanguages, family) in languages"
               :key="'langfamily' + family"
+              class="language-family-container mt-3 shadow-sm"
             >
-              <h5 class="language-family mt-3">
-                Language Family:
-                {{ family === 'undefined' ? 'No Family' : family }}
+              <h5 class="language-family mt-0">
+                <span class="language-family-header">Language Family:</span>
+                <span class="language-family-title">{{
+                  family === 'undefined' ? 'No Family' : family
+                }}</span>
               </h5>
               <b-row>
                 <b-col
@@ -57,9 +60,12 @@
                   sm="6"
                 >
                   <LanguageCard
-                    class="mt-3 hover-left-move"
+                    class="mt-2 hover-left-move"
                     :name="language.name"
-                    :color="language.color"
+                    :color="
+                      (language.family && language.family.color) ||
+                        language.color
+                    "
                     @click.native.prevent="
                       handleCardClick($event, language.name, 'lang')
                     "
@@ -81,6 +87,7 @@
                 <CommunityCard
                   class="mt-3 hover-left-move"
                   :name="community.name"
+                  :community="community"
                   @click.native.prevent="
                     handleCardClick($event, community.name, 'comm')
                   "
@@ -91,23 +98,14 @@
         </section>
       </template>
     </SideBar>
-    <div
-      v-else-if="this.$route.name === 'index-languages-lang'"
-      :width="detailOneWidth"
-    >
+    <div v-else>
       <nuxt-child />
     </div>
-    <DetailSideBar v-else :width="detailTwoWidth">
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -121,7 +119,6 @@ export default {
     Accordion,
     Badge,
     LanguageCard,
-    DetailSideBar,
     CommunityCard,
     Filters
   },

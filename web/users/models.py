@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
 
-from language.models import Language, Community
+import datetime
 
 
 class UserManager(BaseUserManager):
@@ -41,44 +41,34 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     objects = UserManager()
+    last_notified = models.DateTimeField(
+        auto_now_add=True
+    )
+    picture = models.URLField(max_length=255, null=True)
+    notification_frequency = models.IntegerField(default=7)
+    communities = models.ManyToManyField(
+        "language.Community", through="language.CommunityMember"
+    )
 
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
-    languages = models.ManyToManyField(Language)
+    languages = models.ManyToManyField("language.Language")
+    bio = models.TextField(null=True, blank=True, default="")
 
+    def __str__(self):
+        if self.first_name:
+            return "{} {}".format(self.first_name, self.last_name).strip()
+        else:
+            return "Someone Anonymous"
 
-# email = models.EmailField(
-#     max_length=255, unique=True,
-#     verbose_name=_('Email'),
-#     help_text=_("The user's email address acts as the username."))
+class Administrator(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    language = models.ForeignKey(
+        "language.Language", on_delete=models.CASCADE, default=None
+    )
+    community = models.ForeignKey(
+        "language.Community", on_delete=models.CASCADE, default=None
+    )
 
-# is_staff = models.BooleanField(
-#     default=False,
-#     verbose_name=_('Has Admin Access?'),
-#     help_text=_("True if the user has access to the admin page."))
-
-# name = models.CharField(
-#     max_length=255, blank=True,
-#     verbose_name=_('Name'),
-#     help_text=_("A full name"),
-#     error_messages={
-#         'unique': _("A user with this username already exists.")
-#     })
-
-# objects = UserManager()
-
-# USERNAME_FIELD = 'email'
-# REQUIRED_FIELDS = []
-
-# def get_short_name(self):
-# 	return "{}".format(self.name)
-
-# def get_absolute_url(self):
-# 	return "/users/{}/".format(self.id)
-
-# def __str__(self):
-# 	return str(self.name) or "(Anonymous Member #{})".format(self.id)
-
-# class Meta:
-# 	verbose_name = _("User")
-# 	verbose_name_plural = _("Users")
-# 	ordering = ('email',)
+    def __str__(self):
+        return 'User {}: language "{}", community "{}"'.format(
+            self.user.username, self.language.name, self.community.name
+        )

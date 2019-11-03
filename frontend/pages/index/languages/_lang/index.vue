@@ -1,18 +1,72 @@
 <template>
-  <DetailSideBar>
-    <template v-slot:badges>
-      <div class="header-mobile d-none">
-        <h5
-          class="color-gray font-08 p-0 m-0"
-          style="margin-bottom: 0.2em !important;"
-        >
-          Language:
-          <span class="font-weight-bold language-title">{{
-            language.name
-          }}</span>
-        </h5>
+  <div class="w-100">
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
+        Language:
+        <span class="font-weight-bold">{{ language.name }}</span>
       </div>
-      <div class="badge-container">
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
+    </div>
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
+      >
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+
+      <div class="color-row" :style="'background-color: ' + languageColor">
+        &nbsp;
+      </div>
+      <LanguageDetailCard
+        :color="languageColor"
+        :name="language.name"
+        :server="isServer"
+        :link="language.fv_archive_link"
+      ></LanguageDetailCard>
+      <section class="ml-2 mr-2">
+        <h5 class="other-lang-names-title text-uppercase mt-4">
+          Other Language Names
+        </h5>
+        <LanguageDetailBadge
+          v-for="name in otherNames"
+          :key="name"
+          :content="name"
+          class="mr-2"
+        ></LanguageDetailBadge>
+        <LanguageSummary
+          :population="language.pop_total_value.toString() || 'NA'"
+          :speakers="language.fluent_speakers.toString() || 'NA'"
+          :somewhat="language.some_speakers.toString() || 'NA'"
+          :learners="language.learners.toString() || 'NA'"
+          class="mt-4"
+        ></LanguageSummary>
+      </section>
+      <section>
+        <LanguageSeeAll
+          :content="`Learn more about ${language.name}`"
+          class="mt-3"
+          @click.native="handleMoreDetails"
+        ></LanguageSeeAll>
+      </section>
+      <Filters class="mb-1 mt-2"></Filters>
+      <Notification
+        v-if="isLoggedIn"
+        :id="language.id"
+        :unsubscribe="!!subscribed"
+        :subscription="subscribed"
+        :is-server="isServer"
+        type="language"
+        class="ml-3 mr-3 mt-2"
+      ></Notification>
+      <div class="badge-container mt-2 ml-3 mr-3">
         <Badge
           content="Communities"
           :number="communities.length"
@@ -59,188 +113,150 @@
           @click.native.prevent="handleBadge($event, 'place')"
         ></Badge>
       </div>
-    </template>
-    <template v-slot:content>
-      <div class="color-row" :style="'background-color: ' + languageColor">
-        &nbsp;
+      <div class="language">
+        <section class="pl-3 pr-3 pt-2">
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'place'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="community in communities"
+                :key="'community' + community.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <CommunityCard
+                  :name="community.name"
+                  :community="community"
+                  class="mt-3 hover-left-move"
+                  @click.native="
+                    handleCardClick($event, community.name, 'comm')
+                  "
+                ></CommunityCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="place in filteredPlaces"
+                :key="'place' + place.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <PlacesCard
+                  :name="place.name"
+                  :place="{ properties: place }"
+                  class="mt-3 hover-left-move"
+                  @click.native="handleCardClick($event, place.name, 'places')"
+                ></PlacesCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'place' &&
+                mode !== 'artist' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in publicArts"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :art="art"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'place' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in orgs"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :art="art"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div
+            v-if="
+              mode !== 'public_art' &&
+                mode !== 'place' &&
+                mode !== 'organization' &&
+                mode !== 'comm'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(art, index) in artists"
+                :key="'art' + index"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
+              >
+                <ArtsCard
+                  class="mt-3 hover-left-move"
+                  :art="art"
+                  @click.native="
+                    handleCardClick($event, art.properties.name, 'art')
+                  "
+                >
+                </ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+        </section>
       </div>
-      <LanguageDetailCard
-        :color="languageColor"
-        :name="language.name"
-        :server="isServer"
-        :link="language.fv_archive_link"
-      ></LanguageDetailCard>
-      <section class="ml-2 mr-2">
-        <h5 class="other-lang-names-title text-uppercase mt-4">
-          Other Language Names
-        </h5>
-        <LanguageDetailBadge
-          v-for="name in otherNames"
-          :key="name"
-          :content="name"
-          class="mr-2"
-        ></LanguageDetailBadge>
-        <LanguageSummary
-          :population="language.pop_total_value.toString() || 'NA'"
-          :speakers="language.fluent_speakers.toString() || 'NA'"
-          :somewhat="language.some_speakers.toString() || 'NA'"
-          :learners="language.learners.toString() || 'NA'"
-          class="mt-4"
-        ></LanguageSummary>
-      </section>
-      <section>
-        <LanguageSeeAll
-          :content="`Learn more about ${language.name}`"
-          class="mt-3"
-          @click.native="handleMoreDetails"
-        ></LanguageSeeAll>
-      </section>
-      <Filters class="mb-1 mt-2"></Filters>
-    </template>
-    <div class="language">
-      <section class="pl-3 pr-3 pt-2">
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'place'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="community in communities"
-              :key="'community' + community.id"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <CommunityCard
-                :name="community.name"
-                class="mt-3 hover-left-move"
-                @click.native="handleCardClick($event, community.name, 'comm')"
-              ></CommunityCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="place in places"
-              :key="'place' + place.id"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <PlacesCard
-                :name="place.properties.name"
-                class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, place.properties.name, 'places')
-                "
-              ></PlacesCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'place' &&
-              mode !== 'artist' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in publicArts"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'artist' &&
-              mode !== 'place' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in orgs"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-        <div
-          v-if="
-            mode !== 'public_art' &&
-              mode !== 'place' &&
-              mode !== 'organization' &&
-              mode !== 'comm'
-          "
-        >
-          <b-row>
-            <b-col
-              v-for="(art, index) in artists"
-              :key="'art' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                class="mt-3 hover-left-move"
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              >
-              </ArtsCard>
-            </b-col>
-          </b-row>
-        </div>
-      </section>
     </div>
-  </DetailSideBar>
+  </div>
 </template>
 
 <script>
@@ -253,9 +269,10 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
@@ -267,8 +284,9 @@ export default {
     PlacesCard,
     ArtsCard,
     Filters,
-    DetailSideBar,
-    Badge
+    Badge,
+    Logo,
+    Notification
   },
   data() {
     return {
@@ -276,6 +294,21 @@ export default {
     }
   },
   computed: {
+    filteredPlaces() {
+      return this.$store.state.places.filteredBadgePlaces
+    },
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    subscribed() {
+      return this.notifications.find(n => n.language === this.language.id)
+    },
+    notifications() {
+      return this.$store.state.user.notifications
+    },
     publicArts() {
       return this.arts
         ? this.arts.filter(art => art.properties.art_type === 'public_art')
@@ -315,28 +348,44 @@ export default {
     const languageName = params.lang
 
     const languages = await $axios.$get(getApiUrl(`language/`))
+
     const language = languages.find(
       lang => encodeFPCC(lang.name) === languageName
     )
     const languageId = language.id
-
+    const isServer = !!process.server
     const result = await Promise.all([
-      $axios.$get(getApiUrl(`language/${languageId}`)),
+      $axios.$get(
+        getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
+      ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`)),
       $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
 
+    try {
+      await store.dispatch('user/getNotifications', {
+        isServer: !!process.server
+      })
+    } catch (e) {}
+
     console.log('RegExp Url')
 
-    const isServer = !!process.server
+    store.commit('places/setBadgePlaces', result[0].places)
+    store.commit('places/setFilteredBadgePlaces', result[0].places)
 
     return {
       language: result[0],
       communities: result[1],
-      places: result[2].features,
-      arts: result[3].features,
+      places: result[0].places,
+      arts: result[2].features,
       isServer
+    }
+  },
+  async fetch({ store }) {
+    if (store.state.user.isLoggedIn) {
+      await store.dispatch('user/getNotifications', {
+        isServer: !!process.server
+      })
     }
   },
   mounted() {
@@ -350,6 +399,7 @@ export default {
     })
   },
   methods: {
+    handleNotificationAdded() {},
     handleMoreDetails() {
       this.$router.push({
         path: `${encodeFPCC(this.$route.params.lang)}/details`

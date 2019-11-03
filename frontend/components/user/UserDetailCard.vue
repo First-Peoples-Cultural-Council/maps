@@ -21,7 +21,28 @@
               {{ name }}
             </h5>
           </div>
-          <CardBadge content="Edit Profile" type="edit"></CardBadge>
+        </div>
+        <div v-if="edit && id" class="d-inline-block">
+          <CardBadge
+            content="Edit"
+            type="edit"
+            @click.native="
+              $router.push({
+                path: `/profile/edit/${id}`
+              })
+            "
+          ></CardBadge>
+        </div>
+        <div v-if="approval && id" class="d-inline-block">
+          <CardBadge
+            content="Approval"
+            type="edit"
+            @click.native="
+              $router.push({
+                path: `/profile/approvals`
+              })
+            "
+          ></CardBadge>
         </div>
       </template>
       <template v-slot:footer>
@@ -84,6 +105,18 @@ export default {
     link: {
       type: String,
       default: ''
+    },
+    edit: {
+      type: Boolean,
+      default: null
+    },
+    id: {
+      type: Number,
+      default: null
+    },
+    approval: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

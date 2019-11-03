@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User
+from .models import User, Administrator
 
 from rest_framework import viewsets, generics, mixins
 from rest_framework.viewsets import GenericViewSet
@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from .serializers import UserSerializer
+from django.views.decorators.cache import never_cache
 
 from django.utils.decorators import method_decorator
 from .cognito import verify_token
@@ -28,8 +29,16 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("first_name")
 
+    @method_decorator(never_cache)
+    def detail(self, request):
+        return super().detail(request)
+
+    @method_decorator(never_cache)
     @action(detail=False)
     def login(self, request):
+        """
+        This API expects a JWT from AWS Cognito, which it uses to authenticate our user
+        """
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
         if "email" in result:
@@ -41,26 +50,33 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
+                    picture=result['picture'],
+                    first_name=result['given_name'],
+                    last_name=result['family_name']
                 )
                 user.save()
                 is_new = True
             login(request, user)
             return Response(
-                {
-                    "success": True,
-                    "email": user.email,
-                    "new": is_new,
-                    "worked": request.user.is_authenticated,
-                }
+                {"success": True, "email": user.email, "id": user.id, "new": is_new}
             )
         else:
             return Response({"success": False})
 
+    @method_decorator(never_cache)
     @action(detail=False)
     def auth(self, request):
         context = {}
         if request.user.is_authenticated:
-            return Response({"is_authenticated": True, "email": request.user.email})
+            return Response(
+                {
+                    "is_authenticated": True,
+                    "user": UserSerializer(request.user).data,
+                    "administration_list": Administrator.objects.filter(
+                        user=request.user
+                    ).count(),
+                }
+            )
         else:
             return Response({"is_authenticated": False})
 

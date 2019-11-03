@@ -1,7 +1,7 @@
 export const state = () => ({
   layers: [
     {
-      name: 'Western Names',
+      name: 'Common Names',
       id: 1,
       layerNames: [
         'settlement-subdivision-label',
@@ -24,9 +24,10 @@ export const state = () => ({
       layerNames: [
         'fn-lang-area-outlines-1',
         'fn-lang-area-outlines-fade',
-        'fn-lang-areas-fill'
+        'fn-lang-areas-fill',
+        'fn-lang-labels'
       ],
-      active: true
+      active: false
     },
     {
       name: 'Reserves',
@@ -39,10 +40,16 @@ export const state = () => ({
       active: false
     },
     {
-      name: 'Provincial Borders',
+      name: 'Borders',
       id: 4,
       layerNames: ['admin'],
       active: true
+    },
+    {
+      name: 'Satelite',
+      id: 5,
+      layerNames: ['satelite'],
+      active: false
     }
   ]
 })
@@ -56,7 +63,7 @@ export const mutations = {
     const toggleLayer = state.layers.find(l => l.id === layer.id)
     toggleLayer.active = !toggleLayer.active
     if (toggleLayer.name === 'Sleeping Languages') {
-      if (toggleLayer.active) {
+      if (!toggleLayer.active) {
         layer.layerNames.map(l => {
           map.setFilter(l, ['!', ['get', 'sleeping']])
         })

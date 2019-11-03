@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 
 module.exports = {
+  dev: process.env.NODE_ENV !== 'production',
+
   mode: 'universal',
   server: {
     port: 80, // default: 3000
@@ -24,7 +26,8 @@ module.exports = {
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1'
+        content:
+          'width=device-width, initial-scale=1 maximum-scale=1, user-scalable=0'
       },
       {
         hid: 'description',
@@ -76,10 +79,14 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
     '@nuxtjs/eslint-module',
-    '@tui-nuxt/editor'
+    '@nuxtjs/markdownit',
+    '@tui-nuxt/editor',
+    'nuxt-vue-multiselect'
   ],
+  markdownit: {
+    injected: true
+  },
   tui: {
     editor: {}
   },
@@ -92,7 +99,6 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'
@@ -115,6 +121,9 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {
+      config.node = {
+        fs: 'empty'
+      }
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',

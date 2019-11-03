@@ -1,8 +1,8 @@
 import cognitojwt
 
 region = "ca-central-1"
-userpool_id = "ca-central-1_dW1peVcEx"
-app_client_id = "7rj6th7pknck3tih16ihekk1ik"
+userpool_id = "ca-central-1_MHa7IjSrw"
+app_client_id = "3b9okcenun1vherojjv4hc6rb3"
 keys_url = "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json".format(
     region, userpool_id
 )

@@ -4,6 +4,9 @@ services:
   nginx:
     ports:
       - 80:80
+    restart: always
+    environment:
+      - CACHE_LIFE=30s
   web:
     environment:
       - ARTSMAP_HOST=ratpack.sebastiantech.ca
@@ -14,8 +17,14 @@ services:
       - FPLM_DB=fpmaps_d7_live
       - FPLM_USER=
       - FPLM_PW=
+
     command: ./prod.sh
+    restart: awlways
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
-      - HOST=http://maps-dev.fpcc.ca
+      - HOST=https://maps-dev.fpcc.ca
+      - NODE_ENV=production
+    restart: always
+  test:
+    command: sleep 1000000

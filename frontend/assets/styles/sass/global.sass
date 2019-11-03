@@ -49,6 +49,9 @@ body,
 .cursor-pointer
     cursor: pointer
 
+.padding-05 
+    padding: 0.5rem
+
 .list-style-none
     list-style: none
 
@@ -67,14 +70,40 @@ body,
     .hide-mobile
         display: none !important
 
-.marker
-  background-size: cover
+.art-marker, .place-marker, .nation-marker
   width: 35px
   height: 35px
   border-radius: 50%
-  cursor: pointer
   background: white
   border: 2px solid white
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+
+.hover-marker
+  width: 30px
+  height: 30px
+  padding: 5px
+  border-radius: 25%
+  border: 1px solid white
+  background-color: #c46156
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4)
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+
+@keyframes pulsate
+  0%
+    opacity: 0.2;
+  50%
+    opacity: 0.7;
+  100%
+    opacity: 0.2;
+
+.search-marker
+  width: 40px
+  height: 50px;
+
+.marker
+  cursor: pointer
+  background-size: cover
 
 .ds-container
   overflow: hidden
@@ -82,5 +111,7 @@ body,
 @media (max-width: 992px) 
   .header-mobile 
     display: block !important
+
+
   
 

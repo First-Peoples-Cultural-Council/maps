@@ -1,7 +1,36 @@
 <template>
-  <div class="searchbar-container">
+  <div
+    class="searchbar-container"
+    :class="{ 'searchbar-container-detail': isDetailMode }"
+  >
     <div class="searchbar-input-container">
+      <div v-if="mobile" class="searchbar-mobile-header">
+        <div class="search-mobile-icon">
+          <img src="@/assets/images/search_icon.svg" alt="Search" />
+        </div>
+        <div class="search-mobile-input">
+          <b-form-input
+            id="search-input"
+            v-model="searchQuery"
+            type="text"
+            class="search-input"
+            placeholder="Search for a language, community, or place name..."
+            autocomplete="off"
+            @update="handleSearchUpdate"
+            @focus="handleInputFocus"
+          >
+          </b-form-input>
+        </div>
+        <div class="search-mobile-close-icon">
+          <img
+            src="@/assets/images/close_icon.svg"
+            alt="Close"
+            @click="$root.$emit('closeSearchOverlay', true)"
+          />
+        </div>
+      </div>
       <b-form-input
+        v-else
         id="search-input"
         v-model="searchQuery"
         type="search"
@@ -12,7 +41,122 @@
         @focus="handleInputFocus"
       >
       </b-form-input>
+      <div v-if="mobile">
+        <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
+          Search Term: {{ searchQuery }}
+        </h5>
+        <div v-if="isSearchEmpty" class="nosearch-results p-3">
+          <Contact
+            error="No search results were found"
+            subject="FPCC Map: Didn't find what I was looking for (search)"
+          ></Contact>
+        </div>
+        <div v-else class="pt-2">
+          <div
+            v-for="(results, key) in searchResults"
+            :key="key"
+            class="search-row"
+          >
+            <div v-if="results.length > 0" class="mb-3">
+              <h5
+                v-if="key === 'Locations'"
+                class="search-result-group font-1 pl-3 pr-3"
+              >
+                Locations from the BC Geographical Names Database
+              </h5>
+              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+                {{ key }}
+              </h5>
+              <div
+                v-for="(result, index) in results"
+                :key="index"
+                class="search-results pl-3 pr-3"
+              >
+                <h5
+                  v-if="key === 'Languages' || key === 'Communities'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="handleResultClick($event, key, result.item.name)"
+                >
+                  <div
+                    v-html="highlightSearch(result.item.name, result.matches)"
+                  ></div>
+                </h5>
+                <h5
+                  v-else-if="key === 'Places'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.item.properties.name)
+                  "
+                >
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
+                </h5>
+                <h5
+                  v-else-if="key === 'Arts'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick($event, key, result.item.properties.name)
+                  "
+                >
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
+                </h5>
+                <h5
+                  v-else-if="key === 'Locations'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.properties.name,
+                      result.geometry,
+                      result
+                    )
+                  "
+                >
+                  {{ result.properties.name }} -
+                  {{ result.properties.feature.relativeLocation }}
+                </h5>
+                <h5
+                  v-else-if="key === 'Address'"
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="
+                    handleResultClick(
+                      $event,
+                      key,
+                      result.place_name,
+                      result.geometry,
+                      result
+                    )
+                  "
+                >
+                  {{ result.place_name }}
+                </h5>
+              </div>
+              <hr />
+            </div>
+          </div>
+          <div>
+            <Contact
+              subject="FPCC Map: Didn't find what I was looking for (search)"
+            ></Contact>
+          </div>
+        </div>
+      </div>
       <b-popover
+        v-else
         target="search-input"
         placement="bottom"
         :show.sync="show"
@@ -35,7 +179,15 @@
             class="search-row"
           >
             <div v-if="results.length > 0" class="mb-3">
-              <h5 class="search-result-group font-1 pl-3 pr-3">{{ key }}</h5>
+              <h5
+                v-if="key === 'Locations'"
+                class="search-result-group font-1 pl-3 pr-3"
+              >
+                Locations from the BC Geographical Names Database
+              </h5>
+              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+                {{ key }}
+              </h5>
               <div
                 v-for="(result, index) in results"
                 :key="index"
@@ -44,27 +196,43 @@
                 <h5
                   v-if="key === 'Languages' || key === 'Communities'"
                   class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.name)"
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
-                  {{ result.name }}
+                  <div
+                    v-html="highlightSearch(result.item.name, result.matches)"
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Places'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
-                    handleResultClick($event, key, result.properties.name)
+                    handleResultClick($event, key, result.item.properties.name)
                   "
                 >
-                  {{ result.properties.name }}
+                  <div
+                    v-html="
+                      highlightSearch(
+                        result.item.properties.name,
+                        result.matches
+                      )
+                    "
+                  ></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Locations'"
@@ -74,7 +242,8 @@
                       $event,
                       key,
                       result.properties.name,
-                      result.geometry
+                      result.geometry,
+                      result
                     )
                   "
                 >
@@ -89,7 +258,8 @@
                       $event,
                       key,
                       result.place_name,
-                      result.geometry
+                      result.geometry,
+                      result
                     )
                   "
                 >
@@ -122,6 +292,12 @@ export default {
   components: {
     Contact
   },
+  props: {
+    mobile: {
+      default: false,
+      type: Boolean
+    }
+  },
   data() {
     return {
       MAPBOX_ACCESS_TOKEN:
@@ -134,10 +310,15 @@ export default {
       placesResults: [],
       artsResults: [],
       locationResults: [],
-      addressResults: []
+      addressResults: [],
+      popup: null,
+      marker: null
     }
   },
   computed: {
+    isDetailMode() {
+      return this.$store.state.sidebar.isDetailMode
+    },
     communities() {
       return this.$store.state.communities.communitySet
     },
@@ -152,6 +333,7 @@ export default {
     },
     isSearchEmpty() {
       return (
+        this.searchQuery.length !== 0 &&
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
@@ -177,7 +359,24 @@ export default {
   beforeDestroy() {
     document.removeEventListener('click', this.clicked)
   },
+
   methods: {
+    generateHighlightedText(s, indices) {
+      return indices
+        .reduce((str, [start, end]) => {
+          str[start] = `<span class="font-weight-bold">${str[start]}`
+          str[end] = `${str[end]}</span>`
+          return str
+        }, s.split(''))
+        .join('')
+    },
+    highlightSearch(s, matches) {
+      if (!matches || matches.length === 0) {
+        return s
+      }
+
+      return this.generateHighlightedText(s, matches[0].indices)
+    },
     handleSearchUpdate: debounce(async function() {
       if (this.searchQuery === '') {
         this.show = false
@@ -188,7 +387,20 @@ export default {
       this.languageResults = this.fuzzySearch(
         this.languages,
         this.searchQuery,
-        ['name', 'family.name', 'other_names']
+        [
+          {
+            name: 'name',
+            weight: 0.3
+          },
+          {
+            name: 'family.name',
+            weight: 0.7
+          },
+          {
+            name: 'other_names',
+            weight: 0.7
+          }
+        ]
       )
       this.communityResults = this.fuzzySearch(
         this.communities,
@@ -196,14 +408,22 @@ export default {
         ['name']
       )
 
-      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
-        'properties.name',
-        'properties.other_names'
+      const placeFuzzy = this.fuzzySearch(this.places, this.searchQuery, [
+        {
+          name: 'properties.name',
+          weight: 0.3
+        },
+        {
+          name: 'properties.other_names',
+          weight: 0.7
+        }
       ])
+      this.placesResults = placeFuzzy.filter(
+        p => p.item.properties.status !== 'FL'
+      )
 
       this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
-        'properties.name',
-        'properties.art_type'
+        'properties.name'
       ])
       try {
         const geoCodeResults = await Promise.all([
@@ -215,7 +435,9 @@ export default {
           this.$axios.$get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${
               this.searchQuery
-            }.json?access_token=${this.MAPBOX_ACCESS_TOKEN}`
+            }.json?access_token=${
+              this.MAPBOX_ACCESS_TOKEN
+            }&bbox=-140,48,-114,60`
           )
         ])
 
@@ -229,44 +451,52 @@ export default {
     }, 500),
     fuzzySearch(data, query, keys) {
       const options = {
+        includeMatches: true,
+        includeScore: true,
         shouldSort: true,
-        threshold: 0.6,
+        threshold: 0.3,
         location: 0,
-        distance: 100,
+        distance: 70,
         maxPatternLength: 32,
-        minMatchCharLength: 1,
+        minMatchCharLength: 3,
         keys
       }
 
-      const fuse = new Fuse(data, options)
-      const result = fuse.search(query)
-      return result
-    },
-    filterBasedOnTitle(data = [], query = '', mode = 0) {
-      if (data.length === 0) {
+      try {
+        const fuse = new Fuse(data, options)
+        const result = fuse.search(query)
+        console.log('Fuse Result', result)
+
+        return result
+      } catch (e) {
         return []
       }
-      let results
-      const lowerCasedQuery = query.toLowerCase()
-      if (mode === 1) {
-        results = data.filter(d => {
-          return (
-            d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
-            (d.properties.other_names || '')
-              .toLowerCase()
-              .includes(lowerCasedQuery)
-          )
-        })
-      } else {
-        results = data.filter(d => {
-          return (
-            d.name.toLowerCase().includes(lowerCasedQuery) ||
-            (d.other_names || '').toLowerCase().includes(lowerCasedQuery)
-          )
-        })
-      }
-      return results
     },
+    // filterBasedOnTitle(data = [], query = '', mode = 0) {
+    //   if (data.length === 0) {
+    //     return []
+    //   }
+    //   let results
+    //   const lowerCasedQuery = query.toLowerCase()
+    //   if (mode === 1) {
+    //     results = data.filter(d => {
+    //       return (
+    //         d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         (d.properties.other_names || '')
+    //           .toLowerCase()
+    //           .includes(lowerCasedQuery)
+    //       )
+    //     })
+    //   } else {
+    //     results = data.filter(d => {
+    //       return (
+    //         d.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         (d.other_names || '').toLowerCase().includes(lowerCasedQuery)
+    //       )
+    //     })
+    //   }
+    //   return results
+    // },
     clicked(event) {
       const el = event.target
       const isPopOver = el.closest('.popover')
@@ -283,7 +513,18 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data, geom) {
+    handleResultClick(event, type, data, geom, result) {
+      if (this.popup) {
+        this.popup.remove()
+        this.popup = null
+      }
+      if (this.marker) {
+        this.marker.remove()
+        this.marker = null
+      }
+      if (this.mobile) {
+        this.$root.$emit('closeSearchOverlay')
+      }
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
@@ -311,8 +552,45 @@ export default {
       }
 
       if (type === 'Locations' || type === 'Address') {
+        const self = this
         this.$eventHub.whenMap(map => {
+          self.$router.push({ path: '/languages' })
           zoomToPoint({ map, geom, zoom: 11 })
+          const el = document.createElement('div')
+          el.className = 'marker search-marker'
+          el.style = "background-image: url('https://i.imgur.com/MK4NUzI.png')"
+          const mapboxgl = require('mapbox-gl')
+
+          let govLink = ''
+          let locationHtml = ''
+          if (type === 'Locations') {
+            govLink = `http://${result.properties.uri}.html`
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
+                <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
+          }
+
+          self.marker = new mapboxgl.Marker(el)
+            .setLngLat(geom.coordinates)
+            .addTo(map)
+          self.popup = new mapboxgl.Popup({
+            className: 'artPopUp'
+          })
+            .setLngLat(geom.coordinates)
+            .setHTML(
+              `<div class='popup-inner address-popup'>
+                <h4 class="font-1 font-weight-bold">${data}</h4>
+
+                ${locationHtml}
+                
+                <a class="d-block text-center" href="/contribute?lat=${
+                  geom.coordinates[1]
+                }&lng=${
+                geom.coordinates[0]
+              }&cname=${data}">Contribute To This Point.</a>
+
+                </div>`
+            )
+            .addTo(map)
         })
       }
     }
@@ -321,11 +599,17 @@ export default {
 </script>
 
 <style>
+.address-popup {
+  border-radius: 0.5em;
+}
 .searchbar-container {
   position: fixed;
   top: 10px;
-  left: calc(50% - 250px);
+  left: calc(50% - 200px);
   width: 500px;
+}
+.searchbar-container-detail {
+  left: 45%;
 }
 .searchbar-input-container {
   display: flex;
@@ -376,16 +660,67 @@ export default {
   color: rgba(0, 0, 0, 0.2);
 }
 
+@media (max-width: 1200px) {
+  .searchbar-container {
+    position: fixed;
+    top: 10px;
+    left: 40%;
+    width: 400px;
+  }
+
+  .searchbar-container-detail {
+    left: 55%;
+    width: 300px;
+  }
+}
+
 @media (max-width: 992px) {
+  .searchbar-input-container {
+    flex-direction: column;
+  }
   .searchbar-container {
     top: 0;
-    width: auto;
     position: static;
     display: inline-block;
-    display: table-cell;
-    width: 70%;
-    padding-left: 0.5em;
-    vertical-align: middle;
+    width: 100%;
+    padding: 0 0.5em;
+  }
+
+  .searchbar-icon {
+    display: none;
+  }
+
+  .searchbar-mobile-header {
+    display: flex;
+    align-items: center;
+    padding: 0.25em;
+    line-height: 0.8em;
+  }
+
+  .search-mobile-input {
+    flex: 1 1 auto;
+  }
+
+  .search-mobile-input #search-input {
+    border: 0;
+    font-size: 0.8em;
+    border-radius: 0;
+    outline: none;
+    padding: 0;
+  }
+
+  .search-mobile-input #search-input:focus {
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .search-mobile-icon {
+    padding-right: 1em;
+  }
+
+  .search-mobile-close-icon {
+    padding-left: 1em;
   }
 }
 </style>

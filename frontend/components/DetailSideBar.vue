@@ -2,8 +2,10 @@
   <div ref="sidebarContainer" class="ds">
     <div class="ds-container" :style="'width: ' + width + 'px;'">
       <Logo :logo-alt="2" class="pt-2 pb-2"></Logo>
-      <slot name="content"></slot>
+
+      <slot name="header"></slot>
       <slot name="badges"></slot>
+      <slot name="content"></slot>
       <slot></slot>
       <Contact
         :subject="

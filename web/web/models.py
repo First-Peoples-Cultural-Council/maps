@@ -16,7 +16,7 @@ class BaseModel(models.Model):
 
 class CulturalModel(BaseModel):
     # mapped_spellings = models.CharField(max_length=255, default="")
-    other_names = models.CharField(max_length=255, default="")
+    other_names = models.CharField(max_length=255, default="", blank=True)
 
     class Meta:
         abstract = True

@@ -13,11 +13,23 @@
         <div>
           <div>
             <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+              class="font-08 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
               {{ type }}
+              <b-badge id="tooltip-target-1" :variant="getVariant(status)">{{
+                status | filterStatus
+              }}</b-badge>
+              <b-tooltip
+                v-if="status === 'UN'"
+                target="tooltip-target-1"
+                triggers="hover"
+              >
+                This content has not been verified by a community member or
+                FPCC. Please use "Report" it if it needs to be corrected or
+                removed
+              </b-tooltip>
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold place-name">
               {{ name }}
             </h5>
           </div>
@@ -26,11 +38,25 @@
             class="d-inline-block"
             @click.prevent.stop="handlePronounce"
           >
-            <CardBadge content="Pronounce"></CardBadge>
+            <CardBadge
+              content="Pronounce"
+              :class="{ 'md-size-badge': variant === 'md' }"
+            ></CardBadge>
+          </div>
+          <div v-if="allowEdit" class="d-inline-block">
             <CardBadge
               content="Edit"
               type="edit"
+              :class="{ 'md-size-badge': variant === 'md' }"
               @click.native="handleEdit"
+            ></CardBadge>
+          </div>
+          <div v-if="deletePlace" class="d-inline-block">
+            <CardBadge
+              content="Delete"
+              type="delete"
+              :class="{ 'md-size-badge': variant === 'md' }"
+              @click.native="modalShow = true"
             ></CardBadge>
           </div>
         </div>
@@ -53,16 +79,31 @@
         </div>
       </template>
     </Card>
+    <b-modal v-model="modalShow" hide-header @ok="handleDelete"
+      >Are you sure you want to delete this place?</b-modal
+    >
   </div>
 </template>
 
 <script>
 import Card from '@/components/Card.vue'
 import CardBadge from '@/components/CardBadge.vue'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
+
 export default {
   components: {
     Card,
     CardBadge
+  },
+  filters: {
+    filterStatus(d) {
+      return {
+        UN: 'Unverified',
+        RE: 'Rejected',
+        VE: 'Verified',
+        FL: 'Flagged'
+      }[d]
+    }
   },
   props: {
     name: {
@@ -88,14 +129,39 @@ export default {
     id: {
       type: Number,
       default: null
+    },
+    allowEdit: {
+      type: Boolean,
+      default: false
+    },
+    variant: {
+      type: String,
+      default: 'sm'
+    },
+    deletePlace: {
+      type: Boolean,
+      default: false
+    },
+    status: {
+      default: '',
+      type: String
     }
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      modalShow: false
     }
   },
   methods: {
+    getVariant(status) {
+      return {
+        UN: 'info',
+        RE: 'danger',
+        VE: 'primary',
+        FL: 'danger'
+      }[status]
+    },
     handlePronounce() {
       this.audio = this.audio || new Audio(this.audioFile)
       if (this.audio.paused) {
@@ -107,7 +173,7 @@ export default {
     handleReturn() {
       if (this.server) {
         this.$router.push({
-          path: '/place-names'
+          path: '/heritages'
         })
       } else {
         this.$router.go(-1)
@@ -120,6 +186,18 @@ export default {
           mode: 'existing',
           id: this.id
         }
+      })
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(`${getApiUrl(`placename/${this.id}`)}`, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+      this.modalShow = false
+      this.$router.push({
+        path: `/heritages`
       })
     }
   }
@@ -170,5 +248,11 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
+}
+
+.md-size-badge {
+  margin-top: 0.25em;
+  font-size: 1em;
+  padding: 0.5em;
 }
 </style>
