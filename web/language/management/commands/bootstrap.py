@@ -68,6 +68,7 @@ class Client(dedruplify.DeDruplifierClient):
                 "field_tm_fn_grp_email1_email": "email",
                 "field_tm_fn_grp_fax_value": "fax",
                 "field_tm_fn_grp_ph_tf_value": "phone",
+                "field_tm_fn_grp_code_value": "nation_id",
                 "field_tm_fn_grp_ph_value": "alt_phone",
             },
         ):

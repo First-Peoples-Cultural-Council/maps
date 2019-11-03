@@ -109,7 +109,8 @@ class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
-
+    # field_tm_fn_grp_code_value from the old db.
+    nation_id = models.IntegerField(null=True)
     english_name = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
     # TODO: just add off + on reserve populations. Deprecated.
