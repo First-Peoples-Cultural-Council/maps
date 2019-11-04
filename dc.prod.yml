@@ -19,7 +19,7 @@ services:
       - FPLM_PW=
 
     command: ./prod.sh
-    restart: awlways
+    restart: always
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
