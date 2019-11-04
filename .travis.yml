@@ -1,14 +1,14 @@
 language: python # => 1
-    python: # => 2
-      - "3.6"
-    services: # => 3
-      - postgresql
-    env: # => 4
-      - DJANGO=2.0 DB=mysql
-    install: # => 5
-      - docs/scripts/travis-install.sh
-    before_script: # => 6
-      - psql -c "CREATE DATABASE test;" -U postgres
-    script: # => 7
-      - docs/scripts/travis-script.sh
+python: # => 2
+  - "3.6"
+services: # => 3
+  - postgresql
+env: # => 4
+  - DJANGO=2.0 DB=mysql
+install: # => 5
+  - docs/scripts/travis-install.sh
+before_script: # => 6
+  - psql -c "CREATE DATABASE test;" -U postgres
+script: # => 7
+  - docs/scripts/travis-script.sh
 
