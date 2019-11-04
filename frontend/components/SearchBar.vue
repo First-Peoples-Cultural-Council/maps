@@ -428,16 +428,10 @@ export default {
       try {
         const geoCodeResults = await Promise.all([
           this.$axios.$get(
-            `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${
-              this.searchQuery
-            }&outputSRS=4326&outputStyle=detail`
+            `https://apps.gov.bc.ca/pub/bcgnws/names/search?outputFormat=json&name=${this.searchQuery}&outputSRS=4326&outputStyle=detail`
           ),
           this.$axios.$get(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${
-              this.searchQuery
-            }.json?access_token=${
-              this.MAPBOX_ACCESS_TOKEN
-            }&bbox=-140,48,-114,60`
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${this.searchQuery}.json?access_token=${this.MAPBOX_ACCESS_TOKEN}&bbox=-140,48,-114,60`
           )
         ])
 

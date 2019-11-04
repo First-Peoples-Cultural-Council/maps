@@ -457,9 +457,7 @@ export default {
         {
           hid: `description`,
           name: 'description',
-          content: `${this.community.name}, also known as ${
-            this.community.other_names
-          } is an indigenous community of British Columbia.`
+          content: `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
         }
       ]
     }

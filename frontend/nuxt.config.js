@@ -79,11 +79,11 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
     '@tui-nuxt/editor',
     'nuxt-vue-multiselect'
   ],
-  buildModules: ['@nuxtjs/eslint-module'],
   markdownit: {
     injected: true
   },

@@ -437,9 +437,7 @@ export default {
         {
           hid: `description`,
           name: 'description',
-          content: `${this.language.name}, also known as ${
-            this.language.other_names
-          } is an indigenous language of British Columbia.`
+          content: `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
         }
       ]
     }
