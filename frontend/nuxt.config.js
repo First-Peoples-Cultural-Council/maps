@@ -83,7 +83,7 @@ module.exports = {
     '@tui-nuxt/editor',
     'nuxt-vue-multiselect'
   ],
-  devModules: ['@nuxtjs/eslint-module'],
+  buildModules: ['@nuxtjs/eslint-module'],
   markdownit: {
     injected: true
   },
