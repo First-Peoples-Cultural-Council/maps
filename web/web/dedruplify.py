@@ -7,6 +7,15 @@ from django.contrib.gis.geos import Point
 
 
 class DeDruplifierClient:
+
+
+    def __init__(self, host, user, pw, db, file_site=None):
+        self.db_name=db
+        self.db = pymysql.connect(
+            host, user, pw, db, cursorclass=pymysql.cursors.DictCursor
+        )
+        self.file_site = file_site
+
     def query(self, sql):
         with self.db.cursor() as cursor:
             cursor.execute(sql)
@@ -81,11 +90,6 @@ class DeDruplifierClient:
         term_mappings = self.query("select * from taxonomy_index;")
         # TODO: make generic.
 
-    def __init__(self, host, user, pw, db, file_site=None):
-        self.db = pymysql.connect(
-            host, user, pw, db, cursorclass=pymysql.cursors.DictCursor
-        )
-        self.file_site = file_site
 
     def update(self):
         os.makedirs("tmp/files", exist_ok=True)
@@ -105,11 +109,11 @@ class DeDruplifierClient:
             _by_id[node["nid"]] = new_node
         for k, v in _nodes.items():
             print("type:", k, len(v))
-        tables = [r["Tables_in_{}".format(db)] for r in self.query("show tables;")[:]]
+        tables = [r["Tables_in_{}".format(self.db_name)] for r in self.query("show tables;")[:]]
 
         _files = {}
         # download files.
-        if this.file_site:
+        if self.file_site:
             for row in self.query("select * from file_managed"):
                 print(row)
                 uri = row["uri"].replace("public://", "")
@@ -117,7 +121,7 @@ class DeDruplifierClient:
                 output_filename = os.path.join("tmp/files", uri)
                 output_dir = os.path.dirname(output_filename)
                 os.makedirs(output_dir, exist_ok=True)
-                cmd = "wget {}/{} -P {}".format(this.file_site, uri, output_dir)
+                cmd = "wget {}/{} -P {}".format(self.file_site, uri, output_dir)
                 print(cmd)
                 if not os.path.exists(output_filename):
                     os.system(cmd)
@@ -170,7 +174,7 @@ class DeDruplifierClient:
             for k, v in tmp.items():
 
                 # files
-                if k.endswith("_fid") and file_site:
+                if k.endswith("_fid") and self.file_site:
                     print(k, rec[k])
                     newval = [_files[v[0]]]
                     rec[k + "_filename"] = newval
