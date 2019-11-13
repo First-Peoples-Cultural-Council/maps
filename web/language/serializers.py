@@ -141,8 +141,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         required=False,
     )
     language_audio = RecordingSerializer(read_only=True)
-    
-
+    greeting_audio = RecordingSerializer(read_only=True)
 
     def to_representation(self, value):
         rep = super().to_representation(value)
