@@ -244,6 +244,10 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     languages = LanguageSerializer(read_only=True, many=True)
     places = PlaceNameLightSerializer(many=True, read_only=True)
     medias = MediaLightSerializer(many=True, read_only=True)
+    audio = serializers.PrimaryKeyRelatedField(
+        queryset=Recording.objects.all(), allow_null=True, required=False
+    )
+    audio_obj = RecordingSerializer(source="audio", read_only=True)
 
     # Atomic Writable APIs
     language_ids = serializers.PrimaryKeyRelatedField(
@@ -290,6 +294,8 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "name",
             "languages",
             "regions",
+            "audio",
+            "audio_obj",
             "audio_file",
             "champion_set",
             "communitylink_set",
@@ -303,7 +309,6 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "phone",
             "alt_phone",
             "fax",
-            "audio_file",
             "language_ids",
             "champion_ids",
             "communitylink_ids",

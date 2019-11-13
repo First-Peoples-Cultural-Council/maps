@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.utils import timezone
 
 from users.models import User, Administrator
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -9,6 +10,8 @@ from language.models import (
     Language, 
     Community, 
     CommunityMember, 
+    Champion,
+    Recording,
 )
 
 
@@ -29,6 +32,8 @@ class BaseTestCase(APITestCase):
 class CommunityAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
+        self.now = timezone.now()
+
         self.community1 = Community.objects.create(name="Test Community 01")
         self.community2 = Community.objects.create(name="Test Community 02")
         self.language = Language.objects.create(name="Test Language")
@@ -41,6 +46,14 @@ class CommunityAPITests(BaseTestCase):
                     54.74840576223716
                 ]
             }"""
+        self.point = GEOSGeometry(self.FAKE_GEOM)
+
+        self.recording = Recording.objects.create(
+            speaker = "Test recording",
+            recorder = "Test recording",
+            created = self.now,
+            date_recorded = self.now,
+        )
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -49,9 +62,9 @@ class CommunityAPITests(BaseTestCase):
 		Ensure we can retrieve a newly created community object.
 		"""
 
-        point = GEOSGeometry(self.FAKE_GEOM)
         test_community = Community(name="Test community 001")
-        test_community.point = point
+        test_community.point = self.point
+        test_community.audio = self.recording
         test_community.save()
 
         response = self.client.get(
@@ -60,6 +73,9 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], test_community.id)
         self.assertEqual(response.data["name"], "Test community 001")
+        self.assertEqual(response.data["audio"], self.recording.id)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
+        self.assertEqual(response.data["audio_obj"]["recorder"], self.recording.recorder)
 
     def test_community_list_route_exists(self):
         """
