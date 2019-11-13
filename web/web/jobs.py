@@ -8,7 +8,7 @@ from language.notifications import send
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
-from arts.management.commands.cache_arts import sync_arts
+from arts.management.commands.load_arts import sync_arts
 
 
 @register_job(
@@ -36,11 +36,11 @@ def notifier_job():
     * 20,  # This is set to 20 hours to give plenty of time to run missed jobs the same day, but avoid them overrunning into the following day.
     second=0,
     minute=0,
-    hour=2,
+    hour=3,
     day="*",
     replace_existing=True,
 )
-def arts(request):
+def arts():
     sync_arts()
 
 

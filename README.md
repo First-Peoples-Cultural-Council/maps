@@ -200,7 +200,7 @@ This project was originally ported from a Drupal database, and we have a somewha
 
 `docker-compose exec web python manage.py bootstrap` to get languages.
 `docker-compose exec web python manage.py get_sleeping` to import an old KML source for languageion region geometry (included in repo).
-`docker-compose exec web python manage.py cache_arts` and `docker-compose exec web python manage.py load_arts` to get arts.
+`docker-compose exec web python manage.py load_arts` to get arts.
 
 ## Testing
 

@@ -7,8 +7,6 @@ from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
-
-from .management.commands.cache_arts import Client
 from .models import Art
 from language.models import Language
 from .serializers import ArtSerializer, ArtDetailSerializer
