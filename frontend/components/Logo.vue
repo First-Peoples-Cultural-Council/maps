@@ -1,5 +1,5 @@
 <template>
-  <div class="logo cursor-pointer" @click.prevent="handleLogoClick">
+  <div class="logo cursor-pointer h-100" @click.prevent="handleLogoClick">
     <div v-if="logoAlt === 1">
       <img
         src="../assets/images/symbol_text_background.png"
@@ -16,6 +16,13 @@
       <img
         src="../assets/images/symbol.png"
         alt="Language Map Of British Columbia"
+      />
+    </div>
+    <div v-else-if="logoAlt === 4" class="h-100">
+      <img
+        src="@/assets/images/symbol@2x.png"
+        alt="Menu"
+        class="mobile-logo h-100"
       />
     </div>
   </div>
@@ -50,11 +57,5 @@ export default {
 }
 .style-two-container {
   text-align: center;
-}
-
-@media (max-width: 992px) {
-  .logo img {
-    width: 100%;
-  }
 }
 </style>

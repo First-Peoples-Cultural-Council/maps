@@ -1,13 +1,87 @@
 <template>
   <div class="nav-container">
-    <div class="navbar-container cursor-pointer" @click="openNav">
-      <nav class="navbar-icon-container">
+    <div class="hide-mobile">
+      <div
+        v-if="isLoggedIn"
+        class="user-container cursor-pointer hide-mobile"
+        @click="profile"
+      >
+        <div
+          v-if="
+            isLoggedIn &&
+              user.languages &&
+              user.languages.length === 0 &&
+              user.communities &&
+              user.communities.length === 0
+          "
+          class="notify-badge"
+        ></div>
+        <nav class="navbar-icon-container">
+          <img
+            v-if="!picture"
+            src="@/assets/images/user_icon_red.svg"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+          <img
+            v-if="picture"
+            :src="picture"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+        </nav>
+      </div>
+      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
+        <nav class="navbar-icon-container">
+          <img
+            src="@/assets/images/menu_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+        </nav>
+      </div>
+    </div>
+
+    <div class="d-none cursor-pointer mobile-logo-container">
+      <Logo :logo-alt="4"></Logo>
+    </div>
+    <div class="d-none mobile-search-container">
+      <div
+        class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openContributeModal')"
+      >
         <img
-          src="@/assets/images/menu_icon.svg"
-          alt="Menu"
+          src="@/assets/images/plus_medium_red.svg"
+          alt="Search"
           class="navbar-icon"
         />
-      </nav>
+      </div>
+      <div
+        class="navbar-icon-container cursor-pointer"
+        @click="$root.$emit('openShareEmbed')"
+      >
+        <img
+          src="@/assets/images/share_icon_red.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
+      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
+        <img
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
+      <div class="navbar-container cursor-pointer" @click="openNav">
+        <nav class="navbar-icon-container">
+          <img
+            src="@/assets/images/menu_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+        </nav>
+      </div>
     </div>
     <transition name="fade">
       <div v-if="navigationOpen" class="navigation">
@@ -20,31 +94,50 @@
           />
         </div>
         <div class="nav-body">
+          <nuxt-link
+            v-if="isLoggedIn"
+            class="color-gray d-none user-mobile text-center"
+            :to="`/profile/${userid}`"
+            @click.native="resetMap"
+          >
+            <div class="text-center d-inline-block">
+              <img
+                v-if="!picture"
+                src="@/assets/images/user_icon_red.svg"
+                alt="Menu"
+                class="navbar-icon user_icon d-inline-block"
+              />
+              <img
+                v-if="picture"
+                :src="picture"
+                alt="Menu"
+                class="navbar-icon user_icon d-inline-block"
+              />
+            </div>
+          </nuxt-link>
+
           <ul class="nav-links p-0 m-0 list-style-none">
-            <li>
-              <nuxt-link to="/" @click.native="handleNavLink">Home</nuxt-link>
-            </li>
-            <li>
-              <nuxt-link to="/languages" @click.native="resetMap"
-                >Languages</nuxt-link
+            <li v-if="isLoggedIn">
+              <nuxt-link class="color-gray" :to="`/profile/${userid}`"
+                >Profile</nuxt-link
               >
             </li>
             <li>
-              <nuxt-link to="/first-nations" @click.native="resetMap"
-                >First Nations</nuxt-link
+              <a class="color-gray" href="http://184.69.112.115/orderMaps"
+                >Order Maps</a
               >
             </li>
             <li>
-              <nuxt-link to="/place-names" @click.native="resetMap"
-                >Place-names</nuxt-link
-              >
+              <a class="color-gray" href="https://maps.fpcc.ca/help">Help</a>
             </li>
-            <li><a href="http://184.69.112.115/orderMaps">Order Maps</a></li>
-            <li><a href="https://maps.fpcc.ca/help">Help</a></li>
             <li class="login-nav cursor-pointer">
-              <a href="https://maps.fpcc.ca/user/login" class="d-block"
+              <a
+                v-if="!email"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
+                class="d-block"
                 >Login</a
               >
+              <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
           <div
@@ -62,18 +155,59 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getApiUrl } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
+
 export default {
+  components: {
+    Logo
+  },
   data() {
     return {
-      navigationOpen: false
+      navigationOpen: false,
+      show: false
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    userid() {
+      return this.$store.state.user.user.id
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
+    },
+    email() {
+      return this.$store.state.user.user && this.$store.state.user.user.email
+    },
+    ...mapState({
+      picture: state => state.user.picture
+    }),
+    user() {
+      return this.$store.state.user.user
     }
   },
+  mounted() {
+    console.log('mounted')
+  },
   methods: {
+    showSearch() {
+      this.$root.$emit('showSearchOverlay', true)
+    },
+    profile() {
+      this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
+    },
+    async logout() {
+      await this.$axios.$get(
+        `${getApiUrl('user/logout/')}?timestamp=${new Date().getTime()}`
+      )
+      this.$store.commit('user/setUser', null)
+      this.$store.commit('user/setLoggedIn', false)
+      window.location =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+    },
     handleLogoClick() {
       this.$router.push({
         path: '/'
@@ -105,7 +239,17 @@ export default {
 </script>
 
 <style>
-.navbar-container {
+.notify-badge {
+  position: absolute;
+  top: 2.5px;
+  right: 2.5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
+}
+.navbar-container,
+.user-container {
   position: fixed;
   top: 10px;
   right: 10px;
@@ -114,7 +258,12 @@ export default {
   border-radius: 50%;
   z-index: 50;
 }
-
+.user-container {
+  padding: 0.67em;
+  width: 45px;
+  height: 45px;
+  right: 60px;
+}
 .navigation {
   position: fixed;
   height: 86px;
@@ -147,6 +296,7 @@ export default {
 }
 .nav-links {
   display: inline-block;
+  text-align: center;
 }
 .nav-links li {
   margin-right: 1em;
@@ -155,14 +305,16 @@ export default {
 }
 
 .nav-links a {
-  color: var(--color-gray);
+  color: var(--color-gray, '#6f6f70');
   font-weight: 500;
 }
 
 .login-nav a {
-  background-color: var(--color-beige);
+  display: inline-block;
+  background-color: #f4eee9;
   border-radius: 0.5em;
   padding: 0.5em 2.7em;
+  color: #6f6f70;
 }
 .close-nav {
   border-radius: 50%;
@@ -178,21 +330,70 @@ export default {
   opacity: 0;
 }
 
+.user_icon {
+  display: inline-block;
+  width: 23px;
+  height: 23px;
+}
+
 @media (max-width: 992px) {
+  .searchbar-mobile {
+    flex: 10 1 auto;
+  }
+
+  .user-mobile {
+    display: block !important;
+  }
+
+  .user_icon {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.5em;
+    width: 80px;
+    height: 80px;
+    border-radius: 0.5em;
+  }
   .nav-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-icon-container {
+    padding-right: 1em;
+  }
+
+  .navbar-icon-container .navbar-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .mobile-logo {
     display: inline-block;
-    display: table-cell;
-    width: 15%;
-    padding-right: 0.5em;
-    vertical-align: middle;
-    padding-left: 0.5em;
+    height: 100%;
+  }
+
+  .mobile-logo-container {
+    display: inline-block !important;
+    height: 100%;
+  }
+
+  .mobile-search-container {
+    display: flex !important;
   }
 
   .navbar-container {
-    position: static;
     display: inline-block;
-    padding: 0.8em;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: static;
+    background-color: white;
+    border: 0;
+    top: unset;
+    left: unset;
+    right: unset;
+    bottom: unset;
+    z-index: unset;
+    padding: 0;
+    margin: 0;
   }
 
   .navigation {

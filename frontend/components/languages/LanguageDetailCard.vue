@@ -21,6 +21,12 @@
               {{ name }}
             </h5>
           </div>
+          <CardBadge
+            v-if="link"
+            type="learn"
+            content="Learn Language"
+            :link="link"
+          ></CardBadge>
           <div
             v-if="audioFile"
             class="d-inline-block"
@@ -58,9 +64,13 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
+
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
@@ -82,6 +92,10 @@ export default {
     audioFile: {
       type: String,
       default: null
+    },
+    link: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -116,7 +130,7 @@ export default {
       } else {
         this.$store.commit('languages/setComingFromDetail', true)
         this.$router.push({
-          path: `/languages/${encodeURIComponent(this.$route.params.lang)}`
+          path: `/languages/${encodeFPCC(this.$route.params.lang)}`
         })
       }
     },
@@ -163,7 +177,7 @@ export default {
 
 .fpcc-card-more:hover {
   color: white;
-  background-color: var(--color-darkgray);
+  background-color: #454545;
 }
 
 .fpcc-card-more img {

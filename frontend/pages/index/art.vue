@@ -2,7 +2,14 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
-        <Filters class="mb-2"></Filters>
+        <section class="pl-3 pr-3 mt-3">
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
+        </section>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3">
@@ -47,13 +54,10 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -68,13 +72,10 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -89,13 +90,10 @@
               sm="6"
             >
               <ArtsCard
-                :arttype="art.properties.art_type"
-                :name="art.properties.name"
+                :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
-                  $router.push({
-                    path: `/art/${encodeURIComponent(art.properties.name)}`
-                  })
+                  handleCardClick($event, art.properties.name, 'art')
                 "
               ></ArtsCard>
             </b-col>
@@ -116,17 +114,22 @@ import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
+import Accordion from '@/components/Accordion.vue'
 
 export default {
   components: {
     SideBar,
     ArtsCard,
     Badge,
-    Filters
+    Filters,
+    Accordion
   },
   data() {
     return {
-      mode: 'All'
+      mode: 'All',
+      accordionContent:
+        'Indigenous languages in B.C. all have corresponding unique cultures and artistic practices. This rich cultural environment is alive with countless Indigenous artists and artistic groups who create work across all artistic disciplines – visual, music, dance, performance, story and new media. The map provides an online environment for artists and groups to share information about their artistic practice as well as upcoming events, including festivals, exhibitions, performances and cultural events.'
     }
   },
   computed: {
@@ -141,6 +144,13 @@ export default {
     },
     artists() {
       return this.arts.filter(art => art.properties.art_type === 'artist')
+    }
+  },
+  methods: {
+    handleCardClick($event, name, type) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
     }
   }
 }

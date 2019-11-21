@@ -6,7 +6,10 @@
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <Accordion :content="accordionContent"></Accordion>
+          <Accordion
+            class="no-scroll-accordion"
+            :content="accordionContent"
+          ></Accordion>
         </section>
 
         <hr class="sidebar-divider" />
@@ -39,10 +42,13 @@
             <div
               v-for="(familyLanguages, family) in languages"
               :key="'langfamily' + family"
+              class="language-family-container mt-3 shadow-sm"
             >
-              <h5 class="language-family mt-3">
-                Language Family:
-                {{ family === 'undefined' ? 'No Family' : family }}
+              <h5 class="language-family mt-0">
+                <span class="language-family-header">Language Family:</span>
+                <span class="language-family-title">{{
+                  family === 'undefined' ? 'No Family' : family
+                }}</span>
               </h5>
               <b-row>
                 <b-col
@@ -54,13 +60,14 @@
                   sm="6"
                 >
                   <LanguageCard
-                    class="mt-3 hover-left-move"
+                    class="mt-2 hover-left-move"
                     :name="language.name"
-                    :color="language.color"
+                    :color="
+                      (language.family && language.family.color) ||
+                        language.color
+                    "
                     @click.native.prevent="
-                      $router.push({
-                        path: `languages/${encodeURIComponent(language.name)}`
-                      })
+                      handleCardClick($event, language.name, 'lang')
                     "
                   ></LanguageCard>
                 </b-col>
@@ -80,13 +87,9 @@
                 <CommunityCard
                   class="mt-3 hover-left-move"
                   :name="community.name"
+                  :community="community"
                   @click.native.prevent="
-                    handleCardClick(
-                      $event,
-                      community.name,
-                      'content',
-                      community.name
-                    )
+                    handleCardClick($event, community.name, 'comm')
                   "
                 ></CommunityCard>
               </b-col>
@@ -95,28 +98,20 @@
         </section>
       </template>
     </SideBar>
-    <div
-      v-else-if="this.$route.name === 'index-languages-lang'"
-      :width="detailOneWidth"
-    >
+    <div v-else>
       <nuxt-child />
     </div>
-    <DetailSideBar v-else :width="detailTwoWidth">
-      <div>
-        <nuxt-child />
-      </div>
-    </DetailSideBar>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -124,7 +119,6 @@ export default {
     Accordion,
     Badge,
     LanguageCard,
-    DetailSideBar,
     CommunityCard,
     Filters
   },
@@ -154,12 +148,19 @@ export default {
     }
   },
   methods: {
-    handleCardClick(e, data) {
-      // const lang = this.languages.find(l => l.name === data)
-      // zoomToLanguage({ map: this.mapinstance, lang: lang })
-      this.$router.push({
-        path: `/languages/${encodeURIComponent(data)}`
-      })
+    handleCardClick($event, name, type) {
+      switch (type) {
+        case 'lang':
+          this.$router.push({
+            path: `/languages/${encodeFPCC(name)}`
+          })
+          break
+        case 'comm':
+          this.$router.push({
+            path: `/content/${encodeFPCC(name)}`
+          })
+          break
+      }
     }
   },
 

@@ -7,7 +7,7 @@
           :style="'background-color:' + color"
         >
           <img
-            v-if="arttype.toLowerCase() === 'art'"
+            v-if="arttype.toLowerCase() === 'public_art'"
             src="@/assets/images/public_art_icon.svg"
             alt="Arts"
           />
@@ -34,7 +34,7 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ arttype }}
+              {{ arttype | art_type }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
               {{ name }}
@@ -68,6 +68,14 @@ import Card from '@/components/Card.vue'
 export default {
   components: {
     Card
+  },
+  filters: {
+    art_type(d) {
+      if (d === 'public_art') {
+        return 'Public Art'
+      }
+      return d
+    }
   },
   props: {
     name: {
@@ -122,7 +130,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more-art {
-  background-color: var(--color-beige);
+  background-color: var(--color-beige, #f4eee9);
   display: flex;
   align-items: center;
   height: 35px;
@@ -138,7 +146,7 @@ export default {
 
 .fpcc-card-more-art:hover {
   color: white;
-  background-color: var(--color-darkgray);
+  background-color: #454545;
 }
 
 .fpcc-card-more-art img {

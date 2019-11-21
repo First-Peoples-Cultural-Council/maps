@@ -1,11 +1,14 @@
 const webpack = require('webpack')
 
 module.exports = {
+  dev: process.env.NODE_ENV !== 'production',
+
   mode: 'universal',
   server: {
     port: 80, // default: 3000
     host: '0.0.0.0' // default: localhost
   },
+
   /*
    ** Headers of the page
    */
@@ -23,7 +26,8 @@ module.exports = {
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1'
+        content:
+          'width=device-width, initial-scale=1 maximum-scale=1, user-scalable=0'
       },
       {
         hid: 'description',
@@ -40,7 +44,7 @@ module.exports = {
       {
         rel: 'stylesheet',
         href:
-          'https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap'
+          'https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap'
       }
     ]
   },
@@ -66,7 +70,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/global'],
+  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
   /*
    ** Nuxt.js modules
    */
@@ -75,9 +79,17 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/markdownit',
+    '@tui-nuxt/editor',
+    'nuxt-vue-multiselect'
   ],
+  markdownit: {
+    injected: true
+  },
+  tui: {
+    editor: {}
+  },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
@@ -87,7 +99,6 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'
@@ -97,7 +108,8 @@ module.exports = {
       // Add plugin names as key and arguments as value
       // Install them before as dependencies with npm or yarn
       plugins: {
-        'postcss-flexbugs-fixes': {}
+        'postcss-flexbugs-fixes': {},
+        'postcss-css-variables': {}
       },
       preset: {
         autoprefixer: {
@@ -109,6 +121,9 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {
+      config.node = {
+        fs: 'empty'
+      }
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',

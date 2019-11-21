@@ -1,16 +1,21 @@
 <template>
   <div class="card-badge">
-    <span class="font-07">{{ content }}</span>
-    <img
-      v-if="type === 'pronounce'"
-      src="@/assets/images/pronounce_icon.svg"
-      alt="Pronounce"
-    />
-    <img
-      v-else-if="type === 'share'"
-      src="@/assets/images/share_icon.svg"
-      alt="Share"
-    />
+    <div v-if="type === 'pronounce'">
+      <span class="font-07">{{ content }}</span>
+      <img src="@/assets/images/pronounce_icon.svg" alt="Pronounce" />
+    </div>
+    <div v-if="type === 'learn'" @click="handleLearn">
+      <span class="font-07">{{ content }}</span>
+      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+    </div>
+    <div v-if="type === 'edit'">
+      <span class="font-07">{{ content }}</span>
+      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+    </div>
+    <div v-if="type === 'delete'">
+      <span class="font-07">{{ content }}</span>
+      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+    </div>
   </div>
 </template>
 
@@ -24,6 +29,15 @@ export default {
     type: {
       type: String,
       default: 'pronounce'
+    },
+    link: {
+      type: String,
+      default: ''
+    }
+  },
+  methods: {
+    handleLearn() {
+      window.open(`${this.link}`)
     }
   }
 }
@@ -32,7 +46,7 @@ export default {
 <style>
 .card-badge {
   line-height: 0;
-  background-color: var(--color-gray);
+  background-color: var(--color-gray, #6f6f70);
   display: inline-block;
   color: white;
   border-radius: 1em;

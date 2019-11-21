@@ -1,27 +1,57 @@
 <template>
-  <DetailSideBar>
-    <template v-slot:badges>
-      <h5 class="color-gray font-08 p-0 m-0">
+  <div class="w-100">
+    <div
+      v-if="!mobileContent"
+      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+    >
+      <div>
         {{ art.properties.art_type | titleCase }}:
         <span class="font-weight-bold">{{ art.properties.name }}</span>
-      </h5>
-    </template>
-    <div>
-      <ArtsDetailCard
-        :arttype="art.properties.art_type"
-        :name="art.properties.name"
-        :server="isServer"
-      ></ArtsDetailCard>
-      <p class="pl-4 mt-3 color-gray font-08" v-html="artDetails.details"></p>
-      <LanguageSeeAll
-        content="See all details"
-        class="mt-3"
-        @click.native="handleClick($event, artDetails.node_id)"
-      >
-      </LanguageSeeAll>
-      <Filters class="mb-2 mt-2"></Filters>
+      </div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <img src="@/assets/images/arrow_up_icon.svg" />
+      </div>
     </div>
-  </DetailSideBar>
+
+    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <div
+        class="text-center d-none mobile-close"
+        :class="{ 'content-mobile': mobileContent }"
+        @click="$store.commit('sidebar/setMobileContent', false)"
+      >
+        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
+      </div>
+
+      <div>
+        <ArtsDetailCard
+          :arttype="art.properties.art_type"
+          :name="art.properties.name"
+          :server="isServer"
+        ></ArtsDetailCard>
+        <div
+          v-if="artDetails.details"
+          class="p-4 m-0 pb-0 color-gray font-08"
+          v-html="artDetails.details"
+        ></div>
+        <div class="ml-3 mr-3 mt-3">
+          <p class="font-08">
+            [ Extracted from the
+            <a href="https://www.fp-artsmap.ca/" target="_blank"
+              >First People's Arts Map </a
+            >]
+          </p>
+        </div>
+        <LanguageSeeAll
+          content="See all details"
+          class="mt-0"
+          @click.native="handleClick($event, artDetails.node_id)"
+        >
+        </LanguageSeeAll>
+        <Filters class="mb-2 mt-2"></Filters>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -30,15 +60,15 @@ import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import DetailSideBar from '@/components/DetailSideBar.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
     ArtsDetailCard,
     LanguageSeeAll,
     Filters,
-    DetailSideBar
+    Logo
   },
   filters: {
     titleCase(str) {
@@ -46,6 +76,9 @@ export default {
     }
   },
   computed: {
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
+    },
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
     }
@@ -61,10 +94,9 @@ export default {
     const arts = (await $axios.$get(getApiUrl('arts'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
-        return a.properties.name.toLowerCase() === params.art.toLowerCase()
+        return encodeFPCC(a.properties.name) === params.art
       }
     })
-    console.log('art', art, params.art.toLowerCase())
     const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
 
     const isServer = !!process.server
@@ -84,24 +116,28 @@ export default {
     },
     setupMap() {
       this.$eventHub.whenMap(map => {
-        const mapboxgl = require('mapbox-gl')
-
-        this.$eventHub.whenMap(map => {
-          if (this.$route.hash.length <= 1) {
-            zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
-          }
-          const el = document.createElement('div')
-          el.className = 'marker'
-          el.style =
-            "background-image: url('/_nuxt/assets/images/" +
-            this.art.properties.art_type +
-            "_icon.svg')"
-
-          new mapboxgl.Marker(el)
-            .setLngLat(this.art.geometry.coordinates)
-            .addTo(map)
-        })
+        if (this.$route.hash.length <= 1) {
+          zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+        }
+        const icon = this.art.properties.art_type + '_icon.svg'
+        makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
       })
+    }
+  },
+  head() {
+    return {
+      title:
+        this.art.properties.name +
+        ' Indigenous ' +
+        this.art.properties.art_type +
+        " on First Peoples' Language Map",
+      meta: [
+        {
+          hid: `description`,
+          name: 'description',
+          content: this.art.properties.details
+        }
+      ]
     }
   }
 }

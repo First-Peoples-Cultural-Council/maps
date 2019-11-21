@@ -4,7 +4,6 @@ from language.models import (
     Language,
     LanguageFamily,
     Community,
-    LanguageSubFamily,
     Champion,
     PlaceName,
     Dialect,
@@ -27,12 +26,6 @@ class Client(dedruplify.DeDruplifierClient):
         Populate Django DB based on Drupal output.
         """
         self.map_drupal_items("tm_language", LanguageFamily)
-
-        self.map_drupal_items(
-            "tm_language_subfamily",
-            LanguageSubFamily,
-            {"field_language_family_target_id": "family"},
-        )
 
         for rec, obj in self.map_drupal_items(
             "tm_language_region",
@@ -190,7 +183,7 @@ class Client(dedruplify.DeDruplifierClient):
             "tm_placename",
             PlaceName,
             {
-                "field_tm_pn_othername_value": "other_name",
+                "field_tm_pn_othername_value": "other_names",
                 "field_tm_pn_location_lat": "point",
             },
         ):

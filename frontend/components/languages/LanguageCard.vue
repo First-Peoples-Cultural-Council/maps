@@ -4,11 +4,12 @@
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
-    <Card>
+    <Card :variant="variant">
       <template v-slot:header>
         <div
           class="language-icon-container"
           :style="'background-color:' + color"
+          :class="{ 'icon-sm': icon === 'small' }"
         >
           <img src="@/assets/images/language_icon.svg" alt="Language" />
         </div>
@@ -21,16 +22,24 @@
             >
               Language
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
+            <h5
+              class="font-09 m-0 p-0 color-gray font-weight-bold language-card-title"
+            >
               {{ name }}
             </h5>
           </div>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
-          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+        <div v-if="go">
+          <div class="fpcc-card-more">
+            <img
+              v-if="!hover"
+              src="@/assets/images/go_icon_hover.svg"
+              alt="Go"
+            />
+            <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+          </div>
         </div>
       </template>
     </Card>
@@ -51,6 +60,18 @@ export default {
     color: {
       type: String,
       default: 'RGB(0, 0, 0)'
+    },
+    go: {
+      type: Boolean,
+      default: true
+    },
+    variant: {
+      type: String,
+      default: 'normal'
+    },
+    icon: {
+      default: 'large',
+      type: String
     }
   },
   data() {
@@ -75,6 +96,7 @@ export default {
 <style scoped>
 .language-card {
   cursor: pointer;
+  background-color: white;
 }
 .language-icon-container {
   background-color: black;
@@ -97,6 +119,11 @@ export default {
   border-bottom-left-radius: 0.5em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: var(--color-darkgray);
+  background-color: #454545;
+}
+
+.language-icon-container.icon-sm {
+  width: 30px;
+  height: 30px;
 }
 </style>

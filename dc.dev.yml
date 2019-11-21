@@ -1,6 +1,13 @@
 version: "3.3"
 
 services:
+    db:
+        image: mdillon/postgis
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+        networks:
+            - back-tier
+
     nginx:
         ports:
             - 80:80
@@ -20,3 +27,9 @@ services:
             - FPLM_DB=fpmaps_d7_live
             - FPLM_USER=
             - FPLM_PW=
+
+
+volumes:
+    pg-data:
+        driver: local
+

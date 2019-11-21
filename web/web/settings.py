@@ -20,18 +20,27 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d"
+SECRET_KEY = os.environ.get("SECRET_KEY", "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # env var, DEBUG=0 for False, DEBUG=1 for True.
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
+HOST = os.environ.get("HOST", 'https://maps-dev.fpcc.ca')
+
 ALLOWED_HOSTS = ["*"]
 
 MEDIA_ROOT = "media/"
 MEDIA_URL = "/media/"
+APPEND_SLASH = True
 
-# Application definition
+ADMINS = (
+    ("Denis", "denis@countable.ca"),
+    ("Clark", "clark@countable.ca"),
+    ("Aaron", "aaron@countable.ca"),
+    ("Daniel", "daniel@fpcc.ca"),
+    )
+SERVER_EMAIL = "info@fpcc.ca"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -40,19 +49,25 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_swagger",
     "rest_framework_gis",
+    "django_apscheduler",
     "language",
     "firstvoices",
     "arts",
+    "users",
     "web",
-    "django.contrib.gis",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -88,7 +103,8 @@ DATABASES = {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": "postgres",
         "USER": "postgres",
-        "HOST": "db",
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+        "HOST": os.environ.get("DATABASE_HOST", "db"),
         "PORT": 5432,
     }
 }
@@ -126,11 +142,32 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
 
+# Select the correct user model
+AUTH_USER_MODEL = "users.User"
+
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = 5872
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "no-reply@fpcc.info"
 SERVER_EMAIL = "no-reply@fpcc.info"
 
+# We are using more granular permissions inside the views.
+# REST_FRAMEWORK = {
+#     "DEFAULT_PERMISSION_CLASSES": [
+#         "web.permissions.IsAdminOrReadOnly",
+#         "web.permissions.IsLanguageAdminOrReadOnly",
+#         "web.permissions.IsCommunityMemberOrReadOnly",
+#         "web.permissions.IsAuthenticatedUserOrReadOnly",
+#     ]
+# }
+
+REST_FRAMEWORK = {
+    # "DEFAULT_PERMISSION_CLASSES": ["web.permissions.IsAdminOrReadOnly"]
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+}

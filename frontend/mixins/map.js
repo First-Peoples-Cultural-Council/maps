@@ -9,6 +9,15 @@ export const selectLanguage = ({ map, lang }) => {
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 
+export const zoomToIdealBox = ({ map }) => {
+  const bbox = [
+    [-143.921875, 45.800059446787316],
+    [-107.9951171875, 63.568120480921074]
+  ]
+  const bounds = [bbox[0], bbox[1]]
+  map.fitBounds(bounds)
+}
+
 export const zoomToPoint = ({ map, geom, zoom }) => {
   console.log(geom.coordinates)
   const currentZoom = map.getZoom()
@@ -38,5 +47,14 @@ export const intersects = (r1, r2) => {
     r2._ne.lng <= r1._sw.lng ||
     r2._ne.lat <= r1._sw.lat ||
     r2._sw.lat >= r1._ne.lat
+  )
+}
+
+export const pointIntersects = (point, r1) => {
+  return (
+    r1._sw.lat <= point.lat &&
+    r1._ne.lat >= point.lat &&
+    r1._sw.lng <= point.lng &&
+    r1._ne.lng >= point.lng
   )
 }

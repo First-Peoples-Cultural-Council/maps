@@ -1,8 +1,20 @@
 const addLangLayers = map => {
+  map.addLayer({
+    id: 'satelite',
+    type: 'raster',
+    source: {
+      type: 'raster',
+      url: 'mapbox://mapbox.satellite'
+    },
+    layout: {
+      visibility: 'none'
+    }
+  })
   map.addLayer(
     {
       id: 'fn-lang-areas-fill',
       type: 'fill',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {
@@ -27,6 +39,7 @@ const addLangLayers = map => {
     {
       id: 'fn-lang-area-outlines-fade',
       type: 'line',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {
@@ -75,6 +88,7 @@ const addLangLayers = map => {
     {
       id: 'fn-lang-area-outlines-1',
       type: 'line',
+      filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
       layout: {},
       paint: {
@@ -95,19 +109,7 @@ const addLangLayers = map => {
     },
     'fn-nations'
   )
-  map.addLayer(
-    {
-      id: 'fn-lang-areas-shaded',
-      type: 'fill',
-      source: 'langs1',
-      layout: {},
-      paint: {
-        'fill-color': 'black',
-        'fill-opacity': 0.001
-      }
-    },
-    'fn-nations'
-  )
+
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 }
 
@@ -161,6 +163,7 @@ export default {
       id: 'fn-arts-clusters-text',
       type: 'symbol',
       source: 'arts1',
+      minzoom: 5,
       filter: ['has', 'point_count'],
       layout: {
         'text-field': '{point_count_abbreviated}',
@@ -188,7 +191,71 @@ export default {
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
-        }
+        },
+        // [cvo] View permissions on frontend is not secure should be done in the API instead.
+        // filter: ['!=', ['get', 'status'], 'FL']
+        filter: ['!=', '$type', 'Polygon']
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places-lines',
+        type: 'line',
+        source: 'places1',
+        minzoom: 5,
+        layout: {
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#987',
+          'line-width': 1,
+          'line-dasharray': [0, 2]
+        },
+        filter: ['==', '$type', 'LineString']
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places-poly',
+        type: 'fill',
+        source: 'places1',
+        minzoom: 5,
+        layout: {},
+        paint: {
+          'fill-color': '#987',
+          'fill-opacity': 0.2
+        },
+        filter: ['==', '$type', 'Polygon']
+      },
+      'fn-nations'
+    )
+
+    map.addLayer(
+      {
+        id: 'fn-places-geom-labels',
+        type: 'symbol',
+        minzoom: 5,
+        source: 'places1',
+        layout: {
+          'text-field': ['to-string', ['get', 'name']],
+          'text-size': 14,
+          'text-font': ['FreeSans Medium']
+        },
+        paint: {
+          'text-halo-width': 2,
+          'text-halo-blur': 2,
+          'text-halo-color': '#ba9',
+          'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
+        },
+        filter: [
+          'any',
+          ['==', '$type', 'LineString'],
+          ['==', '$type', 'Polygon']
+        ]
       },
       'fn-nations'
     )
@@ -222,6 +289,7 @@ export default {
       id: 'fn-lang-labels',
       type: 'symbol',
       source: 'langs1',
+      filter: ['!', ['get', 'sleeping']],
       layout: {
         'text-field': ['to-string', ['get', 'name']],
         'text-size': 16,
@@ -230,6 +298,7 @@ export default {
       paint: {
         'text-halo-width': 2,
         'text-halo-blur': 2,
+        'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25],
         'text-halo-color': [
           'let',
           'rgba',
@@ -261,78 +330,6 @@ export default {
       }
     })
 
-    map.addLayer({
-      id: 'fn-nations-highlighted',
-      type: 'symbol',
-      source: 'communities1',
-      layout: {
-        'text-size': 15,
-        'icon-image': 'community',
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-        'text-padding': 0,
-        'text-offset': [0, 1.7],
-        'icon-size': 0.25,
-        'text-field': ['to-string', ['get', 'name']],
-        'icon-padding': 0
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': 'hsl(53, 50%, 70%)'
-      }
-    })
-
-    // map.addLayer({
-    //   id: 'fn-arts-highlighted',
-    //   type: 'symbol',
-    //   source: 'arts1',
-    //   layout: {
-    //     'text-optional': true,
-    //     'symbol-spacing': 50,
-    //     'icon-image': '{art_type}_icon',
-    //     'icon-size': 0.25,
-    //     'text-field': '{name}',
-    //     'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-    //     'text-size': 15,
-    //     'text-offset': [0, 0.6],
-    //     'text-anchor': 'top'
-    //   },
-    //   paint: {
-    //     'text-color': 'hsl(347, 0%, 0%)',
-    //     'text-halo-width': 2,
-    //     'text-halo-blur': 2,
-    //     'text-halo-color': 'hsl(53, 50%, 70%)'
-    //   }
-    // })
-
-    map.addLayer({
-      id: 'fn-places-highlighted',
-      type: 'symbol',
-      source: 'places1',
-      layout: {
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': 'point_of_interest_icon',
-        'icon-size': 0.25,
-        'text-field': '{name}',
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
-        'text-size': 15,
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
-      },
-      paint: {
-        'text-color': 'hsl(347, 0%, 0%)',
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': 'hsl(53, 50%, 70%)'
-      }
-    })
-
-    map.setFilter('fn-nations-highlighted', ['in', 'name', ''])
-    map.setFilter('fn-places-highlighted', ['in', 'name', ''])
-    map.setFilter('fn-arts-highlighted', ['in', 'name', ''])
-
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
     })
@@ -351,6 +348,8 @@ export default {
     map.on('mouseleave', 'fn-places', e => {
       map.getCanvas().style.cursor = 'default'
     })
+
+    // Layer feature precedence controls, in correct order for your reference:
     //       'text-optional': true,
     //       'icon-optional': true,
     //       'text-ignore-placemnt': true,

@@ -1,6 +1,8 @@
 <template>
-  <div class="fpcc-card">
-    <div class="fpcc-card-header"><slot name="header"></slot></div>
+  <div class="fpcc-card" :class="{ 'fpcc-card-white': variant == 'white' }">
+    <div class="fpcc-card-header">
+      <slot name="header"></slot>
+    </div>
     <div class="fpcc-card-body"><slot name="body"></slot></div>
     <div class="fpcc-card-footer">
       <slot name="footer"></slot>
@@ -9,7 +11,14 @@
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    variant: {
+      default: 'normal',
+      type: String
+    }
+  }
+}
 </script>
 
 <style>
@@ -21,7 +30,6 @@ export default {}
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
-
   display: table;
 }
 .fpcc-card-header {
@@ -39,5 +47,9 @@ export default {}
   display: table-cell;
   vertical-align: middle;
   width: 15%;
+}
+
+.fpcc-card-white {
+  background-color: White;
 }
 </style>
