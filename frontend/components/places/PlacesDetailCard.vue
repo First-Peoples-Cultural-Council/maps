@@ -13,12 +13,16 @@
         <div>
           <div>
             <h5
-              class="font-08 m-0 p-0 color-gray text-uppercase font-weight-normal"
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
               {{ type }}
-              <b-badge id="tooltip-target-1" :variant="getVariant(status)">{{
-                status | filterStatus
-              }}</b-badge>
+              <b-badge
+                v-if="status"
+                id="tooltip-target-1"
+                class="place-status-badge d-inline-block ml-1"
+                :variant="getVariant(status)"
+                >{{ status | filterStatus }}</b-badge
+              >
               <b-tooltip
                 v-if="status === 'UN'"
                 target="tooltip-target-1"
@@ -254,5 +258,16 @@ export default {
   margin-top: 0.25em;
   font-size: 1em;
   padding: 0.5em;
+}
+
+.place-status-badge {
+  border-radius: 0.2em;
+  font-size: 1.1em;
+  text-transform: none;
+}
+
+.place-status-badge.badge-info {
+  background-color: #cccccc;
+  color: #707070;
 }
 </style>

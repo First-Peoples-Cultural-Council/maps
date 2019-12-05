@@ -7,7 +7,7 @@
       size="sm"
       class="rounded-pill"
       @click="modalShow = true"
-      >Be Notified
+      >Follow This Language
     </b-button>
     <b-button
       v-else

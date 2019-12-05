@@ -4,19 +4,19 @@
     :class="{ favourited: favourited }"
     @click="handleFavourite"
   >
-    <b-badge
-      variant="warning"
-      class="d-flex align-items-center favourite-badge mt-1"
-      ><MdHeartIcon
+    <b-button block variant="warning" class="favourite-badge">
+      <MdHeartIcon
         w="15"
         h="15"
-        class="heart-place-icon mr-1"
+        class="heart-place-icon d-inline-block"
         :class="{ favourited: favourited }"
       ></MdHeartIcon>
-      <span v-if="favourited">Favourited</span>
-      <span v-else>Favourite</span>
-      <span v-if="numFavourites" class="ml-1">({{ numFavourites }})</span>
-    </b-badge>
+      <span v-if="favourited" class="d-inline-block">Liked</span>
+      <span v-else class="d-inline-block">Like</span>
+      <span v-if="numFavourites" class="ml-1 d-inline-block"
+        >({{ numFavourites }})</span
+      >
+    </b-button>
   </div>
 </template>
 <script>
@@ -70,6 +70,9 @@ export default {
 }
 </script>
 <style>
+.heart-place-icon {
+  vertical-align: sub;
+}
 .heart-place-icon:hover {
   transform: scale(1.2);
   fill: #dc3545;
@@ -77,10 +80,12 @@ export default {
 
 .favourited:hover {
   fill: black;
+  color: white;
 }
 
 .heart-place-icon svg {
   display: block;
+  fill: white;
 }
 
 .favourited {
@@ -88,5 +93,9 @@ export default {
 }
 
 .favourite-badge {
+  font-size: 0.8em;
+  padding: 0.2em 1em;
+  background-color: #e6a000;
+  color: white;
 }
 </style>

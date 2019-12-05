@@ -1,14 +1,14 @@
 <template>
   <div>
-    <div class="d-inline-block cursor-pointer" @click="modalShow = true">
-      <b-badge variant="danger">
+    <div class="cursor-pointer" @click="modalShow = true">
+      <b-button block variant="danger" class="flag-button">
         <MdFlagIcon
           class="d-inline-block mr-1"
           w="15"
           h="15"
           style="fill: white;"
         ></MdFlagIcon
-        >{{ title || 'Flag' }}</b-badge
+        >{{ title || 'Flag' }}</b-button
       >
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
@@ -125,4 +125,10 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.flag-button {
+  background-color: #c46257;
+  padding: 0.2em 1em;
+  font-size: 0.8em;
+}
+</style>
