@@ -5,13 +5,13 @@
       block
       variant="dark"
       size="sm"
-      class="rounded-pill"
+      class="notify-button"
       @click="modalShow = true"
-      >Follow This Language
+      >{{ title }}
     </b-button>
     <b-button
       v-else
-      class="rounded-pill"
+      class="notify-button"
       block
       variant="dark"
       size="sm"
@@ -60,6 +60,10 @@ export default {
     subscription: {
       default: null,
       type: Object
+    },
+    title: {
+      default: 'Subscribe',
+      type: String
     }
   },
   data() {
@@ -127,4 +131,10 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.notify-button {
+  border-radius: 0.2em;
+  font-size: 0.8em;
+  padding: 0.2em 0.2em;
+}
+</style>
