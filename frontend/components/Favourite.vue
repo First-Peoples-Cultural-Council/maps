@@ -4,27 +4,32 @@
     :class="{ favourited: favourited }"
     @click="handleFavourite"
   >
-    <b-badge
-      variant="warning"
-      class="d-flex align-items-center favourite-badge mt-1"
-      ><MdHeartIcon
-        w="15"
-        h="15"
-        class="heart-place-icon mr-1"
-        :class="{ favourited: favourited }"
-      ></MdHeartIcon>
-      <span v-if="favourited">Favourited</span>
-      <span v-else>Favourite</span>
-      <span v-if="numFavourites" class="ml-1">({{ numFavourites }})</span>
-    </b-badge>
+    <b-button block variant="warning" class="favourite-badge">
+      <img
+        v-if="favourited"
+        width="13"
+        height="13"
+        src="@/assets/images/heart_liked.svg"
+        alt="Liked"
+      />
+      <img
+        v-else
+        width="13"
+        height="13"
+        src="@/assets/images/heart_like.svg"
+        alt="Like"
+      />
+
+      <span v-if="favourited" class="d-inline-block valign-middle">Liked</span>
+      <span v-else class="d-inline-block valign-middle">Like</span>
+      <span v-if="numFavourites" class="d-inline-block valign-middle"
+        >({{ numFavourites }})</span
+      >
+    </b-button>
   </div>
 </template>
 <script>
-import MdHeartIcon from 'vue-ionicons/dist/md-heart.vue'
 export default {
-  components: {
-    MdHeartIcon
-  },
   props: {
     favourited: {
       default: null,
@@ -70,6 +75,9 @@ export default {
 }
 </script>
 <style>
+.heart-place-icon {
+  vertical-align: sub;
+}
 .heart-place-icon:hover {
   transform: scale(1.2);
   fill: #dc3545;
@@ -77,10 +85,12 @@ export default {
 
 .favourited:hover {
   fill: black;
+  color: white;
 }
 
 .heart-place-icon svg {
   display: block;
+  fill: white;
 }
 
 .favourited {
@@ -88,5 +98,9 @@ export default {
 }
 
 .favourite-badge {
+  font-size: 0.8em;
+  padding: 0.2em 1em;
+  background-color: #e6a000;
+  color: white;
 }
 </style>

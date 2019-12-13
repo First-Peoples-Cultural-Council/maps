@@ -14,6 +14,7 @@ from .models import (
     Media,
     Favourite,
     Notification,
+    Recording,
 )
 
 
@@ -48,3 +49,4 @@ admin.site.register(Favourite)
 admin.site.register(Notification)
 admin.site.register(LNA)
 admin.site.register(LNAData, LNADataAdmin)
+admin.site.register(Recording)

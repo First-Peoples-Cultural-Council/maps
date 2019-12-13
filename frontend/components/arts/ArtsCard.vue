@@ -32,7 +32,7 @@
             >
               {{ art.properties.art_type | art_type }}
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
               {{ art.properties.name }}
             </h5>
           </div>

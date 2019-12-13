@@ -13,6 +13,11 @@ class LanguageFamily(BaseModel):
 
 
 class Recording(models.Model):
+
+    def __str__(self):
+        return str(self.audio_file)
+
+    audio_file = models.FileField(null=True, blank=True)
     speaker = models.CharField(max_length=255)
     recorder = models.CharField(max_length=255)
     created = models.DateTimeField("date created", auto_now_add=True)
@@ -101,7 +106,8 @@ class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
-
+    # field_tm_fn_grp_code_value from the old db.
+    nation_id = models.IntegerField(null=True)
     english_name = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
     # TODO: just add off + on reserve populations. Deprecated.
@@ -372,6 +378,7 @@ class Favourite(BaseModel):
 
 
 class Notification(BaseModel):
+    name = models.CharField(max_length=255, blank=True, default="")
     user = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
         Language, null=True, default=None, on_delete=models.SET_NULL

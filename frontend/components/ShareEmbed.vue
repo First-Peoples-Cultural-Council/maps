@@ -110,18 +110,14 @@ export default {
     url() {
       if (this.lat && this.lng && this.zoom) {
         console.log(this.$route)
-        return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${
-          this.zoom
-        }`
+        return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}`
       } else {
         return `${this.origin}${this.$route.fullPath}`
       }
     },
     iframe() {
       if (this.lat && this.lng && this.zoom) {
-        return `<iframe src="${this.origin}${this.$route.path}#${this.lat}/${
-          this.lng
-        }/${this.zoom}"></iframe>`
+        return `<iframe src="${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}"></iframe>`
       } else {
         return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
       }

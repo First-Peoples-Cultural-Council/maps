@@ -17,7 +17,7 @@
             >
               Language
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold lang-name">
               {{ name }}
             </h5>
           </div>

@@ -89,10 +89,23 @@
     >
       <iframe
         width="100%"
-        height="315px"
         :src="`https://www.youtube.com/embed/${getYoutubeId(media.url)[2]}`"
         frameborder="0"
         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <div
+      v-if="getGenericFileType(media.file_type) === 'vimeo'"
+      class="word-break-all d-flex justify-content-center"
+    >
+      <iframe
+        v-if="vimeo.id"
+        :src="`https://player.vimeo.com/video/${vimeo.id}`"
+        width="100%"
+        frameborder="0"
+        allow="autoplay; fullscreen"
         allowfullscreen
       ></iframe>
     </div>
@@ -155,7 +168,18 @@ export default {
       type: Boolean
     }
   },
-
+  data() {
+    return {
+      vimeo: {
+        id: null
+      }
+    }
+  },
+  async created() {
+    if (this.media.file_type === 'vimeo') {
+      await this.getVimeoEmbed(this.media.url)
+    }
+  },
   methods: {
     getYoutubeId,
     getGenericFileType,
@@ -168,6 +192,13 @@ export default {
           closable: true
         })
         .show()
+    },
+    async getVimeoEmbed(link) {
+      const result = await this.$axios.$get(
+        `https://vimeo.com/api/oembed.json?url=${link}`
+      )
+      this.vimeo.id = result.video_id
+      return result.video_id
     }
   }
 }

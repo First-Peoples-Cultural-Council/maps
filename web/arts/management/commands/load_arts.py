@@ -1,16 +1,85 @@
-import pymysql
 from django.core.management.base import BaseCommand, CommandError
-from language.models import Language, Community
-from web import dedruplify
+from django.db import transaction
+from arts.models import Art
+from django.contrib.gis.geos import Point
 
 import os
 import sys
 import json
 
+import pymysql
+from web import dedruplify
+
+
+
+class Command(BaseCommand):
+    help = "Loads arts from fixtures/arts.json."
+
+    def handle(self, *args, **options):
+        sync_arts()
+
+def sync_arts():
+
+    c = Client(
+        os.environ["ARTSMAP_HOST"],
+        os.environ["ARTSMAP_USER"],
+        os.environ["ARTSMAP_PW"],
+        os.environ["ARTSMAP_DB"],
+    )
+    c.update()
+    c.load_arts()
+
+
+
 TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
 
 
 class Client(dedruplify.DeDruplifierClient):
+
+    def load_arts(self):
+
+        arts_geojson = self.nodes_to_geojson()
+        # Removing every Art object from the database.
+        # We are loading everything from the scratch
+        arts = Art.objects.all()
+        arts.delete()
+
+        error_log = []
+        for rec in arts_geojson["features"]:
+
+            # try:
+            with transaction.atomic():
+                # avoid duplicates on remote data source.
+                try:
+                    art = Art.objects.get(name=rec["properties"]["name"])
+                except Art.DoesNotExist:
+                    art = Art(name=rec["properties"]["name"])
+
+                # Geometry map point with latitude and longitude
+                art.point = Point(
+                    float(rec["geometry"]["coordinates"][0]),  # latitude
+                    float(rec["geometry"]["coordinates"][1]),
+                )  # longitude
+                art.art_type = rec["properties"]["type"]
+                art.details = rec["properties"]["details"]
+                art.node_id = rec["properties"]["node_id"]
+
+                art.save()
+
+        # except Exception as e:
+        #     error_log.append(
+        #         "Node Id "
+        #         + str(rec["properties"]["node_id"])
+        #         + ", unexpected error: "
+        #         + str(e)
+        #     )
+
+        if len(error_log) > 0:
+            for error in error_log:
+                print(error)
+        else:
+            print("Arts imported!")
+
     def nodes_to_geojson(self):
         db = pymysql.connect(
             os.environ["ARTSMAP_HOST"],
@@ -58,7 +127,11 @@ class Client(dedruplify.DeDruplifierClient):
                     # bands are duplicated in other layers, skip them.
                     print(row[1], "is duplicated in another layer, skip.")
                     continue
+
                 details = _details[row[0]][str(row[4])]
+                if details.get('field_shared_privacy_value', ["1"])[0] == "0":
+                    print(row[1], "is private.")
+                    continue
                 geojson["features"].append(
                     {
                         "type": "Feature",
@@ -77,19 +150,6 @@ class Client(dedruplify.DeDruplifierClient):
         return geojson
 
 
-class Command(BaseCommand):
-    help = "Closes the specified poll for voting"
-
-    def handle(self, *args, **options):
-        c = Client(
-            os.environ["ARTSMAP_HOST"],
-            os.environ["ARTSMAP_USER"],
-            os.environ["ARTSMAP_PW"],
-            os.environ["ARTSMAP_DB"],
-        )
-        # c.update()
-        # c.load()
-        open("web/static/web/arts1.json", "w").write(json.dumps(c.nodes_to_geojson()))
 
 
 # TODO: move to db query.

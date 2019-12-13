@@ -2,12 +2,20 @@
   <div>
     <b-button
       v-if="!unsubscribe"
+      block
       variant="dark"
       size="sm"
+      class="notify-button"
       @click="modalShow = true"
-      >Be Notified
+      >{{ title }}
     </b-button>
-    <b-button v-else variant="dark" size="sm" @click="unsub"
+    <b-button
+      v-else
+      class="notify-button"
+      block
+      variant="dark"
+      size="sm"
+      @click="unsub"
       >Unsubscribe
     </b-button>
     <b-modal v-model="modalShow" hide-header @ok="handleNotification">
@@ -52,6 +60,10 @@ export default {
     subscription: {
       default: null,
       type: Object
+    },
+    title: {
+      default: 'Subscribe',
+      type: String
     }
   },
   data() {
@@ -119,4 +131,10 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.notify-button {
+  border-radius: 0.2em;
+  font-size: 0.8em;
+  padding: 0.2em 0.2em;
+}
+</style>
