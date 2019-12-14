@@ -9,6 +9,7 @@ from language.models import (
     Language, 
     Community, 
     CommunityMember, 
+    Champion, 
 )
 
 
