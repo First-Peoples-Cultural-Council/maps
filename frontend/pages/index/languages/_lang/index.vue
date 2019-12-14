@@ -50,6 +50,22 @@
         ></LanguageSummary>
       </section>
       <section>
+        <b-row>
+          <b-col xs="6">
+            <Notification
+              v-if="isLoggedIn"
+              :id="language.id"
+              :unsubscribe="!!subscribed"
+              :subscription="subscribed"
+              :is-server="isServer"
+              type="language"
+              class="ml-3 mr-3 mt-3"
+              title="Follow This Language"
+            ></Notification>
+          </b-col>
+          <b-col xs="6"></b-col>
+        </b-row>
+
         <LanguageSeeAll
           :content="`Learn more about ${language.name}`"
           class="mt-3"
@@ -57,15 +73,6 @@
         ></LanguageSeeAll>
       </section>
       <Filters class="mb-1 mt-2"></Filters>
-      <Notification
-        v-if="isLoggedIn"
-        :id="language.id"
-        :unsubscribe="!!subscribed"
-        :subscription="subscribed"
-        :is-server="isServer"
-        type="language"
-        class="ml-3 mr-3 mt-2"
-      ></Notification>
       <div class="badge-container mt-2 ml-3 mr-3">
         <Badge
           content="Communities"

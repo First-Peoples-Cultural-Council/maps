@@ -36,44 +36,63 @@
             :delete-place="isPlaceOwner()"
             :status="place.status"
           ></PlacesDetailCard>
-          <hr class="sidebar-divider" />
-          <Filters class="mb-2"></Filters>
         </div>
-        <section class="mt-3 ml-4 mr-4">
+        <section class="mt-3 ml-4 mr-4 ">
+          <div class="mb-2">
+            <b-row>
+              <b-col xs="6">
+                <div
+                  v-if="creator"
+                  class="cursor-pointer mb-2"
+                  @click="handleCreatorClick($event, creator)"
+                >
+                  <div class="place-sub-header">Uploaded By</div>
+                  <div class="place-sub-content">{{ getCreatorName() }}</div>
+                </div>
+              </b-col>
+              <b-col xs="6">
+                <div v-if="place.category">
+                  <div
+                    class="font-08 text-uppercase color-gray place-sub-header"
+                  >
+                    Category
+                  </div>
+                  <div class="font-08 place-sub-content">
+                    {{ place.category_obj.name }}
+                  </div>
+                </div>
+              </b-col>
+            </b-row>
+          </div>
           <div>
-            <div
-              v-if="creator"
-              class="cursor-pointer mb-2"
-              @click="handleCreatorClick($event, creator)"
-            >
-              <b-badge variant="primary"
-                >Uploaded By: <a>{{ getCreatorName() }}</a></b-badge
-              >
-              <b-badge
-                v-if="place.community_only"
-                variant="success"
-                class="ml-1 mt-1"
-                >Community Only</b-badge
-              >
+            <div v-if="place.description">
+              <h5 class="font-08 text-uppercase color-gray">Description</h5>
+              <p class="font-08">{{ place.description }}</p>
             </div>
-            <div class="d-flex align-items-center mb-2">
-              <FlagModal
-                v-if="place.status !== 'FL' && place.status !== 'VE'"
-                :id="place.id"
-                class="d-inline-block"
-                type="placename"
-                title="Report"
-              ></FlagModal>
-              <Favourite
-                v-if="isLoggedIn"
-                :id="place.id"
-                :favourited="isFavourited"
-                :favourite="favourite"
-                :num-favourites="place.favourites.length"
-                type="placename"
-                class="d-inline-block ml-2"
-              ></Favourite>
-            </div>
+          </div>
+          <div>
+            <b-row no-gutters class="mb-2">
+              <b-col xl="6">
+                <FlagModal
+                  v-if="place.status !== 'FL' && place.status !== 'VE'"
+                  :id="place.id"
+                  type="placename"
+                  title="Report"
+                  class="mr-1"
+                ></FlagModal>
+              </b-col>
+              <b-col xl="6">
+                <Favourite
+                  v-if="isLoggedIn"
+                  :id="place.id"
+                  :favourited="isFavourited"
+                  :favourite="favourite"
+                  :num-favourites="place.favourites.length"
+                  type="placename"
+                  class="ml-1"
+                ></Favourite>
+              </b-col>
+            </b-row>
           </div>
           <div v-if="isPTV" class="mt-2">
             <b-row no-gutters class="mt-2 mb-4">
@@ -119,14 +138,6 @@
               "
             ></LanguageCard>
           </div>
-          <div v-if="place.description">
-            <h5 class="font-08 text-uppercase color-gray">Description</h5>
-            <p class="font-08">{{ place.description }}</p>
-          </div>
-          <div v-if="place.category">
-            <h5 class="font-08 text-uppercase color-gray">Category</h5>
-            <p class="font-08">{{ place.category_obj.name }}</p>
-          </div>
 
           <div v-if="place.common_name">
             <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
@@ -136,8 +147,14 @@
             <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
             <p class="font-08">{{ place.other_names }}</p>
           </div>
+          <div v-if="place.community_only">
+            <h5 class="font-08 text-uppercase color-gray font-weight-bold">
+              Community Only
+            </h5>
+          </div>
         </section>
-        <hr />
+        <hr class="sidebar-divider" />
+        <Filters class="mb-4"></Filters>
         <section class="m-1 ml-4 mr-4">
           <div v-if="isLoggedIn">
             <UploadTool :id="place.id" type="placename"></UploadTool>
@@ -515,5 +532,20 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
+}
+.place-sub-header {
+  color: #707070;
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+.place-sub-content {
+  background-color: #efeae2;
+  display: inline-block;
+  color: #707070;
+  margin: 0;
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  font-weight: bold;
+  border-radius: 0.5em;
 }
 </style>
