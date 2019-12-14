@@ -321,6 +321,12 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "communitylink_ids",
             "places",
             "medias",
+            "notes",
+            "nation_id",
+            "population_on_reserve",
+            "population_off_reserve",
+            "fv_guid",
+            "fv_archive_link",
         )
 
 
