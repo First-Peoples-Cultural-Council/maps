@@ -189,7 +189,15 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "family_id",
             "champion_ids",
             "languagelink_ids",
-            "places"
+            "places",
+            "total_schools",
+            "avg_hrs_wk_languages_in_school",
+            "ece_programs",
+            "avg_hrs_wk_languages_in_ece",
+            "language_nests",
+            "avg_hrs_wk_languages_in_language_nests", 
+            "community_adult_language_classes",
+            "fv_guid",
         )
 
 
@@ -313,6 +321,12 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "communitylink_ids",
             "places",
             "medias",
+            "notes",
+            "nation_id",
+            "population_on_reserve",
+            "population_off_reserve",
+            "fv_guid",
+            "fv_archive_link",
         )
 
 
