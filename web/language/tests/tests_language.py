@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.utils import timezone
 
 from users.models import User, Administrator
 from django.contrib.gis.geos import GEOSGeometry
@@ -9,6 +10,7 @@ import json
 
 from language.models import (
     Language, 
+    Recording,
 )
 
 
@@ -52,6 +54,23 @@ class BaseTestCase(APITestCase):
 
 
 class LanguageAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.now = timezone.now()
+
+        self.recording1 = Recording.objects.create(
+            speaker = "Test recording",
+            recorder = "Test recording",
+            created = self.now,
+            date_recorded = self.now,
+        )
+
+        self.recording2 = Recording.objects.create(
+            speaker = "Test recording",
+            recorder = "Test recording",
+            created = self.now,
+            date_recorded = self.now,
+        )
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -70,6 +89,8 @@ class LanguageAPITests(BaseTestCase):
         
         test_language = Language(name="Test language 001")
         test_language.geom = poly
+        test_language.language_audio = self.recording1
+        test_language.greeting_audio = self.recording2
         test_language.save()
 
         response = self.client.get(
@@ -82,6 +103,8 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], test_language.id)
         self.assertEqual(response.data["name"], "Test language 001")
+        self.assertEqual(response.data["language_audio"]["speaker"], self.recording1.speaker)
+        self.assertEqual(response.data["language_audio"]["recorder"], self.recording1.recorder)
 
     def test_language_list_route_exists(self):
         """
