@@ -27,8 +27,21 @@
         :server="isServer"
         :audio-file="commDetails.audio_file"
       ></CommunityDetailCard>
+
+      <Notification
+        v-if="isLoggedIn"
+        :id="community.id"
+        :is-server="isServer"
+        type="community"
+        class="m-2"
+        :unsubscribe="!!subscribed"
+        :subscription="subscribed"
+        title="Follow This Community"
+      ></Notification>
+
       <hr class="sidebar-divider mt-0" />
       <Filters class="mb-3"></Filters>
+      <section></section>
       <section class="pl-3 pr-3">
         <div v-if="otherNames">
           <h5 class="other-lang-names-title text-uppercase mt-">
@@ -198,17 +211,6 @@
             <hr class="mb-2" />
           </div>
         </div>
-      </section>
-      <section>
-        <Notification
-          v-if="isLoggedIn"
-          :id="community.id"
-          :is-server="isServer"
-          type="community"
-          class="m-4"
-          :unsubscribe="!!subscribed"
-          :subscription="subscribed"
-        ></Notification>
       </section>
     </div>
   </div>
@@ -457,9 +459,7 @@ export default {
         {
           hid: `description`,
           name: 'description',
-          content: `${this.community.name}, also known as ${
-            this.community.other_names
-          } is an indigenous community of British Columbia.`
+          content: `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
         }
       ]
     }

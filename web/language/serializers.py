@@ -1,6 +1,7 @@
 from .models import (
     Language,
     PlaceName,
+    Recording,
     PlaceNameCategory,
     Community,
     Champion,
@@ -52,6 +53,14 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
+class RecordingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recording
+        fields = ("audio_file",
+    "speaker",
+    "recorder",
+    "created",
+    "date_recorded")
 
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")
@@ -135,6 +144,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         source="languagelink_set",
         required=False,
     )
+    language_audio = RecordingSerializer(read_only=True)
     
 
 
@@ -163,6 +173,8 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "champion_set",
             "languagelink_set",
             "audio_file",
+            "language_audio",
+            "greeting_audio",
             "sleeping",
             "dialect_set",
             "fv_archive_link",
@@ -174,7 +186,6 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "some_speakers",
             "pop_total_value",
             "bbox",
-            "audio_file",
             "family_id",
             "champion_ids",
             "languagelink_ids",

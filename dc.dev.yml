@@ -1,35 +1,37 @@
-version: "3.3"
+version: '3.3'
 
 services:
-    db:
-        image: mdillon/postgis
-        volumes:
-            - pg-data:/var/lib/postgresql/data
-        networks:
-            - back-tier
+  db:
+    image: mdillon/postgis
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
 
-    nginx:
-        ports:
-            - 80:80
+  nginx:
+    ports:
+      - 80:80
+    environment:
+      - CACHE_LIFE=2s
+  frontend:
+    environment:
+      - NODE_ENV=development
+      - HOST=http://localhost
 
-    frontend:
+  test:
+      command: sleep 1000000
 
-        environment:
-            - NODE_ENV=development
-            - HOST=http://localhost
-    web:
-        environment:
-            - ARTSMAP_HOST=ratpack.sebastiantech.ca
-            - ARTSMAP_DB=fpcc_artsmap_prod
-            - ARTSMAP_USER=
-            - ARTSMAP_PW=
-            - FPLM_HOST=maps.fpcc.ca
-            - FPLM_DB=fpmaps_d7_live
-            - FPLM_USER=
-            - FPLM_PW=
-
+  web:
+    environment:
+      - ARTSMAP_HOST=ratpack.sebastiantech.ca
+      - ARTSMAP_DB=fpcc_artsmap_prod
+      - ARTSMAP_USER=
+      - ARTSMAP_PW=
+      - FPLM_HOST=maps.fpcc.ca
+      - FPLM_DB=fpmaps_d7_live
+      - FPLM_USER=
+      - FPLM_PW=
 
 volumes:
-    pg-data:
-        driver: local
-
+  pg-data:
+    driver: local

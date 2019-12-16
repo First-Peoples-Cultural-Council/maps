@@ -54,46 +54,7 @@ class Client(dedruplify.DeDruplifierClient):
                     obj.regions = ",".join(regions)
                     obj.save()
 
-        for rec, obj in self.map_drupal_items(
-            "tm_fn_group",
-            Community,
-            {
-                "field_tm_fn_grp_website_url": "website",
-                "field_tm_fn_comm_info_value": "notes",
-                "field_tm_fn_grp_alt_title_value": "english_name",
-                "field_tm_fn_internet_value": "internet_speed",
-                "field_tm_fn_latlong_lat": "point",
-                "field_tm_fn_total_pop_value": "population",
-                "field_tm_fn_grp_alt_title_value": "other_names",
-                "field_tm_fn_grp_email1_email": "email",
-                "field_tm_fn_grp_fax_value": "fax",
-                "field_tm_fn_grp_ph_tf_value": "phone",
-                "field_tm_fn_grp_ph_value": "alt_phone",
-            },
-        ):
-            if rec.get("body_value", [""])[0].strip():
-                obj.notes += "\n\n" + rec["body_value"][0]
-            for title in rec["field_tm_fn_lang_target_id_title"]:
-                try:
-                    lang = Language.objects.get(name=title)
-                except Language.DoesNotExist:
-                    continue
-                obj.languages.add(lang)
-            obj.save()
-
-            for i, v in enumerate(rec.get("field_tm_fn_grp_links_title", [])):
-                print("***", rec["field_tm_fn_grp_links_title"][i])
-                title = rec["field_tm_fn_grp_links_title"][i]
-                url = rec["field_tm_fn_grp_links_url"][i]
-                CommunityLink.objects.get_or_create(community=obj, title=title, url=url)
-
-            # regions are saved in Drupal's taxonomy terms, dig them out.
-            regions = []
-            for term_id in rec["field_tm_region_tid"]:
-                for t in TAX_TERMS:
-                    if t[0] == term_id:
-                        regions.append(t[2])
-            obj.regions = "".join(regions)
+        self.load_communities()
 
         self.load_placenames()
 
@@ -165,6 +126,50 @@ class Client(dedruplify.DeDruplifierClient):
             obj.school_hours = rec.get("field_tm_lna2_school_hrs_value", [0])[0]
             obj.save()
 
+    def load_communities(self):
+        for rec, obj in self.map_drupal_items(
+            "tm_fn_group",
+            Community,
+            {
+                "field_tm_fn_grp_website_url": "website",
+                "field_tm_fn_comm_info_value": "notes",
+                "field_tm_fn_grp_alt_title_value": "english_name",
+                "field_tm_fn_internet_value": "internet_speed",
+                "field_tm_fn_latlong_lat": "point",
+                "field_tm_fn_grp_code_value": "nation_id",
+                "field_tm_fn_total_pop_value": "population",
+                "field_tm_fn_grp_alt_title_value": "other_names",
+                "field_tm_fn_grp_email1_email": "email",
+                "field_tm_fn_grp_fax_value": "fax",
+                "field_tm_fn_grp_ph_tf_value": "phone",
+                "field_tm_fn_grp_code_value": "nation_id",
+                "field_tm_fn_grp_ph_value": "alt_phone",
+            },
+        ):
+            if rec.get("body_value", [""])[0].strip():
+                obj.notes += "\n\n" + rec["body_value"][0]
+            for title in rec["field_tm_fn_lang_target_id_title"]:
+                try:
+                    lang = Language.objects.get(name=title)
+                except Language.DoesNotExist:
+                    continue
+                obj.languages.add(lang)
+            obj.save()
+
+            for i, v in enumerate(rec.get("field_tm_fn_grp_links_title", [])):
+                print("***", rec["field_tm_fn_grp_links_title"][i])
+                title = rec["field_tm_fn_grp_links_title"][i]
+                url = rec["field_tm_fn_grp_links_url"][i]
+                CommunityLink.objects.get_or_create(community=obj, title=title, url=url)
+
+            # regions are saved in Drupal's taxonomy terms, dig them out.
+            regions = []
+            for term_id in rec["field_tm_region_tid"]:
+                for t in TAX_TERMS:
+                    if t[0] == term_id:
+                        regions.append(t[2])
+            obj.regions = "".join(regions)
+
     def load_champs(self):
         self.map_drupal_items(
             "tm_champ",
@@ -233,11 +238,10 @@ class Command(BaseCommand):
             os.environ["FPLM_USER"],
             os.environ["FPLM_PW"],
             os.environ["FPLM_DB"],
-            "https://maps.fpcc.ca/sites/default/files/",
+            #"https://maps.fpcc.ca/sites/default/files/",
         )
-        # c.update()
-        c.load_champs()
-        c.load_placenames()
+        c.update()
+        c.load_communities()
         # c.load()
         # c.load_lnadata()
 

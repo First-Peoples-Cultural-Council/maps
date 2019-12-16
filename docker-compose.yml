@@ -18,10 +18,24 @@ services:
         working_dir: /code/
         command: ./command.sh
 
+    test:
+        image: alekzonder/puppeteer:latest
+        volumes:
+            - ./frontend:/code
+        networks:
+            - back-tier
+        working_dir: /code/
+        user: root
+        command: "./wait-for-it.sh -t 30 frontend:80 -- yarn test"
+        depends_on:
+            - frontend
+     
+        
+
     nginx:
         networks:
             - back-tier
-        image: nginx:1.13
+        build: ./nginx
         volumes:
             - ./nginx/conf.d:/etc/nginx/conf.d
             - static:/static

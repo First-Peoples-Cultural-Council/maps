@@ -388,6 +388,7 @@ export default {
           id: place.community
         }
       }
+
       data = {
         place,
         tname: place.name,
@@ -397,6 +398,9 @@ export default {
       }
       if (community) {
         data.community = community
+      }
+      if (place.community_only) {
+        data.communityOnly = 'accepted'
       }
       if (place.language) {
         try {

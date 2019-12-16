@@ -34,15 +34,13 @@ docker-compose up
 
 Your Django app is served at `http://localhost/api`
 
-To create a superuser, do this from the shell.
-
-```
-docker-compose exec web ./setup.sh
-```
-
-You can visit the Django admin at `http://localhost/admin` and sign in with your superuser. The username is `admin`, password is `pass`.
-
 Your Vue app is served at `http://localhost`. The front-end won't work properly unless you have a realistic dataset. In this project, the database is quite small, we suggest using a production snapshot for development, because this gives better dev/prod parity for easier development. The other option is to populate tables using a script (an example is provided for migrating out of Druapl) or create your data manually in the Django admin.
+
+Acquire a database dump. If the file is `db.sql` in your repo root, do:
+
+```
+./docs/restore-pg
+```
 
 ## Public API
 
@@ -72,6 +70,7 @@ curl http://maps-dev.fpcc.ca/api/community/18/
 
 ## Updating Domain Data Via API
 
+API Documentation is available at localhost/api/docs
 Three endpoints are available to update directly, via API: `/api/language/`, `/api/community`, and `api/stats`.
 
 First, you should authenticate your API client as an FPCC admin user. For example using `curl`:
@@ -137,8 +136,31 @@ To work on a feature locally, configure your editor to use the `black` code styl
 
 ```
 
-docker-compose exec frontend lint --fix
+docker-compose exec frontend yarn lint --fix
 
+```
+
+Vscode settings for automatic linting
+```
+"eslint.validate": [
+    {
+    "language": "vue",
+    "autoFix": true
+    },
+    {
+    "language": "javascript",
+    "autoFix": true
+    },
+    {
+    "language": "javascriptreact",
+    "autoFix": true
+    }
+],
+"eslint.autoFixOnSave": true,
+"editor.formatOnSave": false,
+"vetur.validation.template": false,
+"editor.fontSize": 16,
+"terminal.integrated.scrollback": 50000
 ```
 
 ### Example, add a new database field.
@@ -172,21 +194,24 @@ If you want this field to be editable in the admin, this will happen by default.
 The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
 The `develop` branch id deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
 
-## Restoring data
+## Bootstrapping data (Not necessary to run again)
 
 This project was originally ported from a Drupal database, and we have a somewhat generic way of getting things out of Drupal the first time. Doing this requires populating the old database secrets in your docker-compose.override.yml
 
 `docker-compose exec web python manage.py bootstrap` to get languages.
 `docker-compose exec web python manage.py get_sleeping` to import an old KML source for languageion region geometry (included in repo).
-`docker-compose exec web python manage.py cache_arts` and `docker-compose exec web python manage.py load_arts` to get arts.
+`docker-compose exec web python manage.py load_arts` to get arts.
 
 ## Testing
 
 To test frontend:
 
+The docker container is by default on sleep. Need to comment out `command: sleep 1000000` on `docker-compose.override.yml` then restart the container.
+The test container is dependant on the frontend and the web container, and make sure these are running
+
 ```
 
-docker-compose exec frontend yarn run test
+docker-compose up test
 
 ```
 
