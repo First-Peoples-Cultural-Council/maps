@@ -160,30 +160,7 @@
                 content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
               ></ToolTip>
             </h5>
-            <client-only>
-              <TuiEditor
-                v-model="content"
-                mode="wysiwyg"
-                :options="{
-                  hideModeSwitch: true,
-                  toolbarItems: [
-                    'heading',
-                    'bold',
-                    'italic',
-                    'strike',
-                    'hr',
-                    'quote',
-                    'ul',
-                    'ol',
-                    'indent',
-                    'outdent',
-                    'link'
-                  ]
-                }"
-                preview-style="vertical"
-                height="300px"
-              />
-            </client-only>
+            <div id="quill" ref="quill"></div>
 
             <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
             <!--<MediaUploader></MediaUploader>-->
@@ -249,6 +226,7 @@ export default {
   middleware: 'authenticated',
   data() {
     return {
+      quillEditor: null,
       place: null,
       showDismissibleAlert: true,
       content: '',
@@ -332,9 +310,6 @@ export default {
     }
   },
   watch: {
-    userCommunity(newComm) {
-      console.log('Community Updated', newComm)
-    },
     '$route.query.mode'() {
       this.$eventHub.whenMap(map => {
         if (this.$route.query.mode === 'point') {
@@ -427,8 +402,19 @@ export default {
       window.location =
         'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     }
+    this.initQuill()
   },
   methods: {
+    initQuill() {
+      require('quill/dist/quill.snow.css')
+      const Quill = require('quill')
+      const container = this.$refs.quill
+      const editor = new Quill(container, {
+        theme: 'snow'
+      })
+      editor.setText(`${this.content}\n`)
+      this.quillEditor = editor
+    },
     async uploadAudioFile(id, audio) {
       const data = new FormData()
       data.append('audio_file', audio)
@@ -477,7 +463,11 @@ export default {
       if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
         status = 'UN'
       }
-
+      if (this.quillEditor) {
+        this.content = this.quillEditor.getText()
+      } else {
+        return
+      }
       const data = {
         name: this.tname,
         common_name: this.wname,
@@ -668,6 +658,11 @@ export default {
 .multiselect__element span {
   word-break: break-all;
   white-space: normal;
+}
+
+#quill {
+  height: 300px;
+  margin-bottom: 1em;
 }
 
 @media (max-width: 992px) {
