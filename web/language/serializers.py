@@ -281,10 +281,30 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             if lid in by_lang:
                 if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
                     by_lang[lid] = LNADataSerializer(lnadata).data
+                    lna_name = by_lang[lid]["lna"]["name"]
+                    print(lna_name)
+                    by_lang[lid]['lna']['url'] = self.build_lna_external_url(lna_name)
+                    # print(by_lang[lid]['lna'])
             else:
                 by_lang[lid] = LNADataSerializer(lnadata).data
+                lna_name = by_lang[lid]["lna"]["name"]
+                print(lna_name)
+                by_lang[lid]['lna']['url'] = "denis"
+                # print(by_lang[lid]['lna'])
+
         rep["lna_by_language"] = by_lang
         return rep
+
+    def build_lna_external_url(self, lna_name):
+        permalink = "https://maps.fpcc.ca/lna/"
+        try:
+            lna_external_id = lna_name.split('-')[0].strip().replace("LNA","")
+            print(lna_external_id)
+            lna_link = permalink + lna_external_id
+            print(lna_link)
+        except:
+            lna_link = permalink
+        return lna_link
 
     class Meta:
         model = Community
