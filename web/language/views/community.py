@@ -6,15 +6,11 @@ from django.db.models import Q
 from users.models import User, Administrator
 from language.models import (
     Language,
-    PlaceName,
     Community,
     CommunityMember,
     Champion,
-    PlaceNameCategory,
-    Media,
-    Favourite,
-    Notification,
     CommunityLanguageStats,
+    Recording,
 )
 
 from django.views.decorators.cache import never_cache
@@ -54,6 +50,21 @@ class CommunityViewSet(BaseModelViewSet):
             )
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=["patch"])
+    def add_audio(self, request, pk):
+        if 'recording_id' not in request.data.keys():
+            return Response({"message": "No Recording was sent in the request"})
+        if not pk:
+            return Response({"message": "No Community was sent in the request"})
+        recording_id = int(request.data["recording_id"])
+        community_id = int(pk)
+        community = Community.objects.get(pk=community_id)
+        recording = Recording.objects.get(pk=recording_id)
+        community.audio = recording
+        community.save()
+        return Response({"message": "Audio associated"}, 
+                        status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["post"])
     def create_membership(self, request, pk):

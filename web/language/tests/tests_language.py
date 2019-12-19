@@ -106,6 +106,80 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.data["language_audio"]["speaker"], self.recording1.speaker)
         self.assertEqual(response.data["language_audio"]["recorder"], self.recording1.recorder)
 
+    def test_language_add_language_audio(self):
+        """
+		Ensure we can add a language audio to a language object.
+		"""
+        # Must be logged in
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        poly = GEOSGeometry(self.FAKE_GEOM)
+        
+        test_language = Language(name="Test language audio")
+        test_language.geom = poly
+        test_language.save()
+
+        response = self.client.patch(
+            "/api/language/{}/add_language_audio/".format(test_language.id), 
+            {
+                "recording_id": self.recording1.id
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            "/api/language/{}/".format(test_language.id), format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], test_language.id)
+        self.assertEqual(response.data["name"], "Test language audio")
+        self.assertEqual(response.data["language_audio"]["id"], self.recording1.id)
+        self.assertEqual(response.data["language_audio"]["speaker"], self.recording1.speaker)
+
+    def test_language_add_greeting_audio(self):
+        """
+		Ensure we can add a greeting audio to a language object.
+		"""
+        # Must be logged in
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        poly = GEOSGeometry(self.FAKE_GEOM)
+        
+        test_language = Language(name="Test greeting audio")
+        test_language.geom = poly
+        test_language.save()
+
+        response = self.client.patch(
+            "/api/language/{}/add_greeting_audio/".format(test_language.id), 
+            {
+                "recording_id": self.recording2.id
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            "/api/language/{}/".format(test_language.id), format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], test_language.id)
+        self.assertEqual(response.data["name"], "Test greeting audio")
+        self.assertEqual(response.data["greeting_audio"]["id"], self.recording2.id)
+        self.assertEqual(response.data["greeting_audio"]["speaker"], self.recording2.speaker)
+
     def test_language_list_route_exists(self):
         """
 		Ensure language list API route exists

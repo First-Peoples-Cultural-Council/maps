@@ -56,7 +56,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = ("audio_file", "speaker", "recorder", "created", "date_recorded")
+        fields = ("id", "audio_file", "speaker", "recorder", "created", "date_recorded")
 
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")

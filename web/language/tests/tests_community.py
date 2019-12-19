@@ -84,6 +84,41 @@ class CommunityAPITests(BaseTestCase):
         response = self.client.get("/api/community/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_community_add_audio(self):
+        """
+		Ensure we can add a community audio to a community object.
+		"""
+        # Must be logged in
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+        
+        test_community = Community(name="Test community audio")
+        test_community.point = self.point
+        test_community.save()
+
+        response = self.client.patch(
+            "/api/community/{}/add_audio/".format(test_community.id), 
+            {
+                "recording_id": self.recording.id
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            "/api/community/{}/".format(test_community.id), format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], test_community.id)
+        self.assertEqual(response.data["name"], "Test community audio")
+        self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
+
     def test_create_community_member_post(self):
         """
 		Ensure we can retrieve a newly created community member object.
