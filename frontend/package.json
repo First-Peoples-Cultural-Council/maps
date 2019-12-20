@@ -17,11 +17,10 @@
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@nuxtjs/axios": "^5.3.6",
-    "@nuxtjs/markdownit": "^1.2.7",
-    "@nuxtjs/pwa": "^2.6.0",
     "@nuxtjs/eslint-config": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
-    "@tui-nuxt/editor": "^1.0.0-alpha.6",
+    "@nuxtjs/markdownit": "^1.2.7",
+    "@nuxtjs/pwa": "^2.6.0",
     "basiclightbox": "^5.0.2",
     "bootstrap": "^4.1.3",
     "bootstrap-vue": "^2.0.0-rc.11",
@@ -41,6 +40,7 @@
     "postcss-css-variables": "^0.13.0",
     "postcss-flexbugs-fixes": "^4.1.0",
     "puppeteer": "^1.19.0",
+    "quill": "^1.3.7",
     "regenerator-runtime": "^0.13.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
@@ -48,7 +48,8 @@
     "v-body-scroll-lock": "^1.1.3",
     "vue-audio-recorder": "^3.0.1",
     "vue-chartjs": "^3.4.2",
-    "vue-ionicons": "^3.0.4"
+    "vue-ionicons": "^3.0.4",
+    "vue-quill": "^1.5.1"
   },
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.5.5",

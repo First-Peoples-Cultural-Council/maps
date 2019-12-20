@@ -4,7 +4,6 @@ from django.conf.urls import url
 from rest_framework import routers
 from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
 
-
 from .views import (
     LanguageViewSet,
     CommunityViewSet,
@@ -15,6 +14,7 @@ from .views import (
     FavouriteViewSet,
     NotificationViewSet,
     CommunityLanguageStatsViewSet,
+    RecordingViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -32,6 +32,7 @@ router.register(r"placename", PlaceNameViewSet, basename="placename")
 router.register(r"media", MediaViewSet, basename="media")
 router.register(r"favourite", FavouriteViewSet, basename="favourite")
 router.register(r"notification", NotificationViewSet, basename="notification")
+router.register(r"recording", RecordingViewSet, basename="recording")
 
 urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
