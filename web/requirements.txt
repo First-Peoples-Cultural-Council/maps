@@ -1,4 +1,4 @@
-Django==2.2.4
+Django==2.2.8
 django_rest_swagger==2.2.0
 PyMySQL==0.9.3
 django_markdownx==2.0.28

@@ -15,6 +15,7 @@ from language.models import (
     Favourite,
     Notification,
     CommunityLanguageStats,
+    Recording,
 )
 
 from django.views.decorators.cache import never_cache
@@ -28,11 +29,17 @@ from language.views import BaseModelViewSet
 from language.serializers import (
     FavouriteSerializer,
     NotificationSerializer,
+    RecordingSerializer,
 )
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
+
+
+class RecordingViewSet(BaseModelViewSet):
+    serializer_class = RecordingSerializer
+    queryset = Recording.objects.all()
 
 
 class NotificationViewSet(BaseModelViewSet):

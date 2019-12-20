@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.utils import timezone
 
 from users.models import User, Administrator
 
@@ -14,6 +15,7 @@ from language.models import (
     Media, 
     Favourite,
     Notification,
+    Recording,
 )
 
 
@@ -34,6 +36,8 @@ class BaseTestCase(APITestCase):
 class PlaceNameAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
+        self.now = timezone.now()
+
         self.community = Community.objects.create(name="Test Community")
         self.community2 = Community.objects.create(name="Test Community 02")
         self.language1 = Language.objects.create(name="Test Language 01")
@@ -50,6 +54,13 @@ class PlaceNameAPITests(BaseTestCase):
         )
         self.user2.set_password("password")
         self.user2.save()
+
+        self.recording = Recording.objects.create(
+            speaker = "Test recording",
+            recorder = "Test recording",
+            created = self.now,
+            date_recorded = self.now,
+        )
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
@@ -72,8 +83,12 @@ class PlaceNameAPITests(BaseTestCase):
 		"""
         test_placename = PlaceName.objects.create(
             name = "Test placename 001", 
+            audio = self.recording,
             audio_name = "string",
             audio_description = "string",
+            community = self.community,
+            language = self.language1,
+            category = self.category,
         )
         response = self.client.get(
             "/api/placename/{}/".format(test_placename.id), format="json"
@@ -82,6 +97,13 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.data["name"], "Test placename 001")
         self.assertEqual(response.data["audio_name"], "string")
         self.assertEqual(response.data["audio_description"], "string")
+        self.assertEqual(response.data["audio"], self.recording.id)
+        self.assertEqual(response.data["community"], self.community.id)        
+        self.assertEqual(response.data["language"], self.language1.id)        
+        self.assertEqual(response.data["category"], self.category.id)        
+        # self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
+        self.assertEqual(response.data["audio_obj"]["recorder"], self.recording.recorder)
 
     def test_placename_list_not_logged_in(self):
         """
@@ -473,6 +495,7 @@ class PlaceNameAPITests(BaseTestCase):
                 "category": self.category.id,
                 "community": self.community.id,
                 "language": self.language1.id,
+                "audio": self.recording.id,
             },
             format="json",
         )
@@ -483,17 +506,23 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.name, "test place")
         self.assertEqual(place.community_id, self.community.id)
         self.assertEqual(place.language_id, self.language1.id)
+        self.assertEqual(place.category_id, self.category.id)
+        self.assertEqual(place.audio_id, self.recording.id)
 
         # now update it.
         response = self.client.patch(
             "/api/placename/{}/".format(created_id),
-            {"other_names": "updated other names", "community": None},
+            {"other_names": "updated other names"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         place = PlaceName.objects.get(pk=created_id)
         self.assertEqual(place.other_names, "updated other names")
+        self.assertEqual(place.community_id, self.community.id)
+        self.assertEqual(place.language_id, self.language1.id)
+        self.assertEqual(place.category_id, self.category.id)
+        self.assertEqual(place.audio_id, self.recording.id)
 
     def test_placename_verify(self):
         # Must be logged in to submit a place.
