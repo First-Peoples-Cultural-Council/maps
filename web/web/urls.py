@@ -20,10 +20,19 @@ from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_swagger.views import get_swagger_view
 from web import jobs
+from web.sitemaps import *
 from .views import PageViewSet
+
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import GenericSitemap
 
 schema_view = get_swagger_view(title="FPCC API")
 
+sitemaps = {
+    'language' : LanguageSitemap(),
+    'community': CommunitySitemap(),
+    'placename': PlaceNameSitemap(),
+}
 
 router = routers.DefaultRouter()
 router.register(r"api/page", PageViewSet, basename="page")
@@ -49,4 +58,5 @@ urlpatterns = [
     url(r"api-token-auth/", obtain_auth_token),  # for token based api usage.
     url("docs/crash/$", crash),
     url("docs/$", schema_view),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ] + router.urls
