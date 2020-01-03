@@ -279,28 +279,33 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, value):
         rep = super().to_representation(value)
         by_lang = {}
+        lnas = []
         # get most recent lna for each nation
-        for lnadata in LNAData.objects.filter(community=value).select_related("lna"):
+        lnadatas = LNAData.objects.filter(community=value).select_related("lna")
+        for lnadata in lnadatas:
             if not lnadata.lna:
                 continue
             lid = getattr(lnadata.lna, "language_id")
             if not lid:
                 continue
+            
+            lna_serialized = LNADataSerializer(lnadata).data
+            lna_name = lna_serialized["lna"]["name"]
+            # print(lna_name)
+            lna_serialized['lna']['url'] = self.build_lna_external_url(lna_name)
+            # print(lna_serialized['lna'])
+
             if lid in by_lang:
                 if lnadata.lna.year > by_lang[lid]["lna"]["year"]:
-                    by_lang[lid] = LNADataSerializer(lnadata).data
-                    lna_name = by_lang[lid]["lna"]["name"]
-                    print(lna_name)
-                    by_lang[lid]['lna']['url'] = self.build_lna_external_url(lna_name)
-                    # print(by_lang[lid]['lna'])
+                    by_lang[lid] = lna_serialized
             else:
-                by_lang[lid] = LNADataSerializer(lnadata).data
-                lna_name = by_lang[lid]["lna"]["name"]
-                print(lna_name)
-                by_lang[lid]['lna']['url'] = "denis"
-                # print(by_lang[lid]['lna'])
+                by_lang[lid] = lna_serialized
+            
+            lnas.append(lna_serialized)
 
+        # print(lnas)
         rep["lna_by_language"] = by_lang
+        rep["lnas"] = lnas
         return rep
 
     def build_lna_external_url(self, lna_name):
