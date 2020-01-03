@@ -163,7 +163,7 @@ export default {
         UN: 'info',
         RE: 'danger',
         VE: 'primary',
-        FL: 'danger'
+        FL: 'warning'
       }[status]
     },
     handlePronounce() {
@@ -269,5 +269,15 @@ export default {
 .place-status-badge.badge-info {
   background-color: #cccccc;
   color: #707070;
+}
+
+.place-status-badge.badge-danger {
+  background-color: #c46257;
+  color: white;
+}
+
+.place-status-badge.badge-warning {
+  background-color: #e6a000;
+  color: white;
 }
 </style>

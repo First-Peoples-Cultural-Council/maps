@@ -56,11 +56,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = ("audio_file",
-    "speaker",
-    "recorder",
-    "created",
-    "date_recorded")
+        fields = ("id", "audio_file", "speaker", "recorder", "created", "date_recorded")
 
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")
@@ -145,8 +141,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         required=False,
     )
     language_audio = RecordingSerializer(read_only=True)
-    
-
+    greeting_audio = RecordingSerializer(read_only=True)
 
     def to_representation(self, value):
         rep = super().to_representation(value)
@@ -189,7 +184,15 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "family_id",
             "champion_ids",
             "languagelink_ids",
-            "places"
+            "places",
+            "total_schools",
+            "avg_hrs_wk_languages_in_school",
+            "ece_programs",
+            "avg_hrs_wk_languages_in_ece",
+            "language_nests",
+            "avg_hrs_wk_languages_in_language_nests", 
+            "community_adult_language_classes",
+            "fv_guid",
         )
 
 
@@ -248,6 +251,10 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     languages = LanguageSerializer(read_only=True, many=True)
     places = PlaceNameLightSerializer(many=True, read_only=True)
     medias = MediaLightSerializer(many=True, read_only=True)
+    audio = serializers.PrimaryKeyRelatedField(
+        queryset=Recording.objects.all(), allow_null=True, required=False
+    )
+    audio_obj = RecordingSerializer(source="audio", read_only=True)
 
     # Atomic Writable APIs
     language_ids = serializers.PrimaryKeyRelatedField(
@@ -319,6 +326,8 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "name",
             "languages",
             "regions",
+            "audio",
+            "audio_obj",
             "audio_file",
             "champion_set",
             "communitylink_set",
@@ -332,12 +341,17 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "phone",
             "alt_phone",
             "fax",
-            "audio_file",
             "language_ids",
             "champion_ids",
             "communitylink_ids",
             "places",
             "medias",
+            "notes",
+            "nation_id",
+            "population_on_reserve",
+            "population_off_reserve",
+            "fv_guid",
+            "fv_archive_link",
         )
 
 
@@ -428,6 +442,10 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     )
     category_obj = PlaceNameCategorySerializer(source="category", read_only=True)
     favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
+    audio = serializers.PrimaryKeyRelatedField(
+        queryset=Recording.objects.all(), allow_null=True, required=False
+    )
+    audio_obj = RecordingSerializer(source="audio", read_only=True)
 
     class Meta:
         model = PlaceName
@@ -436,6 +454,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "id",
             "geom",
             "other_names",
+            "audio",
+            "audio_obj",
             "audio_file",
             "audio_name",
             "audio_description",
