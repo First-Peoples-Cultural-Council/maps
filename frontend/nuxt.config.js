@@ -81,7 +81,6 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
-    '@tui-nuxt/editor',
     'nuxt-vue-multiselect'
   ],
   markdownit: {

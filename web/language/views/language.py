@@ -6,15 +6,8 @@ from django.db.models import Q
 from users.models import User, Administrator
 from language.models import (
     Language,
-    PlaceName,
     Community,
-    CommunityMember,
-    Champion,
-    PlaceNameCategory,
-    Media,
-    Favourite,
-    Notification,
-    CommunityLanguageStats,
+    Recording,
 )
 
 from django.views.decorators.cache import never_cache
@@ -46,6 +39,36 @@ class LanguageViewSet(BaseModelViewSet):
         .select_related("family")
         .order_by("family", "name")
     )
+
+    @action(detail=True, methods=["patch"])
+    def add_language_audio(self, request, pk):
+        if 'recording_id' not in request.data.keys():
+            return Response({"message": "No Recording was sent in the request"})
+        if not pk:
+            return Response({"message": "No Language was sent in the request"})
+        recording_id = int(request.data["recording_id"])
+        language_id = int(pk)
+        language = Language.objects.get(pk=language_id)
+        recording = Recording.objects.get(pk=recording_id)
+        language.language_audio = recording
+        language.save()
+        return Response({"message": "Language audio associated"}, 
+                        status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["patch"])
+    def add_greeting_audio(self, request, pk):
+        if 'recording_id' not in request.data.keys():
+            return Response({"message": "No Recording was sent in the request"})
+        if not pk:
+            return Response({"message": "No Language was sent in the request"})
+        recording_id = int(request.data["recording_id"])
+        language_id = int(pk)
+        language = Language.objects.get(pk=language_id)
+        recording = Recording.objects.get(pk=recording_id)
+        language.greeting_audio = recording
+        language.save()
+        return Response({"message": "Greeting audio associated"}, 
+                        status=status.HTTP_200_OK)
 
     def create_membership(self, request):
         user_id = int(request.data["user"]["id"])

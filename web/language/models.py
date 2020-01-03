@@ -236,10 +236,15 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
-
+    
+    # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
     audio_name = models.CharField(max_length=64, null=True, blank=True)
     audio_description = models.TextField(null=True, blank=True, default="")
+    # 3 deprecated. Use Recording.    
+    audio = models.ForeignKey(
+        Recording, on_delete=models.SET_NULL, null=True, blank=True
+    )
     
     kind = models.CharField(max_length=15, default="")
 

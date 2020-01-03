@@ -5,26 +5,31 @@
     @click="handleFavourite"
   >
     <b-button block variant="warning" class="favourite-badge">
-      <MdHeartIcon
-        w="15"
-        h="15"
-        class="heart-place-icon d-inline-block"
-        :class="{ favourited: favourited }"
-      ></MdHeartIcon>
-      <span v-if="favourited" class="d-inline-block">Liked</span>
-      <span v-else class="d-inline-block">Like</span>
-      <span v-if="numFavourites" class="ml-1 d-inline-block"
+      <img
+        v-if="favourited"
+        width="13"
+        height="13"
+        src="@/assets/images/heart_liked.svg"
+        alt="Liked"
+      />
+      <img
+        v-else
+        width="13"
+        height="13"
+        src="@/assets/images/heart_like.svg"
+        alt="Like"
+      />
+
+      <span v-if="favourited" class="d-inline-block valign-middle">Liked</span>
+      <span v-else class="d-inline-block valign-middle">Like</span>
+      <span v-if="numFavourites" class="d-inline-block valign-middle"
         >({{ numFavourites }})</span
       >
     </b-button>
   </div>
 </template>
 <script>
-import MdHeartIcon from 'vue-ionicons/dist/md-heart.vue'
 export default {
-  components: {
-    MdHeartIcon
-  },
   props: {
     favourited: {
       default: null,
