@@ -57,33 +57,33 @@
         <ul class="list-style-none m-0 p-0 mt-2">
           <li>
             <span class="font-08 color-gray">Email:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.email || 'N/A' }}
-            </span>
+            <span class="font-08 font-weight-bold color-gray">{{
+              commDetails.email || 'N/A'
+            }}</span>
           </li>
           <li>
             <span class="font-08 color-gray">Website:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.website || 'N/A' }}
-            </span>
+            <span class="font-08 font-weight-bold color-gray">{{
+              commDetails.website || 'N/A'
+            }}</span>
           </li>
           <li>
             <span class="font-08 color-gray">Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.phone || 'N/A' }}
-            </span>
+            <span class="font-08 font-weight-bold color-gray">{{
+              commDetails.phone || 'N/A'
+            }}</span>
           </li>
           <li>
             <span class="font-08 color-gray">Alternate Phone #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.alt_phone || 'N/A' }}
-            </span>
+            <span class="font-08 font-weight-bold color-gray">{{
+              commDetails.alt_phone || 'N/A'
+            }}</span>
           </li>
           <li>
             <span class="font-08 color-gray">Fax #:</span>
-            <span class="font-08 font-weight-bold color-gray">
-              {{ commDetails.fax || 'N/A' }}
-            </span>
+            <span class="font-08 font-weight-bold color-gray">{{
+              commDetails.fax || 'N/A'
+            }}</span>
           </li>
         </ul>
         <div class="mt-3">
@@ -183,11 +183,26 @@
                 @click.native.prevent="
                   handleCardClick($event, place.name, 'place')
                 "
-              >
-              </PlacesCard>
+              ></PlacesCard>
             </div>
           </b-col>
         </b-row>
+
+        <div class="lnas-communty">
+          <h5 class="mt-4">LNA 1s</h5>
+          <ul
+            v-for="(lnalink, index) in commDetails['lnas']"
+            :key="'lnalink' + index"
+            class="m-0 p-0 list-style-none"
+          >
+            <li class="mt-2 mb-2">
+              <div>
+                <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
+              </div>
+              <div>Language: {{ lnalink.lna.language }}</div>
+            </li>
+          </ul>
+        </div>
       </section>
       <section>
         <div v-if="isLoggedIn">
