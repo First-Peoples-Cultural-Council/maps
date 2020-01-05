@@ -104,6 +104,34 @@ curl --request POST --header "Content-Type: application/json" --header "Authoriz
 
 ```
 
+To create a new Recording, use POST:
+
+```
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request POST -sS http://maps-dev.fpcc.ca/api/recording/ -H 'Content-Type: multipart/form-data;' -F 'speaker=speaker name' -F 'date_recorded=2010-10-10' -F 'recorder=recorder name' -F 'audio_file=@/home/denis/demonyms.txt'
+
+```
+
+To add an existing Recording as a Language audio, use PATCH:
+
+```
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/language/26/add_language_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+
+```
+
+To add an existing Recording as a Language greeting audio, use PATCH:
+
+```
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/language/26/add_greeting_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+
+```
+
+To add an existing Recording as a Community audio, use PATCH:
+
+```
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/community/206/add_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+
+```
+
 There is an important difference between the objects you can write and read from APIs. Related object collections are referenced as a list of IDs, with the `_ids` suffix. So, to set the language of a community, you would do:
 
 ```
