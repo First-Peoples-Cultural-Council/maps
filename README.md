@@ -42,6 +42,11 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 ./docs/restore-pg
 ```
 
+## Deployment
+
+  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps-dev.fpcc.ca` nightly.
+  * We auto-deploy the `develop` branch of `https://github.com/countable/maps` to `http://maps-dev.fpcc.ca:8080` nightly.
+
 ## Public API
 
 To get all languages:
