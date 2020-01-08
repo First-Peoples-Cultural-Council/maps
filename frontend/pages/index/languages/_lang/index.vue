@@ -30,6 +30,7 @@
         :name="language.name"
         :server="isServer"
         :link="language.fv_archive_link"
+        :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
       ></LanguageDetailCard>
       <section class="ml-2 mr-2">
         <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -277,7 +278,7 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import Notification from '@/components/Notification.vue'
 
@@ -380,12 +381,18 @@ export default {
     store.commit('places/setBadgePlaces', result[0].places)
     store.commit('places/setFilteredBadgePlaces', result[0].places)
 
+    let audio_obj = {}
+    if (result[0].audio_obj) {
+      audio_obj = result[0].audio_obj
+    }
+
     return {
       language: result[0],
       communities: result[1],
       places: result[0].places,
       arts: result[2].features,
-      isServer
+      isServer,
+      audio_obj
     }
   },
   async fetch({ store }) {
@@ -406,6 +413,7 @@ export default {
     })
   },
   methods: {
+    getMediaUrl,
     handleNotificationAdded() {},
     handleMoreDetails() {
       this.$router.push({
