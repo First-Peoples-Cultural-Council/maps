@@ -363,7 +363,6 @@ export default {
           id: place.community
         }
       }
-
       data = {
         place,
         tname: place.name,
@@ -557,14 +556,12 @@ export default {
       } else {
         audio = this.audioFile
       }
-
       if (audio) {
         await this.uploadAudioFile(id, audio, newPlace)
       }
 
       this.$eventHub.whenMap(map => {
         map.getSource('places1').setData('/api/placename-geo/')
-
         this.$router.push({
           path: '/place-names/' + encodeFPCC(this.tname)
         })
@@ -597,7 +594,9 @@ export default {
 
       const lat = vm.$route.query.lat
       const lng = vm.$route.query.lng
-      vm.wname = vm.$route.query.cname
+      if (vm.$route.query.cname) {
+        vm.wname = vm.$route.query.cname
+      }
       if (lat && lng) {
         vm.$eventHub.whenMap(map => {
           map.draw.deleteAll()
