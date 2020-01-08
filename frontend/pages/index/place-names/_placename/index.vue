@@ -30,7 +30,7 @@
             :id="place.id"
             :name="place.name"
             :server="isServer"
-            :audio-file="getMediaUrl(place.audio_file, isServer)"
+            :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
             :allow-edit="isPlaceOwner()"
             variant="md"
             :delete-place="isPlaceOwner()"
@@ -269,6 +269,9 @@ export default {
     place() {
       return this.$store.state.places.place
     },
+    audio_obj() {
+      return this.$store.state.places.audio_obj
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -385,6 +388,7 @@ export default {
       })
       this.$store.dispatch('user/getMediaToVerify')
     })
+    console.log('Place', this.place)
   },
   created() {
     this.setupMap(this.geo_place.geometry)
