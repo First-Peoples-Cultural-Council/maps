@@ -415,18 +415,40 @@ export default {
       editor.setText(`${this.content}\n`)
       this.quillEditor = editor
     },
-    async uploadAudioFile(id, audio) {
-      const data = new FormData()
-      data.append('audio_file', audio)
-      data.append('_method', 'PATCH')
-      data.append('csrftoken', getCookie('csrftoken'))
+    async uploadAudioFile(id, audio, newPlace) {
+      const audiodata = new FormData()
+      audiodata.append('audio_file', audio)
+      audiodata.append(
+        'date_recorded',
+        new Date().toISOString().split('T', 1)[0]
+      )
+      audiodata.append('csrftoken', getCookie('csrftoken'))
 
       try {
-        await this.$axios.$patch(`/api/placename/${id}/`, data, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
+        const recording = await this.$axios.$post(
+          `/api/recording/`,
+          audiodata,
+          {
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+            }
           }
-        })
+        )
+        const recording_id = recording.id
+
+        const modified = await this.$axios.$patch(
+          `/api/placename/${newPlace.id}/`,
+          {
+            audio: recording_id,
+            audio_obj: recording
+          },
+          {
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+            }
+          }
+        )
+        console.log('Modified', modified)
       } catch (e) {
         // for now assume this always succeeds.
       }
@@ -487,7 +509,7 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
-
+      let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
         try {
@@ -496,6 +518,7 @@ export default {
             data,
             headers
           )
+          newPlace = modified
           id = modified.id
         } catch (e) {
           this.errors = this.errors.concat(
@@ -513,6 +536,7 @@ export default {
             headers
           )
           id = created.id
+          newPlace = created
         } catch (e) {
           console.error(Object.entries(e.response.data))
           this.errors = this.errors.concat(
@@ -535,7 +559,7 @@ export default {
       }
 
       if (audio) {
-        await this.uploadAudioFile(id, audio)
+        await this.uploadAudioFile(id, audio, newPlace)
       }
 
       this.$eventHub.whenMap(map => {

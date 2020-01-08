@@ -154,7 +154,8 @@ export default {
   data() {
     return {
       hover: false,
-      modalShow: false
+      modalShow: false,
+      audio: null
     }
   },
   methods: {
