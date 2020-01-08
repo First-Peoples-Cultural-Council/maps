@@ -18,10 +18,10 @@ class Recording(models.Model):
         return str(self.audio_file)
 
     audio_file = models.FileField(null=True, blank=True)
-    speaker = models.CharField(max_length=255)
-    recorder = models.CharField(max_length=255)
+    speaker = models.CharField(max_length=255, null=True)
+    recorder = models.CharField(max_length=255, null=True)
     created = models.DateTimeField("date created", auto_now_add=True)
-    date_recorded = models.DateField("date recorded")
+    date_recorded = models.DateField("date recorded", null=True)
 
 
 class Language(CulturalModel):

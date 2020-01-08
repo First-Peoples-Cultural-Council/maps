@@ -10,12 +10,17 @@ export const state = () => ({
   favourites: [],
   badgePlaces: [],
   filteredBadgePlaces: [],
-  filterCategories: []
+  filterCategories: [],
+  audio_obj: {}
 })
 
 export const mutations = {
   set(state, places) {
     state.places = places
+  },
+
+  setAudioObj(state, audio_obj) {
+    state.audio_obj = audio_obj
   },
 
   setPlace(state, place) {
@@ -70,6 +75,12 @@ export const actions = {
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
     commit('setPlace', result)
+    if (result.audio_obj) {
+      commit('setAudioObj', result.audio_obj)
+    } else {
+      commit('setAudioObj', {})
+    }
+
     if (result.community) {
       await dispatch(
         'places/getPlaceCommunity',

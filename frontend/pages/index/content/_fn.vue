@@ -25,7 +25,7 @@
         :name="commDetails.name"
         :population="commDetails.population"
         :server="isServer"
-        :audio-file="commDetails.audio_file"
+        :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
       ></CommunityDetailCard>
 
       <Notification
@@ -240,7 +240,12 @@ import Filters from '@/components/Filters.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
-import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  makeMarker,
+  getMediaUrl
+} from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
@@ -374,11 +379,17 @@ export default {
     const communityDetail = await $axios.$get(
       getApiUrl(`community/${community.id}?timestamp=${new Date().getTime()}/`)
     )
+
+    let audio_obj = {}
+    if (communityDetail.audio_obj) {
+      audio_obj = communityDetail.audio_obj
+    }
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     const isServer = !!process.server
 
     return {
+      audio_obj,
       mode: 'All',
       communityDetail,
       isServer,
@@ -420,6 +431,7 @@ export default {
     })
   },
   methods: {
+    getMediaUrl,
     handleRowClick() {
       console.log('Handle Row Click')
       this.showCollapse = !this.showCollapse
