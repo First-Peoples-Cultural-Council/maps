@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_swagger",
@@ -61,6 +63,8 @@ INSTALLED_APPS = [
     "users",
     "web",
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
