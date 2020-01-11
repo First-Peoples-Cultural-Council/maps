@@ -1,6 +1,6 @@
 # First People's Language Map
 
-This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestone 2. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
+This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestones 3 and 2 of this project. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
 
 ## Technology Stack Overview
 
@@ -15,7 +15,7 @@ This is a web map that helps explore Indigenous language data. This README file 
 Clone the project.
 
 ```
-git clone https://github.com/countable-web/fplm.git
+git clone https://github.com/First-Peoples-Cultural-Council/fplm.git
 ```
 
 Install [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/).
@@ -41,6 +41,11 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 ```
 ./docs/restore-pg
 ```
+
+## Deployment
+
+  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps-dev.fpcc.ca` nightly.
+  * We auto-deploy the `develop` branch of `https://github.com/countable-web/maps` to `http://maps-dev.fpcc.ca:8080` nightly.
 
 ## Public API
 

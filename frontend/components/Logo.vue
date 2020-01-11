@@ -2,11 +2,13 @@
   <div class="logo cursor-pointer h-100" @click.prevent="handleLogoClick">
     <div v-if="logoAlt === 1" class="p-3" style="background-color: #632015;">
       <img
+
         src="../assets/images/logo.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"
         class="d-inline-block mb-2"
+
       />
       <div
         style="color: white; font-size: 1.1em;"
@@ -17,11 +19,13 @@
     </div>
     <div v-else-if="logoAlt === 2" class="style-two-container p-1">
       <img
+
         src="../assets/images/logo.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"
         class="d-inline-block mb-2"
+
       />
       <div
         style="color: #632015; font-size: 1.1em;"
@@ -31,10 +35,7 @@
       </div>
     </div>
     <div v-else-if="logoAlt === 3" class="style-two-container">
-      <img
-        src="../assets/images/symbol.png"
-        alt="Language Map Of British Columbia"
-      />
+      <img src="../assets/images/symbol.png" alt="First Peoples' Map of B.C." />
     </div>
     <div v-else-if="logoAlt === 4" class="h-100">
       <img

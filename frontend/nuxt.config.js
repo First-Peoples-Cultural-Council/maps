@@ -19,7 +19,7 @@ module.exports = {
         body: true
       }
     ],
-    title: "First Peoples' Language Map",
+    title: "First Peoples' Map of B.C.",
     meta: [
       {
         charset: 'utf-8'
@@ -70,7 +70,11 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/mixins/mixins.js', '~/plugins/global'],
+  plugins: [
+    '~/mixins/mixins.js',
+    '~/plugins/global',
+    { src: '~plugins/ga.js', mode: 'client' }
+  ],
   /*
    ** Nuxt.js modules
    */
