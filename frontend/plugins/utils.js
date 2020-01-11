@@ -54,12 +54,18 @@ export const filterLanguages = (
 ) => {
   if (mode === 'draw' && point) {
     return languageSet.filter(lang => {
+      if (lang.sleeping) {
+        return false
+      }
       const langBounds = formatLangBounds(lang)
       return pointIntersects(point, langBounds)
     })
   }
 
   const filteredLanguages = languageSet.filter(lang => {
+    if (lang.sleeping) {
+      return false
+    }
     const langBounds = formatLangBounds(lang)
     return intersects(bounds, langBounds)
   })
