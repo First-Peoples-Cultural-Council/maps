@@ -56,7 +56,9 @@ class LanguageSerializer(serializers.ModelSerializer):
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = ("id", "audio_file", "speaker", "recorder", "created", "date_recorded")
+        fields = ("id",
+            "audio_file",
+            "speaker", "recorder", "created", "date_recorded")
 
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")
@@ -167,7 +169,6 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "regions",
             "champion_set",
             "languagelink_set",
-            "audio_file",
             "language_audio",
             "greeting_audio",
             "sleeping",
@@ -190,7 +191,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "ece_programs",
             "avg_hrs_wk_languages_in_ece",
             "language_nests",
-            "avg_hrs_wk_languages_in_language_nests", 
+            "avg_hrs_wk_languages_in_language_nests",
             "community_adult_language_classes",
             "fv_guid",
         )
@@ -213,7 +214,10 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names", "id", "audio_file", "status", "category")
+        fields = ("name", "other_names", "id",
+            "audio",
+            "status", "category"
+        )
         geo_field = "geom"
 
 
@@ -226,7 +230,9 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "point", "audio_file")
+        fields = ("name", "id", "point",
+            "audio"
+        )
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
@@ -281,14 +287,14 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         lnas = []
         # get most recent lna for each nation
-        lnadatas = LNAData.objects.filter(community=value).select_related("lna")
+        lnadatas = LNAData.objects.filter(community=value).select_related("lna").order_by("-lna__year")
         for lnadata in lnadatas:
             if not lnadata.lna:
                 continue
             lid = getattr(lnadata.lna, "language_id")
             if not lid:
                 continue
-            
+
             lna_serialized = LNADataSerializer(lnadata).data
             lna_name = lna_serialized["lna"]["name"]
             # print(lna_name)
@@ -300,7 +306,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
                     by_lang[lid] = lna_serialized
             else:
                 by_lang[lid] = lna_serialized
-            
+
             lnas.append(lna_serialized)
 
         # print(lnas)
@@ -328,7 +334,6 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "regions",
             "audio",
             "audio_obj",
-            "audio_file",
             "champion_set",
             "communitylink_set",
             "english_name",
@@ -396,16 +401,16 @@ class FavouriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favourite
         fields = (
-            "id", 
-            "name", 
-            "media", 
-            "media_obj", 
-            "user", 
-            "place", 
+            "id",
+            "name",
+            "media",
+            "media_obj",
+            "user",
+            "place",
             "placename_obj",
-            "favourite_type", 
-            "description", 
-            "point", 
+            "favourite_type",
+            "description",
+            "point",
             "zoom"
         )
 
@@ -424,7 +429,7 @@ class FavouritePlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favourite
         fields = (
-            "id", 
+            "id",
         )
 
 
@@ -456,9 +461,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "other_names",
             "audio",
             "audio_obj",
-            "audio_file",
-            "audio_name",
-            "audio_description",
             "kind",
             "common_name",
             "community_only",

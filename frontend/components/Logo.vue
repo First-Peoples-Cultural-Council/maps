@@ -3,20 +3,17 @@
     <div v-if="logoAlt === 1">
       <img
         src="../assets/images/symbol_text_background.png"
-        alt="Language Map Of British Columbia"
+        alt="First Peoples' Map of B.C."
       />
     </div>
     <div v-else-if="logoAlt === 2" class="style-two-container">
       <img
         src="../assets/images/symbol_text.png"
-        alt="Language Map Of British Columbia"
+        alt="First Peoples' Map of B.C."
       />
     </div>
     <div v-else-if="logoAlt === 3" class="style-two-container">
-      <img
-        src="../assets/images/symbol.png"
-        alt="Language Map Of British Columbia"
-      />
+      <img src="../assets/images/symbol.png" alt="First Peoples' Map of B.C." />
     </div>
     <div v-else-if="logoAlt === 4" class="h-100">
       <img

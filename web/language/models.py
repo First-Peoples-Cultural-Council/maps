@@ -107,7 +107,7 @@ class Community(CulturalModel):
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
     # field_tm_fn_grp_code_value from the old db.
-    nation_id = models.IntegerField(null=True)
+    nation_id = models.IntegerField(null=True, blank=True)
     english_name = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
     # TODO: just add off + on reserve populations. Deprecated.
@@ -126,7 +126,7 @@ class Community(CulturalModel):
     # @Denis, I suspect this should be represented as an attribute of the membership object, not another m2m [cvo]
     # language_admins = models.ManyToManyField(LanguageMember)
 
-    email = models.EmailField(max_length=255, default=None, null=True)
+    email = models.EmailField(max_length=255, default=None, null=True, blank=True)
     website = models.URLField(max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
@@ -236,16 +236,16 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
-    
+
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
     audio_name = models.CharField(max_length=64, null=True, blank=True)
     audio_description = models.TextField(null=True, blank=True, default="")
-    # 3 deprecated. Use Recording.    
+    # 3 deprecated. Use Recording.
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
-    
+
     kind = models.CharField(max_length=15, default="")
 
     category = models.ForeignKey(
