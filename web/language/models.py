@@ -107,7 +107,7 @@ class Community(CulturalModel):
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
     # field_tm_fn_grp_code_value from the old db.
-    nation_id = models.IntegerField(null=True)
+    nation_id = models.IntegerField(null=True, blank=True)
     english_name = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
     # TODO: just add off + on reserve populations. Deprecated.
@@ -126,7 +126,7 @@ class Community(CulturalModel):
     # @Denis, I suspect this should be represented as an attribute of the membership object, not another m2m [cvo]
     # language_admins = models.ManyToManyField(LanguageMember)
 
-    email = models.EmailField(max_length=255, default=None, null=True)
+    email = models.EmailField(max_length=255, default=None, null=True, blank=True)
     website = models.URLField(max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)

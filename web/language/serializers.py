@@ -57,7 +57,7 @@ class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
         fields = ("id",
-            # "audio_file",
+            "audio_file",
             "speaker", "recorder", "created", "date_recorded")
 
 class LNASerializer(serializers.ModelSerializer):
@@ -287,7 +287,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         lnas = []
         # get most recent lna for each nation
-        lnadatas = LNAData.objects.filter(community=value).select_related("lna")
+        lnadatas = LNAData.objects.filter(community=value).select_related("lna").order_by("-lna__year")
         for lnadata in lnadatas:
             if not lnadata.lna:
                 continue
