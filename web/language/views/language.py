@@ -40,6 +40,10 @@ class LanguageViewSet(BaseModelViewSet):
         .order_by("family", "name")
     )
 
+    @method_decorator(never_cache)
+    def detail(self, request):
+        return super().detail(request)
+
     @action(detail=True, methods=["patch"])
     def add_language_audio(self, request, pk):
         if 'recording_id' not in request.data.keys():
