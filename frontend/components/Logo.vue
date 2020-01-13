@@ -2,7 +2,7 @@
   <div class="logo cursor-pointer h-100" @click.prevent="handleLogoClick">
     <div v-if="logoAlt === 1" class="p-3" style="background-color: #632015;">
       <img
-        src="../assets/images/logo.png"
+        src="../assets/images/symbol@2x.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"
@@ -17,7 +17,7 @@
     </div>
     <div v-else-if="logoAlt === 2" class="style-two-container p-1">
       <img
-        src="../assets/images/logo.png"
+        src="../assets/images/symbol@2x.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"

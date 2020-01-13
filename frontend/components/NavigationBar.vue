@@ -87,7 +87,7 @@
       <div v-if="navigationOpen" class="navigation">
         <div class="nav-header pl-2">
           <img
-            src="../assets/images/logo.png"
+            src="../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
             height="auto"
             width="50"
