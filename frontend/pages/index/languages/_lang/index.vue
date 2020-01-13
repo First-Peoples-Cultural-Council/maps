@@ -31,6 +31,7 @@
         :server="isServer"
         :link="language.fv_archive_link"
         :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
+        :greeting-file="getMediaUrl(greeting_obj.audio_file, isServer)"
       ></LanguageDetailCard>
       <section class="ml-2 mr-2">
         <h5 class="other-lang-names-title text-uppercase mt-4">
@@ -382,8 +383,13 @@ export default {
     store.commit('places/setFilteredBadgePlaces', result[0].places)
 
     let audio_obj = {}
-    if (result[0].audio_obj) {
-      audio_obj = result[0].audio_obj
+    if (result[0].language_audio) {
+      audio_obj = result[0].language_audio
+    }
+
+    let greeting_obj = {}
+    if (result[0].greeting_audio) {
+      greeting_obj = result[0].greeting_audio
     }
 
     return {
@@ -392,7 +398,8 @@ export default {
       places: result[0].places,
       arts: result[2].features,
       isServer,
-      audio_obj
+      audio_obj,
+      greeting_obj
     }
   },
   async fetch({ store }) {

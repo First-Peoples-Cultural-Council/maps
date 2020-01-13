@@ -130,7 +130,6 @@ export const getMediaUrl = (media_file, isServer) => {
   }
   if (isServer) {
     if (media_file.includes('http://nginx')) {
-      console.log('MEdia File', media_file)
       return media_file.replace('http://nginx', '')
     }
 
