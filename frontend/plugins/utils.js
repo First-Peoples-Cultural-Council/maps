@@ -50,11 +50,14 @@ export const filterLanguages = (
   bounds,
   mode = 'default',
   point = null,
-  context
+  context,
+  sleepingLayer
 ) => {
+  console.log('it Got here 1')
   if (mode === 'draw' && point) {
     return languageSet.filter(lang => {
-      if (lang.sleeping) {
+      if (!sleepingLayer && lang.sleeping) {
+        console.log('it Got here mode')
         return false
       }
       const langBounds = formatLangBounds(lang)
@@ -63,7 +66,8 @@ export const filterLanguages = (
   }
 
   const filteredLanguages = languageSet.filter(lang => {
-    if (lang.sleeping) {
+    if (!sleepingLayer && lang.sleeping) {
+      console.log('it Got here')
       return false
     }
     const langBounds = formatLangBounds(lang)

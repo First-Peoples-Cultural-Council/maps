@@ -36,6 +36,10 @@ export default {
           layer: this.layer,
           map
         })
+
+        if (this.layer.name === 'Sleeping Languages') {
+          this.$root.$emit('updateData')
+        }
       })
     }
   }

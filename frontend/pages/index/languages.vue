@@ -60,7 +60,6 @@
                   sm="6"
                 >
                   <LanguageCard
-                    v-if="!language.sleeping"
                     class="mt-2 hover-left-move"
                     :name="language.name"
                     :color="
@@ -147,6 +146,11 @@ export default {
     languagesCount() {
       return this.$store.state.languages.languagesCount
     }
+  },
+  mounted() {
+    this.$eventHub.whenMap(map => {
+      this.$root.$emit('updateData')
+    })
   },
   methods: {
     handleCardClick($event, name, type) {
