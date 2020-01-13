@@ -9,7 +9,7 @@
         class="d-inline-block mb-2"
       />
       <div
-        style="color: white; font-size: 1.1em;"
+        style="color: white; font-size: 1.2em;"
         class="d-inline-block font-weight-bold ml-3"
       >
         First Peoples' Map of B.C.
@@ -24,7 +24,7 @@
         class="d-inline-block mb-2"
       />
       <div
-        style="color: #632015; font-size: 1.1em;"
+        style="color: #632015; font-size: 1.2em;"
         class="d-inline-block font-weight-bold ml-3"
       >
         First Peoples' Map of B.C.
