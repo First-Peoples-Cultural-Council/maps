@@ -30,9 +30,16 @@
           <div
             v-if="audioFile"
             class="d-inline-block"
-            @click.prevent.stop="handlePronounce"
+            @click.prevent.stop="handlePronounce(audioFile)"
           >
             <CardBadge content="Pronounce"></CardBadge>
+          </div>
+          <div
+            v-if="greetingFile"
+            class="d-inline-block"
+            @click.prevent.stop="handlePronounce(greetingFile)"
+          >
+            <CardBadge content="Greeting"></CardBadge>
           </div>
         </div>
       </template>
@@ -93,6 +100,10 @@ export default {
       type: String,
       default: null
     },
+    greetingFile: {
+      type: String,
+      default: null
+    },
     link: {
       type: String,
       default: ''
@@ -109,12 +120,14 @@ export default {
     }
   },
   methods: {
-    handlePronounce() {
-      this.audio = this.audio || new Audio(this.audioFile)
-      if (this.audio.paused) {
-        this.audio.play()
+    handlePronounce(af) {
+      const audioFile = af
+      console.log('Audio File', audioFile)
+      const audio = new Audio(audioFile)
+      if (audio.paused) {
+        audio.play()
       } else {
-        this.audio.pause()
+        audio.pause()
       }
     },
     handleReturn() {

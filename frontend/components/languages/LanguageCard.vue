@@ -80,9 +80,6 @@ export default {
     }
   },
   methods: {
-    handlePronounce() {
-      console.log('Pronounce')
-    },
     handleMouseOver() {
       this.hover = true
     },
