@@ -21,11 +21,7 @@
               {{ name }}
             </h5>
           </div>
-          <div
-            v-if="audioFile"
-            class="d-inline-block"
-            @click.prevent.stop="handlePronounce"
-          >
+          <div v-if="audioFile" @click.prevent.stop="handlePronounce">
             <CardBadge content="Pronounce"></CardBadge>
           </div>
           <div v-if="population" class="d-inline-block">
@@ -63,9 +59,12 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
+
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
