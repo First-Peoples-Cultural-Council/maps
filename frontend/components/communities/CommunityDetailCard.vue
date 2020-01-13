@@ -63,9 +63,12 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
+
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
