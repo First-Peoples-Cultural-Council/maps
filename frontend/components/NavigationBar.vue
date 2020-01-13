@@ -117,18 +117,14 @@
           </nuxt-link>
 
           <ul class="nav-links p-0 m-0 list-style-none">
-            <li v-if="isLoggedIn">
-              <nuxt-link class="color-gray" :to="`/profile/${userid}`"
-                >Profile</nuxt-link
-              >
+            <li>
+              <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
             <li>
-              <a class="color-gray" href="http://184.69.112.115/orderMaps"
-                >Order Maps</a
-              >
+              <a class="color-gray" href="/page/tos">TOS</a>
             </li>
             <li>
-              <a class="color-gray" href="https://maps.fpcc.ca/help">Help</a>
+              <a class="color-gray" href="/page/help">Help</a>
             </li>
             <li class="login-nav cursor-pointer">
               <a

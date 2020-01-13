@@ -189,19 +189,39 @@
         </b-row>
 
         <div class="lnas-communty">
-          <h5 class="mt-4">LNA 1s</h5>
-          <ul
-            v-for="(lnalink, index) in commDetails['lnas']"
-            :key="'lnalink' + index"
-            class="m-0 p-0 list-style-none"
-          >
-            <li class="mt-2 mb-2">
-              <div>
-                <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
-              </div>
-              <div>Language: {{ lnalink.lna.language }}</div>
-            </li>
-          </ul>
+          <div v-if="showLNAs" class="mb-3 mt-3">
+            <b-button
+              block
+              variant="light"
+              class="font-08"
+              @click="handleLNAClick"
+              >Hide LNAs</b-button
+            >
+          </div>
+          <div v-else class="mt-3 mb-3">
+            <b-button
+              block
+              variant="light"
+              class="font-08"
+              @click="handleLNAClick"
+              >Show LNAs</b-button
+            >
+          </div>
+          <div v-if="showLNAs">
+            <h5 class="mt-4">Language Needs Assessments</h5>
+            <ul
+              v-for="(lnalink, index) in commDetails['lnas']"
+              :key="'lnalink' + index"
+              class="m-0 p-0 list-style-none"
+            >
+              <li class="mt-2 mb-2">
+                <div>
+                  <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
+                </div>
+                <div>Language: {{ lnalink.lna.language }}</div>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
       <section>
@@ -295,7 +315,8 @@ export default {
           }
         }
       },
-      showCollapse: false
+      showCollapse: false,
+      showLNAs: false
     }
   },
 
@@ -433,8 +454,10 @@ export default {
   methods: {
     getMediaUrl,
     handleRowClick() {
-      console.log('Handle Row Click')
       this.showCollapse = !this.showCollapse
+    },
+    handleLNAClick() {
+      this.showLNAs = !this.showLNAs
     },
     extractChartData(l) {
       const fluent_speakers = parseFloat(l.fluent_speakers) / 100

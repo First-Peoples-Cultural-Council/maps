@@ -60,6 +60,7 @@
                   sm="6"
                 >
                   <LanguageCard
+                    v-if="!language.sleeping"
                     class="mt-2 hover-left-move"
                     :name="language.name"
                     :color="

@@ -51,6 +51,10 @@ class CommunityViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @method_decorator(never_cache)
+    def detail(self, request):
+        return super().detail(request)
+
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
         if 'recording_id' not in request.data.keys():
