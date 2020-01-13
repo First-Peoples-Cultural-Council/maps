@@ -31,7 +31,10 @@
       </div>
     </div>
     <div v-else-if="logoAlt === 3" class="style-two-container">
-      <img src="../assets/images/symbol.png" alt="First Peoples' Map of B.C." />
+      <img
+        src="../assets/images/symbol.png"
+        alt="Language Map Of British Columbia"
+      />
     </div>
     <div v-else-if="logoAlt === 4" class="h-100">
       <img
