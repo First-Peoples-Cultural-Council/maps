@@ -38,7 +38,9 @@ export default {
         })
 
         if (this.layer.name === 'Sleeping Languages') {
-          this.$root.$emit('updateData')
+          this.$eventHub.whenMap(map => {
+            this.$root.$emit('updateData')
+          })
         }
       })
     }
