@@ -133,6 +133,9 @@
             <li>
               <a class="color-gray" href="/page/help">Help</a>
             </li>
+            <li>
+              <a class="color-gray" href="/page/contact">Contact Us</a>
+            </li>
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
