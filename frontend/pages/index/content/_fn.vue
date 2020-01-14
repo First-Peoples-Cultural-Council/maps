@@ -98,7 +98,7 @@
             @row-clicked="handleRowClick"
           ></b-table>
           <client-only>
-            <div v-if="showCollapse" class="mb-3">
+            <div v-if="showCollapse" class="mb-3 showHide">
               <b-button
                 block
                 variant="light"
@@ -107,13 +107,31 @@
                 >Hide Charts</b-button
               >
             </div>
-            <div v-else class="mb-3">
+            <div v-else class="mb-3 showHide">
               <b-button
                 block
                 variant="light"
                 class="font-08"
                 @click="handleRowClick"
                 >Show Charts</b-button
+              >
+            </div>
+            <div v-if="showLNAs" class="mb-3 mt-3 showHide">
+              <b-button
+                block
+                variant="light"
+                class="font-08"
+                @click="handleLNAClick"
+                >Hide LNAs</b-button
+              >
+            </div>
+            <div v-else class="mb-3 mt-3 showHide">
+              <b-button
+                block
+                variant="light"
+                class="font-08"
+                @click="handleLNAClick"
+                >Show LNAs</b-button
               >
             </div>
             <div v-if="showCollapse">
@@ -123,6 +141,21 @@
                   :options="options"
                 ></PieChart>
               </div>
+            </div>
+            <div v-if="showLNAs">
+              <h5 class="mt-4">Language Needs Assessments</h5>
+              <ul
+                v-for="(lnalink, index) in commDetails['lnas']"
+                :key="'lnalink' + index"
+                class="m-0 p-0 list-style-none"
+              >
+                <li class="mt-2 mb-2">
+                  <div>
+                    <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
+                  </div>
+                  <div>Language: {{ lnalink.lna.language }}</div>
+                </li>
+              </ul>
             </div>
           </client-only>
         </div>
@@ -187,42 +220,6 @@
             </div>
           </b-col>
         </b-row>
-
-        <div class="lnas-communty">
-          <div v-if="showLNAs" class="mb-3 mt-3">
-            <b-button
-              block
-              variant="light"
-              class="font-08"
-              @click="handleLNAClick"
-              >Hide LNAs</b-button
-            >
-          </div>
-          <div v-else class="mt-3 mb-3">
-            <b-button
-              block
-              variant="light"
-              class="font-08"
-              @click="handleLNAClick"
-              >Show LNAs</b-button
-            >
-          </div>
-          <div v-if="showLNAs">
-            <h5 class="mt-4">Language Needs Assessments</h5>
-            <ul
-              v-for="(lnalink, index) in commDetails['lnas']"
-              :key="'lnalink' + index"
-              class="m-0 p-0 list-style-none"
-            >
-              <li class="mt-2 mb-2">
-                <div>
-                  <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
-                </div>
-                <div>Language: {{ lnalink.lna.language }}</div>
-              </li>
-            </ul>
-          </div>
-        </div>
       </section>
       <section>
         <div v-if="isLoggedIn">
@@ -558,6 +555,11 @@ export default {
   padding-right: 0.5em;
   color: var(--color-gray, #6f6f70);
   vertical-align: middle;
+}
+
+.showHide {
+  width: 49%;
+  display: inline-block;
 }
 
 @media (max-width: 992px) {
