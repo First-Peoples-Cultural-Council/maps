@@ -23,7 +23,7 @@ services:
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
-      - HOST=https://maps-dev.fpcc.ca
+      - HOST=https://maps.fpcc.ca
       - NODE_ENV=production
     restart: always
   test:
