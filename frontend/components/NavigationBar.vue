@@ -128,7 +128,7 @@
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
             <li>
-              <a class="color-gray" href="/page/tos">TOS</a>
+              <a class="color-gray" href="/page/tos">Terms of Use</a>
             </li>
             <li>
               <a class="color-gray" href="/page/help">Help</a>
