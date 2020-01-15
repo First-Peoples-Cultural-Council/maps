@@ -87,14 +87,14 @@
       <div v-if="navigationOpen" class="navigation">
         <div class="nav-header pl-2">
           <img
-            src="../assets/images/logo.png"
+            src="../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
             height="auto"
             width="50"
             class="d-inline-block mb-2"
           />
           <div
-            style="color: #632015; font-size: 1.1em;"
+            style="color: #632015; font-size: 1.2em;"
             class="d-inline-block font-weight-bold ml-3"
           >
             First Peoples' Map of B.C.
@@ -128,15 +128,18 @@
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
             <li>
-              <a class="color-gray" href="/page/tos">TOS</a>
+              <a class="color-gray" href="/page/tos">Terms of Use</a>
             </li>
             <li>
               <a class="color-gray" href="/page/help">Help</a>
             </li>
+            <li>
+              <a class="color-gray" href="/page/contact">Contact Us</a>
+            </li>
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca"
                 class="d-block"
                 >Login</a
               >
@@ -209,7 +212,7 @@ export default {
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
     },
     handleLogoClick() {
       this.$router.push({

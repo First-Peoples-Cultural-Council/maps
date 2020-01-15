@@ -204,7 +204,7 @@ export default {
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
     }
     this.initQuill()
   },
