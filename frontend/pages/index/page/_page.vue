@@ -20,26 +20,45 @@
       />
       <span class="ml-1 font-weight-bold">Return</span>
     </div>
-    <div v-html="$md.render(tos.content)"></div>
+    <div v-html="content"></div>
   </div>
 </template>
 
 <script>
 import { getApiUrl } from '@/plugins/utils.js'
-
-export default {
-  data() {
-    return {
-      hover: false
-    }
+const myMD = require('markdown-it')({
+  html: true
+})
+myMD.use(require('markdown-it-container'), 'accordion', {
+  validate(params) {
+    return params.trim().match(/^accordion\s+(.*)$/)
   },
+
+  render(tokens, idx) {
+    const m = tokens[idx].info.trim().match(/^accordion\s+(.*)$/)
+
+    if (tokens[idx].nesting === 1) {
+      // opening tag
+      return (
+        '<details><summary><b>' +
+        myMD.utils.escapeHtml(m[1]) +
+        '</b></summary>\n'
+      )
+    } else {
+      // closing tag
+      return '</details>\n'
+    }
+  }
+})
+export default {
   async asyncData({ params, $axios, store }) {
     const result = await $axios.$get(
       `${getApiUrl(`page/?timestamp=${new Date().getTime()}`)}`
     )
-    const tos = result.find(r => r.name === params.page)
+    const currentPage = result.find(r => r.name === params.page)
     return {
-      tos
+      hover: false,
+      content: myMD.render(currentPage.content)
     }
   },
   methods: {
@@ -74,8 +93,7 @@ export default {
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-radius: 0.5em;
   margin-bottom: 1em;
   margin-top: 1em;
 }
