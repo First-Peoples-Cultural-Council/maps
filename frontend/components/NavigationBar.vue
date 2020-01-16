@@ -87,11 +87,18 @@
       <div v-if="navigationOpen" class="navigation">
         <div class="nav-header pl-2">
           <img
-            src="@/assets/images/symbol_text.png"
-            alt="Logo"
-            class="nav-logo-img cursor-pointer"
-            @click="handleLogoClick"
+            src="../assets/images/logo.png"
+            alt="Language Map Of British Columbia"
+            height="auto"
+            width="50"
+            class="d-inline-block mb-2"
           />
+          <div
+            style="color: #632015; font-size: 1.1em;"
+            class="d-inline-block font-weight-bold ml-3"
+          >
+            First Peoples' Map of B.C.
+          </div>
         </div>
         <div class="nav-body">
           <nuxt-link

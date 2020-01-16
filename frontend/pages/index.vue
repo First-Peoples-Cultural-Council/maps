@@ -292,6 +292,9 @@ export default {
     },
     catToFilter() {
       return this.$store.state.places.filterCategories
+    },
+    layers() {
+      return this.$store.state.layers.layers
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -373,6 +376,13 @@ export default {
     next()
   },
   async mounted() {
+    this.$root.$on('updateData', () => {
+      console.log('Update Called')
+      this.$eventHub.whenMap(map => {
+        this.updateData(map)
+      })
+    })
+
     this.setMobile(window.innerWidth)
 
     window.addEventListener('resize', () => {
@@ -782,11 +792,23 @@ export default {
       })
     },
     updateData(map) {
+      const sleepingLayer = this.layers.find(
+        n => n.name === 'Sleeping Languages'
+      ).active
+
       const bounds = map.getBounds()
       this.$store.commit(
         'languages/set',
-        filterLanguages(this.languageSet, bounds, 'default', null, this)
+        filterLanguages(
+          this.languageSet,
+          bounds,
+          'default',
+          null,
+          this,
+          sleepingLayer
+        )
       )
+      console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
 
