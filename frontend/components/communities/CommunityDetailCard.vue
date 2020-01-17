@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     handlePronounce() {
-      this.audio = this.audio || new Audio(this.audioFile)
+      this.audio = new Audio(this.audioFile)
       if (this.audio.paused) {
         this.audio.play()
       } else {
