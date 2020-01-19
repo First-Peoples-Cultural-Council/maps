@@ -38,7 +38,7 @@
           <p class="font-08">
             [ Extracted from the
             <a href="https://www.fp-artsmap.ca/" target="_blank"
-              >First People's Arts Map </a
+              >First People's Arts Map</a
             >]
           </p>
         </div>
@@ -46,8 +46,7 @@
           content="See all details"
           class="mt-0"
           @click.native="handleClick($event, artDetails.node_id)"
-        >
-        </LanguageSeeAll>
+        ></LanguageSeeAll>
         <Filters class="mb-2 mt-2"></Filters>
       </div>
     </div>
