@@ -111,7 +111,7 @@
                 >
 
                 <ToolTip
-                  content="What would this location be classified as? This will help users find it."
+                  content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
                 ></ToolTip>
                 <b-form-select
                   v-model="categorySelected"
@@ -186,6 +186,26 @@
                 >
               </b-col>
             </b-row>
+          </section>
+
+          <section>
+            <div>
+              <p class="text-center p-3">
+                <br />
+                For more categories please see
+                <a
+                  href="https://apps.gov.bc.ca/pub/bcgnws/featureTypes?outputFormat=pdf"
+                  >this list</a
+                >
+                provided by BC Geographical Names and email us at
+                <a
+                  :href="
+                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                  "
+                  >info@fpcc.ca</a
+                >.
+              </p>
+            </div>
           </section>
         </div>
         <div v-else>
