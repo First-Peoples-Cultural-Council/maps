@@ -93,8 +93,19 @@ export default {
       hover: false
     }
   },
+  mounted() {
+    this.$root.$on('stopCommunityAudio', () => {
+      this.stopAudio()
+    })
+  },
   methods: {
     handlePronounce() {
+      if (this.audio && !this.audio.paused) {
+        this.audio.pause()
+        this.audio = null
+        return
+      }
+
       this.audio = this.audio || new Audio(this.audioFile)
       if (this.audio.paused) {
         this.audio.play()
@@ -116,6 +127,11 @@ export default {
     },
     handleMouseLeave() {
       this.hover = false
+    },
+    stopAudio() {
+      if (this.audio) {
+        this.audio.pause()
+      }
     }
   }
 }
