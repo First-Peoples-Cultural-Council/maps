@@ -100,13 +100,15 @@ export default {
   },
   methods: {
     handlePronounce() {
+
       if (this.audio && !this.audio.paused) {
         this.audio.pause()
         this.audio = null
         return
       }
 
-      this.audio = this.audio || new Audio(this.audioFile)
+      this.audio = new Audio(this.audioFile)
+
       if (this.audio.paused) {
         this.audio.play()
       } else {
