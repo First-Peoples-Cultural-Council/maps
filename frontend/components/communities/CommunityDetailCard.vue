@@ -100,7 +100,6 @@ export default {
   },
   methods: {
     handlePronounce() {
-
       if (this.audio && !this.audio.paused) {
         this.audio.pause()
         this.audio = null
