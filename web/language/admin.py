@@ -20,6 +20,10 @@ from .models import (
 
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ("name", "sleeping", "family")
+    exclude = ("audio_file",)
+
+class CommunityAdmin(admin.ModelAdmin):
+    exclude = ("audio_file",)
 
 
 class LNADataAdmin(admin.ModelAdmin):
@@ -35,6 +39,7 @@ class PlaceNameAdmin(admin.ModelAdmin):
         "creator__first_name",
         "creator__last_name",
     )
+    exclude = ("audio_file",)
 
 
 admin.site.register(Champion)
@@ -42,7 +47,7 @@ admin.site.register(PlaceName, PlaceNameAdmin)
 admin.site.register(PlaceNameCategory)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
-admin.site.register(Community)
+admin.site.register(Community, CommunityAdmin)
 admin.site.register(CommunityMember)
 admin.site.register(Media)
 admin.site.register(Favourite)
