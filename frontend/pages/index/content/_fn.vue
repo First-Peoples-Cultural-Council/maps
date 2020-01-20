@@ -8,7 +8,7 @@
         Community:
         <span class="font-weight-bold">{{ commDetails.name }}</span>
       </div>
-      <div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
@@ -413,7 +413,12 @@ export default {
       }
     }
   },
+  beforeRouteLeave(to, from, next) {
+    this.$root.$emit('stopCommunityAudio')
+    next()
+  },
   async asyncData({ params, $axios, store, $route }) {
+    console.log('asyncData*****')
     const communities = await $axios.$get(
       getApiUrl(`community?timestamp=${new Date().getTime()}/`)
     )
@@ -427,7 +432,12 @@ export default {
     let audio_obj = {}
     if (communityDetail.audio_obj) {
       audio_obj = communityDetail.audio_obj
+    } else {
+      audio_obj = {
+        audio_obj: null
+      }
     }
+    console.log('audio', audio_obj)
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     const isServer = !!process.server
