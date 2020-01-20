@@ -419,6 +419,10 @@ export default {
       }
     })
   },
+  beforeRouteLeave(to, from, next) {
+    this.$root.$emit('stopLanguageAudio')
+    next()
+  },
   methods: {
     getMediaUrl,
     handleNotificationAdded() {},
