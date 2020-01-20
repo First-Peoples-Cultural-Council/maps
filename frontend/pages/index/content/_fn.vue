@@ -390,6 +390,10 @@ export default {
       }
     }
   },
+  beforeRouteLeave(to, from, next) {
+    this.$root.$emit('stopCommunityAudio')
+    next()
+  },
   async asyncData({ params, $axios, store, $route }) {
     console.log('asyncData*****')
     const communities = await $axios.$get(

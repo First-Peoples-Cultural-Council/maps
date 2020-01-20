@@ -158,6 +158,11 @@ export default {
       audio: null
     }
   },
+  mounted() {
+    this.$root.$on('stopPlaceAudio', () => {
+      this.stopAudio()
+    })
+  },
   methods: {
     getVariant(status) {
       return {
@@ -168,7 +173,14 @@ export default {
       }[status]
     },
     handlePronounce() {
+      if (this.audio && !this.audio.paused) {
+        this.audio.pause()
+        this.audio = null
+        return
+      }
+
       this.audio = this.audio || new Audio(this.audioFile)
+
       if (this.audio.paused) {
         this.audio.play()
       } else {
@@ -204,6 +216,11 @@ export default {
       this.$router.push({
         path: `/heritages`
       })
+    },
+    stopAudio() {
+      if (this.audio) {
+        this.audio.pause()
+      }
     }
   }
 }

@@ -249,6 +249,10 @@ export default {
       closeOverlayContent: false
     }
   },
+  beforeRouteLeave(to, from, next) {
+    this.$root.$emit('stopPlaceAudio')
+    next()
+  },
   watchQuery: true,
   computed: {
     isFavourited() {
