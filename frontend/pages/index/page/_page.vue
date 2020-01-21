@@ -1,5 +1,21 @@
 <template>
   <div class="p-2">
+    <div class="nav-header cursor-pointer" @click.prevent="handleNavLink">
+      <img
+        src="../../../assets/images/symbol@2x.png"
+        alt="Language Map Of British Columbia"
+        height="auto"
+        width="50"
+        class="d-inline-block mb-2"
+      />
+      <div
+        style="color: #632015; font-size: 1.2em;"
+        class="d-inline-block font-weight-bold ml-3"
+      >
+        First Peoples' Map of B.C.
+      </div>
+    </div>
+    <hr />
     <div
       class="fpcc-card-more"
       @click.prevent="handleReturn"
@@ -76,6 +92,15 @@ export default {
     },
     handleMouseLeave() {
       this.hover = false
+    },
+    handleNavLink() {
+      this.$store.commit('mapinstance/setForceReset', true)
+      if (this.$route.name === 'index') {
+        this.$root.$emit('resetMap')
+        this.$store.commit('mapinstance/setForceReset', false)
+      } else {
+        this.$router.push({ path: '/' })
+      }
     }
   }
 }
@@ -113,5 +138,13 @@ export default {
   display: inline-block;
   width: 15px;
   height: 15px;
+}
+.logo img {
+  display: inline-block;
+  height: auto;
+}
+.nav-header {
+  padding-top: 0.5em;
+  padding-left: -0.5em;
 }
 </style>
