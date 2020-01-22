@@ -1,0 +1,260 @@
+id,name,modified,created,icon_name
+6,Abandoned Locality,NOW,NOW,test001
+7,Airfield,NOW,NOW,test002
+8,Airport,NOW,NOW,test003
+9,Anchorage,NOW,NOW,test004
+10,Archipelago,NOW,NOW,test005
+11,Arm,NOW,NOW,test006
+12,Bank (1),NOW,NOW,test007
+13,Bank (2),NOW,NOW,test008
+14,Bank (3),NOW,NOW,test009
+15,Banks (1),NOW,NOW,test010
+16,Bar (1),NOW,NOW,test011
+17,Bar (2),NOW,NOW,test012
+18,Base des Forces canadiennes,NOW,NOW,test013
+19,Basin (4),NOW,NOW,test014
+20,Basin (5),NOW,NOW,test015
+21,Bay,NOW,NOW,test016
+22,Bays,NOW,NOW,test017
+23,Beach,NOW,NOW,test018
+24,Beaches,NOW,NOW,test019
+25,Bench,NOW,NOW,test020
+26,Bend (1),NOW,NOW,test021
+27,Bight,NOW,NOW,test022
+28,Bluff (1),NOW,NOW,test023
+29,Bluff (2),NOW,NOW,test024
+30,Bluffs (1),NOW,NOW,test025
+31,Bog,NOW,NOW,test026
+32,Bridge,NOW,NOW,test027
+33,Brook,NOW,NOW,test028
+34,Butte,NOW,NOW,test029
+35,Cabin,NOW,NOW,test030
+36,Camp,NOW,NOW,test031
+37,Camp des Forces canadiennes,NOW,NOW,test032
+38,Canadian Forces Base,NOW,NOW,test033
+39,Canadian Forces Camp,NOW,NOW,test034
+40,Canadian Forces Range / Training Ar,NOW,NOW,test035
+41,Canadian Forces Station,NOW,NOW,test036
+42,Canal (1),NOW,NOW,test037
+43,Canal (2),NOW,NOW,test038
+44,Canyon (2),NOW,NOW,test039
+45,Cape,NOW,NOW,test040
+46,Cascade,NOW,NOW,test041
+47,Cave,NOW,NOW,test042
+48,Caves,NOW,NOW,test043
+49,Champ de tir / champ de manoeuvre,NOW,NOW,test044
+50,Channel (2),NOW,NOW,test045
+51,Channel (3),NOW,NOW,test046
+52,Cirque,NOW,NOW,test047
+53,City,NOW,NOW,test048
+54,Cliff (1),NOW,NOW,test049
+55,Cliff (2),NOW,NOW,test050
+56,Cliffs (1),NOW,NOW,test051
+57,Cliffs (2),NOW,NOW,test052
+58,Col,NOW,NOW,test053
+59,Community,NOW,NOW,test054
+60,Cone,NOW,NOW,test055
+61,Conservation Area,NOW,NOW,test056
+62,Coulee (2),NOW,NOW,test057
+63,Cove (2),NOW,NOW,test058
+64,Crag,NOW,NOW,test059
+65,Crags,NOW,NOW,test060
+66,Crater (2),NOW,NOW,test061
+67,Creek (1),NOW,NOW,test062
+68,Creek (3),NOW,NOW,test063
+69,Dam,NOW,NOW,test064
+70,Depression,NOW,NOW,test065
+71,District,NOW,NOW,test066
+72,District Municipality (1),NOW,NOW,test067
+73,Ditch (1),NOW,NOW,test068
+74,Dome,NOW,NOW,test069
+75,Domes,NOW,NOW,test070
+76,Dyke (1),NOW,NOW,test071
+77,Ecological Reserve,NOW,NOW,test072
+78,Eddy,NOW,NOW,test073
+79,Entrance,NOW,NOW,test074
+80,Escarpment,NOW,NOW,test075
+81,Falls,NOW,NOW,test076
+82,First Nation Village,NOW,NOW,test077
+83,Fishing Site,NOW,NOW,test078
+84,Flat (2),NOW,NOW,test079
+85,Flats (1),NOW,NOW,test080
+86,Flats (2),NOW,NOW,test081
+87,Flats (3),NOW,NOW,test082
+88,Forest,NOW,NOW,test083
+89,Fork (1),NOW,NOW,test084
+90,Fork (2),NOW,NOW,test085
+91,Former Cannery,NOW,NOW,test086
+92,Former First Nation Village,NOW,NOW,test087
+93,Former Locality,NOW,NOW,test088
+94,Former Post Office,NOW,NOW,test089
+95,Former Railway Point,NOW,NOW,test090
+96,Fort,NOW,NOW,test091
+97,Fumarole,NOW,NOW,test092
+98,Game Preserve,NOW,NOW,test093
+99,Gap (2),NOW,NOW,test094
+100,Glacier,NOW,NOW,test095
+101,Glaciers,NOW,NOW,test096
+102,Gorge,NOW,NOW,test097
+103,Group (1),NOW,NOW,test098
+104,Group (2),NOW,NOW,test099
+105,Gulch (1),NOW,NOW,test100
+106,Gulch (4),NOW,NOW,test101
+107,Harbour (1),NOW,NOW,test102
+108,Head (1),NOW,NOW,test103
+109,Highland,NOW,NOW,test104
+110,Hill,NOW,NOW,test105
+111,Hills,NOW,NOW,test106
+112,Historical Route,NOW,NOW,test107
+113,Hotspring / Hot Spring,NOW,NOW,test108
+114,Hotsprings / Hot Springs,NOW,NOW,test109
+115,Ice Cap / Icecap,NOW,NOW,test110
+116,Icefall,NOW,NOW,test111
+117,Icefield,NOW,NOW,test112
+118,Indian Government District,NOW,NOW,test113
+119,Indian Government District: Land Unit,NOW,NOW,test114
+120,Indian Reserve-Réserve indienne,NOW,NOW,test115
+121,Indian Settlement,NOW,NOW,test116
+122,Inlet (3),NOW,NOW,test117
+123,Island,NOW,NOW,test118
+124,Islands,NOW,NOW,test119
+125,Islet,NOW,NOW,test120
+126,Islets,NOW,NOW,test121
+127,Isthmus,NOW,NOW,test122
+128,Knob,NOW,NOW,test123
+129,Knoll (2),NOW,NOW,test124
+130,Lagoon,NOW,NOW,test125
+131,Lake,NOW,NOW,test126
+132,Lakes,NOW,NOW,test127
+133,Land District,NOW,NOW,test128
+134,Land Grant,NOW,NOW,test129
+135,Landing (1),NOW,NOW,test130
+136,Ledge (1),NOW,NOW,test131
+137,Ledge (2),NOW,NOW,test132
+138,Ledges,NOW,NOW,test133
+139,Lieu historique national,NOW,NOW,test134
+140,Locality,NOW,NOW,test135
+141,Lookout,NOW,NOW,test136
+142,Lowland,NOW,NOW,test137
+143,Marsh,NOW,NOW,test138
+144,Meadow (1),NOW,NOW,test139
+145,Meadow (2),NOW,NOW,test140
+146,Migratory Bird Sanctuary,NOW,NOW,test141
+147,Military College,NOW,NOW,test142
+148,Mine,NOW,NOW,test143
+149,Mining Camp,NOW,NOW,test144
+150,Mount,NOW,NOW,test145
+151,Mountain,NOW,NOW,test146
+152,Mountain Resort Municipality,NOW,NOW,test147
+153,Mountains,NOW,NOW,test148
+154,Mouth,NOW,NOW,test149
+155,Municipal Park,NOW,NOW,test150
+156,Narrows,NOW,NOW,test151
+157,National Historic Site,NOW,NOW,test152
+158,"Historic Sites and Monuments Act of Canada.""",NOW,NOW,test153
+159,National Park,NOW,NOW,test154
+160,National Park Reserve,NOW,NOW,test155
+161,National Wildlife Area,NOW,NOW,test156
+162,Notch,NOW,NOW,test157
+163,Névé,NOW,NOW,test158
+164,Ocean,NOW,NOW,test159
+165,Parc national,NOW,NOW,test160
+166,Pass (1),NOW,NOW,test161
+167,Pass (2),NOW,NOW,test162
+168,Passage,NOW,NOW,test163
+169,Patch,NOW,NOW,test164
+170,Peak (2),NOW,NOW,test165
+171,Peaks,NOW,NOW,test166
+172,Peninsula,NOW,NOW,test167
+173,Picnic Area,NOW,NOW,test168
+174,Pinnacle,NOW,NOW,test169
+175,Plain (2),NOW,NOW,test170
+176,Plains,NOW,NOW,test171
+177,Plateau,NOW,NOW,test172
+178,Point,NOW,NOW,test173
+179,Pond (1),NOW,NOW,test174
+180,Ponds (1),NOW,NOW,test175
+181,Port (1),NOW,NOW,test176
+182,Port (2),NOW,NOW,test177
+183,Portage,NOW,NOW,test178
+184,Post Office,NOW,NOW,test179
+185,Prairie,NOW,NOW,test180
+186,Protected Area,NOW,NOW,test181
+187,Province,NOW,NOW,test182
+188,Provincial Heritage Property,NOW,NOW,test183
+189,Provincial Historic Park,NOW,NOW,test184
+190,Provincial Historic Site,NOW,NOW,test185
+191,Provincial Marine Park,NOW,NOW,test186
+192,Provincial Park,NOW,NOW,test187
+193,Provincial Recreation Area,NOW,NOW,test188
+194,Railway Point,NOW,NOW,test189
+195,Ranch,NOW,NOW,test190
+196,Range (2),NOW,NOW,test191
+197,Ranges,NOW,NOW,test192
+198,Rapids,NOW,NOW,test193
+199,Ravine,NOW,NOW,test194
+200,Reach,NOW,NOW,test195
+201,Recreation Facility,NOW,NOW,test196
+202,Recreational Community,NOW,NOW,test197
+203,Reef,NOW,NOW,test198
+204,Reefs,NOW,NOW,test199
+205,Refuge d'oiseaux migrateurs,NOW,NOW,test200
+206,Region,NOW,NOW,test201
+207,Regional District,NOW,NOW,test202
+208,Regional Park,NOW,NOW,test203
+209,Reservoir,NOW,NOW,test204
+210,Resort,NOW,NOW,test205
+211,Resort Municipality,NOW,NOW,test206
+212,Ridge (2),NOW,NOW,test207
+213,Riffle,NOW,NOW,test208
+214,River,NOW,NOW,test209
+215,Rock (1),NOW,NOW,test210
+216,Rock (2),NOW,NOW,test211
+217,Rocks (1),NOW,NOW,test212
+218,Rocks (2),NOW,NOW,test213
+219,Réserve de parc national,NOW,NOW,test214
+220,Réserve nationale de faune,NOW,NOW,test215
+221,Sea,NOW,NOW,test216
+222,Settlement,NOW,NOW,test217
+223,Shoal,NOW,NOW,test218
+224,Shoals,NOW,NOW,test219
+225,Shore,NOW,NOW,test220
+226,Site,NOW,NOW,test221
+227,Site du patrimoine mondial,NOW,NOW,test222
+228,Slide,NOW,NOW,test223
+229,Slough (1),NOW,NOW,test224
+230,Slough (2),NOW,NOW,test225
+231,Snowfield,NOW,NOW,test226
+232,Sound (1),NOW,NOW,test227
+233,Sound (2),NOW,NOW,test228
+234,Spire,NOW,NOW,test229
+235,Spires,NOW,NOW,test230
+236,Spit,NOW,NOW,test231
+237,Spring,NOW,NOW,test232
+238,Springs,NOW,NOW,test233
+239,Spur,NOW,NOW,test234
+240,Station des Forces canadiennes,NOW,NOW,test235
+241,Steamer Landing,NOW,NOW,test236
+242,Strait,NOW,NOW,test237
+243,Straits,NOW,NOW,test238
+244,Stream,NOW,NOW,test239
+245,Subdivision,NOW,NOW,test240
+246,Summit,NOW,NOW,test241
+247,Swamp,NOW,NOW,test242
+248,Tidal Rapids,NOW,NOW,test243
+249,Tower (1),NOW,NOW,test244
+250,Towers,NOW,NOW,test245
+251,Town,NOW,NOW,test246
+252,Trading Post,NOW,NOW,test247
+253,Trench,NOW,NOW,test248
+254,Trough,NOW,NOW,test249
+255,Tunnel,NOW,NOW,test250
+256,Unclassified,NOW,NOW,test251
+257,Urban Community,NOW,NOW,test252
+258,Valley (1),NOW,NOW,test253
+259,Village (1),NOW,NOW,test254
+260,Village (2),NOW,NOW,test255
+261,Volcano,NOW,NOW,test256
+262,Volcanoes,NOW,NOW,test257
+263,Waterfall,NOW,NOW,test258
+264,Whirlpool,NOW,NOW,test259
