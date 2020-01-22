@@ -236,9 +236,9 @@ This project was originally ported from a Drupal database, and we have a somewha
 `docker-compose exec web python manage.py load_arts` to get arts.
 
 #### Categories
-To import categories from the csv file found at /web/fixtures/categories.csv edit the csv to your liking and run the following command:
+To import categories from the csv file found at /web/fixtures/categories.csv run the following command:
 ```
-./docs/get_categories.sh
+docker-compose exec web python manage.py get_categories
 ```
 
 ## Testing
