@@ -3,21 +3,41 @@
     <div class="ls">
       <div>
         <h5>Population</h5>
-        {{ population }}
+        <div v-if="population == 0">
+          Unknown
+        </div>
+        <div v-else>
+          {{ population }}
+        </div>
       </div>
       <div>
         <h5>Fluent Speakers</h5>
-        {{ speakers }}
+        <div v-if="speakers == 0">
+          Unknown
+        </div>
+        <div v-else>
+          {{ speakers }}
+        </div>
       </div>
     </div>
     <div class="ls mt-2">
       <div>
         <h5>Understanding or speak somewhat</h5>
-        {{ somewhat }}
+        <div v-if="somewhat == 0">
+          Unknown
+        </div>
+        <div v-else>
+          {{ somewhat }}
+        </div>
       </div>
       <div>
         <h5>Learning Speakers</h5>
-        {{ learners }}
+        <div v-if="learners == 0">
+          Unknown
+        </div>
+        <div v-else>
+          {{ learners }}
+        </div>
       </div>
     </div>
     <!--

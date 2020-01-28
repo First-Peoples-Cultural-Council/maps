@@ -9,3 +9,4 @@ gunicorn==19.9.0
 gevent==1.4.0
 cognitojwt==1.1.0
 django-apscheduler==0.3.0
+psycopg2=2.7.7

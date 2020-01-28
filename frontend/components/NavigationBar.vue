@@ -85,7 +85,10 @@
     </div>
     <transition name="fade">
       <div v-if="navigationOpen" class="navigation">
-        <div class="nav-header pl-2">
+        <div
+          class="nav-header cursor-pointer pl-2"
+          @click.prevent="handleNavLink"
+        >
           <img
             src="../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"

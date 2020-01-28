@@ -86,7 +86,7 @@
             }}</span>
           </li>
         </ul>
-        <!-- Commented out until data is fixed -->
+        <!--        Commented out until data is fixed-->
         <!--        <div class="mt-3">-->
         <!--          <b-table-->
         <!--            hover-->
@@ -313,6 +313,29 @@ export default {
               ).toFixed(1) + '%'}`
             }
           }
+        },
+        animation: {
+          duration: 500,
+          onProgress(animation) {
+            const chartContext = this.chart.canvas.getContext('2d', {
+              alpha: false
+            })
+            chartContext.fillStyle = '#4a4a4a'
+            chartContext.font = '100 32px Lato'
+            chartContext.textBaseline = 'middle'
+            chartContext.fillText(
+              this.data.datasets[0].learnerData[0] * 100 + '%',
+              this.chart.width / 2 - 30,
+              this.chart.height / 2 - 5,
+              200
+            )
+            chartContext.fillText(
+              'Learners',
+              this.chart.width / 2 - 58,
+              this.chart.height / 2 + 25,
+              200
+            )
+          }
         }
       },
       showCollapse: false,
@@ -473,18 +496,17 @@ export default {
       const fluent_speakers = parseFloat(l.fluent_speakers) / 100
       const some_speakers = parseFloat(l.some_speakers) / 100
       const learners = parseFloat(l.learners) / 100
-      const others =
-        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
-        100
+      const others = (100 - (fluent_speakers * 100 + some_speakers * 100)) / 100
       console.log('Others', others)
       return {
         name: l.language,
-        labels: ['Fluent', 'Some', 'Learner', 'Other'],
+        labels: ['Fluent', 'Some', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#95a5a6', '#efefef'],
-            data: [fluent_speakers, some_speakers, learners, others]
+            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
+            data: [fluent_speakers, some_speakers, others],
+            learnerData: [learners]
           }
         ]
       }
