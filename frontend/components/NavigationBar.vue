@@ -139,7 +139,7 @@
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca"
+                href="https://login.firstvoices.io/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca"
                 class="d-block"
                 >Login</a
               >
