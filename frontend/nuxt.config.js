@@ -102,11 +102,16 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    babel: {
+      sourceType: 'unambiguous'
+    },
+    transpile: ['@mapbox/mapbox-gl-draw', 'mapbox-gl-draw-freehand-mode'],
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'
       })
     ],
+
     postcss: {
       // Add plugin names as key and arguments as value
       // Install them before as dependencies with npm or yarn
@@ -126,6 +131,9 @@ module.exports = {
     extend(config, ctx) {
       config.node = {
         fs: 'empty'
+      }
+      if (ctx.isDev) {
+        config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'
       }
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
