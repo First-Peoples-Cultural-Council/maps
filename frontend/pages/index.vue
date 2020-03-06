@@ -159,7 +159,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { groupBy } from 'lodash'
+import groupBy from 'lodash/groupBy'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
