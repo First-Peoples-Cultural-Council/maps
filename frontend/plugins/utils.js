@@ -1,6 +1,6 @@
 import groupBy from 'lodash/groupBy'
 import uniqBy from 'lodash/uniqBy'
-import $axios from '@nuxtjs/axios'
+import axios from 'axios'
 import { pointIntersects, intersects } from '../mixins/map'
 
 export const getApiUrl = path => {
@@ -234,8 +234,7 @@ export const getYoutubeId = link => {
 }
 
 export const getVimeoEmbed = async link => {
-  const result = $axios.$get(`https://vimeo.com/api/oembed.json?url=${link}`)
-  console.log('Result', result)
+  const result = axios.get(`https://vimeo.com/api/oembed.json?url=${link}`)
   return result.video_id
 }
 
