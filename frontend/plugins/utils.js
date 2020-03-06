@@ -1,4 +1,5 @@
-import { groupBy, uniqBy } from 'lodash'
+import groupBy from 'lodash/groupBy'
+import uniqBy from 'lodash/uniqBy'
 import $axios from '@nuxtjs/axios'
 import { pointIntersects, intersects } from '../mixins/map'
 
