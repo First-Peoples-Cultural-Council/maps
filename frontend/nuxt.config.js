@@ -132,9 +132,6 @@ module.exports = {
       config.node = {
         fs: 'empty'
       }
-      if (ctx.isDev) {
-        config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'
-      }
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
