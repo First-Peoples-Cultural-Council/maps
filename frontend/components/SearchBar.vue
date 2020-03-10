@@ -597,7 +597,7 @@ export default {
   border-radius: 0.5em;
 }
 .searchbar-container {
-  position: fixed;
+  position: absolute;
   top: 10px;
   left: calc(50% - 200px);
   width: 500px;
