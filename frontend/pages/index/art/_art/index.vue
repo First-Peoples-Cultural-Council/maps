@@ -29,11 +29,82 @@
           :name="art.properties.name"
           :server="isServer"
         ></ArtsDetailCard>
-        <div
+        <div class="artist-content-container color-gray">
+          <section class="artist-content-field">
+            <h5 class="field-title">Indigenous/First Nation Association(s)</h5>
+            <span class="field-content">Nuxalk</span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Artist Awards</span>
+            <span class="field-content">
+              <p>YVR Art Foundation Youth Scolarship 2015</p>
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Artist Biography</span>
+            <span class="field-content">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
+                consequatur praesentium libero placeat voluptatem earum
+                inventore repellendus mollitia doloribus amet ipsum quo deserunt
+                minus quisquam nesciunt, dolorem, quas reiciendis saepe.
+              </p>
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Link to my work</span>
+            <span class="field-content">
+              <a href="google.com"
+                >http://facebook.com/VonXgola/Designs-by-Danika-0231402</a
+              >
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Email</span>
+            <span class="field-content">
+              johndoe@hotmail.com
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Phone</span>
+            <span class="field-content">
+              (668) 332 8898
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Address</span>
+            <span class="field-content">
+              Bella Colla, British Columbia, Canada
+            </span>
+          </section>
+          <section class="artist-content-field">
+            <span class="field-title">Social Media</span>
+            <span class="field-content">
+              <ul class="artist-social-icons">
+                <li>
+                  <a href="https://www.facebook.com">
+                    <img src="@/assets/images/arts/facebook.svg" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.twitter.com">
+                    <img src="@/assets/images/arts/twitter.svg" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.linkedin.com">
+                    <img src="@/assets/images/arts/linkedin.svg" />
+                  </a>
+                </li>
+              </ul>
+            </span>
+          </section>
+        </div>
+        <!-- <div
           v-if="artDetails.details"
           class="p-4 m-0 pb-0 color-gray font-08"
           v-html="artDetails.details"
-        ></div>
+        ></div> -->
         <div class="ml-3 mr-3 mt-3">
           <p class="font-08">
             [ Extracted from the
@@ -141,4 +212,45 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.artist-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 1.5em 1em 0.25em 1em;
+  /* border: 1px solid red; */
+}
+
+.artist-content-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 0.2em 0;
+}
+
+.field-title {
+  font-size: 0.8em;
+}
+
+.field-content {
+  display: flex;
+  flex-direction: column;
+  color: #000;
+  font-size: 0.9em;
+}
+
+.artist-social-icons {
+  display: flex;
+  padding: 0;
+  justify-content: flex-start;
+  width: 100%;
+  list-style: none;
+  text-align: center;
+}
+
+.artist-social-icons li {
+  width: 25px;
+  height: 25px;
+  margin: 0.25em 0.25em 0.5em 0;
+}
+</style>
