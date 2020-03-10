@@ -282,7 +282,7 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 import Contact from '@/components/Contact.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import { zoomToPoint } from '@/mixins/map.js'
