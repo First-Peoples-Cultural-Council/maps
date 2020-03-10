@@ -3,6 +3,7 @@
     <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
+          <ArtistFilter></ArtistFilter>
           <Accordion
             class="no-scroll-accordion"
             :content="accordionContent"
@@ -43,26 +44,32 @@
         </section>
       </template>
       <template v-slot:cards>
-        <section class="pl-3 pr-3">
-          <b-row v-if="mode !== 'organization' && mode !== 'public_art'">
+        <section class="pl-1 pr-1">
+          <b-row
+            v-if="mode !== 'organization' && mode !== 'public_art'"
+            :no-gutters="true"
+          >
             <b-col
               v-for="(art, index) in artists"
               :key="'artists ' + index"
-              lg="12"
-              xl="12"
+              lg="6"
+              xl="6"
               md="6"
               sm="6"
             >
-              <ArtsCard
+              <ArtistCard
                 :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
                 "
-              ></ArtsCard>
+              ></ArtistCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'organization' && mode !== 'artist'">
+          <b-row
+            v-if="mode !== 'organization' && mode !== 'artist'"
+            :no-gutters="true"
+          >
             <b-col
               v-for="(art, index) in publicArts"
               :key="'parts' + index"
@@ -80,7 +87,10 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
+          <b-row
+            v-if="mode !== 'artist' && mode !== 'public_art'"
+            :no-gutters="true"
+          >
             <b-col
               v-for="(art, index) in orgs"
               :key="'orgs' + index"
@@ -112,10 +122,12 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
+import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
+import ArtistFilter from '@/components/arts/ArtistFilter.vue'
 
 export default {
   components: {
@@ -123,13 +135,14 @@ export default {
     ArtsCard,
     Badge,
     Filters,
-    Accordion
+    Accordion,
+    ArtistCard,
+    ArtistFilter
   },
   data() {
     return {
       mode: 'All',
-      accordionContent:
-        'Indigenous languages in B.C. all have corresponding unique cultures and artistic practices. This rich cultural environment is alive with countless Indigenous artists and artistic groups who create work across all artistic disciplines – visual, music, dance, performance, story and new media. The map provides an online environment for artists and groups to share information about their artistic practice as well as upcoming events, including festivals, exhibitions, performances and cultural events.'
+      accordionContent: 'View artwork from indigenous artists in your area.'
     }
   },
   computed: {
@@ -145,6 +158,9 @@ export default {
     artists() {
       return this.arts.filter(art => art.properties.art_type === 'artist')
     }
+  },
+  mounted() {
+    // alert(this.$route.name)
   },
   methods: {
     handleCardClick($event, name, type) {
