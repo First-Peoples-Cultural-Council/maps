@@ -5,37 +5,6 @@
       detailModeContainer: isDetailMode
     }"
   >
-    <LogInOverlay v-if="loggingIn"></LogInOverlay>
-    <div v-if="isDrawMode" class="drawing-mode-container">
-      <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <DrawingTools
-          :draw-mode="$route.query.mode"
-          class="mt-2"
-        ></DrawingTools>
-      </b-alert>
-    </div>
-    <div class="map-loading">
-      Loading Map
-      <b-spinner type="grow" label="Spinning"></b-spinner>
-    </div>
-    <Mapbox
-      :access-token="MAPBOX_ACCESS_TOKEN"
-      :map-options="MAP_OPTIONS"
-      :nav-control="{ show: false }"
-      @map-init="mapInit"
-      @map-load="mapLoaded"
-      @map-touchend="mapClicked"
-      @map-click="mapClicked"
-      @map-zoomend="mapZoomEnd"
-      @map-moveend="mapMoveEnd"
-      @map-sourcedata="mapSourceData"
-    ></Mapbox>
-    <div class="map-controls-overlay">
-      <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-      <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-      <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-      <Contribute class="hide-mobile contribute-control"></Contribute>
-    </div>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <div v-html="ie"></div>
@@ -143,17 +112,62 @@
     <div v-else>
       <nuxt-child />
     </div>
-    <ModalNotification></ModalNotification>
-    <transition name="fade-topbar" mode="out-in">
-      <SearchOverlay
-        v-if="showSearchOverlay"
-        :show="showSearchOverlay"
-      ></SearchOverlay>
-      <div v-else class="top-bar-container shadow-sm">
+
+    <div class="maps-panel">
+      <ArtsSidePanel
+        v-if="this.$route.name === 'index-art-art'"
+        class="maps-left-container"
+      >
+      </ArtsSidePanel>
+      <div class="map-main-container">
+        <LogInOverlay v-if="loggingIn"></LogInOverlay>
+        <div v-if="isDrawMode" class="drawing-mode-container">
+          <b-alert
+            show
+            class="p-1 pr-2 pl-2 draw-mode-container"
+            variant="light"
+          >
+            <DrawingTools
+              :draw-mode="$route.query.mode"
+              class="mt-2"
+            ></DrawingTools>
+          </b-alert>
+        </div>
+        <div class="map-loading">
+          Loading Map
+          <b-spinner type="grow" label="Spinning"></b-spinner>
+        </div>
+        <Mapbox
+          :access-token="MAPBOX_ACCESS_TOKEN"
+          :map-options="MAP_OPTIONS"
+          :nav-control="{ show: false }"
+          @map-init="mapInit"
+          @map-load="mapLoaded"
+          @map-touchend="mapClicked"
+          @map-click="mapClicked"
+          @map-zoomend="mapZoomEnd"
+          @map-moveend="mapMoveEnd"
+          @map-sourcedata="mapSourceData"
+        ></Mapbox>
+        <div class="map-controls-overlay">
+          <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+          <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+          <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+          <Contribute class="hide-mobile contribute-control"></Contribute>
+        </div>
+        <ModalNotification></ModalNotification>
         <SearchBar class="hide-mobile"></SearchBar>
-        <NavigationBar></NavigationBar>
+        <transition name="fade-topbar" mode="out-in">
+          <SearchOverlay
+            v-if="showSearchOverlay"
+            :show="showSearchOverlay"
+          ></SearchOverlay>
+          <div v-else class="top-bar-container shadow-sm">
+            <NavigationBar></NavigationBar>
+          </div>
+        </transition>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -180,6 +194,7 @@ import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
+import ArtsSidePanel from '@/components/arts/ArtsSidePanel.vue'
 
 import {
   getApiUrl,
@@ -220,7 +235,8 @@ export default {
     Contribute,
     DrawingTools,
     ModalNotification,
-    LogInOverlay
+    LogInOverlay,
+    ArtsSidePanel
   },
   data() {
     const bbox = [
@@ -904,11 +920,6 @@ export default {
 </script>
 
 <style>
-#map {
-  width: 100%;
-  height: 100%;
-}
-
 .draw-mode-container {
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0.75em !important;
@@ -920,6 +931,28 @@ export default {
   position: relative;
   padding-left: var(--sidebar-width, 350px);
 }
+
+.maps-panel {
+  display: flex;
+}
+
+.maps-left-container {
+  flex: 0 0 30%;
+  height: 100vh;
+}
+
+.map-main-container {
+  flex: 1 1 70%;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
 .map-loading {
   position: absolute;
   left: 50%;
