@@ -1,8 +1,48 @@
 <template>
   <div class="arts-detail-card">
-    <ArtistBanner>
+    <Card>
       <template v-slot:header>
-        <img class="artist-header" src="@/assets/images/sample.jpg" />
+        <div
+          class="arts-detail-icon-container"
+          :style="'background-color:' + color"
+        >
+          <img
+            v-if="arttype.toLowerCase() === 'public_art'"
+            src="@/assets/images/public_art_icon.svg"
+            alt="Arts"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'event'"
+            src="@/assets/images/event_icon.svg"
+            alt="Event"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'artist'"
+            src="@/assets/images/artist_icon.svg"
+            alt="Event"
+          />
+          <img
+            v-else-if="arttype.toLowerCase() === 'organization'"
+            src="@/assets/images/organization_icon.svg"
+            alt="Organization"
+          />
+        </div>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div>
+            <h5
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+            >
+              {{ arttype | art_type }}
+            </h5>
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
+              {{ name }}
+            </h5>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
         <div class="fpcc-card-more-art" @click.prevent="handleReturn">
           <img
             v-if="!hover"
@@ -19,36 +59,15 @@
           <span class="ml-1 font-weight-bold">Return</span>
         </div>
       </template>
-      <template v-slot:body>
-        <div class="arts-artist-content">
-          <img class="artist-profile" src="@/assets/images/sample-dp.jpg" />
-          <div class="artist-title">
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
-              {{ name }}
-            </h5>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              {{ arttype | art_type }}
-            </h5>
-          </div>
-          <div class="artist-tags-container">
-            <span>Artist</span>
-            <span>Visual</span>
-            <span>Painter</span>
-            <span>Carver</span>
-          </div>
-        </div>
-      </template>
-    </ArtistBanner>
+    </Card>
   </div>
 </template>
 
 <script>
-import ArtistBanner from '@/components/arts/ArtistBanner.vue'
+import Card from '@/components/Card.vue'
 export default {
   components: {
-    ArtistBanner
+    Card
   },
   filters: {
     art_type(d) {
@@ -114,8 +133,6 @@ export default {
   background-color: var(--color-beige, #f4eee9);
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0;
   height: 35px;
   justify-content: center;
   border-top-left-radius: 0.5em;
@@ -141,47 +158,5 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
-}
-
-.artist-header {
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-  height: 100px;
-}
-
-.artist-profile {
-  width: 100px;
-  height: 100px;
-  border-radius: 100%;
-  border: 5px solid white;
-}
-
-.artist-title {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.artist-tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0.5em;
-  width: inherit;
-}
-
-.artist-tags-container span {
-  flex: 0 1 75px;
-  background: #707070;
-  border-radius: 2rem;
-  color: #fff;
-  text-transform: uppercase;
-  padding: 5px;
-  font-weight: 800;
-  font-size: 0.6em;
-  margin: 0.25em;
-  text-align: center;
 }
 </style>
