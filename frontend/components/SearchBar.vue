@@ -62,7 +62,7 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
                 {{ key }}
@@ -183,7 +183,7 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
                 {{ key }}
@@ -559,7 +559,7 @@ export default {
           let locationHtml = ''
           if (type === 'Locations') {
             govLink = `http://${result.properties.uri}.html`
-            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from B.C. Geographical Names website. To view the entry on that site, 
                 <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
 
