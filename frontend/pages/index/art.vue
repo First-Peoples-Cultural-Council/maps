@@ -41,6 +41,24 @@
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
+          <Badge
+            content="Events"
+            :number="artists.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#DA531E"
+            type="event"
+            :mode="getBadgeStatus(mode, 'event')"
+            @click.native.prevent="handleBadge($event, 'event')"
+          ></Badge>
+          <Badge
+            content="Resources"
+            :number="artists.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#008CA9"
+            type="event"
+            :mode="getBadgeStatus(mode, 'resource')"
+            @click.native.prevent="handleBadge($event, 'resource')"
+          ></Badge>
         </section>
       </template>
       <template v-slot:cards>
