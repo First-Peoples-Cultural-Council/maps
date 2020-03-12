@@ -2,6 +2,7 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
 from language.models import (
@@ -153,6 +154,9 @@ class CommunityLanguageStatsViewSet(BaseModelViewSet):
     serializer_class = CommunityLanguageStatsSerializer
     detail_serializer_class = CommunityLanguageStatsSerializer
     queryset = CommunityLanguageStats.objects.all()
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['community', 'language', ]
 
 
 class ChampionViewSet(BaseModelViewSet):
