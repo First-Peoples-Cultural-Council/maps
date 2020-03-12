@@ -315,7 +315,10 @@ class Media(BaseModel):
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="medias"
     )
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+
+    # Artwork specific types
     node_id = models.IntegerField(null=True, blank=True)
+    mime_type = models.CharField(max_length=50, default=None, null=True, blank=True)
     is_artwork = models.BooleanField(default=False)
 
     # Choices Constants:
