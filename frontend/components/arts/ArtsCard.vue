@@ -25,16 +25,18 @@
         </div>
       </template>
       <template v-slot:body>
-        <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              {{ art.properties.art_type | art_type }}
-            </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
-              {{ art.properties.name }}
-            </h5>
+        <div class="arts-card-text">
+          <h5
+            class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+          >
+            {{ art.properties.art_type | art_type }}
+          </h5>
+          <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
+            {{ art.properties.name }}
+          </h5>
+          <div class="artist-tags-container">
+            <span>Artist</span>
+            <span>Visual</span>
           </div>
         </div>
       </template>
@@ -103,8 +105,8 @@ export default {
 .arts-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .arts-icon-container img {
   display: inline-block;
@@ -112,15 +114,38 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
+}
+.arts-card-text {
+  position: relative;
+  right: 10px;
+}
+.artist-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: inherit;
+}
+
+.artist-tags-container span {
+  flex: 0 1;
+  background: #ddd4c6;
+  border-radius: 2rem;
+  color: #707070;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.6em;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
+  text-align: center;
 }
 </style>
