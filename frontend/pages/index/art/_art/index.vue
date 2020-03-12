@@ -23,12 +23,12 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
 
-      <div>
-        <ArtsDetailCard
+      <div v-if="art.properties.art_type.toLowerCase() === 'artist'">
+        <ArtistDetailCard
           :arttype="art.properties.art_type"
           :name="art.properties.name"
           :server="isServer"
-        ></ArtsDetailCard>
+        ></ArtistDetailCard>
         <div class="artist-content-container color-gray">
           <section class="artist-content-field">
             <h5 class="field-title">Indigenous/First Nation Association(s)</h5>
@@ -36,9 +36,9 @@
           </section>
           <section class="artist-content-field">
             <span class="field-title">Artist Awards</span>
-            <span class="field-content">
-              <p>YVR Art Foundation Youth Scolarship 2015</p>
-            </span>
+            <ul class="field-content-list">
+              <li>YVR Art Foundation Youth Scolarship 2015</li>
+            </ul>
           </section>
           <section class="artist-content-field">
             <span class="field-title">Artist Biography</span>
@@ -105,6 +105,19 @@
           class="p-4 m-0 pb-0 color-gray font-08"
           v-html="artDetails.details"
         ></div> -->
+      </div>
+
+      <div v-else>
+        <ArtsDetailCard
+          :arttype="art.properties.art_type"
+          :name="art.properties.name"
+          :server="isServer"
+        ></ArtsDetailCard>
+        <div
+          v-if="artDetails.details"
+          class="p-4 m-0 pb-0 color-gray font-08"
+          v-html="artDetails.details"
+        ></div>
         <div class="ml-3 mr-3 mt-3">
           <p class="font-08">
             [ Extracted from the
@@ -127,6 +140,7 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
+import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
@@ -136,6 +150,7 @@ import Logo from '@/components/Logo.vue'
 export default {
   components: {
     ArtsDetailCard,
+    ArtistDetailCard,
     LanguageSeeAll,
     Filters,
     Logo
@@ -225,7 +240,7 @@ export default {
   display: flex;
   width: 100%;
   flex-direction: column;
-  margin: 0.2em 0;
+  margin: 0.5em 0;
 }
 
 .field-title {
@@ -237,6 +252,10 @@ export default {
   flex-direction: column;
   color: #000;
   font-size: 0.9em;
+}
+
+.artist-content-field > .field-content-list {
+  list-style-image: url('/@/assets/images/arts/award_icon.svg');
 }
 
 .artist-social-icons {
@@ -251,6 +270,6 @@ export default {
 .artist-social-icons li {
   width: 25px;
   height: 25px;
-  margin: 0.25em 0.25em 0.5em 0;
+  margin: 0.25em 0.5em 0.5em 0;
 }
 </style>
