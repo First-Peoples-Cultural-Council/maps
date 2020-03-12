@@ -1,5 +1,5 @@
 <template>
-  <div class="card-badge">
+  <div :class="`card-badge ${isPronouncation}`">
     <div v-if="type === 'pronounce'">
       <span class="font-07">{{ content }}</span>
       <img src="@/assets/images/pronounce_icon.svg" alt="Pronounce" />
@@ -35,6 +35,11 @@ export default {
       default: ''
     }
   },
+  computed: {
+    isPronouncation() {
+      return this.type === 'pronounce' ? 'pronouce-badge' : ''
+    }
+  },
   methods: {
     handleLearn() {
       window.open(`${this.link}`)
@@ -60,5 +65,8 @@ export default {
 .card-badge img {
   display: inline-block;
   vertical-align: middle;
+}
+.pronouce-badge {
+  background-color: #b47a2b;
 }
 </style>
