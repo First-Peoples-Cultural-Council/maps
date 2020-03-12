@@ -316,6 +316,7 @@ class Media(BaseModel):
     )
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     node_id = models.IntegerField(null=True, blank=True)
+    is_artwork = models.BooleanField(default=False)
 
     # Choices Constants:
     FLAGGED = "FL"
