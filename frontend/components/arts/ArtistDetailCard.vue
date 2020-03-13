@@ -145,14 +145,13 @@ export default {
 
 .artist-header {
   object-fit: cover;
-  object-position: center;
   width: 100%;
-  height: 100px;
+  height: 110px;
 }
 
 .artist-profile {
-  width: 100px;
-  height: 100px;
+  width: 135px;
+  height: 135px;
   border-radius: 100%;
   border: 5px solid white;
 }

@@ -19,6 +19,9 @@ export default {
 </script>
 
 <style>
+.arts-artist-banner {
+  height: 270px;
+}
 .arts-artist-header {
   position: relative;
   border-bottom: 0.8px solid rgb(0, 0, 0, 0.25);

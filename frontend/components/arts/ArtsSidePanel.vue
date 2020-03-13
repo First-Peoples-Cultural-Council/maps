@@ -100,19 +100,20 @@ export default {
 <style>
 .arts-right-panel {
   display: flex;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 0 2.5px rgb(0, 0, 0);
-  padding: 0.5em;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #d7d7de;
+  padding: 0 0.5em;
 }
 .panel-field-container {
   width: 100%;
   padding: 1.5em 1em;
-  border-bottom: 0.5px solid rgb(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e4e4e4;
 }
 .arts-right-title {
   display: flex;
@@ -122,6 +123,8 @@ export default {
 .panel-field-title {
   color: #707070;
   font-size: 23px;
+  font-weight: bold;
+  font-size: 23px;
 }
 
 .arts-img-pagination {
@@ -130,13 +133,13 @@ export default {
   justify-content: center;
 }
 .arts-img-item img {
-  width: 100px;
-  height: 100px;
+  width: 135px;
+  height: 135px;
   display: block;
 }
 .arts-img-item {
-  width: 100px;
-  height: 100px;
+  width: 135px;
+  height: 135px;
   margin: 0.5em;
   opacity: 1;
   box-sizing: border-box;

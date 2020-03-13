@@ -122,8 +122,8 @@ export default {
   width: 40%;
   padding: 2px;
   color: #fff;
-  font-size: 0.6em;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: bold;
   text-align: center;
 }
 
@@ -145,6 +145,7 @@ export default {
 }
 
 .arts-card-footer {
+  font-family: 'Lato', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -154,17 +155,16 @@ export default {
 }
 
 .artist-title {
-  font-size: 0.8em;
+  font-size: 14px;
   font-weight: bold;
-  color: grey;
+  color: #707070;
   margin: 0;
 }
 
 .artist-name {
-  font-size: 0.7em;
-  text-transform: capitalize;
+  font-size: 13px;
   font-weight: normal;
-  color: grey;
+  color: #c3bfbc;
   margin: 0;
 }
 
