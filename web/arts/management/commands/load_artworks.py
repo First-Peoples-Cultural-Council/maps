@@ -137,17 +137,3 @@ class Client(dedruplify.DeDruplifierClient):
                 current_media.save()
         else:
             print("{} is no longer up.".format(files_url))
-
-
-# def remove_directory(directory):
-#     files = glob.glob("{}/*".format(directory))
-
-#     for f in files:
-#         if os.path.isfile(f):
-#             os.remove(f)
-#         elif os.path.isdir(f):
-#             remove_directory(f)
-
-#     os.rmdir(directory)
-
-#     return
