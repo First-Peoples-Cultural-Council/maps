@@ -920,6 +920,11 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
+  font-style: normal;
+}
 .draw-mode-container {
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0.75em !important;
@@ -929,7 +934,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  padding-left: var(--sidebar-width, 350px);
+  padding-left: var(--sidebar-width, 425px);
 }
 
 .maps-panel {
@@ -937,12 +942,12 @@ export default {
 }
 
 .maps-left-container {
-  flex: 0 0 30%;
+  flex: 0 0 35%;
   height: 100vh;
 }
 
 .map-main-container {
-  flex: 1 1 70%;
+  flex: 1 1 65%;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -1034,7 +1039,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 350px;
+  width: 425px;
   background-color: white;
   z-index: 1000;
   height: 100%;
