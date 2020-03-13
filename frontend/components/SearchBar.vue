@@ -276,7 +276,7 @@
           </div>
         </div>
       </b-popover>
-      <span class="searchbar-icon"></span>
+      <!-- <span class="searchbar-icon"></span> -->
     </div>
   </div>
 </template>
@@ -651,7 +651,13 @@ export default {
 }
 
 .search-input::placeholder {
-  color: rgba(0, 0, 0, 0.2);
+  color: #707070;
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+.search-input.form-control {
+  border-radius: 3em;
 }
 
 @media (max-width: 1200px) {
