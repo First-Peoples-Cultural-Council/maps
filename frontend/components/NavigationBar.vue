@@ -33,6 +33,7 @@
       </div>
       <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
         <nav class="navbar-icon-container">
+          MENU
           <img
             src="@/assets/images/menu_icon.svg"
             alt="Menu"
@@ -258,8 +259,9 @@ export default {
   right: 10px;
   background-color: white;
   padding: 1em;
-  border-radius: 50%;
   z-index: 50;
+  border: 1px solid #ddd5cc;
+  border-radius: 2em;
 }
 .user-container {
   padding: 0.67em;
@@ -288,6 +290,9 @@ export default {
 }
 .navbar-icon-container {
   line-height: 0;
+  color: #7b7b7b;
+  font-size: 13px;
+  font-weight: bold;
 }
 .navbar-icon {
   display: inline-block;
