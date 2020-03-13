@@ -318,7 +318,7 @@ class Media(BaseModel):
 
     # Artwork specific types
     node_id = models.IntegerField(null=True, blank=True)
-    mime_type = models.CharField(max_length=50, default=None, null=True, blank=True)
+    mime_type = models.CharField(max_length=100, default=None, null=True, blank=True)
     is_artwork = models.BooleanField(default=False)
 
     # Choices Constants:
