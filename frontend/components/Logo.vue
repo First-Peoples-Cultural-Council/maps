@@ -67,10 +67,14 @@ export default {
   background-size: cover;
   background-position: center;
   text-transform: uppercase;
+  font: Medium 20px/22px;
+  letter-spacing: 1px;
 }
 .logo-container p {
   margin: 0;
   font-size: 0.7em;
+  letter-spacing: 0.65px;
+  font: Medium 13px/22px;
 }
 .logo img {
   display: inline-block;

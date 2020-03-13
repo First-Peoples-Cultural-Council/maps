@@ -1,5 +1,5 @@
 <template>
-  <div class="filters-container pl-2 pr-2">
+  <div class="filters-container pl-3 pr-3">
     <div class="cursor-pointer ml-1" @click="showCollapse = !showCollapse">
       <div>
         <img src="@/assets/images/filter_icon.svg" alt="Filter" />
@@ -47,7 +47,7 @@ export default {
 
 <style>
 .filters-container {
-  padding-bottom: 0.5em;
+  padding: 0.25 em 0 0.5em 0;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   color: #737373;
 }

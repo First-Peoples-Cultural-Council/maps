@@ -14,7 +14,7 @@
     </div>
 
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo class="cursor-pointer" :logo-alt="1"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -23,13 +23,16 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
 
-      <div v-if="art.properties.art_type.toLowerCase() === 'artist'">
+      <div
+        v-if="art.properties.art_type.toLowerCase() === 'artist'"
+        class="artist-main-container"
+      >
         <ArtistDetailCard
           :arttype="art.properties.art_type"
           :name="art.properties.name"
           :server="isServer"
         ></ArtistDetailCard>
-        <div class="artist-content-container color-gray">
+        <div class="artist-content-container">
           <section class="artist-content-field">
             <h5 class="field-title">Indigenous/First Nation Association(s)</h5>
             <span class="field-content">Nuxalk</span>
@@ -37,7 +40,10 @@
           <section class="artist-content-field">
             <span class="field-title">Artist Awards</span>
             <ul class="field-content-list">
-              <li>YVR Art Foundation Youth Scolarship 2015</li>
+              <li>
+                <img src="@/assets/images/arts/award_icon.svg" /> YVR Art
+                Foundation YouthScolarship 2015
+              </li>
             </ul>
           </section>
           <section class="artist-content-field">
@@ -47,7 +53,8 @@
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
                 consequatur praesentium libero placeat voluptatem earum
                 inventore repellendus mollitia doloribus amet ipsum quo deserunt
-                minus quisquam nesciunt, dolorem, quas reiciendis saepe.
+                minus quisquam nesciunt, dolorem, quas reiciendis saepe ...
+                <a href="#">keep reading</a>
               </p>
             </span>
           </section>
@@ -228,36 +235,57 @@ export default {
 }
 </script>
 <style>
+.artist-main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .artist-content-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: 1.5em 1em 0.25em 1em;
+  margin: 0em 1em 0.25em 1em;
   /* border: 1px solid red; */
+  font-family: 'Proxima Nova', sans-serif;
 }
 
 .artist-content-field {
   display: flex;
   width: 100%;
   flex-direction: column;
-  margin: 0.5em 0;
+  margin: 0.3em 0;
 }
 
 .field-title {
-  font-size: 0.8em;
+  color: #707070;
+  font-weight: bold;
+  font-size: 13px;
+  opacity: 0.6;
 }
 
 .field-content {
   display: flex;
+  font-size: 18px;
   flex-direction: column;
-  color: #000;
+  color: #707070;
   font-size: 0.9em;
 }
 
-.artist-content-field > .field-content-list {
-  list-style-image: url('/@/assets/images/arts/award_icon.svg');
+.field-content a {
+  text-decoration: underline;
+  color: #c46257;
 }
 
+.artist-content-field > .field-content-list {
+  list-style: none;
+  padding: 0;
+}
+
+.field-content-list li {
+  display: flex;
+  align-items: center;
+}
 .artist-social-icons {
   display: flex;
   padding: 0;
