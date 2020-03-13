@@ -141,36 +141,38 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-width, 350px);
+  width: var(--sidebar-width, 425px);
   overflow-y: auto;
   padding-bottom: 1em;
+  font-family: 'Proxima Nova', sans-serif;
 }
 .sidebar-header {
   background-color: transparent;
   overflow-x: hidden;
 }
-
 .sidebar-body {
   background-color: white;
 }
-
-.nav-tabs .nav-link {
-  font-size: 0.8em;
-  background-color: #f4eee9;
+.nav-tabs {
+  display: flex;
+  border-bottom: 0;
 }
 
+.nav-tabs .nav-item {
+  flex: 1;
+}
 .nav-tabs .nav-link {
+  font-family: 'Faustina', serif;
+  font-size: 15px;
+  background-color: #f4eee9;
   color: var(--color-gray, #707070);
-  font-weight: 700;
   opacity: 0.8;
-  text-decoration: underline;
 }
 .nav-tabs .nav-link.active {
-  color: var(--color-red, #c46257);
+  color: var(--color-red, #b47a2b);
   position: relative;
   font-weight: 700;
   border: 0;
-  line-height: 10px;
   opacity: 1;
   text-transform: capitalize !important;
 }
