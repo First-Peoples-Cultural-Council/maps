@@ -391,6 +391,9 @@ class MediaSerializer(serializers.ModelSerializer):
             "status",
             "status_reason",
             "creator",
+            "node_id",
+            "mime_type",
+            "is_artwork",
         )
 
 
