@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
 from arts.models import Art
 from django.contrib.gis.geos import Point
@@ -11,12 +11,12 @@ import pymysql
 from web import dedruplify
 
 
-
 class Command(BaseCommand):
     help = "Loads arts from fixtures/arts.json."
 
     def handle(self, *args, **options):
         sync_arts()
+
 
 def sync_arts():
 
@@ -28,7 +28,6 @@ def sync_arts():
     )
     c.update()
     c.load_arts()
-
 
 
 TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
