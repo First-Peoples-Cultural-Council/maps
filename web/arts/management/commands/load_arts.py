@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from arts.models import Art
+from language.models import PlaceName
 from django.contrib.gis.geos import Point
 
 import os
@@ -38,32 +38,35 @@ class Client(dedruplify.DeDruplifierClient):
     def load_arts(self):
 
         arts_geojson = self.nodes_to_geojson()
+        # OLD IMPLEMENTATION FOR SAVING ARTS IN ART MODEL
+        # TEMPORARILY COMMENTING BEFORE COMPLETELY OVERRIDING
+
         # Removing every Art object from the database.
         # We are loading everything from the scratch
-        arts = Art.objects.all()
-        arts.delete()
+        # arts = Art.objects.all()
+        # arts.delete()
 
-        error_log = []
-        for rec in arts_geojson["features"]:
+        # error_log = []
+        # for rec in arts_geojson["features"]:
 
-            # try:
-            with transaction.atomic():
-                # avoid duplicates on remote data source.
-                try:
-                    art = Art.objects.get(name=rec["properties"]["name"])
-                except Art.DoesNotExist:
-                    art = Art(name=rec["properties"]["name"])
+        #     # try:
+        #     with transaction.atomic():
+        #         # avoid duplicates on remote data source.
+        #         try:
+        #             art = Art.objects.get(name=rec["properties"]["name"])
+        #         except Art.DoesNotExist:
+        #             art = Art(name=rec["properties"]["name"])
 
-                # Geometry map point with latitude and longitude
-                art.point = Point(
-                    float(rec["geometry"]["coordinates"][0]),  # latitude
-                    float(rec["geometry"]["coordinates"][1]),
-                )  # longitude
-                art.art_type = rec["properties"]["type"]
-                art.details = rec["properties"]["details"]
-                art.node_id = rec["properties"]["node_id"]
+        #         # Geometry map point with latitude and longitude
+        #         art.point = Point(
+        #             float(rec["geometry"]["coordinates"][0]),  # latitude
+        #             float(rec["geometry"]["coordinates"][1]),
+        #         )  # longitude
+        #         art.art_type = rec["properties"]["type"]
+        #         art.details = rec["properties"]["details"]
+        #         art.node_id = rec["properties"]["node_id"]
 
-                art.save()
+        #         art.save()
 
         # except Exception as e:
         #     error_log.append(
@@ -72,6 +75,33 @@ class Client(dedruplify.DeDruplifierClient):
         #         + ", unexpected error: "
         #         + str(e)
         #     )
+
+        # Removing every Art PlaceName object from the database.
+        # We are loading everything from the scratch
+        arts = PlaceName.objects.filter(is_art=True)
+        arts.delete()
+
+        error_log = []
+        for rec in arts_geojson["features"]:
+
+            with transaction.atomic():
+                # avoid duplicates on remote data source.
+                try:
+                    art = PlaceName.objects.get(name=rec["properties"]["name"])
+                except PlaceName.DoesNotExist:
+                    art = PlaceName(name=rec["properties"]["name"])
+
+                # Geometry map point with latitude and longitude
+                art.geom = Point(
+                    float(rec["geometry"]["coordinates"][0]),  # latitude
+                    float(rec["geometry"]["coordinates"][1]),
+                )  # longitude
+                art.node_type = rec["properties"]["type"]
+                art.ndoe_details = rec["properties"]["details"]
+                art.node_id = rec["properties"]["node_id"]
+                art.is_art = True
+
+                art.save()
 
         if len(error_log) > 0:
             for error in error_log:
