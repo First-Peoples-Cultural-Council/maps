@@ -68,13 +68,13 @@ class Client(dedruplify.DeDruplifierClient):
 
                 art.save()
 
-        except Exception as e:
-            error_log.append(
-                "Node Id "
-                + str(rec["properties"]["node_id"])
-                + ", unexpected error: "
-                + str(e)
-            )
+        # except Exception as e:
+        #     error_log.append(
+        #         "Node Id "
+        #         + str(rec["properties"]["node_id"])
+        #         + ", unexpected error: "
+        #         + str(e)
+        #     )
 
         # Removing every Art PlaceName object from the database.
         # We are loading everything from the scratch
