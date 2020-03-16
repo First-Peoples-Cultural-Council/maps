@@ -43,65 +43,65 @@ class Client(dedruplify.DeDruplifierClient):
 
         # Removing every Art object from the database.
         # We are loading everything from the scratch
-        # arts = Art.objects.all()
-        # arts.delete()
-
-        # error_log = []
-        # for rec in arts_geojson["features"]:
-
-        #     # try:
-        #     with transaction.atomic():
-        #         # avoid duplicates on remote data source.
-        #         try:
-        #             art = Art.objects.get(name=rec["properties"]["name"])
-        #         except Art.DoesNotExist:
-        #             art = Art(name=rec["properties"]["name"])
-
-        #         # Geometry map point with latitude and longitude
-        #         art.point = Point(
-        #             float(rec["geometry"]["coordinates"][0]),  # latitude
-        #             float(rec["geometry"]["coordinates"][1]),
-        #         )  # longitude
-        #         art.art_type = rec["properties"]["type"]
-        #         art.details = rec["properties"]["details"]
-        #         art.node_id = rec["properties"]["node_id"]
-
-        #         art.save()
-
-        # except Exception as e:
-        #     error_log.append(
-        #         "Node Id "
-        #         + str(rec["properties"]["node_id"])
-        #         + ", unexpected error: "
-        #         + str(e)
-        #     )
-
-        # Removing every Art PlaceName object from the database.
-        # We are loading everything from the scratch
-        arts = PlaceName.objects.filter(is_art=True)
+        arts = Art.objects.all()
         arts.delete()
 
         error_log = []
         for rec in arts_geojson["features"]:
 
+            # try:
             with transaction.atomic():
                 # avoid duplicates on remote data source.
                 try:
-                    art = PlaceName.objects.get(name=rec["properties"]["name"])
-                except PlaceName.DoesNotExist:
-                    art = PlaceName(name=rec["properties"]["name"])
+                    art = Art.objects.get(name=rec["properties"]["name"])
+                except Art.DoesNotExist:
+                    art = Art(name=rec["properties"]["name"])
 
                 # Geometry map point with latitude and longitude
-                art.geom = Point(
+                art.point = Point(
                     float(rec["geometry"]["coordinates"][0]),  # latitude
                     float(rec["geometry"]["coordinates"][1]),
                 )  # longitude
-                art.node_type = rec["properties"]["type"]
-                art.ndoe_details = rec["properties"]["details"]
+                art.art_type = rec["properties"]["type"]
+                art.details = rec["properties"]["details"]
                 art.node_id = rec["properties"]["node_id"]
-                art.is_art = True
 
                 art.save()
+
+        except Exception as e:
+            error_log.append(
+                "Node Id "
+                + str(rec["properties"]["node_id"])
+                + ", unexpected error: "
+                + str(e)
+            )
+
+        # Removing every Art PlaceName object from the database.
+        # We are loading everything from the scratch
+        # arts = PlaceName.objects.filter(is_art=True)
+        # arts.delete()
+
+        # error_log = []
+        # for rec in arts_geojson["features"]:
+
+        #     with transaction.atomic():
+        #         # avoid duplicates on remote data source.
+        #         try:
+        #             art = PlaceName.objects.get(name=rec["properties"]["name"])
+        #         except PlaceName.DoesNotExist:
+        #             art = PlaceName(name=rec["properties"]["name"])
+
+        #         # Geometry map point with latitude and longitude
+        #         art.geom = Point(
+        #             float(rec["geometry"]["coordinates"][0]),  # latitude
+        #             float(rec["geometry"]["coordinates"][1]),
+        #         )  # longitude
+        #         art.node_type = rec["properties"]["type"]
+        #         art.ndoe_details = rec["properties"]["details"]
+        #         art.node_id = rec["properties"]["node_id"]
+        #         art.is_art = True
+
+        #         art.save()
 
         if len(error_log) > 0:
             for error in error_log:
