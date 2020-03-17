@@ -29,18 +29,21 @@
           />
         </div>
       </div>
-      <b-form-input
-        v-else
-        id="search-input"
-        v-model="searchQuery"
-        type="search"
-        class="search-input"
-        placeholder="Search for a language, community, or place name..."
-        autocomplete="off"
-        @update="handleSearchUpdate"
-        @focus="handleInputFocus"
-      >
-      </b-form-input>
+      <div v-else class="searchbar-not-mobile">
+        <b-form-input
+          id="search-input"
+          v-model="searchQuery"
+          type="search"
+          class="search-input"
+          placeholder="Search for a language, community, or place name..."
+          autocomplete="off"
+          @update="handleSearchUpdate"
+          @focus="handleInputFocus"
+        >
+        </b-form-input>
+        <img src="@/assets/images/search_icon.svg" alt="Search" />
+      </div>
+
       <div v-if="mobile">
         <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
           Search Term: {{ searchQuery }}
@@ -592,7 +595,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .address-popup {
   border-radius: 0.5em;
 }
@@ -607,6 +610,9 @@ export default {
 }
 .searchbar-input-container {
   display: flex;
+}
+.searchbar-not-mobile {
+  width: 100%;
 }
 .searchbar-input {
   flex: 10 1 0;
