@@ -157,11 +157,13 @@
         </div>
         <ModalNotification></ModalNotification>
         <SearchBar class="hide-mobile"></SearchBar>
+        <Event />
         <transition name="fade-topbar" mode="out-in">
           <SearchOverlay
             v-if="showSearchOverlay"
             :show="showSearchOverlay"
           ></SearchOverlay>
+
           <div v-else class="top-bar-container shadow-sm">
             <NavigationBar></NavigationBar>
           </div>
@@ -179,6 +181,7 @@ import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import Event from '@/components/Event.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
@@ -236,7 +239,8 @@ export default {
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    ArtsSidePanel
+    ArtsSidePanel,
+    Event
   },
   data() {
     const bbox = [
