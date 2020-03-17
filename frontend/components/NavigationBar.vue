@@ -19,7 +19,7 @@
         <nav class="navbar-icon-container">
           <img
             v-if="!picture"
-            src="@/assets/images/user_icon_red.svg"
+            src="@/assets/images/user_icon.svg"
             alt="Menu"
             class="navbar-icon user_icon"
           />
@@ -33,7 +33,7 @@
       </div>
       <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
         <nav class="navbar-icon-container">
-          MENU
+          <span>MENU</span>
           <img
             src="@/assets/images/menu_icon.svg"
             alt="Menu"
@@ -52,7 +52,7 @@
         @click="$root.$emit('openContributeModal')"
       >
         <img
-          src="@/assets/images/plus_medium_red.svg"
+          src="@/assets/images/plus_bigger_icon.svg"
           alt="Search"
           class="navbar-icon"
         />
@@ -111,7 +111,7 @@
             <div class="text-center d-inline-block">
               <img
                 v-if="!picture"
-                src="@/assets/images/user_icon_red.svg"
+                src="@/assets/images/user_icon.svg"
                 alt="Menu"
                 class="navbar-icon user_icon d-inline-block"
               />
