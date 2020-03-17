@@ -13,7 +13,6 @@
           <img v-else src="@/assets/images/arrow_up_icon.svg" alt="Close" />
         </div>
       </div>
-      <div></div>
     </div>
     <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
       <LayerToggle
@@ -47,7 +46,7 @@ export default {
 
 <style>
 .filters-container {
-  padding: 0.25 em 0 0.5em 0;
+  padding: 0.25em 0 0.75em 0;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   color: #737373;
 }
