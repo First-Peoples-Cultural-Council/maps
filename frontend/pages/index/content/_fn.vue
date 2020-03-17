@@ -250,7 +250,8 @@
 </template>
 
 <script>
-import { values, omit } from 'lodash'
+import values from 'lodash/values'
+import omit from 'lodash/omit'
 import Logo from '@/components/Logo.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'

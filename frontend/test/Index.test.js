@@ -1,5 +1,5 @@
 import request from 'request'
-const _ = require('lodash')
+import uniq from 'lodash/uniq'
 const puppeteer = require('puppeteer')
 
 let browser = null
@@ -19,7 +19,7 @@ describe('on the index page', () => {
   })
 
   test('all communities is accurate', async () => {
-    const communitiesRendered = _.uniq(
+    const communitiesRendered = uniq(
       await page.evaluate(() => {
         const divs = [...document.querySelectorAll('.community-card-title')]
         return divs.map(div => div.textContent.trim())
@@ -42,7 +42,7 @@ describe('on the index page', () => {
   }, 30000)
 
   test('all languages is accurate', async () => {
-    const languagesRendered = _.uniq(
+    const languagesRendered = uniq(
       await page.evaluate(() => {
         const divs = [...document.querySelectorAll('.language-card-title')]
         return divs.map(div => div.textContent.trim())
@@ -74,7 +74,7 @@ describe('on the arts tab', () => {
   })
 
   test('all arts is accurate', async () => {
-    const artsRendered = _.uniq(
+    const artsRendered = uniq(
       await page.evaluate(() => {
         const divs = [...document.querySelectorAll('.art-name')]
         return divs.map(div => div.textContent.trim())
@@ -106,7 +106,7 @@ describe('on the heritage tab', () => {
   })
 
   test('all places is accurate', async () => {
-    const placesRendered = _.uniq(
+    const placesRendered = uniq(
       await page.evaluate(() => {
         const divs = [...document.querySelectorAll('.place-name')]
         return divs.map(div => div.textContent.trim())
