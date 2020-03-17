@@ -29,10 +29,10 @@
       dialog-class="dialog-gallery"
       content-class="content-gallery"
     >
-      <button class="btn-close">Close</button>
+      <button class="btn-close">X</button>
       <div class="gallery-carousel-container">
         <button :disabled="canNavigatePrevious" @click="previousSlide">
-          <img src="@/assets/images/return_icon_hover.svg" alt="Go" />
+          <img src="@/assets/images/return_icon_hover.svg" />
         </button>
 
         <b-carousel
@@ -146,6 +146,7 @@ export default {
   methods: {
     openGallery(index) {
       this.showGallery = true
+      this.imgIndex = index
       if (this.$refs.galleryCarousel) {
         this.selectCurrentIndex(index)
       }
@@ -180,6 +181,8 @@ export default {
   padding: 0 0.5em;
 }
 .panel-field-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   padding: 1.5em 1em;
   border-bottom: 1px solid #e4e4e4;
@@ -279,6 +282,7 @@ export default {
   position: absolute;
   top: 0;
   right: 5em;
-  border: 1px solid red;
+  font-size: 15px;
+  font-weight: 800;
 }
 </style>
