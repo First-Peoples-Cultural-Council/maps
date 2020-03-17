@@ -49,13 +49,7 @@
           <section class="artist-content-field">
             <span class="field-title">Artist Biography</span>
             <span class="field-content">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
-                consequatur praesentium libero placeat voluptatem earum
-                inventore repellendus mollitia doloribus amet ipsum quo deserunt
-                minus quisquam nesciunt, dolorem, quas reiciendis saepe ...
-                <a href="#">keep reading</a>
-              </p>
+              <p v-html="stringSplit('Text goes here...')" />
             </span>
           </section>
           <section class="artist-content-field">
@@ -214,6 +208,12 @@ export default {
         const icon = this.art.properties.art_type + '_icon.svg'
         makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
       })
+    },
+    stringSplit(string) {
+      return string.replace(
+        /(.{50}[^\s]*)/g,
+        '$1 ...<a href="#">keep reading</a>'
+      )
     }
   },
   head() {
