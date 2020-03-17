@@ -114,7 +114,7 @@ export default {
 
 <style>
 .contribute-container button {
-  background: url('../assets/images/contribute_texture_color.svg');
+  background: url('../assets/images/contribute_bg.svg');
   border: 1px solid #ddd5cc;
   border-radius: 3em;
   cursor: pointer;
