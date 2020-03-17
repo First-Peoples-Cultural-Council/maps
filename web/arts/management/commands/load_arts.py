@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from arts.models import Art
 from language.models import PlaceName
 from django.contrib.gis.geos import Point
 

@@ -282,7 +282,7 @@ class PlaceName(CulturalModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
-    # Art fields
+    # Node fields
     is_art = models.BooleanField(default=False)
     node_id = models.IntegerField(null=True, blank=True)
     node_type = models.CharField(max_length=50, default="")
