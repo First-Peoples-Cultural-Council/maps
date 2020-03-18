@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.db import transaction
-from arts.models import Art
-from language.models import PlaceName
+from language.models import PlaceName, Media, PublicArtArtist
 from django.contrib.gis.geos import Point
 
 import os
@@ -9,6 +9,9 @@ import sys
 import json
 
 import pymysql
+import requests
+import glob
+import shutil
 from web import dedruplify
 
 
@@ -28,87 +31,166 @@ def sync_arts():
         os.environ["ARTSMAP_DB"],
     )
     c.update()
-    c.load_arts()
+    c.load_nodes()
 
 
-TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
+TYPE_MAP = {
+    "art": "public_art",
+    "org": "organization",
+    "per": "artist",
+    "event": "event",
+    "resource": "resource",
+    "grant": "grant"
+}
 
 
 class Client(dedruplify.DeDruplifierClient):
 
-    def load_arts(self):
+    def load_nodes(self):
+        # SETUP FOR SAVING MEDIA
+        # Files url - source from which to download media files
+        files_url = "https://www.fp-artsmap.ca/sites/default/files/"
 
-        arts_geojson = self.nodes_to_geojson()
-        # OLD IMPLEMENTATION FOR SAVING ARTS IN ART MODEL
-        # TEMPORARILY COMMENTING BEFORE COMPLETELY OVERRIDING
+        # Delete existing artwork media
+        media = Media.objects.filter(is_artwork=True)
+        media.delete()
 
-        # Removing every Art object from the database.
-        # We are loading everything from the scratch
-        arts = Art.objects.all()
-        arts.delete()
+        # Delete art artists
+        art_artists = ArtArtist.objects.all()
+        art_artists.delete()
+
+        # Set artsmap path - directory for media files downloaded from fp-artsmap.ca
+        artsmap_path = "{}{}{}".format(settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
+
+        # Delete fp-artsmap directory contents if it exists
+        if os.path.exists(artsmap_path):
+            files = glob.glob("{}/*".format(artsmap_path))
+            for f in files:
+                if os.path.isfile(f):
+                    os.remove(f)
+                elif os.path.isdir(f):
+                    shutil.rmtree(f)
+
+        # Create fp-artsmap directory
+            if not os.path.exists(artsmap_path):
+                os.mkdir(artsmap_path)
+
+        # SETUP FOR SAVING PLACENAMES
+        node_placenames_geojson = self.nodes_to_geojson()
+
+        node_types = ["art", "per", "org", "event", "resource", "grant"]
+
+        # Removing every Node PlaceName object from the database.
+        node_placenames = PlaceName.objects.filter(kind__in=node_types)
+        node_placenames.delete()
 
         error_log = []
-        for rec in arts_geojson["features"]:
 
-            # try:
+        print('----------CREATING PLACENAMES FROM NODES----------')
+
+        # Loop through each record in geojson
+        for rec in node_placenames_geojson["features"]:
             with transaction.atomic():
-                # avoid duplicates on remote data source.
-                try:
-                    art = Art.objects.get(name=rec["properties"]["name"])
-                except Art.DoesNotExist:
-                    art = Art(name=rec["properties"]["name"])
+                node_placename = self.create_placename(rec)
 
-                # Geometry map point with latitude and longitude
-                art.point = Point(
-                    float(rec["geometry"]["coordinates"][0]),  # latitude
-                    float(rec["geometry"]["coordinates"][1]),
-                )  # longitude
-                art.art_type = rec["properties"]["type"]
-                art.details = rec["properties"]["details"]
-                art.node_id = rec["properties"]["node_id"]
+                # If the record is a Public Art PlaceName, we should create the Art's Artist (also a placename)
+                # then associate it with the Art PlaceName using the ArtArtist model
 
-                art.save()
+                # Conditions are kept relatively light to trap errors (e.g. non-existing Artist)
+                if rec["properties"]["type"] == 'art' and rec.get("artists"):
+                    for artist_id in rec.get("artists"):
+                        if artist_id:
+                            # Get the record for the associated artist
+                            artist_list = [placename for placename in node_placenames_geojson["features"]
+                                           if placename["properties"]["node_id"] == artist_id]
 
-        # except Exception as e:
-        #     error_log.append(
-        #         "Node Id "
-        #         + str(rec["properties"]["node_id"])
-        #         + ", unexpected error: "
-        #         + str(e)
-        #     )
+                            # Create the PlaceName for the artist - Only get first item (records may duplicate)
+                            artist_placename = self.create_placename(artist_list[0])
 
-        # Removing every Art PlaceName object from the database.
-        # We are loading everything from the scratch
-        # arts = PlaceName.objects.filter(is_art=True)
-        # arts.delete()
+                            # Create relationship (ignore if it already exists)
+                            ArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
 
-        # error_log = []
-        # for rec in arts_geojson["features"]:
+            for fid in rec["files"]:
+                for row in self.query("SELECT * FROM file_managed WHERE fid = %s" % fid):
+                    # Extract data from query row
+                    uri = row["uri"]
+                    filename = row["filename"]
+                    mime_type = row["filemime"]
+                    file_type = row["type"]
 
-        #     with transaction.atomic():
-        #         # avoid duplicates on remote data source.
-        #         try:
-        #             art = PlaceName.objects.get(name=rec["properties"]["name"])
-        #         except PlaceName.DoesNotExist:
-        #             art = PlaceName(name=rec["properties"]["name"])
+                    try:
+                        existing_media = Media.objects.get(name=filename, placename=node_placename)
+                    except Media.DoesNotExist:
+                        existing_media = None
 
-        #         # Geometry map point with latitude and longitude
-        #         art.geom = Point(
-        #             float(rec["geometry"]["coordinates"][0]),  # latitude
-        #             float(rec["geometry"]["coordinates"][1]),
-        #         )  # longitude
-        #         art.node_type = rec["properties"]["type"]
-        #         art.ndoe_details = rec["properties"]["details"]
-        #         art.node_id = rec["properties"]["node_id"]
-        #         art.is_art = True
+                    if not existing_media:
+                        print('--Processing File: {}'.format(filename))
 
-        #         art.save()
+                        # Instantiate Media object and fill data
+                        current_media = Media()
+
+                        current_media.name = filename
+                        current_media.mime_type = mime_type
+                        current_media.file_type = file_type
+                        current_media.is_artwork = True
+                        current_media.status = "VE"
+                        current_media.placename = node_placename
+
+                        # If the video is from youtube/vimeo, only store their url
+                        # Else, download the file from fp-artsmap.ca and set the media_file
+                        from_youtube = uri.startswith("youtube://v/")
+                        from_vimeo = uri.startswith("vimeo://v/")
+
+                        if from_youtube or from_vimeo:
+                            if from_youtube:
+                                current_media.url = uri.replace("youtube://v/", "https://youtube.com/watch?v=")
+                            elif from_vimeo:
+                                current_media.url = uri.replace("vimeo://v/", "https://vimeo.com/")
+                        else:
+                            # Set up paths
+                            download_url = uri.replace("public://", files_url)
+                            storage_path = "{}/{}".format(artsmap_path, uri.replace("public://", ""))
+                            media_path = "{}/{}".format("fp-artsmap", uri.replace("public://", ""))
+
+                            if not os.path.exists(os.path.dirname(storage_path)):
+                                print('Creating ' + os.path.dirname(storage_path))
+                                os.makedirs(os.path.dirname(storage_path), exist_ok=True)
+
+                            response = requests.get(download_url, allow_redirects=True)
+                            open(storage_path, 'wb').write(response.content)
+
+                            current_media.media_file = media_path
+
+                        current_media.save()
+
+                        print('--Done\n')
 
         if len(error_log) > 0:
             for error in error_log:
                 print(error)
         else:
             print("Arts imported!")
+
+    def create_placename(self, rec):
+        # avoid duplicates on remote data source.
+        try:
+            node_placename = PlaceName.objects.get(name=rec["properties"]["name"])
+            print('Updating %s' % rec["properties"]["name"])
+        except PlaceName.DoesNotExist:
+            node_placename = PlaceName(name=rec["properties"]["name"])
+            print('Creating %s' % rec["properties"]["name"])
+
+        # Geometry map point with latitude and longitude
+        node_placename.geom = Point(
+            float(rec["geometry"]["coordinates"][0]),  # latitude
+            float(rec["geometry"]["coordinates"][1]),
+        )  # longitude
+        node_placename.kind = rec["properties"]["type"]
+        node_placename.description = rec["properties"]["details"]
+
+        node_placename.save()
+
+        return node_placename
 
     def nodes_to_geojson(self):
         db = pymysql.connect(
@@ -122,10 +204,18 @@ class Client(dedruplify.DeDruplifierClient):
         cursor = db.cursor()
 
         sql = """
-        select distinct node.type, node.title, location.latitude, location.longitude, node.nid
-        from node inner join location_instance on node.nid=location_instance.nid
-            inner join location on location.lid=location_instance.lid
-        where node.type = 'art' or node.type = 'per' or node.type = 'org';
+            SELECT
+                distinct node.type, node.title, location.latitude, location.longitude, node.nid
+            FROM
+                node inner join location_instance on node.nid=location_instance.nid
+                inner join location on location.lid=location_instance.lid
+            WHERE
+                node.type = 'art' OR
+                node.type = 'per' OR
+                node.type = 'org' OR
+                node.type = 'event' OR
+                node.type = 'resource' OR
+                node.type = 'grant';
         """
         # Execute the SQL command
         cursor.execute(sql)
@@ -135,7 +225,7 @@ class Client(dedruplify.DeDruplifierClient):
         geojson = {"type": "FeatureCollection", "features": []}
 
         _details = {}
-        for node_type in ["art", "per", "org"]:
+        for node_type in ["per", "art", "org", "event", "resource", "grant"]:
             _details[node_type] = json.loads(
                 open("tmp/{}.json".format(node_type)).read()
             )
@@ -143,40 +233,47 @@ class Client(dedruplify.DeDruplifierClient):
         for row in results:
             if float(row[2]) and float(row[3]):  # only want spatial data.
                 name = row[1].strip()
-                if float(row[3]) > -110:
-                    print(row[3], "is outside the allowable area for this map, skip.")
-                    # skip any features that are past Alberta,
-                    # there seems to be junk in the arts db.
-                    continue
-                if (
-                    name.lower().endswith("band")
-                    or name.lower().endswith("nation")
-                    or name.lower().endswith("council")
-                    or name.lower().endswith("nations")
-                ):
-                    # bands are duplicated in other layers, skip them.
-                    print(row[1], "is duplicated in another layer, skip.")
-                    continue
+                # if (
+                #     name.lower().endswith("band")
+                #     or name.lower().endswith("nation")
+                #     or name.lower().endswith("council")
+                #     or name.lower().endswith("nations")
+                # ):
+                #     # bands are duplicated in other layers, skip them.
+                #     print(row[1], "is duplicated in another layer, skip.")
+                #     continue
 
                 details = _details[row[0]][str(row[4])]
-                if details.get('field_shared_privacy_value', ["1"])[0] == "0":
-                    print(row[1], "is private.")
-                    continue
-                geojson["features"].append(
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "type": TYPE_MAP[row[0]],
-                            "name": name,
-                            "details": details.get("body_value", [""])[0],
-                            "node_id": row[4],
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [float(row[3]), float(row[2])],
-                        },
-                    }
-                )
+
+                file_ids = []
+                for k, v in details.items():
+                    if k.endswith('_fid'):
+                        file_ids += v
+                file_ids.sort()
+
+                feature = {
+                    "type": "Feature",
+                    "properties": {
+                        "type": TYPE_MAP[row[0]],
+                        "name": name,
+                        "details": details.get("body_value", [""])[0],
+                        "node_id": row[4],
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [float(row[3]), float(row[2])],
+                    },
+                    "files": file_ids,
+                }
+
+                if row[0] == 'art' and details.get('field_art_artist_nid'):
+                    feature["artists"] = details.get("field_art_artist_nid", [])
+
+                geojson["features"].append(feature)
+
+        open("tmp/geojson.json", "w").write(
+            json.dumps(geojson, indent=4, sort_keys=True)
+        )
         return geojson
 
 
