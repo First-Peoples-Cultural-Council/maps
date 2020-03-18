@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
-from language.models import PlaceName, Media, ArtArtist
+from language.models import PlaceName, Media, PublicArtArtist
 from django.contrib.gis.geos import Point
 
 import os
@@ -34,7 +34,14 @@ def sync_arts():
     c.load_nodes()
 
 
-TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
+TYPE_MAP = {
+    "art": "public_art",
+    "org": "organization",
+    "per": "artist",
+    "event": "event",
+    "resource": "resource",
+    "grant": "grant"
+}
 
 
 class Client(dedruplify.DeDruplifierClient):
@@ -101,7 +108,7 @@ class Client(dedruplify.DeDruplifierClient):
                             artist_placename = self.create_placename(artist_list[0])
 
                             # Create relationship (ignore if it already exists)
-                            ArtArtist.objects.get_or_create(art=node_placename, artist=artist_placename)
+                            ArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
 
             for fid in rec["files"]:
                 for row in self.query("SELECT * FROM file_managed WHERE fid = %s" % fid):
@@ -247,7 +254,7 @@ class Client(dedruplify.DeDruplifierClient):
                 feature = {
                     "type": "Feature",
                     "properties": {
-                        "type": row[0],
+                        "type": TYPE_MAP[row[0]],
                         "name": name,
                         "details": details.get("body_value", [""])[0],
                         "node_id": row[4],
