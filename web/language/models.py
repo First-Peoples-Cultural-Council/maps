@@ -414,6 +414,14 @@ class Dialect(BaseModel):
     )
 
 
+class ArtArtist(models.Model):
+    art = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='art_artists')
+    artist = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
+
+    def __str__(self):
+        return "{} ({})".format(self.art, self.artist)
+
+
 class LNA(BaseModel):
     """
     Deprecated
