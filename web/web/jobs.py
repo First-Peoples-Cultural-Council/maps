@@ -41,7 +41,9 @@ def notifier_job():
     replace_existing=True,
 )
 def arts():
-    sync_arts()
+    # Old website will be deleted, so will no longer have to sync frequently
+    # sync_arts()
+    pass
 
 
 register_events(scheduler)
