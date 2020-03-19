@@ -56,7 +56,7 @@ class Client(dedruplify.DeDruplifierClient):
         media.delete()
 
         # Delete art artists
-        art_artists = ArtArtist.objects.all()
+        art_artists = PublicArtArtist.objects.all()
         art_artists.delete()
 
         # Set artsmap path - directory for media files downloaded from fp-artsmap.ca
