@@ -56,7 +56,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     queryset = PlaceName.objects.all().order_by("name")
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['kind']
+    filterset_fields = ['kind', 'taxonomies']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
