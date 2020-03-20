@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
-from language.models import PlaceName, Media, PublicArtArtist
+from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy
 from django.contrib.gis.geos import Point
 
 import os
@@ -32,6 +32,7 @@ def sync_arts():
     )
     c.update()
     c.load_nodes()
+    c.load_taxonomies()
 
 
 TYPE_MAP = {
@@ -171,13 +172,79 @@ class Client(dedruplify.DeDruplifierClient):
         else:
             print("Arts imported!")
 
+    def load_taxonomies(self):
+        print('----------CREATING TAXONOMIES AND RELATION----------')
+        existing_taxonomies = Taxonomy.objects.all()
+        existing_taxonomies.delete()
+
+        taxonomy_data = self.query("SELECT * FROM taxonomy_term_data;")
+
+        for data in taxonomy_data:
+            taxonomy = Taxonomy()
+            taxonomy.name = data["name"]
+            taxonomy.description = data["description"]
+
+            taxonomy.save()
+
+        taxonomy_hierarchies = self.query("""
+            SELECT
+                taxonomy_term_data.name,
+                taxonomy_term_hierarchy.*,
+                parent_taxonomy.name as parent_name
+            FROM
+                taxonomy_term_data
+                JOIN taxonomy_term_hierarchy ON taxonomy_term_data.tid = taxonomy_term_hierarchy.tid
+                LEFT JOIN taxonomy_term_data AS parent_taxonomy ON taxonomy_term_hierarchy.parent = parent_taxonomy.tid;
+
+        """)
+
+        for hierarchy in taxonomy_hierarchies:
+            if hierarchy["parent_name"]:
+                try:
+                    taxonomy = Taxonomy.objects.get(name=hierarchy["name"])
+                    parent_taxonomy = Taxonomy.objects.get(name=hierarchy["parent_name"])
+
+                    taxonomy.parent = parent_taxonomy
+
+                    taxonomy.save()
+
+                    print('Parent Saved: %s' % hierarchy["name"])
+                except Taxonomy.DoesNotExist:
+                    print('Taxonomy not found: %s' % hierarchy["name"])
+            else:
+                print('Root Hierarchy - No Parent')
+
+        # Map taxonomies to their node_placenames
+        node_placenames_geojson = self.nodes_to_geojson()
+
+        for rec in node_placenames_geojson["features"]:
+            try:
+                node_placename = PlaceName.objects.get(name=rec["properties"]["name"], kind=rec["properties"]["type"])
+
+                for taxonomy in rec["taxonomies"]:
+                    if taxonomy:
+                        try:
+                            current_taxonomy = Taxonomy.objects.get(name=taxonomy)
+
+                            PlaceNameTaxonomy.objects.get_or_create(
+                                placename=node_placename,
+                                taxonomy=current_taxonomy)
+
+                            print('Setting PlaceName Taxonomy for %s' % node_placename)
+                        except Taxonomy.DoesNotExist:
+                            print('Taxonomy not found %s' % taxonomy)
+
+            except PlaceName.DoesNotExist:
+                print('PlaceName not found %s' % rec["properties"]["name"])
+
+
     def create_placename(self, rec):
         # avoid duplicates on remote data source.
         try:
-            node_placename = PlaceName.objects.get(name=rec["properties"]["name"])
+            node_placename = PlaceName.objects.get(name=rec["properties"]["name"], kind=rec["properties"]["type"])
             print('Updating %s' % rec["properties"]["name"])
         except PlaceName.DoesNotExist:
-            node_placename = PlaceName(name=rec["properties"]["name"])
+            node_placename = PlaceName(name=rec["properties"]["name"], kind=rec["properties"]["type"])
             print('Creating %s' % rec["properties"]["name"])
 
         # Geometry map point with latitude and longitude
@@ -185,7 +252,6 @@ class Client(dedruplify.DeDruplifierClient):
             float(rec["geometry"]["coordinates"][0]),  # latitude
             float(rec["geometry"]["coordinates"][1]),
         )  # longitude
-        node_placename.kind = rec["properties"]["type"]
         node_placename.description = rec["properties"]["details"]
 
         node_placename.save()
@@ -245,11 +311,19 @@ class Client(dedruplify.DeDruplifierClient):
 
                 details = _details[row[0]][str(row[4])]
 
+                # Attach files to node
                 file_ids = []
                 for k, v in details.items():
                     if k.endswith('_fid'):
                         file_ids += v
                 file_ids.sort()
+
+                # Attach taxonomy to node
+                taxonomy_list = []
+                for k, v in details.items():
+                    if k == 'taxonomy_list':
+                        taxonomy_list += v
+                taxonomy_list.sort()
 
                 feature = {
                     "type": "Feature",
@@ -264,6 +338,7 @@ class Client(dedruplify.DeDruplifierClient):
                         "coordinates": [float(row[3]), float(row[2])],
                     },
                     "files": file_ids,
+                    "taxonomies": taxonomy_list
                 }
 
                 if row[0] == 'art' and details.get('field_art_artist_nid'):
