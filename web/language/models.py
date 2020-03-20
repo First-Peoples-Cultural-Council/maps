@@ -262,6 +262,10 @@ class PlaceName(CulturalModel):
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
     )
+    taxonomies = models.ManyToManyField(
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
+    )
 
     # Choices Constants:
     FLAGGED = "FL"
@@ -420,6 +424,23 @@ class PublicArtArtist(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.art, self.artist)
+
+
+class Taxonomy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default="")
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class PlaceNameTaxonomy(models.Model):
+    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(Taxonomy, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} ({})".format(self.placename, self.taxonomy)
 
 
 class LNA(BaseModel):
