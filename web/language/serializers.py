@@ -16,6 +16,8 @@ from .models import (
     Favourite,
     Notification,
     CommunityLanguageStats,
+    Taxonomy,
+    PlaceNameTaxonomy
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 from rest_framework import serializers
@@ -476,5 +478,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "language",
             "creator",
             "favourites",
+            "taxonomies"
         )
         depth = 1

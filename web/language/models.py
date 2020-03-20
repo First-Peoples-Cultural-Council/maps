@@ -262,6 +262,10 @@ class PlaceName(CulturalModel):
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
     )
+    taxonomies = models.ManyToManyField(
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
+    )
 
     # Choices Constants:
     FLAGGED = "FL"
