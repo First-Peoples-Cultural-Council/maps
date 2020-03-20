@@ -194,7 +194,7 @@ const renderArtDetail = props => {
                 <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
     props.name
   }</a> |
-                <span class='art-popup-type'>${props.art_type}</span>
+                <span class='art-popup-type'>${props.kind}</span>
             </p>
         </div>`
 }
