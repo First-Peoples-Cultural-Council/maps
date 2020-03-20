@@ -422,6 +422,23 @@ class PublicArtArtist(models.Model):
         return "{} ({})".format(self.art, self.artist)
 
 
+class Taxonomy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default="")
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class PlaceNameTaxonomy(models.Model):
+    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(Taxonomy, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} ({})".format(self.placename, self.taxonomy)
+
+
 class LNA(BaseModel):
     """
     Deprecated
