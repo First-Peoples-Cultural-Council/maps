@@ -216,9 +216,14 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names", "id",
+        fields = (
+            "name",
+            "other_names",
+            "id",
             "audio",
-            "status", "category"
+            "status",
+            "category",
+            "kind"
         )
         geo_field = "geom"
 
