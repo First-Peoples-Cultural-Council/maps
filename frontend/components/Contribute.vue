@@ -115,7 +115,8 @@ export default {
 <style>
 .contribute-container button {
   background: url('../assets/images/contribute_bg.svg');
-  border: 1px solid #ddd5cc;
+  background-size: cover;
+  border: 0px solid #ddd5cc;
   border-radius: 3em;
   cursor: pointer;
   font-size: 0.75em;
@@ -124,24 +125,6 @@ export default {
   color: white;
   font-weight: 700;
   text-transform: uppercase;
-}
-
-.contribute-container .btn-secondary:focus {
-  box-shadow: none !important;
-}
-
-.contribute-container .btn-secondary:hover {
-  color: white !important;
-  box-shadow: none !important;
-  background-color: #3c110d !important;
-  border: 1px solid #ddd5cc;
-}
-
-.contribute-container.show > .btn-secondary.dropdown-toggle {
-  color: white !important;
-  box-shadow: none !important;
-  background-color: #3c110d !important;
-  border: 1px solid #ddd5cc;
 }
 
 .contribute-container button:hover {
