@@ -177,7 +177,7 @@ export default {
   text-transform: capitalize !important;
 }
 
-.nav-tabs .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-link.active::before {
   content: '';
   display: block;
   width: 100%;
@@ -189,10 +189,10 @@ export default {
   border-top-right-radius: 0.5em;
 }
 
-.nav-tabs .nav-item.arts .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-item.arts .nav-link.active::before {
   border-top-left-radius: 0.5em;
 }
-.nav-tabs .nav-item.heritage .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-item.heritage .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
 }
@@ -221,6 +221,26 @@ export default {
     background-color: white;
   }
 
+  .sidebar-mobile .sidebar-tabs ul li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4eee9;
+    height: 50px;
+  }
+
+  .sidebar-mobile .sidebar-tabs ul .nav-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sidebar-mobile .sidebar-tabs ul .nav-link.active {
+    border-radius: 0;
+  }
+
   .sidebar-tabs-fold {
     position: fixed;
     bottom: 0;
@@ -234,6 +254,10 @@ export default {
 
   .sidebar-tabs-fold .nav-fill .nav-item {
     background-color: white;
+  }
+
+  .nav-tabs .nav-link .active {
+    border: 0;
   }
 }
 </style>
