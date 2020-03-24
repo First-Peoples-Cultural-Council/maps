@@ -29,7 +29,7 @@ export default {}
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: 1em 0;
+  margin: 1em 0 3em 0;
 
   .event-date {
     font: Medium 13px/20px;
@@ -55,7 +55,7 @@ export default {}
     border: 1px solid #eeeae5;
     border-radius: 2em;
     color: #fff;
-    padding: 1em;
+    padding: 0.5em 1.5em;
     font-weight: bold;
   }
   img {
@@ -77,7 +77,7 @@ export default {}
   background: #ddd4c6 0% 0% no-repeat padding-box;
   border-radius: 2rem;
   color: #707070;
-  padding: 2px 6px;
+  padding: 0.2em 0.5em;
   font-weight: bold;
   font-size: 0.8;
   margin: 0.25em 0.25em 0.25em 0;
