@@ -41,8 +41,8 @@ from web.permissions import IsAdminOrReadOnly
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
 class MediaCustomViewSet(
-    mixins.CreateModelMixin, 
-    mixins.DestroyModelMixin, 
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
     mixins.RetrieveModelMixin,
     GenericViewSet
 ):
@@ -54,7 +54,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     queryset = Media.objects.all()
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['is_artwork', 'node_id']
+    filterset_fields = ['placename']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
@@ -151,6 +151,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):
@@ -219,8 +220,6 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 | Q(status__exact=Media.UNVERIFIED) 
                 | Q(status__isnull=True)
             )
-
-        queryset = self.filter_queryset(queryset)
 
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)

@@ -16,6 +16,8 @@ from .models import (
     Favourite,
     Notification,
     CommunityLanguageStats,
+    Taxonomy,
+    PlaceNameTaxonomy
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 from rest_framework import serializers
@@ -214,9 +216,14 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names", "id",
+        fields = (
+            "name",
+            "other_names",
+            "id",
             "audio",
-            "status", "category"
+            "status",
+            "category",
+            "kind"
         )
         geo_field = "geom"
 
@@ -391,7 +398,6 @@ class MediaSerializer(serializers.ModelSerializer):
             "status",
             "status_reason",
             "creator",
-            "node_id",
             "mime_type",
             "is_artwork",
         )
@@ -477,5 +483,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "language",
             "creator",
             "favourites",
+            "taxonomies"
         )
         depth = 1

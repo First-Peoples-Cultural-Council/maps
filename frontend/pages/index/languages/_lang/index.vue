@@ -320,17 +320,17 @@ export default {
     },
     publicArts() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'public_art')
+        ? this.arts.filter(art => art.properties.kind === 'public_art')
         : []
     },
     orgs() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'organization')
+        ? this.arts.filter(art => art.properties.kind === 'organization')
         : []
     },
     artists() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'artist')
+        ? this.arts.filter(art => art.properties.kind === 'artist')
         : []
     },
     mapinstance() {

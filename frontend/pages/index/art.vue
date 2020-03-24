@@ -137,13 +137,13 @@ export default {
       return this.$store.state.arts.arts
     },
     publicArts() {
-      return this.arts.filter(art => art.properties.art_type === 'public_art')
+      return this.arts.filter(art => art.properties.kind === 'public_art')
     },
     orgs() {
-      return this.arts.filter(art => art.properties.art_type === 'organization')
+      return this.arts.filter(art => art.properties.kind === 'organization')
     },
     artists() {
-      return this.arts.filter(art => art.properties.art_type === 'artist')
+      return this.arts.filter(art => art.properties.kind === 'artist')
     }
   },
   methods: {

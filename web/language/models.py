@@ -246,14 +246,14 @@ class PlaceName(CulturalModel):
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    kind = models.CharField(max_length=15, default="")
+    kind = models.CharField(max_length=20, default="")
 
     category = models.ForeignKey(
         PlaceNameCategory, on_delete=models.SET_NULL, null=True
     )
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.TextField(default="")
 
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
@@ -261,6 +261,10 @@ class PlaceName(CulturalModel):
     )
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
+    )
+    taxonomies = models.ManyToManyField(
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
     )
 
     # Choices Constants:
@@ -281,12 +285,6 @@ class PlaceName(CulturalModel):
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
     status_reason = models.TextField(default="", blank=True)
-
-    # Node fields
-    is_art = models.BooleanField(default=False)
-    node_id = models.IntegerField(null=True, blank=True)
-    node_type = models.CharField(max_length=50, default="")
-    details = models.TextField(default="")
 
     def verify(id):
         media = PlaceName.objects.get(pk=id)
@@ -323,7 +321,6 @@ class Media(BaseModel):
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
 
     # Artwork specific types
-    node_id = models.IntegerField(null=True, blank=True)
     mime_type = models.CharField(max_length=100, default=None, null=True, blank=True)
     is_artwork = models.BooleanField(default=False)
 
@@ -419,6 +416,31 @@ class Dialect(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.CASCADE, null=True, default=None
     )
+
+
+class PublicArtArtist(models.Model):
+    public_art = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='art_artists')
+    artist = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
+
+    def __str__(self):
+        return "{} ({})".format(self.art, self.artist)
+
+
+class Taxonomy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default="")
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class PlaceNameTaxonomy(models.Model):
+    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(Taxonomy, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} ({})".format(self.placename, self.taxonomy)
 
 
 class LNA(BaseModel):

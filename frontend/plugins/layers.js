@@ -270,7 +270,7 @@ export default {
         layout: {
           'text-optional': true,
           'symbol-spacing': 50,
-          'icon-image': '{art_type}_icon',
+          'icon-image': '{kind}_icon',
           'icon-size': 0.15,
           'text-field': '{name}',
           'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
