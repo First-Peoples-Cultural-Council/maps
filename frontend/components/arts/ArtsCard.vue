@@ -8,35 +8,33 @@
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
           <img
-            v-if="art.properties.art_type.toLowerCase() === 'public_art'"
+            v-if="art.properties.kind.toLowerCase() === 'public_art'"
             src="@/assets/images/public_art_icon.svg"
             alt="Public Art"
           />
           <img
-            v-else-if="art.properties.art_type.toLowerCase() === 'artist'"
+            v-else-if="art.properties.kind.toLowerCase() === 'artist'"
             src="@/assets/images/artist_icon.svg"
             alt="Artist"
           />
           <img
-            v-else-if="art.properties.art_type.toLowerCase() === 'organization'"
+            v-else-if="art.properties.kind.toLowerCase() === 'organization'"
             src="@/assets/images/organization_icon.svg"
             alt="Organization"
           />
         </div>
       </template>
       <template v-slot:body>
-        <div class="arts-card-text">
-          <h5
-            class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-          >
-            {{ art.properties.art_type | art_type }}
-          </h5>
-          <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
-            {{ art.properties.name }}
-          </h5>
-          <div class="artist-tags-container">
-            <span>Artist</span>
-            <span>Visual</span>
+        <div>
+          <div>
+            <h5
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+            >
+              {{ art.properties.kind | kind }}
+            </h5>
+            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
+              {{ art.properties.name }}
+            </h5>
           </div>
         </div>
       </template>
@@ -57,7 +55,7 @@ export default {
     Card
   },
   filters: {
-    art_type(d) {
+    kind(d) {
       if (d === 'public_art') {
         return 'Public Art'
       }

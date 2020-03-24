@@ -5,7 +5,7 @@
       class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
     >
       <div>
-        {{ art.properties.art_type | titleCase }}:
+        {{ art.properties.kind | titleCase }}:
         <span class="font-weight-bold">{{ art.properties.name }}</span>
       </div>
       <div @click="$store.commit('sidebar/setMobileContent', true)">
@@ -193,13 +193,13 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const arts = (await $axios.$get(getApiUrl('arts'))).features
+    const arts = (await $axios.$get(getApiUrl('placename-geo'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
         return encodeFPCC(a.properties.name) === params.art
       }
     })
-    const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
+    const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
     const isServer = !!process.server
     return {
@@ -221,7 +221,7 @@ export default {
         if (this.$route.hash.length <= 1) {
           zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
         }
-        const icon = this.art.properties.art_type + '_icon.svg'
+        const icon = this.art.properties.kind + '_icon.svg'
         makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
       })
     },
@@ -237,13 +237,13 @@ export default {
       title:
         this.art.properties.name +
         ' Indigenous ' +
-        this.art.properties.art_type +
+        this.art.properties.kind +
         " on First Peoples' Language Map",
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.art.properties.details
+          content: this.art.properties.description
         }
       ]
     }

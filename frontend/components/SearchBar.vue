@@ -72,7 +72,7 @@
                 Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key }}
+                {{ key.replace(/_/g, ' ') }}
               </h5>
               <div
                 v-for="(result, index) in results"
@@ -89,23 +89,15 @@
                   ></div>
                 </h5>
                 <h5
-                  v-else-if="key === 'Places'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
+                  v-else-if="
+                    key === 'Places' ||
+                      key === 'Artists' ||
+                      key === 'Public_Arts' ||
+                      key === 'Organizations' ||
+                      key === 'Resources' ||
+                      key === 'Events' ||
+                      key === 'Grants'
                   "
-                >
-                  <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
-                  ></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
                     handleResultClick($event, key, result.item.properties.name)
@@ -193,7 +185,7 @@
                 Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key }}
+                {{ key.replace(/_/g, ' ') }}
               </h5>
               <div
                 v-for="(result, index) in results"
@@ -210,23 +202,15 @@
                   ></div>
                 </h5>
                 <h5
-                  v-else-if="key === 'Places'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
+                  v-else-if="
+                    key === 'Places' ||
+                      key === 'Artists' ||
+                      key === 'Public_Arts' ||
+                      key === 'Organizations' ||
+                      key === 'Resources' ||
+                      key === 'Events' ||
+                      key === 'Grants'
                   "
-                >
-                  <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
-                  ></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Arts'"
                   class="search-result-title font-1 font-weight-normal"
                   @click="
                     handleResultClick($event, key, result.item.properties.name)
@@ -315,7 +299,12 @@ export default {
       languageResults: [],
       communityResults: [],
       placesResults: [],
+      artistsResults: [],
       artsResults: [],
+      organizationsResults: [],
+      resourcesResults: [],
+      eventsResults: [],
+      grantsResults: [],
       locationResults: [],
       addressResults: [],
       popup: null,
@@ -344,7 +333,12 @@ export default {
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
+        this.artistsResults.length === 0 &&
         this.artsResults.length === 0 &&
+        this.organizationsResults.length === 0 &&
+        this.resourcesResults.length === 0 &&
+        this.eventsResults.length === 0 &&
+        this.grantsResults.length === 0 &&
         this.locationResults.length === 0 &&
         this.addressResults.length === 0
       )
@@ -354,7 +348,12 @@ export default {
         Languages: this.languageResults,
         Communities: this.communityResults,
         Places: this.placesResults,
-        Arts: this.artsResults,
+        Artists: this.artistsResults,
+        Public_Arts: this.artsResults,
+        Organizations: this.organizationsResults,
+        Resources: this.resourcesResults,
+        Events: this.eventsResults,
+        Grants: this.grantsResults,
         Locations: this.locationResults,
         Address: this.addressResults
       }
@@ -415,7 +414,7 @@ export default {
         ['name']
       )
 
-      const placeFuzzy = this.fuzzySearch(this.places, this.searchQuery, [
+      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
         {
           name: 'properties.name',
           weight: 0.3
@@ -425,13 +424,35 @@ export default {
           weight: 0.7
         }
       ])
-      this.placesResults = placeFuzzy.filter(
-        p => p.item.properties.status !== 'FL'
-      )
 
-      this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
+      const artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
         'properties.name'
       ])
+
+      this.artistsResults = artsResults.filter(
+        p => p.item.properties.kind === 'artist'
+      )
+
+      this.artsResults = artsResults.filter(
+        p => p.item.properties.kind === 'public_art'
+      )
+
+      this.organizationsResults = artsResults.filter(
+        p => p.item.properties.kind === 'organization'
+      )
+
+      this.resourcessResults = artsResults.filter(
+        p => p.item.properties.kind === 'resource'
+      )
+
+      this.eventsResults = artsResults.filter(
+        p => p.item.properties.kind === 'event'
+      )
+
+      this.grantsResults = artsResults.filter(
+        p => p.item.properties.kind === 'grant'
+      )
+
       try {
         const geoCodeResults = await Promise.all([
           this.$axios.$get(
@@ -444,8 +465,8 @@ export default {
 
         this.locationResults = geoCodeResults[0].features
         this.addressResults = geoCodeResults[1].features
-        console.log('Government', this.locationResults)
-        console.log('Mapbox', this.addressResults)
+        // console.log('Government', this.locationResults)
+        // console.log('Mapbox', this.addressResults)
       } catch (e) {
         console.error(e)
       }
@@ -466,7 +487,7 @@ export default {
       try {
         const fuse = new Fuse(data, options)
         const result = fuse.search(query)
-        console.log('Fuse Result', result)
+        // console.log('Fuse Result', result)
 
         return result
       } catch (e) {
@@ -531,6 +552,19 @@ export default {
       if (type === 'Places') {
         return this.$router.push({
           path: `/place-names/${encodeFPCC(data)}`
+        })
+      }
+
+      if (
+        type === 'Artists' ||
+        type === 'Public_Arts' ||
+        type === 'Organizations' ||
+        type === 'Resources' ||
+        type === 'Events' ||
+        type === 'Grants'
+      ) {
+        return this.$router.push({
+          path: `/art/${encodeFPCC(data)}`
         })
       }
 

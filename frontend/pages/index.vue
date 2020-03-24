@@ -211,7 +211,7 @@ const renderArtDetail = props => {
                 <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
     props.name
   }</a> |
-                <span class='art-popup-type'>${props.art_type}</span>
+                <span class='art-popup-type'>${props.kind}</span>
             </p>
         </div>`
 }
@@ -335,24 +335,57 @@ export default {
     const results = await Promise.all([
       $axios.$get(getApiUrl('language/')),
       $axios.$get(getApiUrl('community/')),
-      $axios.$get(
-        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
-      ),
-      $axios.$get(getApiUrl('arts'))
+      $axios.$get(getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`))
     ])
 
     if (process.server) {
       store.commit('languages/set', groupBy(results[0], 'family.name'))
-      store.commit('communities/set', results[1])
-      store.commit('places/set', results[2].features)
-      store.commit('arts/set', results[3].features)
       store.commit('languages/setLanguagesCount', results[0].length)
+      store.commit('communities/set', results[1])
+      store.commit(
+        'places/set',
+        results[2].features.filter(
+          p =>
+            p.properties.status !== 'FL' &&
+            (p.properties.kind === '' || p.properties.kind === 'poi')
+        )
+      )
+      store.commit(
+        'arts/set',
+        results[2].features.filter(
+          p =>
+            p.properties.kind === 'artist' ||
+            p.properties.kind === 'public_art' ||
+            p.properties.kind === 'organization' ||
+            p.properties.kind === 'resource' ||
+            p.properties.kind === 'event' ||
+            p.properties.kind === 'grant'
+        )
+      )
     }
 
     store.commit('languages/setStore', results[0])
     store.commit('communities/setStore', results[1])
-    store.commit('places/setStore', results[2].features)
-    store.commit('arts/setStore', results[3].features)
+    store.commit(
+      'places/setStore',
+      results[2].features.filter(
+        p =>
+          p.properties.status !== 'FL' &&
+          (p.properties.kind === '' || p.properties.kind === 'poi')
+      )
+    )
+    store.commit(
+      'arts/setStore',
+      results[2].features.filter(
+        p =>
+          p.properties.kind === 'artist' ||
+          p.properties.kind === 'public_art' ||
+          p.properties.kind === 'organization' ||
+          p.properties.kind === 'resource' ||
+          p.properties.kind === 'event' ||
+          p.properties.kind === 'grant'
+      )
+    )
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
