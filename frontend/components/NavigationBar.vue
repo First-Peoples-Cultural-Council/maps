@@ -1,6 +1,7 @@
 <template>
   <div class="nav-container">
-    <div class="hide-mobile">
+    <div class="navigation-container hide-mobile">
+      <Event />
       <div
         v-if="isLoggedIn"
         class="user-container cursor-pointer hide-mobile"
@@ -31,7 +32,10 @@
           />
         </nav>
       </div>
-      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
+      <div
+        class="navbar-container menu-container cursor-pointer hide-mobile"
+        @click="openNav"
+      >
         <nav class="navbar-icon-container">
           <span>MENU</span>
           <img
@@ -47,13 +51,20 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
+      <div class="navbar-icon-container cursor-pointer" @click="showEvent">
+        <img
+          src="@/assets/images/plus_bigger_icon.svg"
+          alt="Event"
+          class="navbar-icon"
+        />
+      </div>
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
       >
         <img
           src="@/assets/images/plus_bigger_icon.svg"
-          alt="Search"
+          alt="Contribute"
           class="navbar-icon"
         />
       </div>
@@ -63,7 +74,7 @@
       >
         <img
           src="@/assets/images/share_icon_red.svg"
-          alt="Search"
+          alt="Share"
           class="navbar-icon"
         />
       </div>
@@ -162,10 +173,12 @@
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import Event from '@/components/Event.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    Event
   },
   data() {
     return {
@@ -199,6 +212,9 @@ export default {
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
+    },
+    showEvent() {
+      this.$root.$emit('toggleEventOverlay', true)
     },
     profile() {
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
@@ -243,6 +259,12 @@ export default {
 </script>
 
 <style>
+.navigation-container {
+  display: flex;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
 .notify-badge {
   position: absolute;
   top: 2.5px;
@@ -254,20 +276,19 @@ export default {
 }
 .navbar-container,
 .user-container {
-  position: fixed;
-  top: 10px;
-  right: 10px;
   background-color: white;
-  padding: 1em;
+  padding: 0.67em;
   z-index: 50;
   border: 1px solid #ddd5cc;
   border-radius: 2em;
+  margin-right: 1em;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 .user-container {
-  padding: 0.67em;
   width: 45px;
   height: 45px;
-  right: 60px;
 }
 .navigation {
   position: fixed;
@@ -342,6 +363,19 @@ export default {
   display: inline-block;
   width: 23px;
   height: 23px;
+}
+
+@media (max-width: 1200px) {
+  .menu-container {
+    width: 45px;
+    height: 45px;
+  }
+  .menu-container span {
+    display: none;
+  }
+  .user-container {
+    margin-right: 0.25em;
+  }
 }
 
 @media (max-width: 992px) {
