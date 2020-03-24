@@ -41,7 +41,11 @@
           @focus="handleInputFocus"
         >
         </b-form-input>
-        <img src="@/assets/images/search_icon.svg" alt="Search" />
+        <img
+          class="search-icon"
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+        />
       </div>
 
       <div v-if="mobile">
@@ -602,7 +606,7 @@ export default {
 .searchbar-container {
   position: absolute;
   top: 10px;
-  left: calc(50% - 200px);
+  left: calc(40% - 200px);
   width: 500px;
 }
 .searchbar-container-detail {
@@ -613,6 +617,17 @@ export default {
 }
 .searchbar-not-mobile {
   width: 100%;
+  display: flex;
+  position: relative;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  right: 20px;
+  top: 30%;
+  margin-left: 0.5em;
 }
 .searchbar-input {
   flex: 10 1 0;
@@ -664,6 +679,7 @@ export default {
 
 .search-input.form-control {
   border-radius: 3em;
+  padding: 1.4em;
 }
 
 @media (max-width: 1200px) {
