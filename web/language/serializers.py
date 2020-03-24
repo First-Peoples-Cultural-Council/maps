@@ -467,6 +467,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "geom",
+            "image",
             "other_names",
             "audio",
             "audio_obj",

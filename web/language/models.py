@@ -236,6 +236,7 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
+    image = models.ImageField(null=True, default=None)
 
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
