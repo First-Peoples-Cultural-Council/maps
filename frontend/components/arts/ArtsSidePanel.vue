@@ -18,20 +18,20 @@
       </div>
     </div>
 
-    <b-modal
-      id="gallery-modal"
-      v-model="showGallery"
-      hide-footer
-      hide-header
-      centered
-      size="xl"
-      modal-class="modal-gallery"
-      dialog-class="dialog-gallery"
-      content-class="content-gallery"
-    >
-      <button class="btn-close">X</button>
+    <div v-show="showGallery" id="gallery-modal" class="gallery-modal">
+      <img
+        class="btn-close"
+        src="@/assets/images/close_icon.svg"
+        alt="Close"
+        @click="closeGallery"
+      />
+
       <div class="gallery-carousel-container">
-        <button :disabled="canNavigatePrevious" @click="previousSlide">
+        <button
+          class="previous-btn"
+          :disabled="canNavigatePrevious"
+          @click="previousSlide"
+        >
           <img src="@/assets/images/return_icon_hover.svg" />
         </button>
 
@@ -40,7 +40,6 @@
           ref="galleryCarousel"
           class="carousel-gallery"
           no-animation
-          :interval="false"
         >
           <b-carousel-slide
             class="slide-image"
@@ -68,7 +67,7 @@
         </button>
       </div>
 
-      <div class="arts-img-pagination">
+      <div class="gallery-img-pagination">
         <div
           :class="`arts-img-item ${currentIndex === 0 ? 'is-selected' : ''}`"
           @click="selectCurrentIndex(0)"
@@ -95,7 +94,7 @@
           <img src="@/assets/images/arts/img-4.jpg" />
         </div>
       </div>
-    </b-modal>
+    </div>
 
     <div class="panel-field-container">
       <span class="panel-field-title">Youtube Video Title Goes Here</span>
@@ -162,6 +161,9 @@ export default {
     previousSlide() {
       this.imgIndex -= 1
       this.$refs.galleryCarousel.setSlide(this.imgIndex)
+    },
+    closeGallery() {
+      this.showGallery = false
     }
   }
 }
@@ -174,11 +176,11 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  width: 100%;
   height: 100%;
   box-shadow: 0px 3px 6px #00000029;
   border: 1px solid #d7d7de;
   padding: 0 0.5em;
+  border: 1px solid red;
 }
 .panel-field-container {
   display: flex;
@@ -199,18 +201,19 @@ export default {
   font-size: 23px;
 }
 
-.arts-img-pagination {
+.arts-img-pagination,
+.gallery-img-pagination {
   display: flex;
   width: 100%;
   justify-content: center;
 }
+
 .arts-img-item {
   width: 145x;
   height: 145px;
   margin: 0.5em;
   opacity: 1;
   border: 5px solid #fff;
-  box-shadow: 0 0 4px #ccc;
   transition: border 0.2s ease-in;
 }
 
@@ -221,11 +224,12 @@ export default {
 
 .gallery-carousel-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   width: 100vw;
+  padding: 0 2em;
 }
 .carousel-gallery {
-  flex-basis: 70%;
+  flex-basis: 60%;
   margin: 2em;
 }
 
@@ -240,25 +244,6 @@ export default {
 }
 .is-selected {
   border: 5px solid #b57936;
-}
-
-.content-gallery {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100vw;
-  background: rgba(0, 0, 0, 0);
-  border: 0;
-}
-.dialog-gallery {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100vw;
-  height: 80vh;
-  background: rgba(0, 0, 0, 0);
 }
 
 .gallery-carousel-container button {
@@ -280,9 +265,49 @@ export default {
 
 .btn-close {
   position: absolute;
+  top: 2%;
+  right: 1%;
+  width: 20px;
+  height: 20px;
+}
+
+.gallery-modal {
+  position: fixed;
   top: 0;
-  right: 5em;
-  font-size: 15px;
-  font-weight: 800;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 50000;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-carousel-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  padding: 0 2em;
+}
+.carousel-gallery {
+  flex-basis: 60%;
+  margin: 2em;
+}
+@media (max-width: 992px) {
+  .gallery-carousel-container {
+    justify-content: center;
+  }
+  .gallery-carousel-container button {
+    display: none;
+  }
+  .carousel-gallery {
+    flex-basis: 100%;
+  }
 }
 </style>
