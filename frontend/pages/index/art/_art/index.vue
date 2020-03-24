@@ -13,127 +13,141 @@
       </div>
     </div>
 
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo class="cursor-pointer" :logo-alt="1"></Logo>
-      <div
-        class="text-center d-none mobile-close"
-        :class="{ 'content-mobile': mobileContent }"
-        @click="$store.commit('sidebar/setMobileContent', false)"
-      >
-        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
-      </div>
+    <div
+      class="hide-mobile arts-main-container"
+      :class="{ 'content-mobile': mobileContent }"
+    >
+      <div class="artist-detail-container">
+        <Logo v-if="!mobileContent" class="cursor-pointer" :logo-alt="1"></Logo>
+        <div
+          class="text-center d-none mobile-close"
+          :class="{ 'content-mobile': mobileContent }"
+          @click="$store.commit('sidebar/setMobileContent', false)"
+        >
+          <img
+            class="d-inline-block"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
+        </div>
 
-      <div
-        v-if="art.properties.art_type.toLowerCase() === 'artist'"
-        class="artist-main-container"
-      >
-        <ArtistDetailCard
-          :arttype="art.properties.art_type"
-          :name="art.properties.name"
-          :server="isServer"
-        ></ArtistDetailCard>
-        <div class="artist-content-container">
-          <section class="artist-content-field">
-            <h5 class="field-title">Indigenous/First Nation Association(s)</h5>
-            <span class="field-content">Nuxalk</span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Artist Awards</span>
-            <ul class="field-content-list">
-              <li>
-                <img src="@/assets/images/arts/award_icon.svg" /> YVR Art
-                Foundation YouthScolarship 2015
-              </li>
-            </ul>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Artist Biography</span>
-            <span class="field-content">
-              <p v-html="stringSplit('Text goes here...')" />
-            </span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Link to my work</span>
-            <span class="field-content">
-              <a href="google.com"
-                >http://facebook.com/VonXgola/Designs-by-Danika-0231402</a
-              >
-            </span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Email</span>
-            <span class="field-content">
-              johndoe@hotmail.com
-            </span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Phone</span>
-            <span class="field-content">
-              (668) 332 8898
-            </span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Address</span>
-            <span class="field-content">
-              Bella Colla, British Columbia, Canada
-            </span>
-          </section>
-          <section class="artist-content-field">
-            <span class="field-title">Social Media</span>
-            <span class="field-content">
-              <ul class="artist-social-icons">
+        <div
+          v-if="art.properties.art_type.toLowerCase() === 'artist'"
+          class="artist-main-container"
+        >
+          <ArtistDetailCard
+            :arttype="art.properties.art_type"
+            :name="art.properties.name"
+            :server="isServer"
+          ></ArtistDetailCard>
+          <div class="artist-content-container">
+            <section class="artist-content-field">
+              <h5 class="field-title">
+                Indigenous/First Nation Association(s)
+              </h5>
+              <span class="field-content">Nuxalk</span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Artist Awards</span>
+              <ul class="field-content-list">
                 <li>
-                  <a href="https://www.facebook.com">
-                    <img src="@/assets/images/arts/facebook.svg" />
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.twitter.com">
-                    <img src="@/assets/images/arts/twitter.svg" />
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.linkedin.com">
-                    <img src="@/assets/images/arts/linkedin.svg" />
-                  </a>
+                  <img src="@/assets/images/arts/award_icon.svg" /> YVR Art
+                  Foundation YouthScolarship 2015
                 </li>
               </ul>
-            </span>
-          </section>
-        </div>
-        <!-- <div
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Artist Biography</span>
+              <span class="field-content">
+                <p v-html="stringSplit('Text goes here...')" />
+              </span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Link to my work</span>
+              <span class="field-content">
+                <a href="google.com"
+                  >http://facebook.com/VonXgola/Designs-by-Danika-0231402</a
+                >
+              </span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Email</span>
+              <span class="field-content">
+                johndoe@hotmail.com
+              </span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Phone</span>
+              <span class="field-content">
+                (668) 332 8898
+              </span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Address</span>
+              <span class="field-content">
+                Bella Colla, British Columbia, Canada
+              </span>
+            </section>
+            <section class="artist-content-field">
+              <span class="field-title">Social Media</span>
+              <span class="field-content">
+                <ul class="artist-social-icons">
+                  <li>
+                    <a href="https://www.facebook.com">
+                      <img src="@/assets/images/arts/facebook.svg" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.twitter.com">
+                      <img src="@/assets/images/arts/twitter.svg" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.linkedin.com">
+                      <img src="@/assets/images/arts/linkedin.svg" />
+                    </a>
+                  </li>
+                </ul>
+              </span>
+            </section>
+          </div>
+          <!-- <div
           v-if="artDetails.details"
           class="p-4 m-0 pb-0 color-gray font-08"
           v-html="artDetails.details"
         ></div> -->
-      </div>
-
-      <div v-else>
-        <ArtsDetailCard
-          :arttype="art.properties.art_type"
-          :name="art.properties.name"
-          :server="isServer"
-        ></ArtsDetailCard>
-        <div
-          v-if="artDetails.details"
-          class="p-4 m-0 pb-0 color-gray font-08"
-          v-html="artDetails.details"
-        ></div>
-        <div class="ml-3 mr-3 mt-3">
-          <p class="font-08">
-            [ Extracted from the
-            <a href="https://www.fp-artsmap.ca/" target="_blank"
-              >First People's Arts Map</a
-            >]
-          </p>
         </div>
-        <LanguageSeeAll
-          content="See all details"
-          class="mt-0"
-          @click.native="handleClick($event, artDetails.node_id)"
-        ></LanguageSeeAll>
-        <Filters class="mb-2 mt-2"></Filters>
+
+        <div v-else>
+          <ArtsDetailCard
+            :arttype="art.properties.art_type"
+            :name="art.properties.name"
+            :server="isServer"
+          ></ArtsDetailCard>
+          <div
+            v-if="artDetails.details"
+            class="p-4 m-0 pb-0 color-gray font-08"
+            v-html="artDetails.details"
+          ></div>
+          <div class="ml-3 mr-3 mt-3">
+            <p class="font-08">
+              [ Extracted from the
+              <a href="https://www.fp-artsmap.ca/" target="_blank"
+                >First People's Arts Map</a
+              >]
+            </p>
+          </div>
+          <LanguageSeeAll
+            content="See all details"
+            class="mt-0"
+            @click.native="handleClick($event, artDetails.node_id)"
+          ></LanguageSeeAll>
+          <Filters class="mb-2 mt-2"></Filters>
+        </div>
       </div>
+      <ArtsSidePanel
+        v-if="this.$route.name === 'index-art-art'"
+        class="artist-side-panel"
+      />
     </div>
   </div>
 </template>
@@ -141,6 +155,7 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
+import ArtsSidePanel from '@/components/arts/ArtsSidePanel.vue'
 import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -152,6 +167,7 @@ export default {
   components: {
     ArtsDetailCard,
     ArtistDetailCard,
+    ArtsSidePanel,
     LanguageSeeAll,
     Filters,
     Logo
@@ -235,10 +251,23 @@ export default {
 }
 </script>
 <style>
+.arts-main-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 100vh;
+}
+
+.artist-detail-container {
+  width: 425px;
+}
+.artist-side-panel {
+  flex: 1 1 700px;
+}
+
 .artist-main-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .artist-content-container {
