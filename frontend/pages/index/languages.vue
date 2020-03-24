@@ -183,4 +183,17 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.language-family-header {
+  font: Regular 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.5;
+}
+.language-family-title {
+  font: Bold 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.7;
+}
+</style>
