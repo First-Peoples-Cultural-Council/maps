@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-container cursor-pointer hide-mobile">
+  <div class="cursor-pointer hide-mobile">
     <nav id="event-icon-container">
       <span>NEXT EVENTS</span>
       <img src="@/assets/images/menu_icon.svg" alt="Menu" class="navbar-icon" />
@@ -32,12 +32,10 @@ export default {
 
 <style lang="scss" scoped>
 #event-icon-container {
-  position: fixed;
-  top: 10px;
-  right: 100px;
   background-color: white;
   padding: 1em;
   z-index: 50;
+  margin-right: 1em;
   border: 1px solid #ddd5cc;
   border-radius: 2em;
   color: #7b7b7b;
@@ -45,9 +43,21 @@ export default {
   font-weight: bold;
   display: flex;
   justify-content: space-evenly;
+  font: Bold 13px/16px Proxima Nova;
 
   & > * {
     margin: 0 0.25em;
+  }
+
+  @media (max-width: 1200px) {
+    & {
+      width: 45px;
+      height: 45px;
+      margin-right: 0.25em;
+    }
+    span {
+      display: none;
+    }
   }
 }
 
