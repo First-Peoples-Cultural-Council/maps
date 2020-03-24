@@ -424,7 +424,7 @@ class PublicArtArtist(models.Model):
     artist = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
 
     def __str__(self):
-        return "{} ({})".format(self.art, self.artist)
+        return "{} ({})".format(self.public_art, self.artist)
 
 
 class Taxonomy(models.Model):

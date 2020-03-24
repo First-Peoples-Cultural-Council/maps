@@ -98,7 +98,7 @@ class Client(dedruplify.DeDruplifierClient):
                 # then associate it with the Art PlaceName using the ArtArtist model
 
                 # Conditions are kept relatively light to trap errors (e.g. non-existing Artist)
-                if rec["properties"]["type"] == 'art' and rec.get("artists"):
+                if rec["properties"]["type"] == 'public_art' and rec.get("artists"):
                     for artist_id in rec.get("artists"):
                         if artist_id:
                             # Get the record for the associated artist
@@ -109,7 +109,7 @@ class Client(dedruplify.DeDruplifierClient):
                             artist_placename = self.create_placename(artist_list[0])
 
                             # Create relationship (ignore if it already exists)
-                            ArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
+                            PublicArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
 
             for fid in rec["files"]:
                 for row in self.query("SELECT * FROM file_managed WHERE fid = %s" % fid):
@@ -162,15 +162,15 @@ class Client(dedruplify.DeDruplifierClient):
 
                             current_media.media_file = media_path
 
-                        current_media.save()
+                        if fid == rec["properties"]["display_picture"]:
+                            node_placename.image = media_path
+                            node_placename.save()
+                        else:
+                            current_media.save()
 
                         print('--Done\n')
 
-        if len(error_log) > 0:
-            for error in error_log:
-                print(error)
-        else:
-            print("Arts imported!")
+        print("Arts imported!")
 
     def load_taxonomies(self):
         print('----------CREATING TAXONOMIES AND RELATION----------')
@@ -241,10 +241,10 @@ class Client(dedruplify.DeDruplifierClient):
     def create_placename(self, rec):
         # avoid duplicates on remote data source.
         try:
-            node_placename = PlaceName.objects.get(name=rec["properties"]["name"], kind=rec["properties"]["type"])
-            print('Updating %s' % rec["properties"]["name"])
+            node_placename = PlaceName.objects.get(name=rec["properties"]["name"])
+            # print('Updating %s' % rec["properties"]["name"])
         except PlaceName.DoesNotExist:
-            node_placename = PlaceName(name=rec["properties"]["name"], kind=rec["properties"]["type"])
+            node_placename = PlaceName(name=rec["properties"]["name"])
             print('Creating %s' % rec["properties"]["name"])
 
         # Geometry map point with latitude and longitude
@@ -253,6 +253,7 @@ class Client(dedruplify.DeDruplifierClient):
             float(rec["geometry"]["coordinates"][1]),
         )  # longitude
         node_placename.description = rec["properties"]["details"]
+        node_placename.kind = rec["properties"]["type"]
 
         node_placename.save()
 
@@ -332,6 +333,7 @@ class Client(dedruplify.DeDruplifierClient):
                         "name": name,
                         "details": details.get("body_value", [""])[0],
                         "node_id": row[4],
+                        "display_picture": details.get("field_shared_image_fid", [""])[0]
                     },
                     "geometry": {
                         "type": "Point",
