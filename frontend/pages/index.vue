@@ -104,7 +104,8 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent
+        'mobile-content-open': mobileContent,
+        'sb-new-alt-arts': isArtist
       }"
     >
       <nuxt-child class="w-100" />
@@ -114,11 +115,6 @@
     </div>
 
     <div class="maps-panel">
-      <ArtsSidePanel
-        v-if="this.$route.name === 'index-art-art'"
-        class="maps-left-container"
-      >
-      </ArtsSidePanel>
       <div class="map-main-container">
         <LogInOverlay v-if="loggingIn"></LogInOverlay>
         <div v-if="isDrawMode" class="drawing-mode-container">
@@ -150,19 +146,23 @@
           @map-sourcedata="mapSourceData"
         ></Mapbox>
         <div class="map-controls-overlay">
-          <Contribute class="hide-mobile contribute-control"></Contribute>
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
         </div>
         <ModalNotification></ModalNotification>
         <SearchBar class="hide-mobile"></SearchBar>
-        <Event />
         <transition name="fade-topbar" mode="out-in">
           <SearchOverlay
             v-if="showSearchOverlay"
             :show="showSearchOverlay"
           ></SearchOverlay>
+
+          <EventOverlay
+            v-else-if="showEventOverlay"
+            :show="showEventOverlay"
+          ></EventOverlay>
 
           <div v-else class="top-bar-container shadow-sm">
             <NavigationBar></NavigationBar>
@@ -181,7 +181,6 @@ import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
-import Event from '@/components/Event.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
@@ -196,8 +195,8 @@ import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
+import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
-import ArtsSidePanel from '@/components/arts/ArtsSidePanel.vue'
 
 import {
   getApiUrl,
@@ -239,8 +238,7 @@ export default {
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    ArtsSidePanel,
-    Event
+    EventOverlay
   },
   data() {
     const bbox = [
@@ -251,6 +249,7 @@ export default {
     return {
       loggingIn: false,
       showSearchOverlay: false,
+      showEventOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -279,6 +278,9 @@ export default {
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    isArtist() {
+      return this.$route.name === 'index-art-art'
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -427,6 +429,9 @@ export default {
     })
     this.$root.$on('closeSearchOverlay', d => {
       this.showSearchOverlay = false
+    })
+    this.$root.$on('toggleEventOverlay', d => {
+      this.showEventOverlay = !this.showEventOverlay
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
@@ -1050,6 +1055,10 @@ export default {
   overflow-y: auto;
 }
 
+.sb-new-alt-arts {
+  width: 60%;
+}
+
 .sb-detail {
   width: 500px;
 }
@@ -1128,8 +1137,8 @@ export default {
 }
 
 .mobile-content-open {
-  height: 100%;
-  top: 0;
+  height: 50%;
+  bottom: 0;
   align-items: baseline;
 }
 
