@@ -90,7 +90,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const arts = (await $axios.$get(getApiUrl('placename-geo'))).features
+    const arts = (await $axios.$get(getApiUrl('art-geo'))).features
     const art = arts.find(a => {
       if (a.properties.name) {
         return encodeFPCC(a.properties.name) === params.art
