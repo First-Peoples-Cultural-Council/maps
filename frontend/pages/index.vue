@@ -692,7 +692,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/api/art/',
+        data: '/api/art-geo/',
         cluster: true,
         // clusterMaxZoom: 14,
         clusterRadius: 50
