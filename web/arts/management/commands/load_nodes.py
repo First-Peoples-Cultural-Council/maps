@@ -119,6 +119,9 @@ class Client(dedruplify.DeDruplifierClient):
                     mime_type = row["filemime"]
                     file_type = row["type"]
 
+                    media_path = None
+                    media_url = None
+
                     try:
                         existing_media = Media.objects.get(name=filename, placename=node_placename)
                     except Media.DoesNotExist:
@@ -127,16 +130,6 @@ class Client(dedruplify.DeDruplifierClient):
                     if not existing_media:
                         print('--Processing File: {}'.format(filename))
 
-                        # Instantiate Media object and fill data
-                        current_media = Media()
-
-                        current_media.name = filename
-                        current_media.mime_type = mime_type
-                        current_media.file_type = file_type
-                        current_media.is_artwork = True
-                        current_media.status = "VE"
-                        current_media.placename = node_placename
-
                         # If the video is from youtube/vimeo, only store their url
                         # Else, download the file from fp-artsmap.ca and set the media_file
                         from_youtube = uri.startswith("youtube://v/")
@@ -144,9 +137,9 @@ class Client(dedruplify.DeDruplifierClient):
 
                         if from_youtube or from_vimeo:
                             if from_youtube:
-                                current_media.url = uri.replace("youtube://v/", "https://youtube.com/watch?v=")
+                                media_url = uri.replace("youtube://v/", "https://youtube.com/watch?v=")
                             elif from_vimeo:
-                                current_media.url = uri.replace("vimeo://v/", "https://vimeo.com/")
+                                media_url = uri.replace("vimeo://v/", "https://vimeo.com/")
                         else:
                             # Set up paths
                             download_url = uri.replace("public://", files_url)
@@ -160,12 +153,27 @@ class Client(dedruplify.DeDruplifierClient):
                             response = requests.get(download_url, allow_redirects=True)
                             open(storage_path, 'wb').write(response.content)
 
-                            current_media.media_file = media_path
-
+                        # If the media is a display picture, save it in the PlaceName
                         if fid == rec["properties"]["display_picture"]:
                             node_placename.image = media_path
                             node_placename.save()
                         else:
+                            # Instantiate Media object and fill data
+                            current_media = Media()
+
+                            current_media.name = filename
+                            current_media.mime_type = mime_type
+                            current_media.file_type = file_type
+                            current_media.is_artwork = True
+                            current_media.status = "VE"
+                            current_media.placename = node_placename
+
+                            if media_path:
+                                current_media.media_file = media_path
+                            elif media_url:
+                                current_media.url = media_url
+
+                            # Save Media
                             current_media.save()
 
                         print('--Done\n')
