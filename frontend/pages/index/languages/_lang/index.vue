@@ -368,7 +368,7 @@ export default {
         getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
       ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`art/?lang=${languageId}`))
+      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`))
     ])
 
     try {
