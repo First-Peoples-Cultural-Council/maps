@@ -267,6 +267,12 @@ class PlaceName(CulturalModel):
         'Taxonomy',
         through='PlaceNameTaxonomy',
     )
+    public_arts = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('artist', 'public_art')
+    )
 
     # Choices Constants:
     FLAGGED = "FL"

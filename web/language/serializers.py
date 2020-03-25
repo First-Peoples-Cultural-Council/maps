@@ -382,6 +382,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
 class MediaSerializer(serializers.ModelSerializer):
     creator = PublicUserSerializer(read_only=True)
     placename_obj = PlaceNameLightSerializer(source="placename", read_only=True)
+
     class Meta:
         model = Media
         fields = (
@@ -484,6 +485,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "language",
             "creator",
             "favourites",
-            "taxonomies"
+            "taxonomies",
+            "public_arts"
         )
         depth = 1
