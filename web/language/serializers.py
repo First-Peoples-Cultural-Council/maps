@@ -113,6 +113,7 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
             "active_learners",
         )
 
+
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
@@ -373,10 +374,31 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
         fields = ("id", "name", "icon_name")
 
 
-class PlaceNameSerializer(serializers.ModelSerializer):
+class RelatedPlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "kind", "category", "status", "status_reason")
+        fields = (
+            "id",
+            "name",
+            "image",
+        )
+
+
+class PlaceNameSerializer(serializers.ModelSerializer):
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "category",
+            "status",
+            "status_reason",
+            "artists",
+        )
 
 
 class MediaSerializer(serializers.ModelSerializer):
@@ -461,6 +483,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         queryset=Recording.objects.all(), allow_null=True, required=False
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
+    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
@@ -486,6 +510,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "creator",
             "favourites",
             "taxonomies",
-            "public_arts"
+            "public_arts",
+            "artists"
         )
         depth = 1

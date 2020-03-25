@@ -271,7 +271,15 @@ class PlaceName(CulturalModel):
         'self',
         symmetrical=False,
         through='PublicArtArtist',
-        through_fields=('artist', 'public_art')
+        through_fields=('artist', 'public_art'),
+        related_name='public_arts+'
+    )
+    artists = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('public_art', 'artist'),
+        related_name='artists+'
     )
 
     # Choices Constants:
