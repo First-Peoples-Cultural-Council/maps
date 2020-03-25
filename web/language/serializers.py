@@ -384,7 +384,16 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
         )
 
 
+class TaxonomyLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            "name",
+        )
+
+
 class PlaceNameSerializer(serializers.ModelSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
     artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
     class Meta:
@@ -397,6 +406,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "category",
             "status",
             "status_reason",
+            "taxonomies",
             "artists",
         )
 
