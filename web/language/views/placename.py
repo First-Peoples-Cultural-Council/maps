@@ -245,19 +245,22 @@ class PlaceNameViewSet(BaseModelViewSet):
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
         name__icontains="FirstVoices", geom__isnull=False
+    ).filter(
+        kind__in=['poi', '']
     )
+
     serializer_class = PlaceNameGeoSerializer
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
-        
+
         user_logged_in = False
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 user_logged_in = True
-                
+
         # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, show:
         # 2.1) user's contribution regardless the status
@@ -265,9 +268,9 @@ class PlaceNameGeoList(generics.ListAPIView):
         # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
         # 2.2.2) is COMMUNITY ONLY
         # 2.3) everything from where user is Administrator (language/community pair)
-        
+
         if user_logged_in:
-            
+
             # 2.1) user's contribution regardless the status
             queryset_user = queryset.filter(creator__id = request.user.id)
 
@@ -277,7 +280,7 @@ class PlaceNameGeoList(generics.ListAPIView):
             ).filter(
                 status__exact=CommunityMember.VERIFIED
             ).values('community')
-            
+
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
@@ -289,11 +292,11 @@ class PlaceNameGeoList(generics.ListAPIView):
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
-            
+
             # 2.3) everything from where user is Administrator (language/community pair)
             admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
             admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
-                
+
             if admin_languages and admin_communities:
                 # Filter PlaceNames by admin's languages 
                 queryset_admin = queryset.filter(
@@ -312,11 +315,28 @@ class PlaceNameGeoList(generics.ListAPIView):
                 | Q(status__exact=PlaceName.UNVERIFIED) 
                 | Q(status__isnull=True)
             )
-            
+
         if "lang" in request.GET:
             queryset = queryset.filter(
                 geom__intersects=Language.objects.get(pk=request.GET.get("lang")).geom
             )
-            
+
         serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ArtGeoList(generics.ListAPIView):
+    queryset = PlaceName.objects.exclude(
+        name__icontains="FirstVoices", geom__isnull=False
+    ).filter(
+        kind__in=['public_art', 'artist', 'organization', 'event', 'resource', 'grant']
+    )
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request):
+        queryset = self.get_queryset()
+        if "lang" in request.GET:
+            lang = Language.objects.get(pk=int(request.GET["lang"]))
+            queryset = queryset.filter(geom__intersects=lang.geom)
+        serializer = PlaceNameGeoSerializer(queryset, many=True)
         return Response(serializer.data)
