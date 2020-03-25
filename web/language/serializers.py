@@ -214,17 +214,40 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
 
 
-class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
+class RelatedPlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
         fields = (
-            "name",
-            "other_names",
             "id",
-            "audio",
-            "status",
+            "name",
+            "image",
+        )
+
+
+class TaxonomyLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            "name",
+        )
+
+
+class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
             "category",
-            "kind"
+            "status",
+            "status_reason",
+            "taxonomies",
+            "artists",
         )
         geo_field = "geom"
 
@@ -372,24 +395,6 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceNameCategory
         fields = ("id", "name", "icon_name")
-
-
-class RelatedPlaceNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image",
-        )
-
-
-class TaxonomyLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Taxonomy
-        fields = (
-            "name",
-        )
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
