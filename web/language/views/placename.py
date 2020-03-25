@@ -3,6 +3,7 @@ import sys
 from django.shortcuts import render
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import Filter, FilterSet
 
 from users.models import User, Administrator
 from language.models import (
@@ -42,6 +43,15 @@ from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
 
 
+class StringListFilter(Filter):
+    def filter(self, qs, value):
+        if value not in (None, ''):
+            strings = [v for v in value.split(',')]
+            print(strings)
+            return qs.filter(**{'%s__%s' % (self.field_name, self.lookup_expr): strings})
+        return qs
+
+
 class PlaceNameCategoryViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
@@ -50,13 +60,21 @@ class PlaceNameCategoryViewSet(BaseModelViewSet):
     queryset = PlaceNameCategory.objects.all()
 
 
+class PlaceNameFilterSet(FilterSet):
+    kinds = StringListFilter(field_name='kind', lookup_expr='in')
+
+    class Meta:
+        model = PlaceName
+        fields = ('kinds', 'taxonomies')
+
+
 class PlaceNameViewSet(BaseModelViewSet):
     serializer_class = PlaceNameSerializer
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['kind', 'taxonomies']
+    filterset_class = PlaceNameFilterSet
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)

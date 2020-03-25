@@ -113,6 +113,7 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
             "active_learners",
         )
 
+
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
@@ -373,15 +374,47 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
         fields = ("id", "name", "icon_name")
 
 
-class PlaceNameSerializer(serializers.ModelSerializer):
+class RelatedPlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "kind", "category", "status", "status_reason")
+        fields = (
+            "id",
+            "name",
+            "image",
+        )
+
+
+class TaxonomyLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            "name",
+        )
+
+
+class PlaceNameSerializer(serializers.ModelSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "category",
+            "status",
+            "status_reason",
+            "taxonomies",
+            "artists",
+        )
 
 
 class MediaSerializer(serializers.ModelSerializer):
     creator = PublicUserSerializer(read_only=True)
     placename_obj = PlaceNameLightSerializer(source="placename", read_only=True)
+
     class Meta:
         model = Media
         fields = (
@@ -460,6 +493,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         queryset=Recording.objects.all(), allow_null=True, required=False
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
+    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
@@ -467,6 +502,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "geom",
+            "image",
             "other_names",
             "audio",
             "audio_obj",
@@ -483,6 +519,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "language",
             "creator",
             "favourites",
-            "taxonomies"
+            "taxonomies",
+            "public_arts",
+            "artists"
         )
         depth = 1
