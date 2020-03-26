@@ -67,7 +67,7 @@
     <div class="d-none mobile-search-container">
       <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
-          src="@/assets/images/plus_bigger_icon.svg"
+          src="@/assets/images/event_icons.svg"
           alt="Event"
           class="navbar-icon"
         />

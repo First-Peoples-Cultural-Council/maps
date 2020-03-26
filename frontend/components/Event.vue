@@ -2,7 +2,11 @@
   <div class="cursor-pointer hide-mobile">
     <nav id="event-icon-container">
       <span>NEXT EVENTS</span>
-      <img src="@/assets/images/menu_icon.svg" alt="Menu" class="navbar-icon" />
+      <img
+        src="@/assets/images/event_icons.svg"
+        alt="Menu"
+        class="navbar-icon"
+      />
     </nav>
     <b-popover
       target="event-icon-container"
