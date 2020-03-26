@@ -36,6 +36,11 @@
               {{ art.properties.name }}
             </h5>
           </div>
+          <div class="artist-tags-container">
+            <span v-for="tag in art.properties.taxonomies" :key="tag.name">{{
+              tag.name
+            }}</span>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -78,6 +83,9 @@ export default {
     return {
       hover: false
     }
+  },
+  mounted() {
+    // console.log('CARD DATA', this.art)
   },
   methods: {
     handleMouseOver() {
@@ -131,11 +139,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  width: inherit;
+  align-items: center;
 }
 
 .artist-tags-container span {
-  flex: 0 1;
+  flex: 0 1 auto;
   background: #ddd4c6;
   border-radius: 2rem;
   color: #707070;
