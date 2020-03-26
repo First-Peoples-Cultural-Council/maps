@@ -4,6 +4,7 @@
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
+    <!-- Tile View Mode -->
     <div v-if="isLayoutTile" class="arts-card-container">
       <div class="arts-card-tag">
         <img src="@/assets/images/arts/audio.png" /> Audio
@@ -20,22 +21,20 @@
         </span>
       </div>
     </div>
+    <!-- Landscape View Mode -->
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
-        <img class="card-teaser-img" src="@/assets/images/sample.jpg" />
+        <img class="card-teaser-img" :src="artImage" />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
-          <span class="artist-title">
-            I WANT TO BREAK FREE
-          </span>
-          <span class="artist-name">
-            By The Queen
-          </span>
+          <span class="artist-title"> {{ artDetails.name }} </span>
+          <span class="artist-name" v-html="returnArtists" />
         </div>
         <div class="arts-card-more">
           <div class="arts-card-tag">
-            <img src="@/assets/images/arts/audio.png" /> Audio
+            <img v-if="media.length !== 0" :src="returnMediaType" />
+            {{ mediaType }}
           </div>
           <div class="fpcc-card-more">
             <img
@@ -52,6 +51,8 @@
 </template>
 
 <script>
+import { encodeFPCC } from '@/plugins/utils.js'
+
 export default {
   props: {
     art: {
@@ -71,11 +72,48 @@ export default {
     }
   },
   computed: {
+    artDetails() {
+      return this.art.properties
+    },
+    artist() {
+      return this.art.properties.artists
+    },
+    media() {
+      return this.art.properties.medias
+    },
+    mediaType() {
+      return this.media.length ? this.media[0].file_type : 'Unknown'
+    },
     isLayoutTile() {
       return this.layout !== 'landscape'
+    },
+    artImage() {
+      return this.artDetails.image !== null
+        ? this.artDetails.image
+        : require('@/assets/images/public_art_icon.svg')
+    },
+    returnArtists() {
+      const listOfArtist =
+        this.artist.length !== 0
+          ? this.artist.map((artist, index) => {
+              return `<a href="art/${encodeFPCC(artist.name)}"> ${
+                artist.name
+              }</a>`
+            })
+          : 'Unknown'
+      return `By ${listOfArtist}`
+    },
+    returnMediaType() {
+      const type = this.media[0].file_type ? this.media[0].file_type : 'audio'
+      return require(`@/assets/images/arts/${type}.png`)
     }
   },
   methods: {
+    handleCardClick($event, name, type) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
+    },
     handleMouseOver() {
       this.hover = true
       // in some cases, we list places without full geometry, no marker shown.
@@ -125,6 +163,7 @@ export default {
   font-size: 13px;
   font-weight: bold;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .arts-card-tag img {
