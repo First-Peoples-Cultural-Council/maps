@@ -1,11 +1,18 @@
 <template>
   <div class="filter-container">
-    <b-badge class="badge filter-selected">
-      <span class="badge-content">Artworks Only</span>
-    </b-badge>
-    <b-badge class="badge ">
-      <span class="badge-content ">Show All</span>
-    </b-badge>
+    <b-form-input
+      id="search-input"
+      type="search"
+      class="search-input"
+      placeholder="Search for a person, artwork, event..."
+      autocomplete="off"
+    >
+    </b-form-input>
+    <img
+      class="search-icon"
+      src="@/assets/images/search_icon.svg"
+      alt="Search"
+    />
   </div>
 </template>
 
@@ -16,24 +23,27 @@ export default {}
 <style>
 .filter-container {
   display: flex;
-  width: 100%;
-  background-color: #eee;
-  margin: 0.5em 0;
-  border-radius: 1em;
+  width: 90%;
+  position: relative;
 }
 
-.filter-container > .badge {
-  flex: 1 1;
-  padding: 0.5em;
-  margin: 1px;
-  background-color: #eee;
-  color: #000;
-  font-weight: bold;
-  transition: 0.5s ease-in;
+.search-input::placeholder {
+  color: #707070;
+  font-size: 16px;
+  opacity: 0.5;
 }
 
-.badge.filter-selected {
-  background-color: #b57936;
-  color: #fff;
+.search-input.form-control {
+  border-radius: 3em;
+  padding: 1.2em;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  right: 20px;
+  top: 30%;
+  margin-left: 0.5em;
 }
 </style>
