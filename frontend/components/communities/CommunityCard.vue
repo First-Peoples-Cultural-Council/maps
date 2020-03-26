@@ -108,8 +108,8 @@ export default {
 .community-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .community-icon-container img {
   display: inline-block;
