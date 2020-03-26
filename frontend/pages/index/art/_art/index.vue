@@ -35,6 +35,9 @@
           class="artist-main-container"
         >
           <ArtistDetailCard
+            :art-image="art.properties.image"
+            :tags="art.properties.taxonomies"
+            :media="art.properties.medias[0]"
             :arttype="art.properties.kind"
             :name="art.properties.name"
             :server="isServer"
@@ -144,10 +147,6 @@
           <Filters class="mb-2 mt-2"></Filters>
         </div>
       </div>
-      <ArtsSidePanelSmall
-        v-if="this.$route.name === 'index-art-art'"
-        class="artist-side-panel"
-      />
     </div>
   </div>
 </template>
@@ -155,7 +154,6 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
-import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -167,7 +165,6 @@ export default {
   components: {
     ArtsDetailCard,
     ArtistDetailCard,
-    ArtsSidePanelSmall,
     LanguageSeeAll,
     Filters,
     Logo
@@ -211,6 +208,9 @@ export default {
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
+  },
+  mounted() {
+    console.log('ARTIST DATA IS HERE', this.art)
   },
   methods: {
     handleClick(e, data) {
