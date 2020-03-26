@@ -33,6 +33,20 @@
         </nav>
       </div>
       <div
+        v-else
+        class="navbar-container menu-container cursor-pointer hide-mobile"
+        @click="redirectLogin"
+      >
+        <nav class="navbar-icon-container">
+          <span>SIGN UP</span>
+          <img
+            src="@/assets/images/user_icon.svg"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+        </nav>
+      </div>
+      <div
         class="navbar-container menu-container cursor-pointer hide-mobile"
         @click="openNav"
       >
@@ -253,6 +267,10 @@ export default {
     resetMap() {
       this.$root.$emit('resetMap')
       this.closeNav()
+    },
+    redirectLogin() {
+      window.location.href =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     }
   }
 }
