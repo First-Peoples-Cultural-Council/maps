@@ -245,7 +245,6 @@ class Client(dedruplify.DeDruplifierClient):
             except PlaceName.DoesNotExist:
                 print('PlaceName not found %s' % rec["properties"]["name"])
 
-
     def create_placename(self, rec):
         # avoid duplicates on remote data source.
         try:
