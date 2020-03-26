@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo class="cursor-pointer" :logo-alt="1"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -251,14 +251,15 @@
                 md="6"
                 sm="6"
               >
-                <ArtsCard
+                <ArtistCard
                   class="mt-3 hover-left-move"
                   :art="art"
+                  :layout="'landscape'"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
                 >
-                </ArtsCard>
+                </ArtistCard>
               </b-col>
             </b-row>
           </div>
@@ -270,6 +271,7 @@
 
 <script>
 import ArtsCard from '@/components/arts/ArtsCard.vue'
+import ArtistCard from '@/components/arts/ArtistCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
@@ -295,7 +297,8 @@ export default {
     Filters,
     Badge,
     Logo,
-    Notification
+    Notification,
+    ArtistCard
   },
   data() {
     return {

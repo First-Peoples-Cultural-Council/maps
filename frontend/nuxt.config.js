@@ -45,6 +45,11 @@ module.exports = {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Faustina:400,500,700&display=swap'
       }
     ]
   },
@@ -102,11 +107,16 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    babel: {
+      sourceType: 'unambiguous'
+    },
+    transpile: ['@mapbox/mapbox-gl-draw', 'mapbox-gl-draw-freehand-mode'],
     plugins: [
       new webpack.ProvidePlugin({
         mapboxgl: 'mapbox-gl'
       })
     ],
+
     postcss: {
       // Add plugin names as key and arguments as value
       // Install them before as dependencies with npm or yarn

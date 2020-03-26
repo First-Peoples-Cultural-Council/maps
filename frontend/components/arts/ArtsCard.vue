@@ -36,6 +36,11 @@
               {{ art.properties.name }}
             </h5>
           </div>
+          <div class="artist-tags-container">
+            <span v-for="tag in art.properties.taxonomies" :key="tag.name">{{
+              tag.name
+            }}</span>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -79,6 +84,9 @@ export default {
       hover: false
     }
   },
+  mounted() {
+    // console.log('CARD DATA', this.art)
+  },
   methods: {
     handleMouseOver() {
       this.hover = true
@@ -103,8 +111,8 @@ export default {
 .arts-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .arts-icon-container img {
   display: inline-block;
@@ -112,15 +120,38 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
+}
+.arts-card-text {
+  position: relative;
+  right: 10px;
+}
+.artist-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.artist-tags-container span {
+  flex: 0 1 auto;
+  background: #ddd4c6;
+  border-radius: 2rem;
+  color: #707070;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.6em;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
+  text-align: center;
 }
 </style>

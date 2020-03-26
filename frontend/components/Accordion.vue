@@ -83,7 +83,7 @@ export default {
   padding-top: 0.25rem;
 }
 .accordion-content {
-  font-size: 0.8em;
+  font-size: 16px;
   margin: 0;
   padding: 0;
   color: var(--color-darkgray, #454545);

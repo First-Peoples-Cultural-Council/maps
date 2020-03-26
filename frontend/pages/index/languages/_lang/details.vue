@@ -129,7 +129,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { values, omit } from 'lodash'
+import values from 'lodash/values'
+import omit from 'lodash/omit'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'

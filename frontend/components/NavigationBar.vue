@@ -1,6 +1,7 @@
 <template>
   <div class="nav-container">
-    <div class="hide-mobile">
+    <div class="navigation-container hide-mobile">
+      <Event />
       <div
         v-if="isLoggedIn"
         class="user-container cursor-pointer hide-mobile"
@@ -19,7 +20,7 @@
         <nav class="navbar-icon-container">
           <img
             v-if="!picture"
-            src="@/assets/images/user_icon_red.svg"
+            src="@/assets/images/user_icon.svg"
             alt="Menu"
             class="navbar-icon user_icon"
           />
@@ -31,8 +32,26 @@
           />
         </nav>
       </div>
-      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
+      <div
+        v-else
+        class="navbar-container menu-container cursor-pointer hide-mobile"
+        @click="redirectLogin"
+      >
         <nav class="navbar-icon-container">
+          <span>SIGN UP</span>
+          <img
+            src="@/assets/images/user_icon.svg"
+            alt="Menu"
+            class="navbar-icon user_icon"
+          />
+        </nav>
+      </div>
+      <div
+        class="navbar-container menu-container cursor-pointer hide-mobile"
+        @click="openNav"
+      >
+        <nav class="navbar-icon-container">
+          <span>MENU</span>
           <img
             src="@/assets/images/menu_icon.svg"
             alt="Menu"
@@ -46,13 +65,20 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
+      <div class="navbar-icon-container cursor-pointer" @click="showEvent">
+        <img
+          src="@/assets/images/event_icons.svg"
+          alt="Event"
+          class="navbar-icon"
+        />
+      </div>
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
       >
         <img
-          src="@/assets/images/plus_medium_red.svg"
-          alt="Search"
+          src="@/assets/images/plus_bigger_icon.svg"
+          alt="Contribute"
           class="navbar-icon"
         />
       </div>
@@ -62,7 +88,7 @@
       >
         <img
           src="@/assets/images/share_icon_red.svg"
-          alt="Search"
+          alt="Share"
           class="navbar-icon"
         />
       </div>
@@ -110,7 +136,7 @@
             <div class="text-center d-inline-block">
               <img
                 v-if="!picture"
-                src="@/assets/images/user_icon_red.svg"
+                src="@/assets/images/user_icon.svg"
                 alt="Menu"
                 class="navbar-icon user_icon d-inline-block"
               />
@@ -161,10 +187,12 @@
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import Event from '@/components/Event.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    Event
   },
   data() {
     return {
@@ -198,6 +226,9 @@ export default {
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
+    },
+    showEvent() {
+      this.$root.$emit('toggleEventOverlay', true)
     },
     profile() {
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
@@ -236,12 +267,22 @@ export default {
     resetMap() {
       this.$root.$emit('resetMap')
       this.closeNav()
+    },
+    redirectLogin() {
+      window.location.href =
+        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     }
   }
 }
 </script>
 
 <style>
+.navigation-container {
+  display: flex;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
 .notify-badge {
   position: absolute;
   top: 2.5px;
@@ -253,19 +294,19 @@ export default {
 }
 .navbar-container,
 .user-container {
-  position: fixed;
-  top: 10px;
-  right: 10px;
   background-color: white;
-  padding: 1em;
-  border-radius: 50%;
+  padding: 0.67em;
   z-index: 50;
+  border: 1px solid #ddd5cc;
+  border-radius: 2em;
+  margin-right: 1em;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 .user-container {
-  padding: 0.67em;
   width: 45px;
   height: 45px;
-  right: 60px;
 }
 .navigation {
   position: fixed;
@@ -288,6 +329,9 @@ export default {
 }
 .navbar-icon-container {
   line-height: 0;
+  color: #7b7b7b;
+  font-size: 13px;
+  font-weight: bold;
 }
 .navbar-icon {
   display: inline-block;
@@ -337,6 +381,19 @@ export default {
   display: inline-block;
   width: 23px;
   height: 23px;
+}
+
+@media (max-width: 1200px) {
+  .menu-container {
+    width: 45px;
+    height: 45px;
+  }
+  .menu-container span {
+    display: none;
+  }
+  .user-container {
+    margin-right: 0.25em;
+  }
 }
 
 @media (max-width: 992px) {
