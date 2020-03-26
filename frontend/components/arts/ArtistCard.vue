@@ -171,8 +171,10 @@ export default {
 /* Landscape Layout */
 .arts-card-landscape {
   display: flex;
+  width: 100%;
   height: 150px;
   padding: 0;
+  border-radius: 0.25em;
 
   .arts-card-body {
     flex-basis: 45%;
@@ -182,7 +184,6 @@ export default {
       object-fit: fill;
       object-position: 50% 50%;
       width: 100%;
-      height: 100%;
     }
   }
 
@@ -222,7 +223,7 @@ export default {
       }
 
       .fpcc-card-more {
-        width: 30%;
+        width: 55px;
         background-color: #b57936;
         display: flex;
         align-items: center;
@@ -236,6 +237,10 @@ export default {
         background-color: #454545;
       }
     }
+  }
+
+  &:hover {
+    border: 1px solid #b57936;
   }
 }
 </style>
