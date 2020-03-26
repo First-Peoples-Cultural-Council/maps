@@ -271,7 +271,7 @@
 
 <script>
 import ArtsCard from '@/components/arts/ArtsCard.vue'
-import ArtistCard from '@/components/arts/ArtistCard'
+import ArtistCard from '@/components/arts/ArtistCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
