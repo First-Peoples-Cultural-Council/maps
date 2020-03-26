@@ -1,6 +1,10 @@
 <template>
   <div>
-    <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
+    <SideBar
+      v-if="this.$route.name === 'index-art'"
+      active="Arts"
+      :show-side-panel="showPanel"
+    >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
@@ -12,7 +16,8 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 pt-3">
+        <ArtistFilter class="m-3" />
+        <section class="pl-3 pr-3 pt-2">
           <Badge
             content="Public Arts"
             :number="publicArts.length"
@@ -39,6 +44,24 @@
             type="event"
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
+          ></Badge>
+          <Badge
+            content="Events"
+            :number="artists.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#DA531E"
+            type="event"
+            :mode="getBadgeStatus(mode, 'event')"
+            @click.native.prevent="handleBadge($event, 'event')"
+          ></Badge>
+          <Badge
+            content="Resources"
+            :number="artists.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#008CA9"
+            type="event"
+            :mode="getBadgeStatus(mode, 'resource')"
+            @click.native.prevent="handleBadge($event, 'resource')"
           ></Badge>
         </section>
       </template>
@@ -71,13 +94,12 @@
               md="6"
               sm="6"
             >
-              <ArtsCard
+              <ArtistCard
                 :art="art"
+                :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              ></ArtsCard>
+                @click.native="selectPublicArt(art)"
+              ></ArtistCard>
             </b-col>
           </b-row>
           <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
@@ -100,6 +122,9 @@
           </b-row>
         </section>
       </template>
+      <template v-if="showPanel" v-slot:side-panel>
+        <ArtsSidePanelSmall class="artist-side-panel" :art="artDetails" />
+      </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
       <div>
@@ -112,10 +137,13 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
+import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
+import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
@@ -123,13 +151,17 @@ export default {
     ArtsCard,
     Badge,
     Filters,
-    Accordion
+    Accordion,
+    ArtistCard,
+    ArtistFilter,
+    ArtsSidePanelSmall
   },
   data() {
     return {
       mode: 'All',
-      accordionContent:
-        'Indigenous languages in B.C. all have corresponding unique cultures and artistic practices. This rich cultural environment is alive with countless Indigenous artists and artistic groups who create work across all artistic disciplines – visual, music, dance, performance, story and new media. The map provides an online environment for artists and groups to share information about their artistic practice as well as upcoming events, including festivals, exhibitions, performances and cultural events.'
+      accordionContent: 'View artwork from indigenous artists in your area.',
+      showPanel: false,
+      artDetails: {}
     }
   },
   computed: {
@@ -144,13 +176,49 @@ export default {
     },
     artists() {
       return this.arts.filter(art => art.properties.kind === 'artist')
+    },
+    grants() {
+      return this.arts.filter(art => art.properties.kind === 'grant')
+    },
+    events() {
+      return this.arts.filter(art => art.properties.kind === 'event')
     }
+  },
+  mounted() {
+    // alert(this.$route.name)
+    console.log('ARTS DATA IS HERE', [
+      ...new Set(
+        this.arts.map(art => {
+          return art.properties.kind
+        })
+      )
+    ])
+    console.log(
+      'ARTIST DATA IS HERE',
+      this.arts.filter(art => {
+        return art.properties.kind === 'artist'
+      })
+    )
+    console.log(
+      'PUBLIC ART DATA IS HERE',
+      this.arts.filter(art => {
+        return art.properties.kind === 'public_art'
+      })
+    )
   },
   methods: {
     handleCardClick($event, name, type) {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    selectPublicArt(art) {
+      this.artDetails = art
+      this.toggleSidePanel()
+    },
+    toggleSidePanel() {
+      this.showPanel = !this.showPanel
+      this.$root.$emit('toggleSidePanel', this.showPanel)
     }
   }
 }

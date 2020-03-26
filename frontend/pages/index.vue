@@ -2,40 +2,10 @@
   <div
     class="map-container"
     :class="{
-      detailModeContainer: isDetailMode
+      detailModeContainer: isDetailMode,
+      'arts-container': isArt
     }"
   >
-    <LogInOverlay v-if="loggingIn"></LogInOverlay>
-    <div v-if="isDrawMode" class="drawing-mode-container">
-      <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <DrawingTools
-          :draw-mode="$route.query.mode"
-          class="mt-2"
-        ></DrawingTools>
-      </b-alert>
-    </div>
-    <div class="map-loading">
-      Loading Map
-      <b-spinner type="grow" label="Spinning"></b-spinner>
-    </div>
-    <Mapbox
-      :access-token="MAPBOX_ACCESS_TOKEN"
-      :map-options="MAP_OPTIONS"
-      :nav-control="{ show: false }"
-      @map-init="mapInit"
-      @map-load="mapLoaded"
-      @map-touchend="mapClicked"
-      @map-click="mapClicked"
-      @map-zoomend="mapZoomEnd"
-      @map-moveend="mapMoveEnd"
-      @map-sourcedata="mapSourceData"
-    ></Mapbox>
-    <div class="map-controls-overlay">
-      <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-      <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-      <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-      <Contribute class="hide-mobile contribute-control"></Contribute>
-    </div>
     <SideBar v-if="this.$route.name === 'index'">
       <template v-slot:content>
         <div v-html="ie"></div>
@@ -135,7 +105,8 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent
+        'mobile-content-open': mobileContent,
+        'sb-new-alt-arts': isArtistDetail
       }"
     >
       <nuxt-child class="w-100" />
@@ -143,23 +114,69 @@
     <div v-else>
       <nuxt-child />
     </div>
-    <ModalNotification></ModalNotification>
-    <transition name="fade-topbar" mode="out-in">
-      <SearchOverlay
-        v-if="showSearchOverlay"
-        :show="showSearchOverlay"
-      ></SearchOverlay>
-      <div v-else class="top-bar-container shadow-sm">
+
+    <div class="maps-panel">
+      <div class="map-main-container">
+        <LogInOverlay v-if="loggingIn"></LogInOverlay>
+        <div v-if="isDrawMode" class="drawing-mode-container">
+          <b-alert
+            show
+            class="p-1 pr-2 pl-2 draw-mode-container"
+            variant="light"
+          >
+            <DrawingTools
+              :draw-mode="$route.query.mode"
+              class="mt-2"
+            ></DrawingTools>
+          </b-alert>
+        </div>
+        <div class="map-loading">
+          Loading Map
+          <b-spinner type="grow" label="Spinning"></b-spinner>
+        </div>
+        <Mapbox
+          :access-token="MAPBOX_ACCESS_TOKEN"
+          :map-options="MAP_OPTIONS"
+          :nav-control="{ show: false }"
+          @map-init="mapInit"
+          @map-load="mapLoaded"
+          @map-touchend="mapClicked"
+          @map-click="mapClicked"
+          @map-zoomend="mapZoomEnd"
+          @map-moveend="mapMoveEnd"
+          @map-sourcedata="mapSourceData"
+        ></Mapbox>
+        <div class="map-controls-overlay">
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
+          <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+          <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+          <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+        </div>
+        <ModalNotification></ModalNotification>
         <SearchBar class="hide-mobile"></SearchBar>
-        <NavigationBar></NavigationBar>
+        <transition name="fade-topbar" mode="out-in">
+          <SearchOverlay
+            v-if="showSearchOverlay"
+            :show="showSearchOverlay"
+          ></SearchOverlay>
+
+          <EventOverlay
+            v-else-if="showEventOverlay"
+            :show="showEventOverlay"
+          ></EventOverlay>
+
+          <div v-else class="top-bar-container shadow-sm">
+            <NavigationBar></NavigationBar>
+          </div>
+        </transition>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import { groupBy } from 'lodash'
+import groupBy from 'lodash/groupBy'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -179,6 +196,7 @@ import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
+import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 
 import {
@@ -220,7 +238,8 @@ export default {
     Contribute,
     DrawingTools,
     ModalNotification,
-    LogInOverlay
+    LogInOverlay,
+    EventOverlay
   },
   data() {
     const bbox = [
@@ -231,6 +250,7 @@ export default {
     return {
       loggingIn: false,
       showSearchOverlay: false,
+      showEventOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -243,9 +263,10 @@ export default {
         bounds
       },
       mode: 'All',
+      showPanel: false,
       map: {},
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
@@ -259,6 +280,12 @@ export default {
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    isArt() {
+      return this.$route.name === 'index-art' && this.showPanel
+    },
+    isArtistDetail() {
+      return this.$route.name === 'index-art-art'
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -407,6 +434,12 @@ export default {
     })
     this.$root.$on('closeSearchOverlay', d => {
       this.showSearchOverlay = false
+    })
+    this.$root.$on('toggleEventOverlay', d => {
+      this.showEventOverlay = !this.showEventOverlay
+    })
+    this.$root.$on('toggleSidePanel', d => {
+      this.showPanel = !this.showPanel
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
@@ -904,11 +937,11 @@ export default {
 </script>
 
 <style>
-#map {
-  width: 100%;
-  height: 100%;
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
+  font-style: normal;
 }
-
 .draw-mode-container {
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0.75em !important;
@@ -918,8 +951,34 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  padding-left: var(--sidebar-width, 350px);
+  padding-left: var(--sidebar-width, 425px);
 }
+
+.arts-container {
+  padding-left: var(--sidebar-width, 850px);
+}
+
+.maps-panel {
+  display: flex;
+}
+
+.maps-left-container {
+  flex: 0 0 35%;
+  height: 100vh;
+}
+
+.map-main-container {
+  flex: 1 1 65%;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
 .map-loading {
   position: absolute;
   left: 50%;
@@ -1001,11 +1060,16 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 350px;
+  width: 425px;
   background-color: white;
   z-index: 1000;
   height: 100%;
   overflow-y: auto;
+}
+
+.sb-new-alt-arts {
+  /* width: 60%; */
+  width: 425px;
 }
 
 .sb-detail {
@@ -1086,8 +1150,8 @@ export default {
 }
 
 .mobile-content-open {
-  height: 100%;
-  top: 0;
+  height: 50%;
+  bottom: 0;
   align-items: baseline;
 }
 

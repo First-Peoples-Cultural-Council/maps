@@ -199,7 +199,7 @@ export default {
 .share-embed-container {
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 0.2em;
+  border-radius: 3em;
   cursor: pointer;
 }
 .share-embed-container h5 {

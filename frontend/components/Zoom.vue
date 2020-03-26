@@ -33,14 +33,14 @@ export default {
 
 <style>
 .zoom-container {
-  border: 1px solid #ddd5cc;
   display: flex;
   align-items: center;
-  border-radius: 4px;
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 0.2em;
+  border-radius: 3em;
   cursor: pointer;
+  padding: 0 0.5em;
+  box-sizing: border-box;
 }
 .zoomin,
 .zoomout {

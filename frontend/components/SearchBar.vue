@@ -29,18 +29,25 @@
           />
         </div>
       </div>
-      <b-form-input
-        v-else
-        id="search-input"
-        v-model="searchQuery"
-        type="search"
-        class="search-input"
-        placeholder="Search for a language, community, or place name..."
-        autocomplete="off"
-        @update="handleSearchUpdate"
-        @focus="handleInputFocus"
-      >
-      </b-form-input>
+      <div v-else class="searchbar-not-mobile">
+        <b-form-input
+          id="search-input"
+          v-model="searchQuery"
+          type="search"
+          class="search-input"
+          placeholder="Search for a language, community, or place name..."
+          autocomplete="off"
+          @update="handleSearchUpdate"
+          @focus="handleInputFocus"
+        >
+        </b-form-input>
+        <img
+          class="search-icon"
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+        />
+      </div>
+
       <div v-if="mobile">
         <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
           Search Term: {{ searchQuery }}
@@ -62,7 +69,7 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
                 {{ key.replace(/_/g, ' ') }}
@@ -175,7 +182,7 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
                 {{ key.replace(/_/g, ' ') }}
@@ -260,13 +267,13 @@
           </div>
         </div>
       </b-popover>
-      <span class="searchbar-icon"></span>
+      <!-- <span class="searchbar-icon"></span> -->
     </div>
   </div>
 </template>
 
 <script>
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 import Contact from '@/components/Contact.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -593,7 +600,7 @@ export default {
           let locationHtml = ''
           if (type === 'Locations') {
             govLink = `http://${result.properties.uri}.html`
-            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from B.C. Geographical Names website. To view the entry on that site, 
                 <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
 
@@ -626,14 +633,14 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .address-popup {
   border-radius: 0.5em;
 }
 .searchbar-container {
-  position: fixed;
+  position: absolute;
   top: 10px;
-  left: calc(50% - 200px);
+  left: calc(40% - 200px);
   width: 500px;
 }
 .searchbar-container-detail {
@@ -641,6 +648,20 @@ export default {
 }
 .searchbar-input-container {
   display: flex;
+}
+.searchbar-not-mobile {
+  width: 100%;
+  display: flex;
+  position: relative;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  right: 20px;
+  top: 30%;
+  margin-left: 0.5em;
 }
 .searchbar-input {
   flex: 10 1 0;
@@ -685,7 +706,14 @@ export default {
 }
 
 .search-input::placeholder {
-  color: rgba(0, 0, 0, 0.2);
+  color: #707070;
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+.search-input.form-control {
+  border-radius: 3em;
+  padding: 1.4em;
 }
 
 @media (max-width: 1200px) {

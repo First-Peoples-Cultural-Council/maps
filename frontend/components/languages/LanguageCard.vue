@@ -18,7 +18,7 @@
         <div>
           <div>
             <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-bold"
             >
               Language
             </h5>
@@ -27,6 +27,7 @@
             >
               {{ name }}
             </h5>
+            <CardBadge content="Pronounce"></CardBadge>
           </div>
         </div>
       </template>
@@ -48,9 +49,12 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
+
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
@@ -98,8 +102,8 @@ export default {
 .language-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 52px;
+  width: 52px;
 }
 .language-icon-container img {
   display: inline-block;
@@ -107,16 +111,16 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
 }
 
 .language-icon-container.icon-sm {

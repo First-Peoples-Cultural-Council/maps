@@ -46,10 +46,14 @@ export default {
 .fpcc-card-footer {
   display: table-cell;
   vertical-align: middle;
-  width: 15%;
+  width: 55px;
 }
 
 .fpcc-card-white {
   background-color: White;
+}
+
+.fpcc-card:hover {
+  border: 1px solid #b57936;
 }
 </style>
