@@ -232,7 +232,14 @@ class TaxonomyLightSerializer(serializers.ModelSerializer):
         )
 
 
+class MediaLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ("id", "name", "description", "file_type", "url", "media_file", "status", "creator", "placename", "community", "community_only")
+
+
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
+    medias = MediaLightSerializer(many=True, read_only=True)
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
     artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
@@ -243,6 +250,7 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
             "name",
             "image",
             "kind",
+            "medias",
             "category",
             "status",
             "status_reason",
@@ -273,13 +281,6 @@ class CommunityMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityMember
         fields = ("id", "user", "community")
-
-
-
-class MediaLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Media
-        fields = ("id", "name", "description", "file_type", "url", "media_file", "status", "creator", "placename", "community", "community_only")
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
