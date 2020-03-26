@@ -1,9 +1,12 @@
 <template>
   <div>
-    <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
+    <SideBar
+      v-if="this.$route.name === 'index-art'"
+      active="Arts"
+      :show-side-panel="showPanel"
+    >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
-          <ArtistFilter></ArtistFilter>
           <Accordion
             class="no-scroll-accordion"
             :content="accordionContent"
@@ -13,7 +16,8 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 pt-3">
+        <ArtistFilter class="m-3" />
+        <section class="pl-3 pr-3 pt-2">
           <Badge
             content="Public Arts"
             :number="publicArts.length"
@@ -62,32 +66,25 @@
         </section>
       </template>
       <template v-slot:cards>
-        <section class="pl-1 pr-1">
-          <b-row
-            v-if="mode !== 'organization' && mode !== 'public_art'"
-            :no-gutters="true"
-          >
+        <section class="pl-3 pr-3">
+          <b-row v-if="mode !== 'organization' && mode !== 'public_art'">
             <b-col
               v-for="(art, index) in artists"
               :key="'artists ' + index"
-              lg="6"
-              xl="6"
+              lg="12"
+              xl="12"
               md="6"
               sm="6"
             >
               <ArtistCard
                 :art="art"
+                :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
+                @click.native="toggleSidePanel"
               ></ArtistCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="mode !== 'organization' && mode !== 'artist'"
-            :no-gutters="true"
-          >
+          <b-row v-if="mode !== 'organization' && mode !== 'artist'">
             <b-col
               v-for="(art, index) in publicArts"
               :key="'parts' + index"
@@ -105,10 +102,7 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="mode !== 'artist' && mode !== 'public_art'"
-            :no-gutters="true"
-          >
+          <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
             <b-col
               v-for="(art, index) in orgs"
               :key="'orgs' + index"
@@ -160,7 +154,8 @@ export default {
   data() {
     return {
       mode: 'All',
-      accordionContent: 'View artwork from indigenous artists in your area.'
+      accordionContent: 'View artwork from indigenous artists in your area.',
+      showPanel: false
     }
   },
   computed: {
@@ -185,6 +180,10 @@ export default {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    toggleSidePanel() {
+      this.showPanel = !this.showPanel
+      this.$root.$emit('toggleSidePanel', this.showPanel)
     }
   }
 }
