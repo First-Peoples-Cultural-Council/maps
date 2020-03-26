@@ -1,5 +1,9 @@
 <template>
-  <div ref="sidebarContainer" class="sidebar-container">
+  <div
+    ref="sidebarContainer"
+    class="sidebar-container"
+    :class="{ 'sidebar-arts-container': showSidePanel }"
+  >
     <div class="sidebarRelative position-relative">
       <div class="sidebar-desktop">
         <div class="sidebar-header">
@@ -28,6 +32,9 @@
               `FPCC Map: Didn't find what I was looking for (${$route.path})`
             "
           ></Contact>
+        </div>
+        <div v-if="showSidePanel" class="sidebar-side-panel">
+          <slot name="side-panel">ASASASASA</slot>
         </div>
       </div>
       <div class="sidebar-mobile d-none">
@@ -82,6 +89,10 @@ export default {
       default() {
         return []
       }
+    },
+    showSidePanel: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -146,10 +157,24 @@ export default {
   padding-bottom: 1em;
   font-family: 'Proxima Nova', sans-serif;
 }
+
+.sidebar-arts-container {
+  width: var(--sidebar-width, 725px);
+}
+
 .sidebar-header {
   background-color: transparent;
   overflow-x: hidden;
 }
+
+.sidebar-desktop {
+  width: 425px;
+}
+
+.sidebar-side-panel {
+  border: 1px solid red;
+}
+
 .sidebar-body {
   background-color: white;
 }
