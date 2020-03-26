@@ -376,6 +376,9 @@ class Media(BaseModel):
         media.status_reason = status_reason
         media.save()
 
+    class Meta:
+        ordering = ('-id', )
+
 
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
