@@ -76,12 +76,13 @@
               md="6"
               sm="6"
             >
-              <ArtistCard
+              <ArtsCard
                 :art="art"
-                :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="toggleSidePanel"
-              ></ArtistCard>
+                @click.native="
+                  handleCardClick($event, art.properties.name, 'art')
+                "
+              ></ArtsCard>
             </b-col>
           </b-row>
           <b-row v-if="mode !== 'organization' && mode !== 'artist'">
@@ -93,13 +94,12 @@
               md="6"
               sm="6"
             >
-              <ArtsCard
+              <ArtistCard
                 :art="art"
+                :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              ></ArtsCard>
+                @click.native="selectPublicArt(art)"
+              ></ArtistCard>
             </b-col>
           </b-row>
           <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
@@ -122,6 +122,9 @@
           </b-row>
         </section>
       </template>
+      <template v-if="showPanel" v-slot:side-panel>
+        <ArtsSidePanelSmall class="artist-side-panel" :art="artDetails" />
+      </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
       <div>
@@ -140,6 +143,7 @@ import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
 import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
@@ -149,13 +153,15 @@ export default {
     Filters,
     Accordion,
     ArtistCard,
-    ArtistFilter
+    ArtistFilter,
+    ArtsSidePanelSmall
   },
   data() {
     return {
       mode: 'All',
       accordionContent: 'View artwork from indigenous artists in your area.',
-      showPanel: false
+      showPanel: false,
+      artDetails: {}
     }
   },
   computed: {
@@ -170,16 +176,45 @@ export default {
     },
     artists() {
       return this.arts.filter(art => art.properties.kind === 'artist')
+    },
+    grants() {
+      return this.arts.filter(art => art.properties.kind === 'grant')
+    },
+    events() {
+      return this.arts.filter(art => art.properties.kind === 'event')
     }
   },
   mounted() {
     // alert(this.$route.name)
+    console.log('ARTS DATA IS HERE', [
+      ...new Set(
+        this.arts.map(art => {
+          return art.properties.kind
+        })
+      )
+    ])
+    console.log(
+      'ARTIST DATA IS HERE',
+      this.arts.filter(art => {
+        return art.properties.kind === 'artist'
+      })
+    )
+    console.log(
+      'PUBLIC ART DATA IS HERE',
+      this.arts.filter(art => {
+        return art.properties.kind === 'public_art'
+      })
+    )
   },
   methods: {
     handleCardClick($event, name, type) {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    selectPublicArt(art) {
+      this.artDetails = art
+      this.toggleSidePanel()
     },
     toggleSidePanel() {
       this.showPanel = !this.showPanel
