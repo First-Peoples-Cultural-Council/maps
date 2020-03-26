@@ -14,7 +14,7 @@ from .views import (
 )
 
 urlpatterns = [
-    url("art/$", ArtList.as_view(), name="art-list"),
+    # url("art/$", ArtList.as_view(), name="art-list"),
     url(
         "arts/$", ArtList.as_view(), name="arts-list"
     ),  # TODO: this is oddly cached and broken on the FE. it's not referenced but is called anyway.

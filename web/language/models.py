@@ -236,6 +236,7 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
+    image = models.ImageField(null=True, default=None)
 
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
@@ -265,6 +266,20 @@ class PlaceName(CulturalModel):
     taxonomies = models.ManyToManyField(
         'Taxonomy',
         through='PlaceNameTaxonomy',
+    )
+    public_arts = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('artist', 'public_art'),
+        related_name='public_arts+'
+    )
+    artists = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('public_art', 'artist'),
+        related_name='artists+'
     )
 
     # Choices Constants:
@@ -423,7 +438,7 @@ class PublicArtArtist(models.Model):
     artist = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
 
     def __str__(self):
-        return "{} ({})".format(self.art, self.artist)
+        return "{} ({})".format(self.public_art, self.artist)
 
 
 class Taxonomy(models.Model):
