@@ -2,7 +2,8 @@
   <div
     class="map-container"
     :class="{
-      detailModeContainer: isDetailMode
+      detailModeContainer: isDetailMode,
+      'arts-container': isArt
     }"
   >
     <SideBar v-if="this.$route.name === 'index'">
@@ -105,7 +106,7 @@
       :class="{
         'sb-detail': isDetailMode,
         'mobile-content-open': mobileContent,
-        'sb-new-alt-arts': isArtist
+        'sb-new-alt-arts': isArtistDetail
       }"
     >
       <nuxt-child class="w-100" />
@@ -262,6 +263,7 @@ export default {
         bounds
       },
       mode: 'All',
+      showPanel: false,
       map: {},
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
@@ -279,7 +281,10 @@ export default {
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
-    isArtist() {
+    isArt() {
+      return this.$route.name === 'index-art' && this.showPanel
+    },
+    isArtistDetail() {
       return this.$route.name === 'index-art-art'
     },
     drawMode() {
@@ -465,6 +470,9 @@ export default {
     })
     this.$root.$on('toggleEventOverlay', d => {
       this.showEventOverlay = !this.showEventOverlay
+    })
+    this.$root.$on('toggleSidePanel', d => {
+      this.showPanel = !this.showPanel
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
@@ -977,6 +985,10 @@ export default {
   height: 100%;
   position: relative;
   padding-left: var(--sidebar-width, 425px);
+}
+
+.arts-container {
+  padding-left: var(--sidebar-width, 725px);
 }
 
 .maps-panel {
