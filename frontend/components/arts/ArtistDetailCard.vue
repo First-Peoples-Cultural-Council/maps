@@ -2,7 +2,7 @@
   <div class="arts-detail-card">
     <ArtistBanner>
       <template v-slot:header>
-        <img class="artist-header" src="@/assets/images/sample.jpg" />
+        <img class="artist-header" :src="artImage" />
         <div class="fpcc-card-more-art" @click.prevent="handleReturn">
           <img
             v-if="!hover"
@@ -21,7 +21,7 @@
       </template>
       <template v-slot:body>
         <div class="arts-artist-content">
-          <img class="artist-profile" src="@/assets/images/sample-dp.jpg" />
+          <img class="artist-profile" :src="artImage" />
           <div class="artist-title">
             <h5 class="font-09 m-05 p-0 color-gray font-weight-bold art-name">
               {{ name }}
@@ -33,10 +33,7 @@
             </h5>
           </div>
           <div class="artist-tags-container">
-            <span>Artist</span>
-            <span>Visual</span>
-            <span>Painter</span>
-            <span>Carver</span>
+            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
           </div>
         </div>
       </template>
@@ -74,6 +71,22 @@ export default {
     server: {
       default: true,
       type: Boolean
+    },
+    artImage: {
+      type: String,
+      default: ''
+    },
+    tags: {
+      type: Array,
+      default: () => {
+        return {}
+      }
+    },
+    media: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
