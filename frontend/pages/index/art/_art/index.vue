@@ -31,11 +31,11 @@
         </div>
 
         <div
-          v-if="art.properties.art_type.toLowerCase() === 'artist'"
+          v-if="art.properties.kind.toLowerCase() === 'artist'"
           class="artist-main-container"
         >
           <ArtistDetailCard
-            :arttype="art.properties.art_type"
+            :arttype="art.properties.kind"
             :name="art.properties.name"
             :server="isServer"
           ></ArtistDetailCard>
@@ -119,7 +119,7 @@
 
         <div v-else>
           <ArtsDetailCard
-            :arttype="art.properties.art_type"
+            :arttype="art.properties.kind"
             :name="art.properties.name"
             :server="isServer"
           ></ArtsDetailCard>
@@ -144,7 +144,7 @@
           <Filters class="mb-2 mt-2"></Filters>
         </div>
       </div>
-      <ArtsSidePanel
+      <ArtsSidePanelSmall
         v-if="this.$route.name === 'index-art-art'"
         class="artist-side-panel"
       />
@@ -155,7 +155,7 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
-import ArtsSidePanel from '@/components/arts/ArtsSidePanel.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -167,7 +167,7 @@ export default {
   components: {
     ArtsDetailCard,
     ArtistDetailCard,
-    ArtsSidePanel,
+    ArtsSidePanelSmall,
     LanguageSeeAll,
     Filters,
     Logo
