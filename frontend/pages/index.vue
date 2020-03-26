@@ -955,7 +955,7 @@ export default {
 }
 
 .arts-container {
-  padding-left: var(--sidebar-width, 725px);
+  padding-left: var(--sidebar-width, 850px);
 }
 
 .maps-panel {
@@ -1068,7 +1068,8 @@ export default {
 }
 
 .sb-new-alt-arts {
-  width: 60%;
+  /* width: 60%; */
+  width: 425px;
 }
 
 .sb-detail {

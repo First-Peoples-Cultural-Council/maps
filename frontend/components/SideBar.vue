@@ -34,7 +34,7 @@
           ></Contact>
         </div>
         <div v-if="showSidePanel" class="sidebar-side-panel">
-          <slot name="side-panel">ASASASASA</slot>
+          <slot name="side-panel"></slot>
         </div>
       </div>
       <div class="sidebar-mobile d-none">
@@ -159,7 +159,7 @@ export default {
 }
 
 .sidebar-arts-container {
-  width: var(--sidebar-width, 725px);
+  width: var(--sidebar-width, 425px);
 }
 
 .sidebar-header {
@@ -172,7 +172,11 @@ export default {
 }
 
 .sidebar-side-panel {
-  border: 1px solid red;
+  width: 425px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
 }
 
 .sidebar-body {
