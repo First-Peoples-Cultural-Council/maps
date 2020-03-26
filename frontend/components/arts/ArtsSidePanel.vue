@@ -35,33 +35,47 @@
           <img src="@/assets/images/return_icon_hover.svg" />
         </button>
 
-        <b-carousel
-          id="carousel-no-animation"
-          ref="galleryCarousel"
-          class="carousel-gallery"
-          no-animation
-        >
-          <b-carousel-slide
-            class="slide-image"
-            img-src="@/assets/images/arts/img-1.jpg"
+        <div class="carousel-gallery-container">
+          <div class="artist-gallery-detail">
+            <img
+              class="artist-img-small"
+              src="@/assets/images/arts/img-1.jpg"
+            />
+            <div class="gallery-title">
+              <span>Hi-res Photos</span>
+              <span>By Patrick Kelly</span>
+            </div>
+            <img class="art-type" src="@/assets/images/arts/img-1.jpg" />
+          </div>
+          <b-carousel
+            id="carousel-no-animation"
+            ref="galleryCarousel"
+            class="carousel-gallery"
+            no-animation
           >
-          </b-carousel-slide>
-          <b-carousel-slide
-            class="slide-image"
-            img-src="@/assets/images/arts/img-2.jpg"
-          >
-          </b-carousel-slide>
-          <b-carousel-slide
-            class="slide-image"
-            img-src="@/assets/images/arts/img-3.jpg"
-          >
-          </b-carousel-slide>
-          <b-carousel-slide
-            class="slide-image"
-            img-src="@/assets/images/arts/img-4.jpg"
-          >
-          </b-carousel-slide>
-        </b-carousel>
+            <b-carousel-slide
+              class="slide-image"
+              img-src="@/assets/images/arts/img-1.jpg"
+            >
+            </b-carousel-slide>
+            <b-carousel-slide
+              class="slide-image"
+              img-src="@/assets/images/arts/img-2.jpg"
+            >
+            </b-carousel-slide>
+            <b-carousel-slide
+              class="slide-image"
+              img-src="@/assets/images/arts/img-3.jpg"
+            >
+            </b-carousel-slide>
+            <b-carousel-slide
+              class="slide-image"
+              img-src="@/assets/images/arts/img-4.jpg"
+            >
+            </b-carousel-slide>
+          </b-carousel>
+        </div>
+
         <button :disabled="canNavigateNext" @click="nextSlide">
           <img src="@/assets/images/go_icon_hover.svg" />
         </button>
@@ -228,14 +242,55 @@ export default {
   width: 100vw;
   padding: 0 2em;
 }
-.carousel-gallery {
+
+.carousel-gallery-container {
   flex-basis: 60%;
   margin: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.carousel-gallery {
+  width: 100%;
+  height: 600px;
+}
+
+.artist-gallery-detail {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.5em;
+}
+
+.art-type {
+  position: absolute;
+  right: 0.5em;
+  width: 30px;
+  height: 30px;
+  justify-self: flex-end;
+}
+
+.gallery-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.artist-img-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
 }
 
 .slide-image {
   width: 100%;
-  height: 600px;
+  height: 100%;
 }
 
 .slide-image > img {
