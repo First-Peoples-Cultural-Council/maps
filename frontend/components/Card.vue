@@ -25,6 +25,7 @@ export default {
 .fpcc-card {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
   border: 1px solid #ebe6dc;
   padding: 0.5em 0em 0.5em 0.5em;
@@ -35,13 +36,13 @@ export default {
 .fpcc-card-header {
   display: table-cell;
   vertical-align: middle;
-  width: 15%;
+  width: 10%;
 }
 .fpcc-card-body {
   display: table-cell;
   padding: 0 0.5em;
   vertical-align: middle;
-  width: 70%;
+  width: 75%;
 }
 .fpcc-card-footer {
   display: table-cell;
