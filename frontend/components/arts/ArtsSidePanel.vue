@@ -21,7 +21,7 @@
     <div v-show="showGallery" id="gallery-modal" class="gallery-modal">
       <img
         class="btn-close"
-        src="@/assets/images/close_icon.svg"
+        src="@/assets/images/close_icon_white.svg"
         alt="Close"
         @click="closeGallery"
       />
