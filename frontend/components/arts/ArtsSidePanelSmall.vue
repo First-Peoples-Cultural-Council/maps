@@ -1,19 +1,38 @@
 <template>
   <div class="arts-right-panel">
     <div class="panel-header">
-      <div class="panel-close-btn">
-        <img src="@/assets/images/go_icon_hover.svg" alt="Go" />
+      <div class="panel-close-btn cursor-pointer" @click="togglePanel">
+        <span> X </span>
         Close
       </div>
     </div>
-    <div v-for="artist in listOfArtists" :key="artist.id" class="panel-artist">
-      <img class="artist-img-small" :src="artist.image" />
+    <!-- Render List of Artist -->
+    <div v-if="listOfArtists.length === 0" class="panel-artist">
+      <img class="artist-img-small" :src="renderArtistImg(null)" />
       <div class="panel-details">
-        <span>{{ artist.name }}</span>
-        <div>Check Profile</div>
+        <span class="artist-name"> UNKNOWN ARTIST </span>
       </div>
     </div>
-    <b-row class="m-1 media-list-container">
+    <div
+      v-for="artist in listOfArtists"
+      v-else
+      :key="artist.id"
+      class="panel-artist"
+    >
+      <img class="artist-img-small" :src="renderArtistImg(artist.image)" />
+      <div class="panel-details">
+        <span class="artist-name">{{ artist.name }}</span>
+        <div
+          class="cursor-pointer pl-2 pr-2"
+          @click.native="checkArtistProfile(artist.name)"
+        >
+          Check Profile
+        </div>
+      </div>
+    </div>
+
+    <!-- Render List of Medias -->
+    <b-row class="m-1 p-1 media-list-container">
       <b-col
         v-for="media in listOfMedias"
         :key="media.id"
@@ -21,6 +40,7 @@
         xl="12"
         md="6"
         sm="6"
+        @click="toggleGallery"
       >
         <MediaCard
           class="mt-3 hover-left-move"
@@ -30,19 +50,29 @@
         </MediaCard>
       </b-col>
     </b-row>
+    <Gallery :show-gallery="showGallery" :toggle-gallery="toggleGallery" />
   </div>
 </template>
 
 <script>
 import MediaCard from '@/components/MediaCard.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
+import Gallery from '@/components/Gallery.vue'
 
 export default {
   components: {
-    MediaCard
+    MediaCard,
+    Gallery
   },
   props: {
     art: {
       type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    togglePanel: {
+      type: Function,
       default: () => {
         return {}
       }
@@ -56,14 +86,27 @@ export default {
   },
   computed: {
     listOfArtists() {
-      return this.art.properties.artists
+      return this.art.artists
     },
     listOfMedias() {
-      return this.art.properties.medias
+      return this.art.medias
     }
   },
   mounted() {
     console.log('ARTS SIDE PANEL', this.art)
+  },
+  methods: {
+    toggleGallery() {
+      this.showGallery = !this.showGallery
+    },
+    renderArtistImg(img) {
+      return img || require(`@/assets/images/artist_icon.svg`)
+    }
+  },
+  checkArtistProfile(name) {
+    this.$router.push({
+      path: `/art/${encodeFPCC(name)}`
+    })
   }
 }
 </script>
@@ -85,6 +128,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
+  margin-bottom: 1em;
   position: relative;
 }
 
@@ -130,6 +174,11 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 100%;
+}
+
+.artist-name {
+  font: Bold 16px Proxima Nova;
+  color: #707070;
 }
 
 .panel-item-list {
