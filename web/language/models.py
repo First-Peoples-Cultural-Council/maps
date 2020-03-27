@@ -380,6 +380,12 @@ class Media(BaseModel):
         ordering = ('-id', )
 
 
+class RelatedData(models.Model):
+    data_type = models.CharField(max_length=100, unique=False)
+    value = models.CharField(max_length=255, default='')
+    placename = models.ForeignKey(PlaceName, related_name='related_data', on_delete=models.CASCADE)
+
+
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)

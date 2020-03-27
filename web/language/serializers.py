@@ -545,6 +545,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "favourites",
             "taxonomies",
             "public_arts",
-            "artists"
+            "artists",
+            "related_data"
         )
         depth = 1
