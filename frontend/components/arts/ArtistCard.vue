@@ -24,16 +24,19 @@
     <!-- Landscape View Mode -->
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
-        <img class="card-teaser-img" :src="artImage" />
+        <img
+          :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
+          :src="artImage"
+        />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
-          <span class="artist-title"> {{ artDetails.name }} </span>
+          <span class="artist-title"> {{ mediaData.name }} </span>
           <span class="artist-name" v-html="returnArtists" />
         </div>
         <div class="arts-card-more">
           <div class="arts-card-tag">
-            <img v-if="media.length !== 0" :src="returnMediaType" />
+            <img :src="returnMediaType" />
             {{ mediaType }}
           </div>
           <div class="fpcc-card-more">
@@ -72,24 +75,27 @@ export default {
     }
   },
   computed: {
+    mediaData() {
+      return this.art.medias[0]
+    },
     artDetails() {
       return this.art.properties
     },
     artist() {
-      return this.art.properties.artists
-    },
-    media() {
-      return this.art.properties.medias
+      return this.art.artists
     },
     mediaType() {
-      return this.media.length ? this.media[0].file_type : 'Unknown'
+      return this.mediaData.file_type
     },
     isLayoutTile() {
       return this.layout !== 'landscape'
     },
+    mediaExist() {
+      return this.mediaData.media_file !== null
+    },
     artImage() {
-      return this.artDetails.image !== null
-        ? this.artDetails.image
+      return this.mediaExist
+        ? this.mediaData.media_file
         : require('@/assets/images/public_art_icon.svg')
     },
     returnArtists() {
@@ -104,8 +110,18 @@ export default {
       return `By ${listOfArtist}`
     },
     returnMediaType() {
-      const type = this.media[0].file_type ? this.media[0].file_type : 'audio'
-      return require(`@/assets/images/arts/${type}.png`)
+      let mediaType = ''
+      switch (this.mediaType) {
+        case 'youtube':
+          mediaType = 'video'
+          return true
+        case 'default' || 'text':
+          mediaType = 'image'
+          return true
+        default:
+          mediaType = this.mediaType
+      }
+      return require(`@/assets/images/arts/${mediaType}.png`)
     }
   },
   methods: {
@@ -224,6 +240,10 @@ export default {
       object-position: 50% 50%;
       width: 100%;
     }
+    .card-teaser-null {
+      object-fit: none;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
   }
 
   .arts-card-right {
@@ -236,6 +256,10 @@ export default {
 
     .arts-card-footer {
       .artist-title {
+        width: 150px;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+
         font-size: 0.8em;
         font-weight: 800;
       }
