@@ -64,18 +64,18 @@ class Client(dedruplify.DeDruplifierClient):
         artsmap_path = "{}{}{}".format(settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
 
         # Comment if media is already downloaded
-        # Delete fp-artsmap directory contents if it exists
-        if os.path.exists(artsmap_path):
-            files = glob.glob("{}/*".format(artsmap_path))
-            for f in files:
-                if os.path.isfile(f):
-                    os.remove(f)
-                elif os.path.isdir(f):
-                    shutil.rmtree(f)
+        # # Delete fp-artsmap directory contents if it exists
+        # if os.path.exists(artsmap_path):
+        #     files = glob.glob("{}/*".format(artsmap_path))
+        #     for f in files:
+        #         if os.path.isfile(f):
+        #             os.remove(f)
+        #         elif os.path.isdir(f):
+        #             shutil.rmtree(f)
 
-        # Create fp-artsmap directory
-            if not os.path.exists(artsmap_path):
-                os.mkdir(artsmap_path)
+        # # Create fp-artsmap directory
+        #     if not os.path.exists(artsmap_path):
+        #         os.mkdir(artsmap_path)
 
         # SETUP FOR SAVING PLACENAMES
         node_placenames_geojson = self.nodes_to_geojson()
@@ -125,6 +125,49 @@ class Client(dedruplify.DeDruplifierClient):
                             placename=node_placename
                         )
 
+            # Add location as related_data
+            if rec["location_id"]:
+                for row in self.query("""
+                SELECT
+                    street,
+                    city,
+                    province,
+                    postal_code,
+                    location_country.name
+                FROM
+                    location
+                    left join location_country on country = code
+                WHERE
+                    lid = %s;
+                """ % rec["location_id"]):
+                    value = ""
+
+                    # Append street to value if it exists
+                    if row.get("street"):
+                        value += row.get("street")
+
+                    # Conditional data based on postal code and city
+                    if row.get("postal_code") and row.get("city"):
+                        value += "\n{} {}".format(row.get("postal_code"), row.get("city"))
+                    elif row.get("postal_code"):
+                        value += "\n{}".format(row.get("postal_code"))
+                    elif row.get("city"):
+                        value += "\n{}".format(row.get("city"))
+
+                    # Append province if it exists
+                    if row.get("province"):
+                        value += ", {}".format(row.get("province"))
+
+                    # Append Country if it exists
+                    if row.get("name"):
+                        value += "\n{}".format(row.get("name"))
+
+                    RelatedData.objects.get_or_create(
+                        data_type="location",
+                        value=value,
+                        placename=node_placename
+                    )
+
             for fid in rec["files"]:
                 for index, row in enumerate(self.query("""
                     SELECT
@@ -172,12 +215,12 @@ class Client(dedruplify.DeDruplifierClient):
                             media_path = "{}/{}".format("fp-artsmap", uri.replace("public://", ""))
 
                             # Comment if media is already downloaded
-                            if not os.path.exists(os.path.dirname(storage_path)):
-                                print('Creating ' + os.path.dirname(storage_path))
-                                os.makedirs(os.path.dirname(storage_path), exist_ok=True)
+                            # if not os.path.exists(os.path.dirname(storage_path)):
+                            #     print('Creating ' + os.path.dirname(storage_path))
+                            #     os.makedirs(os.path.dirname(storage_path), exist_ok=True)
 
-                            response = requests.get(download_url, allow_redirects=True)
-                            open(storage_path, 'wb').write(response.content)
+                            # response = requests.get(download_url, allow_redirects=True)
+                            # open(storage_path, 'wb').write(response.content)
 
                         # If the media is a display picture, save it in the PlaceName
                         if fid == rec["properties"]["display_picture"]:
