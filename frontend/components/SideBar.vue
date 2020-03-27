@@ -193,12 +193,12 @@ export default {
 .nav-tabs .nav-link {
   font-family: 'Faustina', serif;
   font-size: 15px;
-  background-color: #f4eee9;
-  color: var(--color-gray, #707070);
+  background-color: #03333a;
+  color: #fff;
   opacity: 0.8;
 }
 .nav-tabs .nav-link.active {
-  color: var(--color-red, #b47a2b);
+  color: #b47a2b;
   position: relative;
   font-weight: 700;
   border: 0;
