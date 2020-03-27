@@ -332,7 +332,7 @@ class ArtGeoList(generics.ListAPIView):
         kind__in=['public_art', 'artist', 'organization', 'event', 'resource', 'grant']
     )
 
-    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
         if "lang" in request.GET:
