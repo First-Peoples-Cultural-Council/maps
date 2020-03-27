@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
-from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy
+from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy, RelatedData
 from django.contrib.gis.geos import Point
 
 import os
@@ -63,6 +63,7 @@ class Client(dedruplify.DeDruplifierClient):
         # Set artsmap path - directory for media files downloaded from fp-artsmap.ca
         artsmap_path = "{}{}{}".format(settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
 
+        # Comment if media is already downloaded
         # Delete fp-artsmap directory contents if it exists
         if os.path.exists(artsmap_path):
             files = glob.glob("{}/*".format(artsmap_path))
@@ -79,11 +80,15 @@ class Client(dedruplify.DeDruplifierClient):
         # SETUP FOR SAVING PLACENAMES
         node_placenames_geojson = self.nodes_to_geojson()
 
-        node_types = ["art", "per", "org", "event", "resource", "grant"]
+        node_types = ["public_art", "artist", "organization", "event", "resource", "grant"]
 
         # Removing every Node PlaceName object from the database.
         node_placenames = PlaceName.objects.filter(kind__in=node_types)
         node_placenames.delete()
+
+        # Remove all related_data
+        existing_related_data = RelatedData.objects.all()
+        existing_related_data.delete()
 
         error_log = []
 
@@ -111,16 +116,36 @@ class Client(dedruplify.DeDruplifierClient):
                             # Create relationship (ignore if it already exists)
                             PublicArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
 
+            for data in rec["related_data"]:
+                for k, v in data.items():
+                    for value in v:
+                        RelatedData.objects.get_or_create(
+                            data_type=k.replace('_', ''),
+                            value=value,
+                            placename=node_placename
+                        )
+
             for fid in rec["files"]:
-                for row in self.query("SELECT * FROM file_managed WHERE fid = %s" % fid):
+                for index, row in enumerate(self.query("""
+                    SELECT
+                        file_managed.*,
+                        field_shared_image_gallery_title
+                    FROM
+                        file_managed
+                        LEFT JOIN field_data_field_shared_image_gallery ON fid = field_shared_image_gallery_fid
+                    WHERE fid = %s;
+                """ % fid), start=1):
                     # Extract data from query row
+                    filename = row.get("field_shared_image_gallery_title", '')
                     uri = row["uri"]
-                    filename = row["filename"]
                     mime_type = row["filemime"]
                     file_type = row["type"]
 
                     media_path = None
                     media_url = None
+
+                    if not filename:
+                        filename = "{} - {} {}".format(node_placename.name, 'Artwork', index)
 
                     try:
                         existing_media = Media.objects.get(name=filename, placename=node_placename)
@@ -146,6 +171,7 @@ class Client(dedruplify.DeDruplifierClient):
                             storage_path = "{}/{}".format(artsmap_path, uri.replace("public://", ""))
                             media_path = "{}/{}".format("fp-artsmap", uri.replace("public://", ""))
 
+                            # Comment if media is already downloaded
                             if not os.path.exists(os.path.dirname(storage_path)):
                                 print('Creating ' + os.path.dirname(storage_path))
                                 os.makedirs(os.path.dirname(storage_path), exist_ok=True)
@@ -333,6 +359,16 @@ class Client(dedruplify.DeDruplifierClient):
                         taxonomy_list += v
                 taxonomy_list.sort()
 
+                related_data = []
+                for k, v in details.items():
+                    if k in [
+                        "field_shared_access_value",
+                        "field_shared_website_url",
+                        "field_shared_email_email"
+                    ]:
+                        updated_key = k.replace('field_shared_', '').replace('_value', '').replace('_url', '').replace('_email', '')
+                        related_data.append({updated_key: v})
+
                 feature = {
                     "type": "Feature",
                     "properties": {
@@ -347,7 +383,9 @@ class Client(dedruplify.DeDruplifierClient):
                         "coordinates": [float(row[3]), float(row[2])],
                     },
                     "files": file_ids,
-                    "taxonomies": taxonomy_list
+                    "taxonomies": taxonomy_list,
+                    "related_data": related_data,
+                    "location_id": details.get("field_shared_location_lid", [""])[0]
                 }
 
                 if row[0] == 'art' and details.get('field_art_artist_nid'):
