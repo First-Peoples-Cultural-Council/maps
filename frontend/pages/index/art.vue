@@ -40,8 +40,8 @@
             content="Artists"
             :number="artists.length"
             class="cursor-pointer mb-1"
-            bgcolor="#db531f"
-            type="event"
+            bgcolor="#B45339"
+            type="artist"
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
@@ -59,6 +59,15 @@
             :number="artists.length"
             class="cursor-pointer mb-1"
             bgcolor="#008CA9"
+            type="resource"
+            :mode="getBadgeStatus(mode, 'resource')"
+            @click.native.prevent="handleBadge($event, 'resource')"
+          ></Badge>
+          <Badge
+            content="Artwork"
+            :number="artworks.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#5A8467"
             type="event"
             :mode="getBadgeStatus(mode, 'resource')"
             @click.native.prevent="handleBadge($event, 'resource')"
@@ -67,7 +76,54 @@
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <b-row v-if="mode !== 'organization' && mode !== 'public_art'">
+          <b-row>
+            <b-col
+              v-for="(art, index) in artworks"
+              :key="'parts' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtistCard
+                :art="art"
+                :layout="'landscape'"
+                class="mt-3 hover-left-move"
+                @click.native="selectPublicArt(art)"
+              ></ArtistCard>
+            </b-col>
+          </b-row>
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'artist'
+            "
+          >
+            <b-col
+              v-for="(art, index) in events"
+              :key="'artists ' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                :art="art"
+                class="mt-3 hover-left-move"
+                @click.native="
+                  handleCardClick($event, art.properties.name, 'art')
+                "
+              ></ArtsCard>
+            </b-col>
+          </b-row>
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'event'
+            "
+          >
             <b-col
               v-for="(art, index) in artists"
               :key="'artists ' + index"
@@ -85,7 +141,11 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'organization' && mode !== 'artist'">
+          <b-row
+            v-if="
+              mode !== 'organization' && mode !== 'artist' && mode !== 'event'
+            "
+          >
             <b-col
               v-for="(art, index) in publicArts"
               :key="'parts' + index"
@@ -94,15 +154,20 @@
               md="6"
               sm="6"
             >
-              <ArtistCard
+              <ArtsCard
                 :art="art"
-                :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="selectPublicArt(art)"
-              ></ArtistCard>
+                @click.native="
+                  handleCardClick($event, art.properties.name, 'art')
+                "
+              ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
+          <b-row
+            v-if="
+              mode !== 'artist' && mode !== 'public_art' && mode !== 'event'
+            "
+          >
             <b-col
               v-for="(art, index) in orgs"
               :key="'orgs' + index"
@@ -123,7 +188,11 @@
         </section>
       </template>
       <template v-if="showPanel" v-slot:side-panel>
-        <ArtsSidePanelSmall class="artist-side-panel" :art="artDetails" />
+        <ArtsSidePanelSmall
+          class="artist-side-panel"
+          :art="artDetails"
+          :toggle-panel="toggleSidePanel"
+        />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -182,6 +251,17 @@ export default {
     },
     events() {
       return this.arts.filter(art => art.properties.kind === 'event')
+    },
+    artworks() {
+      return this.arts
+        .filter(art => art.properties.medias.length !== 0)
+        .map(art => {
+          return {
+            artists: art.properties.artists,
+            medias: art.properties.medias,
+            geometry: art.geometry
+          }
+        })
     }
   },
   mounted() {
@@ -189,21 +269,21 @@ export default {
     console.log('ARTS DATA IS HERE', [
       ...new Set(
         this.arts.map(art => {
-          return art.properties.kind
+          return art.properties
         })
       )
     ])
+
     console.log(
-      'ARTIST DATA IS HERE',
-      this.arts.filter(art => {
-        return art.properties.kind === 'artist'
-      })
-    )
-    console.log(
-      'PUBLIC ART DATA IS HERE',
-      this.arts.filter(art => {
-        return art.properties.kind === 'public_art'
-      })
+      'MEDIA DATA DATA IS HERE',
+      this.arts
+        .filter(art => art.properties.medias.length !== 0)
+        .map(media => {
+          return {
+            artist: media.properties.artists,
+            media: media.properties.medias
+          }
+        })
     )
   },
   methods: {

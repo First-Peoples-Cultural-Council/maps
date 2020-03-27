@@ -78,10 +78,13 @@ export default {
       return {
         language: '/language_icon_white.svg',
         community: '/community_icon_white.svg',
-        org: '/organization_icon_white.svg',
-        event: '/event_icon_white.svg',
-        part: '/public_art_icon_white.svg',
-        poi: '/poi_icon_white.svg'
+        org: '/organization_icon.svg',
+        event: '/events_icon.svg',
+        part: '/public_art_icon.svg',
+        poi: '/poi_icon_white.svg',
+        resource: '/resource_icon.svg',
+        artworks: '/resource_icon.svg',
+        artist: '/artist_icon.svg'
       }[this.type]
     }
   },
