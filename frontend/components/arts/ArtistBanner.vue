@@ -19,27 +19,16 @@ export default {
 </script>
 
 <style>
-.arts-artist-banner {
-  height: 270px;
-}
 .arts-artist-header {
   position: relative;
   border-bottom: 0.8px solid rgb(0, 0, 0, 0.25);
+  margin-bottom: 70px;
+  display: flex;
+  justify-content: center;
 }
 
 .arts-artist-body {
   width: 100%;
-  height: 100px;
   position: relative;
-}
-
-.arts-artist-content {
-  width: 100%;
-  position: absolute;
-  top: -3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-items: center;
 }
 </style>
