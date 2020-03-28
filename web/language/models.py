@@ -376,6 +376,15 @@ class Media(BaseModel):
         media.status_reason = status_reason
         media.save()
 
+    class Meta:
+        ordering = ('-id', )
+
+
+class RelatedData(models.Model):
+    data_type = models.CharField(max_length=100, unique=False)
+    value = models.CharField(max_length=255, default='')
+    placename = models.ForeignKey(PlaceName, related_name='related_data', on_delete=models.CASCADE)
+
 
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")

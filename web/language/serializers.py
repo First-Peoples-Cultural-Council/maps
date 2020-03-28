@@ -55,12 +55,19 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
         fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
+
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = ("id",
+        fields = (
+            "id",
             "audio_file",
-            "speaker", "recorder", "created", "date_recorded")
+            "speaker",
+            "recorder",
+            "created",
+            "date_recorded"
+        )
+
 
 class LNASerializer(serializers.ModelSerializer):
     language = serializers.SlugRelatedField(read_only=True, slug_field="name")
@@ -235,7 +242,19 @@ class TaxonomyLightSerializer(serializers.ModelSerializer):
 class MediaLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
-        fields = ("id", "name", "description", "file_type", "url", "media_file", "status", "creator", "placename", "community", "community_only")
+        fields = (
+            "id",
+            "name",
+            "description",
+            "file_type",
+            "url",
+            "media_file",
+            "status",
+            "creator",
+            "placename",
+            "community",
+            "community_only"
+        )
 
 
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
@@ -269,9 +288,7 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name", "id", "point",
-            "audio"
-        )
+        fields = ("name", "id", "point", "audio")
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
@@ -349,11 +366,11 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     def build_lna_external_url(self, lna_name):
         permalink = "https://maps.fpcc.ca/lna/"
         try:
-            lna_external_id = lna_name.split('-')[0].strip().replace("LNA","")
+            lna_external_id = lna_name.split('-')[0].strip().replace("LNA", "")
             print(lna_external_id)
             lna_link = permalink + lna_external_id
             print(lna_link)
-        except:
+        except e:
             lna_link = permalink
         return lna_link
 
@@ -446,6 +463,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
     placename_obj = PlaceNameLightSerializer(source="place", read_only=True)
     media_obj = MediaLightSerializer(source="media", read_only=True)
+
     class Meta:
         model = Favourite
         fields = (
@@ -470,7 +488,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ("id", "name", "user", "language", "community","language_obj", "community_obj")
+        fields = ("id", "name", "user", "language", "community", "language_obj", "community_obj")
 
 
 class FavouritePlaceNameSerializer(serializers.ModelSerializer):
@@ -527,6 +545,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "favourites",
             "taxonomies",
             "public_arts",
-            "artists"
+            "artists",
+            "related_data"
         )
         depth = 1
