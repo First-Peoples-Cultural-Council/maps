@@ -1,23 +1,30 @@
 <template>
   <div v-show="showGallery" id="gallery-modal" class="gallery-modal">
     <img
-      class="btn-close"
+      class="btn-close cursor-pointer"
       src="@/assets/images/close_icon_white.svg"
       alt="Close"
       @click="toggleGallery"
     />
 
-    <div class="gallery-carousel-container">
-      <div class="carousel-gallery-container">
-        <div class="artist-gallery-detail">
-          <img class="artist-img-small" src="@/assets/images/arts/img-1.jpg" />
-          <div class="gallery-title">
-            <span>Hi-res Photos</span>
-            <span>By Patrick Kelly</span>
-          </div>
-          <img class="art-type" src="@/assets/images/arts/img-1.jpg" />
+    <div class="carousel-gallery-container">
+      <div class="artist-gallery-detail">
+        <img class="artist-img-small" src="@/assets/images/arts/img-1.jpg" />
+        <div class="gallery-title">
+          <span class="item-title">{{ media.name }}</span>
+          <span class="item-subtitle" v-html="returnArtists()" />
         </div>
+        <div
+          v-if="artistCount === 1"
+          class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
+          @click="checkProfile"
+        >
+          Check Profile
+        </div>
+        <img class="art-type" src="@/assets/images/arts/audio.png" />
       </div>
+      <!-- Render Media here depending on type -->
+      <img class="media-img" :src="media.media_file" />
     </div>
   </div>
 </template>
@@ -34,6 +41,45 @@ export default {
       default: () => {
         return {}
       }
+    },
+    media: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    artists: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    checkProfile: {
+      type: Function,
+      default: () => {
+        return {}
+      }
+    }
+  },
+  computed: {
+    artistCount() {
+      return this.artists ? this.artists.length : 0
+    }
+  },
+  mounted() {
+    const mapContainer = document.getElementById('map-container')
+    const modalContainer = document.getElementById('gallery-modal')
+    mapContainer.after(modalContainer)
+  },
+  methods: {
+    returnArtists() {
+      const listOfArtist =
+        this.artistCount !== 0
+          ? this.artists.map((artist, index) => {
+              return `<a href="#" @click.prevent="checkProfile()"> ${artist.name}</a>`
+            })
+          : 'Unknown'
+      return `By ${listOfArtist}`
     }
   }
 }
@@ -51,7 +97,6 @@ export default {
   overflow-y: hidden;
   overflow-x: hidden;
   z-index: 500000;
-  border: 1px solid red;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -59,14 +104,53 @@ export default {
   justify-content: center;
 }
 
-.gallery-carousel-container {
-  display: flex;
-  justify-content: space-between;
-  width: 100vw;
-  padding: 0 2em;
+.carousel-gallery-container {
+  width: 60%;
 }
-.carousel-gallery {
-  flex-basis: 60%;
-  margin: 2em;
+
+.btn-close {
+  position: absolute;
+  top: 2%;
+  right: 1%;
+  width: 20px;
+  height: 20px;
+}
+
+.artist-gallery-detail {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 1em;
+}
+
+.art-type {
+  position: absolute;
+  right: 0.5em;
+  width: 30px;
+  height: 30px;
+  justify-self: flex-end;
+}
+
+.gallery-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 0.5em;
+}
+
+.artist-img-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+}
+
+.media-img {
+  width: 100%;
+  height: 600px;
 }
 </style>

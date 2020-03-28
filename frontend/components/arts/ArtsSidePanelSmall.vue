@@ -6,27 +6,30 @@
         Close
       </div>
     </div>
+
     <!-- Render List of Artist -->
-    <div v-if="listOfArtists.length === 0" class="panel-artist">
-      <img class="artist-img-small" :src="renderArtistImg(null)" />
-      <div class="panel-details">
-        <span class="artist-name"> UNKNOWN ARTIST </span>
+    <div v-if="this.$route.name !== 'index-art-art'">
+      <div v-if="listOfArtists.length === 0" class="panel-artist">
+        <img class="artist-img-small" :src="renderArtistImg(null)" />
+        <div class="panel-details">
+          <span class="item-title"> UNKNOWN ARTIST </span>
+        </div>
       </div>
-    </div>
-    <div
-      v-for="artist in listOfArtists"
-      v-else
-      :key="artist.id"
-      class="panel-artist"
-    >
-      <img class="artist-img-small" :src="renderArtistImg(artist.image)" />
-      <div class="panel-details">
-        <span class="artist-name">{{ artist.name }}</span>
-        <div
-          class="cursor-pointer pl-2 pr-2"
-          @click.native="checkArtistProfile(artist.name)"
-        >
-          Check Profile
+      <div
+        v-for="artist in listOfArtists"
+        v-else
+        :key="artist.id"
+        class="panel-artist"
+      >
+        <img class="artist-img-small" :src="renderArtistImg(artist.image)" />
+        <div class="panel-details">
+          <span class="item-title">{{ artist.name }}</span>
+          <div
+            class="cursor-pointer pl-2 pr-2 profile-btn"
+            @click.native="checkArtistProfile(artist.name)"
+          >
+            Check Profile
+          </div>
         </div>
       </div>
     </div>
@@ -40,17 +43,24 @@
         xl="12"
         md="6"
         sm="6"
-        @click="toggleGallery"
+        @click="showMedia(media)"
       >
         <MediaCard
           class="mt-3 hover-left-move"
           :media="media"
-          :geometry="art.geometry"
+          :geometry="geometry"
         >
         </MediaCard>
       </b-col>
     </b-row>
-    <Gallery :show-gallery="showGallery" :toggle-gallery="toggleGallery" />
+    <Gallery
+      v-if="currentMedia"
+      :media="currentMedia"
+      :artists="listOfArtists"
+      :show-gallery="showGallery"
+      :toggle-gallery="toggleGallery"
+      :check-profile="checkArtistProfile"
+    />
   </div>
 </template>
 
@@ -80,16 +90,19 @@ export default {
   },
   data() {
     return {
-      imgIndex: 0,
-      showGallery: false
+      showGallery: false,
+      currentMedia: null
     }
   },
   computed: {
     listOfArtists() {
-      return this.art.artists
+      return this.art.artists || this.art.properties.artists
     },
     listOfMedias() {
-      return this.art.medias
+      return this.art.medias || this.art.properties.medias
+    },
+    geometry() {
+      return this.art.geometry || this.art.geom
     }
   },
   mounted() {
@@ -99,14 +112,18 @@ export default {
     toggleGallery() {
       this.showGallery = !this.showGallery
     },
+    showMedia(media) {
+      this.toggleGallery()
+      this.currentMedia = media
+    },
     renderArtistImg(img) {
       return img || require(`@/assets/images/artist_icon.svg`)
+    },
+    checkArtistProfile(name) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
     }
-  },
-  checkArtistProfile(name) {
-    this.$router.push({
-      path: `/art/${encodeFPCC(name)}`
-    })
   }
 }
 </script>
@@ -140,7 +157,7 @@ export default {
   margin-left: 0.5em;
 }
 
-.panel-details div {
+.profile-btn {
   background-color: #b57936;
   border-radius: 3em;
   color: #fff;
@@ -176,9 +193,14 @@ export default {
   border-radius: 100%;
 }
 
-.artist-name {
+.item-title {
   font: Bold 16px Proxima Nova;
   color: #707070;
+}
+
+.item-subtitle {
+  font: Bold 15px/18px Lato;
+  color: #c3bfbc;
 }
 
 .panel-item-list {
