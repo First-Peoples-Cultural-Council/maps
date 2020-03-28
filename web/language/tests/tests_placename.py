@@ -16,6 +16,10 @@ from language.models import (
     Favourite,
     Notification,
     Recording,
+    RelatedData,
+    PublicArtArtist,
+    Taxonomy,
+    PlaceNameTaxonomy
 )
 
 
@@ -43,6 +47,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.language1 = Language.objects.create(name="Test Language 01")
         self.language2 = Language.objects.create(name="Test Language 02")
         self.category = PlaceNameCategory.objects.create(name="Test Category", icon_name="icon")
+        self.taxonomy = Taxonomy.objects.create(name="Test Taxonomy", description="Test taxonomy desc.")
 
         self.user2 = User.objects.create(
             username="testuser002",
@@ -216,10 +221,10 @@ class PlaceNameAPITests(BaseTestCase):
 
         # REJECTED Placename from another user
         test_placename05 = PlaceName.objects.create(
-            nam="test place05",
-            creato=self.user2,
-            communit=self.community,
-            languag=self.language1,
+            name="test place05",
+            creator=self.user2,
+            community=self.community,
+            language=self.language1,
             status=PlaceName.REJECTED
         )
         response = self.client.get("/api/placename/", format="json")
@@ -618,3 +623,102 @@ class PlaceNameAPITests(BaseTestCase):
 
         place = PlaceName.objects.get(pk=created_id)
         self.assertEqual(place.name, "test place")
+
+    def test_placename_public_arts(self):
+        """
+        Ensure we can retrieve the public_arts data of a placename
+        """
+        artist = PlaceName.objects.create(
+            name="Arist",
+            kind="artist"
+        )
+        public_art = PlaceName.objects.create(
+            name="Test Public Art",
+            description="A test public art description.",
+            kind="public_art"
+        )
+        # Create relationship between the two placenames
+        PublicArtArtist.objects.create(
+            public_art=public_art,
+            artist=artist
+        )
+
+        response = self.client.get(
+            "/api/placename/{}/".format(artist.id), format="json"
+        )
+
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(["public_arts"]), 1)
+        self.assertEqual(data["public_arts"][0]["id"], public_art.id)
+
+    def test_placename_artists(self):
+        """
+        Ensure we can retrieve the artsist data of a placename
+        """
+        public_art = PlaceName.objects.create(
+            name="Public Art",
+            kind="public_art"
+        )
+        artist = PlaceName.objects.create(
+            name="Test Arist",
+            description="A test artist description.",
+            kind="artist"
+        )
+        # Create relationship between the two placenames
+        PublicArtArtist.objects.create(
+            public_art=public_art,
+            artist=artist
+        )
+
+        response = self.client.get(
+            "/api/placename/{}/".format(public_art.id), format="json"
+        )
+
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(["artists"]), 1)
+        self.assertEqual(data["artists"][0]["id"], artist.id)
+
+    def test_placename_taxonomy(self):
+        test_placename06 = PlaceName.objects.create(
+            name="test place06"
+        )
+
+        PlaceNameTaxonomy.objects.create(
+            placename=test_placename06,
+            taxonomy=self.taxonomy
+        )
+
+        response = self.client.get(
+            "/api/placename/{}/".format(test_placename06.id), format="json"
+        )
+
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(["taxonomies"]), 1)
+        self.assertEqual(data["taxonomies"][0]["id"], self.taxonomy.id)
+
+    def test_placename_related_data(self):
+        test_placename07 = PlaceName.objects.create(
+            name="test place07"
+        )
+
+        location = RelatedData.objects.create(
+            data_type="location",
+            value="Test Address",
+            placename=test_placename07
+        )
+
+        response = self.client.get(
+            "/api/placename/{}/".format(test_placename07.id), format="json"
+        )
+
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(["related_data"]), 1)
+        self.assertEqual(data["related_data"][0]["id"], location.id)
