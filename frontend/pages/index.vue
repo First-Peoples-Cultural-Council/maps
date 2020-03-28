@@ -1,9 +1,10 @@
 <template>
   <div
+    id="map-container"
     class="map-container"
     :class="{
       detailModeContainer: isDetailMode,
-      'arts-container': isArt
+      'arts-container': isArt || isArtistDetail
     }"
   >
     <SideBar v-if="this.$route.name === 'index'">
@@ -105,8 +106,7 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent,
-        'sb-new-alt-arts': isArtistDetail
+        'mobile-content-open': mobileContent
       }"
     >
       <nuxt-child class="w-100" />
@@ -285,7 +285,7 @@ export default {
       return this.$route.name === 'index-art' && this.showPanel
     },
     isArtistDetail() {
-      return this.$route.name === 'index-art-art'
+      return this.$route.name === 'index-art-art' && this.showPanel
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -1068,8 +1068,7 @@ export default {
 }
 
 .sb-new-alt-arts {
-  /* width: 60%; */
-  width: 425px;
+  width: 850px;
 }
 
 .sb-detail {
