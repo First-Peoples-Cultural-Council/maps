@@ -78,9 +78,6 @@ export default {
     mediaData() {
       return this.art.medias[0]
     },
-    artDetails() {
-      return this.art.properties
-    },
     artist() {
       return this.art.artists
     },
