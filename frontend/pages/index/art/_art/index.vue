@@ -29,7 +29,7 @@
             src="@/assets/images/arrow_down_icon.svg"
           />
         </div>
-
+        <!-- START Conditional Render Arts Header -->
         <ArtistDetailCard
           v-if="isArtist"
           :art-image="art.properties.image"
@@ -46,6 +46,9 @@
           :name="art.properties.name"
           :server="isServer"
         ></ArtsDetailCard>
+        <!-- END Conditional Render Arts Header  -->
+
+        <!-- START Conditional Render Arts Detail -->
         <div
           v-if="artDetails.details"
           class="p-4 m-0 pb-0 color-gray font-08"
@@ -67,6 +70,7 @@
         <Filters class="mb-2 mt-2"></Filters>
       </div>
     </div>
+    <ArtsSidePanelSmall :art="artDetails" class="sidebar-side-panel" />
   </div>
 </template>
 
@@ -79,6 +83,7 @@ import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
@@ -86,11 +91,17 @@ export default {
     ArtistDetailCard,
     LanguageSeeAll,
     Filters,
-    Logo
+    Logo,
+    ArtsSidePanelSmall
   },
   filters: {
     titleCase(str) {
       return startCase(str)
+    }
+  },
+  data() {
+    return {
+      showPanel: false
     }
   },
   computed: {
@@ -132,6 +143,16 @@ export default {
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
+  },
+  mounted() {
+    if (
+      this.art.properties.kind === 'artist' &&
+      (this.artDetails.medias.length !== 0 ||
+        this.artDetails.public_arts.length !== 0)
+    ) {
+      this.showPanel = true
+      this.$root.$emit('toggleSidePanel', this.showPanel)
+    }
   },
   methods: {
     handleClick(e, data) {
@@ -243,5 +264,14 @@ export default {
   width: 25px;
   height: 25px;
   margin: 0.25em 0.5em 0.5em 0;
+}
+
+.sidebar-side-panel {
+  width: 425px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
+  overflow-y: auto;
 }
 </style>
