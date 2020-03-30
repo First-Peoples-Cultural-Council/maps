@@ -26,6 +26,17 @@
       <!-- Render Media here depending on type -->
       <img class="media-img" :src="media.media_file" />
     </div>
+
+    <div v-if="isRelatedMedia" class="gallery-img-pagination">
+      <div
+        v-for="(item, index) in relatedMedia"
+        :key="item.id"
+        :class="`arts-img-item ${currentIndex === index ? 'is-selected' : ''}`"
+        @click="selectCurrentIndex(index, item)"
+      >
+        <img :src="item.media_file" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -59,11 +70,27 @@ export default {
       default: () => {
         return {}
       }
+    },
+    relatedMedia: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    currIndex: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
     artistCount() {
       return this.artists ? this.artists.length : 0
+    },
+    currentIndex() {
+      return this.currIndex
+    },
+    isRelatedMedia() {
+      return this.media.file_type === 'image' && this.relatedMedia.length > 1
     }
   },
   mounted() {
@@ -80,6 +107,10 @@ export default {
             })
           : 'Unknown'
       return `By ${listOfArtist}`
+    },
+    selectCurrentIndex(index, item) {
+      this.currIndex = index
+      this.media = item
     }
   }
 }
@@ -106,6 +137,7 @@ export default {
 
 .carousel-gallery-container {
   width: 60%;
+  margin-bottom: 2em;
 }
 
 .btn-close {
@@ -152,5 +184,32 @@ export default {
 .media-img {
   width: 100%;
   height: 600px;
+  object-fit: cover;
+}
+
+/* Pagination CSS */
+.gallery-img-pagination {
+  display: flex;
+  width: 80%;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.arts-img-item {
+  width: 145x;
+  height: 145px;
+  margin: 0.5em;
+  opacity: 1;
+  border: 5px solid #fff;
+  transition: border 0.2s ease-in;
+}
+
+.arts-img-item img {
+  width: 135px;
+  height: 135px;
+}
+
+.is-selected {
+  border: 5px solid #b57936;
 }
 </style>
