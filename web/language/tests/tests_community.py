@@ -360,8 +360,8 @@ class ChampionAPITests(APITestCase):
 
     def test_champion_detail(self):
         """
-                Ensure we can retrieve a newly created champion object.
-                """
+        Ensure we can retrieve a newly created champion object.
+        """
         test_champion = Champion.objects.create(name="Test champion 001")
         response = self.client.get(
             "/api/champion/{}/".format(test_champion.id), format="json"
@@ -370,7 +370,7 @@ class ChampionAPITests(APITestCase):
 
     def test_champion_list_route_exists(self):
         """
-                Ensure champion list API route exists
-                """
+        Ensure champion list API route exists
+        """
         response = self.client.get("/api/champion/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
