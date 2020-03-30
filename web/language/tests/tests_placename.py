@@ -37,6 +37,39 @@ class BaseTestCase(APITestCase):
         self.user.save()
 
 
+class PlaceNameAPIRouteTests(APITestCase):
+    def test_placename_detail_route_exists(self):
+        """
+        Ensure PlaceName details API route exists
+        """
+        test_placename00 = PlaceName.objects.create(
+            name="test place00"
+        )
+        response = self.client.get("/api/placename/{}".format(test_placename00.id), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_placename_list_route_exists(self):
+        """
+        Ensure PlaceName list API route exists
+        """
+        response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_placename_geo_route_exists(self):
+        """
+        Ensure PlaceName Geo API route exists
+        """
+        response = self.client.get("/api/placename-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_art_geo_route_exists(self):
+        """
+        Ensure Art Geo API route exists
+        """
+        response = self.client.get("/api/art-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
 class PlaceNameAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
