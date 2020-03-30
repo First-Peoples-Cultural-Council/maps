@@ -716,6 +716,9 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(data["artists"][0]["id"], artist.id)
 
     def test_placename_taxonomy(self):
+        """
+        Ensure we can retrieve the taxonomies attached to each placename
+        """
         test_placename06 = PlaceName.objects.create(
             name="test place06"
         )
@@ -736,6 +739,9 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(data["taxonomies"][0]["id"], self.taxonomy.id)
 
     def test_placename_related_data(self):
+        """
+        Ensure we can retrieve the related_data attached to each placename
+        """
         test_placename07 = PlaceName.objects.create(
             name="test place07"
         )
@@ -757,6 +763,9 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(data["related_data"][0]["id"], location.id)
 
     def test_art_geo(self):
+        """
+        Ensure we only retrieve node_placenames from art-geo API
+        """
         test_placename08 = PlaceName.objects.create(
             name="test place08",
             kind="public_art"
