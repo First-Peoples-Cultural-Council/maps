@@ -49,11 +49,69 @@
         <!-- END Conditional Render Arts Header  -->
 
         <!-- START Conditional Render Arts Detail -->
-        <div
-          v-if="artDetails.details"
+        <!-- <div
+          v-if="artDetails.description"
           class="p-4 m-0 pb-0 color-gray font-08"
-          v-html="artDetails.details"
-        ></div>
+          v-html="stringSplit(artDetails.description)"
+        ></div> -->
+        <div v-if="artDetails.description" class="artist-content-container">
+          <section class="artist-content-field">
+            <span class="field-title">Artist Biography</span>
+            <span class="field-content ">
+              <p v-html="stringSplit(artDetails.description)"></p>
+              <a href="#" @click="toggleDescription">{{
+                collapseDescription ? 'less reading' : 'keep reading'
+              }}</a>
+            </span>
+          </section>
+
+          <!-- Render List of Related Data -->
+          <template v-if="relatedData">
+            <section
+              v-for="art in relatedData"
+              :key="art.id"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">
+                {{ art.data_type }}
+              </h5>
+              <span class="field-content">{{ art.value }}</span>
+            </section>
+          </template>
+
+          <!-- Render LIst of Social Media -->
+          <section v-if="socialMedia.length !== 0" class="artist-content-field">
+            <span class="field-title">Social Media</span>
+            <span class="field-content">
+              <ul class="artist-social-icons">
+                <li v-for="soc in socialMedia" :key="soc.id">
+                  <a :href="soc.value">
+                    <img
+                      v-if="soc.value.includes('facebook')"
+                      src="@/assets/images/arts/facebook.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('twitter')"
+                      src="@/assets/images/arts/twitter.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('linkedin')"
+                      src="@/assets/images/arts/linkedin.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('instagram')"
+                      src="@/assets/images/arts/instagram.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('youtube')"
+                      src="@/assets/images/arts/youtube.svg"
+                    />
+                  </a>
+                </li>
+              </ul>
+            </span>
+          </section>
+        </div>
         <div class="ml-3 mr-3 mt-3">
           <p class="font-08">
             [ Extracted from the
@@ -70,7 +128,12 @@
         <Filters class="mb-2 mt-2"></Filters>
       </div>
     </div>
-    <ArtsSidePanelSmall :art="artDetails" class="sidebar-side-panel" />
+    <ArtsSidePanelSmall
+      v-show="showPanel"
+      :art="artDetails"
+      :toggle-panel="toggleSidePanel"
+      class="sidebar-side-panel"
+    />
   </div>
 </template>
 
@@ -101,7 +164,8 @@ export default {
   },
   data() {
     return {
-      showPanel: false
+      showPanel: false,
+      collapseDescription: false
     }
   },
   computed: {
@@ -113,6 +177,25 @@ export default {
     },
     isArtist() {
       return this.art.properties.kind.toLowerCase() === 'artist'
+    },
+    socialMedia() {
+      const filterCondition = [
+        'instagram',
+        'facebook',
+        'youtube',
+        'twitter',
+        'linkedin'
+      ]
+      return this.artDetails.related_data.filter(
+        filter =>
+          filter.data_type === 'website' &&
+          filterCondition.some(condition => filter.value.includes(condition))
+      )
+    },
+    relatedData() {
+      return this.artDetails.related_data.filter(
+        element => !this.socialMedia.includes(element)
+      )
     }
   },
   watch: {
@@ -145,13 +228,13 @@ export default {
     this.setupMap()
   },
   mounted() {
+    console.log('SOCIAL MEDIAS', this.socialMedia)
     if (
       this.art.properties.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0)
     ) {
-      this.showPanel = true
-      this.$root.$emit('toggleSidePanel', this.showPanel)
+      this.toggleSidePanel()
     }
   },
   methods: {
@@ -166,6 +249,19 @@ export default {
         const icon = this.art.properties.kind + '_icon.svg'
         makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
       })
+    },
+    toggleDescription() {
+      this.collapseDescription = !this.collapseDescription
+    },
+    toggleSidePanel() {
+      this.showPanel = !this.showPanel
+      this.$root.$emit('toggleSidePanel', this.showPanel)
+    },
+    stringSplit(string) {
+      const stringValue = this.collapseDescription
+        ? `${string} `
+        : string.replace(/(.{200})..+/, '$1 ...')
+      return stringValue
     }
   },
   head() {
@@ -227,6 +323,7 @@ export default {
   font-weight: bold;
   font-size: 13px;
   opacity: 0.6;
+  text-transform: capitalize;
 }
 
 .field-content {
@@ -266,6 +363,11 @@ export default {
   margin: 0.25em 0.5em 0.5em 0;
 }
 
+.artist-social-icons img {
+  width: 25px;
+  height: 25px;
+}
+
 .sidebar-side-panel {
   width: 425px;
   height: 100vh;
@@ -273,5 +375,6 @@ export default {
   top: 0;
   left: 425px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>
