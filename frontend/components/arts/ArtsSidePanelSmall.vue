@@ -26,7 +26,7 @@
           <span class="item-title">{{ artist.name }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click.native="checkArtistProfile(artist.name)"
+            @click="checkArtistProfile(artist.name)"
           >
             Check Profile
           </div>
@@ -37,13 +37,13 @@
     <!-- Render List of Medias -->
     <b-row class="m-1 p-1 media-list-container">
       <b-col
-        v-for="media in listOfMedias"
+        v-for="(media, index) in listOfMedias"
         :key="media.id"
         lg="12"
         xl="12"
         md="6"
         sm="6"
-        @click="showMedia(media)"
+        @click="showMedia(media, index)"
       >
         <MediaCard
           class="mt-3 hover-left-move"
@@ -55,11 +55,13 @@
     </b-row>
     <Gallery
       v-if="currentMedia"
+      :curr-index="currentIndex"
       :media="currentMedia"
       :artists="listOfArtists"
       :show-gallery="showGallery"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
+      :related-media="listOfImageMedia"
     />
   </div>
 </template>
@@ -91,7 +93,8 @@ export default {
   data() {
     return {
       showGallery: false,
-      currentMedia: null
+      currentMedia: null,
+      currentIndex: 0
     }
   },
   computed: {
@@ -101,20 +104,25 @@ export default {
     listOfMedias() {
       return this.art.medias || this.art.properties.medias
     },
+    listOfImageMedia() {
+      return this.listOfMedias.filter(media => media.file_type === 'image')
+    },
     geometry() {
       return this.art.geometry || this.art.geom
     }
   },
   mounted() {
-    console.log('ARTS SIDE PANEL', this.art)
+    this.currentMedia = this.listOfMedias[0]
+    console.log('CURRENT MEDIA', this.currentMedia)
   },
   methods: {
     toggleGallery() {
       this.showGallery = !this.showGallery
     },
-    showMedia(media) {
+    showMedia(media, index) {
       this.toggleGallery()
       this.currentMedia = media
+      this.currentIndex = index
     },
     renderArtistImg(img) {
       return img || require(`@/assets/images/artist_icon.svg`)
