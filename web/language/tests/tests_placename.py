@@ -45,7 +45,7 @@ class PlaceNameAPIRouteTests(APITestCase):
         test_placename00 = PlaceName.objects.create(
             name="test place00"
         )
-        response = self.client.get("/api/placename/{}".format(test_placename00.id), format="json")
+        response = self.client.get("/api/placename/{}/".format(test_placename00.id), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_placename_list_route_exists(self):
