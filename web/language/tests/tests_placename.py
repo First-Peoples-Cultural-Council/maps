@@ -722,3 +722,42 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(["related_data"]), 1)
         self.assertEqual(data["related_data"][0]["id"], location.id)
+
+    def test_art_geo(self):
+        test_placename08 = PlaceName.objects.create(
+            name="test place08",
+            kind="public_art"
+        )
+        test_placename09 = PlaceName.objects.create(
+            name="test place09",
+            kind="artist"
+        )
+        test_placename09 = PlaceName.objects.create(
+            name="test place10",
+            kind="organization"
+        )
+        test_placename10 = PlaceName.objects.create(
+            name="test place11",
+            kind="event"
+        )
+        test_placename11 = PlaceName.objects.create(
+            name="test place12",
+            kind="resource"
+        )
+        # This placename should not be a part of the result
+        # because this is not a node_placename
+        test_placename12 = PlaceName.objects.create(
+            name="test place13",
+            kind="poi"
+        )
+
+        response = self.client.get(
+            "/api/art-geo/", format="json"
+        )
+
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 5)  # Should only return 5, even though we added 6 placenames
+        self.assertEqual(data[0].get("id"), test_placename08.id)  # Check first data
+        self.assertEqual(data[4].get("id"), test_placename11.id)  # Check last data - should not be test_placename12
