@@ -770,3 +770,84 @@ class MediaAPITests(BaseTestCase):
             "/api/media/{}/".format(test_media.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_placename_medias(self):
+        """
+        Ensure media is ordered in reverse chronological order.
+        """
+        test_placename_with_media = PlaceName.objects.create(name="Test PlaceName with Media")
+        test_media01 = Media.objects.create(
+            name="Test media 01",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media02 = Media.objects.create(
+            name="Test media 02",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media03 = Media.objects.create(
+            name="Test media 03",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media04 = Media.objects.create(
+            name="Test media 04",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+
+        response = self.client.get(
+            "/api/placename/{}/".format(test_placename_with_media.id), format="json"
+        )
+
+        data = response.json()
+
+        # Check if medias are added in the PlaceName media list
+        self.assertTrue(len(data.get("medias")) == 4)
+        self.assertEqual(data.get("medias")[0].get("id"), test_media04.id)
+        self.assertEqual(data.get("medias")[3].get("id"), test_media01.id)
+
+    def test_media_order(self):
+        """
+        Ensure media is ordered in reverse chronological order.
+        """
+        test_placename_with_media = PlaceName.objects.create(name="Test PlaceName with Media")
+        test_media01 = Media.objects.create(
+            name="Test media 01",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media02 = Media.objects.create(
+            name="Test media 02",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media03 = Media.objects.create(
+            name="Test media 03",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+        test_media04 = Media.objects.create(
+            name="Test media 04",
+            file_type="image",
+            placename=test_placename_with_media
+        )
+
+        response1 = self.client.get(
+            "/api/media/", format="json"
+        )
+
+        data1 = response1.json()
+
+        response2 = self.client.get(
+            "/api/placename/{}/".format(test_placename_with_media.id), format="json"
+        )
+
+        data2 = response2.json()
+
+        # Check if media is ordered properly in the media list API
+        self.assertTrue(data1[0].get("id") > data1[3].get("id"))
+
+        # Check if media is ordered properly in the PlaceName detail API
+        self.assertTrue(data2.get("medias")[0].get("id") > data2.get("medias")[3].get("id"))
