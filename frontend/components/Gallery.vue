@@ -7,24 +7,51 @@
       @click="toggleGallery"
     />
 
-    <div class="carousel-gallery-container">
-      <div class="artist-gallery-detail">
-        <img class="artist-img-small" src="@/assets/images/arts/img-1.jpg" />
-        <div class="gallery-title">
-          <span class="item-title">{{ media.name }}</span>
-          <span class="item-subtitle" v-html="returnArtists()" />
+    <div class="gallery-carousel-container">
+      <button :disabled="canNavigatePrevious" @click="previousSlide">
+        <img src="@/assets/images/return_icon_hover.svg" />
+      </button>
+      <div class="carousel-gallery-container">
+        <div class="artist-gallery-detail">
+          <img class="artist-img-small" :src="placenameImg" />
+          <div class="gallery-title">
+            <span class="item-title">{{ currentMedia.name }}</span>
+            <span class="item-subtitle" v-html="returnArtists()" />
+          </div>
+          <div
+            v-if="artistCount === 1"
+            class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
+            @click="checkProfile"
+          >
+            Check Profile
+          </div>
+          <img class="art-type" src="@/assets/images/arts/audio.png" />
         </div>
-        <div
-          v-if="artistCount === 1"
-          class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
-          @click="checkProfile"
-        >
-          Check Profile
-        </div>
-        <img class="art-type" src="@/assets/images/arts/audio.png" />
+        <!-- Render Media here depending on type -->
+        <img
+          v-if="currentMedia.file_type === 'image'"
+          class="media-img"
+          :src="currentMedia.media_file"
+        />
+        <iframe
+          v-else-if="
+            currentMedia.file_type === 'video' &&
+              getYoutubeEmbed(currentMedia.url)
+          "
+          class="media-img"
+          :src="
+            `https://www.youtube.com/embed/${getYoutubeEmbed(
+              currentMedia.url
+            )}/?rel=0`
+          "
+          frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
       </div>
-      <!-- Render Media here depending on type -->
-      <img class="media-img" :src="media.media_file" />
+      <button :disabled="canNavigateNext" @click="nextSlide">
+        <img src="@/assets/images/go_icon_hover.svg" />
+      </button>
     </div>
 
     <div v-if="isRelatedMedia" class="gallery-img-pagination">
@@ -59,6 +86,7 @@ export default {
         return {}
       }
     },
+
     artists: {
       type: Array,
       default: () => {
@@ -80,6 +108,14 @@ export default {
     currIndex: {
       type: Number,
       default: 0
+    },
+    placename: {
+      type: String,
+      default: ''
+    },
+    placenameImg: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -89,8 +125,19 @@ export default {
     currentIndex() {
       return this.currIndex
     },
+    currentMedia() {
+      return this.media
+    },
     isRelatedMedia() {
-      return this.media.file_type === 'image' && this.relatedMedia.length > 1
+      return (
+        this.currentMedia.file_type === 'image' && this.relatedMedia.length > 1
+      )
+    },
+    canNavigatePrevious() {
+      return this.currIndex === 0
+    },
+    canNavigateNext() {
+      return this.currIndex === this.relatedMedia.length - 1
     }
   },
   mounted() {
@@ -105,18 +152,31 @@ export default {
           ? this.artists.map((artist, index) => {
               return `<a href="#" @click.prevent="checkProfile()"> ${artist.name}</a>`
             })
-          : 'Unknown'
+          : this.placename
       return `By ${listOfArtist}`
     },
     selectCurrentIndex(index, item) {
       this.currIndex = index
       this.media = item
+    },
+    nextSlide() {
+      this.currIndex += 1
+      this.media = this.relatedMedia[this.currIndex]
+    },
+    previousSlide() {
+      this.currIndex -= 1
+      this.media = this.relatedMedia[this.currIndex]
+    },
+    getYoutubeEmbed(url) {
+      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      const match = url.match(regExp)
+      return match && match[7].length === 11 ? match[7] : false
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
 .gallery-modal {
   position: fixed;
   top: 0;
@@ -133,6 +193,13 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.gallery-carousel-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  padding: 0 2em;
 }
 
 .carousel-gallery-container {
@@ -193,6 +260,7 @@ export default {
   width: 80%;
   justify-content: center;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .arts-img-item {
@@ -211,5 +279,22 @@ export default {
 
 .is-selected {
   border: 5px solid #b57936;
+}
+
+.gallery-carousel-container button {
+  background: rgba(0, 0, 0, 0);
+  border: 0;
+
+  img {
+    width: 50px;
+    height: 50px;
+  }
+  &:focus {
+    border: 0;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
 }
 </style>
