@@ -7,7 +7,10 @@
     <!-- Landscape View Mode -->
     <div class="arts-card-landscape">
       <div class="arts-card-body">
-        <img class="card-teaser-img" :src="artImage" />
+        <img
+          :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
+          :src="artImage"
+        />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
@@ -55,13 +58,16 @@ export default {
   },
   computed: {
     artImage() {
-      return this.media.media_file !== null
+      return this.mediaExist
         ? this.media.media_file
         : require('@/assets/images/public_art_icon.svg')
     },
     returnMediaType() {
       const type = this.media.file_type ? this.media.file_type : 'audio'
       return require(`@/assets/images/arts/${type}.png`)
+    },
+    mediaExist() {
+      return this.media.media_file !== null
     }
   },
   methods: {

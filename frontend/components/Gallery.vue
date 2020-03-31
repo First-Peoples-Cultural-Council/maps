@@ -7,21 +7,29 @@
       @click="toggleGallery"
     />
 
-    <div class="gallery-carousel-container">
-      <button :disabled="canNavigatePrevious" @click="previousSlide">
+    <div
+      :class="
+        `gallery-carousel-container ${isRelatedMedia ? '' : 'gallery-center'}`
+      "
+    >
+      <button
+        v-if="isRelatedMedia"
+        :disabled="canNavigatePrevious"
+        @click="previousSlide"
+      >
         <img src="@/assets/images/return_icon_hover.svg" />
       </button>
       <div class="carousel-gallery-container">
         <div class="artist-gallery-detail">
-          <img class="artist-img-small" :src="placenameImg" />
+          <img class="artist-img-small" :src="renderArtistImg(placenameImg)" />
           <div class="gallery-title">
             <span class="item-title">{{ currentMedia.name }}</span>
             <span class="item-subtitle" v-html="returnArtists()" />
           </div>
           <div
-            v-if="artistCount === 1"
+            v-if="artistCount === 0 && this.$route.name !== 'index-art-art'"
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
-            @click="checkProfile"
+            @click="handleProfileClick"
           >
             Check Profile
           </div>
@@ -49,7 +57,11 @@
           allowfullscreen
         ></iframe>
       </div>
-      <button :disabled="canNavigateNext" @click="nextSlide">
+      <button
+        v-if="isRelatedMedia"
+        :disabled="canNavigateNext"
+        @click="nextSlide"
+      >
         <img src="@/assets/images/go_icon_hover.svg" />
       </button>
     </div>
@@ -128,6 +140,7 @@ export default {
     currentMedia() {
       return this.media
     },
+
     isRelatedMedia() {
       return (
         this.currentMedia.file_type === 'image' && this.relatedMedia.length > 1
@@ -155,6 +168,9 @@ export default {
           : this.placename
       return `By ${listOfArtist}`
     },
+    renderArtistImg(img) {
+      return img || require(`@/assets/images/artist_icon.svg`)
+    },
     selectCurrentIndex(index, item) {
       this.currIndex = index
       this.media = item
@@ -171,6 +187,10 @@ export default {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
       const match = url.match(regExp)
       return match && match[7].length === 11 ? match[7] : false
+    },
+    handleProfileClick() {
+      this.toggleGallery()
+      this.checkProfile(this.placename)
     }
   }
 }
@@ -200,6 +220,10 @@ export default {
   justify-content: space-between;
   width: 100vw;
   padding: 0 2em;
+}
+
+.gallery-center {
+  justify-content: center;
 }
 
 .carousel-gallery-container {
