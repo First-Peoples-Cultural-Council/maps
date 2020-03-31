@@ -136,7 +136,7 @@
       :show-panel="showPanel"
       :toggle-panel="toggleSidePanel"
     />
-    <div v-if="!showPanel" class="panel-collapsable">
+    <div v-if="isArtist && !showPanel" class="panel-collapsable">
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
         <img src="@/assets/images/go_icon_hover.svg" />
         Expand
@@ -240,6 +240,7 @@ export default {
     this.setupMap()
   },
   mounted() {
+    this.$root.$emit('closeSidePanel', this.showPanel)
     if (
       this.art.properties.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
