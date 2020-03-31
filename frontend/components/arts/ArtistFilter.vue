@@ -1,7 +1,7 @@
 <template>
   <div class="filter-container">
     <b-form-input
-      id="search-input"
+      id="search-artist-input"
       type="search"
       class="search-input"
       placeholder="Search for a person, artwork, event..."
