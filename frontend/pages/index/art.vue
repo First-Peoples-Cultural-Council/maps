@@ -69,14 +69,21 @@
             class="cursor-pointer mb-1"
             bgcolor="#5A8467"
             type="event"
-            :mode="getBadgeStatus(mode, 'resource')"
-            @click.native.prevent="handleBadge($event, 'resource')"
+            :mode="getBadgeStatus(mode, 'artwork')"
+            @click.native.prevent="handleBadge($event, 'artwork')"
           ></Badge>
         </section>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <b-row>
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'event'
+            "
+          >
             <b-col
               v-for="(art, index) in artworks"
               :key="'parts' + index"
@@ -97,7 +104,8 @@
             v-if="
               mode !== 'organization' &&
                 mode !== 'public_art' &&
-                mode !== 'artist'
+                mode !== 'artist' &&
+                mode !== 'artwork'
             "
           >
             <b-col
@@ -121,7 +129,8 @@
             v-if="
               mode !== 'organization' &&
                 mode !== 'public_art' &&
-                mode !== 'event'
+                mode !== 'event' &&
+                mode !== 'artwork'
             "
           >
             <b-col
@@ -143,7 +152,10 @@
           </b-row>
           <b-row
             v-if="
-              mode !== 'organization' && mode !== 'artist' && mode !== 'event'
+              mode !== 'organization' &&
+                mode !== 'artist' &&
+                mode !== 'event' &&
+                mode !== 'artwork'
             "
           >
             <b-col
@@ -165,7 +177,10 @@
           </b-row>
           <b-row
             v-if="
-              mode !== 'artist' && mode !== 'public_art' && mode !== 'event'
+              mode !== 'artist' &&
+                mode !== 'public_art' &&
+                mode !== 'event' &&
+                mode !== 'artwork'
             "
           >
             <b-col
