@@ -5,8 +5,8 @@
       class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
     >
       <div>
-        {{ art.properties.kind | titleCase }}:
-        <span class="font-weight-bold">{{ art.properties.name }}</span>
+        {{ art.kind | titleCase }}:
+        <span class="font-weight-bold">{{ art.name }}</span>
       </div>
       <div @click="$store.commit('sidebar/setMobileContent', true)">
         <img src="@/assets/images/arrow_up_icon.svg" />
@@ -32,19 +32,19 @@
         <!-- START Conditional Render Arts Header -->
         <ArtistDetailCard
           v-if="isArtist"
-          :art-image="art.properties.image"
-          :tags="art.properties.taxonomies"
-          :media="art.properties.medias[0]"
-          :arttype="art.properties.kind"
-          :name="art.properties.name"
+          :art-image="art.image"
+          :tags="art.taxonomies"
+          :media="art.medias[0]"
+          :arttype="art.kind"
+          :name="art.name"
           :server="isServer"
           :toggle-side="toggleSidePanel"
         ></ArtistDetailCard>
 
         <ArtsDetailCard
           v-else
-          :arttype="art.properties.kind"
-          :name="art.properties.name"
+          :arttype="art.kind"
+          :name="art.name"
           :server="isServer"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
@@ -153,7 +153,12 @@ import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  decodeFPCC,
+  makeMarker
+} from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
@@ -186,7 +191,7 @@ export default {
     },
     isArtist() {
       return (
-        this.art.properties.kind.toLowerCase() === 'artist' &&
+        this.art.kind.toLowerCase() === 'artist' &&
         (this.artDetails.medias.length !== 0 ||
           this.artDetails.public_arts.length !== 0)
       )
@@ -219,15 +224,14 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const arts = (await $axios.$get(getApiUrl('art-geo'))).features
+    const artParam = decodeFPCC(params.art)
+    const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
     const art = arts.find(a => {
-      if (a.properties.name) {
-        return encodeFPCC(a.properties.name) === params.art
+      if (a.name) {
+        return encodeFPCC(a.name) === params.art
       }
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
-
-    console.log('ARTIST DATA IS', artDetails)
 
     const isServer = !!process.server
     return {
@@ -243,7 +247,7 @@ export default {
   mounted() {
     this.$root.$emit('closeSidePanel', this.showPanel)
     if (
-      this.art.properties.kind === 'artist' &&
+      this.art.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0)
     ) {
@@ -257,10 +261,10 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+          zoomToPoint({ map, geom: this.art.geom, zoom: 11 })
         }
-        const icon = this.art.properties.kind + '_icon.svg'
-        makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
+        const icon = this.art.kind + '_icon.svg'
+        makeMarker(this.art.geom, icon, 'art-marker').addTo(map)
       })
     },
     toggleDescription() {
@@ -280,15 +284,15 @@ export default {
   head() {
     return {
       title:
-        this.art.properties.name +
+        this.art.name +
         ' Indigenous ' +
-        this.art.properties.kind +
+        this.art.kind +
         " on First Peoples' Language Map",
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.art.properties.description
+          content: this.art.description
         }
       ]
     }

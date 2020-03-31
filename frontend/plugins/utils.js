@@ -119,6 +119,10 @@ export const encodeFPCC = s => {
     .replace(/\s+/g, '-')
 }
 
+export const decodeFPCC = s => {
+  return s.replace(/-/g, ' ')
+}
+
 export const getCookie = name => {
   const value = '; ' + document.cookie
   const parts = value.split('; ' + name + '=')

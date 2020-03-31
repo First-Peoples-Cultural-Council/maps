@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import Filter, FilterSet
+from rest_framework.filters import SearchFilter
 
 from users.models import User, Administrator
 from language.models import (
@@ -73,8 +74,14 @@ class PlaceNameViewSet(BaseModelViewSet):
     detail_serializer_class = PlaceNameDetailSerializer
     queryset = PlaceName.objects.all().order_by("name")
 
-    filter_backends = [DjangoFilterBackend]
+    # Allow filter by fields and search
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    # Search by kinds and taxonomies
     filterset_class = PlaceNameFilterSet
+
+    # Search by name
+    search_fields = ['name']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
