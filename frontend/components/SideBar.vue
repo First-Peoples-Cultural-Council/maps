@@ -33,9 +33,7 @@
             "
           ></Contact>
         </div>
-        <div v-if="showSidePanel" class="sidebar-side-panel">
-          <slot name="side-panel"></slot>
-        </div>
+        <slot v-if="showSidePanel" name="side-panel"></slot>
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
@@ -165,19 +163,6 @@ export default {
 .sidebar-header {
   background-color: transparent;
   overflow-x: hidden;
-}
-
-.sidebar-desktop {
-  width: 425px;
-}
-
-.sidebar-side-panel {
-  width: 425px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 425px;
-  overflow-y: auto;
 }
 
 .sidebar-body {
