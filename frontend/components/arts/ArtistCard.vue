@@ -103,7 +103,7 @@ export default {
                 artist.name
               }</a>`
             })
-          : this.art.placename
+          : this.art.name
       return `By ${listOfArtist}`
     },
     returnMediaType() {
