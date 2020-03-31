@@ -16,7 +16,7 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <ArtistFilter class="m-3" />
+        <!-- <ArtistFilter class="m-3 " /> -->
         <section class="pl-3 pr-3 pt-2">
           <Badge
             content="Public Arts"
@@ -47,14 +47,14 @@
           ></Badge>
           <Badge
             content="Events"
-            :number="artists.length"
+            :number="events.length"
             class="cursor-pointer mb-1"
             bgcolor="#DA531E"
             type="event"
             :mode="getBadgeStatus(mode, 'event')"
             @click.native.prevent="handleBadge($event, 'event')"
           ></Badge>
-          <Badge
+          <!-- <Badge
             content="Resources"
             :number="artists.length"
             class="cursor-pointer mb-1"
@@ -62,7 +62,7 @@
             type="resource"
             :mode="getBadgeStatus(mode, 'resource')"
             @click.native.prevent="handleBadge($event, 'resource')"
-          ></Badge>
+          ></Badge> -->
           <Badge
             content="Artwork"
             :number="artworks.length"
@@ -211,7 +211,7 @@ import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
-import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+// import ArtistFilter from '@/components/arts/ArtistFilter.vue'
 import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
@@ -222,7 +222,7 @@ export default {
     Filters,
     Accordion,
     ArtistCard,
-    ArtistFilter,
+    // ArtistFilter,
     ArtsSidePanelSmall
   },
   data() {
@@ -254,9 +254,16 @@ export default {
     },
     artworks() {
       return this.arts
-        .filter(art => art.properties.medias.length !== 0)
+        .filter(
+          art =>
+            art.properties.medias.filter(item => item.file_type !== 'default')
+              .length !== 0
+        )
         .map(art => {
           return {
+            name: art.properties.name,
+            type: art.properties.kind,
+            image: art.properties.image,
             artists: art.properties.artists,
             medias: art.properties.medias,
             geometry: art.geometry
@@ -269,25 +276,23 @@ export default {
     console.log('ARTS DATA IS HERE', [
       ...new Set(
         this.arts.map(art => {
-          return art.properties
+          return art
         })
       )
     ])
 
     console.log(
       'MEDIA DATA DATA IS HERE',
-      this.arts
-        .filter(art => art.properties.medias.length !== 0)
-        .map(media => {
-          return {
-            artist: media.properties.artists,
-            media: media.properties.medias
-          }
-        })
+      this.arts.filter(
+        art =>
+          art.properties.medias.filter(item => item.file_type === 'video')
+            .length !== 0
+      )
     )
   },
   methods: {
     handleCardClick($event, name, type) {
+      this.closeSidePanel()
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -299,6 +304,10 @@ export default {
     toggleSidePanel() {
       this.showPanel = !this.showPanel
       this.$root.$emit('toggleSidePanel', this.showPanel)
+    },
+    closeSidePanel() {
+      this.showPanel = false
+      this.$root.$emit('closeSidePanel', true)
     }
   }
 }
