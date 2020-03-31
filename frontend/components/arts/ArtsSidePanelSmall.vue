@@ -12,10 +12,10 @@
       <div v-if="listOfArtists.length === 0" class="panel-artist">
         <img class="artist-img-small" :src="renderArtistImg(art.image)" />
         <div class="panel-details">
-          <span class="item-title">{{ art.placename }}</span>
+          <span class="item-title">{{ art.name }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click="checkArtistProfile(art.placename)"
+            @click="checkArtistProfile(art.name)"
           >
             Check Profile
           </div>
