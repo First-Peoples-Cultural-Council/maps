@@ -416,6 +416,7 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
+    medias = MediaLightSerializer(many=True, read_only=True)
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
     artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
@@ -426,11 +427,13 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
+            "medias",
             "category",
             "status",
             "status_reason",
             "taxonomies",
             "artists",
+            "geom"
         )
 
 
