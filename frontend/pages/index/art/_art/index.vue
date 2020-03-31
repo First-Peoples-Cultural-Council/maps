@@ -38,6 +38,7 @@
           :arttype="art.properties.kind"
           :name="art.properties.name"
           :server="isServer"
+          :toggle-side="toggleSidePanel"
         ></ArtistDetailCard>
 
         <ArtsDetailCard

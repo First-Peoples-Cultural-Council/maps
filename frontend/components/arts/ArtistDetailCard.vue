@@ -85,6 +85,12 @@ export default {
       default: () => {
         return {}
       }
+    },
+    toggleSide: {
+      type: Function,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -94,6 +100,7 @@ export default {
   },
   methods: {
     handleReturn() {
+      this.toggleSide()
       if (this.server) {
         this.$router.push({
           path: '/art'

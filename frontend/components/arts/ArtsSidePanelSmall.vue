@@ -60,6 +60,7 @@
       </b-col>
     </b-row>
     <!-- Render Gallery with Media Info -->
+
     <Gallery
       v-if="currentMedia"
       :curr-index="currentIndex"
