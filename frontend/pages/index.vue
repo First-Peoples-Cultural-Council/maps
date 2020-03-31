@@ -441,6 +441,9 @@ export default {
     this.$root.$on('toggleSidePanel', d => {
       this.showPanel = !this.showPanel
     })
+    this.$root.$on('closeSidePanel', d => {
+      this.showPanel = false
+    })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
       this.loggingIn = true
@@ -1065,10 +1068,6 @@ export default {
   z-index: 1000;
   height: 100%;
   overflow-y: auto;
-}
-
-.sb-new-alt-arts {
-  width: 850px;
 }
 
 .sb-detail {

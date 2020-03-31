@@ -49,14 +49,11 @@
         <!-- END Conditional Render Arts Header  -->
 
         <!-- START Conditional Render Arts Detail -->
-        <!-- <div
-          v-if="artDetails.description"
-          class="p-4 m-0 pb-0 color-gray font-08"
-          v-html="stringSplit(artDetails.description)"
-        ></div> -->
-        <div v-if="artDetails.description" class="artist-content-container">
+        <div v-if="isArtist" class="artist-content-container">
           <section class="artist-content-field">
-            <span class="field-title">Artist Biography</span>
+            <span v-if="artDetails.description" class="field-title">
+              Artist Biography</span
+            >
             <span class="field-content ">
               <p v-html="stringSplit(artDetails.description)"></p>
               <a href="#" @click="toggleDescription">{{
@@ -112,6 +109,11 @@
             </span>
           </section>
         </div>
+        <div
+          v-else
+          class="p-4 m-0 pb-0 color-gray font-08"
+          v-html="artDetails.description"
+        ></div>
         <div class="ml-3 mr-3 mt-3">
           <p class="font-08">
             [ Extracted from the
@@ -129,11 +131,17 @@
       </div>
     </div>
     <ArtsSidePanelSmall
-      v-show="showPanel"
+      v-if="isArtist && showPanel"
       :art="artDetails"
+      :show-panel="showPanel"
       :toggle-panel="toggleSidePanel"
-      class="sidebar-side-panel"
     />
+    <div v-if="!showPanel" class="panel-collapsable">
+      <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
+        <img src="@/assets/images/go_icon_hover.svg" />
+        Expand
+      </div>
+    </div>
   </div>
 </template>
 
@@ -176,7 +184,11 @@ export default {
       return this.$store.state.mapinstance.mapinstance
     },
     isArtist() {
-      return this.art.properties.kind.toLowerCase() === 'artist'
+      return (
+        this.art.properties.kind.toLowerCase() === 'artist' &&
+        (this.artDetails.medias.length !== 0 ||
+          this.artDetails.public_arts.length !== 0)
+      )
     },
     socialMedia() {
       const filterCondition = [
@@ -228,7 +240,6 @@ export default {
     this.setupMap()
   },
   mounted() {
-    console.log('SOCIAL MEDIAS', this.socialMedia)
     if (
       this.art.properties.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
@@ -368,13 +379,31 @@ export default {
   height: 25px;
 }
 
-.sidebar-side-panel {
-  width: 425px;
+.panel-collapsable {
+  width: 25px;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 425px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #d7d7de;
+}
+
+.btn-collapse {
+  display: flex;
+  justify-content: flex-start;
+  padding: 1em;
+  margin: 1em;
+  margin-left: 1.5em;
+  width: 100px;
+  background-color: #953920;
+  display: flex;
+  align-items: center;
+  height: 35px;
+  justify-content: center;
+  border-top-right-radius: 1em;
+  border-bottom-right-radius: 1em;
+  color: #fff;
 }
 </style>

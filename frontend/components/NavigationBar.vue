@@ -1,7 +1,7 @@
 <template>
   <div class="nav-container">
     <div class="navigation-container hide-mobile">
-      <Event />
+      <!-- <Event /> -->
       <div
         v-if="isLoggedIn"
         class="user-container cursor-pointer hide-mobile"
@@ -65,13 +65,13 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
-      <div class="navbar-icon-container cursor-pointer" @click="showEvent">
+      <!-- <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
           src="@/assets/images/event_icons.svg"
           alt="Event"
           class="navbar-icon"
         />
-      </div>
+      </div> -->
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
@@ -187,12 +187,12 @@
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
-import Event from '@/components/Event.vue'
+// import Event from '@/components/Event.vue'
 
 export default {
   components: {
-    Logo,
-    Event
+    Logo
+    // Event
   },
   data() {
     return {

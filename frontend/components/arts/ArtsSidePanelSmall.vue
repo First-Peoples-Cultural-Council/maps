@@ -1,8 +1,8 @@
 <template>
-  <div class="arts-right-panel">
+  <div :class="`sidebar-side-panel arts-right-panel`">
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
-        <span> X </span>
+        <span class="mr-2 font-weight-bold"> X </span>
         Close
       </div>
     </div>
@@ -10,9 +10,15 @@
     <!-- Render List of Artist -->
     <div v-if="this.$route.name !== 'index-art-art'">
       <div v-if="listOfArtists.length === 0" class="panel-artist">
-        <img class="artist-img-small" :src="renderArtistImg(null)" />
+        <img class="artist-img-small" :src="renderArtistImg(art.image)" />
         <div class="panel-details">
-          <span class="item-title"> UNKNOWN ARTIST </span>
+          <span class="item-title">{{ art.placename }}</span>
+          <div
+            class="cursor-pointer pl-2 pr-2 profile-btn"
+            @click="checkArtistProfile(art.placename)"
+          >
+            Check Profile
+          </div>
         </div>
       </div>
       <div
@@ -53,11 +59,14 @@
         </MediaCard>
       </b-col>
     </b-row>
+    <!-- Render Gallery with Media Info -->
     <Gallery
       v-if="currentMedia"
       :curr-index="currentIndex"
       :media="currentMedia"
       :artists="listOfArtists"
+      :placename="art.name"
+      :placename-img="art.image"
       :show-gallery="showGallery"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
@@ -88,6 +97,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    showPanel: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -113,7 +126,6 @@ export default {
   },
   mounted() {
     this.currentMedia = this.listOfMedias[0]
-    console.log('CURRENT MEDIA', this.currentMedia)
   },
   methods: {
     toggleGallery() {
@@ -137,6 +149,16 @@ export default {
 </script>
 
 <style lang="scss">
+.sidebar-side-panel {
+  width: 425px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .arts-right-panel {
   display: flex;
   background: #f9f9f9 0% 0% no-repeat padding-box;
@@ -168,6 +190,7 @@ export default {
 .profile-btn {
   background-color: #b57936;
   border-radius: 3em;
+  max-width: 150px;
   color: #fff;
   padding: 0.2em;
   text-align: center;
@@ -183,12 +206,12 @@ export default {
 .panel-close-btn {
   position: absolute;
   right: 0;
-  width: 20%;
+  width: 100px;
   background-color: #953920;
   display: flex;
   align-items: center;
   height: 35px;
-  justify-content: space-around;
+  justify-content: center;
   border-top-left-radius: 1em;
   border-bottom-left-radius: 1em;
   color: #fff;
