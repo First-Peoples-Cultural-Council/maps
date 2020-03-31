@@ -211,7 +211,10 @@ export default {
     },
     relatedData() {
       return this.artDetails.related_data.filter(
-        element => !this.socialMedia.includes(element)
+        element =>
+          !this.socialMedia.includes(element) &&
+          element.data_type !== 'email' &&
+          !element.value.startsWith(',')
       )
     }
   },
