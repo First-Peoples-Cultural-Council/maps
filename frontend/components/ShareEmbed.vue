@@ -109,7 +109,7 @@ export default {
     },
     url() {
       if (this.lat && this.lng && this.zoom) {
-        console.log(this.$route)
+        // console.log(this.$route)
         return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}`
       } else {
         return `${this.origin}${this.$route.fullPath}`
@@ -134,9 +134,9 @@ export default {
   },
   methods: {
     copyToClip(e, data) {
-      const ClipboardJS = require('clipboard')
-      const clipboard = new ClipboardJS('.clipboard')
-      console.log('Clipboard', clipboard)
+      // const ClipboardJS = require('clipboard')
+      // const clipboard = new ClipboardJS('.clipboard')
+      // console.log('Clipboard', clipboard)
     },
     async handleSave() {
       if (!this.saveTitle) {

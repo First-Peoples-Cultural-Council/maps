@@ -296,7 +296,7 @@ export default {
         legend: {
           labels: {
             filter(legendItem, chartData) {
-              console.log('Legend Item', legendItem)
+              // console.log('Legend Item', legendItem)
               if (legendItem.index === 3) {
                 return false
               }
@@ -307,8 +307,8 @@ export default {
         tooltips: {
           callbacks: {
             label(tooltipItems, data) {
-              console.log('Data', data)
-              console.log('tool', tooltipItems)
+              // console.log('Data', data)
+              // console.log('tool', tooltipItems)
               return `${data.labels[tooltipItems.index]}: ${(
                 data.datasets[0].data[tooltipItems.index] * 100
               ).toFixed(1) + '%'}`
@@ -396,7 +396,7 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, $route }) {
-    console.log('asyncData*****')
+    // console.log('asyncData*****')
     const communities = await $axios.$get(
       getApiUrl(`community?timestamp=${new Date().getTime()}/`)
     )
@@ -415,7 +415,7 @@ export default {
         audio_obj: null
       }
     }
-    console.log('audio', audio_obj)
+    // console.log('audio', audio_obj)
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     const isServer = !!process.server
@@ -477,7 +477,7 @@ export default {
       const others =
         (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
         100
-      console.log('Others', others)
+      // console.log('Others', others)
       return {
         name: l.language,
         labels: ['Fluent', 'Some', 'Learner', 'Other'],

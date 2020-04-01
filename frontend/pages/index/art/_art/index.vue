@@ -247,6 +247,10 @@ export default {
     this.setupMap()
   },
   mounted() {
+    if (this.isServer) {
+      this.updateMediaUrl()
+    }
+
     this.$root.$emit('closeSidePanel', this.showPanel)
     if (
       this.art.kind === 'artist' &&
@@ -281,6 +285,16 @@ export default {
         ? `${string} `
         : string.replace(/(.{200})..+/, '$1 ...')
       return stringValue
+    },
+    updateMediaUrl() {
+      const artDetails = this.artDetails
+
+      artDetails.medias = this.art.medias.map(media => {
+        media.media_file.replace('http://nginx/api/', '')
+        return media
+      })
+
+      this.artDetails = artDetails
     }
   },
   head() {

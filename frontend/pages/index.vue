@@ -404,7 +404,7 @@ export default {
   },
   async mounted() {
     this.$root.$on('updateData', () => {
-      console.log('Update Called')
+      // console.log('Update Called')
       this.$eventHub.whenMap(map => {
         this.updateData(map)
       })
@@ -541,7 +541,7 @@ export default {
       const features = map.querySourceFeatures('arts1')
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
-      console.log('zoom', map.getZoom(), this.$route.name)
+      // console.log('zoom', map.getZoom(), this.$route.name)
       if (
         map.getZoom() > 6 ||
         this.$route.name === 'index-languages-lang' ||
@@ -620,7 +620,7 @@ export default {
           }
         }
         if (feature.layer.id === 'fn-arts-clusters') {
-          console.log(feature)
+          // console.log(feature)
           const zoom = map.getZoom()
           if (zoom < 13) {
             const lat = feature.geometry.coordinates[1]
@@ -640,7 +640,9 @@ export default {
                 feature.properties.point_count,
                 0,
                 function(err, aFeatures) {
-                  console.log('getClusterLeaves', err, aFeatures)
+                  if (err) {
+                    console.log('Error', err)
+                  }
                   const html = aFeatures.reduce(function(ach, feature) {
                     const props = feature.properties
                     return ach + renderArtDetail(props)
@@ -671,7 +673,7 @@ export default {
       })
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          console.log('Feature', feature)
+          // console.log('Feature', feature)
           if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
@@ -744,7 +746,7 @@ export default {
           }
 
           self.$root.$on('mode_change_draw', data => {
-            console.log('This got called')
+            // console.log('This got called')
             if (data === 'point') {
               draw.changeMode('draw_point')
             }
@@ -766,7 +768,7 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
-        console.log('Feature', features)
+        // console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
@@ -844,7 +846,7 @@ export default {
           sleepingLayer
         )
       )
-      console.log('This lanuages', this.languages)
+      // console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
 
