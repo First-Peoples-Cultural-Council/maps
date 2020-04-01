@@ -10,7 +10,7 @@
     <!-- Render List of Artist -->
     <div v-if="this.$route.name !== 'index-art-art'">
       <div v-if="listOfArtists.length === 0" class="panel-artist">
-        <img class="artist-img-small" :src="renderArtistImg(art.image)" />
+        <img class="artist-img-small" :src="renderArtistImg(art.art.image)" />
         <div class="panel-details">
           <span class="item-title">{{ art.art.name }}</span>
           <div
@@ -66,8 +66,8 @@
       :curr-index="currentIndex"
       :media="currentMedia"
       :artists="listOfArtists"
-      :placename="art.name"
-      :placename-img="art.image"
+      :placename="art.art.name"
+      :placename-img="art.art.image"
       :show-gallery="showGallery"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
@@ -113,16 +113,16 @@ export default {
   },
   computed: {
     listOfArtists() {
-      return this.art.art.artists || this.art.properties.artists
+      return this.art.art.artists
     },
     listOfMedias() {
-      return this.art.art.medias || this.art.properties.medias
+      return this.art.art.medias
     },
     listOfImageMedia() {
       return this.listOfMedias.filter(media => media.file_type === 'image')
     },
     geometry() {
-      return this.art.art.geometry || this.art.geom
+      return this.art.art.geometry || this.art.art.geom
     }
   },
   mounted() {
