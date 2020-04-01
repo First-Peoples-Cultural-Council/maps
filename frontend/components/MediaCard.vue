@@ -18,7 +18,7 @@
         </div>
         <div class="arts-card-more">
           <div class="arts-card-tag">
-            <img :src="returnMediaType" />
+            <img :src="returnMediaTypeLogo" />
             {{ media.file_type }}
           </div>
           <div class="fpcc-card-more">
@@ -62,7 +62,7 @@ export default {
         ? this.media.media_file
         : require('@/assets/images/public_art_icon.svg')
     },
-    returnMediaType() {
+    returnMediaTypeLogo() {
       const type = this.media.file_type ? this.media.file_type : 'audio'
       return require(`@/assets/images/arts/${type}.png`)
     },
