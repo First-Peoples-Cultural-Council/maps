@@ -78,7 +78,7 @@
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(art, index) in artworks"
+              v-for="(artwork, index) in artworks"
               :key="'parts' + index"
               lg="12"
               xl="12"
@@ -86,10 +86,10 @@
               sm="6"
             >
               <ArtistCard
-                :art="art"
+                :media="artwork"
                 :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="selectPublicArt(art)"
+                @click.native="selectPublicArt(artwork.art)"
               ></ArtistCard>
             </b-col>
           </b-row>
@@ -253,22 +253,33 @@ export default {
       return this.arts.filter(art => art.properties.kind === 'event')
     },
     artworks() {
-      return this.arts
-        .filter(
-          art =>
-            art.properties.medias.filter(item => item.file_type !== 'default')
-              .length !== 0
-        )
-        .map(art => {
-          return {
-            name: art.properties.name,
-            type: art.properties.kind,
-            image: art.properties.image,
-            artists: art.properties.artists,
-            medias: art.properties.medias,
-            geometry: art.geometry
-          }
-        })
+      const artworks = []
+      this.arts.forEach(art => {
+        const medias = art.properties.medias
+        if (medias) {
+          medias.forEach(media => {
+            if (media.file_type !== 'default' || media.url !== null) {
+              console.log(art)
+              artworks.push({
+                id: media.id,
+                name: media.name,
+                image: media.media_file,
+                type: media.file_type,
+                art: {
+                  name: art.properties.name,
+                  type: art.properties.kind,
+                  image: art.properties.image,
+                  artists: art.properties.artists,
+                  medias: art.properties.medias,
+                  geometry: art.geometry
+                }
+              })
+            }
+          })
+        }
+      })
+      artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
+      return artworks
     }
   },
   mounted() {
