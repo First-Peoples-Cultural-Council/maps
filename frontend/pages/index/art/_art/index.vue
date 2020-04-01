@@ -34,7 +34,6 @@
           v-if="isArtist"
           :art-image="art.image"
           :tags="art.taxonomies"
-          :media="art.medias[0]"
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
@@ -132,12 +131,12 @@
       </div>
     </div>
     <ArtsSidePanelSmall
-      v-if="isArtist && showDrawer"
-      :art="artDetails"
+      v-if="isGalleryNotEmpty && showDrawer"
+      :art="{ art: artDetails }"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
     />
-    <div v-if="isArtist && !showDrawer" class="panel-collapsable">
+    <div v-if="isGalleryNotEmpty && !showDrawer" class="panel-collapsable">
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
         <img src="@/assets/images/go_icon_hover.svg" />
         Expand
@@ -192,6 +191,9 @@ export default {
       return this.$store.state.mapinstance.mapinstance
     },
     isArtist() {
+      return this.art.kind.toLowerCase() === 'artist'
+    },
+    isGalleryNotEmpty() {
       return (
         this.art.kind.toLowerCase() === 'artist' &&
         (this.artDetails.medias.length !== 0 ||
@@ -239,6 +241,7 @@ export default {
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
     console.log('ART DETAILS ARE', artDetails)
+    console.log('ART ARE', arts)
 
     const isServer = !!process.server
     return {
@@ -296,6 +299,8 @@ export default {
         media.media_file.replace('http://nginx/api/', '')
         return media
       })
+
+      console.log('artdetails=', artDetails)
 
       this.artDetails = artDetails
     }
