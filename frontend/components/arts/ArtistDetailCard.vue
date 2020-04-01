@@ -80,8 +80,8 @@ export default {
         return {}
       }
     },
-    media: {
-      type: Object,
+    toggleSide: {
+      type: Function,
       default: () => {
         return {}
       }
@@ -92,8 +92,17 @@ export default {
       hover: false
     }
   },
+  computed: {
+    showDrawer() {
+      return this.$store.state.sidebar.isArtsMode
+    }
+  },
   methods: {
     handleReturn() {
+      if (this.showDrawer) {
+        this.toggleSide()
+      }
+
       if (this.server) {
         this.$router.push({
           path: '/art'

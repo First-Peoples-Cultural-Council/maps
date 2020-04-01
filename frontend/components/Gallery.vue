@@ -297,6 +297,7 @@ export default {
 }
 
 .arts-img-item img {
+  object-fit: cover;
   width: 135px;
   height: 135px;
 }

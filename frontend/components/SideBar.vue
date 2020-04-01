@@ -182,6 +182,8 @@ export default {
   background-color: #03333a;
   color: #fff;
   opacity: 0.8;
+  border-top-left-radius: 0rem;
+  border-top-right-radius: 0rem;
 }
 .nav-tabs .nav-link.active {
   color: #b47a2b;
