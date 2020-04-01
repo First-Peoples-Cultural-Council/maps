@@ -3,7 +3,7 @@
     <SideBar
       v-if="this.$route.name === 'index-art'"
       active="Arts"
-      :show-side-panel="showPanel"
+      :show-side-panel="showDrawer"
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
@@ -96,7 +96,7 @@
                 :media="artwork"
                 :layout="'landscape'"
                 class="mt-3 hover-left-move"
-                @click.native="selectPublicArt(artwork.art)"
+                @click.native="selectMedia(artwork.art, artwork)"
               ></ArtistCard>
             </b-col>
           </b-row>
@@ -202,7 +202,7 @@
           </b-row>
         </section>
       </template>
-      <template v-if="showPanel" v-slot:side-panel>
+      <template v-if="showDrawer" v-slot:side-panel>
         <ArtsSidePanelSmall
           class="artist-side-panel"
           :art="artDetails"
@@ -244,11 +244,13 @@ export default {
     return {
       mode: 'All',
       accordionContent: 'View artwork from indigenous artists in your area.',
-      showPanel: false,
       artDetails: {}
     }
   },
   computed: {
+    showDrawer() {
+      return this.$store.state.sidebar.isArtsMode
+    },
     arts() {
       return this.$store.state.arts.arts
     },
@@ -274,12 +276,12 @@ export default {
         if (medias) {
           medias.forEach(media => {
             if (media.file_type !== 'default' || media.url !== null) {
-              console.log(art)
               artworks.push({
                 id: media.id,
                 name: media.name,
-                image: media.media_file,
-                type: media.file_type,
+                media_file: media.media_file,
+                file_type: media.file_type,
+                url: media.url,
                 art: {
                   name: art.properties.name,
                   type: art.properties.kind,
@@ -298,41 +300,26 @@ export default {
     }
   },
   mounted() {
-    // alert(this.$route.name)
-    // console.log('ARTS DATA IS HERE', [
-    //   ...new Set(
-    //     this.arts.map(art => {
-    //       return art
-    //     })
-    //   )
-    // ])
-    // console.log(
-    //   'MEDIA DATA DATA IS HERE',
-    //   this.arts.filter(
-    //     art =>
-    //       art.properties.medias.filter(item => item.file_type === 'video')
-    //         .length !== 0
-    //   )
-    // )
+    console.log('ALL ARTS DATA', this.artworks)
   },
   methods: {
     handleCardClick($event, name, type) {
-      this.closeSidePanel()
+      if (this.showDrawer) {
+        this.toggleSidePanel()
+      }
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
     },
-    selectPublicArt(art) {
-      this.artDetails = art
+    selectMedia(art, currentMedia) {
+      this.artDetails = {
+        art,
+        currentMedia
+      }
       this.toggleSidePanel()
     },
     toggleSidePanel() {
-      this.showPanel = !this.showPanel
-      this.$root.$emit('toggleSidePanel', this.showPanel)
-    },
-    closeSidePanel() {
-      this.showPanel = false
-      this.$root.$emit('closeSidePanel', true)
+      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
     }
   }
 }

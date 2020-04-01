@@ -132,12 +132,12 @@
       </div>
     </div>
     <ArtsSidePanelSmall
-      v-if="isArtist && showPanel"
+      v-if="isArtist && showDrawer"
       :art="artDetails"
-      :show-panel="showPanel"
+      :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
     />
-    <div v-if="isArtist && !showPanel" class="panel-collapsable">
+    <div v-if="isArtist && !showDrawer" class="panel-collapsable">
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
         <img src="@/assets/images/go_icon_hover.svg" />
         Expand
@@ -178,11 +178,13 @@ export default {
   },
   data() {
     return {
-      showPanel: false,
       collapseDescription: false
     }
   },
   computed: {
+    showDrawer() {
+      return this.$store.state.sidebar.isArtsMode
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -236,6 +238,8 @@ export default {
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
+    console.log('ART DETAILS ARE', artDetails)
+
     const isServer = !!process.server
     return {
       art,
@@ -252,7 +256,6 @@ export default {
       this.updateMediaUrl()
     }
 
-    this.$root.$emit('closeSidePanel', this.showPanel)
     if (
       this.art.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
@@ -278,8 +281,7 @@ export default {
       this.collapseDescription = !this.collapseDescription
     },
     toggleSidePanel() {
-      this.showPanel = !this.showPanel
-      this.$root.$emit('toggleSidePanel', this.showPanel)
+      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
     },
     stringSplit(string) {
       const stringValue = this.collapseDescription

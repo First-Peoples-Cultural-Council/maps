@@ -7,7 +7,7 @@
       'arts-container': isArt || isArtistDetail
     }"
   >
-    <SideBar v-if="this.$route.name === 'index'">
+    <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <template v-slot:content>
         <div v-html="ie"></div>
         <section class="pl-3 pr-3 mt-3">
@@ -263,7 +263,6 @@ export default {
         bounds
       },
       mode: 'All',
-      showPanel: false,
       map: {},
       accordionContent:
         'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
@@ -282,10 +281,10 @@ export default {
       return this.$store.state.sidebar.mobileContent
     },
     isArt() {
-      return this.$route.name === 'index-art' && this.showPanel
+      return this.$store.state.sidebar.isArtsMode
     },
     isArtistDetail() {
-      return this.$route.name === 'index-art-art' && this.showPanel
+      return this.$store.state.sidebar.isArtsMode
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -437,12 +436,6 @@ export default {
     })
     this.$root.$on('toggleEventOverlay', d => {
       this.showEventOverlay = !this.showEventOverlay
-    })
-    this.$root.$on('toggleSidePanel', d => {
-      this.showPanel = !this.showPanel
-    })
-    this.$root.$on('closeSidePanel', d => {
-      this.showPanel = false
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
