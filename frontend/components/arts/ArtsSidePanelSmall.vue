@@ -12,10 +12,10 @@
       <div v-if="listOfArtists.length === 0" class="panel-artist">
         <img class="artist-img-small" :src="renderArtistImg(art.image)" />
         <div class="panel-details">
-          <span class="item-title">{{ art.name }}</span>
+          <span class="item-title">{{ art.art.name }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click="checkArtistProfile(art.name)"
+            @click="checkArtistProfile(art.art.name)"
           >
             Check Profile
           </div>
@@ -59,8 +59,8 @@
         </MediaCard>
       </b-col>
     </b-row>
-    <!-- Render Gallery with Media Info -->
 
+    <!-- Render Gallery with Media Info -->
     <Gallery
       v-if="currentMedia"
       :curr-index="currentIndex"
@@ -107,26 +107,27 @@ export default {
   data() {
     return {
       showGallery: false,
-      currentMedia: null,
+      currentMedia: this.art.currentMedia || null,
       currentIndex: 0
     }
   },
   computed: {
     listOfArtists() {
-      return this.art.artists || this.art.properties.artists
+      return this.art.art.artists || this.art.properties.artists
     },
     listOfMedias() {
-      return this.art.medias || this.art.properties.medias
+      return this.art.art.medias || this.art.properties.medias
     },
     listOfImageMedia() {
       return this.listOfMedias.filter(media => media.file_type === 'image')
     },
     geometry() {
-      return this.art.geometry || this.art.geom
+      return this.art.art.geometry || this.art.geom
     }
   },
   mounted() {
-    this.currentMedia = this.listOfMedias[0]
+    this.showGallery = !!this.currentMedia
+    console.log('SIDE PANEL DATA', this.art)
   },
   methods: {
     toggleGallery() {
@@ -221,6 +222,7 @@ export default {
 }
 
 .artist-img-small {
+  object-fit: cover;
   width: 50px;
   height: 50px;
   border-radius: 100%;
