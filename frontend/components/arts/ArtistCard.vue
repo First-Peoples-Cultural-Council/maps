@@ -82,17 +82,24 @@ export default {
       return this.mediaData.art.artists
     },
     mediaType() {
-      return this.mediaData.type
+      return this.mediaData.file_type
+    },
+    videoThumbnail() {
+      return `https://img.youtube.com/vi/${this.getYoutubeVideoID(
+        this.mediaData.url
+      )}/hqdefault.jpg`
     },
     isLayoutTile() {
       return this.layout !== 'landscape'
     },
     mediaExist() {
-      return this.mediaData.image !== null
+      return this.mediaData.media_file !== null
     },
     artImage() {
       return this.mediaExist
-        ? this.mediaData.image
+        ? this.mediaData.media_file
+        : this.mediaType === 'video'
+        ? this.videoThumbnail
         : require('@/assets/images/public_art_icon.svg')
     },
     returnArtists() {
@@ -139,6 +146,11 @@ export default {
       // in some cases, we list places without full geometry, no marker shown.
       if (!this.media.art.geometry) return
       this.$eventHub.doneReveal()
+    },
+    getYoutubeVideoID(url) {
+      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      const match = url.match(regExp)
+      return match && match[7].length === 11 ? match[7] : false
     }
   }
 }
@@ -221,6 +233,11 @@ export default {
   margin: 0;
 }
 
+.artist-name a {
+  font-weight: normal;
+  color: #c3bfbc;
+}
+
 /* Landscape Layout */
 .arts-card-landscape {
   display: flex;
@@ -234,8 +251,7 @@ export default {
     overflow: hidden;
 
     .card-teaser-img {
-      object-fit: fill;
-      object-position: 50% 50%;
+      object-fit: cover;
       width: 100%;
     }
     .card-teaser-null {
