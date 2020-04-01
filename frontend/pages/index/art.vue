@@ -273,22 +273,21 @@ export default {
   },
   mounted() {
     // alert(this.$route.name)
-    console.log('ARTS DATA IS HERE', [
-      ...new Set(
-        this.arts.map(art => {
-          return art
-        })
-      )
-    ])
-
-    console.log(
-      'MEDIA DATA DATA IS HERE',
-      this.arts.filter(
-        art =>
-          art.properties.medias.filter(item => item.file_type === 'video')
-            .length !== 0
-      )
-    )
+    // console.log('ARTS DATA IS HERE', [
+    //   ...new Set(
+    //     this.arts.map(art => {
+    //       return art
+    //     })
+    //   )
+    // ])
+    // console.log(
+    //   'MEDIA DATA DATA IS HERE',
+    //   this.arts.filter(
+    //     art =>
+    //       art.properties.medias.filter(item => item.file_type === 'video')
+    //         .length !== 0
+    //   )
+    // )
   },
   methods: {
     handleCardClick($event, name, type) {

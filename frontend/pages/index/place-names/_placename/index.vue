@@ -347,7 +347,7 @@ export default {
   watch: {
     place(newPlace, oldPlace) {
       if (newPlace !== oldPlace) {
-        console.log('new Place', newPlace)
+        // console.log('new Place', newPlace)
         this.setupMap(newPlace.geom)
       }
     }
@@ -392,7 +392,7 @@ export default {
       })
       this.$store.dispatch('user/getMediaToVerify')
     })
-    console.log('Place', this.place)
+    // console.log('Place', this.place)
   },
   created() {
     this.setupMap(this.geo_place.geometry)

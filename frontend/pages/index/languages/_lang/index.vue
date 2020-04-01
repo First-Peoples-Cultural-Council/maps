@@ -380,7 +380,7 @@ export default {
       })
     } catch (e) {}
 
-    console.log('RegExp Url')
+    // console.log('RegExp Url')
 
     store.commit('places/setBadgePlaces', result[0].places)
     store.commit('places/setFilteredBadgePlaces', result[0].places)
