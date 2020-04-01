@@ -57,9 +57,16 @@ export default {
     }
   },
   computed: {
+    videoThumbnail() {
+      return `https://img.youtube.com/vi/${this.getYoutubeVideoID(
+        this.media.url
+      )}/hqdefault.jpg`
+    },
     artImage() {
       return this.mediaExist
         ? this.media.media_file
+        : this.media.file_type === 'video'
+        ? this.videoThumbnail
         : require('@/assets/images/public_art_icon.svg')
     },
     returnMediaTypeLogo() {
@@ -85,6 +92,11 @@ export default {
     },
     onImageError(event) {
       event.target.src = '@/assets/images/public_art_icon.svg'
+    },
+    getYoutubeVideoID(url) {
+      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      const match = url.match(regExp)
+      return match && match[7].length === 11 ? match[7] : false
     }
   }
 }
