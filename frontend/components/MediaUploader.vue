@@ -143,7 +143,7 @@ export default {
               audioUrl: this.audioUrl,
               audio: this.audio
             })
-            console.log('Audios', this.audios)
+            // console.log('Audios', this.audios)
           })
         })
       } else {

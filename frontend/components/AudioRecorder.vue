@@ -225,15 +225,15 @@ export default {
         ? this.file.type
         : this.mediaRecorder.mimeType.split(';')[0]
 
-      console.log(
-        'External Audio Test',
-        this.title,
-        file_type,
-        this.description,
-        file,
-        this.type,
-        this.id
-      )
+      // console.log(
+      //   'External Audio Test',
+      //   this.title,
+      //   file_type,
+      //   this.description,
+      //   file,
+      //   this.type,
+      //   this.id
+      // )
       const formData = getFormData({
         name: this.title,
         file_type,

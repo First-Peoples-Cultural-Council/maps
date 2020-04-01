@@ -141,6 +141,7 @@ export default {
       return img || require(`@/assets/images/artist_icon.svg`)
     },
     checkArtistProfile(name) {
+      // console.log('ARTIST PROFILE')
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })

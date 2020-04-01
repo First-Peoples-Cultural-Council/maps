@@ -435,7 +435,7 @@ export default {
         )
         const recording_id = recording.id
 
-        const modified = await this.$axios.$patch(
+        await this.$axios.$patch(
           `/api/placename/${newPlace.id}/`,
           {
             audio: recording_id,
@@ -447,7 +447,7 @@ export default {
             }
           }
         )
-        console.log('Modified', modified)
+        // console.log('Modified', modified)
       } catch (e) {
         // for now assume this always succeeds.
       }

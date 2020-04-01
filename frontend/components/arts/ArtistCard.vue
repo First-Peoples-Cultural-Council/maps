@@ -58,7 +58,7 @@ import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   props: {
-    art: {
+    media: {
       type: Object,
       default: () => {
         return {}
@@ -76,34 +76,35 @@ export default {
   },
   computed: {
     mediaData() {
-      return this.art.medias[0]
+      return this.media
     },
-    artist() {
-      return this.art.artists
+    artists() {
+      return this.mediaData.art.artists
     },
     mediaType() {
-      return this.mediaData.file_type
+      return this.mediaData.type
     },
     isLayoutTile() {
       return this.layout !== 'landscape'
     },
     mediaExist() {
-      return this.mediaData.media_file !== null
+      return this.mediaData.image !== null
     },
     artImage() {
       return this.mediaExist
-        ? this.mediaData.media_file
+        ? this.mediaData.image
         : require('@/assets/images/public_art_icon.svg')
     },
     returnArtists() {
-      const listOfArtist =
-        this.artist.length !== 0
-          ? this.artist.map((artist, index) => {
-              return `<a href="art/${encodeFPCC(artist.name)}"> ${
-                artist.name
-              }</a>`
-            })
-          : this.art.name
+      const listOfArtist = this.artist
+        ? this.artists.map((artist, index) => {
+            return `<a href="art/${encodeFPCC(artist.name)}"> ${
+              artist.name
+            }</a>`
+          })
+        : `<a href="art/${encodeFPCC(this.mediaData.art.name)}"> ${
+            this.mediaData.art.name
+          }</a>`
       return `By ${listOfArtist}`
     },
     returnMediaType() {
@@ -130,13 +131,13 @@ export default {
     handleMouseOver() {
       this.hover = true
       // in some cases, we list places without full geometry, no marker shown.
-      if (!this.art.geometry) return
-      this.$eventHub.revealArea(this.art.geometry)
+      if (!this.media.art.geometry) return
+      this.$eventHub.revealArea(this.media.art.geometry)
     },
     handleMouseLeave() {
       this.hover = false
       // in some cases, we list places without full geometry, no marker shown.
-      if (!this.art.geometry) return
+      if (!this.media.art.geometry) return
       this.$eventHub.doneReveal()
     }
   }

@@ -126,7 +126,7 @@ export default {
 
       this.showModal = false
 
-      console.log('Ok!')
+      // console.log('Ok!')
     }
   }
 }
