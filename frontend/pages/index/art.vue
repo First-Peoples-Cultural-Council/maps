@@ -95,6 +95,7 @@
               <ArtistCard
                 :media="artwork"
                 :layout="'landscape'"
+                :is-selected="artDetails.art === artwork.art"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(artwork.art, artwork)"
               ></ArtistCard>
@@ -312,10 +313,15 @@ export default {
       })
     },
     selectMedia(art, currentMedia) {
-      this.artDetails = {
-        art,
-        currentMedia
+      if (art === this.artDetails.art) {
+        this.artDetails = {}
+      } else {
+        this.artDetails = {
+          art,
+          currentMedia
+        }
       }
+
       this.toggleSidePanel()
     },
     toggleSidePanel() {

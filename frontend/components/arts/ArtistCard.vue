@@ -1,6 +1,7 @@
 <template>
   <div
     class="artist-card"
+    :class="{ 'card-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -67,6 +68,10 @@ export default {
     layout: {
       type: String,
       default: 'tile'
+    },
+    isSelected: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -221,7 +226,7 @@ export default {
 
 .artist-title {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 800;
   color: #707070;
   margin: 0;
 }
@@ -229,13 +234,13 @@ export default {
 .artist-name {
   font-size: 13px;
   font-weight: normal;
-  color: #c3bfbc;
+  color: #707070;
   margin: 0;
 }
 
 .artist-name a {
   font-weight: normal;
-  color: #c3bfbc;
+  color: #707070;
 }
 
 /* Landscape Layout */
@@ -319,5 +324,10 @@ export default {
   &:hover {
     border: 1px solid #b57936;
   }
+}
+
+.card-selected {
+  border: 1px solid #b57936;
+  transform: translateX(10px);
 }
 </style>
