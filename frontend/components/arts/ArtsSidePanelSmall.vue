@@ -10,12 +10,15 @@
     <!-- Render List of Artist -->
     <div v-if="this.$route.name !== 'index-art-art'">
       <div v-if="listOfArtists.length === 0" class="panel-artist">
-        <img class="artist-img-small" :src="renderArtistImg(art.art.image)" />
+        <img
+          class="artist-img-small"
+          :src="renderArtistImg(artDetails.image)"
+        />
         <div class="panel-details">
-          <span class="item-title">{{ art.art.name }}</span>
+          <span class="item-title">{{ artDetails.name }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click="checkArtistProfile(art.art.name)"
+            @click="checkArtistProfile(artDetails.name)"
           >
             Check Profile
           </div>
@@ -40,8 +43,28 @@
       </div>
     </div>
 
+    <b-row v-if="listOfPublicArt" class="ml-1 mr-1 media-list-container">
+      <b-col
+        v-for="(artwork, index) in listOfPublicArt"
+        :key="artwork.id"
+        lg="12"
+        xl="12"
+        md="6"
+        sm="6"
+        @click="showMedia(artwork, index)"
+      >
+        <MediaCard
+          class="mt-3 hover-left-move"
+          :media="artwork"
+          :geometry="geometry"
+          :type="'public_art'"
+        >
+        </MediaCard>
+      </b-col>
+    </b-row>
+
     <!-- Render List of Medias -->
-    <b-row class="m-1 p-1 media-list-container">
+    <b-row class="ml-1 mr-1 media-list-container">
       <b-col
         v-for="(media, index) in listOfMedias"
         :key="media.id"
@@ -55,6 +78,7 @@
           class="mt-3 hover-left-move"
           :media="media"
           :geometry="geometry"
+          :type="'media'"
         >
         </MediaCard>
       </b-col>
@@ -66,8 +90,8 @@
       :curr-index="currentIndex"
       :media="currentMedia"
       :artists="listOfArtists"
-      :placename="art.art.name"
-      :placename-img="art.art.image"
+      :placename="artDetails.name"
+      :placename-img="artDetails.image"
       :show-gallery="showGallery"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
@@ -107,22 +131,31 @@ export default {
   data() {
     return {
       showGallery: false,
-      currentMedia: this.art.currentMedia || null,
+      currentMedia: this.art.currentMedia,
       currentIndex: 0
     }
   },
   computed: {
+    artDetails() {
+      return this.art.art
+    },
+    listOfPublicArt() {
+      return this.artDetails.public_arts || []
+    },
     listOfArtists() {
-      return this.art.art.artists
+      return this.artDetails.artists
     },
     listOfMedias() {
-      return this.art.art.medias
+      return this.artDetails.medias
     },
     listOfImageMedia() {
-      return this.listOfMedias.filter(media => media.file_type === 'image')
+      return [
+        ...this.listOfPublicArt,
+        ...this.listOfMedias.filter(media => media.file_type === 'image')
+      ]
     },
     geometry() {
-      return this.art.art.geometry || this.art.art.geom
+      return this.artDetails.geometry || this.artDetails.geom
     }
   },
   mounted() {
@@ -142,7 +175,6 @@ export default {
       return img || require(`@/assets/images/artist_icon.svg`)
     },
     checkArtistProfile(name) {
-      // console.log('ARTIST PROFILE')
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -171,6 +203,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   height: 100%;
+  padding-bottom: 1em;
 }
 
 .panel-header {
