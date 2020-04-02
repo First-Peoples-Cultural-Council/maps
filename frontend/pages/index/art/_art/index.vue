@@ -54,10 +54,10 @@
             <span v-if="artDetails.description" class="field-title">
               Artist Biography</span
             >
-            <span class="field-content ">
+            <span class="field-content">
               <p v-html="stringSplit(artDetails.description)"></p>
               <a href="#" @click="toggleDescription">{{
-                collapseDescription ? 'less reading' : 'keep reading'
+                collapseDescription ? 'read less' : 'read more'
               }}</a>
             </span>
           </section>
@@ -378,6 +378,14 @@ export default {
 .field-content a {
   text-decoration: underline;
   color: #c46257;
+}
+
+.field content h1,
+.field content h2,
+.field content h3,
+.field content h4,
+.field content h5 {
+  font-size: 1rem;
 }
 
 .artist-content-field > .field-content-list {
