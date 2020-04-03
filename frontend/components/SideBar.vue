@@ -5,7 +5,7 @@
     :class="{ 'sidebar-arts-container': showSidePanel }"
   >
     <div class="sidebarRelative position-relative">
-      <div class="sidebar-desktop">
+      <div class="sidebar-desktop position-relative">
         <div class="sidebar-header">
           <Logo class="cursor-pointer" :logo-alt="1"></Logo>
         </div>
@@ -131,6 +131,7 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
+      this.$store.commit('sidebar/setDrawerContent', false)
       const path = this.navigationTabs.find(nt => nt.name === data).path
       const self = this
       self.$router.push({
@@ -146,7 +147,7 @@ export default {
 
 <style>
 .sidebar-container {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;

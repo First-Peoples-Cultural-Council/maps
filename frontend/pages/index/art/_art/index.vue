@@ -38,6 +38,7 @@
           :name="art.name"
           :server="isServer"
           :toggle-side="toggleSidePanel"
+          :media="[...artDetails.public_arts, ...artDetails.medias][0]"
         ></ArtistDetailCard>
 
         <ArtsDetailCard
@@ -54,10 +55,10 @@
             <span v-if="artDetails.description" class="field-title">
               Artist Biography</span
             >
-            <span class="field-content ">
+            <span class="field-content">
               <p v-html="stringSplit(artDetails.description)"></p>
               <a href="#" @click="toggleDescription">{{
-                collapseDescription ? 'less reading' : 'keep reading'
+                collapseDescription ? 'read less' : 'read more'
               }}</a>
             </span>
           </section>
@@ -241,7 +242,6 @@ export default {
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
     console.log('ART DETAILS ARE', artDetails)
-    console.log('ART ARE', arts)
 
     const isServer = !!process.server
     return {
@@ -255,7 +255,7 @@ export default {
     this.setupMap()
   },
   mounted() {
-    if (this.isServer) {
+    if (this.isServer && this.artDetails) {
       this.updateMediaUrl()
     }
 
@@ -293,6 +293,7 @@ export default {
       return stringValue
     },
     updateMediaUrl() {
+      console.log('DETAILS ARE', this.artDetails)
       const artDetails = this.artDetails
 
       artDetails.medias = this.art.medias.map(media => {
@@ -378,6 +379,14 @@ export default {
 .field-content a {
   text-decoration: underline;
   color: #c46257;
+}
+
+.field content h1,
+.field content h2,
+.field content h3,
+.field content h4,
+.field content h5 {
+  font-size: 1rem;
 }
 
 .artist-content-field > .field-content-list {

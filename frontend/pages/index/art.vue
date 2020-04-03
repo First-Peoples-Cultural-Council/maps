@@ -95,6 +95,7 @@
               <ArtistCard
                 :media="artwork"
                 :layout="'landscape'"
+                :is-selected="artDetails.art === artwork.art"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(artwork.art, artwork)"
               ></ArtistCard>
@@ -299,9 +300,6 @@ export default {
       return artworks
     }
   },
-  mounted() {
-    console.log('ALL ARTS DATA', this.artworks)
-  },
   methods: {
     handleCardClick($event, name, type) {
       if (this.showDrawer) {
@@ -312,10 +310,15 @@ export default {
       })
     },
     selectMedia(art, currentMedia) {
-      this.artDetails = {
-        art,
-        currentMedia
+      if (art === this.artDetails.art) {
+        this.artDetails = {}
+      } else {
+        this.artDetails = {
+          art,
+          currentMedia
+        }
       }
+
       this.toggleSidePanel()
     },
     toggleSidePanel() {

@@ -1,7 +1,7 @@
 <template>
   <ArtistBanner>
     <template v-slot:header>
-      <img class="artist-header" :src="artImage" />
+      <img class="artist-header" :src="artistBanner" />
       <div class="fpcc-card-more-art" @click.prevent="handleReturn">
         <img
           v-if="!hover"
@@ -15,7 +15,6 @@
           src="@/assets/images/return_icon_hover.svg"
           alt="Go"
         />
-        <span class="ml-1 font-weight-bold">Return</span>
       </div>
       <img class="artist-profile" :src="artistImg()" />
     </template>
@@ -85,6 +84,12 @@ export default {
       default: () => {
         return {}
       }
+    },
+    media: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -95,6 +100,9 @@ export default {
   computed: {
     showDrawer() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    artistBanner() {
+      return this.media ? this.media.media_file || this.media.image : ''
     }
   },
   methods: {

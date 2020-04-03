@@ -1,6 +1,7 @@
 <template>
   <div
     class="artist-card"
+    :class="{ 'card-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -67,6 +68,10 @@ export default {
     layout: {
       type: String,
       default: 'tile'
+    },
+    isSelected: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -137,13 +142,11 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      // in some cases, we list places without full geometry, no marker shown.
       if (!this.media.art.geometry) return
       this.$eventHub.revealArea(this.media.art.geometry)
     },
     handleMouseLeave() {
       this.hover = false
-      // in some cases, we list places without full geometry, no marker shown.
       if (!this.media.art.geometry) return
       this.$eventHub.doneReveal()
     },
@@ -221,7 +224,7 @@ export default {
 
 .artist-title {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 800;
   color: #707070;
   margin: 0;
 }
@@ -229,13 +232,12 @@ export default {
 .artist-name {
   font-size: 13px;
   font-weight: normal;
-  color: #c3bfbc;
+  color: #707070;
   margin: 0;
 }
 
 .artist-name a {
   font-weight: normal;
-  color: #c3bfbc;
 }
 
 /* Landscape Layout */
@@ -271,11 +273,12 @@ export default {
     .arts-card-footer {
       .artist-title {
         width: 150px;
+        max-height: 100px;
         overflow-wrap: break-word;
         word-wrap: break-word;
-
         font-size: 0.8em;
         font-weight: 800;
+        overflow: hidden;
       }
       .artist-name {
         font-size: 0.7em;
@@ -319,5 +322,10 @@ export default {
   &:hover {
     border: 1px solid #b57936;
   }
+}
+
+.card-selected {
+  border: 1px solid #b57936;
+  transform: translateX(10px);
 }
 </style>

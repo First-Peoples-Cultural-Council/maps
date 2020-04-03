@@ -1,5 +1,5 @@
 <template>
-  <div v-show="showGallery" id="gallery-modal" class="gallery-modal">
+  <div :id="`gallery-modal-${currentMedia.id}`" class="gallery-modal">
     <img
       class="btn-close cursor-pointer"
       src="@/assets/images/close_icon_white.svg"
@@ -39,8 +39,9 @@
         <img
           v-if="currentMedia.file_type === 'image'"
           class="media-img"
-          :src="currentMedia.media_file"
+          :src="currentMedia.media_file || currentMedia.image"
         />
+        <!-- REnder Youtube Video Here -->
         <iframe
           v-else-if="
             currentMedia.file_type === 'video' &&
@@ -56,6 +57,8 @@
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
+        <!-- Render Public Art Image here -->
+        <img v-else class="media-img" :src="currentMedia.image" />
       </div>
       <button
         v-if="isRelatedMedia"
@@ -68,12 +71,13 @@
 
     <div v-if="isRelatedMedia" class="gallery-img-pagination">
       <div
-        v-for="(item, index) in relatedMedia"
+        v-for="(item, indx) in relatedMedia"
         :key="item.id"
-        :class="`arts-img-item ${currentIndex === index ? 'is-selected' : ''}`"
-        @click="selectCurrentIndex(index, item)"
+        :class="`arts-img-item ${currentIndex === indx ? 'is-selected' : ''}`"
+        @click="selectCurrentIndex(indx, item)"
       >
-        <img :src="item.media_file" />
+        <img v-if="item.media_file" :src="item.media_file" />
+        <img v-else :src="item.image" />
       </div>
     </div>
   </div>
@@ -130,33 +134,33 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      index: this.currIndex,
+      mediaData: this.media
+    }
+  },
   computed: {
     artistCount() {
       return this.artists ? this.artists.length : 0
     },
     currentIndex() {
-      return this.currIndex
+      return this.index
     },
     currentMedia() {
       return this.media
     },
-
     isRelatedMedia() {
       return (
-        this.currentMedia.file_type === 'image' && this.relatedMedia.length > 1
+        this.currentMedia.file_type !== 'video' && this.relatedMedia.length > 1
       )
     },
     canNavigatePrevious() {
-      return this.currIndex === 0
+      return this.index === 0
     },
     canNavigateNext() {
-      return this.currIndex === this.relatedMedia.length - 1
+      return this.index === this.relatedMedia.length - 1
     }
-  },
-  mounted() {
-    const mapContainer = document.getElementById('map-container')
-    const modalContainer = document.getElementById('gallery-modal')
-    mapContainer.after(modalContainer)
   },
   methods: {
     returnArtists() {
@@ -172,16 +176,16 @@ export default {
       return img || require(`@/assets/images/artist_icon.svg`)
     },
     selectCurrentIndex(index, item) {
-      this.currIndex = index
+      this.index = index
       this.media = item
     },
     nextSlide() {
-      this.currIndex += 1
-      this.media = this.relatedMedia[this.currIndex]
+      this.index += 1
+      this.media = this.relatedMedia[this.currentIndex]
     },
     previousSlide() {
-      this.currIndex -= 1
-      this.media = this.relatedMedia[this.currIndex]
+      this.index -= 1
+      this.media = this.relatedMedia[this.currentIndex]
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
@@ -276,6 +280,7 @@ export default {
   width: 100%;
   height: 600px;
   object-fit: cover;
+  object-position: center center;
 }
 
 /* Pagination CSS */

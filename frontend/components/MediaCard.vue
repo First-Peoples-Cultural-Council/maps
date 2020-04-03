@@ -4,8 +4,8 @@
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
-    <!-- Landscape View Mode -->
-    <div class="arts-card-landscape">
+    <!-- Render if Media -->
+    <div v-if="isMedia" class="arts-card-landscape">
       <div class="arts-card-body">
         <img
           :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
@@ -20,6 +20,31 @@
           <div class="arts-card-tag">
             <img :src="returnMediaTypeLogo" />
             {{ media.file_type }}
+          </div>
+          <div class="fpcc-card-more">
+            <img
+              v-if="!hover"
+              src="@/assets/images/go_icon_hover.svg"
+              alt="Go"
+            />
+            <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Render if Public Art -->
+    <div v-else class="arts-card-landscape">
+      <div class="arts-card-body">
+        <img :class="`card-teaser-img`" :src="media.image" />
+      </div>
+      <div class="arts-card-right">
+        <div class="arts-card-footer">
+          <span class="artist-title"> {{ media.name }} </span>
+        </div>
+        <div class="arts-card-more">
+          <div class="arts-card-tag">
+            <img src="@/assets/images/arts/image.png" />
+            Public Art
           </div>
           <div class="fpcc-card-more">
             <img
@@ -49,6 +74,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    type: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -57,6 +86,9 @@ export default {
     }
   },
   computed: {
+    isMedia() {
+      return this.type === 'media'
+    },
     videoThumbnail() {
       return `https://img.youtube.com/vi/${this.getYoutubeVideoID(
         this.media.url

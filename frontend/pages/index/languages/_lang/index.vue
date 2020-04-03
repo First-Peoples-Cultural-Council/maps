@@ -251,7 +251,7 @@
                 md="6"
                 sm="6"
               >
-                <ArtistCard
+                <ArtsCard
                   class="mt-3 hover-left-move"
                   :art="art"
                   :layout="'landscape'"
@@ -259,7 +259,7 @@
                     handleCardClick($event, art.properties.name, 'art')
                   "
                 >
-                </ArtistCard>
+                </ArtsCard>
               </b-col>
             </b-row>
           </div>
@@ -271,7 +271,6 @@
 
 <script>
 import ArtsCard from '@/components/arts/ArtsCard.vue'
-import ArtistCard from '@/components/arts/ArtistCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
@@ -297,8 +296,7 @@ export default {
     Filters,
     Badge,
     Logo,
-    Notification,
-    ArtistCard
+    Notification
   },
   data() {
     return {
