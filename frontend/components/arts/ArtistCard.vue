@@ -142,13 +142,11 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      // in some cases, we list places without full geometry, no marker shown.
       if (!this.media.art.geometry) return
       this.$eventHub.revealArea(this.media.art.geometry)
     },
     handleMouseLeave() {
       this.hover = false
-      // in some cases, we list places without full geometry, no marker shown.
       if (!this.media.art.geometry) return
       this.$eventHub.doneReveal()
     },
@@ -240,7 +238,6 @@ export default {
 
 .artist-name a {
   font-weight: normal;
-  color: #707070;
 }
 
 /* Landscape Layout */
@@ -276,11 +273,12 @@ export default {
     .arts-card-footer {
       .artist-title {
         width: 150px;
+        max-height: 100px;
         overflow-wrap: break-word;
         word-wrap: break-word;
-
         font-size: 0.8em;
         font-weight: 800;
+        overflow: hidden;
       }
       .artist-name {
         font-size: 0.7em;
