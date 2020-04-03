@@ -162,6 +162,7 @@ export default {
       return this.index === this.relatedMedia.length - 1
     }
   },
+
   methods: {
     returnArtists() {
       const listOfArtist =

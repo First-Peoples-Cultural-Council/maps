@@ -310,16 +310,16 @@ export default {
       })
     },
     selectMedia(art, currentMedia) {
-      if (art === this.artDetails.art) {
+      if (art === this.artDetails.art && this.showDrawer) {
         this.artDetails = {}
+        this.$store.commit('sidebar/setDrawerContent', false)
       } else {
         this.artDetails = {
           art,
           currentMedia
         }
+        this.toggleSidePanel()
       }
-
-      this.toggleSidePanel()
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)

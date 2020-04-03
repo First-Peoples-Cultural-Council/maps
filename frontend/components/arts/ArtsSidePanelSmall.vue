@@ -145,7 +145,7 @@ export default {
       return this.artDetails.public_arts || []
     },
     listOfArtists() {
-      return this.artDetails.artists
+      return this.artDetails.artists || []
     },
     listOfMedias() {
       return this.artDetails.medias
@@ -166,6 +166,9 @@ export default {
           )
         : 0
     }
+  },
+  mounted() {
+    this.showGallery = !!this.currentMedia
   },
   methods: {
     toggleGallery() {
