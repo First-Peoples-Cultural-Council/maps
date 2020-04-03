@@ -95,7 +95,7 @@
               <ArtistCard
                 :media="artwork"
                 :layout="'landscape'"
-                :is-selected="artDetails.art === artwork.art"
+                :is-selected="artDetails.art === artwork.art && showDrawer"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(artwork.art, artwork)"
               ></ArtistCard>
@@ -313,12 +313,12 @@ export default {
       if (art === this.artDetails.art && this.showDrawer) {
         this.artDetails = {}
         this.$store.commit('sidebar/setDrawerContent', false)
-      } else {
+      } else if (art !== this.artDetails.art || !this.showDrawer) {
         this.artDetails = {
           art,
           currentMedia
         }
-        this.toggleSidePanel()
+        this.$store.commit('sidebar/setDrawerContent', true)
       }
     },
     toggleSidePanel() {
