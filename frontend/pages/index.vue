@@ -4,7 +4,7 @@
     class="map-container"
     :class="{
       detailModeContainer: isDetailMode,
-      'arts-container': isArt || isArtistDetail
+      'arts-container': isArt
     }"
   >
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
@@ -281,10 +281,11 @@ export default {
       return this.$store.state.sidebar.mobileContent
     },
     isArt() {
-      return this.$store.state.sidebar.isArtsMode
-    },
-    isArtistDetail() {
-      return this.$store.state.sidebar.isArtsMode
+      return (
+        this.$store.state.sidebar.isArtsMode &&
+        (this.$route.name === 'index-art' ||
+          this.$route.name === 'index-art-art')
+      )
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
