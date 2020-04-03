@@ -1,5 +1,5 @@
 <template>
-  <div v-show="showGallery" id="gallery-modal" class="gallery-modal">
+  <div :id="`gallery-modal-${currentMedia.id}`" class="gallery-modal">
     <img
       class="btn-close cursor-pointer"
       src="@/assets/images/close_icon_white.svg"
@@ -150,12 +150,9 @@ export default {
     currentMedia() {
       return this.media
     },
-
     isRelatedMedia() {
       return (
-        (this.currentMedia.file_type !== 'video' ||
-          this.currentMedia.file_type !== 'audio') &&
-        this.relatedMedia.length > 1
+        this.currentMedia.file_type !== 'video' && this.relatedMedia.length > 1
       )
     },
     canNavigatePrevious() {
@@ -164,11 +161,6 @@ export default {
     canNavigateNext() {
       return this.index === this.relatedMedia.length - 1
     }
-  },
-  mounted() {
-    const mapContainer = document.getElementById('map-container')
-    const modalContainer = document.getElementById('gallery-modal')
-    mapContainer.after(modalContainer)
   },
   methods: {
     returnArtists() {
