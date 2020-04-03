@@ -1,5 +1,11 @@
 <template>
-  <div :class="`sidebar-side-panel arts-right-panel`">
+  <div
+    :class="
+      `sidebar-side-panel arts-right-panel ${
+        showGallery ? 'hide-scroll-y' : ''
+      }`
+    "
+  >
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
         <span class="mr-2 font-weight-bold"> X </span>
@@ -86,8 +92,8 @@
 
     <!-- Render Gallery with Media Info -->
     <Gallery
-      v-if="currentMedia"
-      :curr-index="currentIndex"
+      v-if="showGallery"
+      :curr-index="mediaIndex"
       :media="currentMedia"
       :artists="listOfArtists"
       :placename="artDetails.name"
@@ -122,10 +128,6 @@ export default {
       default: () => {
         return {}
       }
-    },
-    showPanel: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -156,11 +158,14 @@ export default {
     },
     geometry() {
       return this.artDetails.geometry || this.artDetails.geom
+    },
+    mediaIndex() {
+      return this.currentMedia
+        ? this.listOfImageMedia.findIndex(
+            media => media.id === this.currentMedia.id
+          )
+        : 0
     }
-  },
-  mounted() {
-    this.showGallery = !!this.currentMedia
-    console.log('SIDE PANEL DATA', this.art)
   },
   methods: {
     toggleGallery() {
@@ -185,13 +190,17 @@ export default {
 
 <style lang="scss">
 .sidebar-side-panel {
-  width: 425px;
-  height: 100vh;
   position: fixed;
   top: 0;
   left: 425px;
-  overflow-y: auto;
+  width: 425px;
+  height: 100vh;
   overflow-x: hidden;
+  z-index: 999999;
+}
+
+.hide-scroll-y {
+  overflow-y: hidden;
 }
 
 .arts-right-panel {
