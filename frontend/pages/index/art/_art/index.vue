@@ -38,6 +38,7 @@
           :name="art.name"
           :server="isServer"
           :toggle-side="toggleSidePanel"
+          :media="[...artDetails.public_arts, ...artDetails.medias][0]"
         ></ArtistDetailCard>
 
         <ArtsDetailCard
@@ -241,7 +242,6 @@ export default {
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
     console.log('ART DETAILS ARE', artDetails)
-    console.log('ART ARE', arts)
 
     const isServer = !!process.server
     return {
@@ -255,7 +255,7 @@ export default {
     this.setupMap()
   },
   mounted() {
-    if (this.isServer) {
+    if (this.isServer && this.artDetails) {
       this.updateMediaUrl()
     }
 
@@ -293,6 +293,7 @@ export default {
       return stringValue
     },
     updateMediaUrl() {
+      console.log('DETAILS ARE', this.artDetails)
       const artDetails = this.artDetails
 
       artDetails.medias = this.art.medias.map(media => {

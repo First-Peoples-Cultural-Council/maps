@@ -300,9 +300,6 @@ export default {
       return artworks
     }
   },
-  mounted() {
-    console.log('ALL ARTS DATA', this.artworks)
-  },
   methods: {
     handleCardClick($event, name, type) {
       if (this.showDrawer) {
