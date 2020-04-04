@@ -73,8 +73,8 @@
       <div
         v-for="(item, indx) in relatedMedia"
         :key="item.id"
-        :class="`arts-img-item ${currentIndex === indx ? 'is-selected' : ''}`"
-        @click="selectCurrentIndex(indx, item)"
+        :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
+        @click="selectCurrentIndex(item)"
       >
         <img v-if="item.media_file" :src="item.media_file" />
         <img v-else :src="item.image" />
@@ -86,10 +86,6 @@
 <script>
 export default {
   props: {
-    showGallery: {
-      type: Boolean,
-      default: false
-    },
     toggleGallery: {
       type: Function,
       default: () => {
@@ -121,10 +117,6 @@ export default {
         return []
       }
     },
-    currIndex: {
-      type: Number,
-      default: 0
-    },
     placename: {
       type: String,
       default: ''
@@ -136,7 +128,7 @@ export default {
   },
   data() {
     return {
-      index: this.currIndex,
+      index: this.mediaIndex,
       mediaData: this.media
     }
   },
@@ -144,11 +136,8 @@ export default {
     artistCount() {
       return this.artists ? this.artists.length : 0
     },
-    currentIndex() {
-      return this.index
-    },
     currentMedia() {
-      return this.media
+      return this.mediaData
     },
     isRelatedMedia() {
       return (
@@ -156,10 +145,17 @@ export default {
       )
     },
     canNavigatePrevious() {
-      return this.index === 0
+      return this.mediaIndex === 0
     },
     canNavigateNext() {
-      return this.index === this.relatedMedia.length - 1
+      return this.mediaIndex === this.relatedMedia.length - 1
+    },
+    mediaIndex() {
+      return this.currentMedia
+        ? this.relatedMedia.findIndex(
+            media => media.id === this.currentMedia.id
+          )
+        : 0
     }
   },
 
@@ -176,17 +172,14 @@ export default {
     renderArtistImg(img) {
       return img || require(`@/assets/images/artist_icon.svg`)
     },
-    selectCurrentIndex(index, item) {
-      this.index = index
-      this.media = item
+    selectCurrentIndex(item) {
+      this.mediaData = item
     },
     nextSlide() {
-      this.index += 1
-      this.media = this.relatedMedia[this.currentIndex]
+      this.mediaData = this.relatedMedia[this.mediaIndex + 1]
     },
     previousSlide() {
-      this.index -= 1
-      this.media = this.relatedMedia[this.currentIndex]
+      this.mediaData = this.relatedMedia[this.mediaIndex - 1]
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
@@ -242,6 +235,8 @@ export default {
   right: 1%;
   width: 20px;
   height: 20px;
+  border: 1px solid red;
+  z-index: 99999;
 }
 
 .artist-gallery-detail {
@@ -308,10 +303,6 @@ export default {
   height: 135px;
 }
 
-.is-selected {
-  border: 5px solid #b57936;
-}
-
 .gallery-carousel-container button {
   background: rgba(0, 0, 0, 0);
   border: 0;
@@ -326,6 +317,68 @@ export default {
 
   &:disabled {
     opacity: 0.4;
+  }
+}
+
+.is-selected {
+  border: 5px solid #b57936;
+}
+
+@media (max-width: 992px) {
+  .gallery-modal {
+    justify-content: center;
+  }
+  .carousel-gallery-container {
+    width: 100%;
+    align-items: center;
+  }
+  .gallery-carousel-container {
+    padding: 0;
+  }
+
+  .media-img {
+    width: 90%;
+    margin: 0 2em;
+  }
+
+  .gallery-carousel-container button {
+    display: none;
+  }
+
+  .artist-gallery-detail {
+    position: fixed;
+    top: 0;
+    border-radius: 0;
+    width: 100vw;
+  }
+
+  .gallery-img-pagination {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .arts-img-item {
+      width: 115px;
+      height: 115px;
+      margin: 0.5em;
+      opacity: 1;
+      border: 5px solid #fff;
+      transition: border 0.2s ease-in;
+    }
+
+    .arts-img-item img {
+      object-fit: cover;
+      width: 105px;
+      height: 105px;
+    }
+
+    .is-selected {
+      border: 5px solid #b57936;
+    }
   }
 }
 </style>
