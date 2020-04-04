@@ -70,15 +70,15 @@
     </b-row>
 
     <!-- Render List of Medias -->
-    <b-row class="ml-1 mr-1 media-list-container">
+    <b-row class="media-list-container">
       <b-col
-        v-for="(media, index) in listOfMedias"
+        v-for="media in listOfMedias"
         :key="media.id"
         lg="12"
         xl="12"
-        md="6"
-        sm="6"
-        @click="showMedia(media, index)"
+        md="12"
+        sm="12"
+        @click="showMedia(media)"
       >
         <MediaCard
           class="mt-3 hover-left-move"
@@ -93,12 +93,10 @@
     <!-- Render Gallery with Media Info -->
     <Gallery
       v-if="showGallery"
-      :curr-index="mediaIndex"
       :media="currentMedia"
       :artists="listOfArtists"
       :placename="artDetails.name"
       :placename-img="artDetails.image"
-      :show-gallery="showGallery"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
       :related-media="listOfImageMedia"
@@ -132,12 +130,13 @@ export default {
   },
   data() {
     return {
-      showGallery: false,
-      currentMedia: this.art.currentMedia,
-      currentIndex: 0
+      currentMedia: this.art.currentMedia
     }
   },
   computed: {
+    showGallery() {
+      return this.$store.state.sidebar.showGallery
+    },
     artDetails() {
       return this.art.art
     },
@@ -158,31 +157,24 @@ export default {
     },
     geometry() {
       return this.artDetails.geometry || this.artDetails.geom
-    },
-    mediaIndex() {
-      return this.currentMedia
-        ? this.listOfImageMedia.findIndex(
-            media => media.id === this.currentMedia.id
-          )
-        : 0
     }
   },
   mounted() {
-    this.showGallery = !!this.currentMedia
+    this.$store.commit('sidebar/setGallery', !!this.currentMedia)
   },
   methods: {
     toggleGallery() {
-      this.showGallery = !this.showGallery
+      this.$store.commit('sidebar/setGallery', !this.showGallery)
     },
-    showMedia(media, index) {
+    showMedia(media) {
       this.toggleGallery()
       this.currentMedia = media
-      this.currentIndex = index
     },
     renderArtistImg(img) {
       return img || require(`@/assets/images/artist_icon.svg`)
     },
     checkArtistProfile(name) {
+      this.toggleGallery()
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -291,5 +283,18 @@ export default {
 
 .media-list-container {
   width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 992px) {
+  .sidebar-side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 325px;
+    height: 100vh;
+    overflow-x: hidden;
+    z-index: 999999;
+  }
 }
 </style>
