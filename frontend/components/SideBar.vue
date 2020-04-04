@@ -37,6 +37,9 @@
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
+          <template v-slot:side-panel>
+            <slot v-if="showSidePanel" name="side-panel"></slot>
+          </template>
           <template v-slot:tabs>
             <div class="sidebar-tabs">
               <b-nav tabs fill>
