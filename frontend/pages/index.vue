@@ -165,7 +165,11 @@
             :show="showEventOverlay"
           ></EventOverlay>
 
-          <div v-else class="top-bar-container shadow-sm">
+          <div
+            v-else
+            v-show="!isGalleryShown"
+            class="top-bar-container shadow-sm"
+          >
             <NavigationBar></NavigationBar>
           </div>
         </transition>
@@ -274,6 +278,9 @@ export default {
     }
   },
   computed: {
+    isGalleryShown() {
+      return this.$store.state.sidebar.showGallery
+    },
     isMobile() {
       return this.$store.state.app.isMobile
     },
@@ -1109,12 +1116,12 @@ export default {
   }
 
   .top-bar-container {
-    position: fixed;
+    position: absolute;
     top: 0px;
     left: 0;
     padding: 0.2em;
     width: 100%;
-    z-index: 100;
+    /* z-index: 100; */
     background-color: white;
     height: 50px;
   }

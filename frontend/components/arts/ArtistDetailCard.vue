@@ -79,12 +79,6 @@ export default {
         return {}
       }
     },
-    toggleSide: {
-      type: Function,
-      default: () => {
-        return {}
-      }
-    },
     media: {
       type: Object,
       default: () => {
@@ -108,7 +102,7 @@ export default {
   methods: {
     handleReturn() {
       if (this.showDrawer) {
-        this.toggleSide()
+        this.$store.commit('sidebar/setDrawerContent', false)
       }
 
       if (this.server) {

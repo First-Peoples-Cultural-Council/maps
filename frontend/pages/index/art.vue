@@ -204,11 +204,7 @@
         </section>
       </template>
       <template v-if="showDrawer" v-slot:side-panel>
-        <ArtsSidePanelSmall
-          class="artist-side-panel"
-          :art="artDetails"
-          :toggle-panel="toggleSidePanel"
-        />
+        <ArtsSidePanelSmall :art="artDetails" :toggle-panel="toggleSidePanel" />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -318,6 +314,7 @@ export default {
           art,
           currentMedia
         }
+
         this.$store.commit('sidebar/setDrawerContent', true)
       }
     },

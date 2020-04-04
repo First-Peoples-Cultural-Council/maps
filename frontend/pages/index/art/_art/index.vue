@@ -37,7 +37,6 @@
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
-          :toggle-side="toggleSidePanel"
           :media="[...artDetails.public_arts, ...artDetails.medias][0]"
         ></ArtistDetailCard>
 
@@ -335,10 +334,6 @@ export default {
 .artist-detail-container {
   width: 425px;
 }
-.artist-side-panel {
-  flex: 1 1 700px;
-}
-
 .artist-main-container {
   display: flex;
   flex-direction: column;
