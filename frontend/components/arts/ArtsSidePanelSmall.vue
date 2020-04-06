@@ -1,11 +1,5 @@
 <template>
-  <div
-    :class="
-      `sidebar-side-panel arts-right-panel ${
-        showGallery ? 'hide-scroll-y' : ''
-      }`
-    "
-  >
+  <div :class="`arts-right-panel ${showGallery ? 'hide-scroll-y' : ''}`">
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
         <span class="mr-2 font-weight-bold"> X </span>
@@ -55,8 +49,8 @@
         :key="artwork.id"
         lg="12"
         xl="12"
-        md="6"
-        sm="6"
+        md="12"
+        sm="12"
         @click="showMedia(artwork, index)"
       >
         <MediaCard
@@ -147,7 +141,9 @@ export default {
       return this.artDetails.artists || []
     },
     listOfMedias() {
-      return this.artDetails.medias
+      return this.artDetails.medias.filter(
+        media => media.file_type !== 'default'
+      )
     },
     listOfImageMedia() {
       return [
@@ -184,16 +180,6 @@ export default {
 </script>
 
 <style lang="scss">
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
 .hide-scroll-y {
   overflow-y: hidden;
 }
@@ -247,7 +233,7 @@ export default {
   position: absolute;
   right: 0;
   width: 100px;
-  background-color: #953920;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
@@ -284,17 +270,5 @@ export default {
 .media-list-container {
   width: 100%;
   margin: 0 auto;
-}
-
-@media (max-width: 992px) {
-  .sidebar-side-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 325px;
-    height: 100vh;
-    overflow-x: hidden;
-    z-index: 999999;
-  }
 }
 </style>

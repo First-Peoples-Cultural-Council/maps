@@ -2,9 +2,14 @@
   <div class="w-100">
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
     >
-      <div>
+      <div class="p-1">
+        <img
+          v-if="isArtist"
+          class="artist-img-small"
+          :src="renderArtistImg(art.image)"
+        />
         {{ art.kind | titleCase }}:
         <span class="font-weight-bold">{{ art.name }}</span>
       </div>
@@ -25,12 +30,13 @@
           @click="$store.commit('sidebar/setMobileContent', false)"
         >
           <img
+            v-if="!isArtist"
             class="d-inline-block"
             src="@/assets/images/arrow_down_icon.svg"
           />
         </div>
         <!-- START Conditional Render Arts Header -->
-        <ArtistDetailCard
+        <ArtsBanner
           v-if="isArtist"
           :art-image="art.image"
           :tags="art.taxonomies"
@@ -38,13 +44,14 @@
           :name="art.name"
           :server="isServer"
           :media="[...artDetails.public_arts, ...artDetails.medias][0]"
-        ></ArtistDetailCard>
+        ></ArtsBanner>
 
         <ArtsDetailCard
           v-else
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
+          :tags="art.taxonomies"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
@@ -82,7 +89,7 @@
             <span class="field-content">
               <ul class="artist-social-icons">
                 <li v-for="soc in socialMedia" :key="soc.id">
-                  <a :href="soc.value">
+                  <a :href="soc.value" target="_blank">
                     <img
                       v-if="soc.value.includes('facebook')"
                       src="@/assets/images/arts/facebook.svg"
@@ -111,7 +118,7 @@
         </div>
         <div
           v-else
-          class="p-4 m-0 pb-0 color-gray font-08"
+          class="p-4 m-0 pb-0 color-gray font-08 field-content"
           v-html="artDetails.description"
         ></div>
         <div class="ml-3 mr-3 mt-3">
@@ -135,8 +142,12 @@
       :art="{ art: artDetails }"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
+      class="sidebar-side-panel hide-mobile"
     />
-    <div v-if="isGalleryNotEmpty && !showDrawer" class="panel-collapsable">
+    <div
+      v-if="isGalleryNotEmpty && !showDrawer"
+      class="hide-mobile panel-collapsable"
+    >
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
         <img src="@/assets/images/go_icon_hover.svg" />
         Expand
@@ -148,7 +159,7 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
-import ArtistDetailCard from '@/components/arts/ArtistDetailCard.vue'
+import ArtsBanner from '@/components/arts/ArtsBanner.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
@@ -164,7 +175,7 @@ import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 export default {
   components: {
     ArtsDetailCard,
-    ArtistDetailCard,
+    ArtsBanner,
     LanguageSeeAll,
     Filters,
     Logo,
@@ -195,9 +206,8 @@ export default {
     },
     isGalleryNotEmpty() {
       return (
-        this.art.kind.toLowerCase() === 'artist' &&
-        (this.artDetails.medias.length !== 0 ||
-          this.artDetails.public_arts.length !== 0)
+        this.artDetails.medias.filter(media => media.file_type !== 'default')
+          .length !== 0 || this.artDetails.public_arts.length !== 0
       )
     },
     socialMedia() {
@@ -292,17 +302,18 @@ export default {
       return stringValue
     },
     updateMediaUrl() {
-      console.log('DETAILS ARE', this.artDetails)
       const artDetails = this.artDetails
 
-      artDetails.medias = this.art.medias.map(media => {
-        media.media_file.replace('http://nginx/api/', '')
-        return media
-      })
-
-      console.log('artdetails=', artDetails)
-
-      this.artDetails = artDetails
+      if (this.artDetails.medias) {
+        artDetails.medias = this.artDetails.medias.map(media => {
+          media.media_file.replace('http://nginx/api/', '')
+          return media
+        })
+        this.artDetails = artDetails
+      }
+    },
+    renderArtistImg(img) {
+      return img || require(`@/assets/images/artist_icon.svg`)
     }
   },
   head() {
@@ -328,11 +339,12 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  height: 100vh;
+  height: auto;
+  overflow-y: auto;
 }
 
 .artist-detail-container {
-  width: 425px;
+  width: 100%;
 }
 .artist-main-container {
   display: flex;
@@ -376,12 +388,18 @@ export default {
   color: #c46257;
 }
 
-.field content h1,
-.field content h2,
-.field content h3,
-.field content h4,
-.field content h5 {
+.field-content h1,
+.field-content h2,
+.field-content h3,
+.field-content h4,
+.field-content h5 {
   font-size: 1rem;
+  font-weight: bold;
+}
+
+.field-content p {
+  font: Regular 16px/25px Proxima Nova;
+  color: #707070;
 }
 
 .artist-content-field > .field-content-list {
@@ -414,7 +432,7 @@ export default {
 }
 
 .panel-collapsable {
-  width: 25px;
+  width: 15px;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -424,14 +442,19 @@ export default {
   border: 1px solid #d7d7de;
 }
 
+.artist-img-small {
+  width: 40px;
+  height: 40px;
+}
+
 .btn-collapse {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
   margin: 1em;
-  margin-left: 1.5em;
+  margin-left: 0.8em;
   width: 100px;
-  background-color: #953920;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
@@ -439,5 +462,30 @@ export default {
   border-top-right-radius: 1em;
   border-bottom-right-radius: 1em;
   color: #fff;
+}
+
+.sidebar-side-panel {
+  position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
+@media (max-width: 992px) {
+  .sidebar-side-panel {
+    width: 325px;
+    height: 100vh;
+    left: 0;
+    overflow-x: hidden;
+    z-index: 999999;
+  }
+}
+
+/* Arts Mobile UI Layout */
+.content-mobile {
+  padding: 1em;
 }
 </style>

@@ -33,7 +33,9 @@
             "
           ></Contact>
         </div>
-        <slot v-if="showSidePanel" name="side-panel"></slot>
+        <div class="sidebar-side-panel">
+          <slot v-if="showSidePanel" name="side-panel"></slot>
+        </div>
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
@@ -149,6 +151,16 @@ export default {
 </script>
 
 <style>
+.sidebar-side-panel {
+  position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
 .sidebar-container {
   position: absolute;
   top: 0;
@@ -279,6 +291,16 @@ export default {
 
   .nav-tabs .nav-link .active {
     border: 0;
+  }
+
+  .sidebar-side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 325px;
+    height: 100vh;
+    overflow-x: hidden;
+    z-index: 999999;
   }
 }
 </style>

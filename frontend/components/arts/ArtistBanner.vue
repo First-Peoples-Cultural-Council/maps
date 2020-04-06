@@ -19,6 +19,12 @@ export default {
 </script>
 
 <style>
+.arts-artist-banner {
+  /* border-radius: 5px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid #dedee4; */
+}
+
 .arts-artist-header {
   position: relative;
   border-bottom: 0.8px solid rgb(0, 0, 0, 0.25);

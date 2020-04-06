@@ -3,18 +3,19 @@
     <template v-slot:header>
       <img class="artist-header" :src="artistBanner" />
       <div class="fpcc-card-more-art" @click.prevent="handleReturn">
+        <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
+      </div>
+      <div
+        class="collapse-btn show-mobile"
+        @click.prevent="
+          $store.commit('sidebar/setMobileContent', !isMobileContent)
+        "
+      >
         <img
-          v-if="!hover"
-          class="ml-1"
-          src="@/assets/images/return_icon.svg"
-          alt="Go"
+          v-if="!isMobileContent"
+          src="@/assets/images/arrow_down_icon.svg"
         />
-        <img
-          v-else
-          class="ml-1"
-          src="@/assets/images/return_icon_hover.svg"
-          alt="Go"
-        />
+        <img v-else src="@/assets/images/arrow_up_icon.svg" />
       </div>
       <img class="artist-profile" :src="artistImg()" />
     </template>
@@ -33,6 +34,18 @@
         <div class="artist-tags-container">
           <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
         </div>
+
+        <span
+          v-if="isMobileContent"
+          class="artist-more-btn"
+          @click.stop.prevent="toggleCollapse"
+          >More about {{ name }}
+          <img
+            v-if="!collapseContent"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
+          <img v-else src="@/assets/images/arrow_up_icon.svg" />
+        </span>
       </div>
     </template>
   </ArtistBanner>
@@ -88,7 +101,8 @@ export default {
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      collapseContent: false
     }
   },
   computed: {
@@ -97,6 +111,9 @@ export default {
     },
     artistBanner() {
       return this.media ? this.media.media_file || this.media.image : ''
+    },
+    isMobileContent() {
+      return this.$store.state.sidebar.mobileContent
     }
   },
   methods: {
@@ -115,12 +132,15 @@ export default {
     },
     artistImg() {
       return this.artImage || require(`@/assets/images/artist_icon.svg`)
+    },
+    toggleCollapse() {
+      this.collapseContent = !this.collapseContent
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
@@ -137,8 +157,8 @@ export default {
   display: flex;
   align-items: center;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 1em;
+  left: 1em;
   height: 35px;
   justify-content: center;
   padding: 0.3em;
@@ -156,6 +176,26 @@ export default {
   display: inline-block;
   width: 15px;
   height: 15px;
+}
+
+.collapse-btn {
+  width: 35px;
+  height: 35px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid #dedee4;
+  position: absolute;
+  border-radius: 100%;
+  top: 30%;
+  right: 2%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.artist-more-btn {
+  font: Regular 14px/17px Proxima Nova;
+  color: #707070;
+  margin-bottom: 0.5em;
 }
 
 .fpcc-card {

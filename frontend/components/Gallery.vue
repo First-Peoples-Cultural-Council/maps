@@ -235,7 +235,6 @@ export default {
   right: 1%;
   width: 20px;
   height: 20px;
-  border: 1px solid red;
   z-index: 99999;
 }
 
