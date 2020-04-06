@@ -1151,7 +1151,7 @@ export default {
 }
 
 .mobile-content-open {
-  height: 50%;
+  height: 100%;
   bottom: 0;
   align-items: baseline;
 }
