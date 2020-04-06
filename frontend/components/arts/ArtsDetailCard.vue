@@ -31,21 +31,22 @@
       <template v-slot:body>
         <div>
           <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
+            <h5 class="field-kind">
               {{ arttype | kind }}
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
+            <h5 class="field-name">
               {{ name }}
             </h5>
+          </div>
+          <div class="artist-tags-container">
+            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
           </div>
         </div>
       </template>
       <template v-slot:footer>
         <div class="fpcc-card-more-art" @click.prevent="handleReturn">
           <img
-            v-if="!hover"
+            v-if="hover"
             class="ml-1"
             src="@/assets/images/return_icon.svg"
             alt="Go"
@@ -93,6 +94,12 @@ export default {
     server: {
       default: true,
       type: Boolean
+    },
+    tags: {
+      type: Array,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -102,6 +109,7 @@ export default {
   },
   methods: {
     handleReturn() {
+      this.$store.commit('sidebar/setDrawerContent', false)
       if (this.server) {
         this.$router.push({
           path: '/art'
@@ -117,12 +125,13 @@ export default {
 <style scoped>
 .arts-detail-card {
   cursor: pointer;
+  padding: 0.5em 0 0.5em 0.5em;
 }
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 50px;
+  width: 50px;
 }
 .arts-detail-icon-container img {
   display: inline-block;
@@ -130,18 +139,17 @@ export default {
   height: 100%;
 }
 .fpcc-card-more-art {
-  background-color: var(--color-beige, #f4eee9);
+  width: 90px;
+  background-color: #b47a2b;
+  height: 35px;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
   display: flex;
   align-items: center;
-  height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
-}
-
-.fpcc-card-more-art {
-  padding: 0.3em;
-  font-size: 0.7em;
+  padding: 1em;
 }
 
 .fpcc-card-more-art:hover {
@@ -158,5 +166,21 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
+}
+
+.field-kind {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 0.7;
+  text-transform: uppercase;
+  margin: 0.2em;
+  padding: 0;
+}
+
+.field-name {
+  font: Bold 16px/20px Proxima Nova;
+  color: #707070;
+  margin: 0.2em;
+  padding: 0;
 }
 </style>
