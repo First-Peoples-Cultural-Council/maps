@@ -140,7 +140,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;

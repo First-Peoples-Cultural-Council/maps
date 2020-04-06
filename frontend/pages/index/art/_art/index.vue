@@ -174,8 +174,8 @@ import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
-    ArtsDetailCard,
     ArtsBanner,
+    ArtsDetailCard,
     LanguageSeeAll,
     Filters,
     Logo,
