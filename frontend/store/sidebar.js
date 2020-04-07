@@ -2,7 +2,8 @@ export const state = () => ({
   isDetailMode: false,
   mobileContent: false,
   isArtsMode: false,
-  showGallery: false
+  showGallery: false,
+  collapseDetail: false
 })
 
 export const mutations = {
@@ -20,5 +21,8 @@ export const mutations = {
 
   setGallery(state, value) {
     state.showGallery = value
+  },
+  toggleCollapse(state, value) {
+    state.collapseDetail = value
   }
 }

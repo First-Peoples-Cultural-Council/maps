@@ -11,6 +11,9 @@
             :content="accordionContent"
           ></Accordion>
         </section>
+        <section class="badge-section pl-3 pr-3 mt-3"></section>
+        <hr class="sidebar-divider" />
+        <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
         <section class="badge-section pl-3 pr-3 mt-3">
@@ -32,8 +35,6 @@
             @click.native.prevent="handleBadge($event, 'comm')"
           ></Badge>
         </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:cards>
         <section class="language-section pl-3 pr-3">

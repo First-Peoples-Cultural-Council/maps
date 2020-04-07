@@ -32,6 +32,7 @@ export default {
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
   display: table;
+  height: 100%;
 }
 .fpcc-card-header {
   display: table-cell;

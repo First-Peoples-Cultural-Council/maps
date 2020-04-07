@@ -134,4 +134,8 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.arts-card-landscape {
+  background-color: #fff;
+}
+</style>

@@ -126,6 +126,7 @@ export default {
 .arts-detail-card {
   cursor: pointer;
   padding: 0.5em 0 0.5em 0.5em;
+  border-bottom: 3px solid #f9f9f9;
 }
 .arts-detail-icon-container {
   background-color: black;
