@@ -271,8 +271,7 @@ export default {
 .media-img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 600px;
+  height: 600px;
   object-fit: cover;
   object-position: center center;
 }
