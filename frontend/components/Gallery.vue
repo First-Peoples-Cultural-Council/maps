@@ -1,11 +1,6 @@
 <template>
   <div :id="`gallery-modal-${currentMedia.id}`" class="gallery-modal">
-    <img
-      class="btn-close cursor-pointer"
-      src="@/assets/images/close_icon_white.svg"
-      alt="Close"
-      @click="toggleGallery"
-    />
+    <div class="btn-close cursor-pointer" @click="toggleGallery" />
 
     <div
       :class="
@@ -232,10 +227,12 @@ export default {
 .btn-close {
   position: absolute;
   top: 2%;
-  right: 1%;
+  right: 3%;
   width: 20px;
   height: 20px;
   z-index: 99999;
+  background: url('../assets/images/close_icon_white.svg');
+  background-size: 100% 100%;
 }
 
 .artist-gallery-detail {
@@ -272,8 +269,10 @@ export default {
 }
 
 .media-img {
+  display: block;
   width: 100%;
-  height: 600px;
+  height: auto;
+  max-height: 600px;
   object-fit: cover;
   object-position: center center;
 }
@@ -349,6 +348,11 @@ export default {
     top: 0;
     border-radius: 0;
     width: 100vw;
+  }
+
+  .btn-close {
+    background: url('../assets/images/close_icon.svg');
+    background-size: 100% 100%;
   }
 
   .gallery-img-pagination {
