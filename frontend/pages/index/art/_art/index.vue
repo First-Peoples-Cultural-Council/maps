@@ -5,11 +5,7 @@
       class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
     >
       <div class="p-1">
-        <img
-          v-if="isArtist"
-          class="artist-img-small"
-          :src="renderArtistImg(art.image)"
-        />
+        <img class="artist-img-small" :src="renderArtistImg(art.image)" />
         {{ art.kind | titleCase }}:
         <span class="font-weight-bold">{{ art.name }}</span>
       </div>
@@ -20,7 +16,10 @@
 
     <div
       class="hide-mobile arts-main-container"
-      :class="{ 'content-mobile': mobileContent }"
+      :class="{
+        'content-mobile': mobileContent,
+        'mobile-content': mobileContent && isArtist
+      }"
     >
       <div class="artist-detail-container">
         <Logo v-if="!mobileContent" class="cursor-pointer" :logo-alt="1"></Logo>
@@ -55,12 +54,17 @@
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
-        <!-- START Conditional Render Arts Detail -->
-        <div v-if="isArtist" class="artist-content-container">
-          <section class="artist-content-field">
-            <span v-if="artDetails.description" class="field-title">
-              Artist Biography</span
-            >
+        <!-- Render Arts Detail -->
+        <div
+          v-if="isArtist"
+          :class="
+            `artist-content-container ${
+              isCollapse ? 'collapse-content-container' : ''
+            }`
+          "
+        >
+          <section v-if="artDetails.description" class="artist-content-field">
+            <span class="field-title"> Artist Biography</span>
             <span class="field-content">
               <p v-html="stringSplit(artDetails.description)"></p>
               <a href="#" @click="toggleDescription">{{
@@ -79,7 +83,14 @@
               <h5 class="field-title">
                 {{ art.data_type }}
               </h5>
-              <span class="field-content">{{ art.value }}</span>
+              <a
+                v-if="art.data_type === 'website'"
+                :href="art.value"
+                target="_blank"
+              >
+                {{ art.value }}</a
+              >
+              <span v-else class="field-content">{{ art.value }}</span>
             </section>
           </template>
 
@@ -121,24 +132,26 @@
           class="p-4 m-0 pb-0 color-gray font-08 field-content"
           v-html="artDetails.description"
         ></div>
-        <div class="ml-3 mr-3 mt-3">
-          <p class="font-08">
-            [ Extracted from the
-            <a href="https://www.fp-artsmap.ca/" target="_blank"
-              >First People's Arts Map</a
-            >]
-          </p>
+        <div class="hide-mobile">
+          <div class="ml-3 mr-3 mt-3">
+            <p class="font-08">
+              [ Extracted from the
+              <a href="https://www.fp-artsmap.ca/" target="_blank"
+                >First People's Arts Map</a
+              >]
+            </p>
+          </div>
+          <LanguageSeeAll
+            content="See all details"
+            class="mt-0"
+            @click.native="handleClick($event, artDetails.node_id)"
+          ></LanguageSeeAll>
+          <Filters class="mb-2 mt-2"></Filters>
         </div>
-        <LanguageSeeAll
-          content="See all details"
-          class="mt-0"
-          @click.native="handleClick($event, artDetails.node_id)"
-        ></LanguageSeeAll>
-        <Filters class="mb-2 mt-2"></Filters>
       </div>
     </div>
     <ArtsSidePanelSmall
-      v-if="isGalleryNotEmpty && showDrawer"
+      v-if="(isGalleryNotEmpty && showDrawer) || mobileContent"
       :art="{ art: artDetails }"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
@@ -192,6 +205,9 @@ export default {
     }
   },
   computed: {
+    isCollapse() {
+      return this.$store.state.sidebar.collapseDetail
+    },
     showDrawer() {
       return this.$store.state.sidebar.isArtsMode
     },
@@ -250,8 +266,6 @@ export default {
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
-    console.log('ART DETAILS ARE', artDetails)
-
     const isServer = !!process.server
     return {
       art,
@@ -263,7 +277,11 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
   },
+  destroyed() {
+    window.removeEventListener('resize', this.widthChecker)
+  },
   mounted() {
+    window.addEventListener('resize', this.widthChecker)
     if (this.isServer && this.artDetails) {
       this.updateMediaUrl()
     }
@@ -271,12 +289,25 @@ export default {
     if (
       this.art.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
-        this.artDetails.public_arts.length !== 0)
+        this.artDetails.public_arts.length !== 0) &&
+      window.innerWidth > 992
     ) {
-      this.toggleSidePanel()
+      this.$store.commit('sidebar/setDrawerContent', true)
     }
   },
   methods: {
+    widthChecker(e) {
+      if (this.mobileContent) {
+        if (e.srcElement.innerWidth > 992) {
+          this.$store.commit('sidebar/setMobileContent', false)
+          this.$store.commit('sidebar/toggleCollapse')
+        }
+      } else if (this.showDrawer) {
+        if (e.srcElement.innerWidth <= 992) {
+          this.$store.commit('sidebar/setDrawerContent', false)
+        }
+      }
+    },
     handleClick(e, data) {
       window.open(`https://fp-artsmap.ca/node/${data}`)
     },
@@ -313,7 +344,7 @@ export default {
       }
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/artist_icon.svg`)
+      return img || require(`@/assets/images/${this.art.kind}_icon.svg`)
     }
   },
   head() {
@@ -356,7 +387,6 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   margin: 0em 1em 0.25em 1em;
-  /* border: 1px solid red; */
   font-family: 'Proxima Nova', sans-serif;
 }
 
@@ -476,16 +506,35 @@ export default {
 
 @media (max-width: 992px) {
   .sidebar-side-panel {
-    width: 325px;
+    display: block !important;
+    position: initial;
+    width: 100%;
     height: 100vh;
     left: 0;
     overflow-x: hidden;
     z-index: 999999;
   }
+  .panel-header {
+    display: none;
+  }
+
+  .arts-main-container {
+    background: #f9f9f9 0% 0% no-repeat padding-box;
+  }
+
+  .artist-content-container {
+    height: 1px;
+    overflow-y: hidden;
+  }
+
+  .collapse-content-container {
+    height: auto;
+    overflow-y: initial;
+  }
 }
 
 /* Arts Mobile UI Layout */
-.content-mobile {
+.mobile-content {
   padding: 1em;
 }
 </style>
