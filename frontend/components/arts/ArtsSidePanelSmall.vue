@@ -16,6 +16,7 @@
         />
         <div class="panel-details">
           <span class="item-title">{{ artDetails.name }}</span>
+          <span class="item-subtitle">{{ artDetails.type }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
             @click="checkArtistProfile(artDetails.name)"
@@ -49,7 +50,7 @@
         :key="artwork.id"
         lg="12"
         xl="12"
-        md="12"
+        md="6"
         sm="12"
         @click="showMedia(artwork, index)"
       >
@@ -70,7 +71,7 @@
         :key="media.id"
         lg="12"
         xl="12"
-        md="12"
+        md="6"
         sm="12"
         @click="showMedia(media)"
       >
@@ -192,7 +193,8 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  height: 100%;
+  min-height: 100%;
+  max-height: auto;
   padding-bottom: 1em;
 }
 
@@ -214,6 +216,7 @@ export default {
 }
 
 .profile-btn {
+  margin-top: 0.25em;
   background-color: #b57936;
   border-radius: 3em;
   max-width: 150px;
@@ -258,7 +261,9 @@ export default {
 
 .item-subtitle {
   font: Bold 15px/18px Lato;
-  color: #c3bfbc;
+  color: #707070;
+  opacity: 0.7;
+  text-transform: capitalize;
 }
 
 .panel-item-list {
@@ -270,5 +275,12 @@ export default {
 .media-list-container {
   width: 100%;
   margin: 0 auto;
+}
+
+@media (max-width: 992px) {
+  .arts-right-panel {
+    box-shadow: 0;
+    border: 0;
+  }
 }
 </style>
