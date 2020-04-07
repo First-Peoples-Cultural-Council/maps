@@ -76,6 +76,17 @@
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
+          <!-- <b-row>
+            <b-col
+              v-for="(artwork, index) in artworks"
+              :key="'parts' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"> 
+            </b-col>
+          </b-row> -->
+
           <b-row
             v-if="
               mode !== 'organization' &&

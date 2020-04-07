@@ -282,5 +282,10 @@ export default {
     box-shadow: 0;
     border: 0;
   }
+
+  .sidefold-modal .media-list-container .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 </style>

@@ -152,7 +152,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .sidebar-side-panel {
   position: fixed;
   top: 0;

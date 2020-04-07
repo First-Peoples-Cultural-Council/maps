@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100">
+  <div class="w-100 arts-main-wrapper">
     <div
       v-if="!mobileContent"
       class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
@@ -18,7 +18,8 @@
       class="hide-mobile arts-main-container"
       :class="{
         'content-mobile': mobileContent,
-        'mobile-content': mobileContent && isArtist
+        'mobile-content': mobileContent && isArtist,
+        'hide-scroll-y': showGallery
       }"
     >
       <div class="artist-detail-container">
@@ -205,6 +206,9 @@ export default {
     }
   },
   computed: {
+    showGallery() {
+      return this.$store.state.sidebar.showGallery
+    },
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
     },
@@ -512,12 +516,9 @@ export default {
     height: 100vh;
     left: 0;
     overflow-x: hidden;
+    overflow-y: hidden;
     z-index: 999999;
   }
-  .panel-header {
-    display: none;
-  }
-
   .arts-main-container {
     background: #f9f9f9 0% 0% no-repeat padding-box;
   }
