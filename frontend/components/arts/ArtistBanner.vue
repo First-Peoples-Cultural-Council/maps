@@ -20,9 +20,7 @@ export default {
 
 <style>
 .arts-artist-banner {
-  /* border-radius: 5px;
-  background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid #dedee4; */
+  margin-bottom: 1em;
 }
 
 .arts-artist-header {
@@ -36,5 +34,16 @@ export default {
 .arts-artist-body {
   width: 100%;
   position: relative;
+}
+
+@media (max-width: 992px) {
+  .arts-artist-banner {
+    border-radius: 5px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    border: 1px solid #dedee4;
+  }
+  .arts-artist-header {
+    border-top-left-radius: 5px;
+  }
 }
 </style>
