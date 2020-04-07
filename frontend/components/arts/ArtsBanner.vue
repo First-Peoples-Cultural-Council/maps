@@ -39,11 +39,8 @@
           v-if="isMobileContent"
           class="artist-more-btn"
           @click.stop.prevent="toggleCollapse"
-          >More about {{ name }}
-          <img
-            v-if="!collapseContent"
-            src="@/assets/images/arrow_down_icon.svg"
-          />
+          >{{ `${isCollapse ? 'Less' : 'More'} about ${name}` }}
+          <img v-if="!isCollapse" src="@/assets/images/arrow_down_icon.svg" />
           <img v-else src="@/assets/images/arrow_up_icon.svg" />
         </span>
       </div>
@@ -106,6 +103,9 @@ export default {
     }
   },
   computed: {
+    isCollapse() {
+      return this.$store.state.sidebar.collapseDetail
+    },
     showDrawer() {
       return this.$store.state.sidebar.isArtsMode
     },
@@ -134,7 +134,7 @@ export default {
       return this.artImage || require(`@/assets/images/artist_icon.svg`)
     },
     toggleCollapse() {
-      this.collapseContent = !this.collapseContent
+      this.$store.commit('sidebar/toggleCollapse', !this.isCollapse)
     }
   }
 }
@@ -195,7 +195,7 @@ export default {
 .artist-more-btn {
   font: Regular 14px/17px Proxima Nova;
   color: #707070;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 .fpcc-card {
@@ -207,6 +207,7 @@ export default {
   object-fit: cover;
   width: 100%;
   height: 110px;
+  background-color: black;
 }
 
 .artist-title {

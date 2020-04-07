@@ -112,6 +112,8 @@ export default {
 <style>
 .arts-card {
   cursor: pointer;
+  height: 100%;
+  padding-top: 0.5em;
 }
 .arts-icon-container {
   background-color: black;
