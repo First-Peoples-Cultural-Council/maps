@@ -133,6 +133,7 @@ export default {
 #inner-collapse {
   max-height: 60vh;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 #inner-collapse .sidebar-tabs .nav-tabs .nav-link {
