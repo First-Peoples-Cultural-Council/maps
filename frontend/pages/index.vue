@@ -66,6 +66,7 @@
                 <LanguageCard
                   class="mb-2 hover-left-move"
                   :name="language.name"
+                  :pronounce="language.language_audio"
                   :color="
                     (language.family && language.family.color) || language.color
                   "
