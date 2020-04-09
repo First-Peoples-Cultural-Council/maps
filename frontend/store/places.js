@@ -65,7 +65,7 @@ export const actions = {
     const result = await this.$axios.$get(
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
-    console.log('Dispatch', result.medias)
+    // console.log('Dispatch', result.medias)
     commit('setMedias', result.medias)
     return result
   },

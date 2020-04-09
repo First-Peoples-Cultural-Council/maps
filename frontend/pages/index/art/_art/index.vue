@@ -1,53 +1,170 @@
 <template>
-  <div class="w-100">
+  <div class="w-100 arts-main-wrapper">
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
     >
-      <div>
-        {{ art.properties.art_type | titleCase }}:
-        <span class="font-weight-bold">{{ art.properties.name }}</span>
+      <div class="p-1">
+        <img class="artist-img-small" :src="renderArtistImg(art.image)" />
+        {{ art.kind | titleCase }}:
+        <span class="font-weight-bold">{{ art.name }}</span>
       </div>
       <div @click="$store.commit('sidebar/setMobileContent', true)">
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
 
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div
-        class="text-center d-none mobile-close"
-        :class="{ 'content-mobile': mobileContent }"
-        @click="$store.commit('sidebar/setMobileContent', false)"
-      >
-        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
-      </div>
-
-      <div>
-        <ArtsDetailCard
-          :arttype="art.properties.art_type"
-          :name="art.properties.name"
-          :server="isServer"
-        ></ArtsDetailCard>
+    <div
+      class="hide-mobile arts-main-container"
+      :class="{
+        'content-mobile': mobileContent,
+        'mobile-content': mobileContent && isArtist,
+        'hide-scroll-y': showGallery
+      }"
+    >
+      <div class="artist-detail-container">
+        <Logo v-if="!mobileContent" class="cursor-pointer" :logo-alt="1"></Logo>
         <div
-          v-if="artDetails.details"
-          class="p-4 m-0 pb-0 color-gray font-08"
-          v-html="artDetails.details"
-        ></div>
-        <div class="ml-3 mr-3 mt-3">
-          <p class="font-08">
-            [ Extracted from the
-            <a href="https://www.fp-artsmap.ca/" target="_blank"
-              >First People's Arts Map</a
-            >]
-          </p>
+          class="text-center d-none mobile-close"
+          :class="{ 'content-mobile': mobileContent }"
+          @click="$store.commit('sidebar/setMobileContent', false)"
+        >
+          <img
+            v-if="!isArtist"
+            class="d-inline-block"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
         </div>
-        <LanguageSeeAll
-          content="See all details"
-          class="mt-0"
-          @click.native="handleClick($event, artDetails.node_id)"
-        ></LanguageSeeAll>
-        <Filters class="mb-2 mt-2"></Filters>
+        <!-- START Conditional Render Arts Header -->
+        <ArtsBanner
+          v-if="isArtist"
+          :art-image="art.image"
+          :tags="art.taxonomies"
+          :arttype="art.kind"
+          :name="art.name"
+          :server="isServer"
+          :media="[...artDetails.public_arts, ...artDetails.medias][0]"
+        ></ArtsBanner>
+
+        <ArtsDetailCard
+          v-else
+          :arttype="art.kind"
+          :name="art.name"
+          :server="isServer"
+          :tags="art.taxonomies"
+        ></ArtsDetailCard>
+        <!-- END Conditional Render Arts Header  -->
+
+        <!-- Render Arts Detail -->
+        <div
+          v-if="isArtist"
+          :class="
+            `artist-content-container ${
+              isCollapse ? 'collapse-content-container' : ''
+            }`
+          "
+        >
+          <section v-if="artDetails.description" class="artist-content-field">
+            <span class="field-title"> Artist Biography</span>
+            <span class="field-content">
+              <p v-html="stringSplit(artDetails.description)"></p>
+              <a href="#" @click="toggleDescription">{{
+                collapseDescription ? 'read less' : 'read more'
+              }}</a>
+            </span>
+          </section>
+
+          <!-- Render List of Related Data -->
+          <template v-if="relatedData">
+            <section
+              v-for="art in relatedData"
+              :key="art.id"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">
+                {{ art.data_type }}
+              </h5>
+              <a
+                v-if="art.data_type === 'website'"
+                :href="art.value"
+                target="_blank"
+              >
+                {{ art.value }}</a
+              >
+              <span v-else class="field-content">{{ art.value }}</span>
+            </section>
+          </template>
+
+          <!-- Render LIst of Social Media -->
+          <section v-if="socialMedia.length !== 0" class="artist-content-field">
+            <span class="field-title">Social Media</span>
+            <span class="field-content">
+              <ul class="artist-social-icons">
+                <li v-for="soc in socialMedia" :key="soc.id">
+                  <a :href="soc.value" target="_blank">
+                    <img
+                      v-if="soc.value.includes('facebook')"
+                      src="@/assets/images/arts/facebook.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('twitter')"
+                      src="@/assets/images/arts/twitter.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('linkedin')"
+                      src="@/assets/images/arts/linkedin.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('instagram')"
+                      src="@/assets/images/arts/instagram.svg"
+                    />
+                    <img
+                      v-else-if="soc.value.includes('youtube')"
+                      src="@/assets/images/arts/youtube.svg"
+                    />
+                  </a>
+                </li>
+              </ul>
+            </span>
+          </section>
+        </div>
+        <div
+          v-else
+          class="p-4 m-0 pb-0 color-gray font-08 field-content"
+          v-html="artDetails.description"
+        ></div>
+        <div class="hide-mobile">
+          <div class="ml-3 mr-3 mt-3">
+            <p class="font-08">
+              [ Extracted from the
+              <a href="https://www.fp-artsmap.ca/" target="_blank"
+                >First People's Arts Map</a
+              >]
+            </p>
+          </div>
+          <LanguageSeeAll
+            content="See all details"
+            class="mt-0"
+            @click.native="handleClick($event, artDetails.node_id)"
+          ></LanguageSeeAll>
+          <Filters class="mb-2 mt-2"></Filters>
+        </div>
+      </div>
+    </div>
+    <ArtsSidePanelSmall
+      v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
+      :art="{ art: artDetails }"
+      :show-panel="showDrawer"
+      :toggle-panel="toggleSidePanel"
+      class="sidebar-side-panel hide-mobile"
+    />
+    <div
+      v-if="isGalleryNotEmpty && !showDrawer"
+      class="hide-mobile panel-collapsable"
+    >
+      <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
+        <img src="@/assets/images/go_icon_hover.svg" />
+        Expand
       </div>
     </div>
   </div>
@@ -56,30 +173,84 @@
 <script>
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
+import ArtsBanner from '@/components/arts/ArtsBanner.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
+import {
+  getApiUrl,
+  encodeFPCC,
+  decodeFPCC,
+  makeMarker
+} from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
+    ArtsBanner,
     ArtsDetailCard,
     LanguageSeeAll,
     Filters,
-    Logo
+    Logo,
+    ArtsSidePanelSmall
   },
   filters: {
     titleCase(str) {
       return startCase(str)
     }
   },
+  data() {
+    return {
+      collapseDescription: false
+    }
+  },
   computed: {
+    showGallery() {
+      return this.$store.state.sidebar.showGallery
+    },
+    isCollapse() {
+      return this.$store.state.sidebar.collapseDetail
+    },
+    showDrawer() {
+      return this.$store.state.sidebar.isArtsMode
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
     mapinstance() {
       return this.$store.state.mapinstance.mapinstance
+    },
+    isArtist() {
+      return this.art.kind.toLowerCase() === 'artist'
+    },
+    isGalleryNotEmpty() {
+      return (
+        this.artDetails.medias.filter(media => media.file_type !== 'default')
+          .length !== 0 || this.artDetails.public_arts.length !== 0
+      )
+    },
+    socialMedia() {
+      const filterCondition = [
+        'instagram',
+        'facebook',
+        'youtube',
+        'twitter',
+        'linkedin'
+      ]
+      return this.artDetails.related_data.filter(
+        filter =>
+          filter.data_type === 'website' &&
+          filterCondition.some(condition => filter.value.includes(condition))
+      )
+    },
+    relatedData() {
+      return this.artDetails.related_data.filter(
+        element =>
+          !this.socialMedia.includes(element) &&
+          element.data_type !== 'email' &&
+          !element.value.startsWith(',')
+      )
     }
   },
   watch: {
@@ -90,13 +261,14 @@ export default {
     }
   },
   async asyncData({ params, $axios, store }) {
-    const arts = (await $axios.$get(getApiUrl('arts'))).features
+    const artParam = decodeFPCC(params.art)
+    const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
     const art = arts.find(a => {
-      if (a.properties.name) {
-        return encodeFPCC(a.properties.name) === params.art
+      if (a.name) {
+        return encodeFPCC(a.name) === params.art
       }
     })
-    const artDetails = await $axios.$get(getApiUrl('art/' + art.id))
+    const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
     const isServer = !!process.server
     return {
@@ -109,36 +281,275 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.setupMap()
   },
+  destroyed() {
+    window.removeEventListener('resize', this.widthChecker)
+  },
+  mounted() {
+    window.addEventListener('resize', this.widthChecker)
+    if (this.isServer && this.artDetails) {
+      this.updateMediaUrl()
+    }
+
+    if (
+      this.art.kind === 'artist' &&
+      (this.artDetails.medias.length !== 0 ||
+        this.artDetails.public_arts.length !== 0) &&
+      window.innerWidth > 992
+    ) {
+      this.$store.commit('sidebar/setDrawerContent', true)
+    }
+  },
   methods: {
+    widthChecker(e) {
+      if (this.mobileContent) {
+        if (e.srcElement.innerWidth > 992) {
+          this.$store.commit('sidebar/setMobileContent', false)
+          this.$store.commit('sidebar/toggleCollapse')
+        }
+      } else if (this.showDrawer) {
+        if (e.srcElement.innerWidth <= 992) {
+          this.$store.commit('sidebar/setDrawerContent', false)
+        }
+      }
+    },
     handleClick(e, data) {
       window.open(`https://fp-artsmap.ca/node/${data}`)
     },
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.art.geometry, zoom: 11 })
+          zoomToPoint({ map, geom: this.art.geom, zoom: 11 })
         }
-        const icon = this.art.properties.art_type + '_icon.svg'
-        makeMarker(this.art.geometry, icon, 'art-marker').addTo(map)
+        const icon = this.art.kind + '_icon.svg'
+        makeMarker(this.art.geom, icon, 'art-marker').addTo(map)
       })
+    },
+    toggleDescription() {
+      this.collapseDescription = !this.collapseDescription
+    },
+    toggleSidePanel() {
+      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+    },
+    stringSplit(string) {
+      const stringValue = this.collapseDescription
+        ? `${string} `
+        : string.replace(/(.{200})..+/, '$1 ...')
+      return stringValue
+    },
+    updateMediaUrl() {
+      const artDetails = this.artDetails
+
+      if (this.artDetails.medias) {
+        artDetails.medias = this.artDetails.medias.map(media => {
+          media.media_file.replace('http://nginx/api/', '')
+          return media
+        })
+        this.artDetails = artDetails
+      }
+    },
+    renderArtistImg(img) {
+      return img || require(`@/assets/images/${this.art.kind}_icon.svg`)
     }
   },
   head() {
     return {
       title:
-        this.art.properties.name +
+        this.art.name +
         ' Indigenous ' +
-        this.art.properties.art_type +
+        this.art.kind +
         " on First Peoples' Language Map",
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.art.properties.details
+          content: this.art.description
         }
       ]
     }
   }
 }
 </script>
-<style></style>
+<style>
+.arts-main-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: auto;
+  overflow-y: auto;
+}
+
+.artist-detail-container {
+  width: 100%;
+}
+.artist-main-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0em 1em 0.25em 1em;
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+.artist-content-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 0.3em 0 1em 0;
+}
+
+.field-title {
+  color: #707070;
+  font-weight: bold;
+  font-size: 13px;
+  opacity: 0.6;
+  text-transform: capitalize;
+}
+
+.field-content {
+  display: flex;
+  font-size: 18px;
+  flex-direction: column;
+  color: #707070;
+  font-size: 0.9em;
+}
+
+.field-content a {
+  text-decoration: underline;
+  color: #c46257;
+}
+
+.field-content h1,
+.field-content h2,
+.field-content h3,
+.field-content h4,
+.field-content h5 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.field-content p {
+  font: Regular 16px/25px Proxima Nova;
+  color: #707070;
+}
+
+.artist-content-field > .field-content-list {
+  list-style: none;
+  padding: 0;
+}
+
+.field-content-list li {
+  display: flex;
+  align-items: center;
+}
+.artist-social-icons {
+  display: flex;
+  padding: 0;
+  justify-content: flex-start;
+  width: 100%;
+  list-style: none;
+  text-align: center;
+}
+
+.artist-social-icons li {
+  width: 25px;
+  height: 25px;
+  margin: 0.25em 0.5em 0.5em 0;
+}
+
+.artist-social-icons img {
+  width: 25px;
+  height: 25px;
+}
+
+.panel-collapsable {
+  width: 15px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #d7d7de;
+}
+
+.artist-img-small {
+  width: 40px;
+  height: 40px;
+}
+
+.btn-collapse {
+  display: flex;
+  justify-content: flex-start;
+  padding: 1em;
+  margin: 1em;
+  margin-left: 0.8em;
+  width: 100px;
+  background-color: #b47a2b;
+  display: flex;
+  align-items: center;
+  height: 35px;
+  justify-content: center;
+  border-top-right-radius: 1em;
+  border-bottom-right-radius: 1em;
+  color: #fff;
+}
+
+.btn-collapse img {
+  margin-right: 0.5em;
+}
+
+.sidebar-side-panel {
+  position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar-side-panel {
+    display: block !important;
+    position: initial;
+    width: 100%;
+    height: 100vh;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 999999;
+  }
+  .arts-main-container {
+    background: #f9f9f9 0% 0% no-repeat padding-box;
+  }
+
+  .artist-content-container {
+    height: 1px;
+    overflow-y: hidden;
+  }
+
+  .collapse-content-container {
+    height: auto;
+    overflow-y: initial;
+  }
+}
+
+/* Arts Mobile UI Layout */
+.mobile-content {
+  padding: 1em;
+}
+</style>

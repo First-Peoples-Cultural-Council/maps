@@ -8,19 +8,24 @@
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
           <img
-            v-if="art.properties.art_type.toLowerCase() === 'public_art'"
+            v-if="art.properties.kind.toLowerCase() === 'public_art'"
             src="@/assets/images/public_art_icon.svg"
             alt="Public Art"
           />
           <img
-            v-else-if="art.properties.art_type.toLowerCase() === 'artist'"
+            v-else-if="art.properties.kind.toLowerCase() === 'artist'"
             src="@/assets/images/artist_icon.svg"
             alt="Artist"
           />
           <img
-            v-else-if="art.properties.art_type.toLowerCase() === 'organization'"
+            v-else-if="art.properties.kind.toLowerCase() === 'organization'"
             src="@/assets/images/organization_icon.svg"
             alt="Organization"
+          />
+          <img
+            v-else-if="art.properties.kind.toLowerCase() === 'event'"
+            src="@/assets/images/event_icon.svg"
+            alt="Event"
           />
         </div>
       </template>
@@ -30,11 +35,16 @@
             <h5
               class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
             >
-              {{ art.properties.art_type | art_type }}
+              {{ art.properties.kind | kind }}
             </h5>
             <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
               {{ art.properties.name }}
             </h5>
+          </div>
+          <div class="artist-tags-container">
+            <span v-for="tag in art.properties.taxonomies" :key="tag.name">{{
+              tag.name
+            }}</span>
           </div>
         </div>
       </template>
@@ -55,7 +65,7 @@ export default {
     Card
   },
   filters: {
-    art_type(d) {
+    kind(d) {
       if (d === 'public_art') {
         return 'Public Art'
       }
@@ -79,6 +89,9 @@ export default {
       hover: false
     }
   },
+  mounted() {
+    // console.log('CARD DATA', this.art)
+  },
   methods: {
     handleMouseOver() {
       this.hover = true
@@ -99,12 +112,14 @@ export default {
 <style>
 .arts-card {
   cursor: pointer;
+  height: 100%;
+  padding-top: 0.5em;
 }
 .arts-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .arts-icon-container img {
   display: inline-block;
@@ -112,15 +127,38 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
+}
+.arts-card-text {
+  position: relative;
+  right: 10px;
+}
+.artist-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.artist-tags-container span {
+  flex: 0 1 auto;
+  background: #ddd4c6;
+  border-radius: 2rem;
+  color: #707070;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.6em;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
+  text-align: center;
 }
 </style>

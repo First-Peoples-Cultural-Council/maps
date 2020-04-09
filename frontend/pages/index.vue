@@ -1,42 +1,13 @@
 <template>
   <div
+    id="map-container"
     class="map-container"
     :class="{
-      detailModeContainer: isDetailMode
+      detailModeContainer: isDetailMode,
+      'arts-container': isArt
     }"
   >
-    <LogInOverlay v-if="loggingIn"></LogInOverlay>
-    <div v-if="isDrawMode" class="drawing-mode-container">
-      <b-alert show class="p-1 pr-2 pl-2 draw-mode-container" variant="light">
-        <DrawingTools
-          :draw-mode="$route.query.mode"
-          class="mt-2"
-        ></DrawingTools>
-      </b-alert>
-    </div>
-    <div class="map-loading">
-      Loading Map
-      <b-spinner type="grow" label="Spinning"></b-spinner>
-    </div>
-    <Mapbox
-      :access-token="MAPBOX_ACCESS_TOKEN"
-      :map-options="MAP_OPTIONS"
-      :nav-control="{ show: false }"
-      @map-init="mapInit"
-      @map-load="mapLoaded"
-      @map-touchend="mapClicked"
-      @map-click="mapClicked"
-      @map-zoomend="mapZoomEnd"
-      @map-moveend="mapMoveEnd"
-      @map-sourcedata="mapSourceData"
-    ></Mapbox>
-    <div class="map-controls-overlay">
-      <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-      <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-      <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-      <Contribute class="hide-mobile contribute-control"></Contribute>
-    </div>
-    <SideBar v-if="this.$route.name === 'index'">
+    <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <template v-slot:content>
         <div v-html="ie"></div>
         <section class="pl-3 pr-3 mt-3">
@@ -95,6 +66,7 @@
                 <LanguageCard
                   class="mb-2 hover-left-move"
                   :name="language.name"
+                  :pronounce="language.language_audio"
                   :color="
                     (language.family && language.family.color) || language.color
                   "
@@ -135,7 +107,8 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent
+        'mobile-content-open': mobileContent,
+        'hide-scroll-y': isGalleryShown
       }"
     >
       <nuxt-child class="w-100" />
@@ -143,17 +116,65 @@
     <div v-else>
       <nuxt-child />
     </div>
-    <ModalNotification></ModalNotification>
-    <transition name="fade-topbar" mode="out-in">
-      <SearchOverlay
-        v-if="showSearchOverlay"
-        :show="showSearchOverlay"
-      ></SearchOverlay>
-      <div v-else class="top-bar-container shadow-sm">
-        <SearchBar class="hide-mobile"></SearchBar>
-        <NavigationBar></NavigationBar>
+
+    <div class="maps-panel">
+      <div class="map-main-container">
+        <LogInOverlay v-if="loggingIn"></LogInOverlay>
+        <div v-if="isDrawMode" class="drawing-mode-container">
+          <b-alert
+            show
+            class="p-1 pr-2 pl-2 draw-mode-container"
+            variant="light"
+          >
+            <DrawingTools
+              :draw-mode="$route.query.mode"
+              class="mt-2"
+            ></DrawingTools>
+          </b-alert>
+        </div>
+        <div class="map-loading">
+          Loading Map
+          <b-spinner type="grow" label="Spinning"></b-spinner>
+        </div>
+        <Mapbox
+          :access-token="MAPBOX_ACCESS_TOKEN"
+          :map-options="MAP_OPTIONS"
+          :nav-control="{ show: false }"
+          @map-init="mapInit"
+          @map-load="mapLoaded"
+          @map-touchend="mapClicked"
+          @map-click="mapClicked"
+          @map-zoomend="mapZoomEnd"
+          @map-moveend="mapMoveEnd"
+          @map-sourcedata="mapSourceData"
+        ></Mapbox>
+        <div class="map-controls-overlay">
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
+          <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+          <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+          <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+        </div>
+        <ModalNotification></ModalNotification>
+        <div class="map-navigation-container">
+          <SearchBar class="hide-mobile"></SearchBar>
+          <transition name="fade-topbar" mode="out-in">
+            <SearchOverlay
+              v-if="showSearchOverlay"
+              :show="showSearchOverlay"
+            ></SearchOverlay>
+
+            <EventOverlay
+              v-else-if="showEventOverlay"
+              :show="showEventOverlay"
+            ></EventOverlay>
+
+            <div v-else class="top-bar-container">
+              <NavigationBar></NavigationBar>
+            </div>
+          </transition>
+        </div>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -179,6 +200,7 @@ import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
+import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 
 import {
@@ -194,7 +216,7 @@ const renderArtDetail = props => {
                 <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
     props.name
   }</a> |
-                <span class='art-popup-type'>${props.art_type}</span>
+                <span class='art-popup-type'>${props.kind}</span>
             </p>
         </div>`
 }
@@ -220,7 +242,8 @@ export default {
     Contribute,
     DrawingTools,
     ModalNotification,
-    LogInOverlay
+    LogInOverlay,
+    EventOverlay
   },
   data() {
     const bbox = [
@@ -231,6 +254,7 @@ export default {
     return {
       loggingIn: false,
       showSearchOverlay: false,
+      showEventOverlay: false,
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
@@ -245,7 +269,7 @@ export default {
       mode: 'All',
       map: {},
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
@@ -254,11 +278,21 @@ export default {
     }
   },
   computed: {
+    isGalleryShown() {
+      return this.$store.state.sidebar.showGallery
+    },
     isMobile() {
       return this.$store.state.app.isMobile
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    isArt() {
+      return (
+        this.$store.state.sidebar.isArtsMode &&
+        (this.$route.name === 'index-art' ||
+          this.$route.name === 'index-art-art')
+      )
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -316,15 +350,15 @@ export default {
       $axios.$get(
         getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
       ),
-      $axios.$get(getApiUrl('arts'))
+      $axios.$get(getApiUrl(`art-geo?timestamp=${new Date().getTime()}/`))
     ])
 
     if (process.server) {
       store.commit('languages/set', groupBy(results[0], 'family.name'))
+      store.commit('languages/setLanguagesCount', results[0].length)
       store.commit('communities/set', results[1])
       store.commit('places/set', results[2].features)
       store.commit('arts/set', results[3].features)
-      store.commit('languages/setLanguagesCount', results[0].length)
     }
 
     store.commit('languages/setStore', results[0])
@@ -377,7 +411,7 @@ export default {
   },
   async mounted() {
     this.$root.$on('updateData', () => {
-      console.log('Update Called')
+      // console.log('Update Called')
       this.$eventHub.whenMap(map => {
         this.updateData(map)
       })
@@ -407,6 +441,9 @@ export default {
     })
     this.$root.$on('closeSearchOverlay', d => {
       this.showSearchOverlay = false
+    })
+    this.$root.$on('toggleEventOverlay', d => {
+      this.showEventOverlay = !this.showEventOverlay
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
@@ -505,7 +542,7 @@ export default {
       const features = map.querySourceFeatures('arts1')
       // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
       // and add it to the map if it's not there already
-      console.log('zoom', map.getZoom(), this.$route.name)
+      // console.log('zoom', map.getZoom(), this.$route.name)
       if (
         map.getZoom() > 6 ||
         this.$route.name === 'index-languages-lang' ||
@@ -584,7 +621,7 @@ export default {
           }
         }
         if (feature.layer.id === 'fn-arts-clusters') {
-          console.log(feature)
+          // console.log(feature)
           const zoom = map.getZoom()
           if (zoom < 13) {
             const lat = feature.geometry.coordinates[1]
@@ -604,7 +641,9 @@ export default {
                 feature.properties.point_count,
                 0,
                 function(err, aFeatures) {
-                  console.log('getClusterLeaves', err, aFeatures)
+                  if (err) {
+                    console.log('Error', err)
+                  }
                   const html = aFeatures.reduce(function(ach, feature) {
                     const props = feature.properties
                     return ach + renderArtDetail(props)
@@ -635,7 +674,7 @@ export default {
       })
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          console.log('Feature', feature)
+          // console.log('Feature', feature)
           if (feature.layer.id === 'fn-lang-areas-fill') {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
@@ -659,7 +698,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/api/art/',
+        data: '/api/art-geo/',
         cluster: true,
         // clusterMaxZoom: 14,
         clusterRadius: 50
@@ -708,7 +747,7 @@ export default {
           }
 
           self.$root.$on('mode_change_draw', data => {
-            console.log('This got called')
+            // console.log('This got called')
             if (data === 'point') {
               draw.changeMode('draw_point')
             }
@@ -730,7 +769,7 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
-        console.log('Feature', features)
+        // console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
@@ -808,7 +847,7 @@ export default {
           sleepingLayer
         )
       )
-      console.log('This lanuages', this.languages)
+      // console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
 
@@ -904,11 +943,11 @@ export default {
 </script>
 
 <style>
-#map {
-  width: 100%;
-  height: 100%;
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
+  font-style: normal;
 }
-
 .draw-mode-container {
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0.75em !important;
@@ -918,8 +957,28 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  padding-left: var(--sidebar-width, 350px);
+  padding-left: var(--sidebar-width, 425px);
 }
+
+.arts-container {
+  padding-left: var(--sidebar-width, 850px);
+}
+
+.maps-panel {
+  display: flex;
+}
+
+.map-main-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
 .map-loading {
   position: absolute;
   left: 50%;
@@ -938,6 +997,15 @@ export default {
   width: 100%;
   padding-left: 500px;
   z-index: 50;
+}
+
+.map-navigation-container {
+  width: 100%;
+  display: flex;
+  position: absolute;
+  top: 0;
+  justify-content: space-between;
+  padding-top: 10px;
 }
 
 .map-controls-overlay {
@@ -1001,7 +1069,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 350px;
+  width: 425px;
   background-color: white;
   z-index: 1000;
   height: 100%;
@@ -1019,7 +1087,20 @@ export default {
 .content-mobile-title > div {
   cursor: pointer;
 }
+
+@media (max-width: 1300px) {
+  .arts-container {
+    padding-left: var(--sidebar-width, 750px);
+  }
+  .arts-container .sb-new-alt-one {
+    width: 375px;
+  }
+}
+
 @media (max-width: 992px) {
+  .arts-container {
+    padding-left: 0;
+  }
   .drawing-mode-container {
     padding-left: 0;
   }
@@ -1051,12 +1132,12 @@ export default {
   }
 
   .top-bar-container {
-    position: fixed;
+    position: absolute;
     top: 0px;
     left: 0;
     padding: 0.2em;
     width: 100%;
-    z-index: 100;
+    /* z-index: 100; */
     background-color: white;
     height: 50px;
   }
@@ -1087,7 +1168,7 @@ export default {
 
 .mobile-content-open {
   height: 100%;
-  top: 0;
+  bottom: 0;
   align-items: baseline;
 }
 

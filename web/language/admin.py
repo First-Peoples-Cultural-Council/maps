@@ -15,6 +15,8 @@ from .models import (
     Favourite,
     Notification,
     Recording,
+    Taxonomy,
+    PlaceNameTaxonomy
 )
 
 
@@ -55,3 +57,5 @@ admin.site.register(Notification)
 admin.site.register(LNA)
 admin.site.register(LNAData, LNADataAdmin)
 admin.site.register(Recording)
+admin.site.register(Taxonomy)
+admin.site.register(PlaceNameTaxonomy)

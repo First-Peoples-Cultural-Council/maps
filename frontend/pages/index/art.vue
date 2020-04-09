@@ -1,6 +1,10 @@
 <template>
   <div>
-    <SideBar v-if="this.$route.name === 'index-art'" active="Arts">
+    <SideBar
+      v-if="this.$route.name === 'index-art'"
+      active="Arts"
+      :show-side-panel="showDrawer"
+    >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
@@ -12,7 +16,8 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 pt-3">
+        <ArtistFilter class="m-3 " />
+        <section class="pl-3 pr-3 pt-2">
           <Badge
             content="Public Arts"
             :number="publicArts.length"
@@ -35,18 +40,88 @@
             content="Artists"
             :number="artists.length"
             class="cursor-pointer mb-1"
-            bgcolor="#db531f"
-            type="event"
+            bgcolor="#B45339"
+            type="artist"
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
+          <Badge
+            content="Events"
+            :number="events.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#DA531E"
+            type="event"
+            :mode="getBadgeStatus(mode, 'event')"
+            @click.native.prevent="handleBadge($event, 'event')"
+          ></Badge>
+          <Badge
+            content="Artwork"
+            :number="artworks.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#5A8467"
+            type="event"
+            :mode="getBadgeStatus(mode, 'artwork')"
+            @click.native.prevent="handleBadge($event, 'artwork')"
+          ></Badge>
+          <!-- <Badge
+            content="Resources"
+            :number="artists.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#008CA9"
+            type="resource"
+            :mode="getBadgeStatus(mode, 'resource')"
+            @click.native.prevent="handleBadge($event, 'resource')"
+          ></Badge> -->
         </section>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <b-row v-if="mode !== 'organization' && mode !== 'public_art'">
+          <!-- <b-row>
             <b-col
-              v-for="(art, index) in artists"
+              v-for="(artwork, index) in artworks"
+              :key="'parts' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"> 
+            </b-col>
+          </b-row> -->
+
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'event'
+            "
+          >
+            <b-col
+              v-for="(artwork, index) in artworks"
+              :key="'parts' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtistCard
+                :media="artwork"
+                :layout="'landscape'"
+                :is-selected="artDetails.art === artwork.art && showDrawer"
+                class="mt-3 hover-left-move"
+                @click.native="selectMedia(artwork.art, artwork)"
+              ></ArtistCard>
+            </b-col>
+          </b-row>
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'artist' &&
+                mode !== 'artwork'
+            "
+          >
+            <b-col
+              v-for="(art, index) in events"
               :key="'artists ' + index"
               lg="12"
               xl="12"
@@ -62,7 +137,39 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'organization' && mode !== 'artist'">
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'public_art' &&
+                mode !== 'event' &&
+                mode !== 'artwork'
+            "
+          >
+            <b-col
+              v-for="(art, index) in artists"
+              :key="'artists ' + index"
+              lg="12"
+              xl="12"
+              md="6"
+              sm="6"
+            >
+              <ArtsCard
+                :art="art"
+                class="mt-3  hover-left-move "
+                @click.native="
+                  handleCardClick($event, art.properties.name, 'art')
+                "
+              ></ArtsCard>
+            </b-col>
+          </b-row>
+          <b-row
+            v-if="
+              mode !== 'organization' &&
+                mode !== 'artist' &&
+                mode !== 'event' &&
+                mode !== 'artwork'
+            "
+          >
             <b-col
               v-for="(art, index) in publicArts"
               :key="'parts' + index"
@@ -80,7 +187,14 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row v-if="mode !== 'artist' && mode !== 'public_art'">
+          <b-row
+            v-if="
+              mode !== 'artist' &&
+                mode !== 'public_art' &&
+                mode !== 'event' &&
+                mode !== 'artwork'
+            "
+          >
             <b-col
               v-for="(art, index) in orgs"
               :key="'orgs' + index"
@@ -100,6 +214,9 @@
           </b-row>
         </section>
       </template>
+      <template v-if="showDrawer" v-slot:side-panel>
+        <ArtsSidePanelSmall :art="artDetails" :toggle-panel="toggleSidePanel" />
+      </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
       <div>
@@ -112,10 +229,13 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
+import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
+import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
   components: {
@@ -123,34 +243,94 @@ export default {
     ArtsCard,
     Badge,
     Filters,
-    Accordion
+    Accordion,
+    ArtistCard,
+    ArtistFilter,
+    ArtsSidePanelSmall
   },
   data() {
     return {
       mode: 'All',
-      accordionContent:
-        'Indigenous languages in B.C. all have corresponding unique cultures and artistic practices. This rich cultural environment is alive with countless Indigenous artists and artistic groups who create work across all artistic disciplines – visual, music, dance, performance, story and new media. The map provides an online environment for artists and groups to share information about their artistic practice as well as upcoming events, including festivals, exhibitions, performances and cultural events.'
+      accordionContent: 'View artwork from indigenous artists in your area.',
+      artDetails: {}
     }
   },
   computed: {
+    showDrawer() {
+      return this.$store.state.sidebar.isArtsMode
+    },
     arts() {
       return this.$store.state.arts.arts
     },
     publicArts() {
-      return this.arts.filter(art => art.properties.art_type === 'public_art')
+      return this.arts.filter(art => art.properties.kind === 'public_art')
     },
     orgs() {
-      return this.arts.filter(art => art.properties.art_type === 'organization')
+      return this.arts.filter(art => art.properties.kind === 'organization')
     },
     artists() {
-      return this.arts.filter(art => art.properties.art_type === 'artist')
+      return this.arts.filter(art => art.properties.kind === 'artist')
+    },
+    grants() {
+      return this.arts.filter(art => art.properties.kind === 'grant')
+    },
+    events() {
+      return this.arts.filter(art => art.properties.kind === 'event')
+    },
+    artworks() {
+      const artworks = []
+      this.arts.forEach(art => {
+        const medias = art.properties.medias
+        if (medias) {
+          medias.forEach(media => {
+            if (media.file_type !== 'default' || media.url !== null) {
+              artworks.push({
+                id: media.id,
+                name: media.name,
+                media_file: media.media_file,
+                file_type: media.file_type,
+                url: media.url,
+                art: {
+                  name: art.properties.name,
+                  type: art.properties.kind,
+                  image: art.properties.image,
+                  artists: art.properties.artists,
+                  medias: art.properties.medias,
+                  geometry: art.geometry
+                }
+              })
+            }
+          })
+        }
+      })
+      artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
+      return artworks
     }
   },
   methods: {
     handleCardClick($event, name, type) {
+      if (this.showDrawer) {
+        this.toggleSidePanel()
+      }
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    selectMedia(art, currentMedia) {
+      if (art === this.artDetails.art && this.showDrawer) {
+        this.artDetails = {}
+        this.$store.commit('sidebar/setDrawerContent', false)
+      } else if (art !== this.artDetails.art || !this.showDrawer) {
+        this.artDetails = {
+          art,
+          currentMedia
+        }
+
+        this.$store.commit('sidebar/setDrawerContent', true)
+      }
+    },
+    toggleSidePanel() {
+      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
     }
   }
 }

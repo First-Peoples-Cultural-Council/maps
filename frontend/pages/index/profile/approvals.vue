@@ -177,7 +177,7 @@ export default {
         verify: getApiUrl('community/verify_member/'),
         reject: getApiUrl('community/reject_member/')
       }
-      const result = await this.$axios.$patch(
+      await this.$axios.$patch(
         url[verify || reject],
         {
           user_id: tv.user.id,
@@ -190,7 +190,7 @@ export default {
         }
       )
       await this.$store.dispatch('user/getMembersToVerify')
-      console.log('Result', result)
+      // console.log('Result', result)
     },
     async handleApproval(e, tv, { verify, reject, type }) {
       const data = {

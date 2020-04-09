@@ -1,6 +1,9 @@
 export const state = () => ({
   isDetailMode: false,
-  mobileContent: false
+  mobileContent: false,
+  isArtsMode: false,
+  showGallery: false,
+  collapseDetail: false
 })
 
 export const mutations = {
@@ -10,5 +13,16 @@ export const mutations = {
 
   setMobileContent(state, mobileContent) {
     state.mobileContent = mobileContent
+  },
+
+  setDrawerContent(state, value) {
+    state.isArtsMode = value
+  },
+
+  setGallery(state, value) {
+    state.showGallery = value
+  },
+  toggleCollapse(state, value) {
+    state.collapseDetail = value
   }
 }

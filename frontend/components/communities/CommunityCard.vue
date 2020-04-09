@@ -108,8 +108,8 @@ export default {
 .community-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .community-icon-container img {
   display: inline-block;
@@ -117,16 +117,16 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
 }
 
 .community-icon-container.icon-sm {

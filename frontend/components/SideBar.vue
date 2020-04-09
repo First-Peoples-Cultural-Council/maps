@@ -1,7 +1,11 @@
 <template>
-  <div ref="sidebarContainer" class="sidebar-container">
+  <div
+    ref="sidebarContainer"
+    class="sidebar-container"
+    :class="{ 'sidebar-arts-container': showSidePanel }"
+  >
     <div class="sidebarRelative position-relative">
-      <div class="sidebar-desktop">
+      <div class="sidebar-desktop position-relative">
         <div class="sidebar-header">
           <Logo class="cursor-pointer" :logo-alt="1"></Logo>
         </div>
@@ -29,9 +33,17 @@
             "
           ></Contact>
         </div>
+        <div v-if="showSidePanel" class="sidebar-side-panel">
+          <slot name="side-panel"></slot>
+        </div>
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
+          <template v-slot:side-panel>
+            <div v-if="showSidePanel" class="sidebar-side-panel">
+              <slot name="side-panel"></slot>
+            </div>
+          </template>
           <template v-slot:tabs>
             <div class="sidebar-tabs">
               <b-nav tabs fill>
@@ -82,6 +94,10 @@ export default {
       default() {
         return []
       }
+    },
+    showSidePanel: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -122,6 +138,7 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
+      this.$store.commit('sidebar/setDrawerContent', false)
       const path = this.navigationTabs.find(nt => nt.name === data).path
       const self = this
       self.$router.push({
@@ -136,15 +153,31 @@ export default {
 </script>
 
 <style>
-.sidebar-container {
+.sidebar-side-panel {
   position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
+.sidebar-container {
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-width, 350px);
+  width: var(--sidebar-width, 425px);
   overflow-y: auto;
   padding-bottom: 1em;
+  font-family: 'Proxima Nova', sans-serif;
 }
+
+.sidebar-arts-container {
+  width: var(--sidebar-width, 425px);
+}
+
 .sidebar-header {
   background-color: transparent;
   overflow-x: hidden;
@@ -153,29 +186,33 @@ export default {
 .sidebar-body {
   background-color: white;
 }
-
-.nav-tabs .nav-link {
-  font-size: 0.8em;
-  background-color: #f4eee9;
+.nav-tabs {
+  display: flex;
+  border-bottom: 0;
 }
 
+.nav-tabs .nav-item {
+  flex: 1;
+}
 .nav-tabs .nav-link {
-  color: var(--color-gray, #707070);
-  font-weight: 700;
+  font-family: 'Faustina', serif;
+  font-size: 15px;
+  background-color: #03333a;
+  color: #fff;
   opacity: 0.8;
-  text-decoration: underline;
+  border-top-left-radius: 0rem;
+  border-top-right-radius: 0rem;
 }
 .nav-tabs .nav-link.active {
-  color: var(--color-red, #c46257);
+  color: #b47a2b;
   position: relative;
   font-weight: 700;
   border: 0;
-  line-height: 10px;
   opacity: 1;
   text-transform: capitalize !important;
 }
 
-.nav-tabs .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-link.active::before {
   content: '';
   display: block;
   width: 100%;
@@ -187,10 +224,10 @@ export default {
   border-top-right-radius: 0.5em;
 }
 
-.nav-tabs .nav-item.arts .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-item.arts .nav-link.active::before {
   border-top-left-radius: 0.5em;
 }
-.nav-tabs .nav-item.heritage .nav-link.active::before {
+.sidebar-desktop .nav-tabs .nav-item.heritage .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
 }
@@ -219,6 +256,26 @@ export default {
     background-color: white;
   }
 
+  .sidebar-mobile .sidebar-tabs ul li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4eee9;
+    height: 50px;
+  }
+
+  .sidebar-mobile .sidebar-tabs ul .nav-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sidebar-mobile .sidebar-tabs ul .nav-link.active {
+    border-radius: 0;
+  }
+
   .sidebar-tabs-fold {
     position: fixed;
     bottom: 0;
@@ -232,6 +289,31 @@ export default {
 
   .sidebar-tabs-fold .nav-fill .nav-item {
     background-color: white;
+  }
+
+  .nav-tabs .nav-link .active {
+    border: 0;
+  }
+
+  .sidebar-side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 325px;
+    height: 100vh;
+    overflow-x: hidden;
+    z-index: 999999;
+  }
+}
+
+/* Sidebar style when screen width is 1300px and drawer is open */
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
   }
 }
 </style>

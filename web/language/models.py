@@ -236,6 +236,7 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
+    image = models.ImageField(null=True, default=None)
 
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
@@ -246,14 +247,14 @@ class PlaceName(CulturalModel):
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    kind = models.CharField(max_length=15, default="")
+    kind = models.CharField(max_length=20, default="")
 
     category = models.ForeignKey(
         PlaceNameCategory, on_delete=models.SET_NULL, null=True
     )
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.TextField(default="")
 
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
@@ -261,6 +262,24 @@ class PlaceName(CulturalModel):
     )
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
+    )
+    taxonomies = models.ManyToManyField(
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
+    )
+    public_arts = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('artist', 'public_art'),
+        related_name='public_arts+'
+    )
+    artists = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('public_art', 'artist'),
+        related_name='artists+'
     )
 
     # Choices Constants:
@@ -316,6 +335,10 @@ class Media(BaseModel):
     )
     creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
 
+    # Artwork specific types
+    mime_type = models.CharField(max_length=100, default=None, null=True, blank=True)
+    is_artwork = models.BooleanField(default=False)
+
     # Choices Constants:
     FLAGGED = "FL"
     UNVERIFIED = "UN"
@@ -352,6 +375,15 @@ class Media(BaseModel):
         media.status = Media.FLAGGED
         media.status_reason = status_reason
         media.save()
+
+    class Meta:
+        ordering = ('-id', )
+
+
+class RelatedData(models.Model):
+    data_type = models.CharField(max_length=100, unique=False)
+    value = models.CharField(max_length=255, default='')
+    placename = models.ForeignKey(PlaceName, related_name='related_data', on_delete=models.CASCADE)
 
 
 class Favourite(BaseModel):
@@ -408,6 +440,31 @@ class Dialect(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.CASCADE, null=True, default=None
     )
+
+
+class PublicArtArtist(models.Model):
+    public_art = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='art_artists')
+    artist = models.ForeignKey(PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
+
+    def __str__(self):
+        return "{} ({})".format(self.public_art, self.artist)
+
+
+class Taxonomy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default="")
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='child_taxonomies')
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class PlaceNameTaxonomy(models.Model):
+    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(Taxonomy, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} ({})".format(self.placename, self.taxonomy)
 
 
 class LNA(BaseModel):

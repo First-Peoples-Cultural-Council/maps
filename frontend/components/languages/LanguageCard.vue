@@ -18,7 +18,7 @@
         <div>
           <div>
             <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
+              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-bold"
             >
               Language
             </h5>
@@ -27,6 +27,13 @@
             >
               {{ name }}
             </h5>
+            <CardBadge
+              v-if="pronounce"
+              content="Pronounce"
+              @click.native.prevent="
+                handlePronounce(getAudio(pronounce.audio_file), 'pr')
+              "
+            ></CardBadge>
           </div>
         </div>
       </template>
@@ -48,9 +55,13 @@
 
 <script>
 import Card from '@/components/Card.vue'
+import CardBadge from '@/components/CardBadge.vue'
+import { getMediaUrl } from '@/plugins/utils.js'
+
 export default {
   components: {
-    Card
+    Card,
+    CardBadge
   },
   props: {
     name: {
@@ -72,6 +83,12 @@ export default {
     icon: {
       default: 'large',
       type: String
+    },
+    pronounce: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -80,11 +97,37 @@ export default {
     }
   },
   methods: {
+    getAudio(file) {
+      return getMediaUrl(file, !!process.server)
+    },
     handleMouseOver() {
       this.hover = true
     },
     handleMouseLeave() {
       this.hover = false
+    },
+    handlePronounce(af, at) {
+      const audioFile = af
+      const audio = new Audio(audioFile)
+      if (this.audioType === at && this.audio && !this.audio.paused) {
+        this.audio.pause()
+        return
+      }
+      this.stopAudio()
+
+      this.audio = audio
+      this.audioType = at
+
+      if (this.audio.paused) {
+        this.audio.play()
+      } else {
+        this.audio.pause()
+      }
+    },
+    stopAudio() {
+      if (this.audio) {
+        this.audio.pause()
+      }
     }
   }
 }
@@ -98,8 +141,8 @@ export default {
 .language-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 52px;
+  width: 52px;
 }
 .language-icon-container img {
   display: inline-block;
@@ -107,16 +150,16 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
 }
 
 .language-icon-container.icon-sm {

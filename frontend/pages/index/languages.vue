@@ -11,7 +11,7 @@
             :content="accordionContent"
           ></Accordion>
         </section>
-
+        <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </template>
@@ -62,6 +62,7 @@
                   <LanguageCard
                     class="mt-2 hover-left-move"
                     :name="language.name"
+                    :pronounce="language.language_audio"
                     :color="
                       (language.family && language.family.color) ||
                         language.color
@@ -125,7 +126,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
       detailOneWidth: 375,
       detailTwoWidth: 500,
@@ -184,4 +185,17 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.language-family-header {
+  font: Regular 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.5;
+}
+.language-family-title {
+  font: Bold 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.7;
+}
+</style>

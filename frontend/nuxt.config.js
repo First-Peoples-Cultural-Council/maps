@@ -45,6 +45,11 @@ module.exports = {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Faustina:400,500,700&display=swap'
       }
     ]
   },
@@ -73,6 +78,7 @@ module.exports = {
   plugins: [
     '~/mixins/mixins.js',
     '~/plugins/global',
+    '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' }
   ],
   /*

@@ -2,7 +2,7 @@ from django.urls import include
 from django.conf.urls import url
 
 from rest_framework import routers
-from .views import PlaceNameGeoList, LanguageGeoList, CommunityGeoList
+from .views import PlaceNameGeoList, ArtGeoList, LanguageGeoList, CommunityGeoList
 
 from .views import (
     LanguageViewSet,
@@ -15,6 +15,7 @@ from .views import (
     NotificationViewSet,
     CommunityLanguageStatsViewSet,
     RecordingViewSet,
+    TaxonomyViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -30,6 +31,7 @@ router.register(r"placename", PlaceNameViewSet, basename="placename")
 
 # Only application usage
 router.register(r"media", MediaViewSet, basename="media")
+router.register(r"taxonomy", TaxonomyViewSet, basename="taxonomy")
 router.register(r"favourite", FavouriteViewSet, basename="favourite")
 router.register(r"notification", NotificationViewSet, basename="notification")
 router.register(r"recording", RecordingViewSet, basename="recording")
@@ -38,4 +40,5 @@ urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
     url("community-geo/$", CommunityGeoList.as_view(), name="community-geo"),
     url("placename-geo/$", PlaceNameGeoList.as_view(), name="placename-geo"),
+    url("art-geo/$", ArtGeoList.as_view(), name="placename-geo"),
 ] + router.urls

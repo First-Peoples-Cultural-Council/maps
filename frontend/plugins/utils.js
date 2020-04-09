@@ -54,11 +54,11 @@ export const filterLanguages = (
   context,
   sleepingLayer
 ) => {
-  console.log('it Got here 1')
+  // console.log('it Got here 1')
   if (mode === 'draw' && point) {
     return languageSet.filter(lang => {
       if (!sleepingLayer && lang.sleeping) {
-        console.log('it Got here mode')
+        // console.log('it Got here mode')
         return false
       }
       const langBounds = formatLangBounds(lang)
@@ -68,7 +68,7 @@ export const filterLanguages = (
 
   const filteredLanguages = languageSet.filter(lang => {
     if (!sleepingLayer && lang.sleeping) {
-      console.log('it Got here')
+      // console.log('it Got here')
       return false
     }
     const langBounds = formatLangBounds(lang)
@@ -117,6 +117,10 @@ export const encodeFPCC = s => {
       ''
     )
     .replace(/\s+/g, '-')
+}
+
+export const decodeFPCC = s => {
+  return s.replace(/-/g, ' ')
 }
 
 export const getCookie = name => {

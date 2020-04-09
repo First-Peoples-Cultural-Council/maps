@@ -257,7 +257,7 @@ export default {
     return { user, isOwner }
   },
   mounted() {
-    console.log('mounted, user=', this.user)
+    // console.log('mounted, user=', this.user)
   },
   methods: {
     encodeFPCC,
@@ -282,11 +282,8 @@ export default {
       const data = {
         favourite: sl
       }
-      const result = await this.$store.dispatch(
-        'user/removeSavedLocation',
-        data
-      )
-      console.log('Location Remove Result', result)
+      await this.$store.dispatch('user/removeSavedLocation', data)
+      // console.log('Location Remove Result', result)
     }
   }
 }
