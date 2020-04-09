@@ -78,6 +78,7 @@ module.exports = {
   plugins: [
     '~/mixins/mixins.js',
     '~/plugins/global',
+    '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' }
   ],
   /*
