@@ -8,8 +8,8 @@
     <div v-if="isMedia" class="arts-card-landscape">
       <div class="arts-card-body">
         <img
+          v-lazy="artImage"
           :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
-          :src="artImage"
         />
       </div>
       <div class="arts-card-right">
@@ -35,7 +35,7 @@
     <!-- Render if Public Art -->
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
-        <img :class="`card-teaser-img`" :src="media.image" />
+        <img v-lazy="media.image" :class="`card-teaser-img`" />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
