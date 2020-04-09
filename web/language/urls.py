@@ -15,6 +15,7 @@ from .views import (
     NotificationViewSet,
     CommunityLanguageStatsViewSet,
     RecordingViewSet,
+    TaxonomyViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -30,6 +31,7 @@ router.register(r"placename", PlaceNameViewSet, basename="placename")
 
 # Only application usage
 router.register(r"media", MediaViewSet, basename="media")
+router.register(r"taxonomy", TaxonomyViewSet, basename="taxonomy")
 router.register(r"favourite", FavouriteViewSet, basename="favourite")
 router.register(r"notification", NotificationViewSet, basename="notification")
 router.register(r"recording", RecordingViewSet, basename="recording")
