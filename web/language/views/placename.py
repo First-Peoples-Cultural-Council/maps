@@ -1,9 +1,8 @@
 import sys
 
-from django.shortcuts import render
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import Filter, FilterSet
+from django_filters import FilterSet
 from rest_framework.filters import SearchFilter
 
 from users.models import User, Administrator
@@ -23,6 +22,7 @@ from language.notifications import (
     inform_placename_rejected_or_flagged,
     inform_placename_to_be_verified,
 )
+from language.filters import StringListFilter
 
 from django.views.decorators.cache import never_cache
 from rest_framework import viewsets, generics, mixins, status
@@ -42,15 +42,6 @@ from language.serializers import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
-
-
-class StringListFilter(Filter):
-    def filter(self, qs, value):
-        if value not in (None, ''):
-            strings = [v for v in value.split(',')]
-            print(strings)
-            return qs.filter(**{'%s__%s' % (self.field_name, self.lookup_expr): strings})
-        return qs
 
 
 class PlaceNameCategoryViewSet(BaseModelViewSet):
