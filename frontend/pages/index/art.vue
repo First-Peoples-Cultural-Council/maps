@@ -16,7 +16,7 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <!-- <ArtistFilter class="m-3 " /> -->
+        <ArtistFilter class="m-3 " />
         <section class="pl-3 pr-3 pt-2">
           <Badge
             content="Public Arts"
@@ -234,7 +234,7 @@ import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
-// import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtistFilter from '@/components/arts/ArtistFilter.vue'
 import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
 
 export default {
@@ -245,7 +245,7 @@ export default {
     Filters,
     Accordion,
     ArtistCard,
-    // ArtistFilter,
+    ArtistFilter,
     ArtsSidePanelSmall
   },
   data() {
