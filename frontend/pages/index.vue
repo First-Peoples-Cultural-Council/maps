@@ -107,7 +107,8 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent
+        'mobile-content-open': mobileContent,
+        'hide-scroll-y': isGalleryShown
       }"
     >
       <nuxt-child class="w-100" />
@@ -167,11 +168,7 @@
               :show="showEventOverlay"
             ></EventOverlay>
 
-            <div
-              v-else
-              v-show="!isGalleryShown"
-              class="top-bar-container shadow-sm"
-            >
+            <div v-else class="top-bar-container">
               <NavigationBar></NavigationBar>
             </div>
           </transition>
@@ -1003,17 +1000,12 @@ export default {
 }
 
 .map-navigation-container {
-  border: 1px solid red;
   width: 100%;
   display: flex;
   position: absolute;
   top: 0;
   justify-content: space-between;
   padding-top: 10px;
-}
-
-.map-navigation-container > * {
-  border: 1px solid red;
 }
 
 .map-controls-overlay {
@@ -1095,7 +1087,20 @@ export default {
 .content-mobile-title > div {
   cursor: pointer;
 }
+
+@media (max-width: 1300px) {
+  .arts-container {
+    padding-left: var(--sidebar-width, 750px);
+  }
+  .arts-container .sb-new-alt-one {
+    width: 375px;
+  }
+}
+
 @media (max-width: 992px) {
+  .arts-container {
+    padding-left: 0;
+  }
   .drawing-mode-container {
     padding-left: 0;
   }

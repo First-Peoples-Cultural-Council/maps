@@ -512,6 +512,16 @@ export default {
   z-index: 999999;
 }
 
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
+  }
+}
+
 @media (max-width: 992px) {
   .sidebar-side-panel {
     display: block !important;

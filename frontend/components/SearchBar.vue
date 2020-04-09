@@ -717,16 +717,18 @@ export default {
   padding: 1.4em;
 }
 
+@media (min-width: 1300px) {
+  .searchbar-container {
+    width: 500px;
+  }
+}
+
 @media (max-width: 1200px) {
   .searchbar-container {
-    position: fixed;
-    top: 10px;
-    left: 40%;
     width: 400px;
   }
 
   .searchbar-container-detail {
-    left: 55%;
     width: 300px;
   }
 }

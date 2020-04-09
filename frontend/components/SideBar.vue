@@ -305,4 +305,15 @@ export default {
     z-index: 999999;
   }
 }
+
+/* Sidebar style when screen width is 1300px and drawer is open */
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
+  }
+}
 </style>
