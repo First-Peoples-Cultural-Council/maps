@@ -30,11 +30,8 @@
             <CardBadge
               v-if="pronounce"
               content="Pronounce"
-              @click.prevent.stop="
-                handlePronounce(
-                  getAudio(pronounce.greeting_audio.audio_file),
-                  'gr'
-                )
+              @click.native.prevent="
+                handlePronounce(getAudio(pronounce.audio_file), 'pr')
               "
             ></CardBadge>
           </div>
@@ -124,6 +121,11 @@ export default {
       if (this.audio.paused) {
         this.audio.play()
       } else {
+        this.audio.pause()
+      }
+    },
+    stopAudio() {
+      if (this.audio) {
         this.audio.pause()
       }
     }
