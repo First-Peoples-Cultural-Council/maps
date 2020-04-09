@@ -453,7 +453,7 @@ class PublicArtArtist(models.Model):
 class Taxonomy(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(default="")
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='child_taxonomies')
 
     def __str__(self):
         return "{}".format(self.name)

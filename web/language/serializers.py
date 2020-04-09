@@ -553,3 +553,15 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "related_data"
         )
         depth = 1
+
+
+class TaxonomySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            'id',
+            'name',
+            'description',
+            'parent',
+            'child_taxonomies'
+        )
