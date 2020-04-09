@@ -1,7 +1,7 @@
 <template>
   <div class="nav-container">
     <div class="navigation-container hide-mobile">
-      <!-- <Event /> -->
+      <Event />
       <div
         v-if="isLoggedIn"
         class="user-container cursor-pointer hide-mobile"
@@ -38,7 +38,7 @@
         @click="redirectLogin"
       >
         <nav class="navbar-icon-container">
-          <span>SIGN UP</span>
+          <span>LOGIN</span>
           <img
             src="@/assets/images/user_icon.svg"
             alt="Menu"
@@ -65,13 +65,13 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
-      <!-- <div class="navbar-icon-container cursor-pointer" @click="showEvent">
+      <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
           src="@/assets/images/event_icons.svg"
           alt="Event"
           class="navbar-icon"
         />
-      </div> -->
+      </div>
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
@@ -187,12 +187,12 @@
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
-// import Event from '@/components/Event.vue'
+import Event from '@/components/Event.vue'
 
 export default {
   components: {
-    Logo
-    // Event
+    Logo,
+    Event
   },
   data() {
     return {
@@ -304,11 +304,11 @@ export default {
   justify-content: space-evenly;
   align-items: center;
 }
+
 .user-container {
   display: relative;
   width: 45px;
   height: 45px;
-  border: 1px solid red;
 }
 .navigation {
   position: fixed;
@@ -335,10 +335,11 @@ export default {
   font-size: 13px;
   font-weight: bold;
 }
+
 .navbar-icon {
   display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 22px;
   line-height: 0;
   padding: 0;
   margin: 0;
@@ -389,13 +390,26 @@ export default {
   .menu-container {
     width: 45px;
     height: 45px;
+    margin-right: 0.25em;
   }
-  .menu-container span {
+  .menu-container .navbar-icon-container span {
     display: none;
   }
   .user-container {
     margin-right: 0.25em;
   }
+}
+
+/* Navigation Icons when Drawer is open */
+.arts-container .menu-container {
+  width: 45px;
+  height: 45px;
+}
+.arts-container .menu-container .navbar-icon-container span {
+  display: none;
+}
+.arts-container .user-container {
+  margin-right: 0.25em;
 }
 
 @media (max-width: 992px) {
