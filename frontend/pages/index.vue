@@ -154,26 +154,28 @@
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
         </div>
         <ModalNotification></ModalNotification>
-        <SearchBar class="hide-mobile"></SearchBar>
-        <transition name="fade-topbar" mode="out-in">
-          <SearchOverlay
-            v-if="showSearchOverlay"
-            :show="showSearchOverlay"
-          ></SearchOverlay>
+        <div class="map-navigation-container">
+          <SearchBar class="hide-mobile"></SearchBar>
+          <transition name="fade-topbar" mode="out-in">
+            <SearchOverlay
+              v-if="showSearchOverlay"
+              :show="showSearchOverlay"
+            ></SearchOverlay>
 
-          <EventOverlay
-            v-else-if="showEventOverlay"
-            :show="showEventOverlay"
-          ></EventOverlay>
+            <EventOverlay
+              v-else-if="showEventOverlay"
+              :show="showEventOverlay"
+            ></EventOverlay>
 
-          <div
-            v-else
-            v-show="!isGalleryShown"
-            class="top-bar-container shadow-sm"
-          >
-            <NavigationBar></NavigationBar>
-          </div>
-        </transition>
+            <div
+              v-else
+              v-show="!isGalleryShown"
+              class="top-bar-container shadow-sm"
+            >
+              <NavigationBar></NavigationBar>
+            </div>
+          </transition>
+        </div>
       </div>
     </div>
   </div>
@@ -969,13 +971,7 @@ export default {
   display: flex;
 }
 
-.maps-left-container {
-  flex: 0 0 35%;
-  height: 100vh;
-}
-
 .map-main-container {
-  flex: 1 1 65%;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -1004,6 +1000,20 @@ export default {
   width: 100%;
   padding-left: 500px;
   z-index: 50;
+}
+
+.map-navigation-container {
+  border: 1px solid red;
+  width: 100%;
+  display: flex;
+  position: absolute;
+  top: 0;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+.map-navigation-container > * {
+  border: 1px solid red;
 }
 
 .map-controls-overlay {

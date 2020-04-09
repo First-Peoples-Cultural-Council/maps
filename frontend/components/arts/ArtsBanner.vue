@@ -122,6 +122,8 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
 
+      this.$store.commit('sidebar/setMobileContent', false)
+
       if (this.server) {
         this.$router.push({
           path: '/art'
@@ -196,6 +198,10 @@ export default {
   font: Regular 14px/17px Proxima Nova;
   color: #707070;
   margin-bottom: 1em;
+}
+
+.artist-more-btn img {
+  margin-left: 1em;
 }
 
 .fpcc-card {

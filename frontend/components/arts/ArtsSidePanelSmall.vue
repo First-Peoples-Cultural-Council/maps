@@ -287,5 +287,8 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
   }
+  .arts-main-wrapper .panel-header {
+    display: none !important;
+  }
 }
 </style>

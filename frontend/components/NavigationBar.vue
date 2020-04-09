@@ -279,14 +279,14 @@ export default {
 <style>
 .navigation-container {
   display: flex;
-  position: fixed;
-  top: 10px;
-  right: 10px;
+  /* position: absolute;
+  top: 0;
+  right: 10px; */
 }
 .notify-badge {
   position: absolute;
   top: 2.5px;
-  right: 2.5px;
+  right: 5px;
   width: 10px;
   height: 10px;
   background-color: rgba(173, 20, 20, 0.753);
@@ -305,8 +305,10 @@ export default {
   align-items: center;
 }
 .user-container {
+  display: relative;
   width: 45px;
   height: 45px;
+  border: 1px solid red;
 }
 .navigation {
   position: fixed;

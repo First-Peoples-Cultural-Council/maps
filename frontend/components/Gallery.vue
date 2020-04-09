@@ -226,7 +226,7 @@ export default {
 
 .btn-close {
   position: absolute;
-  top: 2%;
+  top: 2.5%;
   right: 3%;
   width: 20px;
   height: 20px;
@@ -303,6 +303,8 @@ export default {
 .gallery-carousel-container button {
   background: rgba(0, 0, 0, 0);
   border: 0;
+  margin: auto 0;
+  transform: translateY(2.25em);
 
   img {
     width: 50px;
