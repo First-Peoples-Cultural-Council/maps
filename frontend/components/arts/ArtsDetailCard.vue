@@ -1,75 +1,66 @@
 <template>
   <div class="arts-detail-card">
-    <Card>
-      <template v-slot:header>
-        <div
-          class="arts-detail-icon-container"
-          :style="'background-color:' + color"
-        >
-          <img
-            v-if="arttype.toLowerCase() === 'public_art'"
-            src="@/assets/images/public_art_icon.svg"
-            alt="Arts"
-          />
-          <img
-            v-else-if="arttype.toLowerCase() === 'event'"
-            src="@/assets/images/event_icon.svg"
-            alt="Event"
-          />
-          <img
-            v-else-if="arttype.toLowerCase() === 'artist'"
-            src="@/assets/images/artist_icon.svg"
-            alt="Event"
-          />
-          <img
-            v-else-if="arttype.toLowerCase() === 'organization'"
-            src="@/assets/images/organization_icon.svg"
-            alt="Organization"
-          />
-        </div>
-      </template>
-      <template v-slot:body>
-        <div>
-          <div>
-            <h5 class="field-kind">
-              {{ arttype | kind }}
-            </h5>
-            <h5 class="field-name">
-              {{ name }}
-            </h5>
-          </div>
-          <div class="artist-tags-container">
-            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
-          </div>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="fpcc-card-more-art" @click.prevent="handleReturn">
-          <img
-            v-if="hover"
-            class="ml-1"
-            src="@/assets/images/return_icon.svg"
-            alt="Go"
-          />
-          <img
-            v-else
-            class="ml-1"
-            src="@/assets/images/return_icon_hover.svg"
-            alt="Go"
-          />
-          <span class="ml-1 font-weight-bold">Return</span>
-        </div>
-      </template>
-    </Card>
+    <div
+      class="arts-detail-icon-container"
+      :style="'background-color:' + color"
+    >
+      <img
+        v-if="arttype.toLowerCase() === 'public_art'"
+        src="@/assets/images/public_art_icon.svg"
+        alt="Arts"
+      />
+      <img
+        v-else-if="arttype.toLowerCase() === 'event'"
+        src="@/assets/images/event_icon.svg"
+        alt="Event"
+      />
+      <img
+        v-else-if="arttype.toLowerCase() === 'artist'"
+        src="@/assets/images/artist_icon.svg"
+        alt="Event"
+      />
+      <img
+        v-else-if="arttype.toLowerCase() === 'organization'"
+        src="@/assets/images/organization_icon.svg"
+        alt="Organization"
+      />
+    </div>
+
+    <div class="arts-detail-text">
+      <div>
+        <h5 class="field-kind">
+          {{ arttype | kind }}
+        </h5>
+        <h5 class="field-name">
+          {{ name }}
+        </h5>
+      </div>
+      <div class="artist-tags-container">
+        <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
+      </div>
+    </div>
+
+    <div class="fpcc-card-more-art" @click.prevent="handleReturn">
+      <img
+        v-if="hover"
+        class="ml-1"
+        src="@/assets/images/return_icon.svg"
+        alt="Go"
+      />
+      <img
+        v-else
+        class="ml-1"
+        src="@/assets/images/return_icon_hover.svg"
+        alt="Go"
+      />
+      <span class="ml-1 font-weight-bold">Return</span>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
 export default {
-  components: {
-    Card
-  },
+  components: {},
   filters: {
     kind(d) {
       if (d === 'public_art') {
@@ -125,14 +116,24 @@ export default {
 <style scoped>
 .arts-detail-card {
   cursor: pointer;
-  padding: 0.5em 0 0.5em 0.5em;
   border-bottom: 3px solid #f9f9f9;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  border: 1px solid #ebe6dc;
+  padding: 1em 0 1em 1em;
+  border-radius: 0.25em;
+  position: relative;
 }
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
   height: 50px;
   width: 50px;
+}
+
+.arts-detail-text {
+  margin-left: 0.5em;
 }
 .arts-detail-icon-container img {
   display: inline-block;
@@ -151,6 +152,9 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 1em;
+  position: absolute;
+  right: 0;
+  top: 25%;
 }
 
 .fpcc-card-more-art:hover {

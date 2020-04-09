@@ -16,7 +16,10 @@
       </button>
       <div class="carousel-gallery-container">
         <div class="artist-gallery-detail">
-          <img class="artist-img-small" :src="renderArtistImg(placenameImg)" />
+          <img
+            v-lazy="renderArtistImg(placenameImg)"
+            class="artist-img-small"
+          />
           <div class="gallery-title">
             <span class="item-title">{{ currentMedia.name }}</span>
             <span class="item-subtitle" v-html="returnArtists()" />
@@ -53,7 +56,7 @@
           allowfullscreen
         ></iframe>
         <!-- Render Public Art Image here -->
-        <img v-else class="media-img" :src="currentMedia.image" />
+        <img v-else v-lazy="currentMedia.image" class="media-img" />
       </div>
       <button
         v-if="isRelatedMedia"
@@ -71,8 +74,8 @@
         :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
         @click="selectCurrentIndex(item)"
       >
-        <img v-if="item.media_file" :src="item.media_file" />
-        <img v-else :src="item.image" />
+        <img v-if="item.media_file" v-lazy="item.media_file" />
+        <img v-else v-lazy="item.image" />
       </div>
     </div>
   </div>
@@ -226,7 +229,7 @@ export default {
 
 .btn-close {
   position: absolute;
-  top: 2%;
+  top: 2.5%;
   right: 3%;
   width: 20px;
   height: 20px;
@@ -303,6 +306,8 @@ export default {
 .gallery-carousel-container button {
   background: rgba(0, 0, 0, 0);
   border: 0;
+  margin: auto 0;
+  transform: translateY(2.25em);
 
   img {
     width: 50px;

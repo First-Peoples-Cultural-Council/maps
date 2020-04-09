@@ -48,14 +48,6 @@ class DialectSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
-class LanguageSerializer(serializers.ModelSerializer):
-    family = LanguageFamilySerializer(read_only=True)
-
-    class Meta:
-        model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
-
-
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
@@ -67,6 +59,15 @@ class RecordingSerializer(serializers.ModelSerializer):
             "created",
             "date_recorded"
         )
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    family = LanguageFamilySerializer(read_only=True)
+    language_audio = RecordingSerializer(read_only=True)
+ 
+    class Meta:
+        model = Language
+        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names", "language_audio")
 
 
 class LNASerializer(serializers.ModelSerializer):

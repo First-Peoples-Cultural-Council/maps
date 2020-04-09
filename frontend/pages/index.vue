@@ -66,6 +66,7 @@
                 <LanguageCard
                   class="mb-2 hover-left-move"
                   :name="language.name"
+                  :pronounce="language.language_audio"
                   :color="
                     (language.family && language.family.color) || language.color
                   "
@@ -106,7 +107,8 @@
       class="sb-new-alt-one"
       :class="{
         'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent
+        'mobile-content-open': mobileContent,
+        'hide-scroll-y': isGalleryShown
       }"
     >
       <nuxt-child class="w-100" />
@@ -153,26 +155,24 @@
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
         </div>
         <ModalNotification></ModalNotification>
-        <SearchBar class="hide-mobile"></SearchBar>
-        <transition name="fade-topbar" mode="out-in">
-          <SearchOverlay
-            v-if="showSearchOverlay"
-            :show="showSearchOverlay"
-          ></SearchOverlay>
+        <div class="map-navigation-container">
+          <SearchBar class="hide-mobile"></SearchBar>
+          <transition name="fade-topbar" mode="out-in">
+            <SearchOverlay
+              v-if="showSearchOverlay"
+              :show="showSearchOverlay"
+            ></SearchOverlay>
 
-          <EventOverlay
-            v-else-if="showEventOverlay"
-            :show="showEventOverlay"
-          ></EventOverlay>
+            <EventOverlay
+              v-else-if="showEventOverlay"
+              :show="showEventOverlay"
+            ></EventOverlay>
 
-          <div
-            v-else
-            v-show="!isGalleryShown"
-            class="top-bar-container shadow-sm"
-          >
-            <NavigationBar></NavigationBar>
-          </div>
-        </transition>
+            <div v-else class="top-bar-container">
+              <NavigationBar></NavigationBar>
+            </div>
+          </transition>
+        </div>
       </div>
     </div>
   </div>
@@ -968,13 +968,7 @@ export default {
   display: flex;
 }
 
-.maps-left-container {
-  flex: 0 0 35%;
-  height: 100vh;
-}
-
 .map-main-container {
-  flex: 1 1 65%;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -1003,6 +997,15 @@ export default {
   width: 100%;
   padding-left: 500px;
   z-index: 50;
+}
+
+.map-navigation-container {
+  width: 100%;
+  display: flex;
+  position: absolute;
+  top: 0;
+  justify-content: space-between;
+  padding-top: 10px;
 }
 
 .map-controls-overlay {
@@ -1084,7 +1087,20 @@ export default {
 .content-mobile-title > div {
   cursor: pointer;
 }
+
+@media (max-width: 1300px) {
+  .arts-container {
+    padding-left: var(--sidebar-width, 750px);
+  }
+  .arts-container .sb-new-alt-one {
+    width: 375px;
+  }
+}
+
 @media (max-width: 992px) {
+  .arts-container {
+    padding-left: 0;
+  }
   .drawing-mode-container {
     padding-left: 0;
   }

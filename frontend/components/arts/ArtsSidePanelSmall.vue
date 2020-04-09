@@ -11,8 +11,8 @@
     <div v-if="this.$route.name !== 'index-art-art'">
       <div v-if="listOfArtists.length === 0" class="panel-artist">
         <img
+          v-lazy="renderArtistImg(artDetails.image)"
           class="artist-img-small"
-          :src="renderArtistImg(artDetails.image)"
         />
         <div class="panel-details">
           <span class="item-title">{{ artDetails.name }}</span>
@@ -31,7 +31,7 @@
         :key="artist.id"
         class="panel-artist"
       >
-        <img class="artist-img-small" :src="renderArtistImg(artist.image)" />
+        <img v-lazy="renderArtistImg(artist.image)" class="artist-img-small" />
         <div class="panel-details">
           <span class="item-title">{{ artist.name }}</span>
           <div
@@ -182,7 +182,7 @@ export default {
 
 <style lang="scss">
 .hide-scroll-y {
-  overflow-y: hidden;
+  overflow-y: hidden !important;
 }
 
 .arts-right-panel {
@@ -286,6 +286,9 @@ export default {
   .sidefold-modal .media-list-container .col-md-6 {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+  .arts-main-wrapper .panel-header {
+    display: none !important;
   }
 }
 </style>

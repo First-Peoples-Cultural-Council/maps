@@ -152,7 +152,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .sidebar-side-panel {
   position: fixed;
   top: 0;
@@ -303,6 +303,17 @@ export default {
     height: 100vh;
     overflow-x: hidden;
     z-index: 999999;
+  }
+}
+
+/* Sidebar style when screen width is 1300px and drawer is open */
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
   }
 }
 </style>

@@ -152,7 +152,7 @@
       </div>
     </div>
     <ArtsSidePanelSmall
-      v-if="(isGalleryNotEmpty && showDrawer) || mobileContent"
+      v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
       :art="{ art: artDetails }"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
@@ -398,7 +398,7 @@ export default {
   display: flex;
   width: 100%;
   flex-direction: column;
-  margin: 0.3em 0;
+  margin: 0.3em 0 1em 0;
 }
 
 .field-title {
@@ -498,6 +498,10 @@ export default {
   color: #fff;
 }
 
+.btn-collapse img {
+  margin-right: 0.5em;
+}
+
 .sidebar-side-panel {
   position: fixed;
   top: 0;
@@ -506,6 +510,16 @@ export default {
   height: 100vh;
   overflow-x: hidden;
   z-index: 999999;
+}
+
+@media (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 375px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 375px;
+    left: 375px;
+  }
 }
 
 @media (max-width: 992px) {

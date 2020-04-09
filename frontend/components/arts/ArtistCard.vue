@@ -26,8 +26,8 @@
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
         <img
+          v-lazy="artImage"
           :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
-          :src="artImage"
         />
       </div>
       <div class="arts-card-right">
@@ -196,8 +196,8 @@ export default {
 }
 
 .arts-card-tag img {
-  width: 12.5px;
-  height: 12.5px;
+  width: 17px;
+  height: 15px;
 }
 
 .arts-card-body {
@@ -294,12 +294,13 @@ export default {
       .arts-card-tag {
         border-radius: 20px;
         position: initial;
-        padding: 2px;
+        padding: 3px;
         color: #fff;
-        font-size: 0.6em;
+        font-size: 0.8em;
         font-weight: 800;
-        text-align: center;
         border: 0;
+        width: 80px;
+        max-width: 100px;
       }
 
       .fpcc-card-more {

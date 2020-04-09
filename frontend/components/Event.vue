@@ -1,7 +1,7 @@
 <template>
   <div class="cursor-pointer hide-mobile">
     <nav id="event-icon-container">
-      <span>NEXT EVENTS</span>
+      <span>EVENTS</span>
       <img
         src="@/assets/images/event_icons.svg"
         alt="Menu"
@@ -37,7 +37,7 @@ export default {
 <style lang="scss" scoped>
 #event-icon-container {
   background-color: white;
-  padding: 1em;
+  padding: 0.8em;
   z-index: 50;
   margin-right: 1em;
   border: 1px solid #ddd5cc;
@@ -47,10 +47,20 @@ export default {
   font-weight: bold;
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
   font: Bold 13px/16px Proxima Nova;
 
   & > * {
     margin: 0 0.25em;
+  }
+  .arts-container & {
+    margin-right: 0.25em !important;
+    width: 45px;
+    height: 45px;
+  }
+
+  .arts-container & > span {
+    display: none;
   }
 
   @media (max-width: 1200px) {
@@ -66,9 +76,8 @@ export default {
 }
 
 .navbar-icon {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 23px;
+  height: 23px;
   line-height: 0;
   padding: 0;
   margin: 0;
@@ -78,8 +87,5 @@ export default {
   max-width: 350px;
   max-height: 800px;
   overflow-y: auto;
-}
-
-.popover-body {
 }
 </style>
