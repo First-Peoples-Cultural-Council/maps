@@ -30,14 +30,14 @@
           <div
             v-if="audioFile"
             class="d-inline-block"
-            @click.prevent.stop="handlePronounce(audioFile)"
+            @click.prevent.stop="handlePronounce(audioFile, 'pr')"
           >
             <CardBadge content="Pronounce"></CardBadge>
           </div>
           <div
             v-if="greetingFile"
             class="d-inline-block"
-            @click.prevent.stop="handlePronounce(greetingFile)"
+            @click.prevent.stop="handlePronounce(greetingFile, 'gr')"
           >
             <CardBadge content="Greeting"></CardBadge>
           </div>
@@ -111,7 +111,9 @@ export default {
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      audio: null,
+      audioType: null
     }
   },
   computed: {
@@ -119,15 +121,28 @@ export default {
       return this.$store.state.languages.comingFromDetail
     }
   },
+  mounted() {
+    this.$root.$on('stopLanguageAudio', () => {
+      this.stopAudio()
+    })
+  },
   methods: {
-    handlePronounce(af) {
+    handlePronounce(af, at) {
       const audioFile = af
-      console.log('Audio File', audioFile)
       const audio = new Audio(audioFile)
-      if (audio.paused) {
-        audio.play()
+      if (this.audioType === at && this.audio && !this.audio.paused) {
+        this.audio.pause()
+        return
+      }
+      this.stopAudio()
+
+      this.audio = audio
+      this.audioType = at
+
+      if (this.audio.paused) {
+        this.audio.play()
       } else {
-        audio.pause()
+        this.audio.pause()
       }
     },
     handleReturn() {
@@ -152,6 +167,19 @@ export default {
     },
     handleMouseLeave() {
       this.hover = false
+    },
+    stopAudio() {
+      if (this.audio) {
+        this.audio.pause()
+      }
+    },
+    isAudioPlaying() {
+      if (this.audio) {
+        return (
+          this.audio.paused && this.audio.currentTime > 0 && !this.audio.ended
+        )
+      }
+      return false
     }
   }
 }

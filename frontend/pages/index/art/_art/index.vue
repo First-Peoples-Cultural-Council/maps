@@ -38,7 +38,7 @@
           <p class="font-08">
             [ Extracted from the
             <a href="https://www.fp-artsmap.ca/" target="_blank"
-              >First People's Arts Map </a
+              >First People's Arts Map</a
             >]
           </p>
         </div>
@@ -46,8 +46,7 @@
           content="See all details"
           class="mt-0"
           @click.native="handleClick($event, artDetails.node_id)"
-        >
-        </LanguageSeeAll>
+        ></LanguageSeeAll>
         <Filters class="mb-2 mt-2"></Filters>
       </div>
     </div>
@@ -55,7 +54,7 @@
 </template>
 
 <script>
-import { startCase } from 'lodash'
+import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'

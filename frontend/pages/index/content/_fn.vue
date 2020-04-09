@@ -8,7 +8,7 @@
         Community:
         <span class="font-weight-bold">{{ commDetails.name }}</span>
       </div>
-      <div>
+      <div @click="$store.commit('sidebar/setMobileContent', true)">
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
@@ -252,7 +252,8 @@
 </template>
 
 <script>
-import { values, omit } from 'lodash'
+import values from 'lodash/values'
+import omit from 'lodash/omit'
 import Logo from '@/components/Logo.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -389,6 +390,10 @@ export default {
         this.setupMap()
       }
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$root.$emit('stopCommunityAudio')
+    next()
   },
   async asyncData({ params, $axios, store, $route }) {
     console.log('asyncData*****')
