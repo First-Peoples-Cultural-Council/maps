@@ -46,7 +46,7 @@
           <div
             v-for="(familyLanguages, family) in languages"
             :key="'langfamily' + family"
-            class="language-family-container mt-3 shadow-sm"
+            class="language-family-container"
           >
             <h5 class="language-family mt-0">
               <span class="language-family-header">Language Family:</span>
@@ -66,7 +66,6 @@
                 <LanguageCard
                   class="mb-2 hover-left-move"
                   :name="language.name"
-                  :pronounce="language.language_audio"
                   :color="
                     (language.family && language.family.color) || language.color
                   "
@@ -1027,8 +1026,7 @@ export default {
 }
 
 .language-family-container {
-  background-color: rgba(0, 0, 0, 0.03);
-  padding: 1em 0.5em;
+  padding: 0.5em 0;
   border-radius: 0.5em;
 }
 .language-family {

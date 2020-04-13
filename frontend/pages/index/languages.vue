@@ -42,7 +42,7 @@
             <div
               v-for="(familyLanguages, family) in languages"
               :key="'langfamily' + family"
-              class="language-family-container mt-3 shadow-sm"
+              class="language-family-container"
             >
               <h5 class="language-family mt-0">
                 <span class="language-family-header">Language Family:</span>
@@ -62,7 +62,6 @@
                   <LanguageCard
                     class="mt-2 hover-left-move"
                     :name="language.name"
-                    :pronounce="language.language_audio"
                     :color="
                       (language.family && language.family.color) ||
                         language.color

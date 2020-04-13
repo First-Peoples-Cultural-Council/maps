@@ -27,13 +27,6 @@
             >
               {{ name }}
             </h5>
-            <CardBadge
-              v-if="pronounce"
-              content="Pronounce"
-              @click.native.prevent="
-                handlePronounce(getAudio(pronounce.audio_file), 'pr')
-              "
-            ></CardBadge>
           </div>
         </div>
       </template>
@@ -55,13 +48,10 @@
 
 <script>
 import Card from '@/components/Card.vue'
-import CardBadge from '@/components/CardBadge.vue'
-import { getMediaUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card,
-    CardBadge
+    Card
   },
   props: {
     name: {
@@ -83,12 +73,6 @@ export default {
     icon: {
       default: 'large',
       type: String
-    },
-    pronounce: {
-      type: Object,
-      default: () => {
-        return {}
-      }
     }
   },
   data() {
@@ -97,37 +81,11 @@ export default {
     }
   },
   methods: {
-    getAudio(file) {
-      return getMediaUrl(file, !!process.server)
-    },
     handleMouseOver() {
       this.hover = true
     },
     handleMouseLeave() {
       this.hover = false
-    },
-    handlePronounce(af, at) {
-      const audioFile = af
-      const audio = new Audio(audioFile)
-      if (this.audioType === at && this.audio && !this.audio.paused) {
-        this.audio.pause()
-        return
-      }
-      this.stopAudio()
-
-      this.audio = audio
-      this.audioType = at
-
-      if (this.audio.paused) {
-        this.audio.play()
-      } else {
-        this.audio.pause()
-      }
-    },
-    stopAudio() {
-      if (this.audio) {
-        this.audio.pause()
-      }
     }
   }
 }
@@ -153,6 +111,7 @@ export default {
   background-color: #b47a2b;
   display: flex;
   align-items: center;
+  width: 55px;
   height: 35px;
   justify-content: center;
   border-top-left-radius: 1em;
