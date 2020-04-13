@@ -19,22 +19,13 @@
         <ArtistFilter class="m-3 " />
         <section class="pl-3 pr-3 pt-2">
           <Badge
-            content="Public Arts"
-            :number="publicArts.length"
-            class="cursor-pointer mb-2"
-            bgcolor="#848159"
-            type="part"
-            :mode="getBadgeStatus(mode, 'public_art')"
-            @click.native.prevent="handleBadge($event, 'public_art')"
-          ></Badge>
-          <Badge
-            content="Organization"
-            :number="orgs.length"
-            class="cursor-pointer mb-2"
-            bgcolor="#a48116"
-            type="org"
-            :mode="getBadgeStatus(mode, 'organization')"
-            @click.native.prevent="handleBadge($event, 'organization')"
+            content="Artwork"
+            :number="artworks.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#5A8467"
+            type="event"
+            :mode="getBadgeStatus(mode, 'artwork')"
+            @click.native.prevent="handleBadge($event, 'artwork')"
           ></Badge>
           <Badge
             content="Artists"
@@ -55,14 +46,24 @@
             @click.native.prevent="handleBadge($event, 'event')"
           ></Badge>
           <Badge
-            content="Artwork"
-            :number="artworks.length"
-            class="cursor-pointer mb-1"
-            bgcolor="#5A8467"
-            type="event"
-            :mode="getBadgeStatus(mode, 'artwork')"
-            @click.native.prevent="handleBadge($event, 'artwork')"
+            content="Organization"
+            :number="orgs.length"
+            class="cursor-pointer mb-2"
+            bgcolor="#a48116"
+            type="org"
+            :mode="getBadgeStatus(mode, 'organization')"
+            @click.native.prevent="handleBadge($event, 'organization')"
           ></Badge>
+          <Badge
+            content="Public Arts"
+            :number="publicArts.length"
+            class="cursor-pointer mb-2"
+            bgcolor="#848159"
+            type="part"
+            :mode="getBadgeStatus(mode, 'public_art')"
+            @click.native.prevent="handleBadge($event, 'public_art')"
+          ></Badge>
+
           <!-- <Badge
             content="Resources"
             :number="artists.length"
@@ -75,7 +76,7 @@
         </section>
       </template>
       <template v-slot:cards>
-        <section class="pl-3 pr-3">
+        <section id="card-item-list" class="pl-3 pr-3">
           <!-- <b-row>
             <b-col
               v-for="(artwork, index) in artworks"
@@ -87,16 +88,9 @@
             </b-col>
           </b-row> -->
 
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'artist' &&
-                mode !== 'event'
-            "
-          >
+          <b-row v-if="mode === 'artwork'">
             <b-col
-              v-for="(artwork, index) in artworks"
+              v-for="(artwork, index) in artworksPaginated"
               :key="'parts' + index"
               lg="12"
               xl="12"
@@ -112,14 +106,7 @@
               ></ArtistCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'artist' &&
-                mode !== 'artwork'
-            "
-          >
+          <b-row v-if="mode === 'event'">
             <b-col
               v-for="(art, index) in events"
               :key="'artists ' + index"
@@ -137,14 +124,7 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
+          <b-row v-if="mode === 'artist'">
             <b-col
               v-for="(art, index) in artists"
               :key="'artists ' + index"
@@ -162,14 +142,7 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'artist' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
+          <b-row v-if="mode === 'public_art'">
             <b-col
               v-for="(art, index) in publicArts"
               :key="'parts' + index"
@@ -187,14 +160,7 @@
               ></ArtsCard>
             </b-col>
           </b-row>
-          <b-row
-            v-if="
-              mode !== 'artist' &&
-                mode !== 'public_art' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
+          <b-row v-if="mode === 'organization'">
             <b-col
               v-for="(art, index) in orgs"
               :key="'orgs' + index"
@@ -250,9 +216,11 @@ export default {
   },
   data() {
     return {
-      mode: 'All',
+      mode: 'artwork',
       accordionContent: 'View artwork from indigenous artists in your area.',
-      artDetails: {}
+      artDetails: {},
+      maximumLength: 8,
+      loading: true
     }
   },
   computed: {
@@ -305,7 +273,26 @@ export default {
       })
       artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
       return artworks
+    },
+    artworksPaginated() {
+      return this.artworks.slice(0, this.maximumLength)
     }
+  },
+  mounted() {
+    const listElm = document.querySelector('#sidebar-container')
+
+    listElm.addEventListener('scroll', e => {
+      console.log(listElm.scrollTop, listElm.clientHeight, listElm.scrollHeight)
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        if (this.artworks.length > this.maximumLength) {
+          this.loading = true
+          setTimeout(() => {
+            this.maximumLength += 8
+            this.loading = false
+          }, 500)
+        }
+      }
+    })
   },
   methods: {
     handleCardClick($event, name, type) {

@@ -1,5 +1,6 @@
 <template>
   <div
+    id="sidebar-container"
     ref="sidebarContainer"
     class="sidebar-container"
     :class="{ 'sidebar-arts-container': showSidePanel }"
