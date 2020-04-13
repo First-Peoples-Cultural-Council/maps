@@ -686,6 +686,7 @@ export default {
   max-width: var(--searchbar-width, 500px);
   max-height: 500px;
   overflow-y: auto;
+  z-index: 9999999;
 }
 
 .popover-body {
