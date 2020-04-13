@@ -299,7 +299,7 @@ export default {
   z-index: 50;
   border: 1px solid #ddd5cc;
   border-radius: 2em;
-  margin-right: 1em;
+  margin-right: 0.5em;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -318,7 +318,7 @@ export default {
   background-color: white;
   top: 0;
   left: 0;
-  z-index: 10000;
+  z-index: 999999;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
