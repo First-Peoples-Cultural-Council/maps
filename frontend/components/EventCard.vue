@@ -6,8 +6,6 @@
       <span>Artist</span>
       <span>Visual</span>
       <span>Painter</span>
-      <span>Carver</span>
-      <span>Carver</span>
     </div>
     <img src="@/assets/images/sample-dp.jpg" />
     <p class="event-description">
@@ -32,15 +30,15 @@ export default {}
   margin: 1em 0 3em 0;
 
   .event-date {
-    font: Medium 13px/20px;
-    letter-spacing: 0.65px;
+    font: Medium 15px/20px Proxima Nova;
+    letter-spacing: 0.75px;
     color: #707070;
     text-transform: uppercase;
   }
 
   .event-title {
-    font: Bold 20px/20px 'Faustina';
-    letter-spacing: 1px;
+    font: Bold 16px/20px Proxima Nova;
+    letter-spacing: 0.8px;
     color: #454545;
   }
 
