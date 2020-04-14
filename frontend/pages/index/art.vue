@@ -18,15 +18,20 @@
       <template v-slot:badges>
         <ArtistFilter class="m-3 " />
         <section class="pl-3 pr-3 pt-2">
-          <Badge
-            content="Artwork"
-            :number="artworks.length"
-            class="cursor-pointer mb-1"
-            bgcolor="#5A8467"
-            type="event"
-            :mode="getBadgeStatus(mode, 'artwork')"
-            @click.native.prevent="badgeClick($event, 'artwork')"
-          ></Badge>
+          <BadgeFilter>
+            <template v-slot:badge>
+              <Badge
+                content="Artwork"
+                :number="artworks.length"
+                class="cursor-pointer"
+                bgcolor="#5A8467"
+                type="event"
+                :mode="getBadgeStatus(mode, 'artwork')"
+                @click.native.prevent="badgeClick($event, 'artwork')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
           <Badge
             content="Artists"
             :number="artists.length"
@@ -124,6 +129,7 @@ import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
+import BadgeFilter from '@/components/BadgeFilter.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
@@ -135,6 +141,7 @@ export default {
     SideBar,
     ArtsCard,
     Badge,
+    BadgeFilter,
     Filters,
     Accordion,
     ArtistCard,
@@ -155,6 +162,9 @@ export default {
     },
     arts() {
       return this.$store.state.arts.arts
+    },
+    isMobile() {
+      return this.$store.state.responsive.isMobileSideBarOpen
     },
     publicArts() {
       return this.arts.filter(art => art.properties.kind === 'public_art')
@@ -228,7 +238,9 @@ export default {
   mounted() {
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
-      const listElm = document.querySelector('#sidebar-container')
+      const listElm = this.isMobile
+        ? document.querySelector('#side-inner-collapse')
+        : document.querySelector('#sidebar-container')
       listElm.addEventListener('scroll', e => {
         if (
           listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
@@ -283,4 +295,24 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.badge-filter-container {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  border: 2px solid #5a8467;
+  border-radius: 1em;
+  background-color: #ededed;
+  margin: 0.5em 0;
+}
+
+.badge-filters {
+  font-size: 12px;
+  margin: 0 0.5em;
+}
+
+.badge-filters > p {
+  margin: 0;
+  font-weight: 500;
+}
+</style>
