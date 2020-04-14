@@ -76,8 +76,9 @@
           </div>
           <div v-if="mode !== 'lang'">
             <b-row>
+              <h5 class="language-family mt-2 pl-3 pr-3">Communities</h5>
               <b-col
-                v-for="community in communities"
+                v-for="community in paginatedCommunities"
                 :key="'community ' + community.name"
                 lg="12"
                 xl="12"
@@ -85,7 +86,7 @@
                 sm="6"
               >
                 <CommunityCard
-                  class="mt-3 hover-left-move"
+                  class="mb-2 hover-left-move"
                   :name="community.name"
                   :community="community"
                   @click.native.prevent="
@@ -129,7 +130,8 @@ export default {
       badgeContent: 'Languages',
       detailOneWidth: 375,
       detailTwoWidth: 500,
-      mode: 'All'
+      mode: 'All',
+      maximumLength: 0
     }
   },
   computed: {
@@ -143,6 +145,9 @@ export default {
     communities() {
       return this.$store.state.communities.communities
     },
+    paginatedCommunities() {
+      return this.communities.slice(0, this.maximumLength)
+    },
     languagesCount() {
       return this.$store.state.languages.languagesCount
     }
@@ -151,6 +156,22 @@ export default {
     this.$eventHub.whenMap(map => {
       this.$root.$emit('updateData')
     })
+
+    // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    if (this.$route.name === 'index-languages') {
+      const listElm = document.querySelector('#sidebar-container')
+      listElm.addEventListener('scroll', e => {
+        if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+          if (this.communities.length > this.maximumLength) {
+            this.loadMoreData()
+          }
+        }
+      })
+      this.loadMoreData()
+    }
+  },
+  destroyed() {
+    window.removeEventListener('scroll', () => {})
   },
   methods: {
     handleCardClick($event, name, type) {
@@ -166,6 +187,13 @@ export default {
           })
           break
       }
+    },
+    loadMoreData() {
+      this.$store.commit('sidebar/toggleLoading', true)
+      setTimeout(() => {
+        this.maximumLength += 10
+        this.$store.commit('sidebar/toggleLoading', false)
+      }, 500)
     }
   },
 
@@ -184,17 +212,4 @@ export default {
 }
 </script>
 
-<style>
-.language-family-header {
-  font: Regular 15px/18px;
-  letter-spacing: 0;
-  color: #707070;
-  opacity: 0.5;
-}
-.language-family-title {
-  font: Bold 15px/18px;
-  letter-spacing: 0;
-  color: #707070;
-  opacity: 0.7;
-}
-</style>
+<style></style>
