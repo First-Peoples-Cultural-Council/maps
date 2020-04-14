@@ -168,7 +168,7 @@ export default {
       this.currentMedia = media
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/artist_icon.svg`)
+      return img || require(`@/assets/images/${this.artDetails.type}_icon.svg`)
     },
     checkArtistProfile(name) {
       this.toggleGallery()

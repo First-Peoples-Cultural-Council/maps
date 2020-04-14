@@ -63,11 +63,10 @@ class RecordingSerializer(serializers.ModelSerializer):
 
 class LanguageSerializer(serializers.ModelSerializer):
     family = LanguageFamilySerializer(read_only=True)
-    language_audio = RecordingSerializer(read_only=True)
  
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names", "language_audio")
+        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
 class LNASerializer(serializers.ModelSerializer):

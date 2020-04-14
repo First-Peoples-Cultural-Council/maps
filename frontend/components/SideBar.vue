@@ -1,5 +1,6 @@
 <template>
   <div
+    id="sidebar-container"
     ref="sidebarContainer"
     class="sidebar-container"
     :class="{ 'sidebar-arts-container': showSidePanel }"
@@ -26,6 +27,11 @@
             <slot name="content"></slot>
             <slot name="badges"></slot>
             <slot name="cards"></slot>
+            <transition v-if="showLoading" name="fade">
+              <div class="loading-spinner">
+                <img src="@/assets/images/loading.gif" />
+              </div>
+            </transition>
           </div>
           <Contact
             :subject="
@@ -125,6 +131,11 @@ export default {
       fold: true
     }
   },
+  computed: {
+    showLoading() {
+      return this.$store.state.sidebar.showLoading
+    }
+  },
   mounted() {
     const sideBarContainer = this.$refs.sidebarContainer
     const el = document.getElementById('innerToggleHead')
@@ -169,7 +180,7 @@ export default {
   left: 0;
   bottom: 0;
   width: var(--sidebar-width, 425px);
-  overflow-y: auto;
+  overflow-y: scroll;
   padding-bottom: 1em;
   font-family: 'Proxima Nova', sans-serif;
 }
@@ -315,5 +326,25 @@ export default {
     width: 375px;
     left: 375px;
   }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.loading-spinner img {
+  width: 75px;
+  height: 75px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

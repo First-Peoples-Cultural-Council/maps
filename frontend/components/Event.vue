@@ -1,5 +1,5 @@
 <template>
-  <div class="cursor-pointer hide-mobile">
+  <div class="cursor-pointer hide-mobile event-main-container">
     <nav id="event-icon-container">
       <span>EVENTS</span>
       <img
@@ -14,8 +14,9 @@
       triggers="click"
       :show.sync="showEvents"
     >
-      <EventCard />
-      <EventCard />
+      <div class="event-list-container">
+        <EventCard />
+      </div>
     </b-popover>
   </div>
 </template>
@@ -39,7 +40,7 @@ export default {
   background-color: white;
   padding: 0.8em;
   z-index: 50;
-  margin-right: 1em;
+  margin-right: 0.5em;
   border: 1px solid #ddd5cc;
   border-radius: 2em;
   color: #7b7b7b;
@@ -86,6 +87,11 @@ export default {
   width: 350px;
   max-width: 350px;
   max-height: 800px;
+}
+
+.event-list-container {
+  width: 330px;
+  max-height: 750px;
   overflow-y: auto;
 }
 </style>

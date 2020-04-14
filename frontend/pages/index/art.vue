@@ -19,22 +19,13 @@
         <ArtistFilter class="m-3 " />
         <section class="pl-3 pr-3 pt-2">
           <Badge
-            content="Public Arts"
-            :number="publicArts.length"
-            class="cursor-pointer mb-2"
-            bgcolor="#848159"
-            type="part"
-            :mode="getBadgeStatus(mode, 'public_art')"
-            @click.native.prevent="handleBadge($event, 'public_art')"
-          ></Badge>
-          <Badge
-            content="Organization"
-            :number="orgs.length"
-            class="cursor-pointer mb-2"
-            bgcolor="#a48116"
-            type="org"
-            :mode="getBadgeStatus(mode, 'organization')"
-            @click.native.prevent="handleBadge($event, 'organization')"
+            content="Artwork"
+            :number="artworks.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#5A8467"
+            type="event"
+            :mode="getBadgeStatus(mode, 'artwork')"
+            @click.native.prevent="badgeClick($event, 'artwork')"
           ></Badge>
           <Badge
             content="Artists"
@@ -43,7 +34,7 @@
             bgcolor="#B45339"
             type="artist"
             :mode="getBadgeStatus(mode, 'artist')"
-            @click.native.prevent="handleBadge($event, 'artist')"
+            @click.native.prevent="badgeClick($event, 'artist')"
           ></Badge>
           <Badge
             content="Events"
@@ -52,17 +43,27 @@
             bgcolor="#DA531E"
             type="event"
             :mode="getBadgeStatus(mode, 'event')"
-            @click.native.prevent="handleBadge($event, 'event')"
+            @click.native.prevent="badgeClick($event, 'event')"
           ></Badge>
           <Badge
-            content="Artwork"
-            :number="artworks.length"
-            class="cursor-pointer mb-1"
-            bgcolor="#5A8467"
-            type="event"
-            :mode="getBadgeStatus(mode, 'artwork')"
-            @click.native.prevent="handleBadge($event, 'artwork')"
+            content="Organization"
+            :number="orgs.length"
+            class="cursor-pointer mb-2"
+            bgcolor="#a48116"
+            type="org"
+            :mode="getBadgeStatus(mode, 'organization')"
+            @click.native.prevent="badgeClick($event, 'organization')"
           ></Badge>
+          <Badge
+            content="Public Arts"
+            :number="publicArts.length"
+            class="cursor-pointer mb-2"
+            bgcolor="#848159"
+            type="part"
+            :mode="getBadgeStatus(mode, 'public_art')"
+            @click.native.prevent="badgeClick($event, 'public_art')"
+          ></Badge>
+
           <!-- <Badge
             content="Resources"
             :number="artists.length"
@@ -75,135 +76,27 @@
         </section>
       </template>
       <template v-slot:cards>
-        <section class="pl-3 pr-3">
-          <!-- <b-row>
+        <section id="card-item-list" class="pl-3 pr-3">
+          <b-row>
             <b-col
-              v-for="(artwork, index) in artworks"
-              :key="'parts' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"> 
-            </b-col>
-          </b-row> -->
-
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'artist' &&
-                mode !== 'event'
-            "
-          >
-            <b-col
-              v-for="(artwork, index) in artworks"
-              :key="'parts' + index"
+              v-for="(art, index) in paginatedArts"
+              :key="'arts' + index"
               lg="12"
               xl="12"
               md="6"
               sm="6"
             >
               <ArtistCard
-                :media="artwork"
+                v-if="mode === 'artwork'"
+                :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails.art === artwork.art && showDrawer"
+                :is-selected="artDetails.art === art.art && showDrawer"
                 class="mt-3 hover-left-move"
-                @click.native="selectMedia(artwork.art, artwork)"
+                @click.native="selectMedia(art.art, art)"
               ></ArtistCard>
-            </b-col>
-          </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'artist' &&
-                mode !== 'artwork'
-            "
-          >
-            <b-col
-              v-for="(art, index) in events"
-              :key="'artists ' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
+
               <ArtsCard
-                :art="art"
-                class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              ></ArtsCard>
-            </b-col>
-          </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'public_art' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
-            <b-col
-              v-for="(art, index) in artists"
-              :key="'artists ' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                :art="art"
-                class="mt-3  hover-left-move "
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              ></ArtsCard>
-            </b-col>
-          </b-row>
-          <b-row
-            v-if="
-              mode !== 'organization' &&
-                mode !== 'artist' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
-            <b-col
-              v-for="(art, index) in publicArts"
-              :key="'parts' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
-                :art="art"
-                class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
-              ></ArtsCard>
-            </b-col>
-          </b-row>
-          <b-row
-            v-if="
-              mode !== 'artist' &&
-                mode !== 'public_art' &&
-                mode !== 'event' &&
-                mode !== 'artwork'
-            "
-          >
-            <b-col
-              v-for="(art, index) in orgs"
-              :key="'orgs' + index"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <ArtsCard
+                v-else
                 :art="art"
                 class="mt-3 hover-left-move"
                 @click.native="
@@ -215,7 +108,7 @@
         </section>
       </template>
       <template v-if="showDrawer" v-slot:side-panel>
-        <ArtsSidePanelSmall :art="artDetails" :toggle-panel="toggleSidePanel" />
+        <ArtsDrawer :art="artDetails" :toggle-panel="toggleSidePanel" />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -235,7 +128,7 @@ import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
 import ArtistFilter from '@/components/arts/ArtistFilter.vue'
-import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
+import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {
   components: {
@@ -246,13 +139,14 @@ export default {
     Accordion,
     ArtistCard,
     ArtistFilter,
-    ArtsSidePanelSmall
+    ArtsDrawer
   },
   data() {
     return {
-      mode: 'All',
+      mode: 'artwork',
       accordionContent: 'View artwork from indigenous artists in your area.',
-      artDetails: {}
+      artDetails: {},
+      maximumLength: 0
     }
   },
   computed: {
@@ -305,9 +199,63 @@ export default {
       })
       artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
       return artworks
+    },
+    selectedArt() {
+      let artsArray = []
+      switch (this.mode) {
+        case 'artwork':
+          artsArray = this.artworks
+          break
+        case 'event':
+          artsArray = this.events
+          break
+        case 'artist':
+          artsArray = this.artists
+          break
+        case 'public_art':
+          artsArray = this.publicArts
+          break
+        case 'organization':
+          artsArray = this.orgs
+          break
+      }
+      return artsArray
+    },
+    paginatedArts() {
+      return this.selectedArt.slice(0, this.maximumLength)
+    }
+  },
+  mounted() {
+    // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    if (this.$route.name === 'index-art') {
+      const listElm = document.querySelector('#sidebar-container')
+      listElm.addEventListener('scroll', e => {
+        if (
+          listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
+          listElm.scrollTop !== 0
+        ) {
+          if (this.selectedArt.length > this.maximumLength) {
+            this.loadMoreData()
+          }
+        }
+      })
+      this.loadMoreData()
     }
   },
   methods: {
+    badgeClick($event, name) {
+      this.maximumLength = 0
+      console.log(this.maximumLength)
+      this.handleBadge($event, name)
+      this.loadMoreData()
+    },
+    loadMoreData() {
+      this.$store.commit('sidebar/toggleLoading', true)
+      setTimeout(() => {
+        this.maximumLength += 8
+        this.$store.commit('sidebar/toggleLoading', false)
+      }, 500)
+    },
     handleCardClick($event, name, type) {
       if (this.showDrawer) {
         this.toggleSidePanel()

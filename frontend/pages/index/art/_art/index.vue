@@ -151,7 +151,7 @@
         </div>
       </div>
     </div>
-    <ArtsSidePanelSmall
+    <ArtsDrawer
       v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
       :art="{ art: artDetails }"
       :show-panel="showDrawer"
@@ -184,7 +184,7 @@ import {
   makeMarker
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
-import ArtsSidePanelSmall from '@/components/arts/ArtsSidePanelSmall.vue'
+import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {
   components: {
@@ -193,7 +193,7 @@ export default {
     LanguageSeeAll,
     Filters,
     Logo,
-    ArtsSidePanelSmall
+    ArtsDrawer
   },
   filters: {
     titleCase(str) {
