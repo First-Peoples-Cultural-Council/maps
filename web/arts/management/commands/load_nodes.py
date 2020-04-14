@@ -121,13 +121,14 @@ class Client(dedruplify.DeDruplifierClient):
                                 public_art=node_placename, artist=artist_placename)
 
             for data in rec["related_data"]:
-                for k, v in data.items():
-                    for value in v:
-                        RelatedData.objects.get_or_create(
-                            data_type=k.replace('_', ''),
-                            value=value,
-                            placename=node_placename
-                        )
+                for value in data.get("value"):
+                    RelatedData.objects.get_or_create(
+                        data_type=data.get("key"),
+                        label=data.get("label"),
+                        is_private=data.get("private"),
+                        value=value,
+                        placename=node_placename
+                    )
 
             # Add location as related_data
             if rec["location_id"]:
@@ -167,8 +168,16 @@ class Client(dedruplify.DeDruplifierClient):
                     if row.get("name"):
                         value += "\n{}".format(row.get("name"))
 
+                    # Sanitize location data
+                    if value.startswith("\n"):
+                        value = value.strip()
+                    if value.startswith(", "):
+                        value.replace(", ", "", 1)
+
                     RelatedData.objects.get_or_create(
                         data_type="location",
+                        label="Location",
+                        is_private=False,
                         value=value,
                         placename=node_placename
                     )
@@ -343,7 +352,7 @@ class Client(dedruplify.DeDruplifierClient):
         node_placename.geom = Point(
             float(rec["geometry"]["coordinates"][0]),  # latitude
             float(rec["geometry"]["coordinates"][1]),
-        )  # longitude
+        ) if rec["geometry"] else None
         node_placename.description = rec["properties"]["details"]
         node_placename.kind = rec["properties"]["type"]
 
@@ -426,15 +435,37 @@ class Client(dedruplify.DeDruplifierClient):
             taxonomy_list.sort()
 
             related_data = []
-            for k, v in details.items():
-                if k in [
-                    "field_shared_access_value",
-                    "field_shared_website_url",
-                    "field_shared_email_email"
-                ]:
-                    updated_key = k.replace('field_shared_', '').replace(
-                        '_value', '').replace('_url', '').replace('_email', '')
-                    related_data.append({updated_key: v})
+            for k, value in details.items():
+                data_type = None
+                label = None
+                private = False
+
+                # Format Data
+                if k == "field_shared_access_value":
+                    label = 'Access'
+                    data_type = 'access'
+                if k == "field_shared_website_url":
+                    label = 'Website(s)'
+                    data_type = 'website'
+                if k == "field_shared_email_email":
+                    label = "Email"
+                    data_type = 'email'
+                    private = True
+                if k == "field_per_fn_value":
+                    label = "Indigenous/First Nation Association(s)"
+                    data_type = 'fn'
+                if k == "field_shared_awards_value":
+                    data_type = 'award'
+                    label = "Award(s)"
+
+                # If this is a field we customized for adding, include it
+                if data_type and label:
+                    related_data.append({
+                        "key": data_type,
+                        "label": label,
+                        "value": value,
+                        "private": private
+                    })
 
             feature = {
                 "type": "Feature",
