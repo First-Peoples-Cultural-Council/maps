@@ -61,7 +61,8 @@ class Client(dedruplify.DeDruplifierClient):
         art_artists.delete()
 
         # Set artsmap path - directory for media files downloaded from fp-artsmap.ca
-        artsmap_path = "{}{}{}".format(settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
+        artsmap_path = "{}{}{}".format(
+            settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
 
         # Comment if media is already downloaded
         # # Delete fp-artsmap directory contents if it exists
@@ -80,7 +81,8 @@ class Client(dedruplify.DeDruplifierClient):
         # SETUP FOR SAVING PLACENAMES
         node_placenames_geojson = self.nodes_to_geojson()
 
-        node_types = ["public_art", "artist", "organization", "event", "resource", "grant"]
+        node_types = ["public_art", "artist",
+                      "organization", "event", "resource", "grant"]
 
         # Removing every Node PlaceName object from the database.
         node_placenames = PlaceName.objects.filter(kind__in=node_types)
@@ -111,10 +113,12 @@ class Client(dedruplify.DeDruplifierClient):
                                            if placename["properties"]["node_id"] == artist_id]
 
                             # Create the PlaceName for the artist - Only get first item (records may duplicate)
-                            artist_placename = self.create_placename(artist_list[0])
+                            artist_placename = self.create_placename(
+                                artist_list[0])
 
                             # Create relationship (ignore if it already exists)
-                            PublicArtArtist.objects.get_or_create(public_art=node_placename, artist=artist_placename)
+                            PublicArtArtist.objects.get_or_create(
+                                public_art=node_placename, artist=artist_placename)
 
             for data in rec["related_data"]:
                 for k, v in data.items():
@@ -148,7 +152,8 @@ class Client(dedruplify.DeDruplifierClient):
 
                     # Conditional data based on postal code and city
                     if row.get("postal_code") and row.get("city"):
-                        value += "\n{} {}".format(row.get("postal_code"), row.get("city"))
+                        value += "\n{} {}".format(row.get("postal_code"),
+                                                  row.get("city"))
                     elif row.get("postal_code"):
                         value += "\n{}".format(row.get("postal_code"))
                     elif row.get("city"):
@@ -188,10 +193,12 @@ class Client(dedruplify.DeDruplifierClient):
                     media_url = None
 
                     if not filename:
-                        filename = "{} - {} {}".format(node_placename.name, 'Artwork', index)
+                        filename = "{} - {} {}".format(
+                            node_placename.name, 'Artwork', index)
 
                     try:
-                        existing_media = Media.objects.get(name=filename, placename=node_placename)
+                        existing_media = Media.objects.get(
+                            name=filename, placename=node_placename)
                     except Media.DoesNotExist:
                         existing_media = None
 
@@ -205,14 +212,18 @@ class Client(dedruplify.DeDruplifierClient):
 
                         if from_youtube or from_vimeo:
                             if from_youtube:
-                                media_url = uri.replace("youtube://v/", "https://youtube.com/watch?v=")
+                                media_url = uri.replace(
+                                    "youtube://v/", "https://youtube.com/watch?v=")
                             elif from_vimeo:
-                                media_url = uri.replace("vimeo://v/", "https://vimeo.com/")
+                                media_url = uri.replace(
+                                    "vimeo://v/", "https://vimeo.com/")
                         else:
                             # Set up paths
                             download_url = uri.replace("public://", files_url)
-                            storage_path = "{}/{}".format(artsmap_path, uri.replace("public://", ""))
-                            media_path = "{}/{}".format("fp-artsmap", uri.replace("public://", ""))
+                            storage_path = "{}/{}".format(
+                                artsmap_path, uri.replace("public://", ""))
+                            media_path = "{}/{}".format("fp-artsmap",
+                                                        uri.replace("public://", ""))
 
                             # Comment if media is already downloaded
                             # if not os.path.exists(os.path.dirname(storage_path)):
@@ -279,7 +290,8 @@ class Client(dedruplify.DeDruplifierClient):
             if hierarchy["parent_name"]:
                 try:
                     taxonomy = Taxonomy.objects.get(name=hierarchy["name"])
-                    parent_taxonomy = Taxonomy.objects.get(name=hierarchy["parent_name"])
+                    parent_taxonomy = Taxonomy.objects.get(
+                        name=hierarchy["parent_name"])
 
                     taxonomy.parent = parent_taxonomy
 
@@ -296,18 +308,21 @@ class Client(dedruplify.DeDruplifierClient):
 
         for rec in node_placenames_geojson["features"]:
             try:
-                node_placename = PlaceName.objects.get(name=rec["properties"]["name"], kind=rec["properties"]["type"])
+                node_placename = PlaceName.objects.get(
+                    name=rec["properties"]["name"], kind=rec["properties"]["type"])
 
                 for taxonomy in rec["taxonomies"]:
                     if taxonomy:
                         try:
-                            current_taxonomy = Taxonomy.objects.get(name=taxonomy)
+                            current_taxonomy = Taxonomy.objects.get(
+                                name=taxonomy)
 
                             PlaceNameTaxonomy.objects.get_or_create(
                                 placename=node_placename,
                                 taxonomy=current_taxonomy)
 
-                            print('Setting PlaceName Taxonomy for %s' % node_placename)
+                            print('Setting PlaceName Taxonomy for %s' %
+                                  node_placename)
                         except Taxonomy.DoesNotExist:
                             print('Taxonomy not found %s' % taxonomy)
 
@@ -317,7 +332,8 @@ class Client(dedruplify.DeDruplifierClient):
     def create_placename(self, rec):
         # avoid duplicates on remote data source.
         try:
-            node_placename = PlaceName.objects.get(name=rec["properties"]["name"])
+            node_placename = PlaceName.objects.get(
+                name=rec["properties"]["name"])
             # print('Updating %s' % rec["properties"]["name"])
         except PlaceName.DoesNotExist:
             node_placename = PlaceName(name=rec["properties"]["name"])
@@ -346,25 +362,21 @@ class Client(dedruplify.DeDruplifierClient):
         # prepare a cursor object using cursor() method
         cursor = db.cursor()
 
-        sql = """
+        nodes = self.query("""
             SELECT
-                distinct node.type, node.title, location.latitude, location.longitude, node.nid
+                type,
+                title,
+                nid
             FROM
-                node inner join location_instance on node.nid=location_instance.nid
-                inner join location on location.lid=location_instance.lid
+                node
             WHERE
-                node.type = 'art' OR
-                node.type = 'per' OR
-                node.type = 'org' OR
-                node.type = 'event' OR
-                node.type = 'resource' OR
-                node.type = 'grant';
-        """
-        # Execute the SQL command
-        cursor.execute(sql)
-        # Fetch all the rows in a list of lists.
-        results = cursor.fetchall()
-
+                type = 'art' OR
+                type = 'per' OR
+                type = 'org' OR
+                type = 'event' OR
+                type = 'resource' OR
+                type = 'grant';
+        """)
         geojson = {"type": "FeatureCollection", "features": []}
 
         _details = {}
@@ -372,76 +384,86 @@ class Client(dedruplify.DeDruplifierClient):
             _details[node_type] = json.loads(
                 open("tmp/{}.json".format(node_type)).read()
             )
+        counter = 1
 
-        for row in results:
-            if float(row[2]) and float(row[3]):  # only want spatial data.
-                name = row[1].strip()
-                # if (
-                #     name.lower().endswith("band")
-                #     or name.lower().endswith("nation")
-                #     or name.lower().endswith("council")
-                #     or name.lower().endswith("nations")
-                # ):
-                #     # bands are duplicated in other layers, skip them.
-                #     print(row[1], "is duplicated in another layer, skip.")
-                #     continue
+        for node in nodes:
+            location = self.query("""
+                SELECT DISTINCT
+                    latitude,
+                    longitude,
+                    location.lid
+                FROM
+                    location
+                    JOIN location_instance on location.lid = location_instance.lid
+                WHERE
+                    nid=%s
+                ORDER BY
+                    location.lid DESC
+                LIMIT
+                    1;
+            """ % node.get("nid"))
 
-                details = _details[row[0]][str(row[4])]
+            name = node.get("title", "").strip()
+            node_type = node.get("type")
+            node_id = node.get("nid")
+            coordinates = [float(location[0].get("longitude", "")), float(
+                location[0].get("latitude", ""))] if location else None
 
-                # Attach files to node
-                file_ids = []
-                for k, v in details.items():
-                    if k.endswith('_fid'):
-                        file_ids += v
-                file_ids.sort()
+            details = _details[node_type][str(node_id)]
 
-                # Attach taxonomy to node
-                taxonomy_list = []
-                for k, v in details.items():
-                    if k == 'taxonomy_list':
-                        taxonomy_list += v
-                taxonomy_list.sort()
+            # Attach files to node
+            file_ids = []
+            for k, v in details.items():
+                if k.endswith('_fid'):
+                    file_ids += v
+            file_ids.sort()
 
-                related_data = []
-                for k, v in details.items():
-                    if k in [
-                        "field_shared_access_value",
-                        "field_shared_website_url",
-                        "field_shared_email_email"
-                    ]:
-                        updated_key = k.replace('field_shared_', '').replace('_value', '').replace('_url', '').replace('_email', '')
-                        related_data.append({updated_key: v})
+            # Attach taxonomy to node
+            taxonomy_list = []
+            for k, v in details.items():
+                if k == 'taxonomy_list':
+                    taxonomy_list += v
+            taxonomy_list.sort()
 
-                feature = {
-                    "type": "Feature",
-                    "properties": {
-                        "type": TYPE_MAP[row[0]],
-                        "name": name,
-                        "details": details.get("body_value", [""])[0],
-                        "node_id": row[4],
-                        "display_picture": details.get("field_shared_image_fid", [""])[0]
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [float(row[3]), float(row[2])],
-                    },
-                    "files": file_ids,
-                    "taxonomies": taxonomy_list,
-                    "related_data": related_data,
-                    "location_id": details.get("field_shared_location_lid", [""])[0]
-                }
+            related_data = []
+            for k, v in details.items():
+                if k in [
+                    "field_shared_access_value",
+                    "field_shared_website_url",
+                    "field_shared_email_email"
+                ]:
+                    updated_key = k.replace('field_shared_', '').replace(
+                        '_value', '').replace('_url', '').replace('_email', '')
+                    related_data.append({updated_key: v})
 
-                if row[0] == 'art' and details.get('field_art_artist_nid'):
-                    feature["artists"] = details.get("field_art_artist_nid", [])
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "type": TYPE_MAP[node_type],
+                    "name": name,
+                    "details": details.get("body_value", [""])[0],
+                    "node_id": node_id,
+                    "display_picture": details.get("field_shared_image_fid", [""])[0]
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": coordinates
+                } if location else None,
+                "files": file_ids,
+                "taxonomies": taxonomy_list,
+                "related_data": related_data,
+                "location_id": details.get("field_shared_location_lid", [""])[0]
+            }
 
-                geojson["features"].append(feature)
+            if node_type == 'art' and details.get('field_art_artist_nid'):
+                feature["artists"] = details.get("field_art_artist_nid", [])
+
+            geojson["features"].append(feature)
 
         open("tmp/geojson.json", "w").write(
             json.dumps(geojson, indent=4, sort_keys=True)
         )
         return geojson
-
-
 
 
 # TODO: move to db query.
@@ -481,14 +503,17 @@ TAX_TERMS = [
         "1",
         "4c796e30-3669-48d2-8eb4-660a80ed5752",
     ),
-    (55, 1, "Cultural Centre", "", 1, None, "b4f62a90-3cd1-46b6-944e-3b54da996b1b"),
+    (55, 1, "Cultural Centre", "", 1, None,
+     "b4f62a90-3cd1-46b6-944e-3b54da996b1b"),
     (56, 1, "Arts Group", "", 0, None, "bafa558f-4afd-42bf-8b11-05076e7f37b5"),
-    (58, 1, "Artists' Collective", "", 1, None, "893a3423-e745-49b6-9eba-030512d72f4e"),
+    (58, 1, "Artists' Collective", "", 1, None,
+     "893a3423-e745-49b6-9eba-030512d72f4e"),
     (59, 1, "Funder", "", 2, "1", "e70805ab-3330-4271-8275-d57261f0d21f"),
     (60, 1, "School", "", 5, "1", "0238377c-88e9-40ae-8072-1fa5e63b60f2"),
     (61, 1, "Venue", "", 4, None, "14f8f62f-b687-4d5f-9900-6481df130d61"),
     (62, 1, "Gallery", "", 3, "1", "09a59051-e22f-4a01-9f8e-20a71521e9ad"),
-    (64, 1, "Other Organization", "", 6, None, "4f02e021-9eaf-426a-b4ed-f787e50ba9d3"),
+    (64, 1, "Other Organization", "", 6, None,
+     "4f02e021-9eaf-426a-b4ed-f787e50ba9d3"),
     (
         69,
         1,
@@ -498,7 +523,8 @@ TAX_TERMS = [
         "1",
         "bbc036b8-b866-4865-ba0b-d186e9df3297",
     ),
-    (70, 1, "Cultural Gathering", "", 4, None, "874820ae-1036-4300-a00d-94119e44cc24"),
+    (70, 1, "Cultural Gathering", "", 4, None,
+     "874820ae-1036-4300-a00d-94119e44cc24"),
     (71, 1, "Festival", "", 5, None, "fa762610-6085-4daa-b079-cb902c6ec51f"),
     (73, 1, "Conference", "", 6, None, "907b9087-973f-4fc2-b9f5-86e7f6840403"),
     (74, 1, "Pow-wow", "", 3, None, "7c9bd15c-289b-4562-9c7c-d8901e093f25"),
@@ -560,17 +586,24 @@ TAX_TERMS = [
     (115, 1, "Weaver", "", 1, None, "101fbba1-5aaf-4e13-9651-298efdbf6367"),
     (116, 1, "Carver", "", 2, None, "c2efc650-2481-4b52-9ac2-b1205ce4a2e3"),
     (117, 1, "Jeweler", "", 3, None, "6e6e6bf6-21a1-4a9d-84e1-6b5207e42be4"),
-    (118, 1, "Graphic Designer", "", 4, None, "e8277a9d-1a81-4f83-852b-10b9bfa0b87e"),
-    (119, 1, "Visual - Other", "", 5, None, "14eb037b-ebe6-4c3a-93c2-d435faf6846f"),
+    (118, 1, "Graphic Designer", "", 4, None,
+     "e8277a9d-1a81-4f83-852b-10b9bfa0b87e"),
+    (119, 1, "Visual - Other", "", 5, None,
+     "14eb037b-ebe6-4c3a-93c2-d435faf6846f"),
     (120, 1, "Director", "", 3, None, "6af232e7-6d97-4897-9c14-77a267377d84"),
     (121, 1, "Musician", "", 5, None, "167a1ea9-a9ff-4450-b311-7d5fb2b560b1"),
-    (122, 1, "Spoken Word Artist", "", 2, None, "8486782e-ed5e-4851-841d-ca2d77bc0f47"),
-    (123, 1, "Children's Author", "", 3, None, "23e55af7-cbef-4b1d-bfe1-6e39856bf218"),
-    (124, 1, "Graphic Novelist", "", 4, None, "d7887c5f-8965-4a4c-9a20-3a3bb61c732c"),
+    (122, 1, "Spoken Word Artist", "", 2, None,
+     "8486782e-ed5e-4851-841d-ca2d77bc0f47"),
+    (123, 1, "Children's Author", "", 3, None,
+     "23e55af7-cbef-4b1d-bfe1-6e39856bf218"),
+    (124, 1, "Graphic Novelist", "", 4, None,
+     "d7887c5f-8965-4a4c-9a20-3a3bb61c732c"),
     (125, 1, "Photographer", "", 0, None, "86b63ecb-cf07-442a-bde5-58e8132f6451"),
-    (126, 1, "Film and Video", "", 1, None, "43e1a633-d5bc-4972-a983-6c99552454a7"),
+    (126, 1, "Film and Video", "", 1, None,
+     "43e1a633-d5bc-4972-a983-6c99552454a7"),
     (127, 1, "Animator", "", 2, None, "e8e16ceb-6886-42d5-ad2b-91ce5a10012a"),
-    (128, 1, "New Media Artist", "", 3, None, "ce5f1f52-59ae-4e57-9c80-f95b8de2e301"),
+    (128, 1, "New Media Artist", "", 3, None,
+     "ce5f1f52-59ae-4e57-9c80-f95b8de2e301"),
     (
         129,
         1,
