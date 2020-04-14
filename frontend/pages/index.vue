@@ -79,9 +79,9 @@
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
           <b-row>
-            <h5 class="language-family mt-4 pl-3 pr-3">Communities</h5>
+            <h5 class="language-family mt-2 pl-3 pr-3">Communities</h5>
             <b-col
-              v-for="community in communities"
+              v-for="community in paginatedCommunities"
               :key="'community ' + community.name"
               lg="12"
               xl="12"
@@ -89,7 +89,7 @@
               sm="6"
             >
               <CommunityCard
-                class="mt-3 hover-left-move"
+                class="mb-2 hover-left-move"
                 :name="community.name"
                 :community="community"
                 @click.native.prevent="
@@ -251,6 +251,7 @@ export default {
     ]
     const bounds = [bbox[0], bbox[1]]
     return {
+      maximumLength: 0,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -259,11 +260,11 @@ export default {
       MAP_OPTIONS: {
         style:
           'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx?optimize=true', // hero
-        // center: [-125, 55],
         maxZoom: 19,
         minZoom: 3,
-        // zoom: 4
         bounds
+        // center: [-125, 55],
+        // zoom: 4
       },
       mode: 'All',
       map: {},
@@ -301,6 +302,9 @@ export default {
     },
     languages() {
       return this.$store.state.languages.languages || []
+    },
+    paginatedCommunities() {
+      return this.communities.slice(0, this.maximumLength)
     },
     languagesCount() {
       return this.$store.state.languages.languagesCount
@@ -476,8 +480,25 @@ export default {
         zoomToIdealBox({ map })
       })
     }
+
+    const listElm = document.querySelector('#sidebar-container')
+    listElm.addEventListener('scroll', e => {
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        if (this.communities.length > this.maximumLength) {
+          this.loadMoreData()
+        }
+      }
+    })
+    this.loadMoreData()
   },
   methods: {
+    loadMoreData() {
+      this.$store.commit('sidebar/toggleLoading', true)
+      setTimeout(() => {
+        this.maximumLength += 10
+        this.$store.commit('sidebar/toggleLoading', false)
+      }, 500)
+    },
     setMobile(screenSizeOnLand) {
       if (screenSizeOnLand <= 992 && this.isMobile === false) {
         this.$store.commit('app/setMobile', true)
@@ -1034,8 +1055,17 @@ export default {
   font-size: 0.8em;
 }
 
+.language-family-header {
+  font: Regular 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.5;
+}
 .language-family-title {
-  font-weight: bold;
+  font: Bold 15px/18px;
+  letter-spacing: 0;
+  color: #707070;
+  opacity: 0.7;
 }
 
 .no-scroll-accordion #inner-collapse {
