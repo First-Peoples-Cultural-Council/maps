@@ -26,7 +26,7 @@
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(place, index) in places"
+              v-for="(place, index) in paginatedPlaces"
               :key="index"
               lg="12"
               xl="12"
@@ -66,7 +66,8 @@ export default {
     return {
       selected: [],
       accordionContent:
-        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.'
+        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.',
+      maximumLength: 0
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -77,13 +78,34 @@ export default {
   computed: {
     places() {
       return this.$store.state.places.places
+    },
+    paginatedPlaces() {
+      return this.places.slice(0, this.maximumLength)
     }
+  },
+  mounted() {
+    const listElm = document.querySelector('#sidebar-container')
+    listElm.addEventListener('scroll', e => {
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        if (this.places.length > this.maximumLength) {
+          this.loadMoreData()
+        }
+      }
+    })
+    this.loadMoreData()
   },
   methods: {
     handleCardClick(e, name) {
       this.$router.push({
         path: `/place-names/${encodeFPCC(name)}`
       })
+    },
+    loadMoreData() {
+      this.$store.commit('sidebar/toggleLoading', true)
+      setTimeout(() => {
+        this.maximumLength += 10
+        this.$store.commit('sidebar/toggleLoading', false)
+      }, 500)
     }
   }
 }
