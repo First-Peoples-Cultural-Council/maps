@@ -382,7 +382,9 @@ class Media(BaseModel):
 
 class RelatedData(models.Model):
     data_type = models.CharField(max_length=100, unique=False)
+    label = models.CharField(max_length=100, unique=False, default='')
     value = models.CharField(max_length=255, default='')
+    is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(PlaceName, related_name='related_data', on_delete=models.CASCADE)
 
 
