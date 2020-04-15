@@ -327,7 +327,8 @@ class ArtGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
         name__icontains="FirstVoices", geom__isnull=False
     ).filter(
-        kind__in=['public_art', 'artist', 'organization', 'event', 'resource', 'grant']
+        kind__in=['public_art', 'artist', 'organization', 'event', 'resource', 'grant'],
+        geom__isnull=False
     )
 
     @method_decorator(never_cache)
