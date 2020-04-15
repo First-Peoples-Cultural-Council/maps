@@ -1,3 +1,7 @@
+from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+
 from .models import (
     Language,
     PlaceName,
@@ -20,8 +24,6 @@ from .models import (
     PlaceNameTaxonomy
 )
 from users.serializers import PublicUserSerializer, UserSerializer
-from rest_framework import serializers
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class LanguageFamilySerializer(serializers.ModelSerializer):
@@ -235,6 +237,7 @@ class TaxonomyLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Taxonomy
         fields = (
+            "id",
             "name",
         )
 
@@ -502,6 +505,17 @@ class FavouritePlaceNameSerializer(serializers.ModelSerializer):
         )
 
 
+class TaxonomySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            'id',
+            'name',
+            'description',
+            'parent'
+        )
+
+
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = MediaLightSerializer(many=True, read_only=True)
     creator = PublicUserSerializer(read_only=True)
@@ -522,6 +536,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
     artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+    taxonomies = TaxonomySerializer(many=True)
 
     class Meta:
         model = PlaceName
@@ -554,13 +569,3 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class TaxonomySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Taxonomy
-        fields = (
-            'id',
-            'name',
-            'description',
-            'parent',
-            'child_taxonomies'
-        )
