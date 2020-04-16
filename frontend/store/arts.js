@@ -1,6 +1,7 @@
 export const state = () => ({
   arts: [],
-  artsSet: []
+  artsSet: [],
+  artSearch: ''
 })
 
 export const mutations = {
@@ -10,5 +11,8 @@ export const mutations = {
 
   setStore(state, artsSet) {
     state.artsSet = artsSet
+  },
+  setArtSearch(state, query) {
+    state.artSearch = query
   }
 }
