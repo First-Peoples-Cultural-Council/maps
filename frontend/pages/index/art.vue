@@ -17,12 +17,12 @@
       </template>
       <template v-slot:badges>
         <ArtistFilter class="m-3 " />
-        <section class="pl-3 pr-3 pt-2">
+        <section :class="`pl-3 pr-3 pt-2`">
           <BadgeFilter>
             <template v-slot:badge>
               <Badge
                 content="Artwork"
-                :number="artworks.length"
+                :number="artworksCount"
                 class="cursor-pointer"
                 bgcolor="#5A8467"
                 type="event"
@@ -34,7 +34,7 @@
 
           <Badge
             content="Artists"
-            :number="artists.length"
+            :number="artistsCount"
             class="cursor-pointer mb-1"
             bgcolor="#B45339"
             type="artist"
@@ -43,7 +43,7 @@
           ></Badge>
           <Badge
             content="Events"
-            :number="events.length"
+            :number="eventsCount"
             class="cursor-pointer mb-1"
             bgcolor="#DA531E"
             type="event"
@@ -52,7 +52,7 @@
           ></Badge>
           <Badge
             content="Organization"
-            :number="orgs.length"
+            :number="orgsCount"
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
             type="org"
@@ -61,7 +61,7 @@
           ></Badge>
           <Badge
             content="Public Arts"
-            :number="publicArts.length"
+            :number="publicArtsCount"
             class="cursor-pointer mb-2"
             bgcolor="#848159"
             type="part"
@@ -71,12 +71,12 @@
 
           <!-- <Badge
             content="Resources"
-            :number="artists.length"
+            :number="grantsCount"
             class="cursor-pointer mb-1"
             bgcolor="#008CA9"
             type="resource"
-            :mode="getBadgeStatus(mode, 'resource')"
-            @click.native.prevent="handleBadge($event, 'resource')"
+            :mode="getBadgeStatus(mode, 'grants')"
+            @click.native.prevent="handleBadge($event, 'grants')"
           ></Badge> -->
         </section>
       </template>
@@ -92,12 +92,14 @@
               sm="6"
             >
               <ArtistCard
-                v-if="mode === 'artwork'"
+                v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails.art === art.art && showDrawer"
+                :is-selected="
+                  artDetails.properties === art.properties && showDrawer
+                "
                 class="mt-3 hover-left-move"
-                @click.native="selectMedia(art.art, art)"
+                @click.native="selectMedia(art.properties, art)"
               ></ArtistCard>
 
               <ArtsCard
@@ -157,6 +159,12 @@ export default {
     }
   },
   computed: {
+    searchQuery() {
+      return this.$store.state.arts.artSearch
+    },
+    isSearchMode() {
+      return this.searchQuery.length !== 0
+    },
     showDrawer() {
       return this.$store.state.sidebar.isArtsMode
     },
@@ -166,20 +174,25 @@ export default {
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
-    publicArts() {
-      return this.arts.filter(art => art.properties.kind === 'public_art')
+    publicArtsCount() {
+      return this.getCountValues('public_art')
     },
-    orgs() {
-      return this.arts.filter(art => art.properties.kind === 'organization')
+    orgsCount() {
+      return this.getCountValues('organization')
     },
-    artists() {
-      return this.arts.filter(art => art.properties.kind === 'artist')
+    artistsCount() {
+      return this.getCountValues('artist')
     },
-    grants() {
-      return this.arts.filter(art => art.properties.kind === 'grant')
+    grantsCount() {
+      return this.getCountValues('grant')
     },
-    events() {
-      return this.arts.filter(art => art.properties.kind === 'event')
+    eventsCount() {
+      return this.getCountValues('public_art')
+    },
+    artworksCount() {
+      return this.isSearchMode
+        ? this.filterArray(this.selectedArt, 'artwork')
+        : this.artworks.length
     },
     artworks() {
       const artworks = []
@@ -194,8 +207,9 @@ export default {
                 media_file: media.media_file,
                 file_type: media.file_type,
                 url: media.url,
-                art: {
+                properties: {
                   name: art.properties.name,
+                  kind: 'artwork',
                   type: art.properties.kind,
                   image: art.properties.image,
                   artists: art.properties.artists,
@@ -210,25 +224,28 @@ export default {
       artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
       return artworks
     },
+    allArts() {
+      return [...this.artworks, ...this.arts]
+    },
     selectedArt() {
+      console.log('MODE', this.allArts)
       let artsArray = []
-      switch (this.mode) {
-        case 'artwork':
-          artsArray = this.artworks
-          break
-        case 'event':
-          artsArray = this.events
-          break
-        case 'artist':
-          artsArray = this.artists
-          break
-        case 'public_art':
-          artsArray = this.publicArts
-          break
-        case 'organization':
-          artsArray = this.orgs
-          break
+
+      // TO DO FILTER BY NAME AND KIND
+      if (this.isSearchMode) {
+        artsArray = this.allArts.filter(art => {
+          if (art.properties.kind === 'artwork') {
+            return art.name.includes(this.searchQuery)
+          } else {
+            return art.properties.name.includes(this.searchQuery)
+          }
+        })
+      } else {
+        artsArray = this.allArts.filter(art => {
+          return art.properties.kind === this.mode
+        })
       }
+
       return artsArray
     },
     paginatedArts() {
@@ -257,14 +274,13 @@ export default {
   methods: {
     badgeClick($event, name) {
       this.maximumLength = 0
-      console.log(this.maximumLength)
       this.handleBadge($event, name)
       this.loadMoreData()
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
-        this.maximumLength += 8
+        this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
       }, 500)
     },
@@ -291,28 +307,16 @@ export default {
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+    },
+    getCountValues(type) {
+      return this.isSearchMode
+        ? this.filterArray(this.selectedArt, type)
+        : this.filterArray(this.arts, type)
+    },
+    filterArray(artsArray, type) {
+      return artsArray.filter(art => art.properties.kind === type).length
     }
   }
 }
 </script>
-<style>
-.badge-filter-container {
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  border: 2px solid #5a8467;
-  border-radius: 1em;
-  background-color: #ededed;
-  margin: 0.5em 0;
-}
-
-.badge-filters {
-  font-size: 12px;
-  margin: 0 0.5em;
-}
-
-.badge-filters > p {
-  margin: 0;
-  font-weight: 500;
-}
-</style>
+<style></style>
