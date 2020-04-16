@@ -69,15 +69,15 @@
             @click.native.prevent="badgeClick($event, 'public_art')"
           ></Badge>
 
-          <!-- <Badge
-            content="Resources"
+          <Badge
+            content="Grants"
             :number="grantsCount"
             class="cursor-pointer mb-1"
             bgcolor="#008CA9"
-            type="resource"
-            :mode="getBadgeStatus(mode, 'grants')"
-            @click.native.prevent="handleBadge($event, 'grants')"
-          ></Badge> -->
+            type="org"
+            :mode="getBadgeStatus(mode, 'grant')"
+            @click.native.prevent="handleBadge($event, 'grant')"
+          ></Badge>
         </section>
       </template>
       <template v-slot:cards>
@@ -228,7 +228,6 @@ export default {
       return [...this.artworks, ...this.arts]
     },
     selectedArt() {
-      console.log('MODE', this.allArts)
       let artsArray = []
 
       // TO DO FILTER BY NAME AND KIND
