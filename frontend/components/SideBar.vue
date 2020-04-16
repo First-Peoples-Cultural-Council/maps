@@ -39,14 +39,22 @@
             "
           ></Contact>
         </div>
-        <div v-if="showSidePanel" class="sidebar-side-panel">
+        <div
+          v-if="showSidePanel"
+          class="sidebar-side-panel"
+          :class="{ 'hide-scroll-y': showGallery }"
+        >
           <slot name="side-panel"></slot>
         </div>
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
           <template v-slot:side-panel>
-            <div v-if="showSidePanel" class="sidebar-side-panel">
+            <div
+              v-if="showSidePanel"
+              class="sidebar-side-panel"
+              :class="{ 'hide-scroll-y': showGallery }"
+            >
               <slot name="side-panel"></slot>
             </div>
           </template>
@@ -134,6 +142,9 @@ export default {
   computed: {
     showLoading() {
       return this.$store.state.sidebar.showLoading
+    },
+    showGallery() {
+      return this.$store.state.sidebar.showGallery
     }
   },
   mounted() {
