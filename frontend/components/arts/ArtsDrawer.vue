@@ -1,5 +1,5 @@
 <template>
-  <div :class="`arts-right-panel ${showGallery ? 'hide-scroll-y' : ''}`">
+  <div :class="`arts-right-panel`">
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
         <span class="mr-2 font-weight-bold"> X </span>
@@ -21,7 +21,7 @@
             class="cursor-pointer pl-2 pr-2 profile-btn"
             @click="checkArtistProfile(artDetails.name)"
           >
-            Check Profile
+            Visit Profile
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
             class="cursor-pointer pl-2 pr-2 profile-btn"
             @click="checkArtistProfile(artist.name)"
           >
-            Check Profile
+            Visit Profile
           </div>
         </div>
       </div>
@@ -91,6 +91,7 @@
       :media="currentMedia"
       :artists="listOfArtists"
       :placename="artDetails.name"
+      :art-thumbnail="renderArtistImg"
       :placename-img="artDetails.image"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
@@ -226,7 +227,6 @@ export default {
 }
 
 .panel-artist {
-  width: 100%;
   display: flex;
   justify-content: flex-start;
   padding: 1em;
@@ -260,6 +260,7 @@ export default {
 }
 
 .item-subtitle {
+  width: fit-content;
   font: Bold 15px/18px Lato;
   color: #707070;
   opacity: 0.7;
