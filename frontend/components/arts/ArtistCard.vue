@@ -84,7 +84,7 @@ export default {
       return this.media
     },
     artists() {
-      return this.mediaData.art.artists
+      return this.mediaData.properties.artists
     },
     mediaType() {
       return this.mediaData.file_type
@@ -114,8 +114,8 @@ export default {
               artist.name
             }</a>`
           })
-        : `<a href="art/${encodeFPCC(this.mediaData.art.name)}"> ${
-            this.mediaData.art.name
+        : `<a href="art/${encodeFPCC(this.mediaData.properties.name)}"> ${
+            this.mediaData.properties.name
           }</a>`
       return `By ${listOfArtist}`
     },
@@ -142,12 +142,12 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      if (!this.media.art.geometry) return
-      this.$eventHub.revealArea(this.media.art.geometry)
+      if (!this.mediaData.properties.geometry) return
+      this.$eventHub.revealArea(this.mediaData.properties.geometry)
     },
     handleMouseLeave() {
       this.hover = false
-      if (!this.media.art.geometry) return
+      if (!this.mediaData.properties.geometry) return
       this.$eventHub.doneReveal()
     },
     getYoutubeVideoID(url) {
