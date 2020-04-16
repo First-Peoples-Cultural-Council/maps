@@ -81,10 +81,15 @@ export default {
     },
     paginatedPlaces() {
       return this.places.slice(0, this.maximumLength)
+    },
+    isMobile() {
+      return this.$store.state.responsive.isMobileSideBarOpen
     }
   },
   mounted() {
-    const listElm = document.querySelector('#sidebar-container')
+    const listElm = this.isMobile
+      ? document.querySelector('#side-inner-collapse')
+      : document.querySelector('#sidebar-container')
     listElm.addEventListener('scroll', e => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         if (this.places.length > this.maximumLength) {
@@ -103,7 +108,7 @@ export default {
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
-        this.maximumLength += 10
+        this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
       }, 500)
     }

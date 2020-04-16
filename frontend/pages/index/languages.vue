@@ -75,8 +75,8 @@
             </div>
           </div>
           <div v-if="mode !== 'lang'">
+            <h5 class="language-family mt-2 ">Communities</h5>
             <b-row>
-              <h5 class="language-family mt-2 pl-3 pr-3">Communities</h5>
               <b-col
                 v-for="community in paginatedCommunities"
                 :key="'community ' + community.name"
@@ -150,6 +150,9 @@ export default {
     },
     languagesCount() {
       return this.$store.state.languages.languagesCount
+    },
+    isMobile() {
+      return this.$store.state.responsive.isMobileSideBarOpen
     }
   },
   mounted() {
@@ -159,7 +162,9 @@ export default {
 
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-languages') {
-      const listElm = document.querySelector('#sidebar-container')
+      const listElm = this.isMobile
+        ? document.querySelector('#side-inner-collapse')
+        : document.querySelector('#sidebar-container')
       listElm.addEventListener('scroll', e => {
         if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
           if (this.communities.length > this.maximumLength) {

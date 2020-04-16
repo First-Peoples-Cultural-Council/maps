@@ -16,10 +16,7 @@
       </button>
       <div class="carousel-gallery-container">
         <div class="artist-gallery-detail">
-          <img
-            v-lazy="renderArtistImg(placenameImg)"
-            class="artist-img-small"
-          />
+          <img v-lazy="artThumbnail(placenameImg)" class="artist-img-small" />
           <div class="gallery-title">
             <span class="item-title">{{ currentMedia.name }}</span>
             <span class="item-subtitle" v-html="returnArtists()" />
@@ -29,9 +26,9 @@
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
           >
-            Check Profile
+            Visit Profile
           </div>
-          <img class="art-type" src="@/assets/images/arts/audio.png" />
+          <!-- <img class="art-type" src="@/assets/images/arts/audio.png" /> -->
         </div>
         <!-- Render Media here depending on type -->
         <img
@@ -122,6 +119,12 @@ export default {
     placenameImg: {
       type: String,
       default: ''
+    },
+    artThumbnail: {
+      type: Function,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
@@ -166,9 +169,6 @@ export default {
             })
           : this.placename
       return `By ${listOfArtist}`
-    },
-    renderArtistImg(img) {
-      return img || require(`@/assets/images/artist_icon.svg`)
     },
     selectCurrentIndex(item) {
       this.mediaData = item
@@ -263,6 +263,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   margin-left: 0.5em;
+  flex: 1;
 }
 
 .artist-img-small {
@@ -275,8 +276,8 @@ export default {
   display: block;
   width: 100%;
   height: 600px;
-  object-fit: cover;
-  object-position: center center;
+  object-fit: contain;
+  background: black;
 }
 
 /* Pagination CSS */

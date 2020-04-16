@@ -14,7 +14,7 @@
             v-model="searchQuery"
             type="text"
             class="search-input"
-            placeholder="Search for a language, community, or place name..."
+            placeholder="Search for any terms, like Secwepemctsin..."
             autocomplete="off"
             @update="handleSearchUpdate"
             @focus="handleInputFocus"
@@ -35,7 +35,7 @@
           v-model="searchQuery"
           type="search"
           class="search-input"
-          placeholder="Search for a language, community, or place name..."
+          placeholder="Search for any terms, like Secwepemctsin..."
           autocomplete="off"
           @update="handleSearchUpdate"
           @focus="handleInputFocus"
@@ -641,7 +641,7 @@ export default {
   /* position: absolute;
   top: 0;
   left: calc(40% - 200px); */
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
 }
 .searchbar-container-detail {
@@ -716,12 +716,6 @@ export default {
 .search-input.form-control {
   border-radius: 3em;
   padding: 1.4em;
-}
-
-@media (min-width: 1300px) {
-  .searchbar-container {
-    width: 500px;
-  }
 }
 
 @media (max-width: 1200px) {

@@ -35,11 +35,16 @@
       </div>
       <div ref="innerCollapse">
         <b-collapse
-          id="inner-collapse"
+          id="side-inner-collapse"
           v-model="visible"
           :class="{ innerFix: visible }"
         >
           <slot></slot>
+          <transition v-if="showLoading" name="fade">
+            <div class="loading-spinner">
+              <img src="@/assets/images/loading.gif" />
+            </div>
+          </transition>
         </b-collapse>
       </div>
     </b-collapse>
@@ -62,6 +67,9 @@ export default {
     },
     isMobileSideBarOpen() {
       return this.$store.state.responsive.isMobileSideBarOpen
+    },
+    showLoading() {
+      return this.$store.state.sidebar.showLoading
     }
   },
   methods: {
@@ -122,7 +130,7 @@ export default {
   background-color: white;
 }
 
-#inner-collapse .sidebar-tabs {
+#side-inner-collapse .sidebar-tabs {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -130,21 +138,21 @@ export default {
   z-index: 50;
 }
 
-#inner-collapse {
+#side-inner-collapse {
   max-height: 60vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-#inner-collapse .sidebar-tabs .nav-tabs .nav-link {
+#side-inner-collapse .sidebar-tabs .nav-tabs .nav-link {
   opacity: 1;
 }
 
-#inner-collapse .sidebar-tabs .nav-item {
+#side-inner-collapse .sidebar-tabs .nav-item {
   background-color: White;
 }
 
-#inner-collapse .sidebar-tabs .nav-item a::before {
+#side-inner-collapse .sidebar-tabs .nav-item a::before {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px -2px 2px 1px rgba(0, 0, 0, 0.05);
 }

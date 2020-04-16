@@ -27,6 +27,11 @@
             src="@/assets/images/event_icon.svg"
             alt="Event"
           />
+          <img
+            v-else-if="art.properties.kind.toLowerCase() === 'grant'"
+            src="@/assets/images/resource_icon.svg"
+            alt="Event"
+          />
         </div>
       </template>
       <template v-slot:body>
