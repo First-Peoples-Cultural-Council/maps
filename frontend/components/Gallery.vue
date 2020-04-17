@@ -36,7 +36,7 @@
           class="media-img"
           :src="currentMedia.media_file || currentMedia.image"
         />
-        <!-- REnder Youtube Video Here -->
+        <!-- Render Youtube Video Here -->
         <iframe
           v-else-if="
             currentMedia.file_type === 'video' &&
@@ -52,6 +52,17 @@
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
+        <!-- Render if audio file  -->
+        <audio
+          v-else-if="currentMedia.file_type === 'audio'"
+          class="media-img audio"
+          controls
+        >
+          <source :src="currentMedia.media_file" type="audio/ogg" />
+          <source :src="currentMedia.media_file" type="audio/mpeg" />
+          <source :src="currentMedia.media_file" type="audio/wav" />
+          Your browser does not support the audio element.
+        </audio>
         <!-- Render Public Art Image here -->
         <img v-else v-lazy="currentMedia.image" class="media-img" />
       </div>
@@ -278,6 +289,11 @@ export default {
   height: 600px;
   object-fit: contain;
   background: black;
+}
+
+.audio {
+  display: flex;
+  height: 100px;
 }
 
 /* Pagination CSS */
