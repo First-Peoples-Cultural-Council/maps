@@ -157,6 +157,9 @@
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
       class="sidebar-side-panel hide-mobile"
+      :class="{
+        'hide-scroll-y': showGallery
+      }"
     />
     <div
       v-if="isGalleryNotEmpty && !showDrawer"
