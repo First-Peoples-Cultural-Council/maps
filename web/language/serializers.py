@@ -589,7 +589,7 @@ class CommunitySearchSerializer(serializers.ModelSerializer):
 
 # ARTS SERIALIZERS
 # Base serializer
-class ArtPlaceNameSerializer(serializers.ModelSerializer):
+class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
 
     class Meta:
@@ -599,9 +599,9 @@ class ArtPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "geom",
             "taxonomies"
         )
+        geo_field = "geom"
 
 
 class PublicArtSerializer(ArtPlaceNameSerializer):
@@ -614,6 +614,8 @@ class PublicArtSerializer(ArtPlaceNameSerializer):
             "taxonomies",
             "artists"
         )
+        geo_field = "geom"
+
 
 
 class ArtistSerializer(ArtPlaceNameSerializer):
@@ -624,3 +626,5 @@ class ArtistSerializer(ArtPlaceNameSerializer):
         fields = ArtPlaceNameSerializer.Meta.fields + (
             "public_arts",
         )
+        geo_field = "geom"
+
