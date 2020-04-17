@@ -2,7 +2,16 @@ from django.urls import include
 from django.conf.urls import url
 
 from rest_framework import routers
-from .views import PlaceNameGeoList, ArtGeoList, LanguageGeoList, CommunityGeoList
+from .views import (
+    PlaceNameGeoList,
+    ArtGeoList,
+    LanguageGeoList,
+    CommunityGeoList,
+    LanguageSearchList,
+    CommunitySearchList,
+    PlaceNameSearchList,
+    ArtSearchList
+)
 
 from .views import (
     LanguageViewSet,
@@ -22,7 +31,8 @@ router = routers.DefaultRouter()
 # Used only for data managmement by admins
 router.register(r"stats", CommunityLanguageStatsViewSet, basename="placename")
 router.register(r"champion", ChampionViewSet, basename="champion")
-router.register(r"placenamecategory", PlaceNameCategoryViewSet, basename="placename")
+router.register(r"placenamecategory",
+                PlaceNameCategoryViewSet, basename="placename")
 
 # Used for data management and application usage
 router.register(r"language", LanguageViewSet, basename="language")
@@ -41,4 +51,8 @@ urlpatterns = [
     url("community-geo/$", CommunityGeoList.as_view(), name="community-geo"),
     url("placename-geo/$", PlaceNameGeoList.as_view(), name="placename-geo"),
     url("art-geo/$", ArtGeoList.as_view(), name="art-geo"),
+    url("language-search/$", LanguageSearchList.as_view(), name="language-search"),
+    url("community-search/$", CommunitySearchList.as_view(), name="community-search"),
+    url("placename-search/$", PlaceNameSearchList.as_view(), name="placename-search"),
+    url("art-search/$", ArtSearchList.as_view(), name="art-search")
 ] + router.urls
