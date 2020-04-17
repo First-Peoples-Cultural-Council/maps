@@ -574,6 +574,8 @@ class PlaceNameSearchSerializer(serializers.ModelSerializer):
 
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
+    family = LanguageFamilySerializer(read_only=True)
+
     class Meta:
         model = Language
         fields = ("name", "other_names", "family")
