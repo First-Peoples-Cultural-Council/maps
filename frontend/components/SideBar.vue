@@ -160,7 +160,10 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
+      // Recalibrate Vuex Values
+      this.$store.commit('arts/setArtSearch', '')
       this.$store.commit('sidebar/setDrawerContent', false)
+
       const path = this.navigationTabs.find(nt => nt.name === data).path
       const self = this
       self.$router.push({
