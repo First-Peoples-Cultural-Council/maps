@@ -502,7 +502,7 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
-      }, 500)
+      }, 250)
     },
     setMobile(screenSizeOnLand) {
       if (screenSizeOnLand <= 992 && this.isMobile === false) {

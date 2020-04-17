@@ -198,7 +198,7 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
-      }, 500)
+      }, 250)
     }
   },
 
