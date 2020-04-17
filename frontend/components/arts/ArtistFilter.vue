@@ -2,10 +2,12 @@
   <div class="filter-container">
     <b-form-input
       id="search-artist-input"
+      :value="searchQuery"
       type="search"
       class="search-input"
       placeholder="Search for a person, artwork, event..."
       autocomplete="off"
+      @input="updateQuery"
     >
     </b-form-input>
     <img
@@ -17,7 +19,18 @@
 </template>
 
 <script>
-export default {}
+export default {
+  computed: {
+    searchQuery() {
+      return this.$store.state.arts.artSearch
+    }
+  },
+  methods: {
+    updateQuery(value) {
+      this.$store.commit('arts/setArtSearch', value)
+    }
+  }
+}
 </script>
 
 <style>

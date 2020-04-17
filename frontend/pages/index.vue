@@ -78,8 +78,8 @@
           </div>
         </section>
         <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
+          <h5 class="language-family mt-2 ">Communities</h5>
           <b-row>
-            <h5 class="language-family mt-2 pl-3 pr-3">Communities</h5>
             <b-col
               v-for="community in paginatedCommunities"
               :key="'community ' + community.name"
@@ -278,6 +278,9 @@ export default {
     }
   },
   computed: {
+    isMobileCollapse() {
+      return this.$store.state.responsive.isMobileSideBarOpen
+    },
     isGalleryShown() {
       return this.$store.state.sidebar.showGallery
     },
@@ -472,7 +475,9 @@ export default {
       })
     }
 
-    const listElm = document.querySelector('#sidebar-container')
+    const listElm = this.isMobileCollapse
+      ? document.querySelector('#side-inner-collapse')
+      : document.querySelector('#sidebar-container')
     listElm.addEventListener('scroll', e => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         if (this.communities.length > this.maximumLength) {

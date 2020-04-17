@@ -99,8 +99,8 @@ export default {
 .language-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 52px;
-  width: 52px;
+  height: 30px;
+  width: 30px;
 }
 .language-icon-container img {
   display: inline-block;
@@ -111,7 +111,6 @@ export default {
   background-color: #b47a2b;
   display: flex;
   align-items: center;
-  width: 55px;
   height: 35px;
   justify-content: center;
   border-top-left-radius: 1em;
