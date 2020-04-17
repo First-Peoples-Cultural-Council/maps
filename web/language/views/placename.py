@@ -30,14 +30,17 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from language.views import BaseModelViewSet
+from language.views import BaseModelViewSet, BasePlaceNameListAPIView
 
 from language.serializers import (
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
     PlaceNameCategorySerializer,
-    PlaceNameSearchSerializer
+    PlaceNameSearchSerializer,
+    ArtPlaceNameSerializer,
+    PublicArtSerializer,
+    ArtistSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -148,82 +151,82 @@ class PlaceNameViewSet(BaseModelViewSet):
         return super().detail(request)
 
     # Users can contribute this data, so never cache it.
-    @method_decorator(never_cache)
-    def list(self, request):
-        queryset = self.get_queryset()
-        queryset = self.filter_queryset(queryset)
+    # @method_decorator(never_cache)
+    # def list(self, request):
+    #     queryset = self.get_queryset()
+    #     queryset = self.filter_queryset(queryset)
 
-        user_logged_in = False
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                user_logged_in = True
+    #     user_logged_in = False
+    #     if request and hasattr(request, "user"):
+    #         if request.user.is_authenticated:
+    #             user_logged_in = True
 
-        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
-        # 2) if USER IS LOGGED IN, shows:
-        # 2.1) user's contribution regardless the status
-        # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-        # 2.2.2) is COMMUNITY ONLY
-        # 2.3) everything from where user is Administrator (language/community pair)
+    #     # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
+    #     # 2) if USER IS LOGGED IN, shows:
+    #     # 2.1) user's contribution regardless the status
+    #     # 2.2) community_only content from user's communities. Rules:
+    #     # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
+    #     # 2.2.2) is COMMUNITY ONLY
+    #     # 2.3) everything from where user is Administrator (language/community pair)
 
-        if user_logged_in:
+    #     if user_logged_in:
 
-            # 2.1) user's contribution regardless the status
-            queryset_user = queryset.filter(creator__id=request.user.id)
+    #         # 2.1) user's contribution regardless the status
+    #         queryset_user = queryset.filter(creator__id=request.user.id)
 
-            # 2.2) community_only content from user's communities
-            user_communities = CommunityMember.objects.filter(
-                user__id=int(request.user.id)
-            ).filter(
-                status__exact=CommunityMember.VERIFIED
-            ).values('community')
+    #         # 2.2) community_only content from user's communities
+    #         user_communities = CommunityMember.objects.filter(
+    #             user__id=int(request.user.id)
+    #         ).filter(
+    #             status__exact=CommunityMember.VERIFIED
+    #         ).values('community')
 
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-            # 2.2.2) is COMMUNITY ONLY
-            queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only__isnull=True, status__isnull=True)
-                | Q(community__in=user_communities)
-            )
+    #         # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
+    #         # 2.2.2) is COMMUNITY ONLY
+    #         queryset_community = queryset.filter(
+    #             Q(community_only=False, status__exact=PlaceName.VERIFIED)
+    #             | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
+    #             | Q(community_only=False, status__isnull=True)
+    #             | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
+    #             | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
+    #             | Q(community_only__isnull=True, status__isnull=True)
+    #             | Q(community__in=user_communities)
+    #         )
 
-            # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('community')
+    #         # 2.3) everything from where user is Administrator (language/community pair)
+    #         admin_languages = Administrator.objects.filter(
+    #             user__id=int(request.user.id)).values('language')
+    #         admin_communities = Administrator.objects.filter(
+    #             user__id=int(request.user.id)).values('community')
 
-            if admin_languages and admin_communities:
-                # Filter PlaceNames by admin's languages
-                queryset_admin = queryset.filter(
-                    language__in=admin_languages, community__in=admin_communities
-                )
-                if queryset_admin:
-                    queryset = queryset_user.union(
-                        queryset_community).union(queryset_admin)
-                else:
-                    queryset = queryset_user.union(queryset_community)
-            else:  # user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community)
+    #         if admin_languages and admin_communities:
+    #             # Filter PlaceNames by admin's languages
+    #             queryset_admin = queryset.filter(
+    #                 language__in=admin_languages, community__in=admin_communities
+    #             )
+    #             if queryset_admin:
+    #                 queryset = queryset_user.union(
+    #                     queryset_community).union(queryset_admin)
+    #             else:
+    #                 queryset = queryset_user.union(queryset_community)
+    #         else:  # user is not Administrator of anything
+    #             queryset = queryset_user.union(queryset_community)
 
-        else:  # no user is logged in
-            queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
-                | Q(status__isnull=True)
-            )
+    #     else:  # no user is logged in
+    #         queryset = queryset.filter(
+    #             Q(status__exact=PlaceName.VERIFIED)
+    #             | Q(status__exact=PlaceName.UNVERIFIED)
+    #             | Q(status__isnull=True)
+    #         )
 
-        if "lang" in request.GET:
-            queryset = queryset.filter(
-                geom__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")).geom
-            )
+    #     if "lang" in request.GET:
+    #         queryset = queryset.filter(
+    #             geom__intersects=Language.objects.get(
+    #                 pk=request.GET.get("lang")).geom
+    #         )
 
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
+    #     serializer = self.serializer_class(queryset, many=True)
+    #     return Response(serializer.data)
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -252,7 +255,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         return Response([])
 
 
-# Geo List APIViews
+# GEO LIST APIVIEWS
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
         name__icontains="FirstVoices", geom__isnull=False
@@ -349,6 +352,8 @@ class ArtGeoList(generics.ListAPIView):
     )
     serializer_class = PlaceNameGeoSerializer
 
+    # Users can contribute this data, so never cache it.
+    @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
 
@@ -425,8 +430,8 @@ class ArtGeoList(generics.ListAPIView):
         return Response(serializer.data)
 
 
-# Search List APIViews
-class PlaceNameSearchList(generics.ListAPIView):
+# SEARCH LIST APIVIEWS
+class PlaceNameSearchList(BasePlaceNameListAPIView):
     queryset = PlaceName.objects.exclude(
         name__icontains="FirstVoices", geom__isnull=False
     ).filter(
@@ -434,81 +439,10 @@ class PlaceNameSearchList(generics.ListAPIView):
     )
     serializer_class = PlaceNameSearchSerializer
 
-    # Users can contribute this data, so never cache it.
-    @method_decorator(never_cache)
-    def list(self, request):
-        queryset = self.get_queryset()
 
-        user_logged_in = False
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                user_logged_in = True
-
-        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
-        # 2) if USER IS LOGGED IN, show:
-        # 2.1) user's contribution regardless the status
-        # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-        # 2.2.2) is COMMUNITY ONLY
-        # 2.3) everything from where user is Administrator (language/community pair)
-
-        if user_logged_in:
-
-            # 2.1) user's contribution regardless the status
-            queryset_user = queryset.filter(creator__id=request.user.id)
-
-            # 2.2) community_only content from user's communities
-            user_communities = CommunityMember.objects.filter(
-                user__id=int(request.user.id)
-            ).filter(
-                status__exact=CommunityMember.VERIFIED
-            ).values('community')
-
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-            # 2.2.2) is COMMUNITY ONLY
-            queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only__isnull=True, status__isnull=True)
-                | Q(community__in=user_communities)
-            )
-
-            # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('community')
-
-            if admin_languages and admin_communities:
-                # Filter PlaceNames by admin's languages
-                queryset_admin = queryset.filter(
-                    language__in=admin_languages, community__in=admin_communities
-                )
-                if queryset_admin:
-                    queryset = queryset_user.union(
-                        queryset_community).union(queryset_admin)
-                else:
-                    queryset = queryset_user.union(queryset_community)
-            else:  # user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community)
-
-        else:  # no user is logged in
-            queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
-                | Q(status__isnull=True)
-            )
-
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
-
-
-class ArtSearchList(generics.ListAPIView):
+class ArtSearchList(BasePlaceNameListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", geom__isnull=False
+        geom__isnull=False
     ).filter(
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource', 'grant'],
@@ -516,71 +450,51 @@ class ArtSearchList(generics.ListAPIView):
     )
     serializer_class = PlaceNameSearchSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
 
-        user_logged_in = False
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                user_logged_in = True
+# ART TYPES
+class PublicArtList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='public_art',
+        geom__isnull=False
+    )
+    serializer_class = PublicArtSerializer
 
-        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
-        # 2) if USER IS LOGGED IN, show:
-        # 2.1) user's contribution regardless the status
-        # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-        # 2.2.2) is COMMUNITY ONLY
-        # 2.3) everything from where user is Administrator (language/community pair)
 
-        if user_logged_in:
+class ArtistList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='artist',
+        geom__isnull=False
+    )
+    serializer_class = ArtistSerializer
 
-            # 2.1) user's contribution regardless the status
-            queryset_user = queryset.filter(creator__id=request.user.id)
 
-            # 2.2) community_only content from user's communities
-            user_communities = CommunityMember.objects.filter(
-                user__id=int(request.user.id)
-            ).filter(
-                status__exact=CommunityMember.VERIFIED
-            ).values('community')
+class EventList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='event',
+        geom__isnull=False
+    )
+    serializer_class = ArtPlaceNameSerializer
 
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-            # 2.2.2) is COMMUNITY ONLY
-            queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
-                | Q(community_only__isnull=True, status__isnull=True)
-                | Q(community__in=user_communities)
-            )
 
-            # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('community')
+class OrganizationList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='organization',
+        geom__isnull=False
+    )
+    serializer_class = ArtPlaceNameSerializer
 
-            if admin_languages and admin_communities:
-                # Filter PlaceNames by admin's languages
-                queryset_admin = queryset.filter(
-                    language__in=admin_languages, community__in=admin_communities
-                )
-                if queryset_admin:
-                    queryset = queryset_user.union(
-                        queryset_community).union(queryset_admin)
-                else:
-                    queryset = queryset_user.union(queryset_community)
-            else:  # user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community)
 
-        else:  # no user is logged in
-            queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
-                | Q(status__isnull=True)
-            )
+class ResourceList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='resource',
+        geom__isnull=False
+    )
+    serializer_class = ArtPlaceNameSerializer
 
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
+
+class GrantList(BasePlaceNameListAPIView):
+    queryset = PlaceName.objects.filter(
+        kind='grant',
+        geom__isnull=False
+    )
+    serializer_class = ArtPlaceNameSerializer

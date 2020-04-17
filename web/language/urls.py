@@ -10,7 +10,13 @@ from .views import (
     LanguageSearchList,
     CommunitySearchList,
     PlaceNameSearchList,
-    ArtSearchList
+    ArtSearchList,
+    PublicArtList,
+    ArtistList,
+    EventList,
+    OrganizationList,
+    ResourceList,
+    GrantList
 )
 
 from .views import (
@@ -54,5 +60,11 @@ urlpatterns = [
     url("language-search/$", LanguageSearchList.as_view(), name="language-search"),
     url("community-search/$", CommunitySearchList.as_view(), name="community-search"),
     url("placename-search/$", PlaceNameSearchList.as_view(), name="placename-search"),
-    url("art-search/$", ArtSearchList.as_view(), name="art-search")
+    url("art-search/$", ArtSearchList.as_view(), name="art-search"),
+    url("arts/public-art", PublicArtList.as_view(), name="arts-public-art"),
+    url("arts/artist", ArtistList.as_view(), name="arts-artist"),
+    url("arts/event", EventList.as_view(), name="arts-event"),
+    url("arts/organization", OrganizationList.as_view(), name="arts-organization"),
+    url("arts/resource", ResourceList.as_view(), name="arts-resource"),
+    url("arts/grant", GrantList.as_view(), name="arts-grant")
 ] + router.urls
