@@ -11,52 +11,46 @@ export const state = () => ({
   badgePlaces: [],
   filteredBadgePlaces: [],
   filterCategories: [],
-  audio_obj: {}
+  audio_obj: {},
+  placeSearchSet: []
 })
 
 export const mutations = {
   set(state, places) {
     state.places = places
   },
-
   setAudioObj(state, audio_obj) {
     state.audio_obj = audio_obj
   },
-
   setPlace(state, place) {
     state.place = place
   },
-
   setPlaceCommunity(state, placeComm) {
     state.placeCommunity = placeComm
   },
-
   setStore(state, placesSet) {
     state.placesSet = placesSet
   },
-
   setMedias(state, medias) {
     state.medias = medias
   },
-
   setFavourites(state, favourites) {
     state.favourites = favourites
   },
-
   setBadgePlaces(state, bplaces) {
     state.badgePlaces = bplaces
   },
-
   setFilteredBadgePlaces(state, fplaces) {
     state.filteredBadgePlaces = fplaces
   },
-
   setFilterCategories(state, fcategories) {
     state.filterCategories = fcategories
   },
-
   setPlaceLanguage(state, language) {
     state.placeLanguage = language
+  },
+  setSearchSet(state, placeSearchSet) {
+    state.placeSearchSet = placeSearchSet
   }
 }
 
