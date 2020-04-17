@@ -179,7 +179,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import groupBy from 'lodash/groupBy'
+// import groupBy from 'lodash/groupBy'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -347,27 +347,18 @@ export default {
     return user
   },
   async fetch({ $axios, store }) {
+    // Only fetch search data
     const results = await Promise.all([
-      $axios.$get(getApiUrl('language/')),
-      $axios.$get(getApiUrl('community/')),
-      $axios.$get(
-        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
-      ),
-      $axios.$get(getApiUrl(`art-geo?timestamp=${new Date().getTime()}/`))
+      $axios.$get(getApiUrl('language-search')),
+      $axios.$get(getApiUrl('community-search')),
+      $axios.$get(getApiUrl('placename-search')),
+      $axios.$get(getApiUrl('art-search'))
     ])
 
-    if (process.server) {
-      store.commit('languages/set', groupBy(results[0], 'family.name'))
-      store.commit('languages/setLanguagesCount', results[0].length)
-      store.commit('communities/set', results[1])
-      store.commit('places/set', results[2].features)
-      store.commit('arts/set', results[3].features)
-    }
-
-    store.commit('languages/setStore', results[0])
-    store.commit('communities/setStore', results[1])
-    store.commit('places/setStore', results[2].features)
-    store.commit('arts/setStore', results[3].features)
+    store.commit('languages/setSearchSet', results[0])
+    store.commit('communities/setSearchSet', results[1])
+    store.commit('places/setSearchSet', results[2])
+    store.commit('arts/setSearchSet', results[3])
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
