@@ -570,7 +570,7 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names")
+        fields = ("name", "other_names", "kind")
 
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
