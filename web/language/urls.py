@@ -40,5 +40,5 @@ urlpatterns = [
     url("language-geo/$", LanguageGeoList.as_view(), name="language-geo"),
     url("community-geo/$", CommunityGeoList.as_view(), name="community-geo"),
     url("placename-geo/$", PlaceNameGeoList.as_view(), name="placename-geo"),
-    url("art-geo/$", ArtGeoList.as_view(), name="placename-geo"),
+    url("art-geo/$", ArtGeoList.as_view(), name="art-geo"),
 ] + router.urls
