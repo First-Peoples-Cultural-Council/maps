@@ -16,7 +16,8 @@ from .views import (
     EventList,
     OrganizationList,
     ResourceList,
-    GrantList
+    GrantList,
+    ArtworkList
 )
 
 from .views import (
@@ -66,5 +67,6 @@ urlpatterns = [
     url("arts/event", EventList.as_view(), name="arts-event"),
     url("arts/organization", OrganizationList.as_view(), name="arts-organization"),
     url("arts/resource", ResourceList.as_view(), name="arts-resource"),
-    url("arts/grant", GrantList.as_view(), name="arts-grant")
+    url("arts/grant", GrantList.as_view(), name="arts-grant"),
+    url("arts/artwork", ArtworkList.as_view(), name="arts-artwork")
 ] + router.urls

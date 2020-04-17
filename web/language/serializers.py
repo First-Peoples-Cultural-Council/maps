@@ -626,3 +626,33 @@ class ArtistSerializer(ArtPlaceNameSerializer):
             "public_arts",
         )
         geo_field = "geom"
+
+
+class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "geom",
+            "artists"
+        )
+
+
+class ArtworkSerializer(serializers.ModelSerializer):
+    placename = ArtworkPlaceNameSerializer(read_only=True)
+
+    class Meta:
+        model = Media
+        fields = (
+            "id",
+            "name",
+            "file_type",
+            "url",
+            "media_file",
+            "placename",
+        )

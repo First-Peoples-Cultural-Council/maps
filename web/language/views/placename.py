@@ -40,7 +40,8 @@ from language.serializers import (
     PlaceNameSearchSerializer,
     ArtPlaceNameSerializer,
     PublicArtSerializer,
-    ArtistSerializer
+    ArtistSerializer,
+    ArtworkSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -423,3 +424,9 @@ class GrantList(BasePlaceNameListAPIView):
         geom__isnull=False
     )
     serializer_class = ArtPlaceNameSerializer
+
+
+# ARTWORKS
+class ArtworkList(generics.ListAPIView):
+    queryset = Media.objects.filter(is_artwork=True)
+    serializer_class = ArtworkSerializer
