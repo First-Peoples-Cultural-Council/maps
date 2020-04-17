@@ -585,3 +585,42 @@ class CommunitySearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = ("name",)
+
+
+# ARTS SERIALIZERS
+# Base serializer
+class ArtPlaceNameSerializer(serializers.ModelSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "geom",
+            "taxonomies"
+        )
+
+
+class PublicArtSerializer(ArtPlaceNameSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = ArtPlaceNameSerializer.Meta.fields + (
+            "taxonomies",
+            "artists"
+        )
+
+
+class ArtistSerializer(ArtPlaceNameSerializer):
+    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = ArtPlaceNameSerializer.Meta.fields + (
+            "public_arts",
+        )
