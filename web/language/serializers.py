@@ -575,11 +575,11 @@ class PlaceNameSearchSerializer(serializers.ModelSerializer):
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlaceName
+        model = Language
         fields = ("name", "other_names", "family")
 
 
 class CommunitySearchSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlaceName
+        model = Community
         fields = ("name",)
