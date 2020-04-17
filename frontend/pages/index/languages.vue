@@ -160,7 +160,6 @@ export default {
     const currentLanguages = store.state.languages.languageSet
 
     if (currentLanguages.length === 0) {
-      console.log('FETCHING DATA')
       // Fetch languages and communites data
       const languages = await $axios.$get(getApiUrl('language'))
       const communities = await $axios.$get(getApiUrl('community'))
