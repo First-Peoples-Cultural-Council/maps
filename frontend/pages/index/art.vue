@@ -133,7 +133,7 @@ import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
 import ArtistFilter from '@/components/arts/ArtistFilter.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -187,7 +187,7 @@ export default {
       return this.getCountValues('grant')
     },
     eventsCount() {
-      return this.getCountValues('public_art')
+      return this.getCountValues('event')
     },
     artworksCount() {
       return this.isSearchMode
@@ -273,6 +273,7 @@ export default {
   methods: {
     badgeClick($event, name) {
       this.maximumLength = 0
+      this.loadKindData(name)
       this.handleBadge($event, name)
       this.loadMoreData()
     },
@@ -282,6 +283,20 @@ export default {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
       }, 500)
+    },
+    async loadKindData(kind) {
+      const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
+
+      const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
+
+      if (!loaded) {
+        // Fetch Public Arts
+        const data = await this.$axios.$get(url)
+
+        // Set language stores
+        this.$store.commit('arts/setStore', [...this.arts, ...data.features]) // Updating data based on map
+        this.$store.commit('arts/set', [...this.arts, ...data.features]) // All data
+      }
     },
     handleCardClick($event, name, type) {
       if (this.showDrawer) {
