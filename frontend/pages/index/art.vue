@@ -16,22 +16,22 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <ArtistFilter class="m-3 " />
+        <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`pl-3 pr-3 pt-2`">
-          <BadgeFilter>
+          <!-- <BadgeFilter>
             <template v-slot:badge>
-              <Badge
-                content="Artwork"
-                :number="artworksCount"
-                class="cursor-pointer"
-                bgcolor="#5A8467"
-                type="event"
-                :mode="getBadgeStatus(mode, 'artwork')"
-                @click.native.prevent="badgeClick($event, 'artwork')"
-              ></Badge>
+              
             </template>
-          </BadgeFilter>
-
+          </BadgeFilter> -->
+          <Badge
+            content="Artwork"
+            :number="artworksCount"
+            class="cursor-pointer"
+            bgcolor="#5A8467"
+            type="event"
+            :mode="getBadgeStatus(mode, 'artwork')"
+            @click.native.prevent="badgeClick($event, 'artwork')"
+          ></Badge>
           <Badge
             content="Artists"
             :number="artistsCount"
@@ -76,7 +76,7 @@
             bgcolor="#008CA9"
             type="org"
             :mode="getBadgeStatus(mode, 'grant')"
-            @click.native.prevent="handleBadge($event, 'grant')"
+            @click.native.prevent="badgeClick($event, 'grant')"
           ></Badge>
         </section>
       </template>
@@ -95,9 +95,7 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="
-                  artDetails.properties === art.properties && showDrawer
-                "
+                :is-selected="artDetails.art === art.properties && showDrawer"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties, art)"
               ></ArtistCard>
@@ -131,7 +129,6 @@ import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import ArtistCard from '@/components/arts/ArtistCard.vue'
 import Badge from '@/components/Badge.vue'
-import BadgeFilter from '@/components/BadgeFilter.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
@@ -143,7 +140,6 @@ export default {
     SideBar,
     ArtsCard,
     Badge,
-    BadgeFilter,
     Filters,
     Accordion,
     ArtistCard,
@@ -234,9 +230,13 @@ export default {
       if (this.isSearchMode) {
         artsArray = this.allArts.filter(art => {
           if (art.properties.kind === 'artwork') {
-            return art.name.includes(this.searchQuery)
+            return art.name
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
           } else {
-            return art.properties.name.includes(this.searchQuery)
+            return art.properties.name
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
           }
         })
       } else {
@@ -252,6 +252,11 @@ export default {
     }
   },
   mounted() {
+    console.log(
+      this.artworks.filter(art => {
+        return art.file_type === 'audio'
+      })
+    )
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
       const listElm = this.isMobile
@@ -272,6 +277,9 @@ export default {
   },
   methods: {
     badgeClick($event, name) {
+      if (this.showDrawer) {
+        this.toggleSidePanel()
+      }
       this.maximumLength = 0
       this.handleBadge($event, name)
       this.loadMoreData()
@@ -281,7 +289,7 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
-      }, 500)
+      }, 250)
     },
     handleCardClick($event, name, type) {
       if (this.showDrawer) {
