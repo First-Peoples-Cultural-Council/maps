@@ -560,24 +560,9 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 
 
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
-    medias = MediaLightSerializer(many=True, read_only=True)
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
     class Meta:
         model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image",
-            "kind",
-            "medias",
-            "category",
-            "status",
-            "status_reason",
-            "taxonomies",
-            "artists",
-        )
+        fields = ("name",)
         geo_field = "geom"
 
 
