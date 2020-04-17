@@ -617,7 +617,6 @@ class PublicArtSerializer(ArtPlaceNameSerializer):
         geo_field = "geom"
 
 
-
 class ArtistSerializer(ArtPlaceNameSerializer):
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
 
@@ -627,4 +626,3 @@ class ArtistSerializer(ArtPlaceNameSerializer):
             "public_arts",
         )
         geo_field = "geom"
-
