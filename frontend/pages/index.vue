@@ -324,6 +324,9 @@ export default {
     artsSet() {
       return this.$store.state.arts.artsSet
     },
+    artsGeoSet() {
+      return this.$store.state.arts.artsGeoSet
+    },
     artworkSet() {
       return this.$store.state.arts.artworkSet
     },
@@ -358,13 +361,18 @@ export default {
       $axios.$get(getApiUrl('language-search')),
       $axios.$get(getApiUrl('community-search')),
       $axios.$get(getApiUrl('placename-search')),
-      $axios.$get(getApiUrl('art-search'))
+      $axios.$get(getApiUrl('art-search')),
+      $axios.$get(getApiUrl('art-geo'))
     ])
 
-    store.commit('languages/setSearchSet', results[0])
-    store.commit('communities/setSearchSet', results[1])
-    store.commit('places/setSearchSet', results[2])
-    store.commit('arts/setSearchSet', results[3])
+    store.commit('languages/setSearchStore', results[0])
+    store.commit('communities/setSearchStore', results[1])
+    store.commit('places/setSearchStore', results[2])
+    store.commit('arts/setSearchStore', results[3])
+
+    // Set Art Geo Set - for visible Arts count
+    store.commit('arts/setGeo', results[4].features)
+    store.commit('arts/setGeoStore', results[4])
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
@@ -717,7 +725,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/api/art-geo/',
+        data: this.artsGeoSet,
         cluster: true,
         // clusterMaxZoom: 14,
         clusterRadius: 50
@@ -870,6 +878,7 @@ export default {
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
       this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
+      this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
 
       if (this.catToFilter.length === 0) {
         this.$store.commit('places/set', this.filterPlaces(bounds))
@@ -923,8 +932,13 @@ export default {
     },
     filterArtworks(bounds) {
       return this.artworkSet.filter(artwork => {
-        console.log(artwork)
         const point = artwork.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterArtsGeo(bounds) {
+      return this.artsGeoSet.features.filter(art => {
+        const point = art.geometry.coordinates
         return inBounds(bounds, point)
       })
     },
