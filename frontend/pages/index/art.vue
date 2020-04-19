@@ -287,8 +287,6 @@ export default {
         // Set language stores
         this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
         this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
-      } else {
-        console.log('DATA ALREADY LOADED')
       }
     },
     handleCardClick($event, name, type) {
