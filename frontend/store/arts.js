@@ -46,5 +46,8 @@ export const actions = {
       const isLoaded = !!data
       return isLoaded
     }
+  },
+  getArtsGeoIds({ state }) {
+    return state.artsGeo.map(art => art.id)
   }
 }
