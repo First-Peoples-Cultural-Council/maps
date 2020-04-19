@@ -171,6 +171,9 @@ export default {
     arts() {
       return this.$store.state.arts.arts
     },
+    artsGeo() {
+      return this.$store.state.arts.artsGeo
+    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -308,7 +311,7 @@ export default {
     getCountValues(type) {
       return this.isSearchMode
         ? this.filterArray(this.selectedArt, type)
-        : this.filterArray(this.arts, type)
+        : this.filterArray(this.artsGeo, type)
     },
     filterArray(artsArray, type) {
       return artsArray.filter(art => art.properties.kind === type).length
