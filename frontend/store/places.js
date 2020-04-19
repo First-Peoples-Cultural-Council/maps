@@ -49,7 +49,7 @@ export const mutations = {
   setPlaceLanguage(state, language) {
     state.placeLanguage = language
   },
-  setSearchSet(state, placeSearchSet) {
+  setSearchStore(state, placeSearchSet) {
     state.placeSearchSet = placeSearchSet
   }
 }

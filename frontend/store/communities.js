@@ -11,7 +11,7 @@ export const mutations = {
   setStore(state, communitySet) {
     state.communitySet = communitySet
   },
-  setSearchSet(state, communitySearchSet) {
+  setSearchStore(state, communitySearchSet) {
     state.communitySearchSet = communitySearchSet
   }
 }
