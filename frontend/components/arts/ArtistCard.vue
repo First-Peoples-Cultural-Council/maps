@@ -146,12 +146,12 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      if (!this.mediaData.geometry) return
-      this.$eventHub.revealArea(this.mediaData.geometry)
+      if (!this.media.geometry) return
+      this.$eventHub.revealArea(this.media.geometry)
     },
     handleMouseLeave() {
       this.hover = false
-      if (!this.mediaData.geometry) return
+      if (!this.media.geometry) return
       this.$eventHub.doneReveal()
     },
     getYoutubeVideoID(url) {
