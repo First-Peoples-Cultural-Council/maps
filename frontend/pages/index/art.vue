@@ -76,7 +76,7 @@
             bgcolor="#008CA9"
             type="org"
             :mode="getBadgeStatus(mode, 'grant')"
-            @click.native.prevent="handleBadge($event, 'grant')"
+            @click.native.prevent="badgeClick($event, 'grant')"
           ></Badge>
         </section>
       </template>
@@ -274,14 +274,21 @@ export default {
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
+      const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
 
       if (!loaded) {
-        // Fetch Public Arts
+        // Fetch Arts
         const data = await this.$axios.$get(url)
 
+        // Set data with name for clarity
+        const artsSet = data.features
+        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
+
         // Set language stores
-        this.$store.commit('arts/setStore', [...this.arts, ...data.features]) // Updating data based on map
-        this.$store.commit('arts/set', [...this.arts, ...data.features]) // All data
+        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
+        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
+      } else {
+        console.log('DATA ALREADY LOADED')
       }
     },
     handleCardClick($event, name, type) {
