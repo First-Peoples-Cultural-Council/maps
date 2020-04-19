@@ -11,7 +11,10 @@ export const state = () => ({
 
 export const mutations = {
   set(state, arts) {
-    state.arts = arts
+    const artsGeo = state.artsGeo
+    const artsIds = artsGeo.map(art => art.id)
+
+    state.arts = arts.filter(art => artsIds.includes(art.id))
   },
   setStore(state, artsSet) {
     state.artsSet = artsSet
