@@ -428,7 +428,7 @@ class GrantList(BasePlaceNameListAPIView):
 
 # ARTWORKS
 class ArtworkList(generics.ListAPIView):
-    queryset = Media.objects.filter(is_artwork=True)
+    queryset = Media.objects.filter(is_artwork=True, placename__geom__isnull=False)
     serializer_class = ArtworkSerializer
 
     @method_decorator(never_cache)
