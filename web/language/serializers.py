@@ -656,3 +656,11 @@ class ArtworkSerializer(serializers.ModelSerializer):
             "media_file",
             "placename",
         )
+
+    def to_representation(self, value):
+        representation = super().to_representation(value)
+
+        # Add a kind field
+        representation["kind"] = 'artwork'
+
+        return representation
