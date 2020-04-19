@@ -562,7 +562,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name",)
+        fields = ("id", "name", "kind")
         geo_field = "geom"
 
 
