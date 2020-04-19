@@ -629,7 +629,7 @@ class ArtistSerializer(ArtPlaceNameSerializer):
 
 
 class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+    artists = PlaceNameLightSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
@@ -654,13 +654,25 @@ class ArtworkSerializer(serializers.ModelSerializer):
             "file_type",
             "url",
             "media_file",
-            "placename",
+            "placename"
         )
 
     def to_representation(self, value):
         representation = super().to_representation(value)
+        print(representation["placename"])
 
+        updated_representation = {}
         # Add a kind field
-        representation["kind"] = 'artwork'
+        updated_representation["id"] = representation["id"]
+        updated_representation["geometry"] = representation["placename"]["geom"]
+        updated_representation["type"] = "Feature"
+        updated_representation["properties"] = {
+            "name": representation["name"],
+            "kind": "artwork",
+            "file_type": representation["file_type"],
+            "media_file": representation["media_file"],
+            "url": representation["url"],
+            "placename": representation["placename"]
+        }
 
-        return representation
+        return updated_representation
