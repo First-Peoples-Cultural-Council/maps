@@ -3,6 +3,8 @@ export const state = () => ({
   artsSet: [],
   artsSearchSet: [],
   artSearch: '',
+  artsGeo: [],
+  artsGeoSet: [],
   artworks: [],
   artworkSet: []
 })
@@ -14,11 +16,17 @@ export const mutations = {
   setStore(state, artsSet) {
     state.artsSet = artsSet
   },
-  setSearchSet(state, artsSearchSet) {
+  setSearchStore(state, artsSearchSet) {
     state.artsSearchSet = artsSearchSet
   },
   setArtSearch(state, query) {
     state.artSearch = query
+  },
+  setGeo(state, artsGeo) {
+    state.artsGeo = artsGeo
+  },
+  setGeoStore(state, artsGeoSet) {
+    state.artsGeoSet = artsGeoSet
   },
   setArtworks(state, artworks) {
     state.artworks = artworks
