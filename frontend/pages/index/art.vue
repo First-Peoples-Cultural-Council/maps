@@ -195,34 +195,7 @@ export default {
         : this.artworks.length
     },
     artworks() {
-      const artworks = []
-      this.arts.forEach(art => {
-        const medias = art.properties.medias
-        if (medias) {
-          medias.forEach(media => {
-            if (media.file_type !== 'default' || media.url !== null) {
-              artworks.push({
-                id: media.id,
-                name: media.name,
-                media_file: media.media_file,
-                file_type: media.file_type,
-                url: media.url,
-                properties: {
-                  name: art.properties.name,
-                  kind: 'artwork',
-                  type: art.properties.kind,
-                  image: art.properties.image,
-                  artists: art.properties.artists,
-                  medias: art.properties.medias,
-                  geometry: art.geometry
-                }
-              })
-            }
-          })
-        }
-      })
-      artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
-      return artworks
+      return this.$store.state.arts.artworks
     },
     allArts() {
       return [...this.artworks, ...this.arts]
@@ -233,7 +206,7 @@ export default {
       // TO DO FILTER BY NAME AND KIND
       if (this.isSearchMode) {
         artsArray = this.allArts.filter(art => {
-          if (art.properties.kind === 'artwork') {
+          if (art.kind === 'artwork') {
             return art.name.includes(this.searchQuery)
           } else {
             return art.properties.name.includes(this.searchQuery)
@@ -249,6 +222,16 @@ export default {
     },
     paginatedArts() {
       return this.selectedArt.slice(0, this.maximumLength)
+    }
+  },
+  async fetch({ $axios, store }) {
+    const currentArtworks = store.state.arts.artworkSet
+
+    if (currentArtworks.length === 0) {
+      const artworks = await $axios.$get(getApiUrl('arts/artwork?format=json'))
+
+      store.commit('arts/setArtworksStore', artworks) // All data
+      store.commit('arts/setArtworks', artworks) // All data
     }
   },
   mounted() {
