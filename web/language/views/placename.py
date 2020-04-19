@@ -430,3 +430,7 @@ class GrantList(BasePlaceNameListAPIView):
 class ArtworkList(generics.ListAPIView):
     queryset = Media.objects.filter(is_artwork=True)
     serializer_class = ArtworkSerializer
+
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)
