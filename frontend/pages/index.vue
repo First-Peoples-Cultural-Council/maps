@@ -876,9 +876,9 @@ export default {
       )
       // console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
+      this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
       this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
-      this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
 
       if (this.catToFilter.length === 0) {
         this.$store.commit('places/set', this.filterPlaces(bounds))
