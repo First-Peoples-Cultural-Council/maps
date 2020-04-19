@@ -324,6 +324,9 @@ export default {
     artsSet() {
       return this.$store.state.arts.artsSet
     },
+    artworkSet() {
+      return this.$store.state.arts.artworkSet
+    },
     placesSet() {
       return this.$store.state.places.placesSet
     },
@@ -866,6 +869,7 @@ export default {
       // console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
+      this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
 
       if (this.catToFilter.length === 0) {
         this.$store.commit('places/set', this.filterPlaces(bounds))
@@ -914,6 +918,13 @@ export default {
     filterArts(bounds) {
       return this.artsSet.filter(art => {
         const point = art.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterArtworks(bounds) {
+      return this.artworkSet.filter(artwork => {
+        console.log(artwork)
+        const point = artwork.geometry.coordinates
         return inBounds(bounds, point)
       })
     },
