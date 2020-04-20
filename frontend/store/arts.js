@@ -4,7 +4,8 @@ export const state = () => ({
   artSearch: '',
   filter: 'artwork',
   selectedFilterTag: [],
-  artsSearchSet: []
+  artsSearchSet: [],
+  taxonomySearchSet: []
 })
 
 export const mutations = {
@@ -25,6 +26,9 @@ export const mutations = {
   },
   setFilterTag(state, value) {
     state.selectedFilterTag = value
+  },
+  setTaxonomySearchSet(state, result) {
+    state.taxonomySearchSet = result
   }
 }
 
