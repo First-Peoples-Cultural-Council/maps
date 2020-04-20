@@ -355,13 +355,15 @@ export default {
       $axios.$get(getApiUrl('language-search')),
       $axios.$get(getApiUrl('community-search')),
       $axios.$get(getApiUrl('placename-search')),
-      $axios.$get(getApiUrl('art-search'))
+      $axios.$get(getApiUrl('art-search')),
+      $axios.$get(getApiUrl('taxonomy'))
     ])
 
     store.commit('languages/setSearchSet', results[0])
     store.commit('communities/setSearchSet', results[1])
     store.commit('places/setSearchSet', results[2])
     store.commit('arts/setSearchSet', results[3])
+    store.commit('arts/setTaxonomySearchSet', results[4])
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
