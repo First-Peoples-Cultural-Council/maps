@@ -133,22 +133,6 @@
           class="p-4 m-0 pb-0 color-gray font-08 field-content"
           v-html="artDetails.description"
         ></div>
-        <div class="hide-mobile">
-          <div class="ml-3 mr-3 mt-3">
-            <p class="font-08">
-              [ Extracted from the
-              <a href="https://www.fp-artsmap.ca/" target="_blank"
-                >First People's Arts Map</a
-              >]
-            </p>
-          </div>
-          <LanguageSeeAll
-            content="See all details"
-            class="mt-0"
-            @click.native="handleClick($event, artDetails.node_id)"
-          ></LanguageSeeAll>
-          <Filters class="mb-2 mt-2"></Filters>
-        </div>
       </div>
     </div>
     <ArtsDrawer
@@ -177,9 +161,7 @@
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import ArtsBanner from '@/components/arts/ArtsBanner.vue'
-import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
-import Filters from '@/components/Filters.vue'
 import {
   getApiUrl,
   encodeFPCC,
@@ -193,8 +175,6 @@ export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
-    LanguageSeeAll,
-    Filters,
     Logo,
     ArtsDrawer
   },
