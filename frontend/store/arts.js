@@ -1,7 +1,9 @@
 export const state = () => ({
   arts: [],
   artsSet: [],
-  artSearch: ''
+  artSearch: '',
+  filter: 'artwork',
+  selectedFilterTag: []
 })
 
 export const mutations = {
@@ -14,5 +16,11 @@ export const mutations = {
   },
   setArtSearch(state, query) {
     state.artSearch = query
+  },
+  setFilter(state, value) {
+    state.filter = value
+  },
+  setFilterTag(state, value) {
+    state.selectedFilterTag = value
   }
 }
