@@ -7,7 +7,13 @@
   >
     <slot name="badge"></slot>
     <div v-if="(isSelected && isHover) || showOption" class="badge-filters">
-      <p id="badge-choose">choose sub-category</p>
+      <p id="badge-choose">
+        {{ `${filterTag.length !== 0 ? getTags() : 'choose sub-category'} ` }}
+        <span v-if="filterTag.length !== 0" class="bold" @click="removeTag()"
+          >X</span
+        >
+      </p>
+      <!-- Parent Popover -->
       <b-popover
         target="badge-choose"
         placement="bottom"
@@ -15,19 +21,43 @@
         :show.sync="showOption"
       >
         <div class="badge-option-container">
-          <span>Director</span>
-          <span id="badge-child-option"
-            >Artist
+          <span
+            v-for="taxonomy in getChildTaxonomy"
+            :id="`badge-child-option-${taxonomy.id}`"
+            :key="taxonomy.id"
+            @click="optionSelected(taxonomy.name)"
+          >
+            {{ taxonomy.name }}
+            <!-- Child Popover -->
             <b-popover
-              target="badge-child-option"
+              v-if="hasTaxonomyChild(taxonomy.id)"
+              :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
               triggers="hover"
-              :show.sync="showChild"
-              class="child-option-container"
             >
               <div class="badge-option-container">
-                <span>Artist</span>
-                <span>Director</span>
+                <span
+                  v-for="taxChild in getChildTaxonomyList(taxonomy.id)"
+                  :id="`badge-child-option-${taxChild.id}`"
+                  :key="taxChild.id"
+                  >{{ taxChild.name }}
+                  <!-- Child Child Popover -->
+                  <b-popover
+                    v-if="hasTaxonomyChild(taxChild.id)"
+                    :target="`badge-child-option-${taxChild.id}`"
+                    placement="right"
+                    triggers="hover"
+                  >
+                    <div class="badge-option-container">
+                      <span
+                        v-for="taxChild1 in getChildTaxonomyList(taxChild.id)"
+                        :id="`badge-child-option-${taxChild1.id}`"
+                        :key="taxChild1.id"
+                        >{{ taxChild1.name }}</span
+                      >
+                    </div>
+                  </b-popover>
+                </span>
               </div>
             </b-popover>
           </span>
@@ -45,6 +75,12 @@ export default {
       default: false
     },
     filter: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    color: {
       type: String,
       default: ''
     }
@@ -53,7 +89,18 @@ export default {
     return {
       isHover: false,
       showOption: false,
-      showChild: false
+      showChild: false,
+      filterTag: []
+    }
+  },
+  computed: {
+    taxonomies() {
+      return this.$store.state.arts.taxonomySearchSet
+    },
+    getChildTaxonomy() {
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === this.filter.id
+      )
     }
   },
   methods: {
@@ -62,6 +109,21 @@ export default {
     },
     selectOption(value) {
       this.$store.commit('arts/setFilterTag', value)
+    },
+    hasTaxonomyChild(taxId) {
+      return this.taxonomies.some(taxonomy => taxonomy.parent === taxId)
+    },
+    getChildTaxonomyList(id) {
+      return this.taxonomies.filter(taxonomy => taxonomy.parent === id)
+    },
+    optionSelected(taxonomy) {
+      this.filterTag.push(taxonomy)
+    },
+    getTags() {
+      return this.filterTag.map(tag => `${tag} > `)
+    },
+    removeTag() {
+      this.filterTag = []
     }
   }
 }
@@ -73,10 +135,9 @@ export default {
   position: relative;
   align-items: center;
   width: fit-content;
-  border: 2px solid #5a8467;
   border-radius: 1em;
   background-color: #ededed;
-  margin: 0.5em 0;
+  margin: 0.25em 0.3em;
   height: fit-content;
 }
 
@@ -113,9 +174,5 @@ export default {
 .popover-body {
   padding: 0;
   margin: 0;
-}
-
-.child-option-container {
-  border: 1px solid red;
 }
 </style>
