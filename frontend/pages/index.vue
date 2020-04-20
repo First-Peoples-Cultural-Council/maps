@@ -484,17 +484,19 @@ export default {
       })
     }
 
-    const listElm = this.isMobileCollapse
-      ? document.querySelector('#side-inner-collapse')
-      : document.querySelector('#sidebar-container')
-    listElm.addEventListener('scroll', e => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-        if (this.communities.length > this.maximumLength) {
-          this.loadMoreData()
+    if (this.$route.name === 'index') {
+      const listElm = this.isMobileCollapse
+        ? document.querySelector('#side-inner-collapse')
+        : document.querySelector('#sidebar-container')
+      listElm.addEventListener('scroll', e => {
+        if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+          if (this.communities.length > this.maximumLength) {
+            this.loadMoreData()
+          }
         }
-      }
-    })
-    this.loadMoreData()
+      })
+      this.loadMoreData()
+    }
   },
   methods: {
     loadMoreData() {

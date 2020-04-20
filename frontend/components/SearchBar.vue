@@ -718,7 +718,7 @@ export default {
   padding: 1.4em;
 }
 
-@media (max-width: 1200px) {
+@media (min-width: 993px) and (max-width: 1350px) {
   .searchbar-container {
     width: 400px;
   }
