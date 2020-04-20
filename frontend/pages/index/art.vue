@@ -17,11 +17,9 @@
       </template>
       <template v-slot:badges>
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
-        <section :class="`pl-3 pr-3 pt-2`">
-          <BadgeFilter
-            :is-selected="filterMode === 'artwork'"
-            :filter="'Person'"
-          >
+        <section :class="`badge-list-container pl-3 pr-3 pt-2`">
+          <!-- Art Work Badge Filter  -->
+          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
             <template v-slot:badge>
               <Badge
                 content="Artwork"
@@ -34,61 +32,97 @@
               ></Badge>
             </template>
           </BadgeFilter>
-          <Badge
-            content="Artwork"
-            :number="artworksCount"
-            class="cursor-pointer"
-            bgcolor="#5A8467"
-            type="event"
-            :mode="getBadgeStatus(filterMode, 'artwork')"
-            @click.native.prevent="badgeClick($event, 'artwork')"
-          ></Badge>
-          <Badge
-            content="Artists"
-            :number="artistsCount"
-            class="cursor-pointer mb-1"
-            bgcolor="#B45339"
-            type="artist"
-            :mode="getBadgeStatus(filterMode, 'artist')"
-            @click.native.prevent="badgeClick($event, 'artist')"
-          ></Badge>
-          <Badge
-            content="Events"
-            :number="eventsCount"
-            class="cursor-pointer mb-1"
-            bgcolor="#DA531E"
-            type="event"
-            :mode="getBadgeStatus(filterMode, 'event')"
-            @click.native.prevent="badgeClick($event, 'event')"
-          ></Badge>
-          <Badge
-            content="Organization"
-            :number="orgsCount"
-            class="cursor-pointer mb-2"
-            bgcolor="#a48116"
-            type="org"
-            :mode="getBadgeStatus(filterMode, 'organization')"
-            @click.native.prevent="badgeClick($event, 'organization')"
-          ></Badge>
-          <Badge
-            content="Public Arts"
-            :number="publicArtsCount"
-            class="cursor-pointer mb-2"
-            bgcolor="#848159"
-            type="part"
-            :mode="getBadgeStatus(filterMode, 'public_art')"
-            @click.native.prevent="badgeClick($event, 'public_art')"
-          ></Badge>
 
-          <Badge
-            content="Grants"
-            :number="grantsCount"
-            class="cursor-pointer mb-1"
-            bgcolor="#008CA9"
-            type="org"
-            :mode="getBadgeStatus(filterMode, 'grant')"
-            @click.native.prevent="badgeClick($event, 'grant')"
-          ></Badge>
+          <!-- Artist Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'artist'"
+            :filter="getTaxonomyID('Person')"
+            :color="'#B45339'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Person"
+                :number="artistsCount"
+                class="cursor-pointer"
+                bgcolor="#B45339"
+                type="artist"
+                :mode="getBadgeStatus(filterMode, 'artist')"
+                @click.native.prevent="badgeClick($event, 'artist')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Event Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'event'"
+            :filter="getTaxonomyID('Event')"
+            :color="'#DA531E'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Events"
+                :number="eventsCount"
+                class="cursor-pointer"
+                bgcolor="#DA531E"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'event')"
+                @click.native.prevent="badgeClick($event, 'event')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Organization Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'organization'"
+            :filter="getTaxonomyID('Organization')"
+            :color="'#a48116'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Organization"
+                :number="orgsCount"
+                class="cursor-pointer"
+                bgcolor="#a48116"
+                type="org"
+                :mode="getBadgeStatus(filterMode, 'organization')"
+                @click.native.prevent="badgeClick($event, 'organization')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Public Art Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'public_art'"
+            :filter="getTaxonomyID('Public Art')"
+            :color="'#848159'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Public Arts"
+                :number="publicArtsCount"
+                class="cursor-pointer"
+                bgcolor="#848159"
+                type="part"
+                :mode="getBadgeStatus(filterMode, 'public_art')"
+                @click.native.prevent="badgeClick($event, 'public_art')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Grant Badge Filter -->
+          <BadgeFilter :filter="getTaxonomyID('Grant')" :color="'#008CA9'">
+            <template v-slot:badge>
+              <Badge
+                content="Grants"
+                :number="grantsCount"
+                class="cursor-pointer"
+                bgcolor="#008CA9"
+                type="org"
+                :mode="getBadgeStatus(filterMode, 'grant')"
+                @click.native.prevent="badgeClick($event, 'grant')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
         </section>
       </template>
       <template v-slot:cards>
@@ -169,6 +203,9 @@ export default {
   computed: {
     filterMode() {
       return this.$store.state.arts.filter
+    },
+    taxonomies() {
+      return this.$store.state.arts.taxonomySearchSet
     },
     searchQuery() {
       return this.$store.state.arts.artSearch
@@ -269,6 +306,8 @@ export default {
     }
   },
   mounted() {
+    console.log('AWAW', this.arts)
+    console.log('artworks', this.artworks)
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
       const listElm = this.isMobile
@@ -300,7 +339,7 @@ export default {
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
-        this.maximumLength += 10
+        this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
       }, 250)
     },
@@ -349,8 +388,16 @@ export default {
     },
     filterArray(artsArray, type) {
       return artsArray.filter(art => art.properties.kind === type).length
+    },
+    getTaxonomyID(taxName) {
+      return this.taxonomies.find(taxonomy => taxonomy.name === taxName)
     }
   }
 }
 </script>
-<style></style>
+<style>
+.badge-list-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>
