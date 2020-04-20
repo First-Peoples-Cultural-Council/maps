@@ -28,6 +28,9 @@ export default {
   methods: {
     updateQuery(value) {
       this.$store.commit('arts/setArtSearch', value)
+    },
+    resetValue() {
+      this.$store.commit('arts/setArtSearch', '')
     }
   }
 }
