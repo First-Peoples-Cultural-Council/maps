@@ -18,18 +18,29 @@
       <template v-slot:badges>
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`pl-3 pr-3 pt-2`">
-          <!-- <BadgeFilter>
+          <BadgeFilter
+            :is-selected="filterMode === 'artwork'"
+            :filter="'Person'"
+          >
             <template v-slot:badge>
-              
+              <Badge
+                content="Artwork"
+                :number="artworksCount"
+                class="cursor-pointer"
+                bgcolor="#5A8467"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'artwork')"
+                @click.native.prevent="badgeClick($event, 'artwork')"
+              ></Badge>
             </template>
-          </BadgeFilter> -->
+          </BadgeFilter>
           <Badge
             content="Artwork"
             :number="artworksCount"
             class="cursor-pointer"
             bgcolor="#5A8467"
             type="event"
-            :mode="getBadgeStatus(mode, 'artwork')"
+            :mode="getBadgeStatus(filterMode, 'artwork')"
             @click.native.prevent="badgeClick($event, 'artwork')"
           ></Badge>
           <Badge
@@ -38,7 +49,7 @@
             class="cursor-pointer mb-1"
             bgcolor="#B45339"
             type="artist"
-            :mode="getBadgeStatus(mode, 'artist')"
+            :mode="getBadgeStatus(filterMode, 'artist')"
             @click.native.prevent="badgeClick($event, 'artist')"
           ></Badge>
           <Badge
@@ -47,7 +58,7 @@
             class="cursor-pointer mb-1"
             bgcolor="#DA531E"
             type="event"
-            :mode="getBadgeStatus(mode, 'event')"
+            :mode="getBadgeStatus(filterMode, 'event')"
             @click.native.prevent="badgeClick($event, 'event')"
           ></Badge>
           <Badge
@@ -56,7 +67,7 @@
             class="cursor-pointer mb-2"
             bgcolor="#a48116"
             type="org"
-            :mode="getBadgeStatus(mode, 'organization')"
+            :mode="getBadgeStatus(filterMode, 'organization')"
             @click.native.prevent="badgeClick($event, 'organization')"
           ></Badge>
           <Badge
@@ -65,7 +76,7 @@
             class="cursor-pointer mb-2"
             bgcolor="#848159"
             type="part"
-            :mode="getBadgeStatus(mode, 'public_art')"
+            :mode="getBadgeStatus(filterMode, 'public_art')"
             @click.native.prevent="badgeClick($event, 'public_art')"
           ></Badge>
 
@@ -75,7 +86,7 @@
             class="cursor-pointer mb-1"
             bgcolor="#008CA9"
             type="org"
-            :mode="getBadgeStatus(mode, 'grant')"
+            :mode="getBadgeStatus(filterMode, 'grant')"
             @click.native.prevent="badgeClick($event, 'grant')"
           ></Badge>
         </section>
@@ -128,6 +139,7 @@
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import ArtistCard from '@/components/arts/ArtistCard.vue'
+import BadgeFilter from '@/components/BadgeFilter.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
@@ -144,17 +156,20 @@ export default {
     Accordion,
     ArtistCard,
     ArtistFilter,
-    ArtsDrawer
+    ArtsDrawer,
+    BadgeFilter
   },
   data() {
     return {
-      mode: 'artwork',
       accordionContent: 'View artwork from indigenous artists in your area.',
       artDetails: {},
       maximumLength: 0
     }
   },
   computed: {
+    filterMode() {
+      return this.$store.state.arts.filter
+    },
     searchQuery() {
       return this.$store.state.arts.artSearch
     },
@@ -228,20 +243,22 @@ export default {
 
       // TO DO FILTER BY NAME AND KIND
       if (this.isSearchMode) {
-        artsArray = this.allArts.filter(art => {
-          if (art.properties.kind === 'artwork') {
-            return art.name
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
-          } else {
-            return art.properties.name
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
-          }
-        })
+        artsArray = this.allArts
+          .filter(art => {
+            if (art.properties.kind === 'artwork') {
+              return art.name
+                .toLowerCase()
+                .includes(this.searchQuery.toLowerCase())
+            } else {
+              return art.properties.name
+                .toLowerCase()
+                .includes(this.searchQuery.toLowerCase())
+            }
+          })
+          .filter(art => art.properties.kind === this.filterMode)
       } else {
         artsArray = this.allArts.filter(art => {
-          return art.properties.kind === this.mode
+          return art.properties.kind === this.filterMode
         })
       }
 
@@ -252,11 +269,6 @@ export default {
     }
   },
   mounted() {
-    console.log(
-      this.artworks.filter(art => {
-        return art.file_type === 'audio'
-      })
-    )
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
       const listElm = this.isMobile
