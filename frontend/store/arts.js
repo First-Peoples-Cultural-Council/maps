@@ -5,7 +5,11 @@ export const state = () => ({
   filter: 'artwork',
   selectedFilterTag: [],
   artsSearchSet: [],
-  taxonomySearchSet: []
+  taxonomySearchSet: [],
+  artsGeo: [],
+  artsGeoSet: [],
+  artworks: [],
+  artworkSet: []
 })
 
 export const mutations = {
@@ -15,7 +19,7 @@ export const mutations = {
   setStore(state, artsSet) {
     state.artsSet = artsSet
   },
-  setSearchSet(state, artsSearchSet) {
+  setSearchStore(state, artsSearchSet) {
     state.artsSearchSet = artsSearchSet
   },
   setArtSearch(state, query) {
@@ -29,6 +33,18 @@ export const mutations = {
   },
   setTaxonomySearchSet(state, result) {
     state.taxonomySearchSet = result
+  },
+  setGeo(state, artsGeo) {
+    state.artsGeo = artsGeo
+  },
+  setGeoStore(state, artsGeoSet) {
+    state.artsGeoSet = artsGeoSet
+  },
+  setArtworks(state, artworks) {
+    state.artworks = artworks
+  },
+  setArtworksStore(state, artworkSet) {
+    state.artworkSet = artworkSet
   }
 }
 
@@ -42,5 +58,8 @@ export const actions = {
       const isLoaded = !!data
       return isLoaded
     }
+  },
+  getArtsGeoIds({ state }) {
+    return state.artsGeo.map(art => art.id)
   }
 }

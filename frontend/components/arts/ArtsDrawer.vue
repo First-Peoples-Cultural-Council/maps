@@ -16,7 +16,7 @@
         />
         <div class="panel-details">
           <span class="item-title">{{ artDetails.name }}</span>
-          <span class="item-subtitle">{{ artDetails.type }}</span>
+          <span class="item-subtitle">{{ artDetails.kind }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
             @click="checkArtistProfile(artDetails.name)"
@@ -102,7 +102,7 @@
 
 <script>
 import MediaCard from '@/components/MediaCard.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
 
 export default {
@@ -126,7 +126,8 @@ export default {
   },
   data() {
     return {
-      currentMedia: this.art.currentMedia
+      currentMedia: this.art.currentMedia,
+      listOfMedias: []
     }
   },
   computed: {
@@ -142,11 +143,6 @@ export default {
     listOfArtists() {
       return this.artDetails.artists || []
     },
-    listOfMedias() {
-      return this.artDetails.medias.filter(
-        media => media.file_type !== 'default'
-      )
-    },
     listOfImageMedia() {
       return [
         ...this.listOfPublicArt,
@@ -154,11 +150,22 @@ export default {
       ]
     },
     geometry() {
-      return this.artDetails.geometry || this.artDetails.geom
+      return this.currentMedia.geometry
     }
   },
   mounted() {
     this.$store.commit('sidebar/setGallery', !!this.currentMedia)
+
+    // Fetch Medias for this placename
+    const url = `${getApiUrl('media/?placename=')}${
+      this.artDetails.placename.id
+    }`
+
+    this.$axios.$get(url).then(result => {
+      if (result) {
+        this.listOfMedias = result
+      }
+    })
   },
   methods: {
     toggleGallery() {
@@ -169,7 +176,7 @@ export default {
       this.currentMedia = media
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/${this.artDetails.type}_icon.svg`)
+      return img || require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
     },
     checkArtistProfile(name) {
       this.toggleGallery()

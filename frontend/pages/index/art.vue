@@ -219,6 +219,9 @@ export default {
     arts() {
       return this.$store.state.arts.arts
     },
+    artsGeo() {
+      return this.$store.state.arts.artsGeo
+    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -243,34 +246,7 @@ export default {
         : this.artworks.length
     },
     artworks() {
-      const artworks = []
-      this.arts.forEach(art => {
-        const medias = art.properties.medias
-        if (medias) {
-          medias.forEach(media => {
-            if (media.file_type !== 'default' || media.url !== null) {
-              artworks.push({
-                id: media.id,
-                name: media.name,
-                media_file: media.media_file,
-                file_type: media.file_type,
-                url: media.url,
-                properties: {
-                  name: art.properties.name,
-                  kind: 'artwork',
-                  type: art.properties.kind,
-                  image: art.properties.image,
-                  artists: art.properties.artists,
-                  medias: art.properties.medias,
-                  geometry: art.geometry
-                }
-              })
-            }
-          })
-        }
-      })
-      artworks.sort((a, b) => (a.id > b.id ? -1 : 1))
-      return artworks
+      return this.$store.state.arts.artworks
     },
     allArts() {
       return [...this.artworks, ...this.arts]
@@ -280,19 +256,13 @@ export default {
 
       // TO DO FILTER BY NAME AND KIND
       if (this.isSearchMode) {
-        artsArray = this.allArts
-          .filter(art => {
-            if (art.properties.kind === 'artwork') {
-              return art.name
-                .toLowerCase()
-                .includes(this.searchQuery.toLowerCase())
-            } else {
-              return art.properties.name
-                .toLowerCase()
-                .includes(this.searchQuery.toLowerCase())
-            }
-          })
-          .filter(art => art.properties.kind === this.filterMode)
+        artsArray = this.allArts.filter(art => {
+          if (art.kind === 'artwork') {
+            return art.name.includes(this.searchQuery)
+          } else {
+            return art.properties.name.includes(this.searchQuery)
+          }
+        })
       } else {
         artsArray = this.allArts.filter(art => {
           return art.properties.kind === this.filterMode
@@ -303,6 +273,16 @@ export default {
     },
     paginatedArts() {
       return this.selectedArt.slice(0, this.maximumLength)
+    }
+  },
+  async fetch({ $axios, store }) {
+    const currentArtworks = store.state.arts.artworkSet
+
+    if (currentArtworks.length === 0) {
+      const artworks = await $axios.$get(getApiUrl('arts/artwork?format=json'))
+
+      store.commit('arts/setArtworksStore', artworks) // All data
+      store.commit('arts/setArtworks', artworks) // All data
     }
   },
   mounted() {
@@ -347,14 +327,19 @@ export default {
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
+      const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
 
       if (!loaded) {
-        // Fetch Public Arts
+        // Fetch Arts
         const data = await this.$axios.$get(url)
 
+        // Set data with name for clarity
+        const artsSet = data.features
+        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
+
         // Set language stores
-        this.$store.commit('arts/setStore', [...this.arts, ...data.features]) // Updating data based on map
-        this.$store.commit('arts/set', [...this.arts, ...data.features]) // All data
+        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
+        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
       }
     },
     handleCardClick($event, name, type) {
@@ -384,7 +369,7 @@ export default {
     getCountValues(type) {
       return this.isSearchMode
         ? this.filterArray(this.selectedArt, type)
-        : this.filterArray(this.arts, type)
+        : this.filterArray(this.artsGeo, type)
     },
     filterArray(artsArray, type) {
       return artsArray.filter(art => art.properties.kind === type).length

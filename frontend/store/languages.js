@@ -23,7 +23,7 @@ export const mutations = {
   setLanguagesCount(state, languagesCount) {
     state.languagesCount = languagesCount
   },
-  setSearchSet(state, languageSearchSet) {
+  setSearchStore(state, languageSearchSet) {
     state.languageSearchSet = languageSearchSet
   }
 }
