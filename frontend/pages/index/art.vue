@@ -140,9 +140,9 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails.art === art.properties && showDrawer"
+                :is-selected="artDetails === art && showDrawer"
                 class="mt-3 hover-left-move"
-                @click.native="selectMedia(art.properties, art)"
+                @click.native="selectMedia(art.properties)"
               ></ArtistCard>
 
               <ArtsCard
@@ -248,17 +248,23 @@ export default {
     artworks() {
       return this.$store.state.arts.artworks
     },
+    previewArtworkOnly() {
+      return this.artworks.reduce((unique, item) => {
+        return unique.some(
+          items =>
+            items.properties.placename.id === item.properties.placename.id
+        )
+          ? unique
+          : [...unique, item]
+      }, [])
+    },
+    selectedArtwork() {
+      return this.isSearchMode ? this.artworks : this.previewArtworkOnly
+    },
     allArts() {
-      return [...this.artworks, ...this.arts]
+      return [...this.selectedArtwork, ...this.arts]
     },
     selectedArt() {
-      const resultArray = []
-      this.artworks.map(art => {
-        if (resultArray.length !== 0) {
-          resultArray.map(resultArt => {})
-        }
-      })
-      // console.log(this.artworks.)
       let artsArray = []
 
       // TO DO FILTER BY NAME AND KIND
@@ -297,8 +303,6 @@ export default {
     }
   },
   mounted() {
-    console.log('AWAW', this.arts)
-    console.log('artworks', this.artworks)
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
       const listElm = this.isMobile
@@ -361,21 +365,35 @@ export default {
         path: `/art/${encodeFPCC(name)}`
       })
     },
-    selectMedia(art, currentMedia) {
-      if (art === this.artDetails.art && this.showDrawer) {
+    selectMedia(currentArt) {
+      // If Same Artwork is clicked, close the drawer
+      if (currentArt === this.artDetails && this.showDrawer) {
         this.artDetails = {}
-        this.$store.commit('sidebar/setDrawerContent', false)
-      } else if (art !== this.artDetails.art || !this.showDrawer) {
-        this.artDetails = {
-          art,
-          currentMedia
-        }
-
-        this.$store.commit('sidebar/setDrawerContent', true)
+        this.closeDrawer()
+      }
+      // If another artwork is selected when there's open, close it to recalibrate data, then open
+      else if (currentArt !== this.artDetails && this.showDrawer) {
+        this.artDetails = currentArt
+        // Important to open it after closing the drawer
+        this.closeDrawer()
+        setTimeout(() => {
+          this.openDrawer()
+        }, 100)
+      }
+      // If no artwork is selected, it opens the drawer
+      else if (currentArt !== this.artDetails || !this.showDrawer) {
+        this.artDetails = currentArt
+        this.openDrawer()
       }
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+    },
+    openDrawer() {
+      this.$store.commit('sidebar/setDrawerContent', true)
+    },
+    closeDrawer() {
+      this.$store.commit('sidebar/setDrawerContent', false)
     },
     getCountValues(type) {
       return this.isSearchMode
