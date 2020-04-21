@@ -6,7 +6,7 @@
     @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
-    <div v-if="(isSelected && isHover) || showOption" class="badge-filters">
+    <div v-if="isSelected" class="badge-filters">
       <p id="badge-choose">
         {{ `${filterTag.length !== 0 ? getTags() : 'choose sub-category'} ` }}
         <span v-if="filterTag.length !== 0" class="bold" @click="removeTag()"
