@@ -87,7 +87,7 @@ export default {
       if (this.mediaData.placename.kind === 'public_art') {
         return this.mediaData.placename.artists
       } else {
-        return [this.mediaData.placename]
+        return this.mediaData.placename.artists
       }
     },
     mediaType() {
@@ -119,7 +119,7 @@ export default {
             }</a>`
           })
         : `<a href="art/${encodeFPCC(this.mediaData.name)}"> ${
-            this.mediaData.name
+            this.mediaData.placename.name
           }</a>`
       return `By ${listOfArtist}`
     },
@@ -298,13 +298,12 @@ export default {
       .arts-card-tag {
         border-radius: 20px;
         position: initial;
-        padding: 3px;
+        padding: 3px 8px;
         color: #fff;
         font-size: 0.8em;
         font-weight: 800;
         border: 0;
-        width: 80px;
-        max-width: 100px;
+        width: auto;
       }
 
       .fpcc-card-more {
