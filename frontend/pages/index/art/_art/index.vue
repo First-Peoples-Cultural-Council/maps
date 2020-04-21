@@ -137,7 +137,7 @@
     </div>
     <ArtsDrawer
       v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
-      :art="{ art: artDetails }"
+      :art="artDetails"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
       class="sidebar-side-panel hide-mobile"
