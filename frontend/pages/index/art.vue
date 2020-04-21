@@ -252,15 +252,26 @@ export default {
       return [...this.artworks, ...this.arts]
     },
     selectedArt() {
+      const resultArray = []
+      this.artworks.map(art => {
+        if (resultArray.length !== 0) {
+          resultArray.map(resultArt => {})
+        }
+      })
+      // console.log(this.artworks.)
       let artsArray = []
 
       // TO DO FILTER BY NAME AND KIND
       if (this.isSearchMode) {
         artsArray = this.allArts.filter(art => {
           if (art.kind === 'artwork') {
-            return art.name.includes(this.searchQuery)
+            return art.name
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
           } else {
-            return art.properties.name.includes(this.searchQuery)
+            return art.properties.name
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
           }
         })
       } else {
