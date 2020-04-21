@@ -269,17 +269,21 @@ export default {
 
       // TO DO FILTER BY NAME AND KIND
       if (this.isSearchMode) {
-        artsArray = this.allArts.filter(art => {
-          if (art.kind === 'artwork') {
-            return art.name
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
-          } else {
-            return art.properties.name
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
-          }
-        })
+        artsArray = this.allArts
+          .filter(art => {
+            if (art.kind === 'artwork') {
+              return art.name
+                .toLowerCase()
+                .includes(this.searchQuery.toLowerCase())
+            } else {
+              return art.properties.name
+                .toLowerCase()
+                .includes(this.searchQuery.toLowerCase())
+            }
+          })
+          .filter(art => {
+            return art.properties.kind === this.filterMode
+          })
       } else {
         artsArray = this.allArts.filter(art => {
           return art.properties.kind === this.filterMode
