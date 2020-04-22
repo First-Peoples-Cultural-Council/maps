@@ -244,6 +244,16 @@ export default {
     LogInOverlay,
     EventOverlay
   },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
+  },
   data() {
     const bbox = [
       [-143.921875, 45.800059446787316],
@@ -1051,6 +1061,8 @@ export default {
   top: 0;
   justify-content: space-between;
   padding-top: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .map-controls-overlay {
@@ -1058,8 +1070,14 @@ export default {
   bottom: 20px;
   right: 10px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  width: 80%;
+}
+
+.map-controls-overlay > * {
+  margin-bottom: 0.25em;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
