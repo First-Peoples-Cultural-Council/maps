@@ -51,7 +51,7 @@
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
-          :tags="art.taxonomies"
+          :tags="taxonomies"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
@@ -186,7 +186,8 @@ export default {
 
   data() {
     return {
-      collapseDescription: false
+      collapseDescription: false,
+      blockedTag: ['Person'] // add taxonomy to not show
     }
   },
   computed: {
@@ -234,6 +235,11 @@ export default {
           !this.socialMedia.includes(element) &&
           element.data_type !== 'email' &&
           !element.value.startsWith(',')
+      )
+    },
+    taxonomies() {
+      return this.art.taxonomies.filter(
+        taxo => !this.blockedTag.includes(taxo.name)
       )
     }
   },
