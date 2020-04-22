@@ -6,7 +6,7 @@
     @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
-    <div v-if="isSelected" class="badge-filters">
+    <div v-if="isSelected" class="badge-filters hide-mobile">
       <p id="badge-choose">
         {{ `${filterTag.length !== 0 ? getTags() : 'choose sub-category'} ` }}
         <span v-if="filterTag.length !== 0" class="bold" @click="removeTag()"
@@ -137,7 +137,7 @@ export default {
   width: fit-content;
   border-radius: 1em;
   background-color: #ededed;
-  margin: 0.25em 0.3em;
+  margin: 0.25em 0;
   height: fit-content;
 }
 
