@@ -136,14 +136,14 @@
               md="6"
               sm="6"
             >
-              <ArtistCard
+              <ArtworkCard
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
                 :is-selected="artDetails === art && showDrawer"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties)"
-              ></ArtistCard>
+              ></ArtworkCard>
 
               <ArtsCard
                 v-else
@@ -172,7 +172,7 @@
 <script>
 import SideBar from '@/components/SideBar.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
-import ArtistCard from '@/components/arts/ArtistCard.vue'
+import ArtworkCard from '@/components/arts/ArtworkCard.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
@@ -188,7 +188,7 @@ export default {
     Badge,
     Filters,
     Accordion,
-    ArtistCard,
+    ArtworkCard,
     ArtistFilter,
     ArtsDrawer,
     BadgeFilter
@@ -211,6 +211,12 @@ export default {
     }
   },
   computed: {
+    isTaxonomyFilterMode() {
+      return this.taxonomyFilter !== ''
+    },
+    taxonomyFilter() {
+      return this.$store.state.arts.taxonomyFilter
+    },
     filterMode() {
       return this.$store.state.arts.filter
     },
@@ -300,7 +306,15 @@ export default {
         })
       }
 
-      return artsArray
+      console.log(this.taxonomyFilter)
+
+      return this.isTaxonomyFilterMode
+        ? artsArray.filter(art => {
+            return art.properties.taxonomies.some(
+              taxonomy => taxonomy.name === this.taxonomyFilter
+            )
+          })
+        : artsArray
     },
     paginatedArts() {
       return this.selectedArt.slice(0, this.maximumLength)
@@ -335,15 +349,23 @@ export default {
       this.loadMoreData()
     }
   },
+  destroyed() {
+    this.resetFilter()
+  },
   methods: {
     badgeClick($event, name) {
       if (this.showDrawer) {
         this.toggleSidePanel()
       }
+      this.resetFilter()
       this.maximumLength = 0
       this.loadKindData(name)
       this.handleBadge($event, name)
       this.loadMoreData()
+    },
+    resetFilter() {
+      this.$store.commit('arts/setTaxonomyTag', '')
+      this.$store.commit('arts/setArtSearch', '')
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
@@ -410,7 +432,8 @@ export default {
       this.$store.commit('sidebar/setDrawerContent', false)
     },
     getCountValues(type) {
-      return this.isSearchMode
+      return this.isSearchMode ||
+        (this.isTaxonomyFilterMode && this.filterMode === type)
         ? this.filterArray(this.selectedArt, type)
         : this.filterArray(this.artsGeo, type)
     },
