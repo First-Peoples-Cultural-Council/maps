@@ -259,6 +259,7 @@ export default {
 .artist-profile {
   width: 135px;
   height: 135px;
+  object-fit: cover;
   border-radius: 100%;
   border: 5px solid white;
   position: absolute;
