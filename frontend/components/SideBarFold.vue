@@ -1,13 +1,9 @@
 <template>
   <div class="accordion sidebar-fold-container">
     <b-collapse id="outer-collapse" visible>
-      <div
-        id="innerToggleHead"
-        :class="{ fixTop: visible }"
-        class="cursor-pointer"
-      >
+      <div id="innerToggleHead" :class="{ fixTop: visible }">
         <slot name="tabs"></slot>
-        <div class="innerToggle pl-2 pr-2" @click.prevent="toggleSideBar">
+        <div class="innerToggle pl-2 pr-2">
           <div class="d-table innerHeader">
             <span
               class="d-inline-block badge-section d-table-cell valign-middle"
@@ -16,8 +12,9 @@
               <slot name="badges"></slot>
             </span>
             <span
-              class="d-inline-block d-table-cell valign-middle"
+              class="d-inline-block d-table-cell valign-middle cursor-pointer"
               style="width: 5%; line-height: 0;"
+              @click.prevent="toggleSideBar"
             >
               <img
                 v-if="!visible"
