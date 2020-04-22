@@ -6,11 +6,17 @@
     @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
-    <div v-if="isSelected" class="badge-filters hide-mobile">
+    <div
+      v-if="(isSelected && isHover) || showOption"
+      class="badge-filters hide-mobile"
+    >
       <p id="badge-choose">
         {{ `${filterTag.length !== 0 ? getTags() : 'choose sub-category'} ` }}
-        <span v-if="filterTag.length !== 0" class="bold" @click="removeTag()"
-          >X</span
+        <span
+          v-if="filterTag.length !== 0"
+          class="remove-tag-btn cursor-pointer"
+          @click="removeTag()"
+          >&#x2716;</span
         >
       </p>
       <!-- Parent Popover -->
@@ -25,7 +31,7 @@
             v-for="taxonomy in getChildTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
-            @click="optionSelected(taxonomy.name)"
+            @click="optionSelected([taxonomy.name], taxonomy.name)"
           >
             {{ taxonomy.name }}
             <!-- Child Popover -->
@@ -40,6 +46,12 @@
                   v-for="taxChild in getChildTaxonomyList(taxonomy.id)"
                   :id="`badge-child-option-${taxChild.id}`"
                   :key="taxChild.id"
+                  @click="
+                    optionSelected(
+                      [taxonomy.name, taxChild.name],
+                      taxChild.name
+                    )
+                  "
                   >{{ taxChild.name }}
                   <!-- Child Child Popover -->
                   <b-popover
@@ -53,6 +65,12 @@
                         v-for="taxChild1 in getChildTaxonomyList(taxChild.id)"
                         :id="`badge-child-option-${taxChild1.id}`"
                         :key="taxChild1.id"
+                        @click="
+                          optionSelected(
+                            [taxonomy.name, taxChild.name, taxChild1.name],
+                            taxChild1.name
+                          )
+                        "
                         >{{ taxChild1.name }}</span
                       >
                     </div>
@@ -107,23 +125,28 @@ export default {
     toggleOption() {
       this.showOption = !this.showOption
     },
-    selectOption(value) {
-      this.$store.commit('arts/setFilterTag', value)
-    },
     hasTaxonomyChild(taxId) {
       return this.taxonomies.some(taxonomy => taxonomy.parent === taxId)
     },
     getChildTaxonomyList(id) {
       return this.taxonomies.filter(taxonomy => taxonomy.parent === id)
     },
-    optionSelected(taxonomy) {
-      this.filterTag.push(taxonomy)
+    optionSelected(taxList, taxonomy) {
+      this.filterTag = taxList
+      this.$store.commit('arts/setTaxonomyTag', taxonomy)
+      this.showOption = false
     },
     getTags() {
-      return this.filterTag.map(tag => `${tag} > `)
+      return this.filterTag.map(
+        (tag, index) =>
+          `${tag} ${
+            index !== 0 || index !== this.filterTag.length - 1 ? ' / ' : ''
+          }`
+      )
     },
     removeTag() {
       this.filterTag = []
+      this.$store.commit('arts/setTaxonomyTag', '')
     }
   }
 }
@@ -165,6 +188,14 @@ export default {
       background: #b47839;
     }
   }
+}
+
+#badge-choose {
+  font-weight: 700;
+}
+
+.remove-tag-btn {
+  margin: 0.25em;
 }
 
 .popover {
