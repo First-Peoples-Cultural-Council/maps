@@ -2,8 +2,8 @@
   <div :class="`arts-right-panel`">
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
-        <span class="mr-2 font-weight-bold"> X </span>
-        Close
+        <img src="@/assets/images/return_icon_hover.svg" />
+        Collapse
       </div>
     </div>
 
@@ -225,7 +225,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
-  margin-bottom: 1em;
+  margin: 1em 0 1.5em 0;
   position: relative;
 }
 
@@ -266,6 +266,10 @@ export default {
   border-bottom-left-radius: 1em;
   color: #fff;
   z-index: 50000;
+
+  & > * {
+    margin: 0 0.25em;
+  }
 }
 
 .artist-img-small {
