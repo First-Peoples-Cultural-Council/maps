@@ -183,6 +183,7 @@ export default {
       return startCase(str)
     }
   },
+
   data() {
     return {
       collapseDescription: false
@@ -468,7 +469,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
-  margin: 1em;
+  margin: 1.5em;
   margin-left: 0.8em;
   width: 100px;
   background-color: #b47a2b;

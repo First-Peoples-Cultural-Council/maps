@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo :logo-alt="1" class="cursor-pointer hide-mobile"></Logo>
       <div>
         <div
           class="text-center d-none mobile-close"
