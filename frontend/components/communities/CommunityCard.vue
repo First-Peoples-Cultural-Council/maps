@@ -31,15 +31,9 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div v-if="go">
-          <div class="fpcc-card-more">
-            <img
-              v-if="!hover"
-              src="@/assets/images/go_icon_hover.svg"
-              alt="Go"
-            />
-            <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
-          </div>
+        <div v-if="go" class="fpcc-card-more">
+          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
+          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
         </div>
       </template>
     </Card>
