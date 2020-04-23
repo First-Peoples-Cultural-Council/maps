@@ -613,9 +613,6 @@ export default {
   border-radius: 0.5em;
 }
 .searchbar-container {
-  /* position: absolute;
-  top: 0;
-  left: calc(40% - 200px); */
   width: 600px;
   margin: 0 auto;
 }
@@ -685,7 +682,7 @@ export default {
 .search-input::placeholder {
   color: #707070;
   font-size: 16px;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .search-input.form-control {
