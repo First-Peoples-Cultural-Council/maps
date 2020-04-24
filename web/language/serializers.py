@@ -304,21 +304,21 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
 
     # Primary Key Related fields -> could be updated by passing a list of ids
     artists = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceName.objects.filter(kind='artist'), many=True)
+        queryset=PlaceName.objects.filter(kind='artist'), many=True, required=False)
     taxonomies = serializers.PrimaryKeyRelatedField(
-        queryset=Taxonomy.objects.all(), many=True)
+        queryset=Taxonomy.objects.all(), many=True, required=False)
 
     def create(self, validated_data):
         # If related_data is included in the payload, pop it first
         related_data = validated_data.pop('related_data', [])
 
         # Save the PlaceName without a related_data
-        placename = placename.objects.create(**validated_data)
+        placename = PlaceName.objects.create(**validated_data)
 
         # Save all related data one by one if they were added in the payload
         if len(related_data) > 0:
             for data in related_data:
-                RelatedData.objects.create(placename=placename, **data)
+                RelatedData.objects.create(**data)
 
         return placename
 
