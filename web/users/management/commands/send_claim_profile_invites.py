@@ -5,8 +5,8 @@ class Command(BaseCommand):
     help = "Send out emails to registered users to claim their artist profiles."
 
     def handle(self, *args, **options):
-        send_notifications()
+        send_invites()
 
 
-def send_notifications():
+def send_invites():
     print('SENDING NOTIFICATIONS')
