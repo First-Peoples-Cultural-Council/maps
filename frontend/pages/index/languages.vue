@@ -16,7 +16,7 @@
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="badge-section pl-3 pr-3 mt-3">
+        <section class="badge-section pl-2 pr-3 mt-3">
           <Badge
             :content="badgeContent"
             :number="languagesCount"

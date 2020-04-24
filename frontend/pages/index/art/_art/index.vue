@@ -39,7 +39,7 @@
         <ArtsBanner
           v-if="isArtist"
           :art-image="art.image"
-          :tags="art.taxonomies"
+          :tags="taxonomies"
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
@@ -399,17 +399,15 @@ export default {
 
 .field-title {
   color: #707070;
-  font-weight: bold;
-  font-size: 13px;
+  font: Bold 15px/18px Proxima Nova;
   text-transform: capitalize;
 }
 
 .field-content {
   display: flex;
-  font-size: 18px;
+  font: normal 16px/25px Proxima Nova;
   flex-direction: column;
   color: #151515;
-  font-size: 0.9em;
 }
 
 .field-content a {
@@ -428,7 +426,7 @@ export default {
 }
 
 .field-content p {
-  font: Regular 16px/25px Proxima Nova;
+  font: normal 16px/25px Proxima Nova;
   color: #151515 !important;
   background: none !important;
 }
@@ -473,14 +471,9 @@ export default {
   border: 1px solid #d7d7de;
 }
 
-.artist-img-small {
-  width: 40px;
-  height: 40px;
-}
-
 .btn-collapse {
   padding: 1em;
-  margin: 1.5em;
+  margin: 2.5em;
   margin-left: 0.8em;
   width: 100px;
   height: 35px;
@@ -495,6 +488,11 @@ export default {
 
 .btn-collapse img {
   margin-right: 0.5em;
+}
+
+.artist-img-small {
+  width: 40px;
+  height: 40px;
 }
 
 .sidebar-side-panel {

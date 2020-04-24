@@ -240,11 +240,9 @@ export default {
   background: #707070;
   border-radius: 2rem;
   text-transform: uppercase;
-  font: Bold 15px/18px Proxima Nova;
+  font: Bold 12px/15px Proxima Nova;
   color: #ffffff;
   padding: 2px 8px;
-  font-weight: 800;
-  font-size: 0.6em;
   margin: 0.25em;
   text-align: center;
 }
