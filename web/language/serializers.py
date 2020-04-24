@@ -21,7 +21,8 @@ from .models import (
     Notification,
     CommunityLanguageStats,
     Taxonomy,
-    PlaceNameTaxonomy
+    PlaceNameTaxonomy,
+    RelatedData
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 
@@ -284,6 +285,12 @@ class TaxonomySerializer(serializers.ModelSerializer):
         )
 
 
+class RelatedDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RelatedData
+        fields = '__all__'
+
+
 # DETAIL SERIALIZERS
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = MediaLightSerializer(many=True, read_only=True)
@@ -305,14 +312,18 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+    related_data = RelatedDataSerializer(many=True, required=False)
 
     # Primary Key Related fields -> could be updated by passing a list of ids
-    artists = serializers.PrimaryKeyRelatedField(queryset=PlaceName.objects.filter(kind='artist'), many=True)
-    taxonomies = serializers.PrimaryKeyRelatedField(queryset=Taxonomy.objects.all(), many=True)
+    artists = serializers.PrimaryKeyRelatedField(
+        queryset=PlaceName.objects.filter(kind='artist'), many=True)
+    taxonomies = serializers.PrimaryKeyRelatedField(
+        queryset=Taxonomy.objects.all(), many=True)
 
     def to_representation(self, instance):
         # Get original representation
-        representation = super(PlaceNameDetailSerializer, self).to_representation(instance)
+        representation = super(PlaceNameDetailSerializer,
+                               self).to_representation(instance)
 
         # Alter representation for taxonomies
         # From list of ids -> to list of Taxonomy dictionaries
@@ -324,6 +335,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             taxonomies_representation.append(serializer.data)
         representation['taxonomies'] = taxonomies_representation
 
+        # Alter representation for taxonomies
+        # From list of ids -> to list of PlaceName dictionaries
         artists_representation = []
         artists = representation.get('artists')
         for artist_id in artists:
