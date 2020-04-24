@@ -51,6 +51,8 @@
 
 <script>
 import ArtistBanner from '@/components/arts/ArtistBanner.vue'
+import { getMediaUrl } from '@/plugins/utils.js'
+
 export default {
   components: {
     ArtistBanner
@@ -134,7 +136,9 @@ export default {
       }
     },
     artistImg() {
-      return this.artImage || require(`@/assets/images/artist_icon.svg`)
+      return (
+        getMediaUrl(this.artImage) || require(`@/assets/images/artist_icon.svg`)
+      )
     },
     toggleCollapse() {
       this.$store.commit('sidebar/toggleCollapse', !this.isCollapse)

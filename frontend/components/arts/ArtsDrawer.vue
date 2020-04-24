@@ -102,7 +102,7 @@
 
 <script>
 import MediaCard from '@/components/MediaCard.vue'
-import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl, getMediaUrl } from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
 
 export default {
@@ -190,7 +190,9 @@ export default {
       this.currentMedia = media
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/${this.artKind}_icon.svg`)
+      return (
+        getMediaUrl(img) || require(`@/assets/images/${this.artKind}_icon.svg`)
+      )
     },
     checkArtistProfile(name) {
       this.toggleGallery()
