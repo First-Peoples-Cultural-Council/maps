@@ -21,7 +21,7 @@
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 mt-3">
+        <section class="pl-2 pr-3 mt-3">
           <Badge
             content="Languages"
             :number="languagesCount"
@@ -179,7 +179,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-// import groupBy from 'lodash/groupBy'
+import groupBy from 'lodash/groupBy'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -385,6 +385,22 @@ export default {
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
     store.commit('arts/setTaxonomySearchSet', results[5])
+
+    const currentLanguages = store.state.languages.languageSet
+
+    if (currentLanguages.length === 0) {
+      // Fetch languages and communites data
+      const languages = await $axios.$get(getApiUrl('language'))
+      const communities = await $axios.$get(getApiUrl('community'))
+
+      // Set language stores
+      store.commit('languages/set', groupBy(languages, 'family.name')) // All data
+      store.commit('languages/setStore', languages) // Updating data based on map
+
+      // Set community stores
+      store.commit('communities/set', communities) // All data
+      store.commit('communities/setStore', communities) // Updating data based on map
+    }
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
