@@ -74,3 +74,12 @@ class Administrator(models.Model):
         return 'User {}: language "{}", community "{}"'.format(
             self.user.username, self.language.name, self.community.name
         )
+
+
+class ArtistProfileClaimRecord(models.Model):
+    email = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
+    is_claimed = models.BooleanField(default=False)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
