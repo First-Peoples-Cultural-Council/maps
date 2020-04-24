@@ -433,8 +433,8 @@ export default {
       this.$store.commit('sidebar/setDrawerContent', false)
     },
     getCountValues(type) {
-      return this.isSearchMode ||
-        (this.isTaxonomyFilterMode && this.filterMode === type)
+      return (this.isSearchMode || this.isTaxonomyFilterMode) &&
+        this.filterMode === type
         ? this.filterArray(this.selectedArt, type)
         : this.filterArray(this.artsGeo, type)
     },
