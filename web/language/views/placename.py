@@ -341,7 +341,7 @@ class ArtGeoList(generics.ListAPIView):
         name__icontains="FirstVoices", geom__isnull=False
     ).filter(
         kind__in=['public_art', 'artist', 'organization',
-                  'event', 'resource', 'grant'],
+                  'event', 'resource'],
         geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
