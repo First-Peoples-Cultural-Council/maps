@@ -26,7 +26,8 @@ def _format_fpcc(s):
 def get_new_media_messages(new_medias):
     messages = []
     if new_medias.count():
-        messages.append("<h3>New Media in Your Languages and Communities</h3><ul>")
+        messages.append(
+            "<h3>New Media in Your Languages and Communities</h3><ul>")
         for media in new_medias:
             if media.placename:
                 link = _place_link(media.placename)
@@ -39,7 +40,8 @@ def get_new_media_messages(new_medias):
             if 'image' in media.file_type:
                 link = ""
                 kind = "image"
-                preview = "<br><img src='{}/static/{}' width=100 style='width:100px;height:auto'/>".format(settings.HOST, media.media_file)
+                preview = "<br><img src='{}/static/{}' width=100 style='width:100px;height:auto'/>".format(
+                    settings.HOST, media.media_file)
             if media.url:
                 link = media.url
                 kind = "video"
@@ -149,14 +151,16 @@ def notify(user, since=None):
     if len(communities_awaiting_verification):
         intro.append(
             "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
-                ",".join([_comm_link(c) for c in communities_awaiting_verification])
+                ",".join([_comm_link(c)
+                          for c in communities_awaiting_verification])
             )
         )
     messages = []
     # If somethe user is a member of a language, notify them of all the public places in their language of interest.
     for language in languages:
         new_places = PlaceName.objects.filter(
-            ~Q(community__in=communities+communities_awaiting_verification), # don't double-show items in their community.
+            # don't double-show items in their community.
+            ~Q(community__in=communities+communities_awaiting_verification),
             language=language,
             community_only=False, created__gte=since)
         messages += get_new_places_messages(
@@ -165,18 +169,20 @@ def notify(user, since=None):
 
     # all placenames, shared with verified members.
     for community in communities:
-        new_places = PlaceName.objects.filter(community=community, created__gte=since)
+        new_places = PlaceName.objects.filter(
+            community=community, created__gte=since)
         messages += get_new_places_messages(
             new_places, "New Places in {}".format(community.name)
         )
 
     # public placenames.
     for community in communities_awaiting_verification:
-        new_places = PlaceName.objects.filter(community=community, created__gte=since, community_only=False)
+        new_places = PlaceName.objects.filter(
+            community=community, created__gte=since, community_only=False)
         messages += get_new_places_messages(
-            new_places, "New Places in {} (public updates only)".format(community.name)
+            new_places, "New Places in {} (public updates only)".format(
+                community.name)
         )
-
 
     # all media, shared only with verified members.
     new_medias_private = Media.objects.filter(
@@ -185,11 +191,12 @@ def notify(user, since=None):
     )
     messages += get_new_media_messages(new_medias_private)
 
-
     # public media. Show public stuff to anyone who has signed up.
     new_medias_public = Media.objects.filter(
-        Q(placename__language__in=languages) | Q(placename__community__in=communities_awaiting_verification),
-        Q(community_only=False) & Q(placename__community_only=False), # public items.
+        Q(placename__language__in=languages) | Q(
+            placename__community__in=communities_awaiting_verification),
+        # public items.
+        Q(community_only=False) & Q(placename__community_only=False),
         created__gte=since,
     )
     messages += get_new_media_messages(new_medias_public)
@@ -238,10 +245,10 @@ def send():
 
 def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
-    #Getting the PlaceName
+    # Getting the PlaceName
     placename = PlaceName.objects.get(pk=placename_id)
 
-    #Getting user
+    # Getting user
     creator = placename.creator
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
@@ -258,7 +265,8 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
             message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
-                _lang_link(placename.language), _comm_link(placename.community), state
+                _lang_link(placename.language), _comm_link(
+                    placename.community), state
             )
         else:
             message += "<p>Your contribution to {} Language has been {}.</p>".format(
@@ -271,10 +279,10 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
             )
         else:
             message += "<p>Your contribution has been {}.</p>".format(state)
-    
+
     if placename.name:
         message += "<p>Contribution: {}</p>".format(placename.name)
-    
+
     message += "<p>Reason: {}</p>".format(reason)
 
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
@@ -282,12 +290,13 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     # if the creator is a system admin
     if creator.email in [a[1] for a in settings.ADMINS]:
         message = intro + message
-    
+
     print("sending to ", creator.email)
-    print(message)    
-    
+    print(message)
+
     send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(state),
+        "Your contribution has been {} on the First Peoples' Language Map".format(
+            state),
         message,
         "info@fpcc.ca",
         [creator.email],
@@ -298,7 +307,7 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
 def inform_placename_to_be_verified(placename_id):
 
-    #Getting the PlaceName
+    # Getting the PlaceName
     placename = PlaceName.objects.get(pk=placename_id)
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
@@ -319,7 +328,8 @@ def inform_placename_to_be_verified(placename_id):
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
             message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
-                _lang_link(placename.language), _comm_link(placename.community), state
+                _lang_link(placename.language), _comm_link(
+                    placename.community), state
             )
             # Storing the pair language/community of the contribution
             language = placename.language
@@ -335,17 +345,18 @@ def inform_placename_to_be_verified(placename_id):
             )
         else:
             message += "<p>A contribution has been {}.</p>".format(state)
-    
+
     if placename.name:
         message += "<p>Contribution: {}</p>".format(placename.name)
-    
+
     message += "<p>Reason: {}</p>".format(placename.status_reason)
 
     # If we could get a language and community form the contribution
     if language and community:
-        
+
         # Checking if there is a Administrator for the pair language/community
-        administrators = Administrator.objects.filter(language=language, community=community)
+        administrators = Administrator.objects.filter(
+            language=language, community=community)
 
         # If there are Administrators for the pair language/community
         if administrators:
@@ -353,12 +364,13 @@ def inform_placename_to_be_verified(placename_id):
                 # if the administrator is a system admin
                 if administrator.user.email in [a[1] for a in settings.ADMINS]:
                     message = intro + message
-                
+
                 print("sending to ", administrator.user.email)
-                print(message)    
-                
+                print(message)
+
                 send_mail(
-                    "A contribution has been {} on the First Peoples' Language Map".format(state),
+                    "A contribution has been {} on the First Peoples' Language Map".format(
+                        state),
                     message,
                     "info@fpcc.ca",
                     [administrator.user.email],
@@ -369,10 +381,10 @@ def inform_placename_to_be_verified(placename_id):
 
 def inform_media_rejected_or_flagged(media_id, reason, status):
 
-    #Getting the Media
+    # Getting the Media
     media = Media.objects.get(pk=media_id)
 
-    #Getting user
+    # Getting user
     creator = media.creator
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
@@ -390,7 +402,8 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         if media.placename.language and media.placename.language.name:
             if media.placename.community and media.placename.community.name:
                 message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
-                    _lang_link(media.placename.language), _comm_link(media.placename.community), state
+                    _lang_link(media.placename.language), _comm_link(
+                        media.placename.community), state
                 )
             else:
                 message += "<p>Your contribution to {} Language has been {}.</p>".format(
@@ -402,7 +415,8 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
                     _comm_link(media.placename.community), state
                 )
             else:
-                message += "<p>Your contribution has been {}.</p>".format(state)
+                message += "<p>Your contribution has been {}.</p>".format(
+                    state)
     else:
         if media.community and media.community.name:
             message += "<p>Your contribution to {} Community has been {}.</p>".format(
@@ -411,10 +425,9 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         else:
             message += "<p>Your contribution has been {}.</p>".format(state)
 
-    
     if media.name:
         message += "<p>Contribution: {}</p>".format(media.name)
-    
+
     message += "<p>Reason: {}</p>".format(reason)
 
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
@@ -422,12 +435,13 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
     # if the creator is a system admin
     if creator.email in [a[1] for a in settings.ADMINS]:
         message = intro + message
-    
+
     print("sending to ", creator.email)
-    print(message)    
-    
+    print(message)
+
     send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(state),
+        "Your contribution has been {} on the First Peoples' Language Map".format(
+            state),
         message,
         "info@fpcc.ca",
         [creator.email],
@@ -438,7 +452,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
 
 def inform_media_to_be_verified(media_id):
 
-    #Getting the Media
+    # Getting the Media
     media = Media.objects.get(pk=media_id)
 
     intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
@@ -460,7 +474,8 @@ def inform_media_to_be_verified(media_id):
         if media.placename.language and media.placename.language.name:
             if media.placename.community and media.placename.community.name:
                 message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
-                    _lang_link(media.placename.language), _comm_link(media.placename.community), state
+                    _lang_link(media.placename.language), _comm_link(
+                        media.placename.community), state
                 )
 
                 # Storing the pair language/community of the contribution
@@ -488,17 +503,17 @@ def inform_media_to_be_verified(media_id):
         else:
             message += "<p>A contribution has been {}.</p>".format(state)
 
-    
     if media.name:
         message += "<p>Contribution: {}</p>".format(media.name)
-    
+
     message += "<p>Reason: {}</p>".format(media.status_reason)
 
     # If we could get a language and community form the contribution
     if language and community:
-        
+
         # Checking if there is a Administrator for the pair language/community
-        administrators = Administrator.objects.filter(language=language, community=community)
+        administrators = Administrator.objects.filter(
+            language=language, community=community)
 
         # If there are Administrators for the pair language/community
         if administrators:
@@ -506,16 +521,16 @@ def inform_media_to_be_verified(media_id):
                 # if the administrator is a system admin
                 if administrator.user.email in [a[1] for a in settings.ADMINS]:
                     message = intro + message
-                
+
                 print("sending to ", administrator.user.email)
-                print(message)    
-                
+                print(message)
+
                 send_mail(
-                    "A contribution has been {} on the First Peoples' Language Map".format(state),
+                    "A contribution has been {} on the First Peoples' Language Map".format(
+                        state),
                     message,
                     "info@fpcc.ca",
                     [administrator.user.email],
                     html_message=message,
                 )
                 return message
-        
