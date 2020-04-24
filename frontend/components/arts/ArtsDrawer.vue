@@ -1,15 +1,13 @@
 <template>
-  <div :class="`arts-right-panel`">
-    <div class="panel-header">
-      <div class="panel-close-btn cursor-pointer" @click="togglePanel">
-        <img src="@/assets/images/return_icon_hover.svg" />
-        Collapse
-      </div>
+  <div class="arts-right-panel">
+    <div class="panel-close-btn" @click="togglePanel">
+      <img src="@/assets/images/return_icon_hover.svg" />
+      Collapse
     </div>
 
     <!-- Render List of Artist -->
     <div v-if="this.$route.name !== 'index-art-art'">
-      <div v-if="listOfArtists.length === 0" class="panel-artist">
+      <div class="panel-artist">
         <img
           v-lazy="renderArtistImg(placename.image)"
           class="artist-img-small"
@@ -25,22 +23,15 @@
           </div>
         </div>
       </div>
-      <div
-        v-for="artist in listOfArtists"
-        v-else
-        :key="artist.id"
-        class="panel-artist"
-      >
-        <img v-lazy="renderArtistImg(artist.image)" class="artist-img-small" />
-        <div class="panel-details">
-          <span class="item-title">{{ artist.name }}</span>
-          <div
-            class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click="checkArtistProfile(artist.name)"
-          >
-            Visit Profile
-          </div>
-        </div>
+      <div v-if="listOfArtists.length !== 0" class="artist-list-container">
+        <span>List of Artist:</span> <br />
+        <a
+          v-for="artist in listOfArtists"
+          :key="artist.id"
+          href="#"
+          @click="checkArtistProfile(artist.name)"
+          >{{ artist.name }}</a
+        >
       </div>
     </div>
 
@@ -217,16 +208,11 @@ export default {
   align-items: flex-start;
   min-height: 100%;
   max-height: auto;
-  padding-bottom: 1em;
+  padding: 1.25em 0.5em;
 }
 
-.panel-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  padding: 1em;
-  margin: 1em 0 1.5em 0;
-  position: relative;
+.arts-main-wrapper .arts-right-panel {
+  padding-top: 5.5em;
 }
 
 .panel-details {
@@ -235,6 +221,7 @@ export default {
   justify-content: center;
   box-sizing: content-box;
   margin-left: 0.5em;
+  width: 240px;
 }
 
 .profile-btn {
@@ -254,10 +241,24 @@ export default {
   padding: 1em;
 }
 
+.artist-list-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding: 0 1em;
+  font: Bold 18px/22px Proxima Nova;
+
+  a {
+    margin: 0 0.25em;
+    text-decoration: underline;
+  }
+}
+
 .panel-close-btn {
+  cursor: pointer;
   position: absolute;
+  top: 5%;
   right: 0;
-  width: 100px;
   height: 35px;
   background-color: #b47a2b;
   display: flex;
@@ -268,6 +269,7 @@ export default {
   color: #fff;
   z-index: 50000;
   font: Bold 15px/18px Proxima Nova;
+  padding: 0 0.25em;
 
   & > * {
     margin: 0 0.25em;
@@ -306,6 +308,12 @@ export default {
   margin: 0 auto;
 }
 
+@media (min-width: 993px) and (max-width: 1300px) {
+  .panel-details {
+    width: 170px;
+  }
+}
+
 @media (max-width: 992px) {
   .arts-right-panel {
     box-shadow: 0;
@@ -316,7 +324,7 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
   }
-  .arts-main-wrapper .panel-header {
+  .arts-main-wrapper .panel-close-btn {
     display: none !important;
   }
 }
