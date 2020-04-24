@@ -320,6 +320,39 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     taxonomies = serializers.PrimaryKeyRelatedField(
         queryset=Taxonomy.objects.all(), many=True)
 
+    def create(self, validated_data):
+        # If related_data is included in the payload, pop it first
+        related_data = validated_data.pop('related_data', [])
+
+        # Save the PlaceName without a related_data
+        placename = placename.objects.create(**validated_data)
+
+        # Save all related data one by one if they were added in the payload
+        if len(related_data) > 0:
+            for data in related_data:
+                RelatedData.objects.create(placename=placename, **data)
+
+        return placename
+
+    def update(self, instance, validated_data):
+        # If the instance already has related_data, we must first delete them
+        if 'related_data' in validated_data:
+            RelatedData.objects.filter(placename__id=instance.id).delete()
+
+        # If related_data is included in the payload, pop it first
+        related_data = validated_data.pop('related_data', [])
+
+        # Update all the other properties in the validated_data
+        placename = super().update(instance, validated_data)
+
+        # Save all related data one by one if they were added in the payload
+        if len(related_data) > 0:
+            for data in related_data:
+                data['placename'] = placename
+                RelatedData.objects.create(**data)
+
+        return placename
+
     def to_representation(self, instance):
         # Get original representation
         representation = super(PlaceNameDetailSerializer,
