@@ -20,7 +20,8 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_("Users must have an email address"))
         if len(password) < 8:
-            raise ValidationError("Passwords must be at least 8 characters long")
+            raise ValidationError(
+                "Passwords must be at least 8 characters long")
         user = self.model(email=self.normalize_email(email))
         user.username = username
         user.set_password(password)
@@ -58,6 +59,7 @@ class User(AbstractUser):
             return "{} {}".format(self.first_name, self.last_name).strip()
         else:
             return "Someone Anonymous"
+
 
 class Administrator(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
