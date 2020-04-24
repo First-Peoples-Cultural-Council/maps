@@ -225,7 +225,7 @@ export default {
 }
 
 .carousel-gallery-container {
-  width: 60%;
+  width: 65%;
   margin-bottom: 2em;
 }
 
@@ -276,7 +276,7 @@ export default {
 .media-img {
   display: block;
   width: 100%;
-  height: 600px;
+  height: 60vh;
   object-fit: contain;
   background: black;
 }
