@@ -306,7 +306,23 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
     artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-    taxonomies = TaxonomySerializer(many=True)
+    taxonomies = serializers.PrimaryKeyRelatedField(queryset=Taxonomy.objects.all(), many=True)
+
+    def to_representation(self, instance):
+        # Get original representation
+        representation = super(PlaceNameDetailSerializer, self).to_representation(instance)
+
+        # Alter representation for taxonomies
+        # From list of ids -> to list of Taxonomy dictionaries
+        taxonomies_representation = []
+        taxonomies = representation.get('taxonomies')
+        for taxonomy_id in taxonomies:
+            curr_taxonomy = Taxonomy.objects.get(pk=taxonomy_id)
+            serializer = TaxonomySerializer(curr_taxonomy)
+            taxonomies_representation.append(serializer.data)
+        representation['taxonomies'] = taxonomies_representation
+
+        return representation
 
     class Meta:
         model = PlaceName
