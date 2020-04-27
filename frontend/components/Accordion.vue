@@ -7,36 +7,15 @@
           class="outer-text d-flex align-items-center justify-content-between"
         >
           <span class="accordion-content">
-            {{ content.substring(0, 85) }}...
-          </span>
-          <b-button
-            v-b-toggle.inner-collapse
-            size="sm"
-            class="accordion-toggle"
-          >
-            <img
-              src="@/assets/images/expand_icon.svg"
-              alt="Expand"
-              class="accordion-toggle-icon"
-            />
-          </b-button>
-        </p>
-        <b-collapse id="inner-collapse" v-model="notVisible">
-          <b-card>
-            <p class="accordion-content">{{ content }}</p>
-            <b-button
-              v-b-toggle.inner-collapse
-              size="sm"
-              class="accordion-toggle float-right"
+            {{ getContextData }}
+            <span
+              class="accordion-toggle"
+              @click="expandContent = !expandContent"
             >
-              <img
-                src="@/assets/images/contract_icon.svg"
-                alt="Contract"
-                class="accordion-toggle-icon"
-              />
-            </b-button>
-          </b-card>
-        </b-collapse>
+              {{ `${expandContent ? 'collapse' : 'expand'}` }}
+            </span>
+          </span>
+        </p>
       </b-card>
     </b-collapse>
   </div>
@@ -52,7 +31,14 @@ export default {
   },
   data() {
     return {
-      notVisible: false
+      expandContent: false
+    }
+  },
+  computed: {
+    getContextData() {
+      return this.expandContent
+        ? this.content
+        : `${this.content.substring(0, 100)} ...`
     }
   }
 }
@@ -69,7 +55,7 @@ export default {
   color: var(--color-darkgray, #454545);
 }
 #outer-collapse > .card > .card-body {
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0;
 }
 #inner-collapse {
   margin: 0;
@@ -82,23 +68,29 @@ export default {
   padding: 0;
   padding-top: 0.25rem;
 }
+
+#outer-collapse .card {
+  border: 0;
+  padding: 0;
+}
+
 .accordion-content {
-  font-size: 16px;
+  font: Regular 16px/20px Proxima Nova;
+  letter-spacing: 0.8px;
   margin: 0;
   padding: 0;
-  color: var(--color-darkgray, #454545);
+  color: #151515;
 }
 .accordion-toggle {
   background-color: transparent;
   border: 0;
+  text-decoration: underline;
+  color: #c46257;
+  font-weight: 800;
+  cursor: pointer;
 }
 .accordion-toggle:hover {
   background-color: transparent;
   border: 0;
-}
-.accordion-toggle-icon {
-  display: inline-block;
-  height: 12px;
-  width: 12px;
 }
 </style>

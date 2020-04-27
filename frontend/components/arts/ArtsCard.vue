@@ -35,21 +35,22 @@
         </div>
       </template>
       <template v-slot:body>
-        <div>
+        <div class="arts-detail-text">
           <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
+            <h5 class="field-kind">
               {{ art.properties.kind | kind }}
             </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold art-name">
+            <h5 class="field-name">
               {{ art.properties.name }}
             </h5>
+            <div class="artist-tags-container">
+              <span v-for="tag in taxonomies" :key="tag.name">{{
+                tag.name
+              }}</span>
+            </div>
           </div>
           <div class="artist-tags-container">
-            <span v-for="tag in taxonomies" :key="tag.name">{{
-              tag.name
-            }}</span>
+            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
           </div>
         </div>
       </template>
@@ -170,10 +171,25 @@ export default {
   border-radius: 2rem;
   color: #707070;
   text-transform: uppercase;
-  font-weight: 800;
-  font-size: 0.6em;
+  font: Bold 12px Proxima Nova;
   margin: 0.25em 0.5em 0.25em 0;
   padding: 2px 5px;
   text-align: center;
+}
+
+.field-kind {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 0.1em;
+  padding: 0;
+}
+
+.field-name {
+  font: Bold 16px/20px Proxima Nova;
+  color: #151515;
+  margin: 0.1em;
+  padding: 0;
 }
 </style>

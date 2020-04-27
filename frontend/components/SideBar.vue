@@ -223,7 +223,6 @@ export default {
   font-size: 15px;
   background-color: #03333a;
   color: #fff;
-  opacity: 0.8;
   border-top-left-radius: 0rem;
   border-top-right-radius: 0rem;
 }
@@ -259,11 +258,11 @@ export default {
 /* Sidebar style when screen width is 1300px and drawer is open */
 @media (min-width: 993px) and (max-width: 1300px) {
   .arts-container .sidebar-container {
-    width: 375px;
+    width: 350px;
   }
   .arts-container .sidebar-side-panel {
-    width: 375px;
-    left: 375px;
+    width: 350px;
+    left: 350px;
   }
 }
 

@@ -16,18 +16,12 @@
       </template>
       <template v-slot:body>
         <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              Community
-            </h5>
-            <h5
-              class="font-09 m-0 p-0 color-gray font-weight-bold community-card-title"
-            >
-              {{ name }}
-            </h5>
-          </div>
+          <h5 class="field-kind">
+            Community
+          </h5>
+          <h5 class="field-name">
+            {{ name }}
+          </h5>
         </div>
       </template>
       <template v-slot:footer>
@@ -126,5 +120,21 @@ export default {
 .community-icon-container.icon-sm {
   width: 30px;
   height: 30px;
+}
+
+.field-kind {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 0.1em;
+  padding: 0;
+}
+
+.field-name {
+  font: Bold 16px/20px Proxima Nova;
+  color: #151515;
+  margin: 0.1em;
+  padding: 0;
 }
 </style>

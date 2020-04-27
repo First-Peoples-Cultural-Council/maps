@@ -11,9 +11,11 @@
       class="badge-filters hide-mobile"
     >
       <p id="badge-choose">
-        {{ `${filterTag.length !== 0 ? getTags() : 'choose sub-category'} ` }}
+        {{
+          `${getTaxonomies.length !== 0 ? getTags() : 'choose sub-category'} `
+        }}
         <span
-          v-if="filterTag.length !== 0"
+          v-if="getTaxonomies.length !== 0"
           class="remove-tag-btn cursor-pointer"
           @click="removeTag()"
           >&#x2716;</span
@@ -31,7 +33,7 @@
             v-for="taxonomy in getChildTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
-            @click="optionSelected([taxonomy.name], taxonomy.name)"
+            @click="optionSelected([taxonomy.name])"
           >
             {{ taxonomy.name }}
             <!-- Child Popover -->
@@ -46,12 +48,7 @@
                   v-for="taxChild in getChildTaxonomyList(taxonomy.id)"
                   :id="`badge-child-option-${taxChild.id}`"
                   :key="taxChild.id"
-                  @click="
-                    optionSelected(
-                      [taxonomy.name, taxChild.name],
-                      taxChild.name
-                    )
-                  "
+                  @click="optionSelected([taxonomy.name, taxChild.name])"
                   >{{ taxChild.name }}
                   <!-- Child Child Popover -->
                   <b-popover
@@ -66,10 +63,11 @@
                         :id="`badge-child-option-${taxChild1.id}`"
                         :key="taxChild1.id"
                         @click="
-                          optionSelected(
-                            [taxonomy.name, taxChild.name, taxChild1.name],
+                          optionSelected([
+                            taxonomy.name,
+                            taxChild.name,
                             taxChild1.name
-                          )
+                          ])
                         "
                         >{{ taxChild1.name }}</span
                       >
@@ -107,11 +105,13 @@ export default {
     return {
       isHover: false,
       showOption: false,
-      showChild: false,
-      filterTag: []
+      showChild: false
     }
   },
   computed: {
+    getTaxonomies() {
+      return this.$store.state.arts.taxonomyFilter
+    },
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
     },
@@ -131,22 +131,20 @@ export default {
     getChildTaxonomyList(id) {
       return this.taxonomies.filter(taxonomy => taxonomy.parent === id)
     },
-    optionSelected(taxList, taxonomy) {
-      this.filterTag = taxList
-      this.$store.commit('arts/setTaxonomyTag', taxonomy)
+    optionSelected(taxList) {
+      this.$store.commit('arts/setTaxonomyTag', taxList)
       this.showOption = false
     },
     getTags() {
-      return this.filterTag.map(
+      return this.getTaxonomies.map(
         (tag, index) =>
           `${tag} ${
-            index !== 0 || index !== this.filterTag.length - 1 ? ' / ' : ''
+            index !== 0 || index !== this.getTaxonomies.length - 1 ? ' / ' : ''
           }`
       )
     },
     removeTag() {
-      this.filterTag = []
-      this.$store.commit('arts/setTaxonomyTag', '')
+      this.$store.commit('arts/setTaxonomyTag', [])
     }
   }
 }
@@ -191,7 +189,9 @@ export default {
 }
 
 #badge-choose {
-  font-weight: 700;
+  font: Bold 15px/18px Lato;
+  text-transform: lowercase;
+  color: #151515;
 }
 
 .remove-tag-btn {

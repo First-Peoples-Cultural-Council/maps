@@ -140,7 +140,7 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails === art && showDrawer"
+                :is-selected="artDetails === art.properties && showDrawer"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties)"
               ></ArtworkCard>
@@ -205,14 +205,15 @@ export default {
   },
   data() {
     return {
-      accordionContent: 'View artwork from indigenous artists in your area.',
+      accordionContent:
+        'View Artwork from Indigenous Artists in your area, and check their details .  You can also view Organization, Event, Public Art, and Grant information.',
       artDetails: {},
       maximumLength: 0
     }
   },
   computed: {
     isTaxonomyFilterMode() {
-      return this.taxonomyFilter !== ''
+      return this.taxonomyFilter.length !== 0
     },
     taxonomyFilter() {
       return this.$store.state.arts.taxonomyFilter
@@ -306,12 +307,12 @@ export default {
         })
       }
 
-      console.log(this.taxonomyFilter)
-
       return this.isTaxonomyFilterMode
         ? artsArray.filter(art => {
             return art.properties.taxonomies.some(
-              taxonomy => taxonomy.name === this.taxonomyFilter
+              taxonomy =>
+                taxonomy.name ===
+                this.taxonomyFilter[this.taxonomyFilter.length - 1]
             )
           })
         : artsArray
@@ -364,7 +365,7 @@ export default {
       this.loadMoreData()
     },
     resetFilter() {
-      this.$store.commit('arts/setTaxonomyTag', '')
+      this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
     },
     loadMoreData() {

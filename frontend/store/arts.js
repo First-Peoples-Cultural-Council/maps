@@ -3,7 +3,7 @@ export const state = () => ({
   artsSet: [],
   artSearch: '',
   filter: 'artwork',
-  taxonomyFilter: '',
+  taxonomyFilter: [],
   artsSearchSet: [],
   taxonomySearchSet: [],
   artsGeo: [],

@@ -279,9 +279,6 @@ export default {
 <style>
 .navigation-container {
   display: flex;
-  /* position: absolute;
-  top: 0;
-  right: 10px; */
 }
 .notify-badge {
   position: absolute;
@@ -297,7 +294,8 @@ export default {
   background-color: white;
   padding: 0.67em;
   z-index: 50;
-  border: 1px solid #ddd5cc;
+  box-shadow: 0px 3px 6px #00000022;
+  border: 1px solid #beb2a5;
   border-radius: 2em;
   margin-right: 0.5em;
   display: flex;
@@ -331,9 +329,8 @@ export default {
 }
 .navbar-icon-container {
   line-height: 0;
-  color: #7b7b7b;
-  font-size: 13px;
-  font-weight: bold;
+  color: #151515;
+  font: Bold 15px/18px Proxima Nova;
 }
 
 .navbar-icon {
