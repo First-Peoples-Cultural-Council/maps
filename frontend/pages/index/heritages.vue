@@ -52,7 +52,7 @@ import Accordion from '@/components/Accordion.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -61,6 +61,16 @@ export default {
     Badge,
     Filters,
     Accordion
+  },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
   },
   data() {
     return {
@@ -84,6 +94,20 @@ export default {
     },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
+    }
+  },
+  async fetch({ $axios, store }) {
+    const currentPlaces = store.state.places.places
+
+    if (currentPlaces.length === 0) {
+      // Fetch languages and communites data
+      const heritage = await $axios.$get(
+        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
+      )
+
+      // Set Heritage stores
+      store.commit('places/set', heritage.features)
+      store.commit('places/setStore', heritage.features)
     }
   },
   mounted() {

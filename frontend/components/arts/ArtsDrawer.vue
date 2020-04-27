@@ -2,8 +2,8 @@
   <div :class="`arts-right-panel`">
     <div class="panel-header">
       <div class="panel-close-btn cursor-pointer" @click="togglePanel">
-        <span class="mr-2 font-weight-bold"> X </span>
-        Close
+        <img src="@/assets/images/return_icon_hover.svg" />
+        Collapse
       </div>
     </div>
 
@@ -11,15 +11,15 @@
     <div v-if="this.$route.name !== 'index-art-art'">
       <div v-if="listOfArtists.length === 0" class="panel-artist">
         <img
-          v-lazy="renderArtistImg(artDetails.image)"
+          v-lazy="renderArtistImg(placename.image)"
           class="artist-img-small"
         />
         <div class="panel-details">
-          <span class="item-title">{{ artDetails.name }}</span>
-          <span class="item-subtitle">{{ artDetails.type }}</span>
+          <span class="item-title">{{ placename.name }}</span>
+          <span class="item-subtitle">{{ placename.kind }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
-            @click="checkArtistProfile(artDetails.name)"
+            @click="checkArtistProfile(placename.name)"
           >
             Visit Profile
           </div>
@@ -90,9 +90,9 @@
       v-if="showGallery"
       :media="currentMedia"
       :artists="listOfArtists"
-      :placename="artDetails.name"
+      :placename="artName"
+      :placename-img="artImg"
       :art-thumbnail="renderArtistImg"
-      :placename-img="artDetails.image"
       :toggle-gallery="toggleGallery"
       :check-profile="checkArtistProfile"
       :related-media="listOfImageMedia"
@@ -102,7 +102,7 @@
 
 <script>
 import MediaCard from '@/components/MediaCard.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
 
 export default {
@@ -126,26 +126,25 @@ export default {
   },
   data() {
     return {
-      currentMedia: this.art.currentMedia
+      currentMedia: this.art,
+      listOfMedias: []
     }
   },
   computed: {
+    isArtsDetailPage() {
+      return this.$route.name === 'index-art-art'
+    },
     showGallery() {
       return this.$store.state.sidebar.showGallery
     },
-    artDetails() {
-      return this.art.art
+    placename() {
+      return this.art.placename
     },
     listOfPublicArt() {
-      return this.artDetails.public_arts || []
+      return this.art.public_arts || []
     },
     listOfArtists() {
-      return this.artDetails.artists || []
-    },
-    listOfMedias() {
-      return this.artDetails.medias.filter(
-        media => media.file_type !== 'default'
-      )
+      return this.isArtsDetailPage ? this.art.artists : this.placename.artists
     },
     listOfImageMedia() {
       return [
@@ -154,11 +153,33 @@ export default {
       ]
     },
     geometry() {
-      return this.artDetails.geometry || this.artDetails.geom
+      return this.isArtsDetailPage ? this.art.geom : this.placename.geom
+    },
+    artName() {
+      return this.isArtsDetailPage ? this.art.name : this.placename.name
+    },
+    artImg() {
+      return this.isArtsDetailPage ? this.art.image : this.placename.image
+    },
+    artKind() {
+      return this.isArtsDetailPage ? this.art.kind : this.placename.kind
     }
   },
   mounted() {
-    this.$store.commit('sidebar/setGallery', !!this.currentMedia)
+    if (!this.isArtsDetailPage) {
+      this.$store.commit('sidebar/setGallery', !!this.currentMedia)
+
+      // Fetch Medias for this placename
+      const url = `${getApiUrl('media/?placename=')}${this.placename.id}`
+
+      this.$axios.$get(url).then(result => {
+        if (result) {
+          this.listOfMedias = result
+        }
+      })
+    } else {
+      this.listOfMedias = this.art.medias
+    }
   },
   methods: {
     toggleGallery() {
@@ -169,7 +190,7 @@ export default {
       this.currentMedia = media
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/${this.artDetails.type}_icon.svg`)
+      return img || require(`@/assets/images/${this.artKind}_icon.svg`)
     },
     checkArtistProfile(name) {
       this.toggleGallery()
@@ -204,7 +225,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
-  margin-bottom: 1em;
+  margin: 1em 0 1.5em 0;
   position: relative;
 }
 
@@ -245,6 +266,10 @@ export default {
   border-bottom-left-radius: 1em;
   color: #fff;
   z-index: 50000;
+
+  & > * {
+    margin: 0 0.25em;
+  }
 }
 
 .artist-img-small {

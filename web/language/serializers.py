@@ -1,3 +1,7 @@
+from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+
 from .models import (
     Language,
     PlaceName,
@@ -20,10 +24,43 @@ from .models import (
     PlaceNameTaxonomy
 )
 from users.serializers import PublicUserSerializer, UserSerializer
-from rest_framework import serializers
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
+# LIGHT SERIALIZERS
+class TaxonomyLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            "id",
+            "name",
+        )
+
+
+class MediaLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = (
+            "id",
+            "name",
+            "description",
+            "file_type",
+            "url",
+            "media_file",
+            "status",
+            "creator",
+            "placename",
+            "community",
+            "community_only"
+        )
+
+
+class PlaceNameLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "id", "category", "other_names")
+
+
+# NORMAL SERIALIZERS
 class LanguageFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = LanguageFamily
@@ -63,10 +100,11 @@ class RecordingSerializer(serializers.ModelSerializer):
 
 class LanguageSerializer(serializers.ModelSerializer):
     family = LanguageFamilySerializer(read_only=True)
- 
+
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
+        fields = ("name", "id", "color", "bbox",
+                  "sleeping", "family", "other_names")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -97,18 +135,6 @@ class LNADataSerializer(serializers.ModelSerializer):
         )
 
 
-class LNADetailSerializer(serializers.ModelSerializer):
-    """
-    Used nested inside LanguageSerializer
-    """
-
-    lnadata_set = LNADataSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = LNA
-        fields = ("name", "id", "year", "language", "lnadata_set")
-
-
 class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLanguageStats
@@ -121,10 +147,208 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
         )
 
 
-class PlaceNameLightSerializer(serializers.ModelSerializer):
+class CommunityLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityLink
+        fields = ("title", "url")
+
+
+class CommunitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name", "id", "point", "audio")
+
+
+class CommunityMemberSerializer(serializers.ModelSerializer):
+    user = PublicUserSerializer(read_only=True)
+    community = CommunitySerializer(read_only=True)
+
+    class Meta:
+        model = CommunityMember
+        fields = ("id", "user", "community")
+
+
+class RelatedPlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names")
+        fields = (
+            "id",
+            "name",
+            "image",
+        )
+
+
+class PlaceNameCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceNameCategory
+        fields = ("id", "name", "icon_name")
+
+
+class PlaceNameSerializer(serializers.ModelSerializer):
+    medias = MediaLightSerializer(many=True, read_only=True)
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "medias",
+            "category",
+            "status",
+            "status_reason",
+            "taxonomies",
+            "artists",
+            "geom"
+        )
+
+
+class MediaSerializer(serializers.ModelSerializer):
+    creator = PublicUserSerializer(read_only=True)
+    placename_obj = PlaceNameLightSerializer(
+        source="placename", read_only=True)
+
+    class Meta:
+        model = Media
+        fields = (
+            "id",
+            "name",
+            "description",
+            "file_type",
+            "url",
+            "media_file",
+            "community_only",
+            "placename",
+            "placename_obj",
+            "community",
+            "status",
+            "status_reason",
+            "creator",
+            "mime_type",
+            "is_artwork",
+        )
+
+
+class FavouriteSerializer(serializers.ModelSerializer):
+    user = PublicUserSerializer(read_only=True)
+    placename_obj = PlaceNameLightSerializer(source="place", read_only=True)
+    media_obj = MediaLightSerializer(source="media", read_only=True)
+
+    class Meta:
+        model = Favourite
+        fields = (
+            "id",
+            "name",
+            "media",
+            "media_obj",
+            "user",
+            "place",
+            "placename_obj",
+            "favourite_type",
+            "description",
+            "point",
+            "zoom"
+        )
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    user = PublicUserSerializer(read_only=True)
+    language_obj = LanguageSerializer(source="language", read_only=True)
+    community_obj = CommunitySerializer(source="community", read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = ("id", "name", "user", "language",
+                  "community", "language_obj", "community_obj")
+
+
+class FavouritePlaceNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favourite
+        fields = (
+            "id",
+        )
+
+
+class TaxonomySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = (
+            'id',
+            'name',
+            'description',
+            'parent'
+        )
+
+
+# DETAIL SERIALIZERS
+class PlaceNameDetailSerializer(serializers.ModelSerializer):
+    medias = MediaLightSerializer(many=True, read_only=True)
+    creator = PublicUserSerializer(read_only=True)
+    community = serializers.PrimaryKeyRelatedField(
+        queryset=Community.objects.all(), allow_null=True, required=False
+    )
+    language = serializers.PrimaryKeyRelatedField(
+        queryset=Language.objects.all(), allow_null=True, required=False
+    )
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
+    )
+    category_obj = PlaceNameCategorySerializer(
+        source="category", read_only=True)
+    favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
+    audio = serializers.PrimaryKeyRelatedField(
+        queryset=Recording.objects.all(), allow_null=True, required=False
+    )
+    audio_obj = RecordingSerializer(source="audio", read_only=True)
+    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+    taxonomies = TaxonomySerializer(many=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "name",
+            "id",
+            "geom",
+            "image",
+            "other_names",
+            "audio",
+            "audio_obj",
+            "kind",
+            "common_name",
+            "community_only",
+            "description",
+            "status",
+            "status_reason",
+            "category",
+            "category_obj",
+            "medias",
+            "community",
+            "language",
+            "creator",
+            "favourites",
+            "taxonomies",
+            "public_arts",
+            "artists",
+            "related_data"
+        )
+        depth = 1
+
+
+class LNADetailSerializer(serializers.ModelSerializer):
+    """
+    Used nested inside LanguageSerializer
+    """
+
+    lnadata_set = LNADataSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = LNA
+        fields = ("name", "id", "year", "language", "lnadata_set")
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
@@ -164,9 +388,11 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         ):
             if lnadata.community_id in by_nation:
                 if lnadata.lna.year > by_nation[lnadata.community_id]["lna"]["year"]:
-                    by_nation[lnadata.community_id] = LNADataSerializer(lnadata).data
+                    by_nation[lnadata.community_id] = LNADataSerializer(
+                        lnadata).data
             else:
-                by_nation[lnadata.community_id] = LNADataSerializer(lnadata).data
+                by_nation[lnadata.community_id] = LNADataSerializer(
+                    lnadata).data
         rep["lna_by_nation"] = by_nation
         return rep
 
@@ -207,99 +433,6 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class LanguageGeoSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = Language
-        fields = ("name", "color", "sleeping")
-        geo_field = "geom"
-
-
-class CommunityGeoSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = Community
-        fields = ("name", "other_names")
-        geo_field = "point"
-
-
-class RelatedPlaceNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image",
-        )
-
-
-class TaxonomyLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Taxonomy
-        fields = (
-            "name",
-        )
-
-
-class MediaLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Media
-        fields = (
-            "id",
-            "name",
-            "description",
-            "file_type",
-            "url",
-            "media_file",
-            "status",
-            "creator",
-            "placename",
-            "community",
-            "community_only"
-        )
-
-
-class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
-    medias = MediaLightSerializer(many=True, read_only=True)
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image",
-            "kind",
-            "medias",
-            "category",
-            "status",
-            "status_reason",
-            "taxonomies",
-            "artists",
-        )
-        geo_field = "geom"
-
-
-class CommunityLinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CommunityLink
-        fields = ("title", "url")
-
-
-class CommunitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Community
-        fields = ("name", "id", "point", "audio")
-
-
-class CommunityMemberSerializer(serializers.ModelSerializer):
-    user = PublicUserSerializer(read_only=True)
-    community = CommunitySerializer(read_only=True)
-
-    class Meta:
-        model = CommunityMember
-        fields = ("id", "user", "community")
-
-
 class CommunityDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     communitylink_set = CommunityLinkSerializer(read_only=True, many=True)
@@ -336,7 +469,8 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         by_lang = {}
         lnas = []
         # get most recent lna for each nation
-        lnadatas = LNAData.objects.filter(community=value).select_related("lna").order_by("-lna__year")
+        lnadatas = LNAData.objects.filter(
+            community=value).select_related("lna").order_by("-lna__year")
         for lnadata in lnadatas:
             if not lnadata.lna:
                 continue
@@ -347,7 +481,8 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             lna_serialized = LNADataSerializer(lnadata).data
             lna_name = lna_serialized["lna"]["name"]
             # print(lna_name)
-            lna_serialized['lna']['url'] = self.build_lna_external_url(lna_name)
+            lna_serialized['lna']['url'] = self.build_lna_external_url(
+                lna_name)
             # print(lna_serialized['lna'])
 
             if lid in by_lang:
@@ -409,16 +544,53 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class PlaceNameCategorySerializer(serializers.ModelSerializer):
+# GEO SERIALIZERS
+class LanguageGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
-        model = PlaceNameCategory
-        fields = ("id", "name", "icon_name")
+        model = Language
+        fields = ("name", "color", "sleeping")
+        geo_field = "geom"
 
 
-class PlaceNameSerializer(serializers.ModelSerializer):
-    medias = MediaLightSerializer(many=True, read_only=True)
+class CommunityGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name", "other_names")
+        geo_field = "point"
+
+
+class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("id", "name", "kind")
+        geo_field = "geom"
+
+
+# SEARCH SERIALIZERS
+class PlaceNameSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceName
+        fields = ("name", "other_names", "kind")
+
+
+class LanguageSearchSerializer(serializers.ModelSerializer):
+    family = LanguageFamilySerializer(read_only=True)
+
+    class Meta:
+        model = Language
+        fields = ("name", "other_names", "family")
+
+
+class CommunitySearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name",)
+
+
+# ARTS SERIALIZERS
+# Base serializer
+class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
@@ -427,140 +599,79 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "medias",
-            "category",
-            "status",
-            "status_reason",
+            "taxonomies"
+        )
+        geo_field = "geom"
+
+
+class PublicArtSerializer(ArtPlaceNameSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = ArtPlaceNameSerializer.Meta.fields + (
             "taxonomies",
-            "artists",
-            "geom"
+            "artists"
+        )
+        geo_field = "geom"
+
+
+class ArtistSerializer(ArtPlaceNameSerializer):
+    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = ArtPlaceNameSerializer.Meta.fields + (
+            "public_arts",
+        )
+        geo_field = "geom"
+
+
+class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
+    artists = PlaceNameLightSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlaceName
+        fields = (
+            "id",
+            "name",
+            "image",
+            "kind",
+            "geom",
+            "artists"
         )
 
 
-class MediaSerializer(serializers.ModelSerializer):
-    creator = PublicUserSerializer(read_only=True)
-    placename_obj = PlaceNameLightSerializer(source="placename", read_only=True)
+class ArtworkSerializer(serializers.ModelSerializer):
+    placename = ArtworkPlaceNameSerializer(read_only=True)
 
     class Meta:
         model = Media
         fields = (
             "id",
             "name",
-            "description",
             "file_type",
             "url",
             "media_file",
-            "community_only",
-            "placename",
-            "placename_obj",
-            "community",
-            "status",
-            "status_reason",
-            "creator",
-            "mime_type",
-            "is_artwork",
+            "placename"
         )
 
+    def to_representation(self, value):
+        representation = super().to_representation(value)
 
-class FavouriteSerializer(serializers.ModelSerializer):
-    user = PublicUserSerializer(read_only=True)
-    placename_obj = PlaceNameLightSerializer(source="place", read_only=True)
-    media_obj = MediaLightSerializer(source="media", read_only=True)
+        updated_representation = {}
+        # Add a kind field
+        updated_representation["id"] = representation["id"]
+        updated_representation["geometry"] = representation["placename"]["geom"]
+        updated_representation["type"] = "Feature"
+        updated_representation["properties"] = {
+            "name": representation["name"],
+            "kind": "artwork",
+            "file_type": representation["file_type"],
+            "media_file": representation["media_file"],
+            "url": representation["url"],
+            "placename": representation["placename"]
+        }
 
-    class Meta:
-        model = Favourite
-        fields = (
-            "id",
-            "name",
-            "media",
-            "media_obj",
-            "user",
-            "place",
-            "placename_obj",
-            "favourite_type",
-            "description",
-            "point",
-            "zoom"
-        )
-
-
-class NotificationSerializer(serializers.ModelSerializer):
-    user = PublicUserSerializer(read_only=True)
-    language_obj = LanguageSerializer(source="language", read_only=True)
-    community_obj = CommunitySerializer(source="community", read_only=True)
-
-    class Meta:
-        model = Notification
-        fields = ("id", "name", "user", "language", "community", "language_obj", "community_obj")
-
-
-class FavouritePlaceNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Favourite
-        fields = (
-            "id",
-        )
-
-
-class PlaceNameDetailSerializer(serializers.ModelSerializer):
-    medias = MediaLightSerializer(many=True, read_only=True)
-    creator = PublicUserSerializer(read_only=True)
-    community = serializers.PrimaryKeyRelatedField(
-        queryset=Community.objects.all(), allow_null=True, required=False
-    )
-    language = serializers.PrimaryKeyRelatedField(
-        queryset=Language.objects.all(), allow_null=True, required=False
-    )
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
-    )
-    category_obj = PlaceNameCategorySerializer(source="category", read_only=True)
-    favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
-    audio = serializers.PrimaryKeyRelatedField(
-        queryset=Recording.objects.all(), allow_null=True, required=False
-    )
-    audio_obj = RecordingSerializer(source="audio", read_only=True)
-    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = (
-            "name",
-            "id",
-            "geom",
-            "image",
-            "other_names",
-            "audio",
-            "audio_obj",
-            "kind",
-            "common_name",
-            "community_only",
-            "description",
-            "status",
-            "status_reason",
-            "category",
-            "category_obj",
-            "medias",
-            "community",
-            "language",
-            "creator",
-            "favourites",
-            "taxonomies",
-            "public_arts",
-            "artists",
-            "related_data"
-        )
-        depth = 1
-
-
-class TaxonomySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Taxonomy
-        fields = (
-            'id',
-            'name',
-            'description',
-            'parent',
-            'child_taxonomies'
-        )
+        return updated_representation

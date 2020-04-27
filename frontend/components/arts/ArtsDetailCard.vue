@@ -134,6 +134,7 @@ export default {
 
 .arts-detail-text {
   margin-left: 0.5em;
+  width: 65%;
 }
 .arts-detail-icon-container img {
   display: inline-block;

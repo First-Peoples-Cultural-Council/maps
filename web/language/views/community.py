@@ -29,6 +29,7 @@ from language.serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     CommunityLanguageStatsSerializer,
+    CommunitySearchSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -167,6 +168,13 @@ class ChampionViewSet(BaseModelViewSet):
     queryset = Champion.objects.all()
 
 
+# Geo List APIViews
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
+
+
+# Search List APIViews
+class CommunitySearchList(generics.ListAPIView):
+    queryset = Community.objects.filter(point__isnull=False).order_by("name")
+    serializer_class = CommunitySearchSerializer

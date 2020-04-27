@@ -93,5 +93,6 @@ export default {
   width: 330px;
   max-height: 750px;
   overflow-y: auto;
+  margin: 0.5rem 0.75rem;
 }
 </style>

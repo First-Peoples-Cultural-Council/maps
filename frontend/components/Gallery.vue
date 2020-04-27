@@ -1,5 +1,5 @@
 <template>
-  <div :id="`gallery-modal-${currentMedia.id}`" class="gallery-modal">
+  <div class="gallery-modal">
     <div class="btn-close cursor-pointer" @click="toggleGallery" />
 
     <div
@@ -18,7 +18,7 @@
         <div class="artist-gallery-detail">
           <img v-lazy="artThumbnail(placenameImg)" class="artist-img-small" />
           <div class="gallery-title">
-            <span class="item-title">{{ currentMedia.name }}</span>
+            <span class="item-title">{{ mediaData.name }}</span>
             <span class="item-subtitle" v-html="returnArtists()" />
           </div>
           <div
@@ -32,20 +32,19 @@
         </div>
         <!-- Render Media here depending on type -->
         <img
-          v-if="currentMedia.file_type === 'image'"
+          v-if="mediaData.file_type === 'image'"
           class="media-img"
-          :src="currentMedia.media_file || currentMedia.image"
+          :src="mediaData.media_file || mediaData.image"
         />
         <!-- Render Youtube Video Here -->
         <iframe
           v-else-if="
-            currentMedia.file_type === 'video' &&
-              getYoutubeEmbed(currentMedia.url)
+            mediaData.file_type === 'video' && getYoutubeEmbed(mediaData.url)
           "
           class="media-img"
           :src="
             `https://www.youtube.com/embed/${getYoutubeEmbed(
-              currentMedia.url
+              mediaData.url
             )}/?rel=0`
           "
           frameborder="0"
@@ -54,17 +53,17 @@
         ></iframe>
         <!-- Render if audio file  -->
         <audio
-          v-else-if="currentMedia.file_type === 'audio'"
+          v-else-if="mediaData.file_type === 'audio'"
           class="media-img audio"
           controls
         >
-          <source :src="currentMedia.media_file" type="audio/ogg" />
-          <source :src="currentMedia.media_file" type="audio/mpeg" />
-          <source :src="currentMedia.media_file" type="audio/wav" />
+          <source :src="mediaData.media_file" type="audio/ogg" />
+          <source :src="mediaData.media_file" type="audio/mpeg" />
+          <source :src="mediaData.media_file" type="audio/wav" />
           Your browser does not support the audio element.
         </audio>
         <!-- Render Public Art Image here -->
-        <img v-else v-lazy="currentMedia.image" class="media-img" />
+        <img v-else v-lazy="mediaData.image" class="media-img" />
       </div>
       <button
         v-if="isRelatedMedia"
@@ -104,7 +103,6 @@ export default {
         return {}
       }
     },
-
     artists: {
       type: Array,
       default: () => {
@@ -140,7 +138,6 @@ export default {
   },
   data() {
     return {
-      index: this.mediaIndex,
       mediaData: this.media
     }
   },
@@ -148,29 +145,23 @@ export default {
     artistCount() {
       return this.artists ? this.artists.length : 0
     },
-    currentMedia() {
-      return this.mediaData
-    },
     isRelatedMedia() {
-      return (
-        this.currentMedia.file_type !== 'video' && this.relatedMedia.length > 1
-      )
+      return this.media.file_type !== 'video' && this.relatedMedia.length > 1
+    },
+    mediaIndex() {
+      return this.mediaData
+        ? this.relatedMedia.findIndex(
+            media => media.name === this.mediaData.name
+          )
+        : 0
     },
     canNavigatePrevious() {
       return this.mediaIndex === 0
     },
     canNavigateNext() {
       return this.mediaIndex === this.relatedMedia.length - 1
-    },
-    mediaIndex() {
-      return this.currentMedia
-        ? this.relatedMedia.findIndex(
-            media => media.id === this.currentMedia.id
-          )
-        : 0
     }
   },
-
   methods: {
     returnArtists() {
       const listOfArtist =

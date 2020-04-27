@@ -145,6 +145,16 @@ export default {
     LanguageSeeAll,
     Logo
   },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
+  },
   data() {},
   computed: {
     mobileContent() {

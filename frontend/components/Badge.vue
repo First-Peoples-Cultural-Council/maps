@@ -135,6 +135,7 @@ export default {
 <style>
 .badge {
   border-radius: 1em;
+  margin: 0.25em 0.3em;
 }
 .badge-content {
   display: inline-block;

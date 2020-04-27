@@ -2,8 +2,9 @@
   <ArtistBanner>
     <template v-slot:header>
       <img class="artist-header" :src="artistBanner" />
-      <div class="fpcc-card-more-art" @click.prevent="handleReturn">
+      <div class="fpcc-card-more" @click.prevent="handleReturn">
         <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
+        <span class="ml-1 font-weight-bold">Return</span>
       </div>
       <div
         class="collapse-btn show-mobile"
@@ -154,27 +155,30 @@ export default {
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more-art {
-  background-color: rgba(255, 255, 255, 0);
+.fpcc-card-more {
+  cursor: pointer;
+  width: 90px;
+  background-color: #b47a2b;
+  height: 35px;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 1em;
-  left: 1em;
-  height: 35px;
   justify-content: center;
-  padding: 0.3em;
-  font-size: 0.7em;
-  color: #fff;
-  text-shadow: white 0px 0px 10px;
-  cursor: pointer;
+  padding: 1em;
+  position: absolute;
+  right: 0;
+  top: 30%;
 }
 
-.fpcc-card-more-art:hover {
+.fpcc-card-more:hover {
   color: white;
+  background-color: #454545;
 }
 
-.fpcc-card-more-art img {
+.fpcc-card-more img {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -255,6 +259,7 @@ export default {
 .artist-profile {
   width: 135px;
   height: 135px;
+  object-fit: cover;
   border-radius: 100%;
   border: 5px solid white;
   position: absolute;

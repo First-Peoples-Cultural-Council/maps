@@ -99,17 +99,10 @@
                       key === 'Grants'
                   "
                   class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
-                  "
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
                   <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
+                    v-html="highlightSearch(result.item.name, result.matches)"
                   ></div>
                 </h5>
                 <h5
@@ -125,7 +118,7 @@
                     )
                   "
                 >
-                  {{ result.properties.name }} -
+                  {{ result.name }} -
                   {{ result.properties.feature.relativeLocation }}
                 </h5>
                 <h5
@@ -162,8 +155,8 @@
         triggers=""
         @click.native="handlePopOverClick"
       >
-        <template slot="title"
-          >Search Term: {{ searchQuery }}
+        <template slot="title">
+          Search Term: {{ searchQuery }}
         </template>
         <div v-if="isSearchEmpty" class="nosearch-results p-3">
           <Contact
@@ -212,17 +205,10 @@
                       key === 'Grants'
                   "
                   class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
-                  "
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
                   <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
+                    v-html="highlightSearch(result.item.name, result.matches)"
                   ></div>
                 </h5>
                 <h5
@@ -238,7 +224,7 @@
                     )
                   "
                 >
-                  {{ result.properties.name }} -
+                  {{ result.name }} -
                   {{ result.properties.feature.relativeLocation }}
                 </h5>
                 <h5
@@ -316,16 +302,16 @@ export default {
       return this.$store.state.sidebar.isDetailMode
     },
     communities() {
-      return this.$store.state.communities.communitySet
+      return this.$store.state.communities.communitySearchSet
     },
     languages() {
-      return this.$store.state.languages.languageSet
+      return this.$store.state.languages.languageSearchSet
     },
     places() {
-      return this.$store.state.places.placesSet
+      return this.$store.state.places.placeSearchSet
     },
     arts() {
-      return this.$store.state.arts.artsSet
+      return this.$store.state.arts.artsSearchSet
     },
     isSearchEmpty() {
       return (
@@ -416,42 +402,34 @@ export default {
 
       this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
         {
-          name: 'properties.name',
+          name: 'name',
           weight: 0.3
         },
         {
-          name: 'properties.other_names',
+          name: 'other_names',
           weight: 0.7
         }
       ])
 
       const artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
-        'properties.name'
+        'name'
       ])
 
-      this.artistsResults = artsResults.filter(
-        p => p.item.properties.kind === 'artist'
-      )
+      this.artistsResults = artsResults.filter(p => p.item.kind === 'artist')
 
-      this.artsResults = artsResults.filter(
-        p => p.item.properties.kind === 'public_art'
-      )
+      this.artsResults = artsResults.filter(p => p.item.kind === 'public_art')
 
       this.organizationsResults = artsResults.filter(
-        p => p.item.properties.kind === 'organization'
+        p => p.item.kind === 'organization'
       )
 
       this.resourcessResults = artsResults.filter(
-        p => p.item.properties.kind === 'resource'
+        p => p.item.kind === 'resource'
       )
 
-      this.eventsResults = artsResults.filter(
-        p => p.item.properties.kind === 'event'
-      )
+      this.eventsResults = artsResults.filter(p => p.item.kind === 'event')
 
-      this.grantsResults = artsResults.filter(
-        p => p.item.properties.kind === 'grant'
-      )
+      this.grantsResults = artsResults.filter(p => p.item.kind === 'grant')
 
       try {
         const geoCodeResults = await Promise.all([
@@ -503,7 +481,7 @@ export default {
     //   if (mode === 1) {
     //     results = data.filter(d => {
     //       return (
-    //         d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         d.name.toLowerCase().includes(lowerCasedQuery) ||
     //         (d.properties.other_names || '')
     //           .toLowerCase()
     //           .includes(lowerCasedQuery)
@@ -535,7 +513,7 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data, geom, result) {
+    handleResultClick(event, type, data, geom = null, result = null) {
       if (this.popup) {
         this.popup.remove()
         this.popup = null
@@ -617,12 +595,9 @@ export default {
 
                 ${locationHtml}
                 
-                <a class="d-block text-center" href="/contribute?lat=${
-                  geom.coordinates[1]
-                }&lng=${
-                geom.coordinates[0]
-              }&cname=${data}">Contribute To This Point.</a>
-
+                <a class="d-block text-center" href="/contribute?lat=
+                ${geom.coordinates[1]}&lng=${geom.coordinates[0]}
+                  &cname=${data}">Contribute To This Point.</a>
                 </div>`
             )
             .addTo(map)
@@ -718,7 +693,7 @@ export default {
   padding: 1.4em;
 }
 
-@media (max-width: 1200px) {
+@media (min-width: 993px) and (max-width: 1350px) {
   .searchbar-container {
     width: 400px;
   }

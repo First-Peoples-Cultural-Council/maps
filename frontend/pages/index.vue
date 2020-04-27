@@ -179,7 +179,7 @@
 
 <script>
 import Mapbox from 'mapbox-gl-vue'
-import groupBy from 'lodash/groupBy'
+// import groupBy from 'lodash/groupBy'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -243,6 +243,16 @@ export default {
     ModalNotification,
     LogInOverlay,
     EventOverlay
+  },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
   },
   data() {
     const bbox = [
@@ -324,6 +334,12 @@ export default {
     artsSet() {
       return this.$store.state.arts.artsSet
     },
+    artsGeoSet() {
+      return this.$store.state.arts.artsGeoSet
+    },
+    artworkSet() {
+      return this.$store.state.arts.artworkSet
+    },
     placesSet() {
       return this.$store.state.places.placesSet
     },
@@ -350,27 +366,25 @@ export default {
     return user
   },
   async fetch({ $axios, store }) {
+    // Only fetch search data
     const results = await Promise.all([
-      $axios.$get(getApiUrl('language/')),
-      $axios.$get(getApiUrl('community/')),
-      $axios.$get(
-        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
-      ),
-      $axios.$get(getApiUrl(`art-geo?timestamp=${new Date().getTime()}/`))
+      $axios.$get(getApiUrl('language-search')),
+      $axios.$get(getApiUrl('community-search')),
+      $axios.$get(getApiUrl('placename-search')),
+      $axios.$get(getApiUrl('art-search')),
+      $axios.$get(getApiUrl('art-geo')),
+      $axios.$get(getApiUrl('taxonomy'))
     ])
 
-    if (process.server) {
-      store.commit('languages/set', groupBy(results[0], 'family.name'))
-      store.commit('languages/setLanguagesCount', results[0].length)
-      store.commit('communities/set', results[1])
-      store.commit('places/set', results[2].features)
-      store.commit('arts/set', results[3].features)
-    }
+    store.commit('languages/setSearchStore', results[0])
+    store.commit('communities/setSearchStore', results[1])
+    store.commit('places/setSearchStore', results[2])
+    store.commit('arts/setSearchStore', results[3])
 
-    store.commit('languages/setStore', results[0])
-    store.commit('communities/setStore', results[1])
-    store.commit('places/setStore', results[2].features)
-    store.commit('arts/setStore', results[3].features)
+    // Set Art Geo Set - for visible Arts count
+    store.commit('arts/setGeo', results[4].features)
+    store.commit('arts/setGeoStore', results[4])
+    store.commit('arts/setTaxonomySearchSet', results[5])
   },
   beforeRouteUpdate(to, from, next) {
     // This is how we know when to restore state of the map. We save previous state (lat,lng,zoom) and now state in Vuex.
@@ -484,17 +498,19 @@ export default {
       })
     }
 
-    const listElm = this.isMobileCollapse
-      ? document.querySelector('#side-inner-collapse')
-      : document.querySelector('#sidebar-container')
-    listElm.addEventListener('scroll', e => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-        if (this.communities.length > this.maximumLength) {
-          this.loadMoreData()
+    if (this.$route.name === 'index') {
+      const listElm = this.isMobileCollapse
+        ? document.querySelector('#side-inner-collapse')
+        : document.querySelector('#sidebar-container')
+      listElm.addEventListener('scroll', e => {
+        if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+          if (this.communities.length > this.maximumLength) {
+            this.loadMoreData()
+          }
         }
-      }
-    })
-    this.loadMoreData()
+      })
+      this.loadMoreData()
+    }
   },
   methods: {
     loadMoreData() {
@@ -723,7 +739,7 @@ export default {
       })
       map.addSource('arts1', {
         type: 'geojson',
-        data: '/api/art-geo/',
+        data: this.artsGeoSet,
         cluster: true,
         // clusterMaxZoom: 14,
         clusterRadius: 50
@@ -874,7 +890,9 @@ export default {
       )
       // console.log('This lanuages', this.languages)
       this.$store.commit('communities/set', this.filterCommunities(bounds))
+      this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
+      this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
 
       if (this.catToFilter.length === 0) {
         this.$store.commit('places/set', this.filterPlaces(bounds))
@@ -922,6 +940,18 @@ export default {
     },
     filterArts(bounds) {
       return this.artsSet.filter(art => {
+        const point = art.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterArtworks(bounds) {
+      return this.artworkSet.filter(artwork => {
+        const point = artwork.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterArtsGeo(bounds) {
+      return this.artsGeoSet.features.filter(art => {
         const point = art.geometry.coordinates
         return inBounds(bounds, point)
       })
@@ -1031,6 +1061,8 @@ export default {
   top: 0;
   justify-content: space-between;
   padding-top: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .map-controls-overlay {
@@ -1038,8 +1070,14 @@ export default {
   bottom: 20px;
   right: 10px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  width: 80%;
+}
+
+.map-controls-overlay > * {
+  margin-bottom: 0.25em;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

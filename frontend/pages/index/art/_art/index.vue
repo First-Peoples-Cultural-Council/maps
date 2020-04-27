@@ -51,7 +51,7 @@
           :arttype="art.kind"
           :name="art.name"
           :server="isServer"
-          :tags="art.taxonomies"
+          :tags="taxonomies"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
@@ -133,27 +133,11 @@
           class="p-4 m-0 pb-0 color-gray font-08 field-content"
           v-html="artDetails.description"
         ></div>
-        <div class="hide-mobile">
-          <div class="ml-3 mr-3 mt-3">
-            <p class="font-08">
-              [ Extracted from the
-              <a href="https://www.fp-artsmap.ca/" target="_blank"
-                >First People's Arts Map</a
-              >]
-            </p>
-          </div>
-          <LanguageSeeAll
-            content="See all details"
-            class="mt-0"
-            @click.native="handleClick($event, artDetails.node_id)"
-          ></LanguageSeeAll>
-          <Filters class="mb-2 mt-2"></Filters>
-        </div>
       </div>
     </div>
     <ArtsDrawer
       v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
-      :art="{ art: artDetails }"
+      :art="artDetails"
       :show-panel="showDrawer"
       :toggle-panel="toggleSidePanel"
       class="sidebar-side-panel hide-mobile"
@@ -177,9 +161,7 @@
 import startCase from 'lodash/startCase'
 import ArtsDetailCard from '@/components/arts/ArtsDetailCard.vue'
 import ArtsBanner from '@/components/arts/ArtsBanner.vue'
-import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import { zoomToPoint } from '@/mixins/map.js'
-import Filters from '@/components/Filters.vue'
 import {
   getApiUrl,
   encodeFPCC,
@@ -193,8 +175,6 @@ export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
-    LanguageSeeAll,
-    Filters,
     Logo,
     ArtsDrawer
   },
@@ -203,9 +183,11 @@ export default {
       return startCase(str)
     }
   },
+
   data() {
     return {
-      collapseDescription: false
+      collapseDescription: false,
+      blockedTag: ['Person'] // add taxonomy to not show
     }
   },
   computed: {
@@ -253,6 +235,11 @@ export default {
           !this.socialMedia.includes(element) &&
           element.data_type !== 'email' &&
           !element.value.startsWith(',')
+      )
+    },
+    taxonomies() {
+      return this.art.taxonomies.filter(
+        taxo => !this.blockedTag.includes(taxo.name)
       )
     }
   },
@@ -488,7 +475,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   padding: 1em;
-  margin: 1em;
+  margin: 1.5em;
   margin-left: 0.8em;
   width: 100px;
   background-color: #b47a2b;

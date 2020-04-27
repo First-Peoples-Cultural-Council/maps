@@ -1,88 +1,79 @@
 <template>
   <div class="arts-detail-card">
-    <Card>
-      <template v-slot:header>
-        <div
-          class="arts-detail-icon-container"
-          :style="'background-color:' + color"
-        >
-          <img src="@/assets/images/poi_icon.svg" alt="Places" />
-        </div>
-      </template>
-      <template v-slot:body>
-        <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              {{ type }}
-              <b-badge
-                v-if="status"
-                id="tooltip-target-1"
-                class="place-status-badge d-inline-block ml-1"
-                :variant="getVariant(status)"
-                >{{ status | filterStatus }}</b-badge
-              >
-              <b-tooltip
-                v-if="status === 'UN'"
-                target="tooltip-target-1"
-                triggers="hover"
-              >
-                This content has not been verified by a community member or
-                FPCC. Please use "Report" it if it needs to be corrected or
-                removed
-              </b-tooltip>
-            </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold place-name">
-              {{ name }}
-            </h5>
-          </div>
-          <div
-            v-if="audioFile"
-            class="d-inline-block"
-            @click.prevent.stop="handlePronounce"
+    <div
+      class="arts-detail-icon-container"
+      :style="'background-color:' + color"
+    >
+      <img src="@/assets/images/poi_icon.svg" alt="Places" />
+    </div>
+
+    <div class="arts-detail-text">
+      <div>
+        <h5 class="field-kind">
+          {{ type }}
+          <b-badge
+            v-if="status"
+            id="tooltip-target-1"
+            class="place-status-badge d-inline-block ml-1"
+            :variant="getVariant(status)"
+            >{{ status | filterStatus }}</b-badge
           >
-            <CardBadge
-              content="Pronounce"
-              :class="{ 'md-size-badge': variant === 'md' }"
-            ></CardBadge>
-          </div>
-          <div v-if="allowEdit" class="d-inline-block">
-            <CardBadge
-              content="Edit"
-              type="edit"
-              :class="{ 'md-size-badge': variant === 'md' }"
-              @click.native="handleEdit"
-            ></CardBadge>
-          </div>
-          <div v-if="deletePlace" class="d-inline-block">
-            <CardBadge
-              content="Delete"
-              type="delete"
-              :class="{ 'md-size-badge': variant === 'md' }"
-              @click.native="modalShow = true"
-            ></CardBadge>
-          </div>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="fpcc-card-more-art" @click.prevent="handleReturn">
-          <img
-            v-if="!hover"
-            class="ml-1"
-            src="@/assets/images/return_icon.svg"
-            alt="Go"
-          />
-          <img
-            v-else
-            class="ml-1"
-            src="@/assets/images/return_icon_hover.svg"
-            alt="Go"
-          />
-          <span class="ml-1 font-weight-bold">Return</span>
-        </div>
-      </template>
-    </Card>
+          <b-tooltip
+            v-if="status === 'UN'"
+            target="tooltip-target-1"
+            triggers="hover"
+          >
+            This content has not been verified by a community member or FPCC.
+            Please use "Report" it if it needs to be corrected or removed
+          </b-tooltip>
+        </h5>
+        <h5 class="field-name">
+          {{ name }}
+        </h5>
+      </div>
+      <div
+        v-if="audioFile"
+        class="d-inline-block"
+        @click.prevent.stop="handlePronounce"
+      >
+        <CardBadge
+          content="Pronounce"
+          :class="{ 'md-size-badge': variant === 'md' }"
+        ></CardBadge>
+      </div>
+      <div v-if="allowEdit" class="d-inline-block">
+        <CardBadge
+          content="Edit"
+          type="edit"
+          :class="{ 'md-size-badge': variant === 'md' }"
+          @click.native="handleEdit"
+        ></CardBadge>
+      </div>
+      <div v-if="deletePlace" class="d-inline-block">
+        <CardBadge
+          content="Delete"
+          type="delete"
+          :class="{ 'md-size-badge': variant === 'md' }"
+          @click.native="modalShow = true"
+        ></CardBadge>
+      </div>
+    </div>
+
+    <div class="fpcc-card-more" @click.prevent="handleReturn">
+      <img
+        v-if="!hover"
+        class="ml-1"
+        src="@/assets/images/return_icon_hover.svg"
+        alt="Go"
+      />
+      <img
+        v-else
+        class="ml-1"
+        src="@/assets/images/return_icon_hover.svg"
+        alt="Go"
+      />
+      <span class="ml-1 font-weight-bold">Return</span>
+    </div>
     <b-modal v-model="modalShow" hide-header @ok="handleDelete"
       >Are you sure you want to delete this place?</b-modal
     >
@@ -90,13 +81,11 @@
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
 import CardBadge from '@/components/CardBadge.vue'
 import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card,
     CardBadge
   },
   filters: {
@@ -229,39 +218,49 @@ export default {
 <style scoped>
 .arts-detail-card {
   cursor: pointer;
+  border-bottom: 3px solid #f9f9f9;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  border: 1px solid #ebe6dc;
+  padding: 1em 0 1em 1em;
+  border-radius: 0.25em;
+  position: relative;
 }
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 50px;
+  width: 50px;
 }
 .arts-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more-art {
-  background-color: var(--color-beige, #f4eee9);
+.fpcc-card-more {
+  width: 90px;
+  background-color: #b47a2b;
+  height: 35px;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
   display: flex;
   align-items: center;
-  height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  padding: 1em;
+  position: absolute;
+  right: 0;
+  top: 25%;
 }
 
-.fpcc-card-more-art {
-  padding: 0.3em;
-  font-size: 0.7em;
-}
-
-.fpcc-card-more-art:hover {
+.fpcc-card-more:hover {
   color: white;
   background-color: #454545;
 }
 
-.fpcc-card-more-art img {
+.fpcc-card-more img {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -297,5 +296,26 @@ export default {
 .place-status-badge.badge-warning {
   background-color: #e6a000;
   color: white;
+}
+
+.arts-detail-text {
+  margin-left: 0.5em;
+  width: 65%;
+}
+
+.field-kind {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 0.7;
+  text-transform: uppercase;
+  margin: 0.2em;
+  padding: 0;
+}
+
+.field-name {
+  font: Bold 16px/20px Proxima Nova;
+  color: #707070;
+  margin: 0.2em;
+  padding: 0;
 }
 </style>

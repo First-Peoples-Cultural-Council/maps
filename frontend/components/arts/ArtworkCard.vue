@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 
 export default {
   props: {
@@ -81,10 +81,14 @@ export default {
   },
   computed: {
     mediaData() {
-      return this.media
+      return this.media.properties
     },
     artists() {
-      return this.mediaData.properties.artists
+      if (this.mediaData.placename.kind === 'public_art') {
+        return this.mediaData.placename.artists
+      } else {
+        return this.mediaData.placename.artists
+      }
     },
     mediaType() {
       return this.mediaData.file_type
@@ -102,7 +106,7 @@ export default {
     },
     artImage() {
       return this.mediaExist
-        ? this.mediaData.media_file
+        ? getMediaUrl(this.mediaData.media_file)
         : this.mediaType === 'video'
         ? this.videoThumbnail
         : require('@/assets/images/public_art_icon.svg')
@@ -114,8 +118,8 @@ export default {
               artist.name
             }</a>`
           })
-        : `<a href="art/${encodeFPCC(this.mediaData.properties.name)}"> ${
-            this.mediaData.properties.name
+        : `<a href="art/${encodeFPCC(this.mediaData.name)}"> ${
+            this.mediaData.placename.name
           }</a>`
       return `By ${listOfArtist}`
     },
@@ -142,12 +146,12 @@ export default {
     },
     handleMouseOver() {
       this.hover = true
-      if (!this.mediaData.properties.geometry) return
-      this.$eventHub.revealArea(this.mediaData.properties.geometry)
+      if (!this.media.geometry) return
+      this.$eventHub.revealArea(this.media.geometry)
     },
     handleMouseLeave() {
       this.hover = false
-      if (!this.mediaData.properties.geometry) return
+      if (!this.media.geometry) return
       this.$eventHub.doneReveal()
     },
     getYoutubeVideoID(url) {
@@ -294,13 +298,12 @@ export default {
       .arts-card-tag {
         border-radius: 20px;
         position: initial;
-        padding: 3px;
+        padding: 3px 8px;
         color: #fff;
         font-size: 0.8em;
         font-weight: 800;
         border: 0;
-        width: 80px;
-        max-width: 100px;
+        width: auto;
       }
 
       .fpcc-card-more {

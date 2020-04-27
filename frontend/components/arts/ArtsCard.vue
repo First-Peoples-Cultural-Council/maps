@@ -47,7 +47,7 @@
             </h5>
           </div>
           <div class="artist-tags-container">
-            <span v-for="tag in art.properties.taxonomies" :key="tag.name">{{
+            <span v-for="tag in taxonomies" :key="tag.name">{{
               tag.name
             }}</span>
           </div>
@@ -91,11 +91,21 @@ export default {
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      blockedTag: ['Person'] // add taxonomy to not show
     }
   },
-  mounted() {
-    // console.log('CARD DATA', this.art)
+  computed: {
+    taxonomyNotEmpty() {
+      return this.art.properties.taxonomies
+    },
+    taxonomies() {
+      return this.taxonomyNotEmpty
+        ? this.art.properties.taxonomies.filter(
+            taxo => !this.blockedTag.includes(taxo.name)
+          )
+        : []
+    }
   },
   methods: {
     handleMouseOver() {

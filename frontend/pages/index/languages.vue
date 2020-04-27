@@ -106,13 +106,14 @@
 </template>
 
 <script>
+import groupBy from 'lodash/groupBy'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -153,6 +154,23 @@ export default {
     },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
+    }
+  },
+  async fetch({ $axios, store }) {
+    const currentLanguages = store.state.languages.languageSet
+
+    if (currentLanguages.length === 0) {
+      // Fetch languages and communites data
+      const languages = await $axios.$get(getApiUrl('language'))
+      const communities = await $axios.$get(getApiUrl('community'))
+
+      // Set language stores
+      store.commit('languages/set', groupBy(languages, 'family.name')) // All data
+      store.commit('languages/setStore', languages) // Updating data based on map
+
+      // Set community stores
+      store.commit('communities/set', communities) // All data
+      store.commit('communities/setStore', communities) // Updating data based on map
     }
   },
   mounted() {
