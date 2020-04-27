@@ -175,7 +175,7 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "image",
+            "image"
         )
 
 
@@ -191,7 +191,9 @@ class PlaceNameSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "kind"
+            "kind",
+            "status",
+            "status_reason"
         )
 
 

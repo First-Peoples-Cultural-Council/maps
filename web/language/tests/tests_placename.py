@@ -4,6 +4,7 @@ from rest_framework import status
 from django.utils import timezone
 
 from users.models import User, Administrator
+from django.contrib.gis.geos import GEOSGeometry
 
 from language.models import (
     Language,
@@ -766,29 +767,43 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we only retrieve node_placenames from art-geo API
         """
+        # This placename should not be a part of the result
+        # because this does not have a geo
         test_placename08 = PlaceName.objects.create(
             name="test place08",
             kind="public_art"
         )
         test_placename09 = PlaceName.objects.create(
             name="test place09",
-            kind="artist"
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
         )
-        test_placename09 = PlaceName.objects.create(
+        test_placename10 = PlaceName.objects.create(  # Excluded
             name="test place10",
             kind="organization"
         )
-        test_placename10 = PlaceName.objects.create(
-            name="test place11",
-            kind="event"
-        )
         test_placename11 = PlaceName.objects.create(
+            name="test place11",
+            kind="event",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        test_placename12 = PlaceName.objects.create(
             name="test place12",
-            kind="resource"
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
         )
         # This placename should not be a part of the result
         # because this is not a node_placename
-        test_placename12 = PlaceName.objects.create(
+        test_placename13 = PlaceName.objects.create(
             name="test place13",
             kind="poi"
         )
@@ -799,7 +814,9 @@ class PlaceNameAPITests(BaseTestCase):
 
         data = response.json().get("features")
 
+        print(data)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 5)  # Should only return 5, even though we added 6 placenames
-        self.assertEqual(data[0].get("id"), test_placename08.id)  # Check first data
-        self.assertEqual(data[4].get("id"), test_placename11.id)  # Check last data - should not be test_placename12
+        self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName
+        self.assertEqual(data[0].get("id"), test_placename09.id)  # Check first data
+        self.assertEqual(data[2].get("id"), test_placename12.id)  # Check last data - should not be test_placename12
