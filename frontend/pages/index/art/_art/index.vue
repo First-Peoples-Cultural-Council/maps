@@ -5,9 +5,12 @@
       class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
     >
       <div class="p-1">
-        <img class="artist-img-small" :src="renderArtistImg(art.image)" />
-        {{ art.kind | titleCase }}:
-        <span class="font-weight-bold">{{ art.name }}</span>
+        <img
+          class="artist-img-small"
+          :src="renderArtistImg(artDetails.image)"
+        />
+        {{ artDetails.kind | titleCase }}:
+        <span class="font-weight-bold">{{ artDetails.name }}</span>
       </div>
       <div @click="$store.commit('sidebar/setMobileContent', true)">
         <img src="@/assets/images/arrow_up_icon.svg" />
@@ -38,18 +41,18 @@
         <!-- START Conditional Render Arts Header -->
         <ArtsBanner
           v-if="isArtist"
-          :art-image="art.image"
-          :tags="art.taxonomies"
-          :arttype="art.kind"
-          :name="art.name"
+          :art-image="artDetails.image"
+          :tags="artDetails.taxonomies"
+          :arttype="artDetails.kind"
+          :name="artDetails.name"
           :server="isServer"
           :media="[...artDetails.public_arts, ...artDetails.medias][0]"
         ></ArtsBanner>
 
         <ArtsDetailCard
           v-else
-          :arttype="art.kind"
-          :name="art.name"
+          :arttype="artDetails.kind"
+          :name="artDetails.name"
           :server="isServer"
           :tags="taxonomies"
         ></ArtsDetailCard>
@@ -77,21 +80,19 @@
           <!-- Render List of Related Data -->
           <template v-if="relatedData">
             <section
-              v-for="art in relatedData"
-              :key="art.id"
+              v-for="data in relatedData"
+              :key="data.id"
               class="artist-content-field"
             >
-              <h5 class="field-title">
-                {{ art.data_type }}
-              </h5>
+              <h5 class="field-title">{{ data.label }}:</h5>
               <a
-                v-if="art.data_type === 'website'"
-                :href="art.value"
+                v-if="data.data_type === 'website'"
+                :href="data.value"
                 target="_blank"
               >
-                {{ art.value }}</a
+                {{ data.value }}</a
               >
-              <span v-else class="field-content">{{ art.value }}</span>
+              <span v-else class="field-content">{{ data.value }}</span>
             </section>
           </template>
 
@@ -207,7 +208,7 @@ export default {
       return this.$store.state.mapinstance.mapinstance
     },
     isArtist() {
-      return this.art.kind.toLowerCase() === 'artist'
+      return this.artDetails.kind.toLowerCase() === 'artist'
     },
     isGalleryNotEmpty() {
       return (
@@ -238,7 +239,7 @@ export default {
       )
     },
     taxonomies() {
-      return this.art.taxonomies.filter(
+      return this.artDetails.taxonomies.filter(
         taxo => !this.blockedTag.includes(taxo.name)
       )
     }
@@ -281,7 +282,7 @@ export default {
     }
 
     if (
-      this.art.kind === 'artist' &&
+      this.artDetails.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
       window.innerWidth > 992
@@ -308,10 +309,10 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.art.geom, zoom: 11 })
+          zoomToPoint({ map, geom: this.artDetails.geom, zoom: 11 })
         }
-        const icon = this.art.kind + '_icon.svg'
-        makeMarker(this.art.geom, icon, 'art-marker').addTo(map)
+        const icon = this.artDetails.kind + '_icon.svg'
+        makeMarker(this.artDetails.geom, icon, 'art-marker').addTo(map)
       })
     },
     toggleDescription() {
@@ -338,21 +339,21 @@ export default {
       }
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/${this.art.kind}_icon.svg`)
+      return img || require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
     }
   },
   head() {
     return {
       title:
-        this.art.name +
+        this.artDetails.name +
         ' Indigenous ' +
-        this.art.kind +
+        this.artDetails.kind +
         " on First Peoples' Language Map",
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.art.description
+          content: this.artDetails.description
         }
       ]
     }
