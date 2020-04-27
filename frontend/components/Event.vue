@@ -37,19 +37,18 @@ export default {
 
 <style lang="scss" scoped>
 #event-icon-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
   background-color: white;
   padding: 0.8em;
   z-index: 50;
   margin-right: 0.5em;
-  border: 1px solid #ddd5cc;
+  box-shadow: 0px 3px 6px #00000022;
+  border: 1px solid #beb2a5;
   border-radius: 2em;
-  color: #7b7b7b;
-  font-size: 13px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  font: Bold 13px/16px Proxima Nova;
+  color: #151515;
+  font: Bold 15px/18px Proxima Nova;
 
   & > * {
     margin: 0 0.25em;

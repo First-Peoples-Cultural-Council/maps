@@ -191,16 +191,16 @@ export default {
 .field-kind {
   font: Bold 15px/18px Proxima Nova;
   color: #707070;
-  opacity: 0.7;
+  opacity: 1;
   text-transform: uppercase;
-  margin: 0.2em;
+  margin: 0.1em;
   padding: 0;
 }
 
 .field-name {
   font: Bold 16px/20px Proxima Nova;
-  color: #707070;
-  margin: 0.2em;
+  color: #151515;
+  margin: 0.1em;
   padding: 0;
 }
 </style>

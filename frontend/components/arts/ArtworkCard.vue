@@ -226,20 +226,6 @@ export default {
   height: auto;
 }
 
-.artist-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #707070;
-  margin: 0;
-}
-
-.artist-name {
-  font-size: 13px;
-  font-weight: normal;
-  color: #707070;
-  margin: 0;
-}
-
 .artist-name a {
   font-weight: normal;
 }
@@ -273,20 +259,25 @@ export default {
     justify-content: space-around;
     box-sizing: border-box;
     padding-left: 0.5em;
+    color: #151515;
 
     .arts-card-footer {
       .artist-title {
         width: 100%;
-        max-height: 100px;
+        max-height: 60px;
         overflow-wrap: break-word;
         word-wrap: break-word;
-        font-size: 0.8em;
-        font-weight: 800;
         overflow: hidden;
+
+        font: Bold 16px/20px Proxima Nova;
+        color: #151515;
+        margin: 0.1em;
+        padding: 0;
       }
       .artist-name {
         font-size: 0.7em;
         font-weight: 800;
+        color: #707070;
       }
     }
 
@@ -316,20 +307,24 @@ export default {
         border-top-left-radius: 1em;
         border-bottom-left-radius: 1em;
       }
-
-      .artist-card:hover .fpcc-card-more {
-        background-color: #454545;
-      }
     }
   }
 
   &:hover {
     border: 1px solid #b57936;
+
+    .fpcc-card-more {
+      background-color: #3d3d3d !important;
+    }
   }
 }
 
 .card-selected {
   border: 1px solid #b57936;
   transform: translateX(10px);
+
+  .fpcc-card-more {
+    background-color: #3d3d3d !important;
+  }
 }
 </style>

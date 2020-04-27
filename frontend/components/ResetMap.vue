@@ -27,11 +27,10 @@ export default {
   cursor: pointer;
 }
 .reset-map-control h5 {
-  font-size: 0.75em;
+  font: Bold 15px/18px Proxima Nova;
+  color: #151515;
   margin: 0;
   padding: 0.5em 0.75em;
-  color: #7b7b7b;
-  font-weight: 700;
   text-transform: uppercase;
 }
 </style>

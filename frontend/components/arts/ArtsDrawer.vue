@@ -193,7 +193,7 @@ export default {
       return img || require(`@/assets/images/${this.artKind}_icon.svg`)
     },
     checkArtistProfile(name) {
-      this.toggleGallery()
+      this.togglePanel()
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -243,8 +243,9 @@ export default {
   border-radius: 3em;
   max-width: 150px;
   color: #fff;
-  padding: 0.2em;
+  padding: 0.5em;
   text-align: center;
+  font: Bold 15px/18px Proxima Nova;
 }
 
 .panel-artist {
@@ -257,15 +258,16 @@ export default {
   position: absolute;
   right: 0;
   width: 100px;
+  height: 35px;
   background-color: #b47a2b;
   display: flex;
   align-items: center;
-  height: 35px;
   justify-content: center;
   border-top-left-radius: 1em;
   border-bottom-left-radius: 1em;
   color: #fff;
   z-index: 50000;
+  font: Bold 15px/18px Proxima Nova;
 
   & > * {
     margin: 0 0.25em;
@@ -280,16 +282,17 @@ export default {
 }
 
 .item-title {
-  font: Bold 16px Proxima Nova;
-  color: #707070;
+  font: Bold 18px/22px Proxima Nova;
+  color: #151515;
+  margin: 0;
 }
 
 .item-subtitle {
   width: fit-content;
-  font: Bold 15px/18px Lato;
+  font: Bold 15px/18px Proxima Nova;
   color: #707070;
-  opacity: 0.7;
   text-transform: capitalize;
+  margin: 0;
 }
 
 .panel-item-list {
