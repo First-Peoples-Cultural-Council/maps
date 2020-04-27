@@ -20,7 +20,8 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_("Users must have an email address"))
         if len(password) < 8:
-            raise ValidationError("Passwords must be at least 8 characters long")
+            raise ValidationError(
+                "Passwords must be at least 8 characters long")
         user = self.model(email=self.normalize_email(email))
         user.username = username
         user.set_password(password)
@@ -59,6 +60,7 @@ class User(AbstractUser):
         else:
             return "Someone Anonymous"
 
+
 class Administrator(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     language = models.ForeignKey(
@@ -72,3 +74,13 @@ class Administrator(models.Model):
         return 'User {}: language "{}", community "{}"'.format(
             self.user.username, self.language.name, self.community.name
         )
+
+
+class ArtistProfileClaimRecord(models.Model):
+    artist_profile_email = models.CharField(max_length=255)
+    user_email = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
+    is_claimed = models.BooleanField(default=False)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
