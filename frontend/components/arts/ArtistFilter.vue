@@ -46,7 +46,7 @@ export default {
 .search-input::placeholder {
   color: #707070;
   font-size: 16px;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .search-input.form-control {

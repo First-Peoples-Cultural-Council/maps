@@ -20,13 +20,13 @@ export default {
 
 <style>
 .arts-artist-banner {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 
 .arts-artist-header {
   position: relative;
   border-bottom: 0.8px solid rgb(0, 0, 0, 0.25);
-  margin-bottom: 70px;
+  margin-bottom: 55px;
   display: flex;
   justify-content: center;
 }

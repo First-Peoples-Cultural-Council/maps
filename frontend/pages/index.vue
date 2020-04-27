@@ -1099,15 +1099,15 @@ export default {
 }
 
 .language-family-header {
-  font: Regular 15px/18px;
-  letter-spacing: 0;
-  color: #707070;
+  font: Regular 15px/18px Proxima Nova;
+  letter-spacing: 0px;
+  color: #151515;
   opacity: 0.5;
 }
 .language-family-title {
-  font: Bold 15px/18px;
-  letter-spacing: 0;
-  color: #707070;
+  font: Bold 15px/18px Proxima Nova;
+  letter-spacing: 0px;
+  color: #151515;
   opacity: 0.7;
 }
 
@@ -1161,10 +1161,10 @@ export default {
 
 @media (max-width: 1300px) {
   .arts-container {
-    padding-left: var(--sidebar-width, 750px);
+    padding-left: var(--sidebar-width, 700px);
   }
   .arts-container .sb-new-alt-one {
-    width: 375px;
+    width: 350px;
   }
 }
 
