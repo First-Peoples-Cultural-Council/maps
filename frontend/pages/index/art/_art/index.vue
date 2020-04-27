@@ -339,17 +339,13 @@ export default {
       }
     },
     renderArtistImg(img) {
-<<<<<<< HEAD
       return img || require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
-=======
-      return img || require(`@/assets/images/${this.art.kind}_icon.svg`)
     },
     checkUrlValid(url) {
       const pattern = /^((http|https|ftp):\/\/)/
       const newUrl = url.toLowerCase()
 
       return pattern.test(newUrl) ? url : `http://${newUrl}`
->>>>>>> 74f271ca38e77c10e865cbcdfc97239f37c81daf
     }
   },
   head() {
