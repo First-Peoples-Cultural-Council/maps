@@ -151,6 +151,12 @@ class PlaceNameViewSet(BaseModelViewSet):
     def detail(self, request):
         return super().detail(request)
 
+
+    @method_decorator(never_cache)
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request)
+
+
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):
