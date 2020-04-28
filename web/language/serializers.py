@@ -305,7 +305,9 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
+
+    # Primary Key Related fields -> could be updated by passing a list of ids
+    artists = serializers.PrimaryKeyRelatedField(queryset=PlaceName.objects.filter(kind='artist'), many=True)
     taxonomies = serializers.PrimaryKeyRelatedField(queryset=Taxonomy.objects.all(), many=True)
 
     def to_representation(self, instance):
@@ -321,6 +323,14 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             serializer = TaxonomySerializer(curr_taxonomy)
             taxonomies_representation.append(serializer.data)
         representation['taxonomies'] = taxonomies_representation
+
+        artists_representation = []
+        artists = representation.get('artists')
+        for artist_id in artists:
+            curr_artist = PlaceName.objects.get(pk=artist_id)
+            serializer = RelatedPlaceNameSerializer(curr_artist)
+            artists_representation.append(serializer.data)
+        representation['artists'] = artists_representation
 
         return representation
 
