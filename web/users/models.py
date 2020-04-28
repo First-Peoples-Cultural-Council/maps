@@ -76,8 +76,8 @@ class Administrator(models.Model):
         )
 
 
-class ArtistProfileClaimRecord(models.Model):
-    artist_profile_email = models.CharField(max_length=255)
+class ProfileClaimRecord(models.Model):
+    profile_email = models.CharField(max_length=255)
     user_email = models.CharField(max_length=255)
     key = models.CharField(max_length=255)
     is_claimed = models.BooleanField(default=False)

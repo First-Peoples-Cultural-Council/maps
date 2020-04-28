@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.contrib.auth import login, logout
 
-from .models import User, Administrator, ArtistProfileClaimRecord
+from .models import User, Administrator, ProfileClaimRecord
 from .notifications import _format_fpcc, claim_profile
 from .serializers import UserSerializer
 from .cognito import verify_token
@@ -123,17 +123,17 @@ class ConfirmClaimView(APIView):
     def get(self, request, email, key):
         # If record exists set is_claimed to true and assign user to placename
         try:
-            record = ArtistProfileClaimRecord.objects.get(artist_profile_email=email)
+            record = ProfileClaimRecord.objects.get(profile_email=email)
 
             with transaction.atomic():
                 print(record.is_claimed)
                 if not record.is_claimed:
-                    # Update Artist Profile's owner
+                    # Update Profile's owner
                     user = User.objects.get(email=record.user_email)
 
-                    artist_profile = record.profile
-                    artist_profile.owner = user
-                    artist_profile.save()
+                    profile = record.profile
+                    profile.owner = user
+                    profile.save()
 
 
                     # Update and Save record
@@ -150,7 +150,7 @@ class ConfirmClaimView(APIView):
                         'success': False,
                         'message': 'This profile was already claimed.',
                     })
-        except ArtistProfileClaimRecord.DoesNotExist:
+        except ProfileClaimRecord.DoesNotExist:
             return Response({
                 'success': False,
                 'message': 'This profile claiming link is invalid.'
@@ -162,7 +162,7 @@ class ConfirmClaimView(APIView):
             })
 
 
-class ClaimArtistProfileView(APIView):
+class ClaimProfileView(APIView):
     @method_decorator(login_required)
     def post(self, request):
         data = request.data
