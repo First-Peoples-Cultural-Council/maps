@@ -512,6 +512,14 @@ export default {
       this.loadMoreData()
     }
   },
+  created() {
+    // Redirect to /languages
+    if (this.$route.path === '/') {
+      this.$router.push({
+        path: '/languages'
+      })
+    }
+  },
   methods: {
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)

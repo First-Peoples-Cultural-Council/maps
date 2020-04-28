@@ -167,7 +167,8 @@ import {
   getApiUrl,
   encodeFPCC,
   decodeFPCC,
-  makeMarker
+  makeMarker,
+  getMediaUrl
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -339,7 +340,10 @@ export default {
       }
     },
     renderArtistImg(img) {
-      return img || require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
+      return (
+        getMediaUrl(img) ||
+        require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
+      )
     },
     checkUrlValid(url) {
       const pattern = /^((http|https|ftp):\/\/)/
