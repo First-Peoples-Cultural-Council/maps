@@ -82,5 +82,8 @@ class ArtistProfileClaimRecord(models.Model):
     key = models.CharField(max_length=255)
     is_claimed = models.BooleanField(default=False)
 
+    # Placename we want to claim
+    profile = models.ForeignKey('language.PlaceName', on_delete=models.CASCADE)
+
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
