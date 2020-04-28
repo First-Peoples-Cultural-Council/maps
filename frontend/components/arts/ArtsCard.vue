@@ -49,9 +49,6 @@
               }}</span>
             </div>
           </div>
-          <div class="artist-tags-container">
-            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
-          </div>
         </div>
       </template>
       <template v-slot:footer>
