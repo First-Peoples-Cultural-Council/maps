@@ -16,7 +16,8 @@ from .models import (
     Notification,
     Recording,
     Taxonomy,
-    PlaceNameTaxonomy
+    PlaceNameTaxonomy,
+    RelatedData
 )
 
 
@@ -31,6 +32,15 @@ class CommunityAdmin(admin.ModelAdmin):
 class LNADataAdmin(admin.ModelAdmin):
     list_display = ("fluent_speakers", "name")
 
+
+class RelatedDataAdmin(admin.ModelAdmin):
+    list_display = ("label", "value")
+    search_fields = (
+        "label",
+        "data_type",
+        "value",
+        "placename__kind"
+    )
 
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
@@ -59,3 +69,4 @@ admin.site.register(LNAData, LNADataAdmin)
 admin.site.register(Recording)
 admin.site.register(Taxonomy)
 admin.site.register(PlaceNameTaxonomy)
+admin.site.register(RelatedData, RelatedDataAdmin)
