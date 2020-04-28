@@ -180,7 +180,7 @@ class ClaimArtistProfileView(APIView):
                 claim_profile(user.email, email_data)
                 return Response({
                     'success': True,
-                    'message': 'Claim profile request has been sent to %s' % email_data.value
+                    'message': 'Claim request has been sent to %s' % email_data.value
                 })
             else:
                 return Response({
