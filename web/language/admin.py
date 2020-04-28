@@ -39,6 +39,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
         "label",
         "data_type",
         "value",
+        "placename__name",
         "placename__kind"
     )
 
