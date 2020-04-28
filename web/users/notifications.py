@@ -83,7 +83,7 @@ def send_claim_profile_invites():
     user_emails = ['justin@countable.ca']
 
     artist_emails = RelatedData.objects.exclude(value='').filter(
-        data_type='email', value__in=user_emails)
+        data_type='email', value__in=user_emails, placename__kind='artist')
 
     for email_data in artist_emails:
         # In the case of bulk sending, user_email = artist_profile_email
