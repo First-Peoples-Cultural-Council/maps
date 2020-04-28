@@ -1,7 +1,10 @@
+from django.conf import settings
+from django.db import transaction
 from django.shortcuts import render
-from .models import User, Administrator
+from .models import User, Administrator, ArtistProfileClaimRecord
 
 from rest_framework import viewsets, generics, mixins
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -13,6 +16,7 @@ from django.utils.decorators import method_decorator
 from .cognito import verify_token
 from django.db.models import Q
 from django.contrib.auth import login, logout
+from .notifications import _format_fpcc
 
 
 # To enable only UPDATE and RETRIEVE, we create a custom ViewSet class...
@@ -109,3 +113,50 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
             ]
 
         return Response(users_results)
+
+
+class ClaimArtistProfileView(APIView):
+    @method_decorator(never_cache)
+    def get(self, request, email, key):
+        # If record exists set is_claimed to true and assign user to placename
+        try:
+            record = ArtistProfileClaimRecord.objects.get(artist_profile_email=email)
+
+            with transaction.atomic():
+                print(record.is_claimed)
+                if not record.is_claimed:
+                    # Update Artist Profile's owner
+                    user = User.objects.get(email=record.user_email)
+
+                    artist_profile = record.profile
+                    artist_profile.owner = user
+                    artist_profile.save()
+
+
+                    # Update and Save record
+                    record.is_claimed = True
+                    record.save()
+
+                    return Response({
+                        'success': True,
+                        'message': 'You have successfully claimed your profile!',
+                        'profile': '{}/art/{}'.format(settings.HOST, _format_fpcc(record.profile.name))
+                    })
+                else:
+                    return Response({
+                        'success': False,
+                        'message': 'This profile was already claimed.',
+                    })
+        except ArtistProfileClaimRecord.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'This profile claiming link is invalid.'
+            })
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': str(e)
+            })
+
+    def post(self, request):
+        pass

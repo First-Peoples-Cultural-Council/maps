@@ -49,6 +49,9 @@ def send_claim_profile_invite(user_email, email_data):
         key=key
     )
 
+    print(message)
+
+    # Send out the message
     send_mail(
         subject="FPCC Artist Profile: %s" % email_data.placename.name,
         message=message,
@@ -57,19 +60,19 @@ def send_claim_profile_invite(user_email, email_data):
         html_message=message,
     )
 
-    record = ArtistProfileClaimRecord.objects.get(artist_profile_email=email_data.value,
-                                                  user_email=user_email)
-
-    # Just update key if it already exists
-    if record:
+    # Update key and user email for record if it already exists
+    try:
+        record = ArtistProfileClaimRecord.objects.get(artist_profile_email=email_data.value)
         record.key = key
+        record.user_email = user_email
         record.save()
-    else:
+    except ArtistProfileClaimRecord.DoesNotExist:
         ArtistProfileClaimRecord.objects.create(
             artist_profile_email=email_data.value,
             user_email=user_email,
-            key=key
-        )
+            key=key,
+            profile=email_data.placename
+        )        
 
 
 def send_claim_profile_invites():

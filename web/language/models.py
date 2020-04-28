@@ -281,6 +281,7 @@ class PlaceName(CulturalModel):
         through_fields=('public_art', 'artist'),
         related_name='artists+'
     )
+    owner = models.ForeignKey("users.User", null=True, related_name='user_placenames', on_delete=models.SET_NULL)
 
     # Choices Constants:
     FLAGGED = "FL"
