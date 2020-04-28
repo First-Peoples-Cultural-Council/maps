@@ -91,12 +91,10 @@ def send_claim_profile_invites():
             user_email=email_data.value, email_data=email_data)
 
 
-def claim_profile(user_email, artist_placename):
+def claim_profile(user_email, email_data):
     """
     Claim profile - this allows claiming profile despite the user.email and the artist.email not matching
     """
-    email_data = RelatedData.objects.get(data_type='email', placename=artist_placename)
-
     # Send invite
     send_claim_profile_invite(user_email, email_data)
 
