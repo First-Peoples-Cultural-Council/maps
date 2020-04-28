@@ -113,7 +113,7 @@ export const encodeFPCC = s => {
     .trim()
     .toLowerCase()
     .replace(
-      /\\|\/|>|<|\?|\)|\(|~|!|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|'|"/g,
+      /\\|\/|>|<|\)|\(|~|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|"/g,
       ''
     )
     .replace(/\s+/g, '-')
@@ -137,7 +137,7 @@ export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
   }
-  if (isServer) {
+  if (!isServer) {
     if (media_file.includes('http://nginx')) {
       return media_file.replace('http://nginx', '')
     }

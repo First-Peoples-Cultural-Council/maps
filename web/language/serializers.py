@@ -21,7 +21,8 @@ from .models import (
     Notification,
     CommunityLanguageStats,
     Taxonomy,
-    PlaceNameTaxonomy
+    PlaceNameTaxonomy,
+    RelatedData
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 
@@ -174,7 +175,7 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "image",
+            "image"
         )
 
 
@@ -185,24 +186,14 @@ class PlaceNameCategorySerializer(serializers.ModelSerializer):
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
-    medias = MediaLightSerializer(many=True, read_only=True)
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
     class Meta:
         model = PlaceName
         fields = (
             "id",
             "name",
-            "image",
             "kind",
-            "medias",
-            "category",
             "status",
-            "status_reason",
-            "taxonomies",
-            "artists",
-            "geom"
+            "status_reason"
         )
 
 
@@ -284,6 +275,12 @@ class TaxonomySerializer(serializers.ModelSerializer):
         )
 
 
+class RelatedDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RelatedData
+        fields = '__all__'
+
+
 # DETAIL SERIALIZERS
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = MediaLightSerializer(many=True, read_only=True)
@@ -305,8 +302,73 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-    taxonomies = TaxonomySerializer(many=True)
+    related_data = RelatedDataSerializer(many=True, required=False)
+
+    # Primary Key Related fields -> could be updated by passing a list of ids
+    artists = serializers.PrimaryKeyRelatedField(
+        queryset=PlaceName.objects.filter(kind='artist'), many=True, required=False)
+    taxonomies = serializers.PrimaryKeyRelatedField(
+        queryset=Taxonomy.objects.all(), many=True, required=False)
+
+    def create(self, validated_data):
+        # If related_data is included in the payload, pop it first
+        related_data = validated_data.pop('related_data', [])
+
+        # Save the PlaceName without a related_data
+        placename = PlaceName.objects.create(**validated_data)
+
+        # Save all related data one by one if they were added in the payload
+        if len(related_data) > 0:
+            for data in related_data:
+                RelatedData.objects.create(**data)
+
+        return placename
+
+    def update(self, instance, validated_data):
+        # If the instance already has related_data, we must first delete them
+        if 'related_data' in validated_data:
+            RelatedData.objects.filter(placename__id=instance.id).delete()
+
+        # If related_data is included in the payload, pop it first
+        related_data = validated_data.pop('related_data', [])
+
+        # Update all the other properties in the validated_data
+        placename = super().update(instance, validated_data)
+
+        # Save all related data one by one if they were added in the payload
+        if len(related_data) > 0:
+            for data in related_data:
+                data['placename'] = placename
+                RelatedData.objects.create(**data)
+
+        return placename
+
+    def to_representation(self, instance):
+        # Get original representation
+        representation = super(PlaceNameDetailSerializer,
+                               self).to_representation(instance)
+
+        # Alter representation for taxonomies
+        # From list of ids -> to list of Taxonomy dictionaries
+        taxonomies_representation = []
+        taxonomies = representation.get('taxonomies')
+        for taxonomy_id in taxonomies:
+            curr_taxonomy = Taxonomy.objects.get(pk=taxonomy_id)
+            serializer = TaxonomySerializer(curr_taxonomy)
+            taxonomies_representation.append(serializer.data)
+        representation['taxonomies'] = taxonomies_representation
+
+        # Alter representation for taxonomies
+        # From list of ids -> to list of PlaceName dictionaries
+        artists_representation = []
+        artists = representation.get('artists')
+        for artist_id in artists:
+            curr_artist = PlaceName.objects.get(pk=artist_id)
+            serializer = RelatedPlaceNameSerializer(curr_artist)
+            artists_representation.append(serializer.data)
+        representation['artists'] = artists_representation
+
+        return representation
 
     class Meta:
         model = PlaceName
