@@ -23,12 +23,10 @@
     <template v-slot:body>
       <div class="arts-artist-content">
         <div class="artist-title">
-          <h5 class="font-09 m-05 p-0 color-gray font-weight-bold art-name">
+          <h5 class="item-title">
             {{ name }}
           </h5>
-          <h5
-            class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-          >
+          <h5 class="item-subtitle">
             {{ arttype | art_type }}
           </h5>
         </div>
@@ -161,20 +159,20 @@ export default {
 }
 .fpcc-card-more {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 30%;
   width: 90px;
-  background-color: #b47a2b;
   height: 35px;
+  background-color: #b47a2b;
   border-top-left-radius: 1em;
   border-bottom-left-radius: 1em;
   color: #fff;
   z-index: 50000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 1em;
-  position: absolute;
-  right: 0;
-  top: 30%;
 }
 
 .fpcc-card-more:hover {
@@ -196,7 +194,7 @@ export default {
   position: absolute;
   border-radius: 100%;
   top: 30%;
-  right: 2%;
+  left: 2%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -220,8 +218,10 @@ export default {
 .artist-header {
   object-fit: cover;
   width: 100%;
-  height: 110px;
+  height: 125px;
   background-color: black;
+  border: 0;
+  padding: 0;
 }
 
 .artist-title {
@@ -236,16 +236,17 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   width: inherit;
-  padding: 1em;
+  margin-top: 0.5em;
 }
 
 .artist-tags-container span {
   flex: 0 1 auto;
   background: #707070;
   border-radius: 2rem;
-  color: #fff;
   text-transform: uppercase;
-  padding: 2px 5px;
+  font: Bold 15px/18px Proxima Nova;
+  color: #ffffff;
+  padding: 2px 8px;
   font-weight: 800;
   font-size: 0.6em;
   margin: 0.25em;
@@ -266,6 +267,7 @@ export default {
   object-fit: cover;
   border-radius: 100%;
   border: 5px solid white;
+  background-color: #fff;
   position: absolute;
   top: 40px;
   z-index: 5000;

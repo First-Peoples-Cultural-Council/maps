@@ -119,11 +119,10 @@ export default {
   border: 0px solid #ddd5cc;
   border-radius: 3em;
   cursor: pointer;
-  font-size: 0.75em;
   margin: 0;
   padding: 0.5em 2em;
-  color: white;
-  font-weight: 700;
+  font: Bold 15px/18px Proxima Nova;
+  color: #ffffff;
   text-transform: uppercase;
 }
 

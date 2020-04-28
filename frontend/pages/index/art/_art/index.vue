@@ -87,10 +87,10 @@
               <h5 class="field-title">{{ data.label }}:</h5>
               <a
                 v-if="data.data_type === 'website'"
-                :href="data.value"
+                :href="checkUrlValid(data.value)"
                 target="_blank"
               >
-                {{ data.value }}</a
+                {{ checkUrlValid(data.value) }}</a
               >
               <span v-else class="field-content">{{ data.value }}</span>
             </section>
@@ -131,7 +131,7 @@
         </div>
         <div
           v-else
-          class="p-4 m-0 pb-0 color-gray font-08 field-content"
+          class="p-4 m-0 pb-0 field-content"
           v-html="artDetails.description"
         ></div>
       </div>
@@ -344,6 +344,12 @@ export default {
         getMediaUrl(img) ||
         require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
       )
+    },
+    checkUrlValid(url) {
+      const pattern = /^((http|https|ftp):\/\/)/
+      const newUrl = url.toLowerCase()
+
+      return pattern.test(newUrl) ? url : `http://${newUrl}`
     }
   },
   head() {
@@ -400,7 +406,6 @@ export default {
   color: #707070;
   font-weight: bold;
   font-size: 13px;
-  opacity: 0.6;
   text-transform: capitalize;
 }
 
@@ -408,7 +413,7 @@ export default {
   display: flex;
   font-size: 18px;
   flex-direction: column;
-  color: #707070;
+  color: #151515;
   font-size: 0.9em;
 }
 
@@ -424,11 +429,13 @@ export default {
 .field-content h5 {
   font-size: 1rem;
   font-weight: bold;
+  color: #151515;
 }
 
 .field-content p {
   font: Regular 16px/25px Proxima Nova;
-  color: #707070;
+  color: #151515 !important;
+  background: none !important;
 }
 
 .artist-content-field > .field-content-list {
@@ -477,20 +484,18 @@ export default {
 }
 
 .btn-collapse {
-  display: flex;
-  justify-content: flex-start;
   padding: 1em;
   margin: 1.5em;
   margin-left: 0.8em;
   width: 100px;
-  background-color: #b47a2b;
+  height: 35px;
   display: flex;
   align-items: center;
-  height: 35px;
   justify-content: center;
   border-top-right-radius: 1em;
   border-bottom-right-radius: 1em;
   color: #fff;
+  background-color: #b47a2b;
 }
 
 .btn-collapse img {
@@ -509,11 +514,11 @@ export default {
 
 @media (max-width: 1300px) {
   .arts-container .sidebar-container {
-    width: 375px;
+    width: 350px;
   }
   .arts-container .sidebar-side-panel {
-    width: 375px;
-    left: 375px;
+    width: 350px;
+    left: 350px;
   }
 }
 

@@ -16,18 +16,12 @@
       </template>
       <template v-slot:body>
         <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-bold"
-            >
-              Language
-            </h5>
-            <h5
-              class="font-09 m-0 p-0 color-gray font-weight-bold language-card-title"
-            >
-              {{ name }}
-            </h5>
-          </div>
+          <h5 class="field-kind">
+            Language
+          </h5>
+          <h5 class="field-name">
+            {{ name }}
+          </h5>
         </div>
       </template>
       <template v-slot:footer>

@@ -265,7 +265,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   margin-left: 0.5em;
-  flex: 1;
 }
 
 .artist-img-small {
@@ -347,7 +346,7 @@ export default {
   }
 
   .media-img {
-    width: 90%;
+    width: 96%;
     margin: 0 2em;
   }
 
@@ -369,7 +368,7 @@ export default {
 
   .gallery-img-pagination {
     position: fixed;
-    bottom: 0;
+    bottom: 2%;
     display: flex;
     width: 90%;
     justify-content: center;
