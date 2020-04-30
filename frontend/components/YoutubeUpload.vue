@@ -94,6 +94,7 @@ export default {
       this.title = null
       this.text = null
       this.titlestate = null
+      this.youtubeLink = null
     },
     async handleYoutubeUpload(e) {
       if (!this.title) {
@@ -112,44 +113,51 @@ export default {
         return false
       }
 
-      const formData = getFormData(
-        {
-          name: this.title,
-          description: this.text,
-          file_type: 'youtube',
-          type: this.type,
-          id: this.id,
-          community_only: this.commonly === 'accepted',
-          url: this.youtubeLink
-        },
-        true
-      )
+      const formData = getFormData(this.getMediaData(), true)
 
-      try {
-        const result = await this.uploadNote(formData)
-        if (
-          result.request.status === 201 &&
-          result.request.statusText === 'Created'
-        ) {
-          this.$root.$emit('fileUploaded', result.data)
-        } else {
-          throw result
+      if (this.$route.query.mode === 'placename') {
+        this.$store.commit('file/setMediaFiles', this.getMediaData())
+        console.log(this.$store.state.file.fileList)
+      } else {
+        try {
+          const result = await this.uploadNote(formData)
+          if (
+            result.request.status === 201 &&
+            result.request.statusText === 'Created'
+          ) {
+            this.$root.$emit('fileUploaded', result.data)
+          } else {
+            throw result
+          }
+        } catch (e) {
+          console.error(e)
+          this.$root.$emit('notification', {
+            title: 'Failed',
+            message: 'Note/Text Upload Failed, please try again',
+            time: 1500,
+            variant: 'danger'
+          })
         }
-      } catch (e) {
-        console.error(e)
-        this.$root.$emit('notification', {
-          title: 'Failed',
-          message: 'Note/Text Upload Failed, please try again',
-          time: 1500,
-          variant: 'danger'
-        })
       }
+
       this.resetState()
     },
 
     async uploadNote(formData) {
       const result = await this.$store.dispatch('file/uploadMedia', formData)
       return result
+    },
+
+    getMediaData() {
+      return {
+        name: this.title,
+        description: this.text,
+        file_type: 'youtube',
+        type: this.type,
+        id: this.id,
+        community_only: this.commonly === 'accepted',
+        url: this.youtubeLink
+      }
     }
   }
 }
