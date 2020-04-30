@@ -58,6 +58,11 @@
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
+        <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
+          <Notification type="language" title="Claim Profile"></Notification>
+          <Notification type="language" title="Edit Profile"></Notification>
+        </div>
+
         <!-- Render Arts Detail -->
         <div
           v-if="isArtist"
@@ -172,13 +177,15 @@ import {
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
     Logo,
-    ArtsDrawer
+    ArtsDrawer,
+    Notification
   },
   filters: {
     titleCase(str) {
@@ -193,6 +200,9 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     showGallery() {
       return this.$store.state.sidebar.showGallery
     },
@@ -225,6 +235,7 @@ export default {
         'twitter',
         'linkedin'
       ]
+
       return this.artDetails.related_data.filter(
         filter =>
           filter.data_type === 'website' &&
@@ -370,7 +381,7 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .arts-main-container {
   display: flex;
   justify-content: flex-start;
@@ -549,5 +560,17 @@ export default {
 /* Arts Mobile UI Layout */
 .mobile-content {
   padding: 1em;
+}
+
+.arts-btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.25em;
+
+  & > * {
+    flex: 0 0 48%;
+    margin-right: 0.25em;
+  }
 }
 </style>
