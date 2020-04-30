@@ -63,6 +63,32 @@
           </div>
           <!-- If Placename Contribution -->
           <section v-if="queryMode === 'placename'" class="pr-3 pl-3">
+            <div class="upload-img-container mt-3">
+              <div class="upload-img">
+                <img
+                  v-if="fileImg === null"
+                  class="upload-placeholder"
+                  src="@/assets/images/user_icon.svg"
+                />
+                <img v-else :src="fileSrc" />
+                <b-button
+                  v-if="fileImg !== null"
+                  class="upload-remove"
+                  @click="removeImg()"
+                  >Remove Image</b-button
+                >
+              </div>
+
+              <b-form-file
+                ref="fileUpload"
+                v-model="fileImg"
+                class="file-upload-input mt-2"
+                placeholder="choose a placename image"
+                drop-placeholder="Drop file here..."
+                accept="image/*"
+              ></b-form-file>
+            </div>
+
             <b-row class="field-row mt-3">
               <div>
                 <label for="traditionalName" class="contribute-title-one"
@@ -202,6 +228,7 @@
               v-model="artistSelected"
               placeholder="Search or Select an Artist"
               label="name"
+              track-by="id"
               :options="listOfArtist"
               :multiple="true"
             ></multiselect>
@@ -214,9 +241,27 @@
               v-model="publicArtSelected"
               placeholder="Search or Select a Public Art"
               label="name"
+              track-by="id"
               :options="listOfPublicArt"
               :multiple="true"
             ></multiselect>
+
+            <b-row v-if="kindSelected === 'Artist'" class="field-row mt-3">
+              <div>
+                <label for="traditionalName" class="contribute-title-one"
+                  >Copyright</label
+                >
+                <ToolTip
+                  content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="traditionalName"
+                v-model="tname"
+                type="text"
+              ></b-form-input>
+            </b-row>
 
             <div v-if="kindSelected === 'Event'">
               <b-time locale="en"></b-time>
@@ -237,14 +282,34 @@
               </div>
 
               <div
-                v-for="input in inputArray"
-                :key="input"
+                v-for="(site, index) in websiteList"
+                :key="index"
                 class="site-input-container"
               >
-                <b-form-select :options="socialMedia"></b-form-select>
-                <b-form-input :id="`site-${input}`" type="text"></b-form-input>
-                <span class="site-btn" @click="websiteCount--">-</span>
-                <span class="site-btn" @click="websiteCount++">+</span>
+                <b-form-select
+                  v-model="site.socMedia"
+                  :options="socialMedia"
+                ></b-form-select>
+                <b-form-input
+                  :id="`site-${index}`"
+                  v-model="site.siteValue"
+                  type="text"
+                ></b-form-input>
+                <span
+                  v-if="
+                    (index !== 0 && websiteList.length !== 1) ||
+                      websiteList.length > 1
+                  "
+                  class="site-btn"
+                  @click="removeSite()"
+                  >-</span
+                >
+                <span
+                  v-if="index + 1 === websiteList.length"
+                  class="site-btn"
+                  @click="addSite()"
+                  >+</span
+                >
               </div>
             </div>
 
@@ -257,9 +322,24 @@
             </h5>
             <div id="quill" ref="quill"></div>
 
-            <div class="media-add-btn">
-              <img src="@/assets/images/plus_icon.svg" alt="Zoom In" />
-              Add Media
+            <div class="media-list-container">
+              <MediaPreview
+                v-for="media in getMediaFiles"
+                :key="media.name"
+                :file="media"
+                :all-media="getMediaFiles"
+                class="media-add-btn"
+              />
+
+              <div class="media-add-btn " @click="openModal">
+                <img
+                  class="add-btn"
+                  src="@/assets/images/plus_icon.svg"
+                  alt="Zoom In"
+                />
+                Add Media
+                <UploadModal :id="1" :type="'placename'"></UploadModal>
+              </div>
             </div>
 
             <b-row class="field-row mt-3">
@@ -465,6 +545,8 @@
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import ToolTip from '@/components/Tooltip.vue'
 import Logo from '@/components/Logo.vue'
+import UploadModal from '@/components/UploadModal.vue'
+import MediaPreview from '@/components/MediaPreview.vue'
 import {
   getApiUrl,
   getCookie,
@@ -472,11 +554,21 @@ import {
   getLanguagesFromDraw
 } from '@/plugins/utils.js'
 
+const base64Encode = data =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(data)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
+
 export default {
   components: {
     AudioRecorder,
     ToolTip,
-    Logo
+    Logo,
+    UploadModal,
+    MediaPreview
   },
   middleware: 'authenticated',
   data() {
@@ -489,6 +581,9 @@ export default {
         'Twitter',
         'Others'
       ],
+      fileSrc: null,
+      fileImg: null,
+      websiteList: [],
       websiteCount: 1,
       kinds: ['Artist', 'Event', 'Public Art', 'Organization'],
       kindSelected: 'Artist',
@@ -516,10 +611,15 @@ export default {
   },
 
   computed: {
+    canRemoveInput() {
+      return this.websiteList.length !== 0
+    },
     inputArray() {
       return [...new Array(this.websiteCount)].map((input, index) => {
         return {
-          input: `input-${index}`
+          input: `input-${index}`,
+          socMedia: null,
+          siteValue: null
         }
       })
     },
@@ -551,7 +651,9 @@ export default {
     },
     getTaxonomy() {
       return this.taxonomies.filter(
-        taxonomy => taxonomy.parent === this.getTaxonomyId.id
+        taxonomy =>
+          taxonomy.parent === this.getTaxonomyId.id ||
+          this.taxonomySelected.some(tax => taxonomy.parent === tax.id)
       )
     },
     queryMode() {
@@ -617,6 +719,9 @@ export default {
           id: c.id
         }
       })
+    },
+    getMediaFiles() {
+      return this.$store.state.file.fileList
     }
   },
   watch: {
@@ -653,6 +758,21 @@ export default {
 
       if (langSelected) {
         this.languageSelectedName = langSelected.text
+      }
+    },
+    fileImg(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (newValue) {
+          base64Encode(newValue)
+            .then(value => {
+              this.fileSrc = value
+            })
+            .catch(() => {
+              this.fileSrc = null
+            })
+        } else {
+          this.fileSrc = null
+        }
       }
     }
   },
@@ -709,14 +829,30 @@ export default {
     return data
   },
   mounted() {
-    console.log(this.listOfArtist)
     if (!this.isLoggedIn) {
       window.location =
         'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
     }
     this.initQuill()
+    this.addSite()
   },
   methods: {
+    addSite() {
+      this.websiteList.push({
+        socMedia: null,
+        siteValue: null
+      })
+    },
+
+    removeSite(index) {
+      this.websiteList.splice(index, 1)
+    },
+    removeImg() {
+      this.fileImg = null
+    },
+    openModal(e) {
+      this.$root.$emit('openUploadModal')
+    },
     resetTaxonomy() {
       this.taxonomySelected = []
     },
@@ -949,7 +1085,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .contribute-header {
   background-color: #f4f0eb;
 }
@@ -1021,16 +1157,116 @@ export default {
   padding: 0 1em;
 }
 
+.media-list-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .media-add-btn {
-  width: 100px;
-  height: 100px;
-  background-clip: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.25rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 0 0 auto;
+  width: 125px;
+  height: 125px;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
+  margin: 0.25em;
+
+  &:hover {
+    cursor: pointer;
+    border: 1px solid #f2a798;
+    background-color: #fcedea !important;
+  }
+
+  img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+  }
+
+  .add-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .media-remove-btn {
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiAgIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiICAgd2lkdGg9IjIwIiAgIGhlaWdodD0iMjAiICAgaWQ9InN2ZzU3MzgiICAgdmVyc2lvbj0iMS4xIiAgIGlua3NjYXBlOnZlcnNpb249IjAuOTErZGV2ZWwrb3N4bWVudSByMTI5MTEiICAgc29kaXBvZGk6ZG9jbmFtZT0idHJhc2guc3ZnIiAgIHZpZXdCb3g9IjAgMCAyMCAyMCI+ICA8ZGVmcyAgICAgaWQ9ImRlZnM1NzQwIiAvPiAgPHNvZGlwb2RpOm5hbWVkdmlldyAgICAgaWQ9ImJhc2UiICAgICBwYWdlY29sb3I9IiNmZmZmZmYiICAgICBib3JkZXJjb2xvcj0iIzY2NjY2NiIgICAgIGJvcmRlcm9wYWNpdHk9IjEuMCIgICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIiAgICAgaW5rc2NhcGU6em9vbT0iMjIuNjI3NDE3IiAgICAgaW5rc2NhcGU6Y3g9IjEyLjEyODE4NCIgICAgIGlua3NjYXBlOmN5PSI4Ljg0NjEzMDciICAgICBpbmtzY2FwZTpkb2N1bWVudC11bml0cz0icHgiICAgICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJsYXllcjEiICAgICBzaG93Z3JpZD0idHJ1ZSIgICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTAzMyIgICAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9Ijc1MSIgICAgIGlua3NjYXBlOndpbmRvdy14PSIyMCIgICAgIGlua3NjYXBlOndpbmRvdy15PSIyMyIgICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjAiICAgICBpbmtzY2FwZTpzbmFwLXNtb290aC1ub2Rlcz0idHJ1ZSIgICAgIGlua3NjYXBlOm9iamVjdC1ub2Rlcz0idHJ1ZSI+ICAgIDxpbmtzY2FwZTpncmlkICAgICAgIHR5cGU9Inh5Z3JpZCIgICAgICAgaWQ9ImdyaWQ1NzQ2IiAgICAgICBlbXBzcGFjaW5nPSI1IiAgICAgICB2aXNpYmxlPSJ0cnVlIiAgICAgICBlbmFibGVkPSJ0cnVlIiAgICAgICBzbmFwdmlzaWJsZWdyaWRsaW5lc29ubHk9InRydWUiIC8+ICA8L3NvZGlwb2RpOm5hbWVkdmlldz4gIDxtZXRhZGF0YSAgICAgaWQ9Im1ldGFkYXRhNTc0MyI+ICAgIDxyZGY6UkRGPiAgICAgIDxjYzpXb3JrICAgICAgICAgcmRmOmFib3V0PSIiPiAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+ICAgICAgICA8ZGM6dHlwZSAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4gICAgICAgIDxkYzp0aXRsZSAvPiAgICAgIDwvY2M6V29yaz4gICAgPC9yZGY6UkRGPiAgPC9tZXRhZGF0YT4gIDxnICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIgICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiICAgICBpZD0ibGF5ZXIxIiAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwtMTAzMi4zNjIyKSI+ICAgIDxwYXRoICAgICAgIHN0eWxlPSJjb2xvcjojMDAwMDAwO2Rpc3BsYXk6aW5saW5lO292ZXJmbG93OnZpc2libGU7dmlzaWJpbGl0eTp2aXNpYmxlO2ZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6MC45OTk5OTk4MjttYXJrZXI6bm9uZTtlbmFibGUtYmFja2dyb3VuZDphY2N1bXVsYXRlIiAgICAgICBkPSJtIDEwLDEwMzUuNzc0MyBjIC0wLjc4NDkyNTMsOGUtNCAtMS40OTY4Mzc2LDAuNDYwNiAtMS44MjAzMTI1LDEuMTc1OCBsIC0zLjE3OTY4NzUsMCAtMSwxIDAsMSAxMiwwIDAsLTEgLTEsLTEgLTMuMTc5Njg4LDAgYyAtMC4zMjM0NzUsLTAuNzE1MiAtMS4wMzUzODcsLTEuMTc1IC0xLjgyMDMxMiwtMS4xNzU4IHogbSAtNSw0LjU4NzkgMCw3IGMgMCwxIDEsMiAyLDIgbCA2LDAgYyAxLDAgMiwtMSAyLC0yIGwgMCwtNyAtMiwwIDAsNS41IC0xLjUsMCAwLC01LjUgLTMsMCAwLDUuNSAtMS41LDAgMCwtNS41IHoiICAgICAgIGlkPSJyZWN0MjQzOS03IiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIiAgICAgICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2MiIC8+ICA8L2c+PC9zdmc+);
+    background-color: #fff;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    bottom: 7.5px;
+    right: 7.5px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+    padding: 0.25em;
+
+    &:hover {
+      border: 1px solid #f2a798;
+      background-color: #fcedea !important;
+    }
+  }
+
+  .media-other {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+  }
+}
+
+.upload-img-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  margin: 0 auto;
+
+  .upload-img {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.125);
+
+    &:hover {
+      img {
+        opacity: 0.5;
+      }
+      .upload-remove {
+        display: block;
+        opacity: 1;
+      }
+    }
+  }
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    object-fit: cover;
+  }
+
+  .upload-placeholder {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    border-radius: 0;
+  }
+
+  .upload-remove {
+    display: none;
+    position: absolute;
+    margin: auto auto;
+    font-size: 0.75em;
+    display: none;
+  }
 }
 
 .website-container {
@@ -1041,10 +1277,11 @@ export default {
 .site-input-container {
   display: flex;
   align-items: center;
-}
+  margin-bottom: 0.5em;
 
-.site-input-container > * {
-  margin-right: 0.5em;
+  & > * {
+    margin-right: 0.5em;
+  }
 }
 
 .site-btn {
