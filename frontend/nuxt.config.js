@@ -9,6 +9,11 @@ module.exports = {
     host: '0.0.0.0' // default: localhost
   },
 
+  env: {
+    COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
+    COGNITO_URL: process.env.COGNITO_URL
+  },
+
   /*
    ** Headers of the page
    */
