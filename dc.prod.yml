@@ -26,6 +26,7 @@ services:
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
+      - HOST=https://maps-dev.fpcc.ca
       - NODE_ENV=production
       - COGNITO_HOST=https://fplm.countable.ca
       - COGNITO_URL=https://login.firstvoices.io
