@@ -17,7 +17,8 @@ services:
     environment:
       - NODE_ENV=development
       - HOST=http://localhost
-      - COGNITO_URL=https://fplm.auth.ca-central-1.amazoncognito.com
+      - COGNITO_HOST=https://fplm.countable.ca
+      - COGNITO_URL=https://fplm-dev.auth.ca-central-1.amazoncognito.com
       - COGNITO_APP_CLIENT_ID=7rj6th7pknck3tih16ihekk1ik
 
   test:
