@@ -395,7 +395,7 @@ export default {
   },
   mounted() {
     if (!this.isLoggedIn) {
-      window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
   },
@@ -564,7 +564,7 @@ export default {
       })
     },
     getLoginUrl() {
-      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
   },
   beforeRouteEnter(to, from, next) {

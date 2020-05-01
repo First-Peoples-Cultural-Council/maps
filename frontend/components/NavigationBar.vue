@@ -234,7 +234,7 @@ export default {
       )
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     handleLogoClick() {
       this.$router.push({
@@ -263,13 +263,13 @@ export default {
       this.closeNav()
     },
     redirectLogin() {
-      window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     redirectLogout() {
-      window.location.href = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      window.location.href = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     getLoginUrl() {
-      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
   }
 }

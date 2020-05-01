@@ -203,7 +203,7 @@ export default {
 
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
-      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://maps-dev.fpcc.ca`
+      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
   },
