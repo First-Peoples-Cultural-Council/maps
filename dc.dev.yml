@@ -17,6 +17,7 @@ services:
     environment:
       - NODE_ENV=development
       - HOST=http://localhost
+      - COGNITO_URL=https://fplm.auth.ca-central-1.amazoncognito.com
 
   test:
       command: sleep 1000000
