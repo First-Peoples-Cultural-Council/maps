@@ -101,7 +101,7 @@
 
               <b-form-input
                 id="traditionalName"
-                v-model="tname"
+                v-model="traditionalName"
                 type="text"
               ></b-form-input>
             </b-row>
@@ -118,8 +118,8 @@
                 </div>
 
                 <b-form-input
-                  id="traditionalName"
-                  v-model="tname"
+                  id="otherName"
+                  v-model="otherName"
                   type="text"
                 ></b-form-input>
               </b-col>
@@ -145,8 +145,8 @@
                   >Email</label
                 >
                 <b-form-input
-                  id="traditionalName"
-                  v-model="tname"
+                  id="email"
+                  v-model="email"
                   type="text"
                 ></b-form-input>
               </b-col>
@@ -159,8 +159,8 @@
                   content="What would this location be classified as? This will help users find it."
                 ></ToolTip>
                 <b-form-input
-                  id="traditionalName"
-                  v-model="tname"
+                  id="phone"
+                  v-model="phone"
                   type="text"
                 ></b-form-input>
               </b-col>
@@ -177,8 +177,8 @@
               </div>
 
               <b-form-input
-                id="traditionalName"
-                v-model="tname"
+                id="location"
+                v-model="location"
                 type="text"
               ></b-form-input>
             </b-row>
@@ -216,6 +216,7 @@
               v-model="taxonomySelected"
               placeholder="Search or Select a Taxonomy"
               label="name"
+              track-by="id"
               :options="getTaxonomy"
               :multiple="true"
             ></multiselect>
@@ -257,8 +258,8 @@
               </div>
 
               <b-form-input
-                id="traditionalName"
-                v-model="tname"
+                id="copyright"
+                v-model="copyright"
                 type="text"
               ></b-form-input>
             </b-row>
@@ -590,6 +591,15 @@ export default {
       taxonomySelected: [],
       artistSelected: [],
       publicArtSelected: [],
+
+      // Placename fields
+      traditionalName: '',
+      otherName: '',
+      email: '',
+      phone: '',
+      location: '',
+      copyright: '',
+
       quillEditor: null,
       place: null,
       showDismissibleAlert: true,
@@ -628,6 +638,7 @@ export default {
         .filter(arts => arts.properties.kind === 'artist')
         .map(art => {
           return {
+            id: art.id,
             name: art.properties.name
           }
         })
@@ -637,6 +648,7 @@ export default {
         .filter(arts => arts.properties.kind === 'public_art')
         .map(art => {
           return {
+            id: art.id,
             name: art.properties.name
           }
         })
