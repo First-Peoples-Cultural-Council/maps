@@ -30,40 +30,47 @@
           </div>
           <!-- <img class="art-type" src="@/assets/images/arts/audio.png" /> -->
         </div>
-        <!-- Render Media here depending on type -->
-        <img
-          v-if="mediaData.file_type === 'image'"
-          class="media-img"
-          :src="mediaData.media_file || mediaData.image"
-        />
-        <!-- Render Youtube Video Here -->
-        <iframe
-          v-else-if="
-            mediaData.file_type === 'video' && getYoutubeEmbed(mediaData.url)
-          "
-          class="media-img"
-          :src="
-            `https://www.youtube.com/embed/${getYoutubeEmbed(
-              mediaData.url
-            )}/?rel=0`
-          "
-          frameborder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
-        <!-- Render if audio file  -->
-        <audio
-          v-else-if="mediaData.file_type === 'audio'"
-          class="media-img audio"
-          controls
-        >
-          <source :src="mediaData.media_file" type="audio/ogg" />
-          <source :src="mediaData.media_file" type="audio/mpeg" />
-          <source :src="mediaData.media_file" type="audio/wav" />
-          Your browser does not support the audio element.
-        </audio>
-        <!-- Render Public Art Image here -->
-        <img v-else v-lazy="mediaData.image" class="media-img" />
+        <div class="media-img-container">
+          <!-- <button class="expand-btn">
+            <img src="@/assets/images/expand_icon.svg" />
+          </button> -->
+          <!-- Render Media here depending on type -->
+          <img
+            v-if="mediaData.file_type === 'image'"
+            class="media-img"
+            :src="
+              getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
+            "
+          />
+          <!-- Render Youtube Video Here -->
+          <iframe
+            v-else-if="
+              mediaData.file_type === 'video' && getYoutubeEmbed(mediaData.url)
+            "
+            class="media-img"
+            :src="
+              `https://www.youtube.com/emedia-imgmbed/${getYoutubeEmbed(
+                mediaData.url
+              )}/?rel=0`
+            "
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <!-- Render if audio file  -->
+          <audio
+            v-else-if="mediaData.file_type === 'audio'"
+            class="media-img audio"
+            controls
+          >
+            <source :src="mediaData.media_file" type="audio/ogg" />
+            <source :src="mediaData.media_file" type="audio/mpeg" />
+            <source :src="mediaData.media_file" type="audio/wav" />
+            Your browser does not support the audio element.
+          </audio>
+          <!-- Render Public Art Image here -->
+          <img v-else v-lazy="getMediaUrl(mediaData.image)" class="media-img" />
+        </div>
       </div>
       <button
         v-if="isRelatedMedia"
@@ -81,7 +88,7 @@
         :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
         @click="selectCurrentIndex(item)"
       >
-        <img v-if="item.media_file" v-lazy="item.media_file" />
+        <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
         <img v-else v-lazy="item.image" />
       </div>
     </div>
@@ -89,6 +96,7 @@
 </template>
 
 <script>
+import { getMediaUrl } from '@/plugins/utils.js'
 export default {
   props: {
     toggleGallery: {
@@ -163,6 +171,7 @@ export default {
     }
   },
   methods: {
+    getMediaUrl,
     returnArtists() {
       const listOfArtist =
         this.artistCount !== 0
@@ -279,6 +288,21 @@ export default {
   height: 60vh;
   object-fit: contain;
   background: black;
+}
+
+.media-img-container {
+  position: relative;
+
+  .expand-btn {
+    position: absolute;
+    top: -20px;
+    right: 15px;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
 }
 
 .audio {
