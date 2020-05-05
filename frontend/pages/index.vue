@@ -268,7 +268,8 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style: 'mapbox://styles/countable-web/ck9osxbys0rr71io228y2zonf/draft?optimize=true',
+        style:
+          'mapbox://styles/countable-web/ck9osxbys0rr71io228y2zonf/draft?optimize=true',
         maxZoom: 19,
         minZoom: 3,
         bounds
