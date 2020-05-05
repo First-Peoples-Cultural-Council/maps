@@ -18,21 +18,6 @@
       <template v-slot:badges>
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
-          <!-- Art Work Badge Filter  -->
-          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
-            <template v-slot:badge>
-              <Badge
-                content="Recent Posts"
-                :number="artworksCount"
-                class="cursor-pointer"
-                bgcolor="#5A8467"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'artwork')"
-                @click.native.prevent="badgeClick($event, 'artwork')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
           <!-- Artist Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'artist'"
@@ -48,6 +33,39 @@
                 type="artist"
                 :mode="getBadgeStatus(filterMode, 'artist')"
                 @click.native.prevent="badgeClick($event, 'artist')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+          <!-- Event Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'event'"
+            :filter="getTaxonomyID('Event')"
+            :color="'#DA531E'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Events"
+                :number="eventsCount"
+                class="cursor-pointer"
+                bgcolor="#DA531E"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'event')"
+                @click.native.prevent="badgeClick($event, 'event')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Art Work Badge Filter  -->
+          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
+            <template v-slot:badge>
+              <Badge
+                content="Recent Posts"
+                :number="artworksCount"
+                class="cursor-pointer"
+                bgcolor="#5A8467"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'artwork')"
+                @click.native.prevent="badgeClick($event, 'artwork')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -86,25 +104,6 @@
                 type="part"
                 :mode="getBadgeStatus(filterMode, 'public_art')"
                 @click.native.prevent="badgeClick($event, 'public_art')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
-          <!-- Event Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'event'"
-            :filter="getTaxonomyID('Event')"
-            :color="'#DA531E'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Events"
-                :number="eventsCount"
-                class="cursor-pointer"
-                bgcolor="#DA531E"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'event')"
-                @click.native.prevent="badgeClick($event, 'event')"
               ></Badge>
             </template>
           </BadgeFilter>

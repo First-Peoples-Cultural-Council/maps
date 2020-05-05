@@ -56,7 +56,7 @@
                   @click="optionSelected([taxonomy.name, taxChild.name])"
                   >{{ taxChild.name }}
                   <!-- Child Child Popover -->
-                  <b-popover
+                  <!-- <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
                     :target="`badge-child-option-${taxChild.id}`"
                     placement="right"
@@ -77,7 +77,7 @@
                         >{{ taxChild1.name }}</span
                       >
                     </div>
-                  </b-popover>
+                  </b-popover> -->
                 </span>
               </div>
             </b-popover>

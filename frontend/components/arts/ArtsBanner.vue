@@ -123,6 +123,7 @@ export default {
     }
   },
   methods: {
+    getMediaUrl,
     redirectToHome(name) {
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
