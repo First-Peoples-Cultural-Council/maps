@@ -654,8 +654,8 @@ export default {
   border-left: 0;
 }
 .popover {
-  width: var(--searchbar-width, 500px);
-  max-width: var(--searchbar-width, 500px);
+  width: var(--searchbar-width, 600px);
+  max-width: var(--searchbar-width, 600px);
   max-height: 500px;
   overflow-y: auto;
   z-index: 9999999;
@@ -691,7 +691,8 @@ export default {
 }
 
 @media (min-width: 993px) and (max-width: 1350px) {
-  .searchbar-container {
+  .searchbar-container,
+  .popover {
     width: 400px;
   }
 

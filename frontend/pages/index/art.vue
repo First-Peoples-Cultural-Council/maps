@@ -22,7 +22,7 @@
           <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
             <template v-slot:badge>
               <Badge
-                content="Artwork"
+                content="Recent Posts"
                 :number="artworksCount"
                 class="cursor-pointer"
                 bgcolor="#5A8467"
@@ -48,25 +48,6 @@
                 type="artist"
                 :mode="getBadgeStatus(filterMode, 'artist')"
                 @click.native.prevent="badgeClick($event, 'artist')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
-          <!-- Event Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'event'"
-            :filter="getTaxonomyID('Event')"
-            :color="'#DA531E'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Events"
-                :number="eventsCount"
-                class="cursor-pointer"
-                bgcolor="#DA531E"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'event')"
-                @click.native.prevent="badgeClick($event, 'event')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -98,13 +79,32 @@
           >
             <template v-slot:badge>
               <Badge
-                content="Public Arts"
+                content="Public Art"
                 :number="publicArtsCount"
                 class="cursor-pointer"
                 bgcolor="#848159"
                 type="part"
                 :mode="getBadgeStatus(filterMode, 'public_art')"
                 @click.native.prevent="badgeClick($event, 'public_art')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Event Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'event'"
+            :filter="getTaxonomyID('Event')"
+            :color="'#DA531E'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Events"
+                :number="eventsCount"
+                class="cursor-pointer"
+                bgcolor="#DA531E"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'event')"
+                @click.native.prevent="badgeClick($event, 'event')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -350,9 +350,6 @@ export default {
       this.loadMoreData()
     }
   },
-  destroyed() {
-    this.resetFilter()
-  },
   methods: {
     badgeClick($event, name) {
       if (this.showDrawer) {
@@ -376,6 +373,7 @@ export default {
       }, 250)
     },
     async loadKindData(kind) {
+      this.$store.commit('sidebar/toggleLoading', true)
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
@@ -392,6 +390,7 @@ export default {
         // Set language stores
         this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
         this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
+        this.$store.commit('sidebar/toggleLoading', false)
       }
     },
     handleCardClick($event, name, type) {
@@ -422,6 +421,13 @@ export default {
         this.artDetails = currentArt
         this.openDrawer()
       }
+
+      // Update URL
+      // history.pushState(
+      //   {},
+      //   null,
+      //   this.$route.path + '/' + this.artDetails.placename.name
+      // )
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
@@ -433,8 +439,8 @@ export default {
       this.$store.commit('sidebar/setDrawerContent', false)
     },
     getCountValues(type) {
-      return this.isSearchMode ||
-        (this.isTaxonomyFilterMode && this.filterMode === type)
+      return (this.isSearchMode || this.isTaxonomyFilterMode) &&
+        this.filterMode === type
         ? this.filterArray(this.selectedArt, type)
         : this.filterArray(this.artsGeo, type)
     },

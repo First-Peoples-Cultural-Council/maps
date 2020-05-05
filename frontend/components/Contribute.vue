@@ -73,6 +73,24 @@
             </div>
           </div></b-list-group-item
         >
+        <b-list-group-item button @click="handleClick($event, 'placename')">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                src="@/assets/images/add_area_icon_big.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add a Placename
+              </div>
+              This option triggers drawing mode, where you can draw a line and
+              create a Placename
+            </div>
+          </div></b-list-group-item
+        >
       </b-list-group>
     </b-modal>
   </div>

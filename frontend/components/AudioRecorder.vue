@@ -225,16 +225,44 @@ export default {
         ? this.file.type
         : this.mediaRecorder.mimeType.split(';')[0]
 
-      // console.log(
-      //   'External Audio Test',
-      //   this.title,
-      //   file_type,
-      //   this.description,
-      //   file,
-      //   this.type,
-      //   this.id
-      // )
-      const formData = getFormData({
+      const formData = getFormData(this.getMediaData(file, file_type))
+
+      if (this.$route.query.mode === 'placename') {
+        this.$store.commit(
+          'file/setMediaFiles',
+          this.getMediaData(file, file_type)
+        )
+        console.log(this.$store.state.file.fileList)
+      } else {
+        try {
+          const result = await this.$store.dispatch(
+            'file/uploadMedia',
+            formData
+          )
+          if (
+            result.request.status === 201 &&
+            result.request.statusText === 'Created'
+          ) {
+            this.$root.$emit('fileUploaded', result.data)
+          } else {
+            throw result
+          }
+        } catch (e) {
+          console.error(e)
+          this.$root.$emit('notification', {
+            title: 'Failed',
+            message: 'Audio Upload Failed, please try again',
+            time: 2000,
+            variant: 'danger'
+          })
+        }
+      }
+
+      this.clearFiles()
+      this.resetFile()
+    },
+    getMediaData(file, file_type) {
+      return {
         name: this.title,
         file_type,
         description: this.description,
@@ -242,30 +270,7 @@ export default {
         type: this.type,
         id: this.id,
         community_only: this.commonly === 'accepted'
-      })
-
-      try {
-        const result = await this.$store.dispatch('file/uploadMedia', formData)
-        if (
-          result.request.status === 201 &&
-          result.request.statusText === 'Created'
-        ) {
-          this.$root.$emit('fileUploaded', result.data)
-        } else {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        this.$root.$emit('notification', {
-          title: 'Failed',
-          message: 'Audio Upload Failed, please try again',
-          time: 2000,
-          variant: 'danger'
-        })
       }
-
-      this.clearFiles()
-      this.resetFile()
     },
     blobToFile(blob) {
       blob.lastModifiedDate = new Date()
