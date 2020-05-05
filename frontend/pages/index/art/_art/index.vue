@@ -89,7 +89,7 @@
               :key="data.id"
               class="artist-content-field"
             >
-              <h5 class="field-title">{{ data.label }}:</h5>
+              <h5 class="field-title">{{ data.data_type }}:</h5>
               <a
                 v-if="data.data_type === 'website'"
                 :href="checkUrlValid(data.value)"
@@ -103,7 +103,7 @@
 
           <!-- Render LIst of Social Media -->
           <section v-if="socialMedia.length !== 0" class="artist-content-field">
-            <span class="field-title">Social Media</span>
+            <span class="field-title">Social Media:</span>
             <span class="field-content">
               <ul class="artist-social-icons">
                 <li v-for="soc in socialMedia" :key="soc.id">
@@ -245,9 +245,10 @@ export default {
     relatedData() {
       return this.artDetails.related_data.filter(
         element =>
-          !this.socialMedia.includes(element) &&
-          element.data_type !== 'email' &&
-          !element.value.startsWith(',')
+          (!this.socialMedia.includes(element) &&
+            element.data_type !== 'email' &&
+            !element.value.startsWith(',')) ||
+          (!element.is_private && (element.value && element.value.length !== 0))
       )
     },
     taxonomies() {
@@ -272,6 +273,8 @@ export default {
       }
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+
+    console.log(artDetails)
 
     const isServer = !!process.server
     return {
@@ -411,6 +414,7 @@ export default {
   width: 100%;
   flex-direction: column;
   margin: 0.3em 0 1em 0;
+  overflow: hidden;
 }
 
 .field-title {
@@ -441,8 +445,9 @@ export default {
   color: #151515;
 }
 
-.field-content p {
-  font: normal 16px/25px Proxima Nova;
+.field-content p,
+.field-content span {
+  font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
 }
