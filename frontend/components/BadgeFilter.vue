@@ -1,13 +1,18 @@
 <template>
   <div
     id="badge-filter-container"
-    class="badge-filter-container"
+    :class="`badge-filter-container ${isSelected ? 'badge-selected' : ''}`"
+    :style="`${isSelected ? `border: 2px solid ${color}` : ''}`"
     @mouseover.prevent="isHover = true"
     @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
     <div
-      v-if="(isSelected && isHover) || showOption"
+      v-if="
+        (isSelected && isHover) ||
+          showOption ||
+          (isSelected && getTaxonomies.length !== 0)
+      "
       class="badge-filters hide-mobile"
     >
       <p id="badge-choose">
@@ -158,8 +163,16 @@ export default {
   width: fit-content;
   border-radius: 1em;
   background-color: #ededed;
-  margin: 0.25em 0;
+  margin: 0.25em 0.125em;
   height: fit-content;
+
+  .badge {
+    margin: 0;
+  }
+}
+
+.badge-selected {
+  width: fit-content;
 }
 
 .badge-filters {
