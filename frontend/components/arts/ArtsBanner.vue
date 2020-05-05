@@ -1,7 +1,7 @@
 <template>
   <ArtistBanner>
     <template v-slot:header>
-      <img class="artist-header" :src="artistBanner" />
+      <img class="artist-header" :src="getMediaUrl(artistBanner)" />
       <div class="fpcc-card-more" @click.prevent="handleReturn">
         <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
         <span class="ml-1 font-weight-bold">Return</span>
@@ -31,7 +31,12 @@
           </h5>
         </div>
         <div class="artist-tags-container">
-          <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
+          <span
+            v-for="tag in tags"
+            :key="tag.name"
+            @click="redirectToHome(tag.name)"
+            >{{ tag.name }}</span
+          >
         </div>
 
         <span
@@ -118,12 +123,16 @@ export default {
     }
   },
   methods: {
+    redirectToHome(name) {
+      this.$store.commit('arts/setFilter', this.arttype)
+      this.$store.commit('arts/setTaxonomyTag', [name])
+      this.resetState()
+      this.$router.push({
+        path: '/art'
+      })
+    },
     handleReturn() {
-      if (this.showDrawer) {
-        this.$store.commit('sidebar/setDrawerContent', false)
-      }
-
-      this.$store.commit('sidebar/setMobileContent', false)
+      this.resetState()
 
       if (this.server) {
         this.$router.push({
@@ -132,6 +141,10 @@ export default {
       } else {
         this.$router.go(-1)
       }
+    },
+    resetState() {
+      this.$store.commit('sidebar/setDrawerContent', false)
+      this.$store.commit('sidebar/setMobileContent', false)
     },
     artistImg() {
       return (
@@ -219,8 +232,9 @@ export default {
   object-fit: cover;
   width: 100%;
   height: 125px;
-  background-color: black;
-  border: 0;
+  background-color: #03333a;
+  border: none;
+  outline: none;
   padding: 0;
 }
 
@@ -240,6 +254,7 @@ export default {
 }
 
 .artist-tags-container span {
+  cursor: pointer;
   flex: 0 1 auto;
   background: #707070;
   border-radius: 2rem;
@@ -249,6 +264,11 @@ export default {
   padding: 2px 8px;
   margin: 0.25em;
   text-align: center;
+}
+
+.artist-tags-container span:hover {
+  color: #fff;
+  background-color: #545b62;
 }
 
 .arts-artist-content {
