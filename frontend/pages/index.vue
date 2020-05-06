@@ -690,7 +690,7 @@ export default {
       map.addControl(draw, 'bottom-left')
 
       // Functions triggered after getCurrentPosition
-      const addCurrentPosition = position => {
+      const onGetLocationSuccess = position => {
         // We want to define our own FeatureCollection with only one point -- the current location
         const geojson = {
           name: 'CurrentLocationFeature',
@@ -733,7 +733,7 @@ export default {
           featureIds: ['current-location-id']
         })
       }
-      function raiseFetchLocationError(error) {
+      function onGetLocationError(error) {
         if (error.code === 1) {
           alert('Error: Location access denied!')
         } else if (error.code === 2) {
@@ -782,11 +782,15 @@ export default {
                 maximumAge: 0
               }
 
-              navigator.geolocation.getCurrentPosition(
-                addCurrentPosition,
-                raiseFetchLocationError,
-                options
-              )
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  onGetLocationSuccess,
+                  onGetLocationError,
+                  options
+                )
+              } else {
+                alert('Sorry, your browser does not support geolocation!')
+              }
             }
           })
         }
