@@ -689,6 +689,58 @@ export default {
       })
       map.addControl(draw, 'bottom-left')
 
+      // Functions triggered after getCurrentPosition
+      const addCurrentPosition = position => {
+        // We want to define our own FeatureCollection with only one point -- the current location
+        const geojson = {
+          name: 'CurrentLocationFeature',
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              id: 'current-location-id',
+              geometry: {
+                type: 'Point',
+                // coordinates: [-143.798273768994, 58.829496604496455]
+                coordinates: [
+                  position.coords.longitude,
+                  position.coords.latitude
+                ]
+              },
+              properties: {}
+            }
+          ]
+        }
+        draw.set(geojson)
+
+        // Redirect to current location in map
+        map.flyTo({ center: geojson.features[0].geometry.coordinates })
+
+        // We update state data for storage later on and for detecting which
+        // languages the user can select when updating the point's info
+        const featureCollection = draw.getAll()
+        const features = featureCollection.features
+
+        this.$store.commit('contribute/setDrawnFeatures', features)
+        this.$store.commit(
+          'contribute/setLanguagesInFeature',
+          getLanguagesFromDraw(features, this.languageSet)
+        )
+
+        // We trigger this function in order to select the newly created
+        // point by default - this would make it easier to delete the point
+        draw.changeMode('simple_select', {
+          featureIds: ['current-location-id']
+        })
+      }
+      function raiseFetchLocationError(error) {
+        if (error.code === 1) {
+          alert('Error: Location access denied!')
+        } else if (error.code === 2) {
+          alert('Error: Cannot get current location.')
+        }
+      }
+
       let drawInit = false
       const self = this
       map.on('draw.render', e => {
@@ -708,7 +760,6 @@ export default {
           }
 
           self.$root.$on('mode_change_draw', data => {
-            console.log('This got called')
             if (data === 'point') {
               draw.changeMode('draw_point')
             }
@@ -722,6 +773,20 @@ export default {
 
             if (data === 'line_string') {
               draw.changeMode('draw_line_string')
+            }
+
+            if (data === 'location') {
+              const options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+              }
+
+              navigator.geolocation.getCurrentPosition(
+                addCurrentPosition,
+                raiseFetchLocationError,
+                options
+              )
             }
           })
         }
