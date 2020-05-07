@@ -33,6 +33,9 @@
     <div class="map-controls-overlay">
       <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
       <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+      <CurrentLocation
+        class="current-location-control hide-mobile mr-2"
+      ></CurrentLocation>
       <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
       <Contribute class="hide-mobile contribute-control"></Contribute>
     </div>
@@ -170,6 +173,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import CurrentLocation from '@/components/CurrentLocation.vue'
 import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -215,6 +219,7 @@ export default {
     CommunityCard,
     ShareEmbed,
     ResetMap,
+    CurrentLocation,
     Zoom,
     Filters,
     Contribute,
@@ -656,6 +661,18 @@ export default {
         zoomToIdealBox({ map })
       })
 
+      this.$root.$on('getLocation', () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            onZoomLocationSuccess,
+            onGetLocationError,
+            locationFetchOptions
+          )
+        } else {
+          alert('Sorry, your browser does not support geolocation!')
+        }
+      })
+
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
@@ -695,6 +712,12 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
+
+      const locationFetchOptions = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
 
       // Functions triggered after getCurrentPosition
       const onGetLocationSuccess = position => {
@@ -748,6 +771,16 @@ export default {
         }
       }
 
+      // Zoom to my location
+      const onZoomLocationSuccess = position => {
+        map.flyTo({
+          center: [position.coords.longitude, position.coords.latitude],
+          zoom: 10,
+          speed: 3,
+          curve: 1
+        })
+      }
+
       let drawInit = false
       const self = this
       map.on('draw.render', e => {
@@ -783,17 +816,11 @@ export default {
             }
 
             if (data === 'location') {
-              const options = {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-              }
-
               if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                   onGetLocationSuccess,
                   onGetLocationError,
-                  options
+                  locationFetchOptions
                 )
               } else {
                 alert('Sorry, your browser does not support geolocation!')
