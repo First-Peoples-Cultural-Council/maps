@@ -234,12 +234,9 @@ export default {
       MAPBOX_ACCESS_TOKEN:
         'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
       MAP_OPTIONS: {
-        style:
-          'mapbox://styles/countable-web/cjyhw87ck01w01cp4u35a73lx?optimize=true', // hero
-        // center: [-125, 55],
+        style: 'mapbox://styles/countable-web/ck9osxbys0rr71io228y2zonf/draft',
         maxZoom: 19,
         minZoom: 3,
-        // zoom: 4
         bounds
       },
       mode: 'All',
@@ -374,6 +371,16 @@ export default {
       })
     }
     next()
+  },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
   },
   async mounted() {
     this.$root.$on('updateData', () => {

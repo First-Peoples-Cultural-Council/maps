@@ -123,7 +123,7 @@ const addNationsLayers = map => {
       'text-optional': true,
       'text-size': 13,
       'icon-image': 'community',
-      'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+      'text-font': ['BC Sans Regular'],
       'text-padding': 0,
       'text-offset': [0, 1.4],
       'icon-optional': true,
@@ -167,7 +167,7 @@ export default {
       filter: ['has', 'point_count'],
       layout: {
         'text-field': '{point_count_abbreviated}',
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-font': ['BC Sans Regular'],
         'text-size': 12
       },
       paint: {
@@ -187,7 +187,7 @@ export default {
           'icon-image': 'point_of_interest_icon',
           'icon-size': 0.15,
           'text-field': '{name}',
-          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+          'text-font': ['BC Sans Regular'],
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
@@ -243,7 +243,7 @@ export default {
         layout: {
           'text-field': ['to-string', ['get', 'name']],
           'text-size': 14,
-          'text-font': ['FreeSans Medium']
+          'text-font': ['BC Sans Regular']
         },
         paint: {
           'text-halo-width': 2,
@@ -273,7 +273,7 @@ export default {
           'icon-image': '{art_type}_icon',
           'icon-size': 0.15,
           'text-field': '{name}',
-          'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular'],
+          'text-font': ['BC Sans Regular'],
           'text-size': 12,
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
@@ -285,15 +285,18 @@ export default {
       'fn-nations'
     )
 
+    // Loading this from MapBox Studio seems to fix a font rendering issue.
+    // [cvo] I've otherwise not been able to determine the root cause (when loading it locally)
+    /*
     map.addLayer({
       id: 'fn-lang-labels',
       type: 'symbol',
       source: 'langs1',
-      filter: ['!', ['get', 'sleeping']],
+      filter: ['get', 'sleeping'],
       layout: {
         'text-field': ['to-string', ['get', 'name']],
         'text-size': 16,
-        'text-font': ['FreeSans Medium', 'Arial Unicode MS Regular']
+        'text-font': ['BC Sans Regular']
       },
       paint: {
         'text-halo-width': 2,
@@ -329,6 +332,7 @@ export default {
         ]
       }
     })
+    */
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
