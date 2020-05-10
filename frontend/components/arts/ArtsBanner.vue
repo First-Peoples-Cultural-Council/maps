@@ -1,7 +1,7 @@
 <template>
   <ArtistBanner>
     <template v-slot:header>
-      <img class="artist-header" :src="getMediaUrl(artistBanner)" />
+      <img class="artist-header" :src="artsBanner" />
       <div class="fpcc-card-more" @click.prevent="handleReturn">
         <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
         <span class="ml-1 font-weight-bold">Return</span>
@@ -18,7 +18,7 @@
         />
         <img v-else src="@/assets/images/arrow_up_icon.svg" />
       </div>
-      <img class="artist-profile" :src="artistImg()" />
+      <img class="artist-profile" :src="artImage" />
     </template>
     <template v-slot:body>
       <div class="arts-artist-content">
@@ -54,7 +54,6 @@
 
 <script>
 import ArtistBanner from '@/components/arts/ArtistBanner.vue'
-import { getMediaUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -95,11 +94,9 @@ export default {
         return {}
       }
     },
-    media: {
-      type: Object,
-      default: () => {
-        return {}
-      }
+    artsBanner: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -115,15 +112,11 @@ export default {
     showDrawer() {
       return this.$store.state.sidebar.isArtsMode
     },
-    artistBanner() {
-      return this.media ? this.media.media_file || this.media.image : ''
-    },
     isMobileContent() {
       return this.$store.state.sidebar.mobileContent
     }
   },
   methods: {
-    getMediaUrl,
     redirectToHome(name) {
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
@@ -146,11 +139,6 @@ export default {
     resetState() {
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$store.commit('sidebar/setMobileContent', false)
-    },
-    artistImg() {
-      return (
-        getMediaUrl(this.artImage) || require(`@/assets/images/artist_icon.svg`)
-      )
     },
     toggleCollapse() {
       this.$store.commit('sidebar/toggleCollapse', !this.isCollapse)
