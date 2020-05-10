@@ -148,10 +148,10 @@
           @map-sourcedata="mapSourceData"
         ></Mapbox>
         <div class="map-controls-overlay">
-          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
         </div>
         <ModalNotification></ModalNotification>
         <div class="map-navigation-container">
@@ -1102,6 +1102,7 @@ export default {
 
 .map-controls-overlay > * {
   margin-bottom: 0.25em;
+  box-shadow: 0px 3px 6px #00000022;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
