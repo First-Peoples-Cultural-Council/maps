@@ -226,6 +226,7 @@ export default {
 .nav-tabs .nav-link {
   font-family: 'Faustina', serif;
   font-size: 15px;
+  font-weight: 500;
   background-color: #03333a;
   color: #fff;
   border-top-left-radius: 0rem;
