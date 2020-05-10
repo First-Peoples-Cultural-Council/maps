@@ -35,7 +35,7 @@
           v-model="searchQuery"
           type="search"
           class="search-input"
-          placeholder="Search for any terms, like Secwepemctsin..."
+          placeholder="Search for places, people, languages or grants..."
           autocomplete="off"
           @update="handleSearchUpdate"
           @focus="handleInputFocus"
@@ -375,6 +375,7 @@ export default {
         return
       } else {
         this.show = true
+        this.$store.commit('sidebar/setDrawerContent', false)
       }
       this.languageResults = this.fuzzySearch(
         this.languages,
@@ -629,8 +630,8 @@ export default {
 }
 
 .search-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   position: absolute;
   right: 20px;
   top: 30%;
@@ -688,6 +689,7 @@ export default {
 .search-input.form-control {
   border-radius: 3em;
   padding: 1.4em;
+  box-shadow: 0px 3px 6px #00000022;
 }
 
 @media (min-width: 993px) and (max-width: 1350px) {
