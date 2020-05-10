@@ -18,6 +18,20 @@
       <template v-slot:badges>
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
+          <!-- Art Work Badge Filter  -->
+          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
+            <template v-slot:badge>
+              <Badge
+                content="Arts"
+                :number="artworksCount"
+                class="cursor-pointer"
+                bgcolor="#5A8467"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'artwork')"
+                @click.native.prevent="badgeClick($event, 'artwork')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
           <!-- Artist Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'artist'"
@@ -51,21 +65,6 @@
                 type="event"
                 :mode="getBadgeStatus(filterMode, 'event')"
                 @click.native.prevent="badgeClick($event, 'event')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
-          <!-- Art Work Badge Filter  -->
-          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
-            <template v-slot:badge>
-              <Badge
-                content="Recent Posts"
-                :number="artworksCount"
-                class="cursor-pointer"
-                bgcolor="#5A8467"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'artwork')"
-                @click.native.prevent="badgeClick($event, 'artwork')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -205,7 +204,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'View Artwork from Indigenous Artists in your area, and check their details .  You can also view Organization, Event, Public Art, and Grant information.',
+        'Zoom in on the map to view Indigenous Artwork in your area. You can also view Organization, Event, Public Art and Grant information.',
       artDetails: {},
       maximumLength: 0
     }
@@ -265,6 +264,7 @@ export default {
       return this.$store.state.arts.artworks
     },
     previewArtworkOnly() {
+      console.log(this.artworks)
       return this.artworks.reduce((unique, item) => {
         return unique.some(
           items =>
