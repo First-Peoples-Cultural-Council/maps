@@ -12,6 +12,7 @@
       </div>
     </div>
     <div class="hide-mobile pb-4" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -19,6 +20,7 @@
       >
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
+
       <UserDetailCard
         :id="user.id"
         :name="getUserName()"
@@ -189,6 +191,7 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
@@ -196,7 +199,8 @@ export default {
     LanguageDetailBadge,
     PlacesCard,
     LanguageCard,
-    CommunityCard
+    CommunityCard,
+    Logo
   },
   computed: {
     isLoggedIn() {
@@ -229,7 +233,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('sidebar/set', true)
+      vm.$store.commit('sidebar/set', false)
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -244,6 +248,7 @@ export default {
     const authUser = await $axios.$get(
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
+
     let isOwner = false
     if (authUser.is_authenticated === true) {
       if (parseInt(params.id) === authUser.user.id) {

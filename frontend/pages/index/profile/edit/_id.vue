@@ -171,7 +171,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('sidebar/set', true)
+      vm.$store.commit('sidebar/set', false)
     })
   },
   beforeRouteLeave(to, from, next) {
