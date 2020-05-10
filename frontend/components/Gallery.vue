@@ -31,9 +31,9 @@
           <!-- <img class="art-type" src="@/assets/images/arts/audio.png" /> -->
         </div>
         <div class="media-img-container">
-          <!-- <button class="expand-btn">
+          <button class="expand-btn">
             <img src="@/assets/images/expand_icon.svg" />
-          </button> -->
+          </button>
           <!-- Render Media here depending on type -->
           <img
             v-if="mediaData.file_type === 'image'"
@@ -49,7 +49,7 @@
             "
             class="media-img"
             :src="
-              `https://www.youtube.com/emedia-imgmbed/${getYoutubeEmbed(
+              `https://www.youtube.com/embed/${getYoutubeEmbed(
                 mediaData.url
               )}/?rel=0`
             "
