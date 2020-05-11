@@ -42,7 +42,7 @@
         <ArtsBanner
           v-if="isArtist"
           :art-image="artDetails.image"
-          :tags="artDetails.taxonomies"
+          :tags="taxonomies"
           :arttype="artDetails.kind"
           :name="artDetails.name"
           :server="isServer"
@@ -57,6 +57,11 @@
           :tags="taxonomies"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
+
+        <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
+          <Notification type="language" title="Claim Profile"></Notification>
+          <Notification type="language" title="Edit Profile"></Notification>
+        </div>
 
         <!-- Render Arts Detail -->
         <div
@@ -84,7 +89,7 @@
               :key="data.id"
               class="artist-content-field"
             >
-              <h5 class="field-title">{{ data.label }}:</h5>
+              <h5 class="field-title">{{ data.data_type }}:</h5>
               <a
                 v-if="data.data_type === 'website'"
                 :href="checkUrlValid(data.value)"
@@ -98,7 +103,7 @@
 
           <!-- Render LIst of Social Media -->
           <section v-if="socialMedia.length !== 0" class="artist-content-field">
-            <span class="field-title">Social Media</span>
+            <span class="field-title">Social Media:</span>
             <span class="field-content">
               <ul class="artist-social-icons">
                 <li v-for="soc in socialMedia" :key="soc.id">
@@ -172,13 +177,15 @@ import {
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
     Logo,
-    ArtsDrawer
+    ArtsDrawer,
+    Notification
   },
   filters: {
     titleCase(str) {
@@ -193,6 +200,9 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     showGallery() {
       return this.$store.state.sidebar.showGallery
     },
@@ -225,6 +235,7 @@ export default {
         'twitter',
         'linkedin'
       ]
+
       return this.artDetails.related_data.filter(
         filter =>
           filter.data_type === 'website' &&
@@ -234,9 +245,10 @@ export default {
     relatedData() {
       return this.artDetails.related_data.filter(
         element =>
-          !this.socialMedia.includes(element) &&
-          element.data_type !== 'email' &&
-          !element.value.startsWith(',')
+          (!this.socialMedia.includes(element) &&
+            element.data_type !== 'email' &&
+            !element.value.startsWith(',')) ||
+          (!element.is_private && (element.value && element.value.length !== 0))
       )
     },
     taxonomies() {
@@ -261,6 +273,8 @@ export default {
       }
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+
+    console.log(artDetails)
 
     const isServer = !!process.server
     return {
@@ -370,7 +384,7 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .arts-main-container {
   display: flex;
   justify-content: flex-start;
@@ -400,21 +414,20 @@ export default {
   width: 100%;
   flex-direction: column;
   margin: 0.3em 0 1em 0;
+  overflow: hidden;
 }
 
 .field-title {
   color: #707070;
-  font-weight: bold;
-  font-size: 13px;
+  font: Bold 15px/18px Proxima Nova;
   text-transform: capitalize;
 }
 
 .field-content {
   display: flex;
-  font-size: 18px;
+  font: normal 16px/25px Proxima Nova;
   flex-direction: column;
   color: #151515;
-  font-size: 0.9em;
 }
 
 .field-content a {
@@ -432,8 +445,9 @@ export default {
   color: #151515;
 }
 
-.field-content p {
-  font: Regular 16px/25px Proxima Nova;
+.field-content p,
+.field-content span {
+  font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
 }
@@ -478,14 +492,9 @@ export default {
   border: 1px solid #d7d7de;
 }
 
-.artist-img-small {
-  width: 40px;
-  height: 40px;
-}
-
 .btn-collapse {
   padding: 1em;
-  margin: 1.5em;
+  margin: 2.5em;
   margin-left: 0.8em;
   width: 100px;
   height: 35px;
@@ -500,6 +509,11 @@ export default {
 
 .btn-collapse img {
   margin-right: 0.5em;
+}
+
+.artist-img-small {
+  width: 40px;
+  height: 40px;
 }
 
 .sidebar-side-panel {
@@ -551,5 +565,17 @@ export default {
 /* Arts Mobile UI Layout */
 .mobile-content {
   padding: 1em;
+}
+
+.arts-btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.25em;
+
+  & > * {
+    flex: 0 0 48%;
+    margin-right: 0.25em;
+  }
 }
 </style>

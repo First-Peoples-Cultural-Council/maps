@@ -161,7 +161,7 @@ export default {
   methods: {
     handleNavigation(e, data) {
       // Recalibrate Vuex Values
-      this.$store.commit('sidebar/setDrawerContent', false)
+      this.resetState()
 
       const path = this.navigationTabs.find(nt => nt.name === data).path
       const self = this
@@ -171,6 +171,11 @@ export default {
     },
     toggleFold(e) {
       this.fold = !this.fold
+    },
+    resetState() {
+      this.$store.commit('arts/setTaxonomyTag', [])
+      this.$store.commit('arts/setArtSearch', '')
+      this.$store.commit('sidebar/setDrawerContent', false)
     }
   }
 }

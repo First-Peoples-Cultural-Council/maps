@@ -50,7 +50,7 @@ export default {
         this.$root.$emit('resetMap')
         this.$store.commit('mapinstance/setForceReset', false)
       } else {
-        this.$router.push({ path: '/' })
+        this.$router.push({ path: '/languages' })
       }
     }
   }

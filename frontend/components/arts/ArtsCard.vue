@@ -44,13 +44,15 @@
               {{ art.properties.name }}
             </h5>
             <div class="artist-tags-container">
-              <span v-for="tag in taxonomies" :key="tag.name">{{
-                tag.name
-              }}</span>
+              <span
+                v-for="tag in taxonomies"
+                :key="tag.name"
+                @click.stop.prevent="
+                  $store.commit('arts/setTaxonomyTag', [tag.name])
+                "
+                >{{ tag.name }}</span
+              >
             </div>
-          </div>
-          <div class="artist-tags-container">
-            <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
           </div>
         </div>
       </template>
@@ -125,7 +127,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .arts-card {
   cursor: pointer;
   height: 100%;
@@ -166,6 +168,7 @@ export default {
 }
 
 .artist-tags-container span {
+  cursor: pointer;
   flex: 0 1 auto;
   background: #ddd4c6;
   border-radius: 2rem;
@@ -175,6 +178,11 @@ export default {
   margin: 0.25em 0.5em 0.25em 0;
   padding: 2px 5px;
   text-align: center;
+
+  &:hover {
+    color: #fff;
+    background-color: #545b62;
+  }
 }
 
 .field-kind {

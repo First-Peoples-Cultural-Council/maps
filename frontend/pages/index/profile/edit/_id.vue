@@ -203,8 +203,10 @@ export default {
 
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
-      window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+      window.open(
+        `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+      )
+      window.location.reload()
     }
     this.initQuill()
   },
