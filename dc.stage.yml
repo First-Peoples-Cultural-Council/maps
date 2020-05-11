@@ -24,11 +24,17 @@ services:
       - FPLM_DB=fpmaps_d7_live
       - FPLM_USER=
       - FPLM_PW=
+      - COGNITO_REGION=ca-central-1
+      - COGNITO_USERPOOL_ID=ca-central-1_dW1peVcEx
+      - COGNITO_APP_CLIENT_ID=7rj6th7pknck3tih16ihekk1ik
     command: ./prod.sh
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
       - HOST=https://fplm.countable.ca
+      - COGNITO_HOST=https://fplm.countable.ca
+      - COGNITO_URL=https://fplm.auth.ca-central-1.amazoncognito.com
+      - COGNITO_APP_CLIENT_ID=7rj6th7pknck3tih16ihekk1ik
 
   test:
     command: sleep 1000000

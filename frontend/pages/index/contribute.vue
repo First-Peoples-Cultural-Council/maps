@@ -529,10 +529,7 @@
             <h4 class="alert-heading">Please Log In</h4>
             <p>
               This feature requires you to be
-              <a
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
-                >logged in.</a
-              >
+              <a :href="getLoginUrl()">logged in.</a>
             </p>
             <hr />
           </b-alert>
@@ -842,8 +839,7 @@ export default {
   },
   mounted() {
     if (!this.isLoggedIn) {
-      window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+      window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
     this.addSite()
@@ -1030,6 +1026,9 @@ export default {
           path: '/place-names/' + encodeFPCC(this.tname)
         })
       })
+    },
+    getLoginUrl() {
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
   },
   beforeRouteEnter(to, from, next) {
