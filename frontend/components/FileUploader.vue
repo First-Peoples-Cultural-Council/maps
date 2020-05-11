@@ -110,30 +110,35 @@ export default {
       if (this.fileName === '' || !this.fileName) {
         return (this.errorMessage = 'Please enter the name of the file')
       }
-      const formData = this.getFormData()
 
-      try {
-        result = await this.uploadFile(formData)
-        if (
-          result.request.status === 201 &&
-          result.request.statusText === 'Created'
-        ) {
-          this.$root.$emit('fileUploaded', result.data)
-        } else {
-          throw result
+      if (this.$route.query.mode === 'placename') {
+        this.$store.commit('file/setMediaFiles', this.getMediaData())
+        console.log(this.$store.state.file.fileList)
+      } else {
+        const formData = this.getFormData()
+        try {
+          result = await this.uploadFile(formData)
+          if (
+            result.request.status === 201 &&
+            result.request.statusText === 'Created'
+          ) {
+            this.$root.$emit('fileUploaded', result.data)
+          } else {
+            throw result
+          }
+        } catch (e) {
+          console.error(e)
+          this.$root.$emit('notification', {
+            title: 'Failed',
+            message: 'File Upload Failed, please try again',
+            time: 1500,
+            variant: 'danger'
+          })
         }
-      } catch (e) {
-        console.error(e)
-        this.$root.$emit('notification', {
-          title: 'Failed',
-          message: 'File Upload Failed, please try again',
-          time: 1500,
-          variant: 'danger'
-        })
       }
+
       this.resetToInitialState()
     },
-
     getFormData() {
       return getFormData({
         name: this.fileName,
@@ -144,6 +149,18 @@ export default {
         id: this.id,
         community_only: this.commonly === 'accepted'
       })
+    },
+
+    getMediaData() {
+      return {
+        name: this.fileName,
+        file_type: this.file.type,
+        description: this.description,
+        media_file: this.file,
+        type: this.type,
+        id: this.id,
+        community_only: this.commonly === 'accepted'
+      }
     },
     async uploadFile(formData) {
       const result = await this.$store.dispatch('file/uploadMedia', formData)

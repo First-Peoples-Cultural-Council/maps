@@ -36,7 +36,12 @@
         </h5>
       </div>
       <div class="artist-tags-container">
-        <span v-for="tag in tags" :key="tag.name">{{ tag.name }}</span>
+        <span
+          v-for="tag in tags"
+          :key="tag.name"
+          @click="redirectToHome(tag.name)"
+          >{{ tag.name }}</span
+        >
       </div>
     </div>
 
@@ -99,6 +104,13 @@ export default {
     }
   },
   methods: {
+    redirectToHome(name) {
+      this.$store.commit('arts/setFilter', this.arttype)
+      this.$store.commit('arts/setTaxonomyTag', [name])
+      this.$router.push({
+        path: '/art'
+      })
+    },
     handleReturn() {
       this.$store.commit('sidebar/setDrawerContent', false)
       if (this.server) {

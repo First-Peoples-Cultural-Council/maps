@@ -2,10 +2,7 @@
   <div class="accordion">
     <b-collapse id="outer-collapse" visible>
       <b-card>
-        <p
-          v-if="!notVisible"
-          class="outer-text d-flex align-items-center justify-content-between"
-        >
+        <p class="outer-text d-flex align-items-center justify-content-between">
           <span class="accordion-content">
             {{ getContextData }}
             <span

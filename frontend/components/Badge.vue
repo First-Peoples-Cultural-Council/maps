@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-block">
+  <div class="d-inline-block badge-wrapper">
     <b-badge
       class="badge"
       :style="'background-color: ' + bgcolor"
@@ -133,6 +133,9 @@ export default {
 </script>
 
 <style>
+.badge-wrapper {
+  line-height: 0;
+}
 .badge {
   border-radius: 1em;
   margin: 0.25em 0.3em;

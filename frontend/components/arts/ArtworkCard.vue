@@ -33,7 +33,22 @@
       <div class="arts-card-right">
         <div class="arts-card-footer">
           <span class="artist-title"> {{ mediaData.name }} </span>
-          <span class="artist-name" v-html="returnArtists" />
+          <span v-if="artists.length !== 0" class="artist-name">
+            By
+            <a
+              v-for="artist in artists"
+              :key="artist.name"
+              @click.stop.prevent="handleCardClick(mediaData.placename.name)"
+            >
+              {{ artist.name }}</a
+            >
+          </span>
+          <span v-else class="artist-name">
+            By
+            <a @click.stop.prevent="handleCardClick(mediaData.placename.name)">
+              {{ mediaData.placename.name }}
+            </a>
+          </span>
         </div>
         <div class="arts-card-more">
           <div class="arts-card-tag">
@@ -84,11 +99,7 @@ export default {
       return this.media.properties
     },
     artists() {
-      if (this.mediaData.placename.kind === 'public_art') {
-        return this.mediaData.placename.artists
-      } else {
-        return this.mediaData.placename.artists
-      }
+      return this.mediaData.placename.artists
     },
     mediaType() {
       return this.mediaData.file_type
@@ -112,15 +123,16 @@ export default {
         : require('@/assets/images/public_art_icon.svg')
     },
     returnArtists() {
-      const listOfArtist = this.artist
-        ? this.artists.map((artist, index) => {
-            return `<a href="art/${encodeFPCC(artist.name)}"> ${
-              artist.name
+      const listOfArtist =
+        this.artists.length !== 0
+          ? this.artists.map((artist, index) => {
+              return `<a href="art/${encodeFPCC(artist.name)}"> ${
+                artist.name
+              }</a>`
+            })
+          : `<a href="art/${encodeFPCC(this.mediaData.placename.name)}"> ${
+              this.mediaData.placename.name
             }</a>`
-          })
-        : `<a href="art/${encodeFPCC(this.mediaData.name)}"> ${
-            this.mediaData.placename.name
-          }</a>`
       return `By ${listOfArtist}`
     },
     returnMediaType() {
@@ -139,7 +151,7 @@ export default {
     }
   },
   methods: {
-    handleCardClick($event, name, type) {
+    handleCardClick(name) {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -198,7 +210,6 @@ export default {
   text-align: center;
   text-transform: capitalize;
 }
-
 .arts-card-tag img {
   width: 17px;
   height: 15px;
@@ -228,6 +239,11 @@ export default {
 
 .artist-name a {
   font-weight: normal;
+  color: #007bff !important;
+
+  &:hover {
+    text-decoration: underline !important;
+  }
 }
 
 /* Landscape Layout */
