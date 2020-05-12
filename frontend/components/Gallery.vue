@@ -19,7 +19,22 @@
           <img v-lazy="artThumbnail(placenameImg)" class="artist-img-small" />
           <div class="gallery-title">
             <span class="item-title">{{ mediaData.name }}</span>
-            <span class="item-subtitle" v-html="returnArtists()" />
+            <span class="item-subtitle">
+              By
+              <template v-if="artistCount !== 0">
+                <a
+                  v-for="artist in artists"
+                  :key="artist.name"
+                  href="#"
+                  @click.prevent="checkProfile(artist.name)"
+                >
+                  {{ artist.name }}</a
+                >
+              </template>
+              <template v-else>
+                {{ placename }}
+              </template>
+            </span>
           </div>
           <div
             v-if="artistCount === 0 && this.$route.name !== 'index-art-art'"
@@ -30,14 +45,31 @@
           </div>
           <!-- <img class="art-type" src="@/assets/images/arts/audio.png" /> -->
         </div>
-        <div class="media-img-container">
-          <button class="expand-btn">
-            <img src="@/assets/images/expand_icon.svg" />
+        <div
+          ref="mediaImg"
+          :class="
+            `media-img-container ${isFullscreen ? 'fullscreen-mode' : ''}`
+          "
+        >
+          <button
+            v-if="
+              mediaData.file_type !== 'audio' && mediaData.file_type !== 'video'
+            "
+            class="expand-btn"
+            @click="toggleFullscreen"
+          >
+            <img
+              :src="
+                require(`@/assets/images/${
+                  isFullscreen ? 'contract_icon' : 'expand_icon'
+                }.svg`)
+              "
+            />
           </button>
           <!-- Render Media here depending on type -->
           <img
             v-if="mediaData.file_type === 'image'"
-            class="media-img"
+            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
             :src="
               getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
             "
@@ -69,7 +101,11 @@
             Your browser does not support the audio element.
           </audio>
           <!-- Render Public Art Image here -->
-          <img v-else v-lazy="getMediaUrl(mediaData.image)" class="media-img" />
+          <img
+            v-else
+            v-lazy="getMediaUrl(mediaData.image)"
+            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
+          />
         </div>
       </div>
       <button
@@ -146,7 +182,8 @@ export default {
   },
   data() {
     return {
-      mediaData: this.media
+      mediaData: this.media,
+      isFullscreen: false
     }
   },
   computed: {
@@ -176,10 +213,20 @@ export default {
       const listOfArtist =
         this.artistCount !== 0
           ? this.artists.map((artist, index) => {
-              return `<a href="#" @click.prevent="checkProfile()"> ${artist.name}</a>`
+              return `<a href="#" "> ${artist.name}</a>`
             })
           : this.placename
       return `By ${listOfArtist}`
+    },
+    toggleFullscreen() {
+      const mediaImg = this.$refs.mediaImg
+      if (this.isFullscreen) {
+        document.exitFullscreen()
+      } else {
+        mediaImg.requestFullscreen()
+      }
+
+      this.isFullscreen = !this.isFullscreen
     },
     selectCurrentIndex(item) {
       this.mediaData = item
@@ -369,11 +416,6 @@ export default {
     padding: 0;
   }
 
-  .media-img {
-    width: 96%;
-    margin: 0 2em;
-  }
-
   .gallery-carousel-container button {
     display: none;
   }
@@ -418,5 +460,20 @@ export default {
       border: 5px solid #b57936;
     }
   }
+}
+
+.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999999999;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.img-fullscreen-mode {
+  width: 100vw;
+  height: 100vh;
 }
 </style>
