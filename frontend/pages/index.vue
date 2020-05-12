@@ -180,6 +180,7 @@
 <script>
 import Mapbox from 'mapbox-gl-vue'
 import groupBy from 'lodash/groupBy'
+import * as Cookies from 'js-cookie'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -527,12 +528,20 @@ export default {
       })
       this.loadMoreData()
     }
-  },
-  created() {
+
     // Redirect to /languages
     if (this.$route.path === '/') {
       this.$router.push({
         path: '/languages'
+      })
+    }
+
+    // Redirect to claim page if during invite mode
+    if (Cookies.get('inviteMode')) {
+      const email = Cookies.get('inviteEmail')
+      const key = Cookies.get('inviteKey')
+      this.$router.push({
+        path: `/claim?email=${email}&key=${key}`
       })
     }
   },
