@@ -19,7 +19,7 @@
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
           <!-- Art Work Badge Filter  -->
-          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
+          <BadgeFilter :child-taxonomy="[]" :color="'#5A8467'">
             <template v-slot:badge>
               <Badge
                 content="Arts"
@@ -35,7 +35,7 @@
           <!-- Artist Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'artist'"
-            :filter="getTaxonomyID('Person')"
+            :child-taxonomy="getChildTaxonomy('Person')"
             :color="'#B45339'"
           >
             <template v-slot:badge>
@@ -53,7 +53,7 @@
           <!-- Event Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'event'"
-            :filter="getTaxonomyID('Event')"
+            :child-taxonomy="getChildTaxonomy('Event')"
             :color="'#DA531E'"
           >
             <template v-slot:badge>
@@ -72,7 +72,7 @@
           <!-- Organization Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'organization'"
-            :filter="getTaxonomyID('Organization')"
+            :child-taxonomy="getChildTaxonomy('Organization')"
             :color="'#a48116'"
           >
             <template v-slot:badge>
@@ -91,7 +91,7 @@
           <!-- Public Art Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'public_art'"
-            :filter="getTaxonomyID('Public Art')"
+            :child-taxonomy="getChildTaxonomy('Public Art')"
             :color="'#848159'"
           >
             <template v-slot:badge>
@@ -108,7 +108,7 @@
           </BadgeFilter>
 
           <!-- Grant Badge Filter -->
-          <!-- <BadgeFilter :filter="getTaxonomyID('Grant')" :color="'#008CA9'">
+          <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
             <template v-slot:badge>
               <Badge
                 content="Grants"
@@ -471,6 +471,11 @@ export default {
     },
     getTaxonomyID(taxName) {
       return this.taxonomies.find(taxonomy => taxonomy.name === taxName)
+    },
+    getChildTaxonomy(taxName) {
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === this.getTaxonomyID(taxName).id
+      )
     }
   }
 }

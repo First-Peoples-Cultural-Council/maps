@@ -9,7 +9,7 @@
       v-if="isSelected || (isSelected && getTaxonomies.length !== 0)"
       class="badge-filters "
     >
-      <p id="badge-choose">
+      <p id="badge-choose" @click="showOption = !showOption">
         {{
           `${getTaxonomies.length !== 0 ? getTags() : 'choose sub-category'} `
         }}
@@ -22,16 +22,17 @@
       </p>
       <!-- Parent Popover -->
       <b-popover
+        v-if="showOption"
         id="filter-popover"
         class="hide-mobile"
         target="badge-choose"
         placement="bottom"
         triggers="click"
-        :show.sync="showOption"
+        :show="showOption"
       >
         <div class="badge-option-container">
           <span
-            v-for="taxonomy in getChildTaxonomy"
+            v-for="taxonomy in childTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
             @click="optionSelected([taxonomy.name])"
@@ -40,6 +41,7 @@
             <!-- Child Popover -->
             <b-popover
               v-if="hasTaxonomyChild(taxonomy.id)"
+              :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
               triggers="hover"
@@ -52,8 +54,9 @@
                   @click="optionSelected([taxonomy.name, taxChild.name])"
                   >{{ taxChild.name }}
                   <!-- Child Child Popover -->
-                  <b-popover
+                  <!-- <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
+                    :id="`child1-popover-${taxChild.name}`"
                     :target="`badge-child-option-${taxChild.id}`"
                     placement="right"
                     triggers="hover"
@@ -73,7 +76,7 @@
                         >{{ taxChild1.name }}</span
                       >
                     </div>
-                  </b-popover>
+                  </b-popover> -->
                 </span>
               </div>
             </b-popover>
@@ -91,22 +94,23 @@ export default {
       type: Boolean,
       default: false
     },
-    filter: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
     color: {
       type: String,
       default: ''
+    },
+    childTaxonomy: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data() {
     return {
       isHover: false,
       showOption: false,
-      showChild: false
+      showChild: false,
+      currentParent: ''
     }
   },
   computed: {
@@ -115,16 +119,9 @@ export default {
     },
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
-    },
-    getChildTaxonomy() {
-      return this.taxonomies.filter(
-        taxonomy => taxonomy.parent === this.filter.id
-      )
     }
   },
-  mounted() {
-    console.log(this.getChildTaxonomy)
-  },
+
   methods: {
     toggleOption() {
       this.showOption = !this.showOption
@@ -140,12 +137,11 @@ export default {
       this.showOption = false
     },
     getTags() {
-      return this.getTaxonomies.map(
-        (tag, index) =>
-          `${tag} ${
-            index !== 0 || index !== this.getTaxonomies.length - 1 ? ' / ' : ''
-          }`
-      )
+      return this.getTaxonomies.reduce((result, item, index) => {
+        return (result += `${item} ${
+          index !== 0 || index !== this.getTaxonomies.length - 1 ? ' / ' : ''
+        } `)
+      }, '')
     },
     removeTag() {
       this.$store.commit('arts/setTaxonomyTag', [])
