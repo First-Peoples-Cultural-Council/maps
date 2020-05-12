@@ -86,9 +86,9 @@ def send_claim_profile_invites():
         send_claim_profile_invite(email)
 
 
-def claim_profile(email):
-    """
-    Claim profile - this allows claiming profile despite the user.email and the email not matching
-    """
-    # Send invite
-    send_claim_profile_invite(email)
+# def claim_profile(email):
+#     """
+#     Claim profile - this allows claiming profile despite the user.email and the email not matching
+#     """
+#     # Send invite
+#     send_claim_profile_invite(email)
