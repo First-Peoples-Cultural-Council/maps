@@ -3,17 +3,11 @@
     id="badge-filter-container"
     :class="`badge-filter-container ${isSelected ? 'badge-selected' : ''}`"
     :style="`${isSelected ? `border: 2px solid ${color}` : ''}`"
-    @mouseover.prevent="isHover = true"
-    @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
     <div
-      v-if="
-        (isSelected && isHover) ||
-          showOption ||
-          (isSelected && getTaxonomies.length !== 0)
-      "
-      class="badge-filters hide-mobile"
+      v-if="isSelected || (isSelected && getTaxonomies.length !== 0)"
+      class="badge-filters "
     >
       <p id="badge-choose">
         {{
@@ -28,6 +22,8 @@
       </p>
       <!-- Parent Popover -->
       <b-popover
+        id="filter-popover"
+        class="hide-mobile"
         target="badge-choose"
         placement="bottom"
         triggers="click"
@@ -56,7 +52,7 @@
                   @click="optionSelected([taxonomy.name, taxChild.name])"
                   >{{ taxChild.name }}
                   <!-- Child Child Popover -->
-                  <!-- <b-popover
+                  <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
                     :target="`badge-child-option-${taxChild.id}`"
                     placement="right"
@@ -77,7 +73,7 @@
                         >{{ taxChild1.name }}</span
                       >
                     </div>
-                  </b-popover> -->
+                  </b-popover>
                 </span>
               </div>
             </b-popover>
@@ -126,6 +122,9 @@ export default {
       )
     }
   },
+  mounted() {
+    console.log(this.getChildTaxonomy)
+  },
   methods: {
     toggleOption() {
       this.showOption = !this.showOption
@@ -163,11 +162,17 @@ export default {
   width: fit-content;
   border-radius: 1em;
   background-color: #ededed;
-  margin: 0.25em 0.125em;
+  margin: 0.25em 0.125em !important;
   height: fit-content;
 
   .badge {
     margin: 0;
+  }
+}
+
+@media (max-width: 993px) {
+  .badge-filter-container {
+    margin: 0.25em 0.5em;
   }
 }
 
