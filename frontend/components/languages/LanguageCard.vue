@@ -16,10 +16,10 @@
       </template>
       <template v-slot:body>
         <div>
-          <h5 class="field-kind">
+          <h5 class="field-kinds">
             Language
           </h5>
-          <h5 class="field-name">
+          <h5 class="field-names">
             {{ name }}
           </h5>
         </div>

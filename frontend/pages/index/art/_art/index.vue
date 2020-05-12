@@ -287,8 +287,6 @@ export default {
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
-    console.log(artDetails)
-
     const isServer = !!process.server
     return {
       art,

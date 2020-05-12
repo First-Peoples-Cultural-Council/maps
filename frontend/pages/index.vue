@@ -1291,4 +1291,23 @@ export default {
     font-size: 0.8em;
   }
 }
+
+/* Global CSS */
+.field-kinds {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 0.1em;
+  padding: 0;
+}
+
+.field-names {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #151515;
+  margin: 0.1em;
+  padding: 0;
+}
 </style>
