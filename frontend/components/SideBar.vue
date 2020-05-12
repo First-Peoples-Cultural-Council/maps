@@ -344,6 +344,9 @@ export default {
     overflow-x: hidden;
     z-index: 999999;
   }
+
+  .sidebar-side-panel .panel-artist {
+  }
 }
 
 .loading-spinner {

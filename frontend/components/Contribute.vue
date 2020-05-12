@@ -80,7 +80,7 @@
             src="@/assets/images/artwork_icon.svg"
             alt="Zoom In"
           />
-          Upload Your Artwork
+          Upload Your Artwork <span>(I'm an Artist)</span>
         </div>
         <div
           class="media-add-btn"
