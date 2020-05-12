@@ -23,10 +23,16 @@ export default {
   computed: {
     searchQuery() {
       return this.$store.state.arts.artSearch
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
     }
   },
   methods: {
     updateQuery(value) {
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
+      }
       this.$store.commit('arts/setArtSearch', value)
     },
     resetValue() {
