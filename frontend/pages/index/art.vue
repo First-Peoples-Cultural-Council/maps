@@ -108,7 +108,7 @@
           </BadgeFilter>
 
           <!-- Grant Badge Filter -->
-          <BadgeFilter :filter="getTaxonomyID('Grant')" :color="'#008CA9'">
+          <!-- <BadgeFilter :filter="getTaxonomyID('Grant')" :color="'#008CA9'">
             <template v-slot:badge>
               <Badge
                 content="Grants"
@@ -120,7 +120,7 @@
                 @click.native.prevent="badgeClick($event, 'grant')"
               ></Badge>
             </template>
-          </BadgeFilter>
+          </BadgeFilter> -->
         </section>
       </template>
       <template v-slot:cards>
@@ -270,7 +270,16 @@ export default {
             items.properties.placename.id === item.properties.placename.id
         )
           ? unique
-          : [...unique, item]
+          : [
+              ...unique,
+              this.artworks
+                .filter(
+                  items =>
+                    items.properties.placename.id ===
+                    item.properties.placename.id
+                )
+                .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
+            ]
       }, [])
     },
     selectedArtwork() {
@@ -319,32 +328,44 @@ export default {
       return this.selectedArt.slice(0, this.maximumLength)
     }
   },
-  async fetch({ $axios, store }) {
-    const currentArtworks = store.state.arts.artworkSet
+  async mounted() {
+    // Fetches the artworks data, for this case, it renders the page, then rerender if data is collected
+    this.$store.commit('sidebar/toggleLoading', true)
+    const currentArtworks = this.$store.state.arts.artworkSet
 
     if (currentArtworks.length === 0) {
-      const artworks = await $axios.$get(getApiUrl('arts/artwork?format=json'))
-
-      store.commit('arts/setArtworksStore', artworks) // All data
-      store.commit('arts/setArtworks', artworks) // All data
+      const artworks = await this.$axios.$get(
+        getApiUrl('arts/artwork?format=json')
+      )
+      if (artworks) {
+        this.$store.commit('arts/setArtworksStore', artworks) // All data
+        this.$store.commit('arts/setArtworks', artworks) // All data
+        this.$store.commit('sidebar/toggleLoading', false)
+      } else {
+        this.$store.commit('sidebar/toggleLoading', true)
+      }
     }
-  },
-  mounted() {
+
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
-      const listElm = this.isMobile
-        ? document.querySelector('#side-inner-collapse')
-        : document.querySelector('#sidebar-container')
-      listElm.addEventListener('scroll', e => {
-        if (
-          listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
-          listElm.scrollTop !== 0
-        ) {
-          if (this.selectedArt.length > this.maximumLength) {
-            this.loadMoreData()
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
+
+      const containerArray = [mobileContainer, desktopContainer]
+
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.selectedArt.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
+
       this.loadMoreData()
     }
   },
@@ -357,7 +378,6 @@ export default {
       this.maximumLength = 0
       this.loadKindData(name)
       this.handleBadge($event, name)
-      this.loadMoreData()
     },
     resetFilter() {
       this.$store.commit('arts/setTaxonomyTag', [])
@@ -371,24 +391,28 @@ export default {
       }, 250)
     },
     async loadKindData(kind) {
-      this.$store.commit('sidebar/toggleLoading', true)
+      this.$store.commit('sidebar/toggleLoading', true) // Start loading
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
       const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
 
-      if (!loaded) {
+      if (!loaded && this.filterMode !== 'artwork') {
         // Fetch Arts
         const data = await this.$axios.$get(url)
 
-        // Set data with name for clarity
-        const artsSet = data.features
-        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
+        if (data) {
+          // Set data with name for clarity
+          const artsSet = data.features
+          const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
 
-        // Set language stores
-        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
-        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
-        this.$store.commit('sidebar/toggleLoading', false)
+          // Set language stores
+          this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
+          this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
+          this.loadMoreData()
+        }
+      } else {
+        this.loadMoreData()
       }
     },
     handleCardClick($event, name, type) {
