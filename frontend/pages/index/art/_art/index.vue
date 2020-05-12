@@ -41,12 +41,12 @@
         <!-- START Conditional Render Arts Header -->
         <ArtsBanner
           v-if="isArtist"
-          :art-image="artDetails.image"
+          :art-image="artistImg"
           :tags="taxonomies"
           :arttype="artDetails.kind"
           :name="artDetails.name"
           :server="isServer"
-          :media="[...artDetails.public_arts, ...artDetails.medias][0]"
+          :arts-banner="artistBanner"
         ></ArtsBanner>
 
         <ArtsDetailCard
@@ -243,18 +243,31 @@ export default {
       )
     },
     relatedData() {
-      return this.artDetails.related_data.filter(
-        element =>
-          (!this.socialMedia.includes(element) &&
-            element.data_type !== 'email' &&
-            !element.value.startsWith(',')) ||
+      return this.artDetails.related_data.filter(element => {
+        return (
+          !this.socialMedia.includes(element) &&
           (!element.is_private && (element.value && element.value.length !== 0))
-      )
+        )
+      })
     },
     taxonomies() {
       return this.artDetails.taxonomies.filter(
         taxo => !this.blockedTag.includes(taxo.name)
       )
+    },
+    artistBanner() {
+      const allMedia = [
+        ...this.artDetails.public_arts,
+        ...this.artDetails.medias
+      ]
+      return allMedia.length !== 0
+        ? getMediaUrl(allMedia[0].media_file) || getMediaUrl(allMedia[0].image)
+        : require(`@/assets/images/default_banner.png`)
+    },
+    artistImg() {
+      return this.artDetails.image
+        ? getMediaUrl(this.artDetails.image)
+        : require(`@/assets/images/artist_icon.svg`)
     }
   },
   watch: {

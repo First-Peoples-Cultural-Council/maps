@@ -6,7 +6,7 @@
     </div>
 
     <!-- Render List of Artist -->
-    <div v-if="this.$route.name !== 'index-art-art'">
+    <template v-if="this.$route.name !== 'index-art-art'">
       <div class="panel-artist">
         <img
           v-lazy="renderArtistImg(placename.image)"
@@ -33,7 +33,7 @@
           >{{ artist.name }}</a
         >
       </div>
-    </div>
+    </template>
 
     <b-row v-if="listOfPublicArt" class="ml-1 mr-1 media-list-container">
       <b-col
@@ -165,7 +165,7 @@ export default {
 
       this.$axios.$get(url).then(result => {
         if (result) {
-          this.listOfMedias = result
+          this.listOfMedias = result.sort((a, b) => b.id - a.id)
         }
       })
     } else {

@@ -111,15 +111,22 @@ export default {
     }
   },
   mounted() {
-    const listElm = this.isMobile
-      ? document.querySelector('#side-inner-collapse')
-      : document.querySelector('#sidebar-container')
-    listElm.addEventListener('scroll', e => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-        if (this.places.length > this.maximumLength) {
-          this.loadMoreData()
+    const mobileContainer = document.querySelector('#side-inner-collapse')
+    const desktopContainer = document.querySelector('#sidebar-container')
+
+    const containerArray = [mobileContainer, desktopContainer]
+
+    containerArray.forEach(elem => {
+      elem.addEventListener('scroll', e => {
+        if (
+          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+          elem.scrollTop !== 0
+        ) {
+          if (this.places.length > this.maximumLength) {
+            this.loadMoreData()
+          }
         }
-      }
+      })
     })
     this.loadMoreData()
   },

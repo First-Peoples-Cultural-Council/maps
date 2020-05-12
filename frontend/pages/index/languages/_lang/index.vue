@@ -74,7 +74,7 @@
           @click.native="handleMoreDetails"
         ></LanguageSeeAll>
       </section>
-      <Filters class="mb-1 mt-2"></Filters>
+      <!-- <Filters class="mb-1 mt-2"></Filters> -->
       <div class="badge-container mt-2 ml-3 mr-3">
         <Badge
           content="Communities"
@@ -278,7 +278,6 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
-import Filters from '@/components/Filters.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
@@ -293,7 +292,6 @@ export default {
     CommunityCard,
     PlacesCard,
     ArtsCard,
-    Filters,
     Badge,
     Logo,
     Notification

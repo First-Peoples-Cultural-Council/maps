@@ -148,10 +148,10 @@
           @map-sourcedata="mapSourceData"
         ></Mapbox>
         <div class="map-controls-overlay">
-          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
         </div>
         <ModalNotification></ModalNotification>
         <div class="map-navigation-container">
@@ -515,15 +515,22 @@ export default {
     }
 
     if (this.$route.name === 'index') {
-      const listElm = this.isMobileCollapse
-        ? document.querySelector('#side-inner-collapse')
-        : document.querySelector('#sidebar-container')
-      listElm.addEventListener('scroll', e => {
-        if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-          if (this.communities.length > this.maximumLength) {
-            this.loadMoreData()
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
+
+      const containerArray = [mobileContainer, desktopContainer]
+
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.communities.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
       this.loadMoreData()
     }
@@ -1102,6 +1109,7 @@ export default {
 
 .map-controls-overlay > * {
   margin-bottom: 0.25em;
+  box-shadow: 0px 3px 6px #00000022;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

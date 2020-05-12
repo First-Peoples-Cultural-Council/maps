@@ -35,7 +35,7 @@
     <!-- Render if Public Art -->
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
-        <img v-lazy="media.image" :class="`card-teaser-img`" />
+        <img v-lazy="getMediaUrl(media.image)" :class="`card-teaser-img`" />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { getMediaUrl } from '@/plugins/utils.js'
 export default {
   props: {
     media: {
@@ -96,7 +97,7 @@ export default {
     },
     artImage() {
       return this.mediaExist
-        ? this.media.media_file
+        ? getMediaUrl(this.media.media_file)
         : this.media.file_type === 'video'
         ? this.videoThumbnail
         : require('@/assets/images/public_art_icon.svg')
@@ -110,6 +111,7 @@ export default {
     }
   },
   methods: {
+    getMediaUrl,
     handleMouseOver() {
       this.hover = true
       // in some cases, we list places without full geometry, no marker shown.

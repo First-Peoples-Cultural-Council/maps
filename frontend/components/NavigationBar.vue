@@ -4,7 +4,7 @@
       <Event />
       <div
         v-if="isLoggedIn"
-        class="user-container cursor-pointer hide-mobile"
+        class="user-container menu-container cursor-pointer hide-mobile"
         @click="profile"
       >
         <div
@@ -293,13 +293,16 @@ export default {
   background-color: white;
   padding: 0.67em;
   z-index: 50;
-  box-shadow: 0px 3px 6px #00000022;
   border: 1px solid #beb2a5;
   border-radius: 2em;
   margin-right: 0.5em;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+}
+
+.menu-container {
+  box-shadow: 0px 3px 6px #00000022;
 }
 
 .user-container {

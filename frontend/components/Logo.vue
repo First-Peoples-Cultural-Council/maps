@@ -59,7 +59,7 @@ export default {
 
 <style>
 .logo-parent {
-  background: url('../assets/images/logo_background.svg');
+  background: url('../assets/images/logo_background.png');
 }
 .logo-container {
   display: flex;
