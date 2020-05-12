@@ -1,6 +1,5 @@
-from django.conf import settings
-from django.db import transaction
-from django.shortcuts import render
+import os
+import hashlib
 
 from rest_framework import viewsets, generics, mixins
 from rest_framework.views import APIView
@@ -8,18 +7,33 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
+from django.conf import settings
+from django.db import transaction
+from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import User, Administrator, ProfileClaimRecord
-from .notifications import _format_fpcc, claim_profile
+from .notifications import _format_fpcc
 from .serializers import UserSerializer
 from .cognito import verify_token
 
 from language.models import PlaceName, RelatedData
+
+
+def validate_key(encoded_email, key):
+    invite_salt = os.environ['INVITE_SALT'].encode('utf-8')
+
+    # Confirmation key used to check against submitted key
+    confirmation_key = hashlib.sha256(
+        invite_salt + encoded_email).hexdigest()
+
+    # Value would be true if key and confirmation key are equal; false otherwise
+    return True if key == confirmation_key else False
 
 
 # To enable only UPDATE and RETRIEVE, we create a custom ViewSet class...
@@ -119,7 +133,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
 
 class ConfirmClaimView(APIView):
-    @method_decorator(never_cache)
+    @method_decorator(never_cache, login_required)
     def get(self, request, email, key):
         # If record exists set is_claimed to true and assign user to placename
         try:
@@ -134,7 +148,6 @@ class ConfirmClaimView(APIView):
                     profile = record.profile
                     profile.owner = user
                     profile.save()
-
 
                     # Update and Save record
                     record.is_claimed = True
@@ -162,33 +175,57 @@ class ConfirmClaimView(APIView):
             })
 
 
-class ClaimProfileView(APIView):
-    @method_decorator(login_required)
+# class ClaimProfileView(APIView):
+#     @method_decorator(login_required)
+#     def post(self, request):
+#         data = request.data
+
+#         # Login required would make sure this works
+#         user = request.user
+
+#         if 'placename' in data:
+#             placename_id = data.get('placename')
+#             placename = PlaceName.objects.get(id=placename_id)
+
+#             if placename.owner is None:
+#                 email_data = RelatedData.objects.get(
+#                     data_type='email', placename=placename)
+
+#                 claim_profile(email_data)
+#                 return Response({
+#                     'success': True,
+#                     'message': 'Claim request has been sent to %s' % email_data.value
+#                 })
+#             else:
+#                 return Response({
+#                     'success': False,
+#                     'message': 'This profile has already been claimed'
+#                 })
+#         else:
+#             return Response({
+#                 'success': False,
+#                 'message': 'Invalid request.'
+#             })
+
+
+class ValidateInviteView(APIView):
     def post(self, request):
         data = request.data
 
-        # Login required would make sure this works
-        user = request.user
+        if not os.environ['INVITE_SALT']:
+            raise Exception("INVITE_SALT environment variable not set up.")
 
-        if 'placename' in data:
-            placename_id = data.get('placename')
-            placename = PlaceName.objects.get(id=placename_id)
+        if 'email' in data and 'key' in data:
+            # Actual Post Data
+            encoded_email = data.get('email').encode('utf-8')
+            key = data.get('key')
 
-            if placename.owner is None:
-                email_data = RelatedData.objects.get(data_type='email', placename=placename)
+            is_valid = validate_key(encoded_email, key)
 
-                claim_profile(user.email, email_data)
-                return Response({
-                    'success': True,
-                    'message': 'Claim request has been sent to %s' % email_data.value
-                })
-            else:
-                return Response({
-                    'success': False,
-                    'message': 'This profile has already been claimed'
-                })
+            return Response({
+                'valid': is_valid
+            })
         else:
             return Response({
-                'success': False,
-                'message': 'Invalid request.'
+                'valid': False
             })
