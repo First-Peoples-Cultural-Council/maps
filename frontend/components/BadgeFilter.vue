@@ -206,6 +206,7 @@ export default {
   font: Bold 15px/18px Lato;
   text-transform: lowercase;
   color: #151515;
+  overflow: hidden;
 }
 
 .remove-tag-btn {
