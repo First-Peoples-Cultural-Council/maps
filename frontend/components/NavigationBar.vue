@@ -160,12 +160,7 @@
               <a class="color-gray" href="/page/help">Help</a>
             </li>
             <li class="login-nav cursor-pointer">
-              <a
-                v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
-                class="d-block"
-                >Login</a
-              >
+              <a v-if="!email" :href="getLoginUrl" class="d-block">Login</a>
               <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
@@ -239,8 +234,7 @@ export default {
       )
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     handleLogoClick() {
       this.$router.push({
@@ -269,8 +263,13 @@ export default {
       this.closeNav()
     },
     redirectLogin() {
-      window.location.href =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+      window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+    redirectLogout() {
+      window.location.href = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+    getLoginUrl() {
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
   }
 }
