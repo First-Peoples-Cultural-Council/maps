@@ -47,9 +47,8 @@
               <span
                 v-for="tag in taxonomies"
                 :key="tag.name"
-                @click.stop.prevent="
-                  $store.commit('arts/setTaxonomyTag', [tag.name])
-                "
+                :class="taxonomyClass(tag.name)"
+                @click.stop.prevent="filterTaxonomy([tag.name])"
                 >{{ tag.name }}</span
               >
             </div>
@@ -108,9 +107,28 @@ export default {
             taxo => !this.blockedTag.includes(taxo.name)
           )
         : []
+    },
+    taxonomyFilter() {
+      return this.$store.state.arts.taxonomyFilter
     }
   },
   methods: {
+    filterTaxonomy(filter) {
+      // Scroll back to top when clicking taxonomy in the cards
+      const desktopContainer = document.querySelector('#sidebar-container')
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      desktopContainer.scrollTop = 0
+      mobileContainer.scrollTop = 0
+      this.$store.commit('arts/setTaxonomyTag', filter)
+    },
+    taxonomyClass(tag) {
+      return this.taxonomyFilter.some(taxonomy => {
+        console.log(taxonomy === tag)
+        return taxonomy === tag
+      })
+        ? 'taxonomy-selected'
+        : ''
+    },
     handleMouseOver() {
       this.hover = true
       // in some cases, we list places without full geometry, no marker shown.
@@ -165,6 +183,16 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+}
+
+.taxonomy-selected {
+  color: #fff !important;
+  background-color: #545b62 !important;
+
+  &:hover {
+    background: #ddd4c6 !important;
+    color: #707070 !important;
+  }
 }
 
 .artist-tags-container span {

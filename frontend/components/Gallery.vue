@@ -106,6 +106,9 @@
             v-lazy="getMediaUrl(mediaData.image)"
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
           />
+          <span class="media-copyright">
+            &copy; copyright text here
+          </span>
         </div>
       </div>
       <button
@@ -349,6 +352,16 @@ export default {
       width: 20px;
       height: 20px;
     }
+  }
+
+  .media-copyright {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+
+    background: #fff;
+    color: #000;
+    padding: 0.25em 0.5em;
   }
 }
 

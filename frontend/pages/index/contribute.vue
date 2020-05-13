@@ -315,6 +315,42 @@
 
               <div class="website-container mt-3">
                 <div>
+                  <label class="contribute-title-one">Awards</label>
+                  <ToolTip
+                    content="Show the list of Awards that this Artist have achieved. Add as many as you want."
+                  ></ToolTip>
+                </div>
+
+                <div
+                  v-for="(award, index) in awardsList"
+                  :key="index"
+                  class="site-input-container"
+                >
+                  <b-form-input
+                    :id="`site-${index}`"
+                    v-model="award.value"
+                    type="text"
+                  ></b-form-input>
+                  <span
+                    v-if="
+                      (index !== 0 && awardsList.length !== 1) ||
+                        awardsList.length > 1
+                    "
+                    class="site-btn"
+                    @click="removeAward(index)"
+                    >-</span
+                  >
+                  <span
+                    v-if="index + 1 === awardsList.length"
+                    class="site-btn"
+                    @click="addAward()"
+                    >+</span
+                  >
+                </div>
+              </div>
+
+              <div class="website-container mt-3">
+                <div>
                   <label class="contribute-title-one">Website</label>
                   <ToolTip
                     content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
@@ -341,7 +377,7 @@
                         websiteList.length > 1
                     "
                     class="site-btn"
-                    @click="removeSite()"
+                    @click="removeSite(index)"
                     >-</span
                   >
                   <span
@@ -646,7 +682,7 @@ export default {
       fileSrc: null,
       fileImg: null,
       websiteList: [],
-      websiteCount: 1,
+      awardsList: [],
       kinds: ['Artist', 'Event', 'Public Art', 'Organization'],
       kindSelected: 'Artist',
       taxonomySelected: [],
@@ -902,7 +938,7 @@ export default {
     }
     this.initQuill()
     this.addSite()
-
+    this.addAward()
     this.setDateTimeNow()
   },
   methods: {
@@ -918,6 +954,14 @@ export default {
     },
     removeSite(index) {
       this.websiteList.splice(index, 1)
+    },
+    addAward() {
+      this.awardsList.push({
+        value: null
+      })
+    },
+    removeAward(index) {
+      this.awardsList.splice(index, 1)
     },
     removeImg() {
       this.fileImg = null
@@ -1217,6 +1261,11 @@ export default {
 .multiselect__element span {
   word-break: break-all;
   white-space: normal;
+}
+
+.multiselect__content-wrapper {
+  border: 1px solid #00000044;
+  box-shadow: 0px 9px 12px #00000044;
 }
 
 #quill {

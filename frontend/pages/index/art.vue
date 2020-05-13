@@ -320,7 +320,7 @@ export default {
             return art.properties.taxonomies.some(
               taxonomy =>
                 taxonomy.name ===
-                this.taxonomyFilter[this.taxonomyFilter.length - 1]
+                this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
             )
           })
         : artsArray
