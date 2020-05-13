@@ -1219,6 +1219,11 @@ export default {
   white-space: normal;
 }
 
+.multiselect__content-wrapper {
+  border: 1px solid #00000044;
+  box-shadow: 0px 9px 12px #00000044;
+}
+
 #quill {
   height: 300px;
   margin-bottom: 1em;
