@@ -41,6 +41,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         """
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
+        print(result)
         if "email" in result:
             try:
                 user = User.objects.get(email=result["email"].strip())
@@ -50,7 +51,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
-                    picture=result['picture'],
+                    picture=result.get('picture', None),
                     first_name=result['given_name'],
                     last_name=result['family_name']
                 )
