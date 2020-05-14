@@ -41,7 +41,6 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         """
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
-        print(result)
         if "email" in result:
             try:
                 user = User.objects.get(email=result["email"].strip())
