@@ -37,7 +37,7 @@
             </span>
           </div>
           <div
-            v-if="artistCount === 0 && this.$route.name !== 'index-art-art'"
+            v-if="artistCount === 0 && !mediaData.media_file"
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
           >
@@ -107,7 +107,7 @@
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
           />
           <span class="media-copyright">
-            &copy; copyright text here
+            Copyright &copy; {{ returnCopyright(false) }}
           </span>
         </div>
       </div>
@@ -128,7 +128,7 @@
         @click="selectCurrentIndex(item)"
       >
         <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
-        <img v-else v-lazy="item.image" />
+        <img v-else v-lazy="getMediaUrl(item.image)" />
       </div>
     </div>
   </div>
@@ -210,6 +210,9 @@ export default {
       return this.mediaIndex === this.relatedMedia.length - 1
     }
   },
+  mounted() {
+    console.log(this.relatedMedia)
+  },
   methods: {
     getMediaUrl,
     returnArtists() {
@@ -220,6 +223,11 @@ export default {
             })
           : this.placename
       return `By ${listOfArtist}`
+    },
+    returnCopyright(copyright) {
+      return copyright
+        ? copyright.value
+        : `${new Date().getFullYear()} ${this.placename}`
     },
     toggleFullscreen() {
       const mediaImg = this.$refs.mediaImg
@@ -246,8 +254,11 @@ export default {
       return match && match[7].length === 11 ? match[7] : false
     },
     handleProfileClick() {
+      const getPlaceName = this.mediaData.file_type
+        ? this.placename
+        : this.mediaData.name
       this.toggleGallery()
-      this.checkProfile(this.placename)
+      this.checkProfile(getPlaceName)
     }
   }
 }
