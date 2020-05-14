@@ -22,6 +22,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_point_icon_big.svg"
                 alt="Add a point"
               />
@@ -40,6 +41,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_area_icon_big.svg"
                 alt="Add an area"
               />
@@ -59,6 +61,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_area_icon_big.svg"
                 alt="Add a line"
               />
@@ -73,39 +76,92 @@
             </div>
           </div></b-list-group-item
         >
-      </b-list-group>
-      <div class="placename-btn-container">
-        <div class="placename-add-btn" @click="validateArtist($event)">
-          <img
-            class="add-btn"
-            src="@/assets/images/artwork_icon.svg"
-            alt="Zoom In"
-          />
-          Upload Your Artwork <span>(I'm an Artist)</span>
-        </div>
-        <div
-          class="placename-add-btn"
+        <b-list-group-item button @click="validateArtist($event)">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artwork_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Upload Your Artwork (I'm an Artist)
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
           @click="handlePlaceClick($event, 'placename', 'Event')"
         >
-          <img
-            class="add-btn"
-            src="@/assets/images/event_icon.svg"
-            alt="Event"
-          />
-          Add An Event
-        </div>
-        <div
-          class="placename-add-btn"
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/event_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Event
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
           @click="handlePlaceClick($event, 'placename', 'Public Art')"
         >
-          <img
-            class="add-btn"
-            src="@/assets/images/public_art_icon.svg"
-            alt="Public Art"
-          />
-          Add A Public Art
-        </div>
-      </div>
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/public_art_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add a Public Art
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Organization')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/organization_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Organization
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+      </b-list-group>
     </b-modal>
     <MessageBox
       :show="showMessage"
@@ -211,6 +267,11 @@ export default {
   text-transform: uppercase;
 }
 
+.point-btn {
+  width: 51px;
+  height: 51px;
+}
+
 .contribute-container button:hover {
   color: white !important;
 }
@@ -218,46 +279,5 @@ export default {
 #contribute-modal .modal-body {
   padding: 0;
   margin: 0;
-}
-
-/* Placename Container */
-.placename-btn-container {
-  z-index: 999999;
-  position: absolute;
-  bottom: -127.5px;
-  display: flex;
-  width: 100%;
-
-  .placename-add-btn {
-    background: #fff;
-    flex: 0 0 33%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 125px;
-    background-clip: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    margin-right: 0.3%;
-    font-weight: 700;
-    color: #495057;
-
-    &:hover {
-      cursor: pointer;
-      background-color: #f8f9fa;
-    }
-
-    img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-    }
-
-    .add-btn {
-      width: 40px;
-      height: 40px;
-    }
-  }
 }
 </style>
