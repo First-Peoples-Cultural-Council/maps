@@ -73,9 +73,9 @@
           "
         >
           <section v-if="artDetails.description" class="artist-content-field">
-            <span class="field-title"> Artist Biography</span>
+            <h5 class="field-title">Artist Biography</h5>
             <span class="field-content">
-              <p v-html="stringSplit(artDetails.description)"></p>
+              <span v-html="stringSplit(artDetails.description)"></span>
               <a href="#" @click="toggleDescription">{{
                 collapseDescription ? 'read less' : 'read more'
               }}</a>
