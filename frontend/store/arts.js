@@ -9,7 +9,8 @@ export const state = () => ({
   artsGeo: [],
   artsGeoSet: [],
   artworks: [],
-  artworkSet: []
+  artworkSet: [],
+  eventsSet: []
 })
 
 export const mutations = {
@@ -45,6 +46,9 @@ export const mutations = {
   },
   setArtworksStore(state, artworkSet) {
     state.artworkSet = artworkSet
+  },
+  setNextEvents(state, events) {
+    state.eventsSet = events
   }
 }
 
