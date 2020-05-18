@@ -7,7 +7,7 @@
       @click="redirectToEvent(event.properties.name)"
     >
       <img class="event-img" :src="getEventImg(event.properties.image)" />
-      <div>
+      <div class="event-details">
         <span class="event-date">MAY 23, 2020</span>
         <h4 class="event-title">{{ event.properties.name }}</h4>
         <div class="events-tags-container">
@@ -45,7 +45,6 @@ export default {
     },
     redirectToEvent(name) {
       this.resetState()
-
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
@@ -59,6 +58,7 @@ export default {
       })
     },
     resetState() {
+      this.$store.commit('sidebar/setDrawerContent', false)
       this.$root.$emit('closeEventPopover')
       this.$root.$emit('toggleEventOverlay', false)
     }
@@ -120,6 +120,10 @@ export default {
     height: 135px;
     object-fit: cover;
     margin-right: 1em;
+  }
+
+  .event-details {
+    width: 235px;
   }
 
   &:hover {
