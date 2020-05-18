@@ -1,19 +1,22 @@
 <template>
   <div class="event-card-container">
-    <span class="event-date">Saturday 21TH-2020 - 13:00</span>
-    <h4 class="event-title">'Q'emcin 2 Rivers REmix 2019</h4>
-    <div class="events-tags-container">
-      <span>Artist</span>
-      <span>Visual</span>
-      <span>Painter</span>
+    <img src="@/assets/images/sample.png" />
+    <div>
+      <span class="event-date">MAY 23, 2020</span>
+      <h4 class="event-title">'Q'emcin 2 Rivers REmix 2019</h4>
+      <div class="events-tags-container">
+        <span>Artist</span>
+        <span>Visual</span>
+        <span>Painter</span>
+      </div>
     </div>
-    <img src="@/assets/images/sample-dp.jpg" />
-    <p class="event-description">
+
+    <!-- <p class="event-description">
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, unde qui
       quos iste praesentium laborum? Aliquam at fuga veniam quis id, neque quod
       alias obcaecati porro suscipit ullam ea temporibus!
-    </p>
-    <button>CHECK EVENT</button>
+    </p> -->
+    <!-- <button>CHECK EVENT</button> -->
   </div>
 </template>
 
@@ -25,9 +28,10 @@ export default {}
 .event-card-container {
   width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  margin: 1em 0 3em 0;
+  border-bottom: 1px solid #ddd5cc;
+  padding: 1em 0 1em 0.75em;
+  cursor: pointer;
 
   .event-date {
     font: Medium 15px/20px Proxima Nova;
@@ -39,7 +43,8 @@ export default {}
   .event-title {
     font: Bold 16px/20px Proxima Nova;
     letter-spacing: 0.8px;
-    color: #454545;
+    color: #151515;
+    margin: 0.25em 0;
   }
 
   .event-description {
@@ -57,9 +62,14 @@ export default {}
     font-weight: bold;
   }
   img {
-    width: 100%;
-    height: 250px;
-    object-fit: contain;
+    width: 135px;
+    height: 135px;
+    object-fit: cover;
+    margin-right: 0.5em;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -67,18 +77,22 @@ export default {}
   display: flex;
   flex-wrap: wrap;
   width: inherit;
-  margin: 0.5em 0;
 }
 
 .events-tags-container span {
   flex: 0 1;
-  background: #ddd4c6 0% 0% no-repeat padding-box;
+  background: #ddd4c6;
   border-radius: 2rem;
   color: #707070;
-  padding: 0.2em 0.5em;
-  font-weight: bold;
-  font-size: 0.8;
-  margin: 0.25em 0.25em 0.25em 0;
+  text-transform: uppercase;
+  font: Bold 12px Proxima Nova;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
   text-align: center;
+
+  &:hover {
+    color: #fff;
+    background-color: #545b62;
+  }
 }
 </style>

@@ -9,12 +9,16 @@
       />
     </nav>
     <b-popover
+      id="event-popover-container"
       target="event-icon-container"
       placement="bottom"
       triggers="click"
       :show.sync="showEvents"
     >
       <div class="event-list-container">
+        <EventCard />
+        <EventCard />
+        <EventCard />
         <EventCard />
       </div>
     </b-popover>
@@ -23,6 +27,7 @@
 
 <script>
 import EventCard from '@/components/EventCard.vue'
+import { getApiUrl } from '@/plugins/utils.js'
 export default {
   components: {
     EventCard
@@ -31,6 +36,37 @@ export default {
     return {
       showEvents: false
     }
+  },
+  computed: {
+    arts() {
+      return this.$store.state.arts.arts
+        .filter(art => art.properties.kind === 'event')
+        .slice(0, 7)
+    }
+  },
+  mounted() {
+    const url = `${getApiUrl('arts')}/event`
+
+    const loaded = this.$store.dispatch('arts/isKindLoaded', 'event')
+    const artsIds = this.$store.dispatch('arts/getArtsGeoIds')
+
+    if (!loaded) {
+      // Fetch Arts
+      const data = this.$axios.$get(url)
+
+      if (data) {
+        // Set data with name for clarity
+        const artsSet = data.features
+        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
+
+        // Set language stores
+        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
+        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
+      }
+    }
+  },
+  updated() {
+    console.log('EVENTS', this.arts)
   }
 }
 </script>
@@ -82,16 +118,25 @@ export default {
   padding: 0;
   margin: 0;
 }
+
 .popover {
-  width: 350px;
-  max-width: 350px;
-  max-height: 800px;
+  width: 425px !important;
+  max-width: 425px !important;
+  height: 650px;
+  max-height: 650px;
+}
+
+.popover-body {
+  padding: 0;
 }
 
 .event-list-container {
-  width: 330px;
-  max-height: 750px;
   overflow-y: auto;
-  margin: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 650px;
+  max-height: 650px;
 }
 </style>

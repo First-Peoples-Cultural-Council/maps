@@ -3,11 +3,11 @@
     <div class="event-overlay-container">
       <div class="event-header-container">
         <img
-          src="@/assets/images/plus_bigger_icon.svg"
+          src="@/assets/images/event_icons.svg"
           alt="Event"
           class="event-icon"
         />
-        <span>NEXT EVENTS</span>
+        <span>EVENTS</span>
         <img
           class="event-close-btn"
           src="@/assets/images/close_icon.svg"
@@ -15,7 +15,7 @@
           @click="closeEvent"
         />
       </div>
-      <div class="event-list-container">
+      <div class="overlay-list-container">
         <EventCard />
         <EventCard />
       </div>
@@ -84,10 +84,10 @@ export default {
   height: 18px;
 }
 
-.event-list-container {
+.overlay-list-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 1em;
+  justify-content: flex-start;
 }
 </style>
