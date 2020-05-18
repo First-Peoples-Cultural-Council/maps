@@ -1,30 +1,82 @@
 <template>
-  <div class="event-card-container">
-    <img src="@/assets/images/sample.png" />
-    <div>
-      <span class="event-date">MAY 23, 2020</span>
-      <h4 class="event-title">'Q'emcin 2 Rivers REmix 2019</h4>
-      <div class="events-tags-container">
-        <span>Artist</span>
-        <span>Visual</span>
-        <span>Painter</span>
+  <div class="event-list-container">
+    <div
+      v-for="event in eventsList"
+      :key="event.id"
+      class="event-card-container"
+      @click="redirectToEvent(event.properties.name)"
+    >
+      <img class="event-img" :src="getEventImg(event.properties.image)" />
+      <div>
+        <span class="event-date">MAY 23, 2020</span>
+        <h4 class="event-title">{{ event.properties.name }}</h4>
+        <div class="events-tags-container">
+          <span
+            v-for="taxonomy in event.properties.taxonomies"
+            :key="taxonomy.name"
+            @click.stop.prevent="redirectToFilter(taxonomy.name)"
+            >{{ taxonomy.name }}</span
+          >
+        </div>
       </div>
-    </div>
 
-    <!-- <p class="event-description">
+      <!-- <p class="event-description">
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, unde qui
       quos iste praesentium laborum? Aliquam at fuga veniam quis id, neque quod
       alias obcaecati porro suscipit ullam ea temporibus!
     </p> -->
-    <!-- <button>CHECK EVENT</button> -->
+      <!-- <button>CHECK EVENT</button> -->
+    </div>
   </div>
 </template>
 
 <script>
-export default {}
+import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
+
+export default {
+  computed: {
+    eventsList() {
+      return this.$store.state.arts.eventsSet.slice(0, 7)
+    }
+  },
+  methods: {
+    getEventImg(img) {
+      return img ? getMediaUrl(img) : require(`@/assets/images/event_icon.svg`)
+    },
+    redirectToEvent(name) {
+      this.resetState()
+
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
+    },
+    redirectToFilter(taxonomy) {
+      this.resetState()
+      this.$store.commit('arts/setFilter', 'event')
+      this.$store.commit('arts/setTaxonomyTag', [taxonomy])
+      this.$router.push({
+        path: '/art'
+      })
+    },
+    resetState() {
+      this.$root.$emit('closeEventPopover')
+      this.$root.$emit('toggleEventOverlay', false)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.event-list-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: auto;
+  max-height: 650px;
+}
+
 .event-card-container {
   width: 100%;
   display: flex;
@@ -52,6 +104,7 @@ export default {}
     color: #707070;
     padding: 5px;
   }
+
   button {
     align-self: center;
     background: #b47a2b 0% 0% no-repeat padding-box;
@@ -61,11 +114,12 @@ export default {}
     padding: 0.5em 1.5em;
     font-weight: bold;
   }
-  img {
+
+  .event-img {
     width: 135px;
     height: 135px;
     object-fit: cover;
-    margin-right: 0.5em;
+    margin-right: 1em;
   }
 
   &:hover {
@@ -80,7 +134,7 @@ export default {}
 }
 
 .events-tags-container span {
-  flex: 0 1;
+  flex: 0 0 auto;
   background: #ddd4c6;
   border-radius: 2rem;
   color: #707070;
@@ -93,6 +147,13 @@ export default {}
   &:hover {
     color: #fff;
     background-color: #545b62;
+  }
+}
+
+@media (max-width: 992px) {
+  .event-list-container {
+    height: 100% !important;
+    max-height: 100% !important;
   }
 }
 </style>
