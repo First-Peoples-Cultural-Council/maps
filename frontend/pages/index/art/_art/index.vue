@@ -73,9 +73,9 @@
           "
         >
           <section v-if="artDetails.description" class="artist-content-field">
-            <span class="field-title"> Artist Biography</span>
+            <h5 class="field-title">Artist Biography</h5>
             <span class="field-content">
-              <p v-html="stringSplit(artDetails.description)"></p>
+              <span v-html="stringSplit(artDetails.description)"></span>
               <a href="#" @click="toggleDescription">{{
                 collapseDescription ? 'read less' : 'read more'
               }}</a>
@@ -107,7 +107,7 @@
             <span class="field-content">
               <ul class="artist-social-icons">
                 <li v-for="soc in socialMedia" :key="soc.id">
-                  <a :href="soc.value" target="_blank">
+                  <a :href="checkUrlValid(soc.value)" target="_blank">
                     <img
                       v-if="soc.value.includes('facebook')"
                       src="@/assets/images/arts/facebook.svg"
@@ -256,13 +256,14 @@ export default {
       )
     },
     artistBanner() {
-      const allMedia = [
-        ...this.artDetails.public_arts,
-        ...this.artDetails.medias
-      ]
-      return allMedia.length !== 0
-        ? getMediaUrl(allMedia[0].media_file) || getMediaUrl(allMedia[0].image)
-        : require(`@/assets/images/default_banner.png`)
+      return require(`@/assets/images/default_banner.png`)
+      // const allMedia = [
+      //   ...this.artDetails.public_arts,
+      //   ...this.artDetails.medias
+      // ]
+      // return allMedia.length !== 0
+      //   ? getMediaUrl(allMedia[0].media_file) || getMediaUrl(allMedia[0].image)
+      //   : require(`@/assets/images/default_banner.png`)
     },
     artistImg() {
       return this.artDetails.image

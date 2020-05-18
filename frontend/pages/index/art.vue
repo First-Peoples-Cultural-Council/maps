@@ -379,6 +379,13 @@ export default {
       this.maximumLength = 0
       this.loadKindData(name)
       this.handleBadge($event, name)
+
+      // update URL, but no functionality
+      this.$router.push({
+        query: {
+          type: name
+        }
+      })
     },
     resetFilter() {
       this.$store.commit('arts/setTaxonomyTag', [])

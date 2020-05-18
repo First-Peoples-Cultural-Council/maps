@@ -178,6 +178,56 @@
             </div>
           </div>
         </div>
+
+        <template>
+          <h5
+            class="color-gray font-08 text-uppercase font-weight-bold mb-1 mt-3"
+          >
+            Placenames ({{ notifications.length }})
+          </h5>
+          <div class="placename-list-container">
+            <div class="placename-container">
+              <img src="@/assets/images/sample.jpg" />
+              <div class="placename-details">
+                <span class="title"> Placename Title</span>
+
+                <div>
+                  <button>View</button>
+                  <button>Edit</button>
+                </div>
+              </div>
+            </div>
+            <div class="placename-container">
+              <img src="@/assets/images/sample.jpg" />
+              <div class="placename-details">
+                <span class="title"> Placename Title</span>
+
+                <div>
+                  <button>View</button>
+                  <button>Edit</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="placename-container add-placename">
+              <img
+                class="add-btn"
+                src="@/assets/images/plus_icon.svg"
+                alt="Zoom In"
+              />
+              Add New Placename
+            </div>
+          </div>
+        </template>
+
+        <template>
+          <h5
+            class="color-gray font-08 text-uppercase font-weight-bold mb-1 mt-3"
+          >
+            Artworks ({{ notifications.length }})
+          </h5>
+          <MediaGallery :media-list="[]"></MediaGallery>
+        </template>
       </section>
     </div>
   </div>
@@ -192,6 +242,7 @@ import { zoomToPoint } from '@/mixins/map.js'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Logo from '@/components/Logo.vue'
+import MediaGallery from '@/components/MediaGallery.vue'
 
 export default {
   components: {
@@ -200,7 +251,8 @@ export default {
     PlacesCard,
     LanguageCard,
     CommunityCard,
-    Logo
+    Logo,
+    MediaGallery
   },
   computed: {
     isLoggedIn() {
@@ -294,4 +346,45 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.placename-list-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  .placename-container {
+    flex: 0 0 32%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 0.25em;
+    box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-sizing: border-box;
+    margin-right: 1%;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 85px;
+    }
+
+    .placename-details {
+      display: flex;
+      flex-direction: column;
+      margin: 0 0.5em 0.5em 0.5em;
+    }
+  }
+
+  .add-placename {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+</style>

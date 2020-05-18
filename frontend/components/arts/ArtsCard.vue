@@ -123,7 +123,6 @@ export default {
     },
     taxonomyClass(tag) {
       return this.taxonomyFilter.some(taxonomy => {
-        console.log(taxonomy === tag)
         return taxonomy === tag
       })
         ? 'taxonomy-selected'

@@ -210,7 +210,7 @@ export default {
 }
 
 .remove-tag-btn {
-  margin: 0.25em;
+  margin: 0 0.25em;
 }
 
 .popover {

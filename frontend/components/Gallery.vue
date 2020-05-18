@@ -1,6 +1,6 @@
 <template>
   <div class="gallery-modal">
-    <div class="btn-close cursor-pointer" @click="toggleGallery" />
+    <div class="btn-close cursor-pointer" @click="closeGallery" />
 
     <div
       :class="
@@ -37,7 +37,10 @@
             </span>
           </div>
           <div
-            v-if="artistCount === 0 && this.$route.name !== 'index-art-art'"
+            v-if="
+              (artistCount === 0 && this.$route.name !== 'index-art-art') ||
+                !mediaData.media_file
+            "
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
           >
@@ -107,7 +110,7 @@
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
           />
           <span class="media-copyright">
-            &copy; copyright text here
+            Copyright &copy; {{ returnCopyright(false) }}
           </span>
         </div>
       </div>
@@ -128,14 +131,14 @@
         @click="selectCurrentIndex(item)"
       >
         <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
-        <img v-else v-lazy="item.image" />
+        <img v-else v-lazy="getMediaUrl(item.image)" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getMediaUrl } from '@/plugins/utils.js'
+import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
 export default {
   props: {
     toggleGallery: {
@@ -212,14 +215,10 @@ export default {
   },
   methods: {
     getMediaUrl,
-    returnArtists() {
-      const listOfArtist =
-        this.artistCount !== 0
-          ? this.artists.map((artist, index) => {
-              return `<a href="#" "> ${artist.name}</a>`
-            })
-          : this.placename
-      return `By ${listOfArtist}`
+    returnCopyright(copyright) {
+      return copyright
+        ? copyright.value
+        : `${new Date().getFullYear()} ${this.placename}`
     },
     toggleFullscreen() {
       const mediaImg = this.$refs.mediaImg
@@ -233,12 +232,22 @@ export default {
     },
     selectCurrentIndex(item) {
       this.mediaData = item
+      this.updateURL()
     },
     nextSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex + 1]
+      this.updateURL()
     },
     previousSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex - 1]
+      this.updateURL()
+    },
+    updateURL() {
+      this.$router.push({
+        query: {
+          artwork: encodeFPCC(this.mediaData.name)
+        }
+      })
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
@@ -246,8 +255,15 @@ export default {
       return match && match[7].length === 11 ? match[7] : false
     },
     handleProfileClick() {
+      const getPlaceName = this.mediaData.file_type
+        ? this.placename
+        : this.mediaData.name
+      this.closeGallery()
+      this.checkProfile(getPlaceName)
+    },
+    closeGallery() {
+      this.$router.push(this.$route.path)
       this.toggleGallery()
-      this.checkProfile(this.placename)
     }
   }
 }
@@ -356,8 +372,9 @@ export default {
 
   .media-copyright {
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     right: 15px;
+    font-size: 0.8em;
 
     background: #fff;
     color: #000;
