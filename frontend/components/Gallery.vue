@@ -1,6 +1,6 @@
 <template>
   <div class="gallery-modal">
-    <div class="btn-close cursor-pointer" @click="toggleGallery" />
+    <div class="btn-close cursor-pointer" @click="closeGallery" />
 
     <div
       :class="
@@ -37,7 +37,10 @@
             </span>
           </div>
           <div
-            v-if="artistCount === 0 && !mediaData.media_file"
+            v-if="
+              (artistCount === 0 && this.$route.name !== 'index-art-art') ||
+                !mediaData.media_file
+            "
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
           >
@@ -135,7 +138,7 @@
 </template>
 
 <script>
-import { getMediaUrl } from '@/plugins/utils.js'
+import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
 export default {
   props: {
     toggleGallery: {
@@ -210,20 +213,8 @@ export default {
       return this.mediaIndex === this.relatedMedia.length - 1
     }
   },
-  mounted() {
-    console.log(this.relatedMedia)
-  },
   methods: {
     getMediaUrl,
-    returnArtists() {
-      const listOfArtist =
-        this.artistCount !== 0
-          ? this.artists.map((artist, index) => {
-              return `<a href="#" "> ${artist.name}</a>`
-            })
-          : this.placename
-      return `By ${listOfArtist}`
-    },
     returnCopyright(copyright) {
       return copyright
         ? copyright.value
@@ -241,12 +232,22 @@ export default {
     },
     selectCurrentIndex(item) {
       this.mediaData = item
+      this.updateURL()
     },
     nextSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex + 1]
+      this.updateURL()
     },
     previousSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex - 1]
+      this.updateURL()
+    },
+    updateURL() {
+      this.$router.push({
+        query: {
+          artwork: encodeFPCC(this.mediaData.name)
+        }
+      })
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
@@ -257,8 +258,12 @@ export default {
       const getPlaceName = this.mediaData.file_type
         ? this.placename
         : this.mediaData.name
-      this.toggleGallery()
+      this.closeGallery()
       this.checkProfile(getPlaceName)
+    },
+    closeGallery() {
+      this.$router.push(this.$route.path)
+      this.toggleGallery()
     }
   }
 }
@@ -367,8 +372,9 @@ export default {
 
   .media-copyright {
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     right: 15px;
+    font-size: 0.8em;
 
     background: #fff;
     color: #000;
