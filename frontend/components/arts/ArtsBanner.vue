@@ -118,6 +118,7 @@ export default {
   },
   methods: {
     redirectToHome(name) {
+      this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
       this.resetState()
