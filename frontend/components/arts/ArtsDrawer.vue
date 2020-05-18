@@ -157,6 +157,7 @@ export default {
     }
   },
   mounted() {
+    // Fetch all medias
     if (!this.isArtsDetailPage) {
       this.$store.commit('sidebar/setGallery', !!this.currentMedia)
 
@@ -171,14 +172,31 @@ export default {
     } else {
       this.listOfMedias = this.art.medias
     }
+
+    // check if query URL exist
+    const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
+    const foundMedia = allArtworks.find(
+      media => encodeFPCC(media.name) === this.$route.query.artwork
+    )
+    if (foundMedia) {
+      this.currentMedia = foundMedia
+      this.toggleGallery()
+    } else {
+      this.$router.push(this.$route.path)
+    }
   },
   methods: {
     toggleGallery() {
       this.$store.commit('sidebar/setGallery', !this.showGallery)
     },
     showMedia(media) {
-      this.toggleGallery()
       this.currentMedia = media
+      this.$router.push({
+        query: {
+          artwork: encodeFPCC(media.name)
+        }
+      })
+      this.toggleGallery()
     },
     renderArtistImg(img) {
       return (
