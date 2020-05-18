@@ -380,12 +380,12 @@ export default {
       this.loadKindData(name)
       this.handleBadge($event, name)
 
-      // update URL, but no functionality
-      this.$router.push({
-        query: {
-          type: name
-        }
-      })
+      // // update URL, but no functionality
+      // this.$router.push({
+      //   query: {
+      //     type: name
+      //   }
+      // })
     },
     resetFilter() {
       this.$store.commit('arts/setTaxonomyTag', [])
@@ -440,6 +440,7 @@ export default {
       // If another artwork is selected when there's open, close it to recalibrate data, then open
       else if (currentArt !== this.artDetails && this.showDrawer) {
         this.artDetails = currentArt
+        this.updateURL(currentArt)
         // Important to open it after closing the drawer
         this.closeDrawer()
         setTimeout(() => {
@@ -450,14 +451,18 @@ export default {
       else if (currentArt !== this.artDetails || !this.showDrawer) {
         this.artDetails = currentArt
         this.openDrawer()
+        this.updateURL(currentArt)
       }
-
-      // Update URL
-      // history.pushState(
-      //   {},
-      //   null,
-      //   this.$route.path + '/' + this.artDetails.placename.name
-      // )
+    },
+    updateURL(artDetails) {
+      // Update URL with Artist name, and media name, so when you copy it, it redirects to the Artist page
+      history.pushState(
+        {},
+        null,
+        `${this.$route.path}/${encodeFPCC(
+          artDetails.placename.name
+        )}?artwork=${encodeFPCC(artDetails.name)}`
+      )
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
