@@ -453,6 +453,8 @@ export default {
         this.openDrawer()
         this.updateURL(currentArt)
       }
+      // Close Event Popover
+      this.$root.$emit('closeEventPopover')
     },
     updateURL(artDetails) {
       // Update URL with Artist name, and media name, so when you copy it, it redirects to the Artist page

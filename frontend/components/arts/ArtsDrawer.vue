@@ -209,6 +209,8 @@ export default {
       }
 
       this.toggleGallery()
+      // Close Event Popover if open
+      this.$root.$emit('closeEventPopover')
     },
     renderArtistImg(img) {
       return (
