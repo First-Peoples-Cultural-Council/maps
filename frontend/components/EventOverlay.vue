@@ -15,10 +15,9 @@
           @click="closeEvent"
         />
       </div>
-      <div class="overlay-list-container">
-        <EventCard />
-        <EventCard />
-      </div>
+
+      <!-- Shows List of Events  -->
+      <EventCard />
     </div>
   </div>
 </template>
@@ -82,12 +81,5 @@ export default {
   right: 10px;
   width: 18px;
   height: 18px;
-}
-
-.overlay-list-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
 }
 </style>

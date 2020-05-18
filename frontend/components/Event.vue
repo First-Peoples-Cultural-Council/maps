@@ -15,19 +15,15 @@
       triggers="click"
       :show.sync="showEvents"
     >
-      <div class="event-list-container">
-        <EventCard />
-        <EventCard />
-        <EventCard />
-        <EventCard />
-      </div>
+      <!-- Shows List of Events  -->
+      <EventCard />
     </b-popover>
   </div>
 </template>
 
 <script>
 import EventCard from '@/components/EventCard.vue'
-import { getApiUrl } from '@/plugins/utils.js'
+
 export default {
   components: {
     EventCard
@@ -37,36 +33,10 @@ export default {
       showEvents: false
     }
   },
-  computed: {
-    arts() {
-      return this.$store.state.arts.arts
-        .filter(art => art.properties.kind === 'event')
-        .slice(0, 7)
-    }
-  },
   mounted() {
-    const url = `${getApiUrl('arts')}/event`
-
-    const loaded = this.$store.dispatch('arts/isKindLoaded', 'event')
-    const artsIds = this.$store.dispatch('arts/getArtsGeoIds')
-
-    if (!loaded) {
-      // Fetch Arts
-      const data = this.$axios.$get(url)
-
-      if (data) {
-        // Set data with name for clarity
-        const artsSet = data.features
-        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
-
-        // Set language stores
-        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
-        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
-      }
-    }
-  },
-  updated() {
-    console.log('EVENTS', this.arts)
+    this.$root.$on('closeEventPopover', e => {
+      this.showEvents = false
+    })
   }
 }
 </script>
@@ -122,21 +92,11 @@ export default {
 .popover {
   width: 425px !important;
   max-width: 425px !important;
-  height: 650px;
+  height: auto;
   max-height: 650px;
 }
 
 .popover-body {
   padding: 0;
-}
-
-.event-list-container {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: 650px;
-  max-height: 650px;
 }
 </style>
