@@ -9,20 +9,21 @@
       />
     </nav>
     <b-popover
+      id="event-popover-container"
       target="event-icon-container"
       placement="bottom"
       triggers="click"
       :show.sync="showEvents"
     >
-      <div class="event-list-container">
-        <EventCard />
-      </div>
+      <!-- Shows List of Events  -->
+      <EventCard />
     </b-popover>
   </div>
 </template>
 
 <script>
 import EventCard from '@/components/EventCard.vue'
+
 export default {
   components: {
     EventCard
@@ -31,6 +32,11 @@ export default {
     return {
       showEvents: false
     }
+  },
+  mounted() {
+    this.$root.$on('closeEventPopover', e => {
+      this.showEvents = false
+    })
   }
 }
 </script>
@@ -82,16 +88,15 @@ export default {
   padding: 0;
   margin: 0;
 }
+
 .popover {
-  width: 350px;
-  max-width: 350px;
-  max-height: 800px;
+  width: 425px !important;
+  max-width: 425px !important;
+  height: auto;
+  max-height: 650px;
 }
 
-.event-list-container {
-  width: 330px;
-  max-height: 750px;
-  overflow-y: auto;
-  margin: 0.5rem 0.75rem;
+.popover-body {
+  padding: 0;
 }
 </style>

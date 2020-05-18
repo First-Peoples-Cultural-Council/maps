@@ -200,5 +200,6 @@ export default {
   margin: 0.1em;
   padding: 0;
   letter-spacing: 0.5px;
+  width: 95%;
 }
 </style>

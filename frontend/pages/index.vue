@@ -373,7 +373,8 @@ export default {
       $axios.$get(getApiUrl('placename-search')),
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
-      $axios.$get(getApiUrl('taxonomy'))
+      $axios.$get(getApiUrl('taxonomy')),
+      $axios.$get(getApiUrl('arts/event'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -385,6 +386,7 @@ export default {
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
     store.commit('arts/setTaxonomySearchSet', results[5])
+    store.commit('arts/setNextEvents', results[6].features)
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -479,7 +481,7 @@ export default {
       this.showSearchOverlay = false
     })
     this.$root.$on('toggleEventOverlay', d => {
-      this.showEventOverlay = !this.showEventOverlay
+      this.showEventOverlay = d
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
