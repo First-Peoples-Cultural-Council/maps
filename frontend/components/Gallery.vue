@@ -193,6 +193,9 @@ export default {
     }
   },
   computed: {
+    isArtsDetailPage() {
+      return this.$route.name === 'index-art-art'
+    },
     artistCount() {
       return this.artists ? this.artists.length : 0
     },
@@ -243,11 +246,22 @@ export default {
       this.updateURL()
     },
     updateURL() {
-      this.$router.push({
-        query: {
-          artwork: encodeFPCC(this.mediaData.name)
-        }
-      })
+      if (this.isArtsDetailPage) {
+        this.$router.push({
+          query: {
+            artwork: encodeFPCC(this.mediaData.name)
+          }
+        })
+      } else {
+        // When on arts list page, manually update the URL
+        history.pushState(
+          {},
+          null,
+          `${this.$route.path}/${encodeFPCC(
+            this.placename
+          )}?artwork=${encodeFPCC(this.mediaData.name)}`
+        )
+      }
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/

@@ -181,7 +181,7 @@ export default {
     if (foundMedia) {
       this.currentMedia = foundMedia
       this.toggleGallery()
-    } else {
+    } else if (this.isArtsDetailPage) {
       this.$router.push(this.$route.path)
     }
   },
@@ -191,11 +191,23 @@ export default {
     },
     showMedia(media) {
       this.currentMedia = media
-      this.$router.push({
-        query: {
-          artwork: encodeFPCC(media.name)
-        }
-      })
+      if (this.isArtsDetailPage) {
+        this.$router.push({
+          query: {
+            artwork: encodeFPCC(media.name)
+          }
+        })
+      } else {
+        // When on arts list page, manually update the URL
+        history.pushState(
+          {},
+          null,
+          `${this.$route.path}/${encodeFPCC(this.artName)}?artwork=${encodeFPCC(
+            media.name
+          )}`
+        )
+      }
+
       this.toggleGallery()
     },
     renderArtistImg(img) {
