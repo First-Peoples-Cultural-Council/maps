@@ -334,7 +334,7 @@ export default {
     this.$store.commit('sidebar/toggleLoading', true)
     const currentArtworks = this.$store.state.arts.artworkSet
 
-    if (currentArtworks.length === 0) {
+    if (currentArtworks.length === 0 && this.filterMode === 'artwork') {
       const artworks = await this.$axios.$get(
         getApiUrl('arts/artwork?format=json')
       )
@@ -345,7 +345,14 @@ export default {
       } else {
         this.$store.commit('sidebar/toggleLoading', true)
       }
+    } else {
+      this.loadKindData()
     }
+
+    // If you're in Arts Page, and trigger sorting by taxonomy, this will load the data
+    this.$root.$on('triggerLoadKindData', e => {
+      this.loadKindData()
+    })
 
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
@@ -377,8 +384,8 @@ export default {
       }
       this.resetFilter()
       this.maximumLength = 0
-      this.loadKindData(name)
       this.handleBadge($event, name)
+      this.loadKindData()
 
       // // update URL, but no functionality
       // this.$router.push({
@@ -398,14 +405,15 @@ export default {
         this.$store.commit('sidebar/toggleLoading', false)
       }, 250)
     },
-    async loadKindData(kind) {
+    async loadKindData() {
+      const kind = this.filterMode
       this.$store.commit('sidebar/toggleLoading', true) // Start loading
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
       const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
 
-      if (!loaded && this.filterMode !== 'artwork') {
+      if (!loaded && kind !== 'artwork') {
         // Fetch Arts
         const data = await this.$axios.$get(url)
 
@@ -453,7 +461,7 @@ export default {
         this.openDrawer()
         this.updateURL(currentArt)
       }
-      // Close Event Popover
+      // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
     },
     updateURL(artDetails) {

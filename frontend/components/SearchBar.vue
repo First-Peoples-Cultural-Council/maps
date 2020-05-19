@@ -617,6 +617,7 @@ export default {
   width: 600px;
   margin: 0 auto;
 }
+
 .searchbar-container-detail {
   left: 45%;
 }

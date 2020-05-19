@@ -32,32 +32,13 @@
           />
         </nav>
       </div>
-      <div
-        v-else
-        class="navbar-container menu-container cursor-pointer hide-mobile"
-        @click="redirectLogin"
-      >
-        <nav class="navbar-icon-container">
-          <span>LOGIN</span>
-          <img
-            src="@/assets/images/user_icon.svg"
-            alt="Menu"
-            class="navbar-icon user_icon"
-          />
-        </nav>
+      <div v-else class="menu-container hide-mobile" @click="redirectLogin">
+        <span>LOGIN</span>
+        <img src="@/assets/images/user_icon.svg" alt="Menu" />
       </div>
-      <div
-        class="navbar-container menu-container cursor-pointer hide-mobile"
-        @click="openNav"
-      >
-        <nav class="navbar-icon-container">
-          <span>MENU</span>
-          <img
-            src="@/assets/images/menu_icon.svg"
-            alt="Menu"
-            class="navbar-icon"
-          />
-        </nav>
+      <div class="menu-container  hide-mobile" @click="openNav">
+        <span>MENU</span>
+        <img src="@/assets/images/menu_icon.svg" alt="Menu" />
       </div>
     </div>
 
@@ -99,14 +80,12 @@
           class="navbar-icon"
         />
       </div>
-      <div class="navbar-container cursor-pointer" @click="openNav">
-        <nav class="navbar-icon-container">
-          <img
-            src="@/assets/images/menu_icon.svg"
-            alt="Menu"
-            class="navbar-icon"
-          />
-        </nav>
+      <div class="navbar-icon-container cursor-pointer" @click="openNav">
+        <img
+          src="@/assets/images/menu_icon.svg"
+          alt="Menu"
+          class="navbar-icon"
+        />
       </div>
     </div>
     <transition name="fade">
@@ -275,7 +254,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .navigation-container {
   display: flex;
 }
@@ -288,27 +267,36 @@ export default {
   background-color: rgba(173, 20, 20, 0.753);
   border-radius: 50%;
 }
-.navbar-container,
-.user-container {
-  background-color: white;
-  padding: 0.67em;
-  z-index: 50;
-  border: 1px solid #beb2a5;
-  border-radius: 2em;
-  margin-right: 0.5em;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
 
 .menu-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  z-index: 50;
+  border: 1px solid #beb2a5;
+  padding: 0.8em;
+  border-radius: 1.5em;
+  margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
+  color: #151515;
+  font: Bold 15px/18px Proxima Nova;
+
+  & > * {
+    margin: 0 0.4em 0 0.2em;
+  }
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .user-container {
   display: relative;
-  width: 45px;
-  height: 45px;
+  width: 47px;
+  height: 47px;
 }
 .navigation {
   position: fixed;
@@ -389,13 +377,13 @@ export default {
   .menu-container {
     width: 45px;
     height: 45px;
-    margin-right: 0.25em;
+    margin: 0 0.25em;
   }
-  .menu-container .navbar-icon-container span {
+  .menu-container span {
     display: none;
   }
   .user-container {
-    margin-right: 0.25em;
+    margin: 0 0.25em;
   }
 }
 
@@ -404,11 +392,15 @@ export default {
   width: 45px;
   height: 45px;
 }
-.arts-container .menu-container .navbar-icon-container span {
+.arts-container .menu-container span {
   display: none;
 }
+
+.arts-container .menu-container img {
+  margin: 0;
+}
 .arts-container .user-container {
-  margin-right: 0.25em;
+  margin: 0 0.25em;
 }
 
 @media (max-width: 992px) {
