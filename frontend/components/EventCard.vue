@@ -53,6 +53,7 @@ export default {
       this.resetState()
       this.$store.commit('arts/setFilter', 'event')
       this.$store.commit('arts/setTaxonomyTag', [taxonomy])
+      this.$root.$emit('triggerLoadKindData')
       this.$router.push({
         path: '/art'
       })

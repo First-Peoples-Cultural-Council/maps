@@ -272,7 +272,7 @@ export default {
 .panel-artist {
   display: flex;
   justify-content: flex-start;
-  padding: 1em;
+  padding: 0 1em;
 }
 
 .artist-list-container {
@@ -291,7 +291,7 @@ export default {
 .panel-close-btn {
   cursor: pointer;
   position: absolute;
-  top: 5%;
+  top: 25px;
   right: 0;
   height: 35px;
   background-color: #b47a2b;

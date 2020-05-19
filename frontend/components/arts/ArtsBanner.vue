@@ -121,6 +121,7 @@ export default {
       this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
+      this.$root.$emit('triggerLoadKindData')
       this.resetState()
       this.$router.push({
         path: '/art'
