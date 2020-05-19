@@ -58,22 +58,56 @@
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
 
-        <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
+        <!-- <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
           <Notification type="language" title="Claim Profile"></Notification>
           <Notification type="language" title="Edit Profile"></Notification>
-        </div>
+        </div> -->
 
         <!-- Render Arts Detail -->
         <div
-          v-if="isArtist"
           :class="
             `artist-content-container ${
               isCollapse ? 'collapse-content-container' : ''
             }`
           "
         >
+          <!-- Show the Placename image if Public Art and Event -->
+          <div
+            v-if="
+              artDetails.image &&
+                (isPublicArt || artDetails.kind.toLowerCase() === 'event')
+            "
+            class="placename-img-container"
+          >
+            <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
+          </div>
+
+          <!-- Show list of Artist involved, if its a Public Art -->
+
+          <div
+            v-if="artDetails.artists.length !== 0 && isPublicArt"
+            class="artist-content-field"
+          >
+            <h5 class="field-title">Artist:</h5>
+
+            <a
+              v-for="artist in artDetails.artists"
+              :key="artist.id"
+              href="#"
+              @click="checkArtistProfile(artist.name)"
+              >{{ artist.name }}</a
+            >
+          </div>
+
           <section v-if="artDetails.description" class="artist-content-field">
-            <h5 class="field-title">Artist Biography</h5>
+            <h5 class="field-title">
+              {{
+                artDetails.kind.toLowerCase() !== 'public_art'
+                  ? artDetails.kind
+                  : 'Public Art'
+              }}
+              Description:
+            </h5>
             <span class="field-content">
               <span v-html="stringSplit(artDetails.description)"></span>
               <a href="#" @click="toggleDescription">{{
@@ -134,11 +168,6 @@
             </span>
           </section>
         </div>
-        <div
-          v-else
-          class="p-4 m-0 pb-0 field-content"
-          v-html="artDetails.description"
-        ></div>
       </div>
     </div>
     <ArtsDrawer
@@ -153,7 +182,7 @@
     />
     <div
       v-if="isGalleryNotEmpty && !showDrawer"
-      class="hide-mobile panel-collapsable"
+      class="panel-collapsable hide-mobile "
     >
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
         <img src="@/assets/images/go_icon_hover.svg" />
@@ -177,15 +206,13 @@ import {
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
-import Notification from '@/components/Notification.vue'
 
 export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
     Logo,
-    ArtsDrawer,
-    Notification
+    ArtsDrawer
   },
   filters: {
     titleCase(str) {
@@ -220,6 +247,9 @@ export default {
     },
     isArtist() {
       return this.artDetails.kind.toLowerCase() === 'artist'
+    },
+    isPublicArt() {
+      return this.artDetails.kind.toLowerCase() === 'public_art'
     },
     isGalleryNotEmpty() {
       return (
@@ -257,13 +287,6 @@ export default {
     },
     artistBanner() {
       return require(`@/assets/images/default_banner.png`)
-      // const allMedia = [
-      //   ...this.artDetails.public_arts,
-      //   ...this.artDetails.medias
-      // ]
-      // return allMedia.length !== 0
-      //   ? getMediaUrl(allMedia[0].media_file) || getMediaUrl(allMedia[0].image)
-      //   : require(`@/assets/images/default_banner.png`)
     },
     artistImg() {
       return this.artDetails.image
@@ -288,6 +311,7 @@ export default {
     })
     const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
+    console.log(artDetails)
     const isServer = !!process.server
     return {
       art,
@@ -309,7 +333,6 @@ export default {
     }
 
     if (
-      this.artDetails.kind === 'artist' &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
       window.innerWidth > 992
@@ -318,6 +341,7 @@ export default {
     }
   },
   methods: {
+    getMediaUrl,
     widthChecker(e) {
       if (this.mobileContent) {
         if (e.srcElement.innerWidth > 992) {
@@ -376,6 +400,11 @@ export default {
       const newUrl = url.toLowerCase()
 
       return pattern.test(newUrl) ? url : `http://${newUrl}`
+    },
+    checkArtistProfile(name) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
     }
   },
   head() {
@@ -425,8 +454,12 @@ export default {
   display: flex;
   width: 100%;
   flex-direction: column;
-  margin: 0.3em 0 1em 0;
+  margin: 1em 0 0.4em 0;
   overflow: hidden;
+
+  a {
+    text-decoration: underline;
+  }
 }
 
 .field-title {
@@ -453,7 +486,7 @@ export default {
 .field-content h4,
 .field-content h5 {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
   color: #151515;
 }
 
@@ -473,6 +506,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .artist-social-icons {
   display: flex;
   padding: 0;
@@ -493,6 +527,20 @@ export default {
   height: 25px;
 }
 
+.placename-img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1em 0;
+}
+.placename-img {
+  width: 275px;
+  height: 275px;
+  object-fit: cover;
+  background-color: rgba(0, 0, 0, 1);
+}
+
 .panel-collapsable {
   width: 15px;
   height: 100vh;
@@ -506,7 +554,7 @@ export default {
 
 .btn-collapse {
   padding: 1em;
-  margin: 2.5em;
+  margin-top: 1.5em;
   margin-left: 0.8em;
   width: 100px;
   height: 35px;
