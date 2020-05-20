@@ -83,7 +83,7 @@
                 ref="fileUpload"
                 v-model="fileImg"
                 class="file-upload-input mt-2"
-                placeholder="choose a placename image"
+                placeholder="choose a thumbnail image"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
               ></b-form-file>
@@ -107,49 +107,22 @@
               ></b-form-input>
             </b-row>
 
-            <b-row class="mt-3">
-              <b-col xl="6">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Alternate Name</label
-                  >
-                  <ToolTip
-                    content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
-                  ></ToolTip>
-                </div>
-
-                <b-form-input
-                  id="otherName"
-                  v-model="otherName"
-                  type="text"
-                ></b-form-input>
-              </b-col>
-              <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Language</label
+            <b-row v-if="queryType === 'Artist'" class="field-row mt-3">
+              <div>
+                <label for="traditionalName" class="contribute-title-one"
+                  >Alternate Name</label
                 >
+                <ToolTip
+                  content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+                ></ToolTip>
+              </div>
 
-                <b-form-select
-                  v-model="languageSelected"
-                  :options="languageOptions"
-                ></b-form-select>
-              </b-col>
-            </b-row>
-
-            <b-row class="mt-3 mb-1">
-              <b-col xl="12">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Community</label
-                >
-                <multiselect
-                  v-model="community"
-                  placeholder="Select a community"
-                  label="name"
-                  track-by="id"
-                  :options="communities"
-                  :multiple="true"
-                ></multiselect>
-              </b-col>
+              <b-form-input
+                id="otherName"
+                v-model="otherName"
+                type="text"
+                placeholder="Input other name here..."
+              ></b-form-input>
             </b-row>
 
             <b-row class="field-row">
@@ -164,6 +137,7 @@
               </div>
 
               <multiselect
+                id="taxonomy-container"
                 v-model="taxonomySelected"
                 placeholder="Search or Select a Taxonomy"
                 label="name"
@@ -171,9 +145,15 @@
                 :options="getTaxonomy"
                 :multiple="true"
               ></multiselect>
+              <b-tooltip target="taxonomy-container" placement="top">
+                Select many Taxonomy tags as you want.
+              </b-tooltip>
             </b-row>
 
-            <b-row v-if="queryType !== 'Artist'" class="field-row">
+            <b-row
+              v-if="queryType === 'Event' || queryType === 'Public Art'"
+              class="field-row"
+            >
               <div>
                 <label
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
@@ -194,7 +174,7 @@
               ></multiselect>
             </b-row>
 
-            <b-row v-if="queryType === 'Organization'" class="field-row">
+            <b-row v-if="queryType === 'Event'" class="field-row">
               <div>
                 <label
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
@@ -214,23 +194,48 @@
               ></multiselect>
             </b-row>
 
+            <b-row
+              v-if="queryType === 'Artist' || queryType === 'Organization'"
+              class="field-row mt-3"
+            >
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Email</label
+                >
+                <ToolTip
+                  content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="email"
+                v-model="email"
+                type="text"
+                placeholder="Input email here..."
+              ></b-form-input>
+            </b-row>
+
+            <b-row v-if="queryType === 'Organization'" class="field-row mt-3">
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Organization Access</label
+                >
+                <ToolTip
+                  content="When is the organization open (E.g. 'open year-round'), or the person available (E.g. 'By appointment only')"
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="email"
+                v-model="email"
+                type="text"
+                placeholder="Input Organization Access here..."
+              ></b-form-input>
+            </b-row>
+
             <template v-if="queryType === 'Artist'">
-              <b-row class="mt-3">
-                <b-col xl="6">
-                  <label for="traditionalName" class="contribute-title-one mb-1"
-                    >Email</label
-                  >
-                  <ToolTip
-                    content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
-                  ></ToolTip>
-                  <b-form-input
-                    id="email"
-                    v-model="email"
-                    type="text"
-                    placeholder="Input email here..."
-                  ></b-form-input>
-                </b-col>
-                <b-col xl="6">
+              <b-row class="field-row mt-3">
+                <div>
                   <label for="traditionalName" class="contribute-title-one mb-1"
                     >Phone</label
                   >
@@ -238,47 +243,13 @@
                   <ToolTip
                     content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
                   ></ToolTip>
-                  <b-form-input
-                    id="phone"
-                    v-model="phone"
-                    type="text"
-                    placeholder="Input phone here..."
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-
-              <!-- <b-row class="field-row mt-3">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Location</label
-                  >
-                  <ToolTip
-                    content="If you wish to be visited personally or for commercial inquiries. This information can be confidential."
-                  ></ToolTip>
                 </div>
 
                 <b-form-input
-                  id="location"
-                  v-model="location"
+                  id="phone"
+                  v-model="phone"
                   type="text"
-                ></b-form-input>
-              </b-row> -->
-
-              <b-row class="field-row mt-3">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Copyright</label
-                  >
-                  <ToolTip
-                    content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
-                  ></ToolTip>
-                </div>
-
-                <b-form-input
-                  id="copyright"
-                  v-model="copyright"
-                  type="text"
-                  placeholder="Input Copyright text here..."
+                  placeholder="Input phone here..."
                 ></b-form-input>
               </b-row>
 
@@ -318,7 +289,27 @@
                   >
                 </div>
               </div>
+            </template>
 
+            <b-row v-if="queryType === 'Public Art'" class="field-row mt-3">
+              <div>
+                <label for="traditionalName" class="contribute-title-one"
+                  >Copyright</label
+                >
+                <ToolTip
+                  content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="copyright"
+                v-model="copyright"
+                type="text"
+                placeholder="Input Copyright text here..."
+              ></b-form-input>
+            </b-row>
+
+            <template v-if="queryType !== 'Event'">
               <div class="website-container mt-3">
                 <div>
                   <label class="contribute-title-one">Website</label>
@@ -357,13 +348,21 @@
               </div>
             </template>
 
-            <div v-if="queryType === 'Event'">
+            <div v-if="queryType === 'Event'" class="mt-3">
               <div>
                 <label class="contribute-title-one">Event Date/Time</label>
                 <ToolTip
                   content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
                 ></ToolTip>
               </div>
+              <b-form-datepicker
+                id="event-datepicker"
+                v-model="dateValue"
+                today-button
+                reset-button
+                class="mt-2 mb-3"
+                placeholder="Please pick a date for the Event"
+              ></b-form-datepicker>
 
               <b-time
                 id="event-timepicker"
@@ -371,17 +370,14 @@
                 locale="en"
                 @context="onTimeContext"
               ></b-time>
-              <b-form-datepicker
-                id="event-datepicker"
-                v-model="dateValue"
-                today-button
-                reset-button
-                class="mb-2"
-              ></b-form-datepicker>
             </div>
 
             <h5 class="contribute-title-one mt-3 mb-1">
-              Bio / Artist Statement
+              {{
+                queryType === 'Artist'
+                  ? 'Bio / Artist Statement'
+                  : `${queryType} Description`
+              }}
 
               <ToolTip
                 content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
@@ -749,6 +745,9 @@ export default {
       }
       return this.$store.state.user.user.is_staff
     },
+    userDetail() {
+      return this.$store.state.user.user
+    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null
@@ -892,6 +891,9 @@ export default {
     this.addSite()
     this.addAward()
     this.setDateTimeNow()
+    if (this.userDetail && this.queryType === 'Artist') {
+      this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
+    }
   },
   methods: {
     setDateTimeNow() {
