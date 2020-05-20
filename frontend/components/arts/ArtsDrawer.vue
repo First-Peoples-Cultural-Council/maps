@@ -6,7 +6,7 @@
     </div>
 
     <!-- Render List of Artist -->
-    <div v-if="this.$route.name !== 'index-art-art'">
+    <template v-if="this.$route.name !== 'index-art-art'">
       <div class="panel-artist">
         <img
           v-lazy="renderArtistImg(placename.image)"
@@ -33,7 +33,7 @@
           >{{ artist.name }}</a
         >
       </div>
-    </div>
+    </template>
 
     <b-row v-if="listOfPublicArt" class="ml-1 mr-1 media-list-container">
       <b-col
@@ -157,6 +157,7 @@ export default {
     }
   },
   mounted() {
+    // Fetch all medias
     if (!this.isArtsDetailPage) {
       this.$store.commit('sidebar/setGallery', !!this.currentMedia)
 
@@ -165,11 +166,23 @@ export default {
 
       this.$axios.$get(url).then(result => {
         if (result) {
-          this.listOfMedias = result
+          this.listOfMedias = result.sort((a, b) => b.id - a.id)
         }
       })
     } else {
       this.listOfMedias = this.art.medias
+    }
+
+    // check if query URL exist
+    const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
+    const foundMedia = allArtworks.find(
+      media => encodeFPCC(media.name) === this.$route.query.artwork
+    )
+    if (foundMedia) {
+      this.currentMedia = foundMedia
+      this.toggleGallery()
+    } else if (this.isArtsDetailPage) {
+      this.$router.push(this.$route.path)
     }
   },
   methods: {
@@ -177,8 +190,27 @@ export default {
       this.$store.commit('sidebar/setGallery', !this.showGallery)
     },
     showMedia(media) {
-      this.toggleGallery()
       this.currentMedia = media
+      if (this.isArtsDetailPage) {
+        this.$router.push({
+          query: {
+            artwork: encodeFPCC(media.name)
+          }
+        })
+      } else {
+        // When on arts list page, manually update the URL
+        history.pushState(
+          {},
+          null,
+          `${this.$route.path}/${encodeFPCC(this.artName)}?artwork=${encodeFPCC(
+            media.name
+          )}`
+        )
+      }
+
+      this.toggleGallery()
+      // Close Event Popover if open
+      this.$root.$emit('closeEventPopover')
     },
     renderArtistImg(img) {
       return (
@@ -240,7 +272,7 @@ export default {
 .panel-artist {
   display: flex;
   justify-content: flex-start;
-  padding: 1em;
+  padding: 0 1em;
 }
 
 .artist-list-container {
@@ -259,7 +291,7 @@ export default {
 .panel-close-btn {
   cursor: pointer;
   position: absolute;
-  top: 5%;
+  top: 25px;
   right: 0;
   height: 35px;
   background-color: #b47a2b;

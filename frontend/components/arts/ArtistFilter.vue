@@ -5,7 +5,7 @@
       :value="searchQuery"
       type="search"
       class="search-input"
-      placeholder="Search for a person, artwork, event..."
+      placeholder="Filter for a person, artwork, event or medium..."
       autocomplete="off"
       @input="updateQuery"
     >
@@ -23,10 +23,16 @@ export default {
   computed: {
     searchQuery() {
       return this.$store.state.arts.artSearch
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
     }
   },
   methods: {
     updateQuery(value) {
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
+      }
       this.$store.commit('arts/setArtSearch', value)
     },
     resetValue() {
@@ -45,7 +51,7 @@ export default {
 
 .search-input::placeholder {
   color: #707070;
-  font-size: 16px;
+  font-size: 15px;
   opacity: 1;
 }
 
@@ -55,10 +61,10 @@ export default {
 }
 
 .search-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   position: absolute;
-  right: 20px;
+  right: 15px;
   top: 30%;
   margin-left: 0.5em;
 }

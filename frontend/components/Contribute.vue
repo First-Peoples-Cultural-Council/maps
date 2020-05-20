@@ -1,14 +1,14 @@
 <template>
   <div class="contribute-container">
-    <b-button v-b-modal.contribute-modal>Contribute</b-button>
+    <b-button @click="toggleModal">Add to the Map</b-button>
 
     <b-modal
       id="contribute-modal"
       ref="c-modal"
+      v-model="showContributeModal"
       hide-footer
       hide-header
       title="Contribute"
-      s
     >
       <b-list-group>
         <!--<b-list-group-item button @click="handleClick($event, 'heritage')">
@@ -22,6 +22,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_point_icon_big.svg"
                 alt="Add a point"
               />
@@ -40,6 +41,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_area_icon_big.svg"
                 alt="Add an area"
               />
@@ -59,6 +61,7 @@
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
+                class="point-btn"
                 src="@/assets/images/add_area_icon_big.svg"
                 alt="Add a line"
               />
@@ -73,37 +76,135 @@
             </div>
           </div></b-list-group-item
         >
-        <b-list-group-item button @click="handleClick($event, 'placename')">
+        <b-list-group-item button @click="validateArtist($event)">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
-                src="@/assets/images/add_area_icon_big.svg"
+                class="point-btn"
+                src="@/assets/images/artwork_icon.svg"
                 alt="Add a line"
               />
             </div>
 
             <div>
               <div class="contribute-list-group-title font-weight-bold">
-                Add a Placename
+                Upload Your Artwork (I'm an Artist)
               </div>
-              This option triggers drawing mode, where you can draw a line and
-              create a Placename
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Event')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/event_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Event
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Public Art')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/public_art_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add a Public Art
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Organization')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/organization_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Organization
+              </div>
+              This option triggers drawing mode, where you will be able to draw
+              a line to contribute
             </div>
           </div></b-list-group-item
         >
       </b-list-group>
     </b-modal>
+    <MessageBox
+      :show="showMessage"
+      :message="
+        `You Cannot Add An Artwork, you need to be registered. Redirecting to
+          Artist Creation`
+      "
+    ></MessageBox>
   </div>
 </template>
 
 <script>
+import MessageBox from '@/components/MessageBox.vue'
 export default {
+  components: {
+    MessageBox
+  },
+  data() {
+    return {
+      showMessage: false,
+      showContributeModal: false
+    }
+  },
+  computed: {
+    validatedArtist() {
+      return false
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
+    }
+  },
   mounted() {
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
   },
   methods: {
+    toggleModal() {
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
+      }
+      this.showContributeModal = !this.showContributeModal
+    },
     handleClick(e, data) {
       this.hideModal()
       if (data === 'heritage') {
@@ -120,6 +221,28 @@ export default {
         }
       })
     },
+    handlePlaceClick(e, data, type) {
+      this.hideModal()
+      this.$store.commit('contribute/setIsDrawMode', true)
+      this.$router.push({
+        path: '/contribute',
+        query: {
+          mode: data,
+          type
+        }
+      })
+    },
+    validateArtist($event) {
+      this.hideModal()
+      if (this.validatedArtist) {
+        this.$router.push({
+          path: '/profile/' + this.$store.state.user.user.id
+        })
+      } else {
+        this.handlePlaceClick($event, 'placename', 'Artist')
+        this.showMessage = true
+      }
+    },
     showModal() {
       this.$refs['c-modal'].show()
     },
@@ -130,9 +253,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .contribute-container button {
-  background: url('../assets/images/contribute_bg.svg');
+  background: url('../assets/images/logo_background.png');
   background-size: cover;
   border: 0px solid #ddd5cc;
   border-radius: 3em;
@@ -142,6 +265,11 @@ export default {
   font: Bold 15px/18px Proxima Nova;
   color: #ffffff;
   text-transform: uppercase;
+}
+
+.point-btn {
+  width: 51px;
+  height: 51px;
 }
 
 .contribute-container button:hover {

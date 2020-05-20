@@ -148,10 +148,10 @@
           @map-sourcedata="mapSourceData"
         ></Mapbox>
         <div class="map-controls-overlay">
-          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
         </div>
         <ModalNotification></ModalNotification>
         <div class="map-navigation-container">
@@ -374,7 +374,8 @@ export default {
       $axios.$get(getApiUrl('placename-search')),
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
-      $axios.$get(getApiUrl('taxonomy'))
+      $axios.$get(getApiUrl('taxonomy')),
+      $axios.$get(getApiUrl('arts/event'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -386,6 +387,7 @@ export default {
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
     store.commit('arts/setTaxonomySearchSet', results[5])
+    store.commit('arts/setNextEvents', results[6].features)
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -480,7 +482,7 @@ export default {
       this.showSearchOverlay = false
     })
     this.$root.$on('toggleEventOverlay', d => {
-      this.showEventOverlay = !this.showEventOverlay
+      this.showEventOverlay = d
     })
     // consume a JWT and authenticate locally.
     if (this.$route.hash.includes('id_token')) {
@@ -516,15 +518,22 @@ export default {
     }
 
     if (this.$route.name === 'index') {
-      const listElm = this.isMobileCollapse
-        ? document.querySelector('#side-inner-collapse')
-        : document.querySelector('#sidebar-container')
-      listElm.addEventListener('scroll', e => {
-        if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-          if (this.communities.length > this.maximumLength) {
-            this.loadMoreData()
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
+
+      const containerArray = [mobileContainer, desktopContainer]
+
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.communities.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
       this.loadMoreData()
     }
@@ -1093,7 +1102,7 @@ export default {
   position: absolute;
   top: 0;
   justify-content: space-between;
-  padding-top: 10px;
+  padding-top: 17.5px;
   padding-left: 5px;
   padding-right: 5px;
 }
@@ -1111,6 +1120,7 @@ export default {
 
 .map-controls-overlay > * {
   margin-bottom: 0.25em;
+  box-shadow: 0px 3px 6px #00000022;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
@@ -1291,5 +1301,24 @@ export default {
     width: 75%;
     font-size: 0.8em;
   }
+}
+
+/* Global CSS */
+.field-kinds {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 0.1em;
+  padding: 0;
+}
+
+.field-names {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #151515;
+  margin: 0.1em;
+  padding: 0;
 }
 </style>

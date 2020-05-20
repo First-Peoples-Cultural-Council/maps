@@ -96,30 +96,42 @@ export default {
       return this.$store.state.responsive.isMobileSideBarOpen
     }
   },
-  async fetch({ $axios, store }) {
-    const currentPlaces = store.state.places.places
+  async mounted() {
+    // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
+    this.$store.commit('sidebar/toggleLoading', true)
+    const currentPlaces = this.$store.state.places.places
 
     if (currentPlaces.length === 0) {
-      // Fetch languages and communites data
-      const heritage = await $axios.$get(
+      const heritage = await this.$axios.$get(
         getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
       )
-
-      // Set Heritage stores
-      store.commit('places/set', heritage.features)
-      store.commit('places/setStore', heritage.features)
-    }
-  },
-  mounted() {
-    const listElm = this.isMobile
-      ? document.querySelector('#side-inner-collapse')
-      : document.querySelector('#sidebar-container')
-    listElm.addEventListener('scroll', e => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-        if (this.places.length > this.maximumLength) {
-          this.loadMoreData()
-        }
+      if (heritage) {
+        // Set Heritage stores
+        this.$store.commit('places/set', heritage.features)
+        this.$store.commit('places/setStore', heritage.features)
+        this.$store.commit('sidebar/toggleLoading', false)
+      } else {
+        this.$store.commit('sidebar/toggleLoading', true)
       }
+    }
+
+    // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    const mobileContainer = document.querySelector('#side-inner-collapse')
+    const desktopContainer = document.querySelector('#sidebar-container')
+
+    const containerArray = [mobileContainer, desktopContainer]
+
+    containerArray.forEach(elem => {
+      elem.addEventListener('scroll', e => {
+        if (
+          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+          elem.scrollTop !== 0
+        ) {
+          if (this.places.length > this.maximumLength) {
+            this.loadMoreData()
+          }
+        }
+      })
     })
     this.loadMoreData()
   },

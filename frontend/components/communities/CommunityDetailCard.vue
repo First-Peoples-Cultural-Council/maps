@@ -202,5 +202,6 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+  letter-spacing: 0.5px;
 }
 </style>

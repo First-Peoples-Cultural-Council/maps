@@ -3,19 +3,13 @@
     id="badge-filter-container"
     :class="`badge-filter-container ${isSelected ? 'badge-selected' : ''}`"
     :style="`${isSelected ? `border: 2px solid ${color}` : ''}`"
-    @mouseover.prevent="isHover = true"
-    @mouseleave="isHover = false"
   >
     <slot name="badge"></slot>
     <div
-      v-if="
-        (isSelected && isHover) ||
-          showOption ||
-          (isSelected && getTaxonomies.length !== 0)
-      "
-      class="badge-filters hide-mobile"
+      v-if="isSelected || (isSelected && getTaxonomies.length !== 0)"
+      class="badge-filters "
     >
-      <p id="badge-choose">
+      <p id="badge-choose" @click="showOption = !showOption">
         {{
           `${getTaxonomies.length !== 0 ? getTags() : 'choose sub-category'} `
         }}
@@ -28,14 +22,17 @@
       </p>
       <!-- Parent Popover -->
       <b-popover
+        v-if="showOption"
+        id="filter-popover"
+        class="hide-mobile"
         target="badge-choose"
         placement="bottom"
         triggers="click"
-        :show.sync="showOption"
+        :show="showOption"
       >
         <div class="badge-option-container">
           <span
-            v-for="taxonomy in getChildTaxonomy"
+            v-for="taxonomy in childTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
             @click="optionSelected([taxonomy.name])"
@@ -44,6 +41,7 @@
             <!-- Child Popover -->
             <b-popover
               v-if="hasTaxonomyChild(taxonomy.id)"
+              :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
               triggers="hover"
@@ -58,6 +56,7 @@
                   <!-- Child Child Popover -->
                   <!-- <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
+                    :id="`child1-popover-${taxChild.name}`"
                     :target="`badge-child-option-${taxChild.id}`"
                     placement="right"
                     triggers="hover"
@@ -95,22 +94,23 @@ export default {
       type: Boolean,
       default: false
     },
-    filter: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
     color: {
       type: String,
       default: ''
+    },
+    childTaxonomy: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data() {
     return {
       isHover: false,
       showOption: false,
-      showChild: false
+      showChild: false,
+      currentParent: ''
     }
   },
   computed: {
@@ -119,13 +119,9 @@ export default {
     },
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
-    },
-    getChildTaxonomy() {
-      return this.taxonomies.filter(
-        taxonomy => taxonomy.parent === this.filter.id
-      )
     }
   },
+
   methods: {
     toggleOption() {
       this.showOption = !this.showOption
@@ -141,12 +137,11 @@ export default {
       this.showOption = false
     },
     getTags() {
-      return this.getTaxonomies.map(
-        (tag, index) =>
-          `${tag} ${
-            index !== 0 || index !== this.getTaxonomies.length - 1 ? ' / ' : ''
-          }`
-      )
+      return this.getTaxonomies.reduce((result, item, index) => {
+        return (result += `${item} ${
+          index !== 0 || index !== this.getTaxonomies.length - 1 ? ' / ' : ''
+        } `)
+      }, '')
     },
     removeTag() {
       this.$store.commit('arts/setTaxonomyTag', [])
@@ -163,11 +158,17 @@ export default {
   width: fit-content;
   border-radius: 1em;
   background-color: #ededed;
-  margin: 0.25em 0.125em;
+  margin: 0.25em 0.125em !important;
   height: fit-content;
 
   .badge {
     margin: 0;
+  }
+}
+
+@media (max-width: 993px) {
+  .badge-filter-container {
+    margin: 0.25em 0.5em;
   }
 }
 
@@ -205,10 +206,11 @@ export default {
   font: Bold 15px/18px Lato;
   text-transform: lowercase;
   color: #151515;
+  overflow: hidden;
 }
 
 .remove-tag-btn {
-  margin: 0.25em;
+  margin: 0 0.25em;
 }
 
 .popover {

@@ -100,7 +100,7 @@ export default {
   position: relative;
 }
 .innerToggle {
-  padding: 1em;
+  padding: 0.5em 1em;
   background-color: white;
   box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
 }
@@ -160,8 +160,8 @@ export default {
 }
 
 .innerToggle > div > span > section > div {
-  margin: 0 !important;
-  margin-bottom: 0 !important;
+  margin: 0;
+  margin-bottom: 0;
 }
 
 .innerHeader {

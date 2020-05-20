@@ -1,33 +1,90 @@
 <template>
-  <div class="event-card-container">
-    <span class="event-date">Saturday 21TH-2020 - 13:00</span>
-    <h4 class="event-title">'Q'emcin 2 Rivers REmix 2019</h4>
-    <div class="events-tags-container">
-      <span>Artist</span>
-      <span>Visual</span>
-      <span>Painter</span>
-    </div>
-    <img src="@/assets/images/sample-dp.jpg" />
-    <p class="event-description">
+  <div class="event-list-container">
+    <div
+      v-for="event in eventsList"
+      :key="event.id"
+      class="event-card-container"
+      @click="redirectToEvent(event.properties.name)"
+    >
+      <img class="event-img" :src="getEventImg(event.properties.image)" />
+      <div class="event-details">
+        <span class="event-date">MAY 23, 2020</span>
+        <h4 class="event-title">{{ event.properties.name }}</h4>
+        <div class="events-tags-container">
+          <span
+            v-for="taxonomy in event.properties.taxonomies"
+            :key="taxonomy.name"
+            @click.stop.prevent="redirectToFilter(taxonomy.name)"
+            >{{ taxonomy.name }}</span
+          >
+        </div>
+      </div>
+
+      <!-- <p class="event-description">
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, unde qui
       quos iste praesentium laborum? Aliquam at fuga veniam quis id, neque quod
       alias obcaecati porro suscipit ullam ea temporibus!
-    </p>
-    <button>CHECK EVENT</button>
+    </p> -->
+      <!-- <button>CHECK EVENT</button> -->
+    </div>
   </div>
 </template>
 
 <script>
-export default {}
+import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
+
+export default {
+  computed: {
+    eventsList() {
+      return this.$store.state.arts.eventsSet.slice(0, 7)
+    }
+  },
+  methods: {
+    getEventImg(img) {
+      return img ? getMediaUrl(img) : require(`@/assets/images/event_icon.svg`)
+    },
+    redirectToEvent(name) {
+      this.resetState()
+      this.$router.push({
+        path: `/art/${encodeFPCC(name)}`
+      })
+    },
+    redirectToFilter(taxonomy) {
+      this.resetState()
+      this.$store.commit('arts/setFilter', 'event')
+      this.$store.commit('arts/setTaxonomyTag', [taxonomy])
+      this.$root.$emit('triggerLoadKindData')
+      this.$router.push({
+        path: '/art'
+      })
+    },
+    resetState() {
+      this.$store.commit('sidebar/setDrawerContent', false)
+      this.$root.$emit('closeEventPopover')
+      this.$root.$emit('toggleEventOverlay', false)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.event-list-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: auto;
+  max-height: 650px;
+}
+
 .event-card-container {
   width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  margin: 1em 0 3em 0;
+  border-bottom: 1px solid #ddd5cc;
+  padding: 1em 0 1em 0.75em;
+  cursor: pointer;
 
   .event-date {
     font: Medium 15px/20px Proxima Nova;
@@ -39,7 +96,8 @@ export default {}
   .event-title {
     font: Bold 16px/20px Proxima Nova;
     letter-spacing: 0.8px;
-    color: #454545;
+    color: #151515;
+    margin: 0.25em 0;
   }
 
   .event-description {
@@ -47,6 +105,7 @@ export default {}
     color: #707070;
     padding: 5px;
   }
+
   button {
     align-self: center;
     background: #b47a2b 0% 0% no-repeat padding-box;
@@ -56,10 +115,20 @@ export default {}
     padding: 0.5em 1.5em;
     font-weight: bold;
   }
-  img {
-    width: 100%;
-    height: 250px;
-    object-fit: contain;
+
+  .event-img {
+    width: 135px;
+    height: 135px;
+    object-fit: cover;
+    margin-right: 1em;
+  }
+
+  .event-details {
+    width: 235px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -67,18 +136,29 @@ export default {}
   display: flex;
   flex-wrap: wrap;
   width: inherit;
-  margin: 0.5em 0;
 }
 
 .events-tags-container span {
-  flex: 0 1;
-  background: #ddd4c6 0% 0% no-repeat padding-box;
+  flex: 0 0 auto;
+  background: #ddd4c6;
   border-radius: 2rem;
   color: #707070;
-  padding: 0.2em 0.5em;
-  font-weight: bold;
-  font-size: 0.8;
-  margin: 0.25em 0.25em 0.25em 0;
+  text-transform: uppercase;
+  font: Bold 12px Proxima Nova;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
   text-align: center;
+
+  &:hover {
+    color: #fff;
+    background-color: #545b62;
+  }
+}
+
+@media (max-width: 992px) {
+  .event-list-container {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
 }
 </style>

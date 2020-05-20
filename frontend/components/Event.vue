@@ -1,28 +1,22 @@
 <template>
-  <div class="cursor-pointer hide-mobile event-main-container">
-    <nav id="event-icon-container">
-      <span>EVENTS</span>
-      <img
-        src="@/assets/images/event_icons.svg"
-        alt="Menu"
-        class="navbar-icon"
-      />
-    </nav>
+  <div id="event-icon-container" class="hide-mobile">
+    <span>EVENTS</span>
+    <img src="@/assets/images/event_icons.svg" alt="Menu" class="menu-icon" />
     <b-popover
       target="event-icon-container"
       placement="bottom"
       triggers="click"
       :show.sync="showEvents"
     >
-      <div class="event-list-container">
-        <EventCard />
-      </div>
+      <!-- Shows List of Events  -->
+      <EventCard />
     </b-popover>
   </div>
 </template>
 
 <script>
 import EventCard from '@/components/EventCard.vue'
+
 export default {
   components: {
     EventCard
@@ -31,30 +25,42 @@ export default {
     return {
       showEvents: false
     }
+  },
+  mounted() {
+    this.$root.$on('closeEventPopover', e => {
+      this.showEvents = false
+    })
   }
 }
 </script>
 
 <style lang="scss" scoped>
 #event-icon-container {
+  cursor: pointer;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   background-color: white;
-  padding: 0.8em;
+  padding: 0.6em;
+  border-radius: 1.5em;
   z-index: 50;
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
   border: 1px solid #beb2a5;
-  border-radius: 2em;
   color: #151515;
   font: Bold 15px/18px Proxima Nova;
 
   & > * {
-    margin: 0 0.25em;
+    margin: 0 0.4em 0 0.2em;
   }
+
+  .menu-icon {
+    width: 18px;
+    height: 18px;
+  }
+
   .arts-container & {
-    margin-right: 0.25em !important;
+    margin: 0 0.25em;
     width: 45px;
     height: 45px;
   }
@@ -63,11 +69,15 @@ export default {
     display: none;
   }
 
+  .arts-container & > .menu-icon {
+    margin: 0;
+  }
+
   @media (max-width: 1200px) {
     & {
       width: 45px;
       height: 45px;
-      margin-right: 0.25em;
+      margin: 0 0.25em;
     }
     span {
       display: none;
@@ -75,23 +85,14 @@ export default {
   }
 }
 
-.navbar-icon {
-  width: 23px;
-  height: 23px;
-  line-height: 0;
-  padding: 0;
-  margin: 0;
-}
 .popover {
-  width: 350px;
-  max-width: 350px;
-  max-height: 800px;
+  width: 425px !important;
+  max-width: 425px !important;
+  height: auto;
+  max-height: 650px;
 }
 
-.event-list-container {
-  width: 330px;
-  max-height: 750px;
-  overflow-y: auto;
-  margin: 0.5rem 0.75rem;
+.popover-body {
+  padding: 0;
 }
 </style>

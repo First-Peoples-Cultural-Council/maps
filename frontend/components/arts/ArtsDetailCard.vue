@@ -105,6 +105,7 @@ export default {
   },
   methods: {
     redirectToHome(name) {
+      this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
       this.$router.push({
@@ -153,6 +154,7 @@ export default {
   height: 100%;
 }
 .fpcc-card-more-art {
+  cursor: pointer;
   width: 90px;
   background-color: #b47a2b;
   height: 35px;
@@ -199,5 +201,7 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+  letter-spacing: 0.5px;
+  width: 95%;
 }
 </style>

@@ -18,10 +18,24 @@
       <template v-slot:badges>
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
+          <!-- Art Work Badge Filter  -->
+          <BadgeFilter :child-taxonomy="[]" :color="'#5A8467'">
+            <template v-slot:badge>
+              <Badge
+                content="Arts"
+                :number="artworksCount"
+                class="cursor-pointer"
+                bgcolor="#5A8467"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'artwork')"
+                @click.native.prevent="badgeClick($event, 'artwork')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
           <!-- Artist Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'artist'"
-            :filter="getTaxonomyID('Person')"
+            :child-taxonomy="getChildTaxonomy('Person')"
             :color="'#B45339'"
           >
             <template v-slot:badge>
@@ -36,44 +50,11 @@
               ></Badge>
             </template>
           </BadgeFilter>
-          <!-- Event Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'event'"
-            :filter="getTaxonomyID('Event')"
-            :color="'#DA531E'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Events"
-                :number="eventsCount"
-                class="cursor-pointer"
-                bgcolor="#DA531E"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'event')"
-                @click.native.prevent="badgeClick($event, 'event')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
-          <!-- Art Work Badge Filter  -->
-          <BadgeFilter :filter="getTaxonomyID('Art Work')" :color="'#5A8467'">
-            <template v-slot:badge>
-              <Badge
-                content="Recent Posts"
-                :number="artworksCount"
-                class="cursor-pointer"
-                bgcolor="#5A8467"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'artwork')"
-                @click.native.prevent="badgeClick($event, 'artwork')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
 
           <!-- Organization Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'organization'"
-            :filter="getTaxonomyID('Organization')"
+            :child-taxonomy="getChildTaxonomy('Organization')"
             :color="'#a48116'"
           >
             <template v-slot:badge>
@@ -92,7 +73,7 @@
           <!-- Public Art Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'public_art'"
-            :filter="getTaxonomyID('Public Art')"
+            :child-taxonomy="getChildTaxonomy('Public Art')"
             :color="'#848159'"
           >
             <template v-slot:badge>
@@ -108,8 +89,27 @@
             </template>
           </BadgeFilter>
 
+          <!-- Event Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'event'"
+            :child-taxonomy="getChildTaxonomy('Event')"
+            :color="'#DA531E'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Events"
+                :number="eventsCount"
+                class="cursor-pointer"
+                bgcolor="#DA531E"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'event')"
+                @click.native.prevent="badgeClick($event, 'event')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
           <!-- Grant Badge Filter -->
-          <BadgeFilter :filter="getTaxonomyID('Grant')" :color="'#008CA9'">
+          <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
             <template v-slot:badge>
               <Badge
                 content="Grants"
@@ -121,7 +121,7 @@
                 @click.native.prevent="badgeClick($event, 'grant')"
               ></Badge>
             </template>
-          </BadgeFilter>
+          </BadgeFilter> -->
         </section>
       </template>
       <template v-slot:cards>
@@ -205,7 +205,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'View Artwork from Indigenous Artists in your area, and check their details .  You can also view Organization, Event, Public Art, and Grant information.',
+        'Zoom in on the map to view Indigenous Artwork in your area. You can also view Organization, Event, Public Art and Grant information.',
       artDetails: {},
       maximumLength: 0
     }
@@ -271,7 +271,16 @@ export default {
             items.properties.placename.id === item.properties.placename.id
         )
           ? unique
-          : [...unique, item]
+          : [
+              ...unique,
+              this.artworks
+                .filter(
+                  items =>
+                    items.properties.placename.id ===
+                    item.properties.placename.id
+                )
+                .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
+            ]
       }, [])
     },
     selectedArtwork() {
@@ -311,7 +320,7 @@ export default {
             return art.properties.taxonomies.some(
               taxonomy =>
                 taxonomy.name ===
-                this.taxonomyFilter[this.taxonomyFilter.length - 1]
+                this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
             )
           })
         : artsArray
@@ -320,32 +329,51 @@ export default {
       return this.selectedArt.slice(0, this.maximumLength)
     }
   },
-  async fetch({ $axios, store }) {
-    const currentArtworks = store.state.arts.artworkSet
+  async mounted() {
+    // Fetches the artworks data, for this case, it renders the page, then rerender if data is collected
+    this.$store.commit('sidebar/toggleLoading', true)
+    const currentArtworks = this.$store.state.arts.artworkSet
 
-    if (currentArtworks.length === 0) {
-      const artworks = await $axios.$get(getApiUrl('arts/artwork?format=json'))
-
-      store.commit('arts/setArtworksStore', artworks) // All data
-      store.commit('arts/setArtworks', artworks) // All data
+    if (currentArtworks.length === 0 && this.filterMode === 'artwork') {
+      const artworks = await this.$axios.$get(
+        getApiUrl('arts/artwork?format=json')
+      )
+      if (artworks) {
+        this.$store.commit('arts/setArtworksStore', artworks) // All data
+        this.$store.commit('arts/setArtworks', artworks) // All data
+        this.$store.commit('sidebar/toggleLoading', false)
+      } else {
+        this.$store.commit('sidebar/toggleLoading', true)
+      }
+    } else {
+      this.loadKindData()
     }
-  },
-  mounted() {
+
+    // If you're in Arts Page, and trigger sorting by taxonomy, this will load the data
+    this.$root.$on('triggerLoadKindData', e => {
+      this.loadKindData()
+    })
+
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
-      const listElm = this.isMobile
-        ? document.querySelector('#side-inner-collapse')
-        : document.querySelector('#sidebar-container')
-      listElm.addEventListener('scroll', e => {
-        if (
-          listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
-          listElm.scrollTop !== 0
-        ) {
-          if (this.selectedArt.length > this.maximumLength) {
-            this.loadMoreData()
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
+
+      const containerArray = [mobileContainer, desktopContainer]
+
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.selectedArt.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
+
       this.loadMoreData()
     }
   },
@@ -356,9 +384,15 @@ export default {
       }
       this.resetFilter()
       this.maximumLength = 0
-      this.loadKindData(name)
       this.handleBadge($event, name)
-      this.loadMoreData()
+      this.loadKindData()
+
+      // // update URL, but no functionality
+      // this.$router.push({
+      //   query: {
+      //     type: name
+      //   }
+      // })
     },
     resetFilter() {
       this.$store.commit('arts/setTaxonomyTag', [])
@@ -371,25 +405,30 @@ export default {
         this.$store.commit('sidebar/toggleLoading', false)
       }, 250)
     },
-    async loadKindData(kind) {
-      this.$store.commit('sidebar/toggleLoading', true)
+    async loadKindData() {
+      const kind = this.filterMode
+      this.$store.commit('sidebar/toggleLoading', true) // Start loading
       const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
       const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
 
-      if (!loaded) {
+      if (!loaded && kind !== 'artwork') {
         // Fetch Arts
         const data = await this.$axios.$get(url)
 
-        // Set data with name for clarity
-        const artsSet = data.features
-        const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
+        if (data) {
+          // Set data with name for clarity
+          const artsSet = data.features
+          const arts = artsSet.filter(datum => artsIds.includes(datum.id)) // Filtered based on map bounds
 
-        // Set language stores
-        this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
-        this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
-        this.$store.commit('sidebar/toggleLoading', false)
+          // Set language stores
+          this.$store.commit('arts/setStore', [...this.arts, ...artsSet]) // All data
+          this.$store.commit('arts/set', [...this.arts, ...arts]) // Updating data based on map
+          this.loadMoreData()
+        }
+      } else {
+        this.loadMoreData()
       }
     },
     handleCardClick($event, name, type) {
@@ -409,6 +448,7 @@ export default {
       // If another artwork is selected when there's open, close it to recalibrate data, then open
       else if (currentArt !== this.artDetails && this.showDrawer) {
         this.artDetails = currentArt
+        this.updateURL(currentArt)
         // Important to open it after closing the drawer
         this.closeDrawer()
         setTimeout(() => {
@@ -419,14 +459,20 @@ export default {
       else if (currentArt !== this.artDetails || !this.showDrawer) {
         this.artDetails = currentArt
         this.openDrawer()
+        this.updateURL(currentArt)
       }
-
-      // Update URL
-      // history.pushState(
-      //   {},
-      //   null,
-      //   this.$route.path + '/' + this.artDetails.placename.name
-      // )
+      // Close Event Popover if open
+      this.$root.$emit('closeEventPopover')
+    },
+    updateURL(artDetails) {
+      // Update URL with Artist name, and media name, so when you copy it, it redirects to the Artist page
+      history.pushState(
+        {},
+        null,
+        `${this.$route.path}/${encodeFPCC(
+          artDetails.placename.name
+        )}?artwork=${encodeFPCC(artDetails.name)}`
+      )
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
@@ -448,6 +494,11 @@ export default {
     },
     getTaxonomyID(taxName) {
       return this.taxonomies.find(taxonomy => taxonomy.name === taxName)
+    },
+    getChildTaxonomy(taxName) {
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === this.getTaxonomyID(taxName).id
+      )
     }
   }
 }

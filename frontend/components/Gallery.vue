@@ -1,6 +1,6 @@
 <template>
   <div class="gallery-modal">
-    <div class="btn-close cursor-pointer" @click="toggleGallery" />
+    <div class="btn-close cursor-pointer" @click="closeGallery" />
 
     <div
       :class="
@@ -19,10 +19,28 @@
           <img v-lazy="artThumbnail(placenameImg)" class="artist-img-small" />
           <div class="gallery-title">
             <span class="item-title">{{ mediaData.name }}</span>
-            <span class="item-subtitle" v-html="returnArtists()" />
+            <span class="item-subtitle">
+              By
+              <template v-if="artistCount !== 0">
+                <a
+                  v-for="artist in artists"
+                  :key="artist.name"
+                  href="#"
+                  @click.prevent="checkProfile(artist.name)"
+                >
+                  {{ artist.name }}</a
+                >
+              </template>
+              <template v-else>
+                {{ placename }}
+              </template>
+            </span>
           </div>
           <div
-            v-if="artistCount === 0 && this.$route.name !== 'index-art-art'"
+            v-if="
+              (artistCount === 0 && this.$route.name !== 'index-art-art') ||
+                !mediaData.media_file
+            "
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
           >
@@ -30,14 +48,31 @@
           </div>
           <!-- <img class="art-type" src="@/assets/images/arts/audio.png" /> -->
         </div>
-        <div class="media-img-container">
-          <!-- <button class="expand-btn">
-            <img src="@/assets/images/expand_icon.svg" />
-          </button> -->
+        <div
+          ref="mediaImg"
+          :class="
+            `media-img-container ${isFullscreen ? 'fullscreen-mode' : ''}`
+          "
+        >
+          <button
+            v-if="
+              mediaData.file_type !== 'audio' && mediaData.file_type !== 'video'
+            "
+            class="expand-btn"
+            @click="toggleFullscreen"
+          >
+            <img
+              :src="
+                require(`@/assets/images/${
+                  isFullscreen ? 'contract_icon' : 'expand_icon'
+                }.svg`)
+              "
+            />
+          </button>
           <!-- Render Media here depending on type -->
           <img
             v-if="mediaData.file_type === 'image'"
-            class="media-img"
+            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
             :src="
               getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
             "
@@ -49,7 +84,7 @@
             "
             class="media-img"
             :src="
-              `https://www.youtube.com/emedia-imgmbed/${getYoutubeEmbed(
+              `https://www.youtube.com/embed/${getYoutubeEmbed(
                 mediaData.url
               )}/?rel=0`
             "
@@ -69,7 +104,14 @@
             Your browser does not support the audio element.
           </audio>
           <!-- Render Public Art Image here -->
-          <img v-else v-lazy="getMediaUrl(mediaData.image)" class="media-img" />
+          <img
+            v-else
+            v-lazy="getMediaUrl(mediaData.image)"
+            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
+          />
+          <span class="media-copyright">
+            Copyright &copy; {{ returnCopyright(false) }}
+          </span>
         </div>
       </div>
       <button
@@ -89,14 +131,14 @@
         @click="selectCurrentIndex(item)"
       >
         <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
-        <img v-else v-lazy="item.image" />
+        <img v-else v-lazy="getMediaUrl(item.image)" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getMediaUrl } from '@/plugins/utils.js'
+import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
 export default {
   props: {
     toggleGallery: {
@@ -146,10 +188,14 @@ export default {
   },
   data() {
     return {
-      mediaData: this.media
+      mediaData: this.media,
+      isFullscreen: false
     }
   },
   computed: {
+    isArtsDetailPage() {
+      return this.$route.name === 'index-art-art'
+    },
     artistCount() {
       return this.artists ? this.artists.length : 0
     },
@@ -172,23 +218,50 @@ export default {
   },
   methods: {
     getMediaUrl,
-    returnArtists() {
-      const listOfArtist =
-        this.artistCount !== 0
-          ? this.artists.map((artist, index) => {
-              return `<a href="#" @click.prevent="checkProfile()"> ${artist.name}</a>`
-            })
-          : this.placename
-      return `By ${listOfArtist}`
+    returnCopyright(copyright) {
+      return copyright
+        ? copyright.value
+        : `${new Date().getFullYear()} ${this.placename}`
+    },
+    toggleFullscreen() {
+      const mediaImg = this.$refs.mediaImg
+      if (this.isFullscreen) {
+        document.exitFullscreen()
+      } else {
+        mediaImg.requestFullscreen()
+      }
+
+      this.isFullscreen = !this.isFullscreen
     },
     selectCurrentIndex(item) {
       this.mediaData = item
+      this.updateURL()
     },
     nextSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex + 1]
+      this.updateURL()
     },
     previousSlide() {
       this.mediaData = this.relatedMedia[this.mediaIndex - 1]
+      this.updateURL()
+    },
+    updateURL() {
+      if (this.isArtsDetailPage) {
+        this.$router.push({
+          query: {
+            artwork: encodeFPCC(this.mediaData.name)
+          }
+        })
+      } else {
+        // When on arts list page, manually update the URL
+        history.pushState(
+          {},
+          null,
+          `${this.$route.path}/${encodeFPCC(
+            this.placename
+          )}?artwork=${encodeFPCC(this.mediaData.name)}`
+        )
+      }
     },
     getYoutubeEmbed(url) {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
@@ -196,8 +269,15 @@ export default {
       return match && match[7].length === 11 ? match[7] : false
     },
     handleProfileClick() {
+      const getPlaceName = this.mediaData.file_type
+        ? this.placename
+        : this.mediaData.name
+      this.closeGallery()
+      this.checkProfile(getPlaceName)
+    },
+    closeGallery() {
+      this.$router.push(this.$route.path)
       this.toggleGallery()
-      this.checkProfile(this.placename)
     }
   }
 }
@@ -303,6 +383,17 @@ export default {
       height: 20px;
     }
   }
+
+  .media-copyright {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 0.8em;
+
+    background: #fff;
+    color: #000;
+    padding: 0.25em 0.5em;
+  }
 }
 
 .audio {
@@ -369,11 +460,6 @@ export default {
     padding: 0;
   }
 
-  .media-img {
-    width: 96%;
-    margin: 0 2em;
-  }
-
   .gallery-carousel-container button {
     display: none;
   }
@@ -418,5 +504,20 @@ export default {
       border: 5px solid #b57936;
     }
   }
+}
+
+.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999999999;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.img-fullscreen-mode {
+  width: 100vw;
+  height: 100vh;
 }
 </style>
