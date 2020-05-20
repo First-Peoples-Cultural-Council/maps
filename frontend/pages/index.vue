@@ -154,7 +154,7 @@
           <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
         </div>
         <ModalNotification></ModalNotification>
-        <div class="map-navigation-container">
+        <div v-if="!isDrawMode" class="map-navigation-container">
           <SearchBar class="hide-mobile"></SearchBar>
           <transition name="fade-topbar" mode="out-in">
             <SearchOverlay
@@ -1035,10 +1035,6 @@ export default {
   src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
   font-style: normal;
 }
-.draw-mode-container {
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 0.75em !important;
-}
 
 .map-container {
   width: 100%;
@@ -1076,14 +1072,20 @@ export default {
 
 .drawing-mode-container {
   position: absolute;
-  top: 60px;
+  top: 10px;
   left: 0;
   background-color: transparent;
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-left: 500px;
   z-index: 50;
+}
+
+.draw-mode-container {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.75em !important;
+  margin: auto auto;
+  color: #151515;
 }
 
 .map-navigation-container {
@@ -1091,7 +1093,7 @@ export default {
   display: flex;
   position: absolute;
   top: 0;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding-top: 17.5px;
   padding-left: 5px;
   padding-right: 5px;
@@ -1102,6 +1104,7 @@ export default {
   bottom: 20px;
   right: 10px;
   display: flex;
+  color: #151515;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
