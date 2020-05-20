@@ -204,7 +204,7 @@ export default {
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
       window.open(
-        'https://login.firstvoices.io/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://login.firstvoices.io/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
       )
       window.location.reload()
     }
