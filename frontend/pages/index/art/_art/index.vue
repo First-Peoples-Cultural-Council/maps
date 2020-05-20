@@ -123,7 +123,7 @@
               :key="data.id"
               class="artist-content-field"
             >
-              <h5 class="field-title">{{ data.data_type }}:</h5>
+              <h5 class="field-title">{{ data.label }}:</h5>
               <a
                 v-if="data.data_type === 'website'"
                 :href="checkUrlValid(data.value)"

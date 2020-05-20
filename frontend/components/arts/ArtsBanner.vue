@@ -118,7 +118,6 @@ export default {
   },
   methods: {
     redirectToHome(name) {
-      this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
       this.$root.$emit('triggerLoadKindData')
@@ -141,6 +140,7 @@ export default {
     resetState() {
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$store.commit('sidebar/setMobileContent', false)
+      this.$root.$emit('resetMap')
     },
     toggleCollapse() {
       this.$store.commit('sidebar/toggleCollapse', !this.isCollapse)
