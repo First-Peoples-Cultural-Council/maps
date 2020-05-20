@@ -44,33 +44,33 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 
 ## Deployment
 
-  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps-dev.fpcc.ca` nightly.
-  * We auto-deploy the `develop` branch of `https://github.com/countable-web/maps` to `http://maps-dev.fpcc.ca:8080` nightly.
+  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps.fpcc.ca` nightly.
+  * We auto-deploy the `develop` branch of `https://github.com/countable-web/maps` to `http://maps.fpcc.ca:8080` nightly.
 
 ## Public API
 
 To get all languages:
 
 ```
-curl http://maps-dev.fpcc.ca/api/language/
+curl http://maps.fpcc.ca/api/language/
 ```
 
 Details or a specific language:
 
 ```
-curl http://maps-dev.fpcc.ca/api/language/18/
+curl http://maps.fpcc.ca/api/language/18/
 ```
 
 To get all communities:
 
 ```
-curl http://maps-dev.fpcc.ca/api/community/
+curl http://maps.fpcc.ca/api/community/
 ```
 
 Details or a specific community:
 
 ```
-curl http://maps-dev.fpcc.ca/api/community/18/
+curl http://maps.fpcc.ca/api/community/18/
 ```
 
 ## Updating Domain Data Via API
@@ -82,7 +82,7 @@ First, you should authenticate your API client as an FPCC admin user. For exampl
 
 ```
 curl --request POST --header "Content-Type: application/json" \
-    --data '{"username": "admin", "password": "********"}' http://maps-dev.fpcc.ca/api-token-auth/
+    --data '{"username": "admin", "password": "********"}' http://maps.fpcc.ca/api-token-auth/
 ```
 
 This will return a token, such as `{"token":"cfc2b213a4adfbae02332fbbfb45ec09e56413a4"}`
@@ -92,48 +92,48 @@ Then, you can call the API using the returned token in your authorization header
 ```
 curl --request PATCH --header "Content-Type: application/json" \
     --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
-    --data '{"regions": "Kootenays"}' http://maps-dev.fpcc.ca/api/language/18/
+    --data '{"regions": "Kootenays"}' http://maps.fpcc.ca/api/language/18/
 ```
 
 To create a new object, use POST, for example a new Community:
 
 ```
 curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
-    --data '{"name":"Heiltsuk Nation New","champion_ids": [22], "language_ids":[27],"sleeping":false,"other_names":"Heiltsuk,Bella Bella,Heiltsuk-Oweekala","regions":"","audio_file":null, "english_name":"","other_names":"Heiltsuk Band","internet_speed":"","population":0,"point":{"type":"Point","coordinates":[-128.145551,52.160363]},"email":"admin@example.net","website":"http://www.bellabella.net","phone":"","alt_phone":"(250) 999-9999","fax":"(250) 999-9999"}' http://maps-dev.fpcc.ca/api/community/
+    --data '{"name":"Heiltsuk Nation New","champion_ids": [22], "language_ids":[27],"sleeping":false,"other_names":"Heiltsuk,Bella Bella,Heiltsuk-Oweekala","regions":"","audio_file":null, "english_name":"","other_names":"Heiltsuk Band","internet_speed":"","population":0,"point":{"type":"Point","coordinates":[-128.145551,52.160363]},"email":"admin@example.net","website":"http://www.bellabella.net","phone":"","alt_phone":"(250) 999-9999","fax":"(250) 999-9999"}' http://maps.fpcc.ca/api/community/
 ```
 
 To add some stats:
 
 ```
-curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --data '{ "fluent_speakers": 2, "semi_speakers": 3, "active_learners": 4, "language": 18, "community":255}' http://maps-dev.fpcc.ca/api/stats/
+curl --request POST --header "Content-Type: application/json" --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --data '{ "fluent_speakers": 2, "semi_speakers": 3, "active_learners": 4, "language": 18, "community":255}' http://maps.fpcc.ca/api/stats/
 
 ```
 
 To create a new Recording, use POST:
 
 ```
-curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request POST -sS http://maps-dev.fpcc.ca/api/recording/ -H 'Content-Type: multipart/form-data;' -F 'speaker=speaker name' -F 'date_recorded=2010-10-10' -F 'recorder=recorder name' -F 'audio_file=@/home/denis/demonyms.txt'
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request POST -sS http://maps.fpcc.ca/api/recording/ -H 'Content-Type: multipart/form-data;' -F 'speaker=speaker name' -F 'date_recorded=2010-10-10' -F 'recorder=recorder name' -F 'audio_file=@/home/denis/demonyms.txt'
 
 ```
 
 To add an existing Recording as a Language audio, use PATCH:
 
 ```
-curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/language/26/add_language_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps.fpcc.ca/api/language/26/add_language_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
 
 ```
 
 To add an existing Recording as a Language greeting audio, use PATCH:
 
 ```
-curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/language/26/add_greeting_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps.fpcc.ca/api/language/26/add_greeting_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
 
 ```
 
 To add an existing Recording as a Community audio, use PATCH:
 
 ```
-curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps-dev.fpcc.ca/api/community/206/add_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
+curl --header "Authorization: Token a213aeb9e9fc723511c37096e69f72822391aae4" --request PATCH -sS http://maps.fpcc.ca/api/community/206/add_audio/ --header "Content-Type: application/json"  --data '{ "recording_id": 41 }'
 
 ```
 
@@ -143,7 +143,7 @@ There is an important difference between the objects you can write and read from
 
 curl --request PATCH --header "Content-Type: application/json" \
  --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" \
- --data '{"language_ids": [18]}' http://maps-dev.fpcc.ca/api/community/255/
+ --data '{"language_ids": [18]}' http://maps.fpcc.ca/api/community/255/
 
 ```
 
@@ -225,7 +225,7 @@ If you want this field to be editable in the admin, this will happen by default.
 ## Deployment
 
 The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
-The `develop` branch id deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
+The `develop` branch is deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
 
 ## Bootstrapping data (Not necessary to run again)
 
@@ -234,6 +234,12 @@ This project was originally ported from a Drupal database, and we have a somewha
 `docker-compose exec web python manage.py bootstrap` to get languages.
 `docker-compose exec web python manage.py get_sleeping` to import an old KML source for languageion region geometry (included in repo).
 `docker-compose exec web python manage.py load_arts` to get arts.
+
+#### Categories
+To import categories from the csv file found at /web/fixtures/categories.csv run the following command:
+```
+docker-compose exec web python manage.py get_categories
+```
 
 ## Testing
 

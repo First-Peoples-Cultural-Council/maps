@@ -86,46 +86,80 @@
             }}</span>
           </li>
         </ul>
-        <div class="mt-3">
-          <b-table
-            hover
-            :items="lna"
-            responsive
-            small
-            table-class="lna-table"
-            thead-class="lna-table-thead"
-            tbody-class="lna-table-tbody"
-            @row-clicked="handleRowClick"
-          ></b-table>
-          <client-only>
-            <div v-if="showCollapse" class="mb-3">
-              <b-button
-                block
-                variant="light"
-                class="font-08"
-                @click="handleRowClick"
-                >Hide Charts</b-button
-              >
-            </div>
-            <div v-else class="mb-3">
-              <b-button
-                block
-                variant="light"
-                class="font-08"
-                @click="handleRowClick"
-                >Show Charts</b-button
-              >
-            </div>
-            <div v-if="showCollapse">
-              <div v-for="(l, index) in lna" :key="`chartlna${index}`">
-                <PieChart
-                  :chartdata="extractChartData(l)"
-                  :options="options"
-                ></PieChart>
-              </div>
-            </div>
-          </client-only>
-        </div>
+        <!--        Commented out until data is fixed-->
+        <!--        <div class="mt-3">-->
+        <!--          <b-table-->
+        <!--            hover-->
+        <!--            :items="lna"-->
+        <!--            responsive-->
+        <!--            small-->
+        <!--            table-class="lna-table"-->
+        <!--            thead-class="lna-table-thead"-->
+        <!--            tbody-class="lna-table-tbody"-->
+        <!--            @row-clicked="handleRowClick"-->
+        <!--          ></b-table>-->
+        <!--          <client-only>-->
+        <!--            <div v-if="showCollapse" class="mb-3 showHide">-->
+        <!--              <b-button-->
+        <!--                block-->
+        <!--                variant="light"-->
+        <!--                class="font-08"-->
+        <!--                @click="handleRowClick"-->
+        <!--                >Hide Charts</b-button-->
+        <!--              >-->
+        <!--            </div>-->
+        <!--            <div v-else class="mb-3 showHide">-->
+        <!--              <b-button-->
+        <!--                block-->
+        <!--                variant="light"-->
+        <!--                class="font-08"-->
+        <!--                @click="handleRowClick"-->
+        <!--                >Show Charts</b-button-->
+        <!--              >-->
+        <!--            </div>-->
+        <!--            <div v-if="showLNAs" class="mb-3 mt-3 showHide">-->
+        <!--              <b-button-->
+        <!--                block-->
+        <!--                variant="light"-->
+        <!--                class="font-08"-->
+        <!--                @click="handleLNAClick"-->
+        <!--                >Hide LNAs</b-button-->
+        <!--              >-->
+        <!--            </div>-->
+        <!--            <div v-else class="mb-3 mt-3 showHide">-->
+        <!--              <b-button-->
+        <!--                block-->
+        <!--                variant="light"-->
+        <!--                class="font-08"-->
+        <!--                @click="handleLNAClick"-->
+        <!--                >Show LNAs</b-button-->
+        <!--              >-->
+        <!--            </div>-->
+        <!--            <div v-if="showCollapse">-->
+        <!--              <div v-for="(l, index) in lna" :key="`chartlna${index}`">-->
+        <!--                <PieChart-->
+        <!--                  :chartdata="extractChartData(l)"-->
+        <!--                  :options="options"-->
+        <!--                ></PieChart>-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--            <div v-if="showLNAs">-->
+        <!--              <h5 class="mt-4">Language Needs Assessments</h5>-->
+        <!--              <ul-->
+        <!--                v-for="(lnalink, index) in commDetails['lnas']"-->
+        <!--                :key="'lnalink' + index"-->
+        <!--                class="m-0 p-0 list-style-none"-->
+        <!--              >-->
+        <!--                <li class="mt-2 mb-2">-->
+        <!--                  <div>-->
+        <!--                    <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>-->
+        <!--                  </div>-->
+        <!--                  <div>Language: {{ lnalink.lna.language }}</div>-->
+        <!--                </li>-->
+        <!--              </ul>-->
+        <!--            </div>-->
+        <!--          </client-only>-->
+        <!--        </div>-->
       </section>
       <section class="pl-3 pr-3">
         <Badge
@@ -187,42 +221,6 @@
             </div>
           </b-col>
         </b-row>
-
-        <div class="lnas-communty">
-          <div v-if="showLNAs" class="mb-3 mt-3">
-            <b-button
-              block
-              variant="light"
-              class="font-08"
-              @click="handleLNAClick"
-              >Hide LNAs</b-button
-            >
-          </div>
-          <div v-else class="mt-3 mb-3">
-            <b-button
-              block
-              variant="light"
-              class="font-08"
-              @click="handleLNAClick"
-              >Show LNAs</b-button
-            >
-          </div>
-          <div v-if="showLNAs">
-            <h5 class="mt-4">Language Needs Assessments</h5>
-            <ul
-              v-for="(lnalink, index) in commDetails['lnas']"
-              :key="'lnalink' + index"
-              class="m-0 p-0 list-style-none"
-            >
-              <li class="mt-2 mb-2">
-                <div>
-                  <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
-                </div>
-                <div>Language: {{ lnalink.lna.language }}</div>
-              </li>
-            </ul>
-          </div>
-        </div>
       </section>
       <section>
         <div v-if="isLoggedIn">
@@ -271,7 +269,8 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Notification from '@/components/Notification.vue'
-import PieChart from '@/components/PieChart.vue'
+// Commented out until data is fixed
+// import PieChart from '@/components/PieChart.vue'
 export default {
   components: {
     // DetailSideBar,
@@ -284,8 +283,9 @@ export default {
     Logo,
     UploadTool,
     Media,
-    Notification,
-    PieChart
+    Notification
+    // Commented out until data is fixed
+    // ,PieChart
   },
   data() {
     return {
@@ -313,6 +313,29 @@ export default {
                 data.datasets[0].data[tooltipItems.index] * 100
               ).toFixed(1) + '%'}`
             }
+          }
+        },
+        animation: {
+          duration: 500,
+          onProgress(animation) {
+            const chartContext = this.chart.canvas.getContext('2d', {
+              alpha: false
+            })
+            chartContext.fillStyle = '#4a4a4a'
+            chartContext.font = '100 32px Lato'
+            chartContext.textBaseline = 'middle'
+            chartContext.fillText(
+              this.data.datasets[0].learnerData[0] * 100 + '%',
+              this.chart.width / 2 - 30,
+              this.chart.height / 2 - 5,
+              200
+            )
+            chartContext.fillText(
+              'Learners',
+              this.chart.width / 2 - 58,
+              this.chart.height / 2 + 25,
+              200
+            )
           }
         }
       },
@@ -474,18 +497,17 @@ export default {
       const fluent_speakers = parseFloat(l.fluent_speakers) / 100
       const some_speakers = parseFloat(l.some_speakers) / 100
       const learners = parseFloat(l.learners) / 100
-      const others =
-        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
-        100
+      const others = (100 - (fluent_speakers * 100 + some_speakers * 100)) / 100
       console.log('Others', others)
       return {
         name: l.language,
-        labels: ['Fluent', 'Some', 'Learner', 'Other'],
+        labels: ['Fluent', 'Some', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#95a5a6', '#efefef'],
-            data: [fluent_speakers, some_speakers, learners, others]
+            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
+            data: [fluent_speakers, some_speakers, others],
+            learnerData: [learners]
           }
         ]
       }
@@ -569,6 +591,11 @@ export default {
   padding-right: 0.5em;
   color: var(--color-gray, #6f6f70);
   vertical-align: middle;
+}
+
+.showHide {
+  width: 49%;
+  display: inline-block;
 }
 
 @media (max-width: 992px) {

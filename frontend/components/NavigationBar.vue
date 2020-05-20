@@ -85,16 +85,19 @@
     </div>
     <transition name="fade">
       <div v-if="navigationOpen" class="navigation">
-        <div class="nav-header pl-2">
+        <div
+          class="nav-header cursor-pointer pl-2"
+          @click.prevent="handleNavLink"
+        >
           <img
-            src="../assets/images/logo.png"
+            src="../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
             height="auto"
             width="50"
             class="d-inline-block mb-2"
           />
           <div
-            style="color: #632015; font-size: 1.1em;"
+            style="color: #632015; font-size: 1.2em;"
             class="d-inline-block font-weight-bold ml-3"
           >
             First Peoples' Map of B.C.
@@ -128,10 +131,13 @@
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
             <li>
-              <a class="color-gray" href="/page/tos">TOS</a>
+              <a class="color-gray" href="/page/tos">Terms of Use</a>
             </li>
             <li>
               <a class="color-gray" href="/page/help">Help</a>
+            </li>
+            <li>
+              <a class="color-gray" href="/page/contact">Contact Us</a>
             </li>
             <li class="login-nav cursor-pointer">
               <a
