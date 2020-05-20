@@ -136,7 +136,7 @@
             <li class="login-nav cursor-pointer">
               <a
                 v-if="!email"
-                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca"
+                href="https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca"
                 class="d-block"
                 >Login</a
               >
@@ -209,7 +209,7 @@ export default {
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
       window.location =
-        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps-dev.fpcc.ca'
+        'https://fplm.auth.ca-central-1.amazoncognito.com/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
     },
     handleLogoClick() {
       this.$router.push({
