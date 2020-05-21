@@ -152,25 +152,19 @@ class ConfirmClaimView(APIView):
             if is_valid:
                 user = User.objects.get(id=user_id)
                 
-                try:
-                    with transaction.atomic():
-                        data_list = RelatedData.objects.filter(data_type='user_email', value=email)
+                with transaction.atomic():
+                    data_list = RelatedData.objects.filter(data_type='user_email', value=email)
 
-                        for data in data_list:
-                            profile = data.placename
-                            profile.owner = user
-                            profile.save()
+                    for data in data_list:
+                        profile = data.placename
+                        profile.owner = user
+                        profile.save()
 
-                            print(profile.name)
-                        
-                        return Response({
-                            'success': True,
-                            'message': 'You have successfully claimed your profile(s)!'
-                        })
-                except Exception as e:
+                        print(profile.name)
+                    
                     return Response({
-                        'success': False,
-                        'message': str(e)
+                        'success': True,
+                        'message': 'You have successfully claimed your profile(s)!'
                     })
         else:
             return Response({
