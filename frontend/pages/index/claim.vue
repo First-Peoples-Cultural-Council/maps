@@ -147,9 +147,9 @@ export default {
 
       // Clear Cookies whether or not the request succeeded or failed
       // to make sure that the user has to repeat the process
-      // Cookies.remove('inviteEmail')
-      // Cookies.remove('inviteKey')
-      // Cookies.remove('inviteMode')
+      Cookies.remove('inviteEmail')
+      Cookies.remove('inviteKey')
+      Cookies.remove('inviteMode')
     }
   }
 }
