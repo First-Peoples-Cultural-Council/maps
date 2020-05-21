@@ -26,6 +26,9 @@ from language.models import PlaceName, RelatedData
 
 
 def validate_key(encoded_email, key):
+    if not os.environ['INVITE_SALT']:
+        raise Exception("INVITE_SALT environment variable not set up.")
+
     invite_salt = os.environ['INVITE_SALT'].encode('utf-8')
 
     # Confirmation key used to check against submitted key
@@ -134,86 +137,51 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
 class ConfirmClaimView(APIView):
     @method_decorator(never_cache, login_required)
-    def get(self, request, email, key):
-        # If record exists set is_claimed to true and assign user to placename
-        try:
-            record = ProfileClaimRecord.objects.get(profile_email=email)
+    def post(self, request):
+        data = request.data
 
-            with transaction.atomic():
-                print(record.is_claimed)
-                if not record.is_claimed:
-                    # Update Profile's owner
-                    user = User.objects.get(email=record.user_email)
+        if 'email' in data and 'key' in data and 'user_id' in data:
+            # Actual Post Data
+            user_id = data.get('user_id')
+            email = data.get('email')
+            encoded_email = data.get('email').encode('utf-8')
+            key = data.get('key')
 
-                    profile = record.profile
-                    profile.owner = user
-                    profile.save()
+            is_valid = validate_key(encoded_email, key)
 
-                    # Update and Save record
-                    record.is_claimed = True
-                    record.save()
+            if is_valid:
+                user = User.objects.get(id=user_id)
+                
+                try:
+                    with transaction.atomic():
+                        data_list = RelatedData.objects.filter(data_type='user_email', value=email)
 
-                    return Response({
-                        'success': True,
-                        'message': 'You have successfully claimed your profile!',
-                        'profile': '{}/art/{}'.format(settings.HOST, _format_fpcc(record.profile.name))
-                    })
-                else:
+                        for data in data_list:
+                            profile = data.placename
+                            profile.owner = user
+                            profile.save()
+
+                            print(profile.name)
+                        
+                        return Response({
+                            'success': True,
+                            'message': 'You have successfully claimed your profile(s)!'
+                        })
+                except Exception as e:
                     return Response({
                         'success': False,
-                        'message': 'This profile was already claimed.',
+                        'message': str(e)
                     })
-        except ProfileClaimRecord.DoesNotExist:
+        else:
             return Response({
                 'success': False,
-                'message': 'This profile claiming link is invalid.'
+                'message': 'Invalid claim request.'
             })
-        except Exception as e:
-            return Response({
-                'success': False,
-                'message': str(e)
-            })
-
-
-# class ClaimProfileView(APIView):
-#     @method_decorator(login_required)
-#     def post(self, request):
-#         data = request.data
-
-#         # Login required would make sure this works
-#         user = request.user
-
-#         if 'placename' in data:
-#             placename_id = data.get('placename')
-#             placename = PlaceName.objects.get(id=placename_id)
-
-#             if placename.owner is None:
-#                 email_data = RelatedData.objects.get(
-#                     data_type='email', placename=placename)
-
-#                 claim_profile(email_data)
-#                 return Response({
-#                     'success': True,
-#                     'message': 'Claim request has been sent to %s' % email_data.value
-#                 })
-#             else:
-#                 return Response({
-#                     'success': False,
-#                     'message': 'This profile has already been claimed'
-#                 })
-#         else:
-#             return Response({
-#                 'success': False,
-#                 'message': 'Invalid request.'
-#             })
 
 
 class ValidateInviteView(APIView):
     def post(self, request):
         data = request.data
-
-        if not os.environ['INVITE_SALT']:
-            raise Exception("INVITE_SALT environment variable not set up.")
 
         if 'email' in data and 'key' in data:
             # Actual Post Data
