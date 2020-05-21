@@ -44,6 +44,8 @@ TYPE_MAP = {
     "grant": "grant"
 }
 
+NODES_WITH_ARTWORK = ["public_art", "artist"]
+
 
 class Client(dedruplify.DeDruplifierClient):
 
@@ -51,10 +53,6 @@ class Client(dedruplify.DeDruplifierClient):
         # SETUP FOR SAVING MEDIA
         # Files url - source from which to download media files
         files_url = "https://www.fp-artsmap.ca/sites/default/files/"
-
-        # Delete existing artwork media
-        media = Media.objects.filter(is_artwork=True)
-        media.delete()
 
         # Delete art artists
         art_artists = PublicArtArtist.objects.all()
@@ -203,8 +201,12 @@ class Client(dedruplify.DeDruplifierClient):
                     media_url = None
 
                     if not filename:
-                        filename = "{} - {} {}".format(
-                            node_placename.name, 'Artwork', index)
+                        if node_placename.kind in NODES_WITH_ARTWORK:
+                            filename = "{} - {} {}".format(
+                                node_placename.name, 'Artwork', index)
+                        else:
+                            filename = "{} - {}".format(
+                                node_placename.name, index)
 
                     try:
                         existing_media = Media.objects.get(
@@ -255,7 +257,10 @@ class Client(dedruplify.DeDruplifierClient):
                             current_media.name = filename
                             current_media.mime_type = mime_type
                             current_media.file_type = file_type
-                            current_media.is_artwork = True
+                            if node_placename.kind in NODES_WITH_ARTWORK:
+                                current_media.is_artwork = True
+                            else:
+                                current_media.is_artwork = False
                             current_media.status = "VE"
                             current_media.placename = node_placename
 
@@ -468,6 +473,28 @@ class Client(dedruplify.DeDruplifierClient):
                         "value": value,
                         "private": private
                     })
+
+            user_email = self.query("""
+                SELECT 
+                    mail
+                FROM
+                    users,
+                    node
+                WHERE
+                    users.uid = node.uid
+                AND
+                    node.nid=%s
+                LIMIT
+                    1;
+            """ % node.get("nid"))
+
+            if user_email[0]:
+                related_data.append({
+                    "key": 'user_email',
+                    "label": 'Old Artsmap User Email',
+                    "value": [user_email[0].get('mail', '')],
+                    "private": True
+                })
 
             feature = {
                 "type": "Feature",
