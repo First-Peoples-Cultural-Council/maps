@@ -11,7 +11,7 @@ router.register(r"user", UserViewSet, basename='user')
 urlpatterns = router.urls
 
 urlpatterns = [
-    path("profile/claim/confirm/<str:email>/<str:key>", ConfirmClaimView.as_view(), name="confirm-profile-claim"),
+    path("profile/claim/confirm/", ConfirmClaimView.as_view(), name="confirm-profile-claim"),
     # path("profile/claim/", ClaimProfileView.as_view(), name="claim-artist-profile"),
     path("key/validate/", ValidateInviteView.as_view(), name="validate-key"),
 ] + router.urls

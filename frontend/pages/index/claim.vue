@@ -66,7 +66,7 @@ export default {
 
       this.message = this.createProfileMessage
 
-      this.claimArtistProfile(email, key)
+      this.claimArtistProfile(email, key, this.userid)
     } else if (!this.isLoggedIn) {
       // If you are neither in invite mode, nor logged in, you will trigger the invite
       // process and you will be asked to register. The Inviet Mode will be activated
@@ -121,23 +121,35 @@ export default {
         this.message = this.invalidMessage
       }
     },
-    async claimArtistProfile(email, key) {
+    async claimArtistProfile(email, key, userId) {
       const headers = {
         'X-CSRFToken': getCookie('csrftoken')
       }
-      console.log(headers)
-      const result = await this.validateUrl(email, key, headers)
-      const isValid = result.data.valid
+      const claimConfirmUrl = `${getApiUrl('profile/claim/confirm/')}`
+      const result = await await this.$axios.post(
+        claimConfirmUrl,
+        {
+          email,
+          key,
+          user_id: userId
+        },
+        {
+          headers
+        }
+      )
+      const isClaimSuccessful = result.data.success
 
-      if (isValid) {
+      if (isClaimSuccessful) {
         this.message = this.claimSuccessMessage
-
-        // Cookies.remove('inviteEmail')
-        // Cookies.remove('inviteKey')
-        // Cookies.remove('inviteMode')
       } else {
         this.message = this.invalidMessage
       }
+
+      // Clear Cookies whether or not the request succeeded or failed
+      // to make sure that the user has to repeat the process
+      // Cookies.remove('inviteEmail')
+      // Cookies.remove('inviteKey')
+      // Cookies.remove('inviteMode')
     }
   }
 }
