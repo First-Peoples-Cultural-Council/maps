@@ -31,42 +31,52 @@ def send_claim_profile_invite(email):
     encoded_email = email.encode('utf-8')
     key = hashlib.sha256(salt + encoded_email).hexdigest()
 
-    email_data = RelatedData.objects.filter(data_type='email', value=email)
+    email_data = RelatedData.objects.filter(data_type='user_email', value=email)
 
-    profile_links = ''
+    fully_claimed = True
+
     for data in email_data:
-        profile_links += """<p>&emsp;<a href='{host}/art/{profile}' target='_blank'>{host}/art/{profile}</a></p>""".format(
+        if data.placename.owner is None:
+            fully_claimed = False
+            break
+
+    if email_data and not fully_claimed:
+        profile_links = ''
+        for data in email_data:
+            profile_links += """<p>&emsp;<a href='{host}/art/{profile}' target='_blank'>{host}/art/{profile}</a></p>""".format(
+                host=settings.HOST,
+                profile=_format_fpcc(data.placename.name),
+            )
+
+        message = """
+            <h3>Greetings from First People's Cultural Council!</h3>
+            <p>We have recently migrated our data from <a href='{fp_artsmap_website}' target='_blank'>{fp_artsmap_website}</a> over to <a href='{fpcc_website}' target='_blank'>{fpcc_website}</a> and would like to invite you to claim your profile(s):</p>
+            {profile_links}<br/>
+            <h4>Claim Your Profile</h4>
+            <p>If you own the following profile(s), please click on the link below to claim it:</p>
+            <p>&emsp;<a href='{host}/claim?email={email}&key={key}' target='_blank'>Claim Profile</a></p>
+            <p>If it isn't, please report that your email is being used by another person on our website by sending an email to <a href='mailto:{fpcc_email}' target='_blank'>{fpcc_email}</a>.</p><br/>
+            <p>Thank you very much, and have a good day!</p>
+        """.format(
+            fp_artsmap_website='https://fp-artsmap.ca',
+            fpcc_website='https://maps.fpcc.ca',
+            profile_links=profile_links,
             host=settings.HOST,
-            profile=_format_fpcc(data.placename.name),
+            fpcc_email='info@fpcc.ca',
+            email=email,
+            key=key
         )
 
-    message = """
-        <h3>Greetings from First People's Cultural Council!</h3>
-        <p>We have recently migrated our data from <a href='{fp_artsmap_website}' target='_blank'>{fp_artsmap_website}</a> over to <a href='{fpcc_website}' target='_blank'>{fpcc_website}</a> and would like to invite you to claim your profile(s):</p>
-        {profile_links}<br/>
-        <h4>Claim Your Profile</h4>
-        <p>If you own the following profile(s), please click on the link below to claim it:</p>
-        <p>&emsp;<a href='{host}/claim?email={email}&key={key}' target='_blank'>Claim Profile</a></p>
-        <p>If it isn't please report that your email is being used by another person on our website by sending an email to <a href='mailto:{fpcc_email}' target='_blank'>{fpcc_email}</a>.</p><br/>
-        <p>Thank you very much, and have a good day!</p>
-    """.format(
-        fp_artsmap_website='https://fp-artsmap.ca',
-        fpcc_website='https://maps.fpcc.ca',
-        profile_links=profile_links,
-        host=settings.HOST,
-        fpcc_email='info@fpcc.ca',
-        email=email,
-        key=key
-    )
-
-    # Send out the message
-    send_mail(
-        subject="Claim Your FPCC Profile",
-        message=message,
-        from_email="info@fpcc.ca",
-        recipient_list=[email],
-        html_message=message,
-    )
+        # Send out the message
+        send_mail(
+            subject="Claim Your FPCC Profile",
+            message=message,
+            from_email="info@fpcc.ca",
+            recipient_list=[email],
+            html_message=message,
+        )
+    else:
+        print('User has no profiles to claim.')
 
 
 def send_claim_profile_invites():
