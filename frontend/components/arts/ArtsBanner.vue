@@ -164,14 +164,9 @@ export default {
     },
     handleReturn() {
       this.resetState()
-
-      if (this.server) {
-        this.$router.push({
-          path: '/art'
-        })
-      } else {
-        this.$router.go(-1)
-      }
+      this.$router.push({
+        path: '/art'
+      })
     },
     resetState() {
       this.$store.commit('sidebar/setDrawerContent', false)

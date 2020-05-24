@@ -11,7 +11,7 @@
       />
       <img
         v-else-if="arttype.toLowerCase() === 'event'"
-        src="@/assets/images/events_icon.svg"
+        src="@/assets/images/event_icon.svg"
         alt="Event"
       />
       <img
@@ -146,13 +146,9 @@ export default {
     },
     handleReturn() {
       this.$store.commit('sidebar/setDrawerContent', false)
-      if (this.server) {
-        this.$router.push({
-          path: '/art'
-        })
-      } else {
-        this.$router.go(-1)
-      }
+      this.$router.push({
+        path: '/art'
+      })
     }
   }
 }
