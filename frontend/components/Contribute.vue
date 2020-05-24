@@ -169,18 +169,23 @@
     <MessageBox
       :show="showMessage"
       :message="
-        `You Cannot Add An Artwork, you need to be registered. Redirecting to
-          Artist Creation`
+        `You cannot add an Artwork, you need to create an Artist profile before uploading Artwork. You will be redirected to
+          Artist Creation.`
       "
+      :toggle-modal="toggleMessageBox"
     ></MessageBox>
+    <UploadModal :id="validatedArtist.id" :type="'placename'"></UploadModal>
   </div>
 </template>
 
 <script>
 import MessageBox from '@/components/MessageBox.vue'
+import UploadModal from '@/components/UploadModal.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
-    MessageBox
+    MessageBox,
+    UploadModal
   },
   data() {
     return {
@@ -190,17 +195,29 @@ export default {
   },
   computed: {
     validatedArtist() {
-      return this.userPlacenames.find(placename => placename.kind === 'artist')
+      if (this.userDetail.placename_set) {
+        const foundUserArtist = this.userDetail.placename_set.find(
+          placename =>
+            placename.kind === 'artist' &&
+            placename.name ===
+              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+        )
+        const getAllArtist = this.userDetail.placename_set.filter(
+          placename => placename.kind === 'artist'
+        )
+        return getAllArtist.length ? foundUserArtist || getAllArtist[0] : false
+      } else {
+        return false
+      }
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
-    userPlacenames() {
-      return this.$store.state.user.user.placename_set
+    userDetail() {
+      return this.$store.state.user.user
     }
   },
   mounted() {
-    console.log(this.validatedArtist)
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
@@ -211,6 +228,9 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
       this.showContributeModal = !this.showContributeModal
+    },
+    toggleMessageBox() {
+      this.showMessage = !this.showMessage
     },
     handleClick(e, data) {
       this.hideModal()
@@ -241,15 +261,27 @@ export default {
     },
     validateArtist($event) {
       this.hideModal()
-      if (this.validatedArtist) {
-        this.$router.push({
-          path: '/profile/' + this.$store.state.user.user.id
-        })
-      } else {
+      // If doesnt have Artist profile, redirect to Artist creation
+      if (!this.validatedArtist) {
         this.handlePlaceClick($event, 'placename', 'Artist')
         this.showMessage = true
       }
+      // If has Artist profile, redirect to Profile, then add Media
+      else {
+        console.log('artist is', this.validatedArtist)
+
+        this.$router.push({
+          path: `/art/${encodeFPCC(this.validatedArtist.name)}`
+        })
+
+        // Decide for UploadModal popup time
+        const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500
+        setTimeout(() => {
+          this.$root.$emit('openUploadModal')
+        }, timeOut)
+      }
     },
+    getCurrentArtist() {},
     showModal() {
       this.$refs['c-modal'].show()
     },
