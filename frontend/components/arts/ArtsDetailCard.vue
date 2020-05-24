@@ -43,6 +43,19 @@
           >{{ tag.name }}</span
         >
       </div>
+      <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+        <CardBadge content="Owned" type="owner"></CardBadge>
+        <CardBadge
+          content="Edit"
+          type="edit"
+          @click.native="editPlacename"
+        ></CardBadge>
+        <CardBadge
+          content="Delete"
+          type="delete"
+          @click.native="showOwnerModal"
+        ></CardBadge>
+      </div>
     </div>
 
     <div class="fpcc-card-more-art" @click.prevent="handleReturn">
@@ -62,10 +75,13 @@
     </div>
   </div>
 </template>
-
 <script>
+import CardBadge from '@/components/CardBadge.vue'
+
 export default {
-  components: {},
+  components: {
+    CardBadge
+  },
   filters: {
     kind(d) {
       if (d === 'public_art') {
@@ -95,6 +111,22 @@ export default {
       type: Array,
       default: () => {
         return {}
+      }
+    },
+    isOwner: {
+      type: Boolean,
+      default: false
+    },
+    showOwnerModal: {
+      type: Function,
+      default: () => {
+        return true
+      }
+    },
+    editPlacename: {
+      type: Function,
+      default: () => {
+        return true
       }
     }
   },
