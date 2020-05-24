@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     getEventImg(img) {
-      return img ? getMediaUrl(img) : require(`@/assets/images/event_icon.svg`)
+      return img ? getMediaUrl(img) : require(`@/assets/images/events_icon.svg`)
     },
     redirectToEvent(name) {
       this.resetState()

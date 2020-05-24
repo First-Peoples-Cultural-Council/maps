@@ -76,7 +76,9 @@
             </div>
           </div></b-list-group-item
         >
-        <b-list-group-item button @click="validateArtist($event)">
+      </b-list-group>
+      <b-list-group class="placename-group-container">
+        <b-list-group-item button class="mt-1" @click="validateArtist($event)">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
@@ -90,8 +92,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Upload Your Artwork (I'm an Artist)
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This options lets you upload an Artwork. If you haven't created an
+              Artist profile, you will be redirected to Artist creation.
             </div>
           </div></b-list-group-item
         >
@@ -112,8 +114,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add an Event
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create an Event. This event will be shown in
+              the Arts Panel, and will also be shown in the maps.
             </div>
           </div></b-list-group-item
         >
@@ -134,8 +136,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add a Public Art
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create a Public Art. This Public Art will be
+              shown in the Arts Panel, and will also be shown in the maps.
             </div>
           </div></b-list-group-item
         >
@@ -156,8 +158,9 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add an Organization
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create an Organization. This Organization
+              will be shown in the Arts Panel, and will also be shown in the
+              maps.
             </div>
           </div></b-list-group-item
         >
@@ -187,13 +190,17 @@ export default {
   },
   computed: {
     validatedArtist() {
-      return false
+      return this.userPlacenames.find(placename => placename.kind === 'artist')
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    userPlacenames() {
+      return this.$store.state.user.user.placename_set
     }
   },
   mounted() {
+    console.log(this.validatedArtist)
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
@@ -279,5 +286,10 @@ export default {
 #contribute-modal .modal-body {
   padding: 0;
   margin: 0;
+}
+
+.placename-group-container {
+  position: absolute;
+  top: 294px;
 }
 </style>

@@ -22,8 +22,6 @@ export const actions = {
       }
     }
 
-    // console.log('Headers', headers)
-    // console.log('FormData', formData)
     try {
       const result = await this.$axios.post(`/api/media/`, formData, headers)
       return result
