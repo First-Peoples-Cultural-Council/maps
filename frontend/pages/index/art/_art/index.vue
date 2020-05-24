@@ -341,6 +341,15 @@ export default {
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
     }
+
+    // Invoke this when Media upload is successful
+    this.$root.$on('fileUploadSuccess', () => {
+      this.$store.commit('sidebar/setDrawerContent', false)
+
+      setTimeout(() => {
+        this.$store.commit('sidebar/setDrawerContent', true)
+      }, 500)
+    })
   },
   methods: {
     getMediaUrl,
