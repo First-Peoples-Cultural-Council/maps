@@ -24,7 +24,7 @@
           />
           <img
             v-else-if="kind.toLowerCase() === 'event'"
-            src="@/assets/images/events_icon.svg"
+            src="@/assets/images/event_icon.svg"
             alt="Event"
           />
           <img
