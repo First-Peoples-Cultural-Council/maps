@@ -1095,7 +1095,7 @@ export default {
       }
 
       if (this.drawnFeatures.length) {
-        data.geom = this.drawnFeatures[0].geometry.g.g.geometryeometry
+        data.geom = this.drawnFeatures[0].geometry
       }
 
       const headers = {
@@ -1419,6 +1419,7 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     next(vm => {
+      vm.$root.$emit('resetMap')
       vm.$store.commit('sidebar/set', true)
       vm.$store.commit('contribute/setIsDrawMode', true)
       if (vm.$route.query.mode === 'point') {
