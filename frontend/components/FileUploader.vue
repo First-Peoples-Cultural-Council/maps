@@ -133,6 +133,9 @@ export default {
             time: 1500,
             variant: 'danger'
           })
+          if (this.$route.name === 'index-art-art') {
+            this.$root.$emit('fileUploadSuccess')
+          }
         }
       }
 
