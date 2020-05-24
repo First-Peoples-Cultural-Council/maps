@@ -61,16 +61,6 @@
               </h4>
             </div>
           </div>
-          <!-- <section
-            v-if="queryType === 'Artwork'"
-            class="artwork-upload-container"
-          >
-            <b-alert show variant="success">
-              You are posting Artwork as Mico Dahang. Please upload as many
-              Artworks as you want.
-            </b-alert>
-            <MediaGallery :media-list="getMediaFiles" />
-          </section> -->
           <!-- If Placename Contribution -->
           <section
             v-if="queryMode === 'placename' || queryType"
@@ -598,7 +588,7 @@
 
           <hr />
 
-          <section class="placename-creation-footer pl-3 pr-3">
+          <section class="pl-3 pr-3">
             <b-row class="mt-3">
               <b-col xl="12">
                 <b-alert
@@ -1410,7 +1400,6 @@ export default {
 
       console.log(values)
     },
-    validatePlacename() {},
     uploadFiles(id) {
       this.files.map(async file => {
         const data = new FormData()
@@ -1714,10 +1703,5 @@ export default {
   padding: 1em;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
-}
-
-.artwork-upload-container {
-  padding: 1em;
-  height: 70vh;
 }
 </style>
