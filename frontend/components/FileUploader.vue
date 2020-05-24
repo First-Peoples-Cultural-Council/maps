@@ -113,7 +113,6 @@ export default {
 
       if (this.$route.query.mode === 'placename') {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
-        console.log(this.$store.state.file.fileList)
       } else {
         const formData = this.getFormData()
         try {
@@ -154,12 +153,12 @@ export default {
     getMediaData() {
       return {
         name: this.fileName,
-        file_type: this.file.type,
+        file_type: 'image',
         description: this.description,
         media_file: this.file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: false
       }
     },
     async uploadFile(formData) {

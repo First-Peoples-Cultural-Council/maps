@@ -314,7 +314,7 @@ export default {
     return { user, isOwner }
   },
   mounted() {
-    // console.log('mounted, user=', this.$store.state.user)
+    console.log('mounted, user=', this.$store.state.user)
   },
   methods: {
     encodeFPCC,
