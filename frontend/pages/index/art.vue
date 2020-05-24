@@ -146,7 +146,10 @@
 
               <ArtsCard
                 v-else
-                :art="art"
+                :name="art.properties.name"
+                :kind="art.properties.kind"
+                :taxonomy="art.properties.taxonomies"
+                :geometry="art.geometry"
                 class="mt-3 hover-left-move"
                 @click.native="
                   handleCardClick($event, art.properties.name, 'art')
