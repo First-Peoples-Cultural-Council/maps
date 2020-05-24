@@ -90,7 +90,7 @@
             v-if="place.kind === ''"
             :key="`place${place.id}`"
             :place="{ properties: place }"
-            class="mt-3 hover-left-move"
+            class="mt-1 hover-left-move"
             @click.native="
               $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
             "
@@ -101,7 +101,7 @@
             :key="`place${place.id}`"
             :name="place.name"
             :kind="place.kind"
-            class="mt-3 hover-left-move"
+            class="mt-1 hover-left-move"
             @click.native="
               $router.push({
                 path: `/art/${encodeFPCC(place.name)}`
