@@ -61,6 +61,16 @@
               </h4>
             </div>
           </div>
+          <!-- <section
+            v-if="queryType === 'Artwork'"
+            class="artwork-upload-container"
+          >
+            <b-alert show variant="success">
+              You are posting Artwork as Mico Dahang. Please upload as many
+              Artworks as you want.
+            </b-alert>
+            <MediaGallery :media-list="getMediaFiles" />
+          </section> -->
           <!-- If Placename Contribution -->
           <section
             v-if="queryMode === 'placename' || queryType"
@@ -224,6 +234,24 @@
                 :options="listOfPublicArt"
                 :multiple="true"
               ></multiselect>
+            </b-row>
+
+            <b-row class="field-row mt-3">
+              <div>
+                <label for="location" class="contribute-title-one"
+                  >Location</label
+                >
+                <ToolTip
+                  content="Tell people about the Location of that Placename."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="location"
+                v-model="relatedData.location"
+                type="text"
+                placeholder="Input location here..."
+              ></b-form-input>
             </b-row>
 
             <b-row
@@ -429,14 +457,14 @@
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="commercial-only"
                   >Are you interested in commercial inquiries?</label
                 >
                 <b-form-checkbox
-                  id="community-only"
+                  id="commercial-only"
                   v-model="relatedData.commercialOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="commercial-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -446,14 +474,14 @@
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="contacted-only"
                   >Allow public to see your contact info?
                 </label>
                 <b-form-checkbox
-                  id="community-only"
+                  id="contacted-only"
                   v-model="relatedData.contactedOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="contacted-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -570,7 +598,7 @@
 
           <hr />
 
-          <section class="pl-3 pr-3">
+          <section class="placename-creation-footer pl-3 pr-3">
             <b-row class="mt-3">
               <b-col xl="12">
                 <b-alert
@@ -922,6 +950,7 @@ export default {
       window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
+
     if (this.queryType !== 'Event') {
       this.addSite()
     }
@@ -939,6 +968,10 @@ export default {
       this.queryMode !== 'existing'
     ) {
       this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
+    }
+
+    if (this.queryType === 'Event') {
+      this.dateValue = new Date().toISOString().slice(0, 10)
     }
   },
   methods: {
@@ -976,14 +1009,16 @@ export default {
       this.timeContext = ctx
     },
     initQuill() {
-      require('quill/dist/quill.snow.css')
-      const Quill = require('quill')
-      const container = this.$refs.quill
-      const editor = new Quill(container, {
-        theme: 'snow'
-      })
-      editor.setText(`${this.content}\n`)
-      this.quillEditor = editor
+      if (document.querySelector('#quill')) {
+        require('quill/dist/quill.snow.css')
+        const Quill = require('quill')
+        const container = this.$refs.quill
+        const editor = new Quill(container, {
+          theme: 'snow'
+        })
+        editor.setText(`${this.content}\n`)
+        this.quillEditor = editor
+      }
     },
     async uploadAudioFile(id, audio, newPlace) {
       const audiodata = new FormData()
@@ -1025,7 +1060,9 @@ export default {
     },
     submitType(e) {
       this.isLoading = true
-      if (this.queryMode === 'placename') {
+      if (this.queryType === 'Artwork') {
+        this.uploadMedias(1)
+      } else if (this.queryMode === 'placename') {
         this.submitPlacename(e)
         // this.postRelatedData()
       } else {
@@ -1230,16 +1267,18 @@ export default {
             }
 
             // Patch placename thumbnail
-            const formDatas = new FormData()
-            formDatas.append('image', this.fileImg)
+            if (this.fileImg) {
+              const formDatas = new FormData()
+              formDatas.append('image', this.fileImg)
 
-            const uploadImg = await this.$axios.$patch(
-              `/api/placename/${id}/`,
-              formDatas,
-              headers
-            )
+              const uploadImg = await this.$axios.$patch(
+                `/api/placename/${id}/`,
+                formDatas,
+                headers
+              )
 
-            console.log(uploadImg)
+              console.log(uploadImg)
+            }
 
             // UPLOAD MEDIAS
             this.uploadMedias(id)
@@ -1253,6 +1292,7 @@ export default {
 
               console.log('MODIFIED DATA', modified)
               this.isLoading = false
+              // this.$store.commit('file/setMediaFiles', [])
 
               this.$router.push({
                 path: `/art/${encodeFPCC(this.traditionalName)}`
@@ -1278,9 +1318,9 @@ export default {
       }
     },
     postRelatedData(id = 1) {
-      // if(this.queryType === 'Event'){
-      //   this.relatedData.push('')
-      // }
+      if (this.queryType === 'Event') {
+        this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
+      }
       const filteredRelatedData = Object.entries(this.relatedData).filter(
         data => {
           if (data[0] === 'websiteList' || data[0] === 'awardsList') {
@@ -1370,6 +1410,7 @@ export default {
 
       console.log(values)
     },
+    validatePlacename() {},
     uploadFiles(id) {
       this.files.map(async file => {
         const data = new FormData()
@@ -1675,7 +1716,8 @@ export default {
   border-radius: 0.25rem;
 }
 
-.badge-notification {
-  border: 1px solid red;
+.artwork-upload-container {
+  padding: 1em;
+  height: 70vh;
 }
 </style>
