@@ -205,6 +205,7 @@ export default {
       this.$root.$emit('toggleEventOverlay', true)
     },
     profile() {
+      this.$root.$emit('resetMap')
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
     },
     async logout() {
