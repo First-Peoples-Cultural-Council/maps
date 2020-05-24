@@ -110,7 +110,7 @@
             </h5>
             <span class="field-content">
               <span v-html="stringSplit(artDetails.description)"></span>
-              <a href="#" @click="toggleDescription">{{
+              <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
                 collapseDescription ? 'read less' : 'read more'
               }}</a>
             </span>
@@ -328,10 +328,6 @@ export default {
   },
   mounted() {
     window.addEventListener('resize', this.widthChecker)
-    if (this.isServer && this.artDetails) {
-      this.updateMediaUrl()
-    }
-
     if (
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
@@ -378,16 +374,8 @@ export default {
         : string.replace(/(.{200})..+/, '$1 ...')
       return stringValue
     },
-    updateMediaUrl() {
-      const artDetails = this.artDetails
-
-      if (this.artDetails.medias) {
-        artDetails.medias = this.artDetails.medias.map(media => {
-          media.media_file.replace('http://nginx/api/', '')
-          return media
-        })
-        this.artDetails = artDetails
-      }
+    showExpandBtn() {
+      return this.artDetails.description.length >= 50
     },
     renderArtistImg(img) {
       return (
@@ -491,10 +479,12 @@ export default {
 }
 
 .field-content p,
-.field-content span {
+.field-content span,
+.field-content pre {
   font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
+  overflow-x: hidden;
 }
 
 .artist-content-field > .field-content-list {
