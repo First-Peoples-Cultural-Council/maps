@@ -62,7 +62,7 @@ class PlaceNameFilterSet(FilterSet):
 
     class Meta:
         model = PlaceName
-        fields = ('kinds', 'taxonomies')
+        fields = ('kinds', 'taxonomies', 'creator')
 
 
 class PlaceNameViewSet(BaseModelViewSet):
