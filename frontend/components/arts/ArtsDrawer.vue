@@ -157,21 +157,21 @@ export default {
     }
   },
   mounted() {
-    // Fetch all medias
-    if (!this.isArtsDetailPage) {
-      this.$store.commit('sidebar/setGallery', !!this.currentMedia)
+    // Checks if what page currently, then decide what ID to use
+    const id = !this.isArtsDetailPage ? this.placename.id : this.art.id
+    this.$store.commit(
+      'sidebar/setGallery',
+      !this.isArtsDetailPage ? !!this.currentMedia : false
+    )
 
-      // Fetch Medias for this placename
-      const url = `${getApiUrl('media/?placename=')}${this.placename.id}`
+    // Fetch Medias for this placename
+    const url = `${getApiUrl('media/?placename=')}${id}`
 
-      this.$axios.$get(url).then(result => {
-        if (result) {
-          this.listOfMedias = result.sort((a, b) => b.id - a.id)
-        }
-      })
-    } else {
-      this.listOfMedias = this.art.medias
-    }
+    this.$axios.$get(url).then(result => {
+      if (result) {
+        this.listOfMedias = result.sort((a, b) => b.id - a.id)
+      }
+    })
 
     // check if query URL exist
     const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
@@ -280,6 +280,7 @@ export default {
   justify-content: flex-start;
   flex-wrap: wrap;
   padding: 0 1em;
+  margin-top: 1em;
   font: Bold 18px/22px Proxima Nova;
 
   a {
