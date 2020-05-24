@@ -706,41 +706,7 @@ export default {
               curve: 1
             })
           } else {
-            const clusterId = feature.properties.cluster_id
-            map
-              .getSource('arts1')
-              .getClusterLeaves(
-                clusterId,
-                feature.properties.point_count,
-                0,
-                function(err, aFeatures) {
-                  if (err) {
-                    console.log('Error', err)
-                  }
-                  const html = aFeatures.reduce(function(ach, feature) {
-                    const props = feature.properties
-                    return ach + renderArtDetail(props)
-                  }, '')
-                  const mapboxgl = require('mapbox-gl')
-                  new mapboxgl.Popup({
-                    className: 'artPopUp'
-                  })
-                    .setLngLat(e.lngLat)
-                    .setHTML(
-                      `<div class='popup-inner'>
-                          <h4>Art Here:</h4>
-
-                          ${html}
-                          <!-- TODO scroll indicator -->
-                          <div class="scroll-indicator">
-                              <i class="fas fa-angle-down float"></i>
-                          </div>
-
-                          </div>`
-                    )
-                    .addTo(map)
-                }
-              )
+            this.showClusterModal(feature, e.lngLat, map)
           }
           done = true
         }
@@ -754,6 +720,44 @@ export default {
             })
           }
         })
+    },
+
+    showClusterModal(feature, latLng, map) {
+      const clusterId = feature.properties.cluster_id
+      map
+        .getSource('arts1')
+        .getClusterLeaves(
+          clusterId,
+          feature.properties.point_count,
+          0,
+          function(err, aFeatures) {
+            if (err) {
+              console.log('Error', err)
+            }
+            const html = aFeatures.reduce(function(ach, feature) {
+              const props = feature.properties
+              return ach + renderArtDetail(props)
+            }, '')
+            const mapboxgl = require('mapbox-gl')
+            new mapboxgl.Popup({
+              className: 'artPopUp'
+            })
+              .setLngLat(latLng)
+              .setHTML(
+                `<div class='popup-inner'>
+                    <h4>Art Here:</h4>
+
+                    ${html}
+                    <!-- TODO scroll indicator -->
+                    <div class="scroll-indicator">
+                        <i class="fas fa-angle-down float"></i>
+                    </div>
+
+                    </div>`
+              )
+              .addTo(map)
+          }
+        )
     },
 
     mapLoaded(map) {

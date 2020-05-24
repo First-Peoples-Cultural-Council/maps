@@ -721,6 +721,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
         representation = super().to_representation(value)
+#        return representation
 
         updated_representation = {}
         # Add a kind field

@@ -29,7 +29,7 @@ const addLangLayers = map => {
           22,
           ['get', 'color']
         ],
-        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 0.1]
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.15, 9, 0.1]
       }
     },
     'fn-nations'
@@ -140,21 +140,113 @@ const addNationsLayers = map => {
     }
   })
 }
+
+const getHTMLMarker = function(map, feature, el) {
+  // const layer = map.getLayer('fn-arts-clusters')
+  console.log(feature.properties.cluster_id)
+  if (!feature.properties.cluster_id) return
+  map
+    .getSource('arts1')
+    .getClusterLeaves(
+      feature.properties.cluster_id,
+      feature.properties.point_count,
+      0,
+      function(err, aFeatures) {
+        if (err) {
+          console.warn('Error', err)
+        }
+        const buckets = {}
+        for (let i = 0; i < aFeatures.length; i++) {
+          buckets[aFeatures[i].properties.kind] = 1
+        }
+
+        let h = '<div style="position:relative">'
+        let key
+        let arc = 0
+        for (key in buckets) {
+          const posStyle =
+            'position: absolute; transform: translate(' +
+            (-Math.sin(arc) * 10 - 10) +
+            'px, ' +
+            (-Math.cos(arc) * 10 - 10) +
+            'px);'
+          arc += 1
+          h +=
+            '<img src="/' +
+            key +
+            '_icon.svg" style="width:15px;height:15px;background:white;border-radius:50%;border:1px solid white;' +
+            posStyle +
+            '">'
+        }
+        el.innerHTML = h + '</div>'
+      }
+    )
+}
+
+const addHTMLClusters = map => {
+  const mapboxgl = require('mapbox-gl')
+
+  // objects for caching and keeping track of HTML marker objects (for performance)
+  const markers = {}
+  let markersOnScreen = {}
+
+  function updateMarkers() {
+    const newMarkers = {}
+    const features = map.querySourceFeatures('arts1')
+
+    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+    // and add it to the map if it's not there already
+    for (let i = 0; i < features.length; i++) {
+      const coords = features[i].geometry.coordinates
+      const props = features[i].properties
+      if (!props.cluster) continue
+      const id = props.cluster_id
+
+      let marker = markers[id]
+      if (!marker) {
+        const el = document.createElement('div')
+        getHTMLMarker(map, features[i], el)
+        marker = markers[id] = new mapboxgl.Marker({
+          element: el
+        }).setLngLat(coords)
+      }
+      newMarkers[id] = marker
+
+      if (!markersOnScreen[id]) marker.addTo(map)
+    }
+    // for every marker we've added previously, remove those that are no longer visible
+    for (const id in markersOnScreen) {
+      if (!newMarkers[id]) markersOnScreen[id].remove()
+    }
+    markersOnScreen = newMarkers
+  }
+
+  // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
+  map.on('data', function(e) {
+    if (e.sourceId !== 'arts1') return
+    updateMarkers()
+  })
+
+  map.on('move', updateMarkers)
+  map.on('moveend', updateMarkers)
+}
+
 export default {
   layers: (map, self) => {
     map.addLayer({
       id: 'fn-arts-clusters',
       type: 'circle',
       source: 'arts1',
-      minzoom: 5,
+      minzoom: 3,
       filter: ['has', 'point_count'],
       paint: {
-        'circle-color': '#555',
-        'circle-radius': ['step', ['get', 'point_count'], 15, 30, 20, 75, 25],
-        'circle-opacity': 0.5,
+        'circle-color': '#000000',
+        // 'circle-radius': ['step', ['get', 'point_count'], 15, 30, 20, 75, 25],
+        'circle-radius': 10,
+        'circle-opacity': 0.6,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 2,
-        'circle-stroke-opacity': 0.4
+        'circle-stroke-opacity': 0.7
       }
     })
     addNationsLayers(map)
@@ -163,7 +255,7 @@ export default {
       id: 'fn-arts-clusters-text',
       type: 'symbol',
       source: 'arts1',
-      minzoom: 5,
+      minzoom: 3,
       filter: ['has', 'point_count'],
       layout: {
         'text-field': '{point_count_abbreviated}',
@@ -310,23 +402,23 @@ export default {
           [
             'let',
             'r',
-            ['number', ['*', 1, ['at', 0, ['var', 'rgba']]]],
+            ['number', ['*', 1, ['at', 0, ['const', 'rgba']]]],
             'g',
-            ['number', ['*', 1, ['at', 1, ['var', 'rgba']]]],
+            ['number', ['*', 1, ['at', 1, ['const', 'rgba']]]],
             'b',
-            ['number', ['*', 1, ['at', 2, ['var', 'rgba']]]],
+            ['number', ['*', 1, ['at', 2, ['const', 'rgba']]]],
             'a',
-            ['number', ['at', 3, ['var', 'rgba']]],
+            ['number', ['at', 3, ['const', 'rgba']]],
 
             [
               'let',
               'r2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'r']]],
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'r']]],
               'g2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'g']]],
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'g']]],
               'b2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['var', 'b']]],
-              ['rgba', ['var', 'r2'], ['var', 'g2'], ['var', 'b2'], 1]
+              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'b']]],
+              ['rgba', ['const', 'r2'], ['const', 'g2'], ['const', 'b2'], 1]
             ]
           ]
         ]
@@ -352,6 +444,8 @@ export default {
     map.on('mouseleave', 'fn-places', e => {
       map.getCanvas().style.cursor = 'default'
     })
+
+    addHTMLClusters(map)
 
     // Layer feature precedence controls, in correct order for your reference:
     //       'text-optional': true,
