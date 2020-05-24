@@ -11,7 +11,7 @@
       />
       <img
         v-else-if="arttype.toLowerCase() === 'event'"
-        src="@/assets/images/events_icon.svg"
+        src="@/assets/images/event_icon.svg"
         alt="Event"
       />
       <img
@@ -43,6 +43,19 @@
           >{{ tag.name }}</span
         >
       </div>
+      <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+        <CardBadge content="Owned" type="owner"></CardBadge>
+        <CardBadge
+          content="Edit"
+          type="edit"
+          @click.native="editPlacename"
+        ></CardBadge>
+        <CardBadge
+          content="Delete"
+          type="delete"
+          @click.native="showOwnerModal"
+        ></CardBadge>
+      </div>
     </div>
 
     <div class="fpcc-card-more-art" @click.prevent="handleReturn">
@@ -62,10 +75,13 @@
     </div>
   </div>
 </template>
-
 <script>
+import CardBadge from '@/components/CardBadge.vue'
+
 export default {
-  components: {},
+  components: {
+    CardBadge
+  },
   filters: {
     kind(d) {
       if (d === 'public_art') {
@@ -96,6 +112,22 @@ export default {
       default: () => {
         return {}
       }
+    },
+    isOwner: {
+      type: Boolean,
+      default: false
+    },
+    showOwnerModal: {
+      type: Function,
+      default: () => {
+        return true
+      }
+    },
+    editPlacename: {
+      type: Function,
+      default: () => {
+        return true
+      }
     }
   },
   data() {
@@ -114,13 +146,9 @@ export default {
     },
     handleReturn() {
       this.$store.commit('sidebar/setDrawerContent', false)
-      if (this.server) {
-        this.$router.push({
-          path: '/art'
-        })
-      } else {
-        this.$router.go(-1)
-      }
+      this.$router.push({
+        path: '/art'
+      })
     }
   }
 }

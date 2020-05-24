@@ -8,27 +8,27 @@
       <template v-slot:header>
         <div class="arts-icon-container" :style="'background-color:' + color">
           <img
-            v-if="art.properties.kind.toLowerCase() === 'public_art'"
+            v-if="kind.toLowerCase() === 'public_art'"
             src="@/assets/images/public_art_icon.svg"
             alt="Public Art"
           />
           <img
-            v-else-if="art.properties.kind.toLowerCase() === 'artist'"
+            v-else-if="kind.toLowerCase() === 'artist'"
             src="@/assets/images/artist_icon.svg"
             alt="Artist"
           />
           <img
-            v-else-if="art.properties.kind.toLowerCase() === 'organization'"
+            v-else-if="kind.toLowerCase() === 'organization'"
             src="@/assets/images/organization_icon.svg"
             alt="Organization"
           />
           <img
-            v-else-if="art.properties.kind.toLowerCase() === 'event'"
-            src="@/assets/images/events_icon.svg"
+            v-else-if="kind.toLowerCase() === 'event'"
+            src="@/assets/images/event_icon.svg"
             alt="Event"
           />
           <img
-            v-else-if="art.properties.kind.toLowerCase() === 'grant'"
+            v-else-if="kind.toLowerCase() === 'grant'"
             src="@/assets/images/resource_icon.svg"
             alt="Event"
           />
@@ -38,14 +38,14 @@
         <div class="arts-detail-text">
           <div>
             <h5 class="field-kinds">
-              {{ art.properties.kind | kind }}
+              {{ kind | kinds }}
             </h5>
             <h5 class="field-names">
-              {{ art.properties.name }}
+              {{ name }}
             </h5>
             <div class="artist-tags-container">
               <span
-                v-for="tag in taxonomies"
+                v-for="tag in taxonomy"
                 :key="tag.name"
                 :class="taxonomyClass(tag.name)"
                 @click.stop.prevent="filterTaxonomy([tag.name])"
@@ -67,12 +67,13 @@
 
 <script>
 import Card from '@/components/Card.vue'
+
 export default {
   components: {
     Card
   },
   filters: {
-    kind(d) {
+    kinds(d) {
       if (d === 'public_art') {
         return 'Public Art'
       }
@@ -80,15 +81,29 @@ export default {
     }
   },
   props: {
-    art: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
     color: {
       type: String,
       default: 'RGB(255, 255, 255)'
+    },
+    name: {
+      type: String,
+      default: ''
+    },
+    kind: {
+      type: String,
+      default: ''
+    },
+    taxonomy: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    geometry: {
+      type: Object,
+      default: () => {
+        return null
+      }
     }
   },
   data() {
@@ -99,13 +114,11 @@ export default {
   },
   computed: {
     taxonomyNotEmpty() {
-      return this.art.properties.taxonomies
+      return this.taxonomy
     },
     taxonomies() {
       return this.taxonomyNotEmpty
-        ? this.art.properties.taxonomies.filter(
-            taxo => !this.blockedTag.includes(taxo.name)
-          )
+        ? this.art.taxonomy.filter(taxo => !this.blockedTag.includes(taxo.name))
         : []
     },
     taxonomyFilter() {
@@ -129,16 +142,20 @@ export default {
         : ''
     },
     handleMouseOver() {
-      this.hover = true
-      // in some cases, we list places without full geometry, no marker shown.
-      if (!this.art.geometry) return
-      this.$eventHub.revealArea(this.art.geometry)
+      if (this.geometry) {
+        this.hover = true
+        // in some cases, we list places without full geometry, no marker shown.
+        if (!this.geometry) return
+        this.$eventHub.revealArea(this.geometry)
+      }
     },
     handleMouseLeave() {
-      this.hover = false
-      // in some cases, we list places without full geometry, no marker shown.
-      if (!this.art.geometry) return
-      this.$eventHub.doneReveal()
+      if (this.geometry) {
+        this.hover = false
+        // in some cases, we list places without full geometry, no marker shown.
+        if (!this.geometry) return
+        this.$eventHub.doneReveal()
+      }
     }
   }
 }

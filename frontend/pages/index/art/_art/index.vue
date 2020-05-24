@@ -47,6 +47,9 @@
           :name="artDetails.name"
           :server="isServer"
           :arts-banner="artistBanner"
+          :is-owner="isPlacenameOwner()"
+          :show-owner-modal="showOwnerModal"
+          :edit-placename="handlePlacenameEdit"
         ></ArtsBanner>
 
         <ArtsDetailCard
@@ -55,13 +58,11 @@
           :name="artDetails.name"
           :server="isServer"
           :tags="taxonomies"
+          :is-owner="isPlacenameOwner()"
+          :show-owner-modal="showOwnerModal"
+          :edit-placename="handlePlacenameEdit"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
-
-        <!-- <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
-          <Notification type="language" title="Claim Profile"></Notification>
-          <Notification type="language" title="Edit Profile"></Notification>
-        </div> -->
 
         <!-- Render Arts Detail -->
         <div
@@ -189,6 +190,9 @@
         Expand
       </div>
     </div>
+    <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
+      `Are you sure you want to delete ${artDetails.name}?`
+    }}</b-modal>
   </div>
 </template>
 
@@ -202,7 +206,8 @@ import {
   encodeFPCC,
   decodeFPCC,
   makeMarker,
-  getMediaUrl
+  getMediaUrl,
+  getCookie
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -223,6 +228,7 @@ export default {
   data() {
     return {
       collapseDescription: false,
+      modalShow: false,
       blockedTag: ['Person'] // add taxonomy to not show
     }
   },
@@ -335,9 +341,56 @@ export default {
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
     }
+
+    // Invoke this when Media upload is successful
+    this.$root.$on('fileUploadSuccess', () => {
+      this.$store.commit('sidebar/setDrawerContent', false)
+
+      setTimeout(() => {
+        this.$store.commit('sidebar/setDrawerContent', true)
+      }, 500)
+    })
   },
   methods: {
     getMediaUrl,
+    isPlacenameOwner() {
+      if (this.artDetails.creator) {
+        if (this.$store.state.user.user.id === this.artDetails.creator.id)
+          return true
+      }
+      return false
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(
+        `${getApiUrl(`placename/${this.artDetails.id}`)}`,
+        {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }
+      )
+
+      this.$router.push({
+        path: `/art`
+      })
+    },
+    showOwnerModal() {
+      this.modalShow = !this.modalShow
+    },
+    handlePlacenameEdit() {
+      const kind =
+        this.artDetails.kind.charAt(0).toUpperCase() +
+        this.artDetails.kind.slice(1)
+      this.$router.push({
+        path: '/contribute',
+        query: {
+          mode: 'existing',
+          id: this.artDetails.id,
+          type: kind === 'Public_art' ? 'Public Art' : kind
+        }
+      })
+    },
     widthChecker(e) {
       if (this.mobileContent) {
         if (e.srcElement.innerWidth > 992) {

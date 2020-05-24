@@ -62,7 +62,10 @@
             </div>
           </div>
           <!-- If Placename Contribution -->
-          <section v-if="queryMode === 'placename'" class="pr-3 pl-3">
+          <section
+            v-if="queryMode === 'placename' || queryType"
+            class="pr-3 pl-3"
+          >
             <div class="upload-img-container mt-3">
               <div class="upload-img">
                 <img
@@ -223,6 +226,24 @@
               ></multiselect>
             </b-row>
 
+            <b-row class="field-row mt-3">
+              <div>
+                <label for="location" class="contribute-title-one"
+                  >Location</label
+                >
+                <ToolTip
+                  content="Tell people about the Location of that Placename."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="location"
+                v-model="relatedData.location"
+                type="text"
+                placeholder="Input location here..."
+              ></b-form-input>
+            </b-row>
+
             <b-row
               v-if="queryType === 'Artist' || queryType === 'Organization'"
               class="field-row mt-3"
@@ -306,7 +327,7 @@
                   <span
                     v-if="
                       (index !== 0 && relatedData.awardsList.length !== 1) ||
-                        awardsList.length > 1
+                        relatedData.awardsList.length > 1
                     "
                     class="site-btn"
                     @click="removeAward(index)"
@@ -416,20 +437,24 @@
             </h5>
             <div id="quill" ref="quill"></div>
 
-            <MediaGallery :media-list="getMediaFiles"> </MediaGallery>
+            <MediaGallery
+              v-if="queryMode !== 'existing'"
+              :media-list="getMediaFiles"
+            >
+            </MediaGallery>
 
             <template v-if="queryType === 'Artist'">
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="commercial-only"
                   >Are you interested in commercial inquiries?</label
                 >
                 <b-form-checkbox
-                  id="community-only"
+                  id="commercial-only"
                   v-model="relatedData.commercialOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="commercial-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -439,14 +464,14 @@
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="contacted-only"
                   >Allow public to see your contact info?
                 </label>
                 <b-form-checkbox
-                  id="community-only"
+                  id="contacted-only"
                   v-model="relatedData.contactedOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="contacted-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -915,6 +940,7 @@ export default {
       window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
+
     if (this.queryType !== 'Event') {
       this.addSite()
     }
@@ -924,8 +950,18 @@ export default {
       this.addAward()
     }
     this.setDateTimeNow()
-    if (this.userDetail && this.queryType === 'Artist') {
+
+    // Get User name
+    if (
+      this.userDetail &&
+      this.queryType === 'Artist' &&
+      this.queryMode !== 'existing'
+    ) {
       this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
+    }
+
+    if (this.queryType === 'Event') {
+      this.dateValue = new Date().toISOString().slice(0, 10)
     }
   },
   methods: {
@@ -951,6 +987,7 @@ export default {
     },
     removeImg() {
       this.fileImg = null
+      this.fileSrc = null
     },
     openModal(e) {
       this.$root.$emit('openUploadModal')
@@ -962,14 +999,16 @@ export default {
       this.timeContext = ctx
     },
     initQuill() {
-      require('quill/dist/quill.snow.css')
-      const Quill = require('quill')
-      const container = this.$refs.quill
-      const editor = new Quill(container, {
-        theme: 'snow'
-      })
-      editor.setText(`${this.content}\n`)
-      this.quillEditor = editor
+      if (document.querySelector('#quill')) {
+        require('quill/dist/quill.snow.css')
+        const Quill = require('quill')
+        const container = this.$refs.quill
+        const editor = new Quill(container, {
+          theme: 'snow'
+        })
+        editor.setText(`${this.content}\n`)
+        this.quillEditor = editor
+      }
     },
     async uploadAudioFile(id, audio, newPlace) {
       const audiodata = new FormData()
@@ -1011,7 +1050,9 @@ export default {
     },
     submitType(e) {
       this.isLoading = true
-      if (this.queryMode === 'placename') {
+      if (this.queryType === 'Artwork') {
+        this.uploadMedias(1)
+      } else if (this.queryMode === 'placename') {
         this.submitPlacename(e)
         // this.postRelatedData()
       } else {
@@ -1052,6 +1093,7 @@ export default {
         community_only: this.communityOnly === 'accepted',
         status
       }
+
       if (this.drawnFeatures.length) {
         data.geom = this.drawnFeatures[0].geometry.g.g.geometryeometry
       }
@@ -1149,15 +1191,18 @@ export default {
 
       const data = {
         name: this.traditionalName,
-        image: this.fileImg,
         other_names: this.alternateName,
         description: this.content,
-        kind: this.queryType.toLowerCase(),
+        kind:
+          this.queryType === 'Public Art'
+            ? 'public_art'
+            : this.queryType.toLowerCase(),
         community: community_id,
         language: this.languageUserSelected.id,
         community_only: false,
         status
       }
+
       if (this.drawnFeatures.length) {
         data.geom = this.drawnFeatures[0].geometry
       }
@@ -1211,11 +1256,22 @@ export default {
               taxonomies: taxoList
             }
 
+            // Patch placename thumbnail
+            if (this.fileImg) {
+              const formDatas = new FormData()
+              formDatas.append('image', this.fileImg)
+
+              const uploadImg = await this.$axios.$patch(
+                `/api/placename/${id}/`,
+                formDatas,
+                headers
+              )
+
+              console.log(uploadImg)
+            }
+
             // UPLOAD MEDIAS
             this.uploadMedias(id)
-
-            console.log('DATA', data1)
-            // console.log('MEDIAS ARE', this.getMediaFiles)
 
             try {
               const modified = await this.$axios.$patch(
@@ -1226,6 +1282,11 @@ export default {
 
               console.log('MODIFIED DATA', modified)
               this.isLoading = false
+              // this.$store.commit('file/setMediaFiles', [])
+
+              this.$router.push({
+                path: `/art/${encodeFPCC(this.traditionalName)}`
+              })
             } catch (e) {
               this.isLoading = false
               this.errors = this.errors.concat(
@@ -1247,6 +1308,9 @@ export default {
       }
     },
     postRelatedData(id = 1) {
+      if (this.queryType === 'Event') {
+        this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
+      }
       const filteredRelatedData = Object.entries(this.relatedData).filter(
         data => {
           if (data[0] === 'websiteList' || data[0] === 'awardsList') {
@@ -1314,7 +1378,6 @@ export default {
           return media
         })
         .map(async file => {
-          console.log(file)
           const data = new FormData()
           data.append('name', file.name)
           data.append('description', file.description)
@@ -1640,9 +1703,5 @@ export default {
   padding: 1em;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
-}
-
-.badge-notification {
-  border: 1px solid red;
 }
 </style>
