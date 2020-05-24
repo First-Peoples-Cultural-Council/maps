@@ -140,7 +140,7 @@ export default {
     listOfImageMedia() {
       return [
         ...this.listOfPublicArt,
-        ...this.listOfMedias.filter(media => media.file_type === 'image')
+        ...this.listOfMedias.filter(media => media.file_type.includes('image'))
       ]
     },
     geometry() {

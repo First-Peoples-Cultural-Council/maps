@@ -71,7 +71,7 @@
           </button>
           <!-- Render Media here depending on type -->
           <img
-            v-if="mediaData.file_type === 'image'"
+            v-if="mediaData.file_type.includes('image')"
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
             :src="
               getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
@@ -80,7 +80,8 @@
           <!-- Render Youtube Video Here -->
           <iframe
             v-else-if="
-              mediaData.file_type === 'video' && getYoutubeEmbed(mediaData.url)
+              mediaData.file_type.includes('video') &&
+                getYoutubeEmbed(mediaData.url)
             "
             class="media-img"
             :src="
@@ -94,7 +95,7 @@
           ></iframe>
           <!-- Render if audio file  -->
           <audio
-            v-else-if="mediaData.file_type === 'audio'"
+            v-else-if="mediaData.file_type.includes('audio')"
             class="media-img audio"
             controls
           >
