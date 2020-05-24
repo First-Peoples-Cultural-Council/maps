@@ -190,13 +190,17 @@ export default {
   },
   computed: {
     validatedArtist() {
-      return false
+      return this.userPlacenames.find(placename => placename.kind === 'artist')
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    userPlacenames() {
+      return this.$store.state.user.user.placename_set
     }
   },
   mounted() {
+    console.log(this.validatedArtist)
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
