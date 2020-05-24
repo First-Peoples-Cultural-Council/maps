@@ -18,8 +18,10 @@
         </div>
         <div class="arts-card-more">
           <div class="arts-card-tag">
-            <img :src="returnMediaTypeLogo" />
-            {{ media.file_type }}
+            <img
+              :src="require(`@/assets/images/arts/${returnMediaType}.png`)"
+            />
+            {{ returnMediaType }}
           </div>
           <div class="fpcc-card-more">
             <img
@@ -100,11 +102,27 @@ export default {
         ? getMediaUrl(this.media.media_file)
         : this.media.file_type === 'video'
         ? this.videoThumbnail
-        : require('@/assets/images/public_art_icon.svg')
+        : require('@/assets/images/artwork_icon.svg')
     },
-    returnMediaTypeLogo() {
-      const type = this.media.file_type ? this.media.file_type : 'audio'
-      return require(`@/assets/images/arts/${type}.png`)
+    returnMediaType() {
+      let mediaType = ''
+      switch (this.media.file_type) {
+        case this.media.file_type.includes('image'):
+          mediaType = 'image'
+          return true
+        case this.media.file_type.includes('audio'):
+          mediaType = 'audio'
+          return true
+        case 'youtube' || 'video':
+          mediaType = 'video'
+          return true
+        case 'default' || 'text':
+          mediaType = 'image'
+          return true
+        default:
+          mediaType = 'image'
+      }
+      return mediaType
     },
     mediaExist() {
       return this.media.media_file !== null
