@@ -370,10 +370,11 @@ export default {
           }
         }
       )
-
       this.$router.push({
         path: `/art`
       })
+
+      this.$store.commit('sidebar/setDrawerContent', false)
     },
     showOwnerModal() {
       this.modalShow = !this.modalShow

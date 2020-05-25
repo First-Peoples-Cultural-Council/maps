@@ -99,6 +99,28 @@
         >
         <b-list-group-item
           button
+          @click="handlePlaceClick($event, 'placename', 'Artist')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artist_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Artist
+              </div>
+              This option lets you create an Artist. This Artist will be shown
+              in the Arts Panel, and will also be shown in the maps.
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
           @click="handlePlaceClick($event, 'placename', 'Event')"
         >
           <div class="d-flex">
