@@ -76,7 +76,9 @@
             </div>
           </div></b-list-group-item
         >
-        <b-list-group-item button @click="validateArtist($event)">
+      </b-list-group>
+      <b-list-group class="placename-group-container">
+        <b-list-group-item button class="mt-1" @click="validateArtist($event)">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
@@ -90,8 +92,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Upload Your Artwork (I'm an Artist)
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This options lets you upload an Artwork. If you haven't created an
+              Artist profile, you will be redirected to Artist creation.
             </div>
           </div></b-list-group-item
         >
@@ -112,8 +114,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add an Event
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create an Event. This event will be shown in
+              the Arts Panel, and will also be shown in the maps.
             </div>
           </div></b-list-group-item
         >
@@ -134,8 +136,8 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add a Public Art
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create a Public Art. This Public Art will be
+              shown in the Arts Panel, and will also be shown in the maps.
             </div>
           </div></b-list-group-item
         >
@@ -156,8 +158,9 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Add an Organization
               </div>
-              This option triggers drawing mode, where you will be able to draw
-              a line to contribute
+              This option lets you create an Organization. This Organization
+              will be shown in the Arts Panel, and will also be shown in the
+              maps.
             </div>
           </div></b-list-group-item
         >
@@ -166,18 +169,23 @@
     <MessageBox
       :show="showMessage"
       :message="
-        `You Cannot Add An Artwork, you need to be registered. Redirecting to
-          Artist Creation`
+        `You cannot add an Artwork, you need to create an Artist profile before uploading Artwork. You will be redirected to
+          Artist Creation.`
       "
+      :toggle-modal="toggleMessageBox"
     ></MessageBox>
+    <UploadModal :id="validatedArtist.id" :type="'placename'"></UploadModal>
   </div>
 </template>
 
 <script>
 import MessageBox from '@/components/MessageBox.vue'
+import UploadModal from '@/components/UploadModal.vue'
+import { encodeFPCC } from '@/plugins/utils.js'
 export default {
   components: {
-    MessageBox
+    MessageBox,
+    UploadModal
   },
   data() {
     return {
@@ -187,10 +195,26 @@ export default {
   },
   computed: {
     validatedArtist() {
-      return false
+      if (this.userDetail.placename_set) {
+        const foundUserArtist = this.userDetail.placename_set.find(
+          placename =>
+            placename.kind === 'artist' &&
+            placename.name ===
+              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+        )
+        const getAllArtist = this.userDetail.placename_set.filter(
+          placename => placename.kind === 'artist'
+        )
+        return getAllArtist.length ? foundUserArtist || getAllArtist[0] : false
+      } else {
+        return false
+      }
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    userDetail() {
+      return this.$store.state.user.user
     }
   },
   mounted() {
@@ -204,6 +228,9 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
       this.showContributeModal = !this.showContributeModal
+    },
+    toggleMessageBox() {
+      this.showMessage = !this.showMessage
     },
     handleClick(e, data) {
       this.hideModal()
@@ -234,15 +261,27 @@ export default {
     },
     validateArtist($event) {
       this.hideModal()
-      if (this.validatedArtist) {
-        this.$router.push({
-          path: '/profile/' + this.$store.state.user.user.id
-        })
-      } else {
+      // If doesnt have Artist profile, redirect to Artist creation
+      if (!this.validatedArtist) {
         this.handlePlaceClick($event, 'placename', 'Artist')
         this.showMessage = true
       }
+      // If has Artist profile, redirect to Profile, then add Media
+      else {
+        console.log('artist is', this.validatedArtist)
+
+        this.$router.push({
+          path: `/art/${encodeFPCC(this.validatedArtist.name)}`
+        })
+
+        // Decide for UploadModal popup time
+        const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500
+        setTimeout(() => {
+          this.$root.$emit('openUploadModal')
+        }, timeOut)
+      }
     },
+    getCurrentArtist() {},
     showModal() {
       this.$refs['c-modal'].show()
     },
@@ -279,5 +318,10 @@ export default {
 #contribute-modal .modal-body {
   padding: 0;
   margin: 0;
+}
+
+.placename-group-container {
+  position: absolute;
+  top: 294px;
 }
 </style>

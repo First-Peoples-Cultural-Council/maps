@@ -197,7 +197,9 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :art="art"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -225,7 +227,9 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :art="art"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -253,7 +257,9 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :art="art"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
                   :layout="'landscape'"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')

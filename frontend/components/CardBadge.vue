@@ -2,19 +2,46 @@
   <div :class="`card-badge ${isPronouncation}`">
     <div v-if="type === 'pronounce'">
       <span class="font-07">{{ content }}</span>
-      <img src="@/assets/images/pronounce_icon.svg" alt="Pronounce" />
+      <img
+        class="card-icon"
+        src="@/assets/images/pronounce_icon.svg"
+        alt="Pronounce"
+      />
     </div>
     <div v-if="type === 'learn'" @click="handleLearn">
       <span class="font-07">{{ content }}</span>
-      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+      <img class="card-icon" src="@/assets/images/share_icon.svg" alt="Learn" />
     </div>
-    <div v-if="type === 'edit'">
+    <div v-if="type === 'edit'" id="card-edit">
       <span class="font-07">{{ content }}</span>
-      <img src="@/assets/images/share_icon.svg" alt="Learn" />
+      <img class="card-icon" src="@/assets/images/edit_small.svg" alt="Learn" />
+      <b-tooltip target="card-edit"
+        >You are the owner of this placename. You can edit the info in this
+        placename.</b-tooltip
+      >
     </div>
-    <div v-if="type === 'delete'">
+    <div v-if="type === 'delete'" id="card-delete">
       <span class="font-07">{{ content }}</span>
-      <img src="@/assets/images/delete_small_icon.svg" alt="Learn" />
+      <img
+        class="card-icon"
+        src="@/assets/images/delete_small_icon.svg"
+        alt="Learn"
+      />
+      <b-tooltip target="card-delete"
+        >You are the owner of this placename. You can delete this
+        placename.</b-tooltip
+      >
+    </div>
+    <div v-if="type === 'owner'" id="card-owned">
+      <span class="font-07">{{ content }}</span>
+      <img
+        class="card-icon"
+        src="@/assets/images/heart_liked.svg"
+        alt="Learn"
+      />
+      <b-tooltip target="card-owned"
+        >You are the owner of this placename.</b-tooltip
+      >
     </div>
   </div>
 </template>
@@ -68,5 +95,10 @@ export default {
 }
 .pronouce-badge {
   background-color: #b47a2b;
+}
+
+.card-icon {
+  width: 10px;
+  height: 10px;
 }
 </style>

@@ -8,10 +8,14 @@
       class="media-add-btn"
     />
 
-    <div class="media-add-btn " @click="openModal">
+    <div id="media-add-btn" class="media-add-btn " @click="openModal">
       <img class="add-btn" src="@/assets/images/plus_icon.svg" alt="Zoom In" />
-      Upload Your Art
+      Upload a Media/File
       <UploadModal :id="1" :type="'placename'"></UploadModal>
+      <b-tooltip target="media-add-btn"
+        >Add relevant audio, images, links to YouTube videos, and PDF files. You
+        can add multiple files.</b-tooltip
+      >
     </div>
   </div>
 </template>
@@ -59,6 +63,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
   margin: 0.25em;
+  text-align: center;
 
   &:hover {
     cursor: pointer;

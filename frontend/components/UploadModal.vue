@@ -44,6 +44,7 @@ import UploadOptions from '@/components/UploadOptions.vue'
 import NoteUploader from '@/components/NoteUploader.vue'
 import YoutubeUploader from '@/components/YoutubeUpload.vue'
 import VimeoUploader from '@/components/VimeoUpload.vue'
+
 export default {
   components: {
     FileUploader,
@@ -87,12 +88,17 @@ export default {
 
     this.$root.$on('fileUploaded', () => {
       this.modalShow = false
+
       this.$root.$emit('notification', {
         title: 'Success',
         message: 'Media Successfully uploaded',
         time: 2000,
         variant: 'success'
       })
+
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      }
     })
 
     this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {
