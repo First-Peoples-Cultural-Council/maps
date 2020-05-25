@@ -162,15 +162,16 @@ const getHTMLMarker = function(map, feature, el) {
 
         let h = '<div style="position:relative">'
         let key
-        let arc = 0
+        let arc = -1.5
+        // make an arc of icons on the outside of the parent.
         for (key in buckets) {
           const posStyle =
             'position: absolute; transform: translate(' +
-            (-Math.sin(arc) * 10 - 10) +
+            (Math.sin(arc) * 13 - 9) +
             'px, ' +
-            (-Math.cos(arc) * 10 - 10) +
+            (-Math.cos(arc) * 11 - 9) +
             'px);'
-          arc += 1
+          arc += 0.9
           h +=
             '<img src="/' +
             key +
@@ -260,7 +261,8 @@ export default {
       layout: {
         'text-field': '{point_count_abbreviated}',
         'text-font': ['BC Sans Regular'],
-        'text-size': 12
+        'text-size': 11,
+        'text-offset': [0, 0.2]
       },
       paint: {
         'text-color': '#ffffff'
