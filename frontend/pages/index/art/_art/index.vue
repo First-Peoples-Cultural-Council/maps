@@ -380,6 +380,8 @@ export default {
         }
       )
 
+      await this.$store.dispatch('user/setLoggedInUser')
+
       this.$root.$emit('refetchArtwork')
       // Delete all Medias in this Placename
       this.artDetails.medias.forEach(async media => {
