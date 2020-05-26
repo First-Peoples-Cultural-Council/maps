@@ -84,21 +84,9 @@ def send_claim_profile_invites():
     Bulk Invite - Sends to every registered
     """
     # This is actual data which we won't use yet
-    # emails = RelatedData.objects.exclude(value='').filter(
-    #     data_type='email').distinct('value').values_list('value', flat=True)
-
-    # TESTING DATA START
-    emails = ['justin@countable.ca']  # Replace with your email
-    # TESTING DATA END
+    emails = RelatedData.objects.exclude(value='').filter(
+        data_type='user_email').distinct('value').values_list('value', flat=True)
 
     for email in emails:
         # In the case of bulk sending, user_email = profile_email
         send_claim_profile_invite(email)
-
-
-# def claim_profile(email):
-#     """
-#     Claim profile - this allows claiming profile despite the user.email and the email not matching
-#     """
-#     # Send invite
-#     send_claim_profile_invite(email)
