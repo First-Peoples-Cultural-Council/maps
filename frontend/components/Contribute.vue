@@ -272,6 +272,8 @@ export default {
           mode: data
         }
       })
+      // This solution is temporary
+      window.location.href = `/contribute?mode=${data}`
     },
     handlePlaceClick(e, data, type) {
       this.hideModal()
@@ -283,6 +285,8 @@ export default {
           type
         }
       })
+      // This solution is temporary
+      window.location.href = `/contribute?mode=${data}&type=${type}`
     },
     validateArtist($event) {
       this.hideModal()

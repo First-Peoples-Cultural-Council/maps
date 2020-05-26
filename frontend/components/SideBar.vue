@@ -164,8 +164,7 @@ export default {
       this.resetState()
 
       const path = this.navigationTabs.find(nt => nt.name === data).path
-      const self = this
-      self.$router.push({
+      this.$router.push({
         path
       })
     },
@@ -176,6 +175,7 @@ export default {
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
       this.$store.commit('sidebar/setDrawerContent', false)
+      this.$root.$emit('resetMap')
     }
   }
 }

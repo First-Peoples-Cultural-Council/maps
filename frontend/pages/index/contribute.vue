@@ -108,9 +108,10 @@
                 type="text"
                 placeholder="Input placename here..."
                 :disabled="
-                  !isArtistProfileFound &&
+                  (!isArtistProfileFound &&
                     queryType === 'Artist' &&
-                    queryProfile
+                    queryProfile) ||
+                    ($route.query.id && traditionalName === userGivenName)
                 "
               ></b-form-input>
             </b-row>
@@ -442,7 +443,8 @@
             </h5>
             <div id="quill" ref="quill"></div>
 
-            <MediaGallery :media-list="getMediaFiles"> </MediaGallery>
+            <MediaGallery :media-list="getMediaFiles" :type="queryType">
+            </MediaGallery>
 
             <template v-if="queryType === 'Artist'">
               <b-row class="field-row mt-3">
@@ -634,7 +636,9 @@ import {
   getCookie,
   encodeFPCC,
   getLanguagesFromDraw,
-  getMediaUrl
+  getMediaUrl,
+  isValidEmail,
+  isValidURL
 } from '@/plugins/utils.js'
 
 const base64Encode = data =>
@@ -680,6 +684,7 @@ export default {
       timeValue: '',
       dateContext: null,
       dateValue: '',
+      isEmailValid: null,
 
       relatedData: {
         email: null,
@@ -795,6 +800,9 @@ export default {
     userDetail() {
       return this.$store.state.user.user
     },
+    userGivenName() {
+      return `${this.userDetail.first_name} ${this.userDetail.last_name}`
+    },
     isArtistProfileFound() {
       const isArtistProfileFound = this.userDetail.placename_set.find(
         placename =>
@@ -905,7 +913,6 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
-    store.commit('file/setNewMediaFiles', [])
     if (query.id && query.type) {
       const now = new Date()
       const place = await $axios.$get(
@@ -976,12 +983,14 @@ export default {
           } else if (related.data_type === 'award') {
             data.relatedData.awardsList.push({
               id: related.id,
-              value: related.value
+              value: related.value,
+              isError: null
             })
           } else if (related.data_type === 'website') {
             data.relatedData.websiteList.push({
               id: related.id,
-              value: related.value
+              value: related.value,
+              isError: null
             })
           } else if (related.data_type === 'email') {
             data.relatedData.email = related.value
@@ -1097,7 +1106,7 @@ export default {
       !this.isArtistProfileFound &&
       this.queryType === 'Artist'
     ) {
-      this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
+      this.traditionalName = this.userGivenName
     }
 
     if (this.queryType === 'Event') {
@@ -1105,13 +1114,16 @@ export default {
     }
   },
   methods: {
+    isValidEmail,
+    isValidURL,
     setDateTimeNow() {
       const now = new Date()
       this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
       this.relatedData.websiteList.push({
-        value: null
+        value: null,
+        isError: null
       })
     },
     removeSite(index) {
@@ -1119,7 +1131,8 @@ export default {
     },
     addAward() {
       this.relatedData.awardsList.push({
-        value: null
+        value: null,
+        isError: null
       })
     },
     removeAward(index) {
@@ -1195,6 +1208,17 @@ export default {
       } else {
         this.submitContribute(e)
       }
+    },
+
+    validateRelatedData() {
+      // Check if Email is valid
+      // this.isValidEmail = this.isValidEmail(this.relatedData.email)
+      // this.relatedData.websiteList.forEach(web => {
+      //   web.isError = !this.isValidURL(web.value)
+      //   if (web.isError === false) {
+      //     this.error.push(`${web.value} is not a valid website URL`)
+      //   }
+      // })
     },
 
     async submitContribute(e) {
@@ -1279,6 +1303,7 @@ export default {
               return e[0] + ': ' + e[1]
             })
           )
+
           return
         }
       }
@@ -1430,6 +1455,7 @@ export default {
               return e[0] + ': ' + e[1]
             })
           )
+          console.log(this.errors)
         }
       }
     },
@@ -1528,7 +1554,10 @@ export default {
             data.append('file_type', file.file_type)
             data.append('community_only', file.community_only)
             data.append('placename', id)
-            data.append('is_artwork', true)
+            data.append(
+              'is_artwork',
+              !!(this.queryType === 'Artist' || this.queryType === 'Public Art')
+            )
             if (file.url) {
               data.append('url', file.url)
             }
