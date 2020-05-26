@@ -74,16 +74,3 @@ class Administrator(models.Model):
         return 'User {}: language "{}", community "{}"'.format(
             self.user.username, self.language.name, self.community.name
         )
-
-
-class ProfileClaimRecord(models.Model):
-    profile_email = models.CharField(max_length=255)
-    user_email = models.CharField(max_length=255)
-    key = models.CharField(max_length=255)
-    is_claimed = models.BooleanField(default=False)
-
-    # Placename we want to claim
-    profile = models.ForeignKey('language.PlaceName', on_delete=models.CASCADE)
-
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)

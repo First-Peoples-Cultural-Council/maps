@@ -69,7 +69,7 @@ export default {
       this.claimArtistProfile(email, key, this.userid)
     } else if (!this.isLoggedIn) {
       // If you are neither in invite mode, nor logged in, you will trigger the invite
-      // process and you will be asked to register. The Inviet Mode will be activated
+      // process and you will be asked to register. The Invite Mode will be activated
       if (email && key) {
         this.processInvite(email, key)
       } else {

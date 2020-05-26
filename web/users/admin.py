@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User, Administrator, ProfileClaimRecord
+from .models import User, Administrator
 
 
 class UserAdmin(UserAdmin):
@@ -31,9 +31,5 @@ class UserAdmin(UserAdmin):
     #     ),
     # )
 
-class ProfileClaimRecordAdmin(admin.ModelAdmin):
-    list_display = ("profile_email", "user_email", "is_claimed")
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Administrator)
-admin.site.register(ProfileClaimRecord, ProfileClaimRecordAdmin)

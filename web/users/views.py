@@ -17,7 +17,7 @@ from django.db.models import Q
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import User, Administrator, ProfileClaimRecord
+from .models import User, Administrator
 from .notifications import _format_fpcc
 from .serializers import UserSerializer
 from .cognito import verify_token
@@ -157,7 +157,7 @@ class ConfirmClaimView(APIView):
 
                     for data in data_list:
                         profile = data.placename
-                        profile.owner = user
+                        profile.creator = user
                         profile.save()
 
                         print(profile.name)

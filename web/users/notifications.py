@@ -6,7 +6,7 @@ import uuid
 from django.conf import settings
 from django.core.mail import send_mail
 
-from users.models import User, ProfileClaimRecord
+from users.models import User
 from language.models import RelatedData
 
 
@@ -36,7 +36,7 @@ def send_claim_profile_invite(email):
     fully_claimed = True
 
     for data in email_data:
-        if data.placename.owner is None:
+        if data.placename.creator is None:
             fully_claimed = False
             break
 
