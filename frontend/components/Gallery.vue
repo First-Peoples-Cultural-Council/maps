@@ -71,7 +71,7 @@
           </button>
           <!-- Render Media here depending on type -->
           <img
-            v-if="mediaData.file_type.includes('image')"
+            v-if="returnMediaType === 'image'"
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
             :src="
               getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
@@ -80,8 +80,7 @@
           <!-- Render Youtube Video Here -->
           <iframe
             v-else-if="
-              mediaData.file_type.includes('video') &&
-                getYoutubeEmbed(mediaData.url)
+              returnMediaType === 'video' && getYoutubeEmbed(mediaData.url)
             "
             class="media-img"
             :src="
@@ -95,7 +94,7 @@
           ></iframe>
           <!-- Render if audio file  -->
           <audio
-            v-else-if="mediaData.file_type.includes('audio')"
+            v-else-if="returnMediaType === 'audio'"
             class="media-img audio"
             controls
           >
@@ -201,7 +200,7 @@ export default {
       return this.artists ? this.artists.length : 0
     },
     isRelatedMedia() {
-      return this.media.file_type !== 'video' && this.relatedMedia.length > 1
+      return this.returnMediaType === 'image' && this.relatedMedia.length > 1
     },
     mediaIndex() {
       return this.mediaData
@@ -215,6 +214,19 @@ export default {
     },
     canNavigateNext() {
       return this.mediaIndex === this.relatedMedia.length - 1
+    },
+    returnMediaType() {
+      const type = this.mediaData.file_type
+
+      if (type.includes('image')) {
+        return 'image'
+      } else if (type.includes('audio')) {
+        return 'audio'
+      } else if (type === 'youtube' || type.includes('video')) {
+        return 'video'
+      } else {
+        return 'image'
+      }
     }
   },
   methods: {
@@ -418,6 +430,7 @@ export default {
   opacity: 1;
   border: 5px solid #fff;
   transition: border 0.2s ease-in;
+  background: #000;
 }
 
 .arts-img-item img {

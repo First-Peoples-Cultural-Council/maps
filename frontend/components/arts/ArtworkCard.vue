@@ -120,7 +120,7 @@ export default {
     artImage() {
       return this.mediaExist
         ? getMediaUrl(this.mediaData.media_file)
-        : this.mediaType === 'video'
+        : this.returnMediaType === 'video'
         ? this.videoThumbnail
         : require('@/assets/images/artwork_icon.svg')
     },
@@ -138,24 +138,16 @@ export default {
       return `By ${listOfArtist}`
     },
     returnMediaType() {
-      let mediaType = ''
-      switch (this.mediaType) {
-        case this.mediaType.includes('image'):
-          mediaType = 'image'
-          return true
-        case this.mediaType.includes('audio'):
-          mediaType = 'audio'
-          return true
-        case 'youtube' || 'video':
-          mediaType = 'video'
-          return true
-        case 'default' || 'text':
-          mediaType = 'image'
-          return true
-        default:
-          mediaType = 'image'
+      const type = this.mediaType
+      if (type.includes('image')) {
+        return 'image'
+      } else if (type.includes('audio')) {
+        return 'audio'
+      } else if (type === 'youtube' || type.includes('video')) {
+        return 'video'
+      } else {
+        return 'image'
       }
-      return mediaType
     }
   },
   methods: {
@@ -269,6 +261,7 @@ export default {
     .card-teaser-img {
       object-fit: cover;
       width: 100%;
+      background: #000;
     }
     .card-teaser-null {
       object-fit: none;
