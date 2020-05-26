@@ -28,13 +28,12 @@ export default {
   data() {
     return {
       claimSuccess: false,
-      message: 'Please wait while we are checking your User Invitation',
+      message: 'Please wait while we are checking your User Invitation.',
       invalidMessage:
-        'Sorry but the URL link you provided to claim your profile is invalid',
-      redirectMessage: 'Please wait while we redirect you to the singup page',
+        'Sorry but the URL link you provided to claim your profile is invalid.',
+      redirectMessage: 'Please wait while we redirect you to the singup page.',
       createProfileMessage:
-        'Please wait while we connect your artist profile to your account',
-      claimSuccessMessage: 'Thank you for claiming your profile(s)'
+        'Please wait while we connect your artist profile to your account.'
     }
   },
   computed: {
@@ -67,17 +66,9 @@ export default {
       this.message = this.createProfileMessage
 
       this.claimArtistProfile(email, key, this.userid)
-    } else if (!this.isLoggedIn) {
-      // If you are neither in invite mode, nor logged in, you will trigger the invite
-      // process and you will be asked to register. The Invite Mode will be activated
-      if (email && key) {
-        this.processInvite(email, key)
-      } else {
-        this.message = this.invalidMessage
-      }
+    } else if (email && key) {
+      this.processInvite(email, key)
     } else {
-      // If you access then claim page while you are logged in, but you're not actively
-      // claiming a profile, you will be notified that your claim URL is invalid
       this.message = this.invalidMessage
     }
   },
@@ -86,8 +77,6 @@ export default {
       window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     async validateUrl(email, key, headers = {}) {
-      console.log(headers)
-
       // Checking the validity will confirm if the invite URL was sent
       // out by our system, and this would allow visual feedback to users
       const validateUrl = `${getApiUrl('key/validate/')}`
@@ -105,7 +94,11 @@ export default {
       return isValid
     },
     async processInvite(email, key) {
-      const result = await this.validateUrl(email, key)
+      const headers = {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+
+      const result = await this.validateUrl(email, key, headers)
       const isValid = result.data.valid
 
       if (isValid) {
@@ -114,9 +107,15 @@ export default {
         Cookies.set('inviteKey', key)
         Cookies.set('inviteMode', true)
 
-        this.message = this.redirectMessage
+        // Force user to register if not logged in,
+        // else, skip to the claiming process
+        if (!this.isLoggedIn) {
+          this.message = this.redirectMessage
 
-        this.redirectLogin()
+          this.redirectLogin()
+        } else {
+          this.claimArtistProfile(email, key, this.userid)
+        }
       } else {
         this.message = this.invalidMessage
       }
@@ -140,7 +139,8 @@ export default {
       const isClaimSuccessful = result.data.success
 
       if (isClaimSuccessful) {
-        this.message = this.claimSuccessMessage
+        this.claimSuccess = true
+        this.message = result.data.message
       } else {
         this.message = this.invalidMessage
       }
