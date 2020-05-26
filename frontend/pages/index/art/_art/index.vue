@@ -172,9 +172,9 @@
       </div>
     </div>
     <ArtsDrawer
-      v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
+      v-if="(mobileContent || isDrawerShown) && isGalleryNotEmpty"
       :art="artDetails"
-      :show-panel="showDrawer"
+      :show-panel="isDrawerShown"
       :toggle-panel="toggleSidePanel"
       class="sidebar-side-panel hide-mobile"
       :class="{
@@ -182,7 +182,7 @@
       }"
     />
     <div
-      v-if="isGalleryNotEmpty && !showDrawer"
+      v-if="isGalleryNotEmpty && !isDrawerShown"
       class="panel-collapsable hide-mobile "
     >
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
@@ -191,7 +191,7 @@
       </div>
     </div>
     <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
-      `Are you sure you want to delete ${artDetails.name}?`
+      `Are you sure you want to delete "${artDetails.name}"?`
     }}</b-modal>
   </div>
 </template>
@@ -242,7 +242,7 @@ export default {
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
     },
-    showDrawer() {
+    isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
     mobileContent() {
@@ -307,22 +307,30 @@ export default {
       }
     }
   },
-  async asyncData({ params, $axios, store }) {
+  async asyncData({ params, $axios, store, $router }) {
     const artParam = decodeFPCC(params.art)
     const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
-    const art = arts.find(a => {
-      if (a.name) {
-        return encodeFPCC(a.name) === params.art
-      }
-    })
-    const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+    if (arts) {
+      const art = arts.find(a => {
+        if (a.name) {
+          return encodeFPCC(a.name) === params.art
+        }
+      })
 
-    console.log(artDetails)
-    const isServer = !!process.server
-    return {
-      art,
-      isServer,
-      artDetails
+      if (art.id) {
+        const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+
+        const isServer = !!process.server
+        return {
+          art,
+          isServer,
+          artDetails
+        }
+      } else {
+        $router.push({
+          path: `/art`
+        })
+      }
     }
   },
   created() {
@@ -344,6 +352,7 @@ export default {
 
     // Invoke this when Media upload is successful
     this.$root.$on('fileUploadSuccess', () => {
+      this.$root.$emit('refetchArtwork')
       this.$store.commit('sidebar/setDrawerContent', false)
 
       setTimeout(() => {
@@ -370,10 +379,20 @@ export default {
           }
         }
       )
+
+      this.$root.$emit('refetchArtwork')
+      // Delete all Medias in this Placename
+      this.artDetails.medias.forEach(async media => {
+        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        })
+      })
+
       this.$router.push({
         path: `/art`
       })
-
       this.$store.commit('sidebar/setDrawerContent', false)
     },
     showOwnerModal() {
@@ -398,7 +417,7 @@ export default {
           this.$store.commit('sidebar/setMobileContent', false)
           this.$store.commit('sidebar/toggleCollapse')
         }
-      } else if (this.showDrawer) {
+      } else if (this.isDrawerShown) {
         if (e.srcElement.innerWidth <= 992) {
           this.$store.commit('sidebar/setDrawerContent', false)
         }
@@ -420,7 +439,7 @@ export default {
       this.collapseDescription = !this.collapseDescription
     },
     toggleSidePanel() {
-      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     stringSplit(string) {
       const stringValue = this.collapseDescription
