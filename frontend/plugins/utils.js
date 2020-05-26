@@ -242,4 +242,19 @@ export const getVimeoEmbed = async link => {
   return result.video_id
 }
 
+export const isValidEmail = email => {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return regex.test(email.toLowerCase())
+}
+
+export const isValidURL = email => {
+  const regex = new RegExp('^(https?:\\/\\/)?'+ 
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ 
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
+    '(\\#[-a-z\\d_]*)?$','i'); 
+  return !!regex.test(email.toLowerCase());
+}
+
 
