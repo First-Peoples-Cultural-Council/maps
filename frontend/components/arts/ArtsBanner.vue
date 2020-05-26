@@ -278,11 +278,11 @@ export default {
 .artist-tags-container span {
   cursor: pointer;
   flex: 0 1 auto;
-  background: #707070;
+  background: #ddd4c6;
   border-radius: 2rem;
+  color: #707070;
   text-transform: uppercase;
   font: Bold 12px/15px Proxima Nova;
-  color: #ffffff;
   padding: 2px 8px;
   margin: 0.25em;
   text-align: center;
