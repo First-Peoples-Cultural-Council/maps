@@ -63,8 +63,6 @@ export default {
       // The `if` block will be executed if the user is undergoing a claiming
       // artist profile process. The condition is set in order to avoid
       // the claim function to be triggered outside the invite flow
-      this.claimSuccess = true
-
       this.message = this.createProfileMessage
 
       this.claimArtistProfile(email, key, this.userid)
