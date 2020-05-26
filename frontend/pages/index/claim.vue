@@ -6,6 +6,8 @@
     <div v-if="isLoggedIn && claimSuccess" class="claim-info-container">
       <div class="alert alert-success">
         {{ message }}
+        <br />
+        <router-link :to="`/profile/${userid}`">Visit my profile</router-link>
       </div>
     </div>
     <div v-else class="claim-info-container no-user">
