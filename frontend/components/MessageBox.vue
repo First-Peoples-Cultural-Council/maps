@@ -13,7 +13,7 @@
 <script>
 export default {
   props: {
-    show: {
+    showModal: {
       type: Boolean,
       default: false
     },
@@ -27,6 +27,14 @@ export default {
       },
       type: Function
     }
+  },
+  data() {
+    return {
+      show: false
+    }
+  },
+  mounted() {
+    this.show = this.showModal
   }
 }
 </script>
