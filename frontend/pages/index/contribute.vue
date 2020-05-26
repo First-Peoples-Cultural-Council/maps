@@ -69,13 +69,13 @@
             <div class="upload-img-container mt-3">
               <div class="upload-img">
                 <img
-                  v-if="fileImg === null"
+                  v-if="fileSrc === null"
                   class="upload-placeholder"
                   src="@/assets/images/user_icon.svg"
                 />
                 <img v-else :src="fileSrc" />
                 <b-button
-                  v-if="fileImg !== null"
+                  v-if="fileSrc !== null"
                   class="upload-remove"
                   @click="removeImg()"
                   >Remove Image</b-button
@@ -107,6 +107,11 @@
                 v-model="traditionalName"
                 type="text"
                 placeholder="Input placename here..."
+                :disabled="
+                  !isArtistProfileFound &&
+                    queryType === 'Artist' &&
+                    queryProfile
+                "
               ></b-form-input>
             </b-row>
 
@@ -437,11 +442,7 @@
             </h5>
             <div id="quill" ref="quill"></div>
 
-            <MediaGallery
-              v-if="queryMode !== 'existing'"
-              :media-list="getMediaFiles"
-            >
-            </MediaGallery>
+            <MediaGallery :media-list="getMediaFiles"> </MediaGallery>
 
             <template v-if="queryType === 'Artist'">
               <b-row class="field-row mt-3">
@@ -632,7 +633,8 @@ import {
   getApiUrl,
   getCookie,
   encodeFPCC,
-  getLanguagesFromDraw
+  getLanguagesFromDraw,
+  getMediaUrl
 } from '@/plugins/utils.js'
 
 const base64Encode = data =>
@@ -753,6 +755,9 @@ export default {
     queryType() {
       return this.$route.query.type
     },
+    queryProfile() {
+      return !!this.$route.query.profile
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -789,6 +794,15 @@ export default {
     },
     userDetail() {
       return this.$store.state.user.user
+    },
+    isArtistProfileFound() {
+      const isArtistProfileFound = this.userDetail.placename_set.find(
+        placename =>
+          placename.kind === 'artist' &&
+          placename.name ===
+            `${this.userDetail.first_name} ${this.userDetail.last_name}`
+      )
+      return isArtistProfileFound
     },
     isSuperUser() {
       if (!this.$store.state.user.user) {
@@ -827,6 +841,13 @@ export default {
     },
     getMediaFiles() {
       return this.$store.state.file.fileList
+    },
+    getCookies() {
+      return {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
     }
   },
   watch: {
@@ -884,8 +905,126 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
+    store.commit('file/setNewMediaFiles', [])
+    if (query.id && query.type) {
+      const now = new Date()
+      const place = await $axios.$get(
+        getApiUrl(`placename/${query.id}/?` + now.getTime())
+      )
+      let community = null
+      if (place.community) {
+        community = await $axios.$get(
+          getApiUrl(`community/${place.community}/?` + now.getTime())
+        )
+        community = {
+          name: community.name,
+          id: place.community
+        }
+      }
 
-    if (query.id) {
+      data = {
+        place,
+        traditionalName: place.name,
+        alternateName: place.other_names,
+        content: place.description,
+        categorySelected: place.category,
+        fileSrc: getMediaUrl(place.image),
+        fileImg: place.fileImg
+      }
+      if (community) {
+        data.community = community
+      }
+      if (place.community_only) {
+        data.communityOnly = 'accepted'
+      }
+      if (place.language) {
+        try {
+          const language = await $axios.$get(
+            getApiUrl(`language/${place.language}`)
+          )
+          if (language) {
+            data.languageSelected = language.id
+            data.languageOptions = [{ value: language.id, text: language.name }]
+            data.languageSelectedName = language.name
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      }
+
+      // Store medias if exist
+      if (place.medias.length !== 0) {
+        store.commit('file/setNewMediaFiles', place.medias)
+      }
+
+      data.relatedData = {
+        email: null,
+        phone: null,
+        organization_access: null,
+        location: null,
+        copyright: null,
+        websiteList: [],
+        awardsList: [],
+        contactedOnly: null,
+        commercialOnly: null
+      }
+      // Loop to Related data, and check data
+      if (place.related_data.length !== 0) {
+        place.related_data.map(related => {
+          if (related.data_type === 'location') {
+            data.relatedData.location = related.value
+          } else if (related.data_type === 'award') {
+            data.relatedData.awardsList.push({
+              id: related.id,
+              value: related.value
+            })
+          } else if (related.data_type === 'website') {
+            data.relatedData.websiteList.push({
+              id: related.id,
+              value: related.value
+            })
+          } else if (related.data_type === 'email') {
+            data.relatedData.email = related.value
+          } else if (related.data_type === 'phone') {
+            data.relatedData.phone = related.value
+          } else if (related.data_type === 'organization_access') {
+            data.relatedData.organization_access = related.value
+          } else if (related.data_type === 'copyright') {
+            data.relatedData.copyright = related.value
+          }
+        })
+      }
+
+      // Loop to Taxonomy, and append tag if exist
+      if (place.taxonomies.length !== 0) {
+        data.taxonomySelected = place.taxonomies.map(tax => {
+          return {
+            id: tax.id,
+            name: tax.name
+          }
+        })
+      }
+
+      // Loop to Public Art, and append Public art if exist
+      if (place.public_arts.length !== 0) {
+        data.publicArtSelected = place.public_arts.map(art => {
+          return {
+            id: art.id,
+            name: art.name
+          }
+        })
+      }
+
+      // Loop to Artist, and append if Artist exist
+      if (place.artists.length !== 0) {
+        data.artistSelected = place.artists.map(artist => {
+          return {
+            id: artist.id,
+            name: artist.name
+          }
+        })
+      }
+    } else if (query.id) {
       const now = new Date()
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
@@ -951,11 +1090,12 @@ export default {
     }
     this.setDateTimeNow()
 
-    // Get User name
+    // Check if user has artist profile, if not, declare the values
     if (
       this.userDetail &&
-      this.queryType === 'Artist' &&
-      this.queryMode !== 'existing'
+      this.queryMode !== 'existing' &&
+      !this.isArtistProfileFound &&
+      this.queryType === 'Artist'
     ) {
       this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
     }
@@ -1050,11 +1190,8 @@ export default {
     },
     submitType(e) {
       this.isLoading = true
-      if (this.queryType === 'Artwork') {
-        this.uploadMedias(1)
-      } else if (this.queryMode === 'placename') {
+      if (this.queryMode === 'placename' || this.queryType) {
         this.submitPlacename(e)
-        // this.postRelatedData()
       } else {
         this.submitContribute(e)
       }
@@ -1114,7 +1251,9 @@ export default {
           )
           newPlace = modified
           id = modified.id
+          this.isLoading = false
         } catch (e) {
+          this.isLoading = false
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
               return e[0] + ': ' + e[1]
@@ -1131,7 +1270,9 @@ export default {
           )
           id = created.id
           newPlace = created
+          this.isLoading = false
         } catch (e) {
+          this.isLoading = false
           console.error(Object.entries(e.response.data))
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
@@ -1168,6 +1309,7 @@ export default {
 
     async submitPlacename(e) {
       let id
+      const headers = this.getCookies
       this.errors = []
       if (!this.drawnFeatures.length && !this.place) {
         this.errors.push('Please choose a location first.')
@@ -1207,24 +1349,30 @@ export default {
         data.geom = this.drawnFeatures[0].geometry
       }
 
-      const headers = {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      }
-
       // if on edit mode
       if (this.$route.query.id) {
+        // Append patch data
+
         id = this.$route.query.id
+        const appendedData = { ...data, ...this.getPatchData(id) }
+        console.log(appendedData)
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
-            data,
+            appendedData,
             headers
           )
 
-          id = modified.id
-          this.isLoading = false
+          if (modified) {
+            // Upload new medias added
+            this.uploadMedias(id)
+
+            // Upload Placename Thumbnail if changed
+            this.uploadPlacenameThumbnail(id, headers)
+
+            // If finish, redirect to Placename
+            this.redirectToPlacename()
+          }
         } catch (e) {
           this.isLoading = false
           this.errors = this.errors.concat(
@@ -1245,30 +1393,10 @@ export default {
           // If Placename is successfully created, then PATCH data
           if (created) {
             // PATCH DATA AFTER POSTING
-            const artistList = this.artistSelected.map(artist => artist.id)
-            const publicArt = this.publicArtSelected.map(art => art.id)
-            const taxoList = this.taxonomySelected.map(taxo => taxo.id)
-
-            const data1 = {
-              related_data: this.postRelatedData(id),
-              artists: artistList,
-              public_arts: publicArt,
-              taxonomies: taxoList
-            }
+            const data1 = this.getPatchData(id)
 
             // Patch placename thumbnail
-            if (this.fileImg) {
-              const formDatas = new FormData()
-              formDatas.append('image', this.fileImg)
-
-              const uploadImg = await this.$axios.$patch(
-                `/api/placename/${id}/`,
-                formDatas,
-                headers
-              )
-
-              console.log(uploadImg)
-            }
+            this.uploadPlacenameThumbnail(id, headers)
 
             // UPLOAD MEDIAS
             this.uploadMedias(id)
@@ -1281,12 +1409,10 @@ export default {
               )
 
               console.log('MODIFIED DATA', modified)
-              this.isLoading = false
               // this.$store.commit('file/setMediaFiles', [])
 
-              this.$router.push({
-                path: `/art/${encodeFPCC(this.traditionalName)}`
-              })
+              // If finish, redirect to Placename
+              this.redirectToPlacename()
             } catch (e) {
               this.isLoading = false
               this.errors = this.errors.concat(
@@ -1307,7 +1433,7 @@ export default {
         }
       }
     },
-    postRelatedData(id = 1) {
+    postRelatedData(id) {
       if (this.queryType === 'Event') {
         this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
       }
@@ -1324,16 +1450,19 @@ export default {
       )
 
       const relatedData = filteredRelatedData.map(field => {
+        // if element is array, get values one by one
         if (field[0] === 'websiteList' || field[0] === 'awardsList') {
-          return field[1].map(data => {
-            return {
-              data_type: field[0] === 'websiteList' ? 'website' : 'award',
-              label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
-              value: data.value,
-              is_private: false,
-              placename: id
-            }
-          })
+          return field[1]
+            .filter(data => data.value !== null)
+            .map(data => {
+              return {
+                data_type: field[0] === 'websiteList' ? 'website' : 'award',
+                label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
+                value: data.value,
+                is_private: false,
+                placename: id
+              }
+            })
         } else {
           return {
             data_type: field[0],
@@ -1361,6 +1490,18 @@ export default {
 
       return [...listElement, ...noListData]
     },
+    getPatchData(id) {
+      const artistList = this.artistSelected.map(artist => artist.id)
+      const publicArt = this.publicArtSelected.map(art => art.id)
+      const taxoList = this.taxonomySelected.map(taxo => taxo.id)
+
+      return {
+        related_data: this.postRelatedData(id),
+        artists: artistList,
+        public_arts: publicArt,
+        taxonomies: taxoList
+      }
+    },
     uploadMedias(id) {
       const values = this.getMediaFiles
         .map(media => {
@@ -1378,27 +1519,51 @@ export default {
           return media
         })
         .map(async file => {
-          const data = new FormData()
-          data.append('name', file.name)
-          data.append('description', file.description)
-          data.append('file_type', file.file_type)
-          data.append('community_only', file.community_only)
-          data.append('placename', id)
-          data.append('is_artwork', true)
-          if (file.url) {
-            data.append('url', file.url)
-          }
-          if (file.media_file) {
-            data.append('media_file', file.media_file)
-          }
+          if (file.creator || file.status) {
+            // if media has been created by a creator, it means its existing, so do nothing
+          } else {
+            const data = new FormData()
+            data.append('name', file.name)
+            data.append('description', file.description)
+            data.append('file_type', file.file_type)
+            data.append('community_only', file.community_only)
+            data.append('placename', id)
+            data.append('is_artwork', true)
+            if (file.url) {
+              data.append('url', file.url)
+            }
+            if (file.media_file) {
+              data.append('media_file', file.media_file)
+            }
 
-          try {
-            const result = await this.$store.dispatch('file/uploadMedia', data)
-            return result
-          } catch (e) {}
+            try {
+              const result = await this.$store.dispatch(
+                'file/uploadMedia',
+                data
+              )
+              return result
+            } catch (e) {}
+          }
         })
 
       console.log(values)
+    },
+    async uploadPlacenameThumbnail(id, headers) {
+      if (this.fileImg) {
+        const formDatas = new FormData()
+        formDatas.append('image', this.fileImg)
+
+        await this.$axios.$patch(`/api/placename/${id}/`, formDatas, headers)
+      }
+    },
+    redirectToPlacename() {
+      if (this.getMediaFiles.length !== 0) {
+        this.$root.$emit('refetchArtwork')
+      }
+
+      this.$router.push({
+        path: `/art/${encodeFPCC(this.traditionalName)}`
+      })
     },
     uploadFiles(id) {
       this.files.map(async file => {
@@ -1419,6 +1584,7 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     next(vm => {
+      vm.$store.commit('sidebar/setDrawerContent', false)
       vm.$root.$emit('resetMap')
       vm.$store.commit('sidebar/set', true)
       vm.$store.commit('contribute/setIsDrawMode', true)
