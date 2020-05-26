@@ -115,9 +115,8 @@ export default {
 
       const formData = getFormData(this.getMediaData(), true)
 
-      if (this.$route.query.mode === 'placename') {
+      if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
-        console.log(this.$store.state.file.fileList)
       } else {
         try {
           const result = await this.uploadNote(formData)

@@ -100,29 +100,22 @@ export default {
     artImage() {
       return this.mediaExist
         ? getMediaUrl(this.media.media_file)
-        : this.media.file_type === 'video'
+        : this.returnMediaType === 'video'
         ? this.videoThumbnail
         : require('@/assets/images/artwork_icon.svg')
     },
     returnMediaType() {
-      let mediaType = ''
-      switch (this.media.file_type) {
-        case this.media.file_type.includes('image'):
-          mediaType = 'image'
-          return true
-        case this.media.file_type.includes('audio'):
-          mediaType = 'audio'
-          return true
-        case 'youtube' || 'video':
-          mediaType = 'video'
-          return true
-        case 'default' || 'text':
-          mediaType = 'image'
-          return true
-        default:
-          mediaType = 'image'
+      const type = this.media.file_type
+
+      if (type.includes('image')) {
+        return 'image'
+      } else if (type.includes('audio')) {
+        return 'audio'
+      } else if (type === 'youtube' || type.includes('video')) {
+        return 'video'
+      } else {
+        return 'image'
       }
-      return mediaType
     },
     mediaExist() {
       return this.media.media_file !== null

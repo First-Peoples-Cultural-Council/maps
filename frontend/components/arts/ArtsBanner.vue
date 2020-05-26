@@ -306,10 +306,11 @@ export default {
   height: 135px;
   object-fit: cover;
   border-radius: 100%;
-  border: 5px solid white;
+  border: 5px solid #fff;
   background-color: #fff;
   position: absolute;
   top: 40px;
   z-index: 5000;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 </style>

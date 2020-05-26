@@ -92,8 +92,31 @@
               <div class="contribute-list-group-title font-weight-bold">
                 Upload Your Artwork (I'm an Artist)
               </div>
-              This options lets you upload an Artwork. If you haven't created an
-              Artist profile, you will be redirected to Artist creation.
+              This options lets you upload an Artwork under your Artist profile.
+              If you haven't created an Artist profile, you will be redirected
+              to Artist creation.
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Artist')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artist_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Artist
+              </div>
+              This option lets you create an Artist. This Artist will be shown
+              in the Arts Panel.
             </div>
           </div></b-list-group-item
         >
@@ -115,7 +138,7 @@
                 Add an Event
               </div>
               This option lets you create an Event. This event will be shown in
-              the Arts Panel, and will also be shown in the maps.
+              the Arts Panel.
             </div>
           </div></b-list-group-item
         >
@@ -137,7 +160,7 @@
                 Add a Public Art
               </div>
               This option lets you create a Public Art. This Public Art will be
-              shown in the Arts Panel, and will also be shown in the maps.
+              shown in the Arts Panel.
             </div>
           </div></b-list-group-item
         >
@@ -159,18 +182,18 @@
                 Add an Organization
               </div>
               This option lets you create an Organization. This Organization
-              will be shown in the Arts Panel, and will also be shown in the
-              maps.
+              will be shown in the Arts Panel.
             </div>
           </div></b-list-group-item
         >
       </b-list-group>
     </b-modal>
     <MessageBox
-      :show="showMessage"
+      v-if="showMessage"
+      :show-modal="showMessage"
       :message="
-        `You cannot add an Artwork, you need to create an Artist profile before uploading Artwork. You will be redirected to
-          Artist Creation.`
+        `You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to
+          Artist Creation. If done, you will be able to upload Artwork under your name.`
       "
       :toggle-modal="toggleMessageBox"
     ></MessageBox>
@@ -182,6 +205,7 @@
 import MessageBox from '@/components/MessageBox.vue'
 import UploadModal from '@/components/UploadModal.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
+
 export default {
   components: {
     MessageBox,
@@ -205,16 +229,17 @@ export default {
         const getAllArtist = this.userDetail.placename_set.filter(
           placename => placename.kind === 'artist'
         )
-        return getAllArtist.length ? foundUserArtist || getAllArtist[0] : false
+        return getAllArtist.length ? foundUserArtist || false : false
       } else {
         return false
       }
     },
-    isDrawerShown() {
-      return this.$store.state.sidebar.isArtsMode
-    },
+
     userDetail() {
       return this.$store.state.user.user
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
     }
   },
   mounted() {
@@ -224,7 +249,7 @@ export default {
   },
   methods: {
     toggleModal() {
-      if (this.isDrawerShown) {
+      if (this.$route.name === 'index-art' && this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
       this.showContributeModal = !this.showContributeModal
@@ -263,16 +288,24 @@ export default {
       this.hideModal()
       // If doesnt have Artist profile, redirect to Artist creation
       if (!this.validatedArtist) {
-        this.handlePlaceClick($event, 'placename', 'Artist')
+        this.$store.commit('contribute/setIsDrawMode', true)
+        this.$router.push({
+          path: '/contribute',
+          query: {
+            mode: 'placename',
+            type: 'Artist',
+            profile: true
+          }
+        })
         this.showMessage = true
       }
       // If has Artist profile, redirect to Profile, then add Media
       else {
-        console.log('artist is', this.validatedArtist)
-
         this.$router.push({
           path: `/art/${encodeFPCC(this.validatedArtist.name)}`
         })
+
+        this.$store.commit('sidebar/setDrawerContent', false)
 
         // Decide for UploadModal popup time
         const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500

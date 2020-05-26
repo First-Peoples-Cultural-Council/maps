@@ -357,6 +357,10 @@ export default {
       this.loadKindData()
     })
 
+    this.$root.$on('refetchArtwork', () => {
+      this.refetchArtwork()
+    })
+
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
     if (this.$route.name === 'index-art') {
       const mobileContainer = document.querySelector('#side-inner-collapse')
@@ -432,6 +436,15 @@ export default {
         }
       } else {
         this.loadMoreData()
+      }
+    },
+    async refetchArtwork() {
+      const artworks = await this.$axios.$get(
+        getApiUrl('arts/artwork?format=json')
+      )
+      if (artworks) {
+        this.$store.commit('arts/setArtworksStore', artworks) // All data
+        this.$store.commit('arts/setArtworks', artworks) // All data
       }
     },
     handleCardClick($event, name, type) {

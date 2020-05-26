@@ -4,6 +4,7 @@
       v-for="media in mediaList"
       :key="media.name"
       :file="media"
+      :type-media="media.placename ? 'existing' : 'new'"
       :all-media="mediaList"
       class="media-add-btn"
     />
@@ -98,6 +99,15 @@ export default {
       border: 1px solid #f2a798;
       background-color: #fcedea !important;
     }
+  }
+
+  .media-status {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    background: #d4edda;
+    padding: 0.25em;
   }
 
   .media-other {
