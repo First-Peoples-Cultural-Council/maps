@@ -111,7 +111,7 @@ export default {
         return (this.errorMessage = 'Please enter the name of the file')
       }
 
-      if (this.$route.query.mode === 'placename') {
+      if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
       } else {
         const formData = this.getFormData()
