@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal v-model="modalShow" ok-only hide-header @ok="toggleModal">
+    <b-modal v-model="show" ok-only hide-header @ok="toggleModal">
       <div class="message-box-container">
         <!-- <img class="message-box-icon" src="@/assets/images/user_icon.svg" /> -->
         <span class="message-box-content">
@@ -13,24 +13,28 @@
 <script>
 export default {
   props: {
-    show: {
+    showModal: {
       type: Boolean,
       default: false
     },
     message: {
       type: String,
       default: ''
+    },
+    toggleModal: {
+      default: () => {
+        return true
+      },
+      type: Function
     }
   },
   data() {
     return {
-      modalShow: this.show
+      show: false
     }
   },
-  methods: {
-    toggleModal() {
-      this.modalShow = false
-    }
+  mounted() {
+    this.show = this.showModal
   }
 }
 </script>

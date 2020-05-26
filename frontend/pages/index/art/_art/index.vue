@@ -47,6 +47,9 @@
           :name="artDetails.name"
           :server="isServer"
           :arts-banner="artistBanner"
+          :is-owner="isPlacenameOwner()"
+          :show-owner-modal="showOwnerModal"
+          :edit-placename="handlePlacenameEdit"
         ></ArtsBanner>
 
         <ArtsDetailCard
@@ -55,13 +58,11 @@
           :name="artDetails.name"
           :server="isServer"
           :tags="taxonomies"
+          :is-owner="isPlacenameOwner()"
+          :show-owner-modal="showOwnerModal"
+          :edit-placename="handlePlacenameEdit"
         ></ArtsDetailCard>
         <!-- END Conditional Render Arts Header  -->
-
-        <!-- <div v-if="isLoggedIn && isArtist" class="arts-btn-container">
-          <Notification type="language" title="Claim Profile"></Notification>
-          <Notification type="language" title="Edit Profile"></Notification>
-        </div> -->
 
         <!-- Render Arts Detail -->
         <div
@@ -110,7 +111,7 @@
             </h5>
             <span class="field-content">
               <span v-html="stringSplit(artDetails.description)"></span>
-              <a href="#" @click="toggleDescription">{{
+              <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
                 collapseDescription ? 'read less' : 'read more'
               }}</a>
             </span>
@@ -123,7 +124,7 @@
               :key="data.id"
               class="artist-content-field"
             >
-              <h5 class="field-title">{{ data.data_type }}:</h5>
+              <h5 class="field-title">{{ data.label }}:</h5>
               <a
                 v-if="data.data_type === 'website'"
                 :href="checkUrlValid(data.value)"
@@ -171,9 +172,9 @@
       </div>
     </div>
     <ArtsDrawer
-      v-if="(mobileContent || showDrawer) && isGalleryNotEmpty"
+      v-if="(mobileContent || isDrawerShown) && isGalleryNotEmpty"
       :art="artDetails"
-      :show-panel="showDrawer"
+      :show-panel="isDrawerShown"
       :toggle-panel="toggleSidePanel"
       class="sidebar-side-panel hide-mobile"
       :class="{
@@ -181,7 +182,7 @@
       }"
     />
     <div
-      v-if="isGalleryNotEmpty && !showDrawer"
+      v-if="isGalleryNotEmpty && !isDrawerShown"
       class="panel-collapsable hide-mobile "
     >
       <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
@@ -189,6 +190,9 @@
         Expand
       </div>
     </div>
+    <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
+      `Are you sure you want to delete "${artDetails.name}"?`
+    }}</b-modal>
   </div>
 </template>
 
@@ -202,7 +206,8 @@ import {
   encodeFPCC,
   decodeFPCC,
   makeMarker,
-  getMediaUrl
+  getMediaUrl,
+  getCookie
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -223,6 +228,7 @@ export default {
   data() {
     return {
       collapseDescription: false,
+      modalShow: false,
       blockedTag: ['Person'] // add taxonomy to not show
     }
   },
@@ -236,7 +242,7 @@ export default {
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
     },
-    showDrawer() {
+    isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
     mobileContent() {
@@ -301,22 +307,30 @@ export default {
       }
     }
   },
-  async asyncData({ params, $axios, store }) {
+  async asyncData({ params, $axios, store, $router }) {
     const artParam = decodeFPCC(params.art)
     const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
-    const art = arts.find(a => {
-      if (a.name) {
-        return encodeFPCC(a.name) === params.art
-      }
-    })
-    const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+    if (arts) {
+      const art = arts.find(a => {
+        if (a.name) {
+          return encodeFPCC(a.name) === params.art
+        }
+      })
 
-    console.log(artDetails)
-    const isServer = !!process.server
-    return {
-      art,
-      isServer,
-      artDetails
+      if (art.id) {
+        const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+
+        const isServer = !!process.server
+        return {
+          art,
+          isServer,
+          artDetails
+        }
+      } else {
+        $router.push({
+          path: `/art`
+        })
+      }
     }
   },
   created() {
@@ -328,10 +342,6 @@ export default {
   },
   mounted() {
     window.addEventListener('resize', this.widthChecker)
-    if (this.isServer && this.artDetails) {
-      this.updateMediaUrl()
-    }
-
     if (
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
@@ -339,16 +349,75 @@ export default {
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
     }
+
+    // Invoke this when Media upload is successful
+    this.$root.$on('fileUploadSuccess', () => {
+      this.$root.$emit('refetchArtwork')
+      this.$store.commit('sidebar/setDrawerContent', false)
+
+      setTimeout(() => {
+        this.$store.commit('sidebar/setDrawerContent', true)
+      }, 500)
+    })
   },
   methods: {
     getMediaUrl,
+    isPlacenameOwner() {
+      if (this.artDetails.creator) {
+        if (this.$store.state.user.user.id === this.artDetails.creator.id)
+          return true
+      }
+      return false
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(
+        `${getApiUrl(`placename/${this.artDetails.id}`)}`,
+        {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }
+      )
+
+      this.$root.$emit('refetchArtwork')
+      // Delete all Medias in this Placename
+      this.artDetails.medias.forEach(async media => {
+        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        })
+      })
+
+      this.$router.push({
+        path: `/art`
+      })
+      this.$store.commit('sidebar/setDrawerContent', false)
+    },
+    showOwnerModal() {
+      this.modalShow = !this.modalShow
+    },
+    handlePlacenameEdit() {
+      const kind =
+        this.artDetails.kind.charAt(0).toUpperCase() +
+        this.artDetails.kind.slice(1)
+      this.$router.push({
+        path: '/contribute',
+        query: {
+          mode: 'existing',
+          id: this.artDetails.id,
+          type: kind === 'Public_art' ? 'Public Art' : kind
+        }
+      })
+    },
     widthChecker(e) {
       if (this.mobileContent) {
         if (e.srcElement.innerWidth > 992) {
           this.$store.commit('sidebar/setMobileContent', false)
           this.$store.commit('sidebar/toggleCollapse')
         }
-      } else if (this.showDrawer) {
+      } else if (this.isDrawerShown) {
         if (e.srcElement.innerWidth <= 992) {
           this.$store.commit('sidebar/setDrawerContent', false)
         }
@@ -370,7 +439,7 @@ export default {
       this.collapseDescription = !this.collapseDescription
     },
     toggleSidePanel() {
-      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     stringSplit(string) {
       const stringValue = this.collapseDescription
@@ -378,16 +447,8 @@ export default {
         : string.replace(/(.{200})..+/, '$1 ...')
       return stringValue
     },
-    updateMediaUrl() {
-      const artDetails = this.artDetails
-
-      if (this.artDetails.medias) {
-        artDetails.medias = this.artDetails.medias.map(media => {
-          media.media_file.replace('http://nginx/api/', '')
-          return media
-        })
-        this.artDetails = artDetails
-      }
+    showExpandBtn() {
+      return this.artDetails.description.length >= 50
     },
     renderArtistImg(img) {
       return (
@@ -491,10 +552,12 @@ export default {
 }
 
 .field-content p,
-.field-content span {
+.field-content span,
+.field-content pre {
   font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
+  overflow-x: hidden;
 }
 
 .artist-content-field > .field-content-list {

@@ -39,6 +39,20 @@
           >
         </div>
 
+        <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+          <CardBadge content="Owned" type="owner"></CardBadge>
+          <CardBadge
+            content="Edit"
+            type="edit"
+            @click.native="editPlacename"
+          ></CardBadge>
+          <CardBadge
+            content="Delete"
+            type="delete"
+            @click.native="showOwnerModal"
+          ></CardBadge>
+        </div>
+
         <span
           v-if="isMobileContent"
           class="artist-more-btn"
@@ -54,10 +68,12 @@
 
 <script>
 import ArtistBanner from '@/components/arts/ArtistBanner.vue'
+import CardBadge from '@/components/CardBadge.vue'
 
 export default {
   components: {
-    ArtistBanner
+    ArtistBanner,
+    CardBadge
   },
   filters: {
     art_type(d) {
@@ -68,6 +84,10 @@ export default {
     }
   },
   props: {
+    id: {
+      type: Number,
+      default: 0
+    },
     name: {
       type: String,
       default: ''
@@ -97,6 +117,22 @@ export default {
     artsBanner: {
       type: String,
       default: ''
+    },
+    isOwner: {
+      type: Boolean,
+      default: false
+    },
+    showOwnerModal: {
+      type: Function,
+      default: () => {
+        return true
+      }
+    },
+    editPlacename: {
+      type: Function,
+      default: () => {
+        return true
+      }
     }
   },
   data() {
@@ -118,7 +154,6 @@ export default {
   },
   methods: {
     redirectToHome(name) {
-      this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
       this.$root.$emit('triggerLoadKindData')
@@ -129,18 +164,14 @@ export default {
     },
     handleReturn() {
       this.resetState()
-
-      if (this.server) {
-        this.$router.push({
-          path: '/art'
-        })
-      } else {
-        this.$router.go(-1)
-      }
+      this.$router.push({
+        path: '/art'
+      })
     },
     resetState() {
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$store.commit('sidebar/setMobileContent', false)
+      this.$root.$emit('resetMap')
     },
     toggleCollapse() {
       this.$store.commit('sidebar/toggleCollapse', !this.isCollapse)
@@ -275,10 +306,11 @@ export default {
   height: 135px;
   object-fit: cover;
   border-radius: 100%;
-  border: 5px solid white;
+  border: 5px solid #fff;
   background-color: #fff;
   position: absolute;
   top: 40px;
   z-index: 5000;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 </style>

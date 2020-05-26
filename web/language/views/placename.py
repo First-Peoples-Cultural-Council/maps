@@ -62,7 +62,7 @@ class PlaceNameFilterSet(FilterSet):
 
     class Meta:
         model = PlaceName
-        fields = ('kinds', 'taxonomies')
+        fields = ('kinds', 'taxonomies', 'creator')
 
 
 class PlaceNameViewSet(BaseModelViewSet):
@@ -500,7 +500,7 @@ class GrantList(BasePlaceNameListAPIView):
 
 # ARTWORKS
 class ArtworkList(generics.ListAPIView):
-    queryset = Media.objects.filter(is_artwork=True, placename__geom__isnull=False)
+    queryset = Media.objects.filter(is_artwork=True, placename__geom__isnull=False).select_related("placename")
     serializer_class = ArtworkSerializer
 
     @method_decorator(never_cache)

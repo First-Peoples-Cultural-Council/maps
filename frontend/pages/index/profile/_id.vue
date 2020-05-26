@@ -84,15 +84,32 @@
         >
           Contributions ({{ user.placename_set.length }})
         </h5>
-        <PlacesCard
-          v-for="place in user.placename_set"
-          :key="`place${place.id}`"
-          :place="{ properties: place }"
-          class="mt-3 hover-left-move"
-          @click.native="
-            $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
-          "
-        ></PlacesCard>
+        <template v-for="place in user.placename_set">
+          <!-- Render this card if not Art Placename -->
+          <PlacesCard
+            v-if="place.kind === ''"
+            :key="`place${place.id}`"
+            :place="{ properties: place }"
+            class="mt-1 hover-left-move"
+            @click.native="
+              $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
+            "
+          ></PlacesCard>
+          <!-- Render this card if Art Placename -->
+          <ArtsCard
+            v-else
+            :key="`place${place.id}`"
+            :name="place.name"
+            :kind="place.kind"
+            class="mt-1 hover-left-move"
+            @click.native="
+              $router.push({
+                path: `/art/${encodeFPCC(place.name)}`
+              })
+            "
+          ></ArtsCard>
+        </template>
+
         <div v-if="savedLocations.length > 0 && isOwner">
           <h5
             class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
@@ -178,56 +195,6 @@
             </div>
           </div>
         </div>
-
-        <template>
-          <h5
-            class="color-gray font-08 text-uppercase font-weight-bold mb-1 mt-3"
-          >
-            Placenames ({{ notifications.length }})
-          </h5>
-          <div class="placename-list-container">
-            <div class="placename-container">
-              <img src="@/assets/images/sample.jpg" />
-              <div class="placename-details">
-                <span class="title"> Placename Title</span>
-
-                <div>
-                  <button>View</button>
-                  <button>Edit</button>
-                </div>
-              </div>
-            </div>
-            <div class="placename-container">
-              <img src="@/assets/images/sample.jpg" />
-              <div class="placename-details">
-                <span class="title"> Placename Title</span>
-
-                <div>
-                  <button>View</button>
-                  <button>Edit</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="placename-container add-placename">
-              <img
-                class="add-btn"
-                src="@/assets/images/plus_icon.svg"
-                alt="Zoom In"
-              />
-              Add New Placename
-            </div>
-          </div>
-        </template>
-
-        <template>
-          <h5
-            class="color-gray font-08 text-uppercase font-weight-bold mb-1 mt-3"
-          >
-            Artworks ({{ notifications.length }})
-          </h5>
-          <MediaGallery :media-list="[]"></MediaGallery>
-        </template>
       </section>
     </div>
   </div>
@@ -241,8 +208,8 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import ArtsCard from '@/components/arts/ArtsCard.vue'
 import Logo from '@/components/Logo.vue'
-import MediaGallery from '@/components/MediaGallery.vue'
 
 export default {
   components: {
@@ -252,7 +219,7 @@ export default {
     LanguageCard,
     CommunityCard,
     Logo,
-    MediaGallery
+    ArtsCard
   },
   computed: {
     isLoggedIn() {
@@ -314,7 +281,7 @@ export default {
     return { user, isOwner }
   },
   mounted() {
-    // console.log('mounted, user=', this.user)
+    console.log('mounted, user=', this.$store.state.user)
   },
   methods: {
     encodeFPCC,

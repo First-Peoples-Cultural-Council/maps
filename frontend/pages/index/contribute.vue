@@ -32,7 +32,7 @@
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div class="position-relative pb-3">
         <div
-          v-if="drawnFeatures.length === 0 && !place"
+          v-if="(drawnFeatures.length === 0 && !place) || isLoading"
           class="required-overlay d-flex align-items-center justify-content-center"
         >
           <b-alert
@@ -62,17 +62,20 @@
             </div>
           </div>
           <!-- If Placename Contribution -->
-          <section v-if="queryMode === 'placename'" class="pr-3 pl-3">
+          <section
+            v-if="queryMode === 'placename' || queryType"
+            class="pr-3 pl-3"
+          >
             <div class="upload-img-container mt-3">
               <div class="upload-img">
                 <img
-                  v-if="fileImg === null"
+                  v-if="fileSrc === null"
                   class="upload-placeholder"
                   src="@/assets/images/user_icon.svg"
                 />
                 <img v-else :src="fileSrc" />
                 <b-button
-                  v-if="fileImg !== null"
+                  v-if="fileSrc !== null"
                   class="upload-remove"
                   @click="removeImg()"
                   >Remove Image</b-button
@@ -83,7 +86,7 @@
                 ref="fileUpload"
                 v-model="fileImg"
                 class="file-upload-input mt-2"
-                placeholder="choose a placename image"
+                placeholder="choose a thumbnail image"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
               ></b-form-file>
@@ -104,57 +107,62 @@
                 v-model="traditionalName"
                 type="text"
                 placeholder="Input placename here..."
+                :disabled="
+                  !isArtistProfileFound &&
+                    queryType === 'Artist' &&
+                    queryProfile
+                "
               ></b-form-input>
             </b-row>
 
-            <b-row class="mt-3">
-              <b-col xl="6">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Alternate Name</label
-                  >
-                  <ToolTip
-                    content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
-                  ></ToolTip>
-                </div>
-
-                <b-form-input
-                  id="otherName"
-                  v-model="otherName"
-                  type="text"
-                ></b-form-input>
-              </b-col>
-              <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Language</label
+            <b-row v-if="queryType === 'Artist'" class="field-row mt-3">
+              <div>
+                <label for="alternateName" class="contribute-title-one"
+                  >Alternate Name</label
                 >
+                <ToolTip
+                  content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+                ></ToolTip>
+              </div>
 
-                <b-form-select
-                  v-model="languageSelected"
-                  :options="languageOptions"
-                ></b-form-select>
-              </b-col>
+              <b-form-input
+                id="alternateName"
+                v-model="alternateName"
+                type="text"
+                placeholder="Input other name here..."
+              ></b-form-input>
             </b-row>
 
-            <b-row class="mt-3 mb-1">
-              <b-col xl="12">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Community</label
-                >
-                <multiselect
-                  v-model="community"
-                  placeholder="Select a community"
-                  label="name"
-                  track-by="id"
-                  :options="communities"
-                  :multiple="true"
-                ></multiselect>
-              </b-col>
+            <b-row class="mt-3 field-row">
+              <label for="traditionalName" class="contribute-title-one mb-1"
+                >Language</label
+              >
+              <multiselect
+                v-model="languageUserSelected"
+                :options="languageList"
+                label="name"
+                track-by="id"
+                placeholder="Select a Language"
+              ></multiselect>
+            </b-row>
+
+            <b-row class="mt-3 field-row">
+              <label for="traditionalName" class="contribute-title-one mb-1"
+                >Community</label
+              >
+              <multiselect
+                v-model="community"
+                placeholder="Select a community"
+                label="name"
+                track-by="id"
+                :options="communities"
+              ></multiselect>
             </b-row>
 
             <b-row class="field-row">
               <div>
                 <label
+                  for="taxonomy-container"
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
                   >Taxonomies</label
                 >
@@ -164,6 +172,7 @@
               </div>
 
               <multiselect
+                id="taxonomy-container"
                 v-model="taxonomySelected"
                 placeholder="Search or Select a Taxonomy"
                 label="name"
@@ -171,11 +180,18 @@
                 :options="getTaxonomy"
                 :multiple="true"
               ></multiselect>
+              <b-tooltip target="taxonomy-container" placement="top">
+                Select many Taxonomy tags as you want.
+              </b-tooltip>
             </b-row>
 
-            <b-row v-if="queryType !== 'Artist'" class="field-row">
+            <b-row
+              v-if="queryType === 'Event' || queryType === 'Public Art'"
+              class="field-row"
+            >
               <div>
                 <label
+                  for="contributing-artist"
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
                   >Contributing Artist</label
                 >
@@ -185,6 +201,7 @@
               </div>
 
               <multiselect
+                id="contributing-artist"
                 v-model="artistSelected"
                 placeholder="Search or Select an Artist"
                 label="name"
@@ -194,7 +211,7 @@
               ></multiselect>
             </b-row>
 
-            <b-row v-if="queryType === 'Organization'" class="field-row">
+            <b-row v-if="queryType === 'Event'" class="field-row">
               <div>
                 <label
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
@@ -214,71 +231,82 @@
               ></multiselect>
             </b-row>
 
+            <b-row class="field-row mt-3">
+              <div>
+                <label for="location" class="contribute-title-one"
+                  >Location</label
+                >
+                <ToolTip
+                  content="Tell people about the Location of that Placename."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="location"
+                v-model="relatedData.location"
+                type="text"
+                placeholder="Input location here..."
+              ></b-form-input>
+            </b-row>
+
+            <b-row
+              v-if="queryType === 'Artist' || queryType === 'Organization'"
+              class="field-row mt-3"
+            >
+              <div>
+                <label for="email" class="contribute-title-one mb-1"
+                  >Email</label
+                >
+                <ToolTip
+                  content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="email"
+                v-model="relatedData.email"
+                type="text"
+                placeholder="Input email here..."
+              ></b-form-input>
+            </b-row>
+
+            <b-row v-if="queryType === 'Organization'" class="field-row mt-3">
+              <div>
+                <label
+                  for="organizationAccess"
+                  class="contribute-title-one mb-1"
+                  >Organization Access</label
+                >
+                <ToolTip
+                  content="When is the organization open (E.g. 'open year-round'), or the person available (E.g. 'By appointment only')"
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="organizationAccess"
+                v-model="relatedData.organization_access"
+                type="text"
+                placeholder="Input Organization Access here..."
+              ></b-form-input>
+            </b-row>
+
             <template v-if="queryType === 'Artist'">
-              <b-row class="mt-3">
-                <b-col xl="6">
-                  <label for="traditionalName" class="contribute-title-one mb-1"
-                    >Email</label
-                  >
-                  <ToolTip
-                    content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
-                  ></ToolTip>
-                  <b-form-input
-                    id="email"
-                    v-model="email"
-                    type="text"
-                    placeholder="Input email here..."
-                  ></b-form-input>
-                </b-col>
-                <b-col xl="6">
-                  <label for="traditionalName" class="contribute-title-one mb-1"
+              <b-row class="field-row mt-3">
+                <div>
+                  <label for="phone" class="contribute-title-one mb-1"
                     >Phone</label
                   >
 
                   <ToolTip
                     content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
                   ></ToolTip>
-                  <b-form-input
-                    id="phone"
-                    v-model="phone"
-                    type="text"
-                    placeholder="Input phone here..."
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-
-              <!-- <b-row class="field-row mt-3">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Location</label
-                  >
-                  <ToolTip
-                    content="If you wish to be visited personally or for commercial inquiries. This information can be confidential."
-                  ></ToolTip>
                 </div>
 
                 <b-form-input
-                  id="location"
-                  v-model="location"
+                  id="phone"
+                  v-model="relatedData.phone"
                   type="text"
-                ></b-form-input>
-              </b-row> -->
-
-              <b-row class="field-row mt-3">
-                <div>
-                  <label for="traditionalName" class="contribute-title-one"
-                    >Copyright</label
-                  >
-                  <ToolTip
-                    content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
-                  ></ToolTip>
-                </div>
-
-                <b-form-input
-                  id="copyright"
-                  v-model="copyright"
-                  type="text"
-                  placeholder="Input Copyright text here..."
+                  placeholder="Input phone here..."
                 ></b-form-input>
               </b-row>
 
@@ -291,7 +319,7 @@
                 </div>
 
                 <div
-                  v-for="(award, index) in awardsList"
+                  v-for="(award, index) in relatedData.awardsList"
                   :key="index"
                   class="site-input-container"
                 >
@@ -303,22 +331,42 @@
                   ></b-form-input>
                   <span
                     v-if="
-                      (index !== 0 && awardsList.length !== 1) ||
-                        awardsList.length > 1
+                      (index !== 0 && relatedData.awardsList.length !== 1) ||
+                        relatedData.awardsList.length > 1
                     "
                     class="site-btn"
                     @click="removeAward(index)"
                     >-</span
                   >
                   <span
-                    v-if="index + 1 === awardsList.length"
+                    v-if="index + 1 === relatedData.awardsList.length"
                     class="site-btn"
                     @click="addAward()"
                     >+</span
                   >
                 </div>
               </div>
+            </template>
 
+            <b-row v-if="queryType === 'Public Art'" class="field-row mt-3">
+              <div>
+                <label for="copyright" class="contribute-title-one"
+                  >Copyright</label
+                >
+                <ToolTip
+                  content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
+                ></ToolTip>
+              </div>
+
+              <multiselect
+                id="copyright"
+                v-model="relatedData.copyright"
+                placeholder="Select a Copyright"
+                :options="copyrightOptions"
+              ></multiselect>
+            </b-row>
+
+            <template v-if="queryType !== 'Event'">
               <div class="website-container mt-3">
                 <div>
                   <label class="contribute-title-one">Website</label>
@@ -328,27 +376,27 @@
                 </div>
 
                 <div
-                  v-for="(site, index) in websiteList"
+                  v-for="(site, index) in relatedData.websiteList"
                   :key="index"
                   class="site-input-container"
                 >
                   <b-form-input
                     :id="`site-${index}`"
-                    v-model="site.siteValue"
+                    v-model="site.value"
                     type="text"
                     placeholder="Input the URL of your website/social media account..."
                   ></b-form-input>
                   <span
                     v-if="
-                      (index !== 0 && websiteList.length !== 1) ||
-                        websiteList.length > 1
+                      (index !== 0 && relatedData.websiteList.length !== 1) ||
+                        relatedData.websiteList.length > 1
                     "
                     class="site-btn"
                     @click="removeSite(index)"
                     >-</span
                   >
                   <span
-                    v-if="index + 1 === websiteList.length"
+                    v-if="index + 1 === relatedData.websiteList.length"
                     class="site-btn"
                     @click="addSite()"
                     >+</span
@@ -357,13 +405,21 @@
               </div>
             </template>
 
-            <div v-if="queryType === 'Event'">
+            <div v-if="queryType === 'Event'" class="mt-3">
               <div>
                 <label class="contribute-title-one">Event Date/Time</label>
                 <ToolTip
                   content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
                 ></ToolTip>
               </div>
+              <b-form-datepicker
+                id="event-datepicker"
+                v-model="dateValue"
+                today-button
+                reset-button
+                class="mt-2 mb-3"
+                placeholder="Please pick a date for the Event"
+              ></b-form-datepicker>
 
               <b-time
                 id="event-timepicker"
@@ -371,17 +427,14 @@
                 locale="en"
                 @context="onTimeContext"
               ></b-time>
-              <b-form-datepicker
-                id="event-datepicker"
-                v-model="dateValue"
-                today-button
-                reset-button
-                class="mb-2"
-              ></b-form-datepicker>
             </div>
 
             <h5 class="contribute-title-one mt-3 mb-1">
-              Bio / Artist Statement
+              {{
+                queryType === 'Artist'
+                  ? 'Bio / Artist Statement'
+                  : `${queryType} Description`
+              }}
 
               <ToolTip
                 content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
@@ -389,38 +442,20 @@
             </h5>
             <div id="quill" ref="quill"></div>
 
-            <div class="media-list-container">
-              <MediaPreview
-                v-for="media in getMediaFiles"
-                :key="media.name"
-                :file="media"
-                :all-media="getMediaFiles"
-                class="media-add-btn"
-              />
-
-              <div class="media-add-btn " @click="openModal">
-                <img
-                  class="add-btn"
-                  src="@/assets/images/plus_icon.svg"
-                  alt="Zoom In"
-                />
-                Upload Your Art
-                <UploadModal :id="1" :type="'placename'"></UploadModal>
-              </div>
-            </div>
+            <MediaGallery :media-list="getMediaFiles"> </MediaGallery>
 
             <template v-if="queryType === 'Artist'">
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="commercial-only"
                   >Are you interested in commercial inquiries?</label
                 >
                 <b-form-checkbox
-                  id="community-only"
-                  v-model="commercialOnly"
+                  id="commercial-only"
+                  v-model="relatedData.commercialOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="commercial-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -430,14 +465,14 @@
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
-                  for="community-only"
+                  for="contacted-only"
                   >Allow public to see your contact info?
                 </label>
                 <b-form-checkbox
-                  id="community-only"
-                  v-model="contactedOnly"
+                  id="contacted-only"
+                  v-model="relatedData.contactedOnly"
                   class="d-inline-block ml-2"
-                  name="community-only"
+                  name="contacted-only"
                   value="accepted"
                   unchecked-value="not_accepted"
                 >
@@ -516,7 +551,6 @@
                   label="name"
                   track-by="id"
                   :options="communities"
-                  :multiple="true"
                 ></multiselect>
               </b-col>
             </b-row>
@@ -568,7 +602,7 @@
                     <li v-for="err in errors" :key="err">{{ err }}</li>
                   </ul>
                 </b-alert>
-                <b-button block variant="danger" @click="submitContribute"
+                <b-button block variant="danger" @click="submitType"
                   >Submit</b-button
                 >
               </b-col>
@@ -594,13 +628,13 @@
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import ToolTip from '@/components/Tooltip.vue'
 import Logo from '@/components/Logo.vue'
-import UploadModal from '@/components/UploadModal.vue'
-import MediaPreview from '@/components/MediaPreview.vue'
+import MediaGallery from '@/components/MediaGallery.vue'
 import {
   getApiUrl,
   getCookie,
   encodeFPCC,
-  getLanguagesFromDraw
+  getLanguagesFromDraw,
+  getMediaUrl
 } from '@/plugins/utils.js'
 
 const base64Encode = data =>
@@ -616,50 +650,56 @@ export default {
     AudioRecorder,
     ToolTip,
     Logo,
-    UploadModal,
-    MediaPreview
+    MediaGallery
   },
   middleware: 'authenticated',
   data() {
     return {
-      socialMedia: [
-        'Facebook',
-        'Instagram',
-        'Youtube',
-        'LinkedIn',
-        'Twitter',
-        'Others'
-      ],
       fileSrc: null,
       fileImg: null,
-      websiteList: [],
-      awardsList: [],
-      kinds: ['Artist', 'Event', 'Public Art', 'Organization'],
-      kindSelected: 'Artist',
       taxonomySelected: [],
       artistSelected: [],
       publicArtSelected: [],
+      copyrightOptions: [
+        '',
+        'Private Copyright',
+        'Public Domain',
+        'Creative Commons – Attribution',
+        'Creative Commons – Attribution Share Alike',
+        'Creative Commons – Attribution No Derivatives',
+        'Creative Commons – Attribution Non-Commercial',
+        'Creative Commons – Non-Commercial Share Alike',
+        'Creative Commons – Non-Commercial No Derivatives',
+        'Other'
+      ],
 
       // Placename fields
-
       traditionalName: '',
-      otherName: '',
-      email: '',
-      phone: '',
-      location: '',
-      copyright: '',
-      contactedOnly: false,
-      commercialOnly: false,
+      alternateName: '',
       timeContext: null,
       timeValue: '',
       dateContext: null,
       dateValue: '',
 
+      relatedData: {
+        email: null,
+        phone: null,
+        organization_access: null,
+        location: null,
+        copyright: null,
+        websiteList: [],
+        awardsList: [],
+        contactedOnly: null,
+        commercialOnly: null
+      },
+
+      isLoading: false,
       quillEditor: null,
       place: null,
       showDismissibleAlert: true,
       content: '',
       languageSelected: null,
+      languageUserSelected: null,
       communitySelected: null,
       categorySelected: null,
       tname: '',
@@ -715,6 +755,9 @@ export default {
     queryType() {
       return this.$route.query.type
     },
+    queryProfile() {
+      return !!this.$route.query.profile
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -749,6 +792,18 @@ export default {
       }
       return this.$store.state.user.user.is_staff
     },
+    userDetail() {
+      return this.$store.state.user.user
+    },
+    isArtistProfileFound() {
+      const isArtistProfileFound = this.userDetail.placename_set.find(
+        placename =>
+          placename.kind === 'artist' &&
+          placename.name ===
+            `${this.userDetail.first_name} ${this.userDetail.last_name}`
+      )
+      return isArtistProfileFound
+    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null
@@ -761,6 +816,14 @@ export default {
     },
     languageSet() {
       return this.$store.state.languages.languageSet
+    },
+    languageList() {
+      return this.languageSet.map(lang => {
+        return {
+          id: lang.id,
+          name: lang.name
+        }
+      })
     },
     languagesInFeature() {
       return this.$store.state.contribute.languagesInFeature
@@ -778,6 +841,13 @@ export default {
     },
     getMediaFiles() {
       return this.$store.state.file.fileList
+    },
+    getCookies() {
+      return {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
     }
   },
   watch: {
@@ -835,8 +905,126 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
+    store.commit('file/setNewMediaFiles', [])
+    if (query.id && query.type) {
+      const now = new Date()
+      const place = await $axios.$get(
+        getApiUrl(`placename/${query.id}/?` + now.getTime())
+      )
+      let community = null
+      if (place.community) {
+        community = await $axios.$get(
+          getApiUrl(`community/${place.community}/?` + now.getTime())
+        )
+        community = {
+          name: community.name,
+          id: place.community
+        }
+      }
 
-    if (query.id) {
+      data = {
+        place,
+        traditionalName: place.name,
+        alternateName: place.other_names,
+        content: place.description,
+        categorySelected: place.category,
+        fileSrc: getMediaUrl(place.image),
+        fileImg: place.fileImg
+      }
+      if (community) {
+        data.community = community
+      }
+      if (place.community_only) {
+        data.communityOnly = 'accepted'
+      }
+      if (place.language) {
+        try {
+          const language = await $axios.$get(
+            getApiUrl(`language/${place.language}`)
+          )
+          if (language) {
+            data.languageSelected = language.id
+            data.languageOptions = [{ value: language.id, text: language.name }]
+            data.languageSelectedName = language.name
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      }
+
+      // Store medias if exist
+      if (place.medias.length !== 0) {
+        store.commit('file/setNewMediaFiles', place.medias)
+      }
+
+      data.relatedData = {
+        email: null,
+        phone: null,
+        organization_access: null,
+        location: null,
+        copyright: null,
+        websiteList: [],
+        awardsList: [],
+        contactedOnly: null,
+        commercialOnly: null
+      }
+      // Loop to Related data, and check data
+      if (place.related_data.length !== 0) {
+        place.related_data.map(related => {
+          if (related.data_type === 'location') {
+            data.relatedData.location = related.value
+          } else if (related.data_type === 'award') {
+            data.relatedData.awardsList.push({
+              id: related.id,
+              value: related.value
+            })
+          } else if (related.data_type === 'website') {
+            data.relatedData.websiteList.push({
+              id: related.id,
+              value: related.value
+            })
+          } else if (related.data_type === 'email') {
+            data.relatedData.email = related.value
+          } else if (related.data_type === 'phone') {
+            data.relatedData.phone = related.value
+          } else if (related.data_type === 'organization_access') {
+            data.relatedData.organization_access = related.value
+          } else if (related.data_type === 'copyright') {
+            data.relatedData.copyright = related.value
+          }
+        })
+      }
+
+      // Loop to Taxonomy, and append tag if exist
+      if (place.taxonomies.length !== 0) {
+        data.taxonomySelected = place.taxonomies.map(tax => {
+          return {
+            id: tax.id,
+            name: tax.name
+          }
+        })
+      }
+
+      // Loop to Public Art, and append Public art if exist
+      if (place.public_arts.length !== 0) {
+        data.publicArtSelected = place.public_arts.map(art => {
+          return {
+            id: art.id,
+            name: art.name
+          }
+        })
+      }
+
+      // Loop to Artist, and append if Artist exist
+      if (place.artists.length !== 0) {
+        data.artistSelected = place.artists.map(artist => {
+          return {
+            id: artist.id,
+            name: artist.name
+          }
+        })
+      }
+    } else if (query.id) {
       const now = new Date()
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
@@ -885,13 +1073,36 @@ export default {
     return data
   },
   mounted() {
+    this.languageUserSelected =
+      this.userDetail.length !== 0 ? this.userDetail.languages[0] : null
     if (!this.isLoggedIn) {
       window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
-    this.addSite()
-    this.addAward()
+
+    if (this.queryType !== 'Event') {
+      this.addSite()
+    }
+    if (this.queryType === 'Artist') {
+      this.contactedOnly = false
+      this.commercialOnly = false
+      this.addAward()
+    }
     this.setDateTimeNow()
+
+    // Check if user has artist profile, if not, declare the values
+    if (
+      this.userDetail &&
+      this.queryMode !== 'existing' &&
+      !this.isArtistProfileFound &&
+      this.queryType === 'Artist'
+    ) {
+      this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
+    }
+
+    if (this.queryType === 'Event') {
+      this.dateValue = new Date().toISOString().slice(0, 10)
+    }
   },
   methods: {
     setDateTimeNow() {
@@ -899,23 +1110,24 @@ export default {
       this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
-      this.websiteList.push({
-        siteValue: null
+      this.relatedData.websiteList.push({
+        value: null
       })
     },
     removeSite(index) {
-      this.websiteList.splice(index, 1)
+      this.relatedData.websiteList.splice(index, 1)
     },
     addAward() {
-      this.awardsList.push({
+      this.relatedData.awardsList.push({
         value: null
       })
     },
     removeAward(index) {
-      this.awardsList.splice(index, 1)
+      this.relatedData.awardsList.splice(index, 1)
     },
     removeImg() {
       this.fileImg = null
+      this.fileSrc = null
     },
     openModal(e) {
       this.$root.$emit('openUploadModal')
@@ -927,14 +1139,16 @@ export default {
       this.timeContext = ctx
     },
     initQuill() {
-      require('quill/dist/quill.snow.css')
-      const Quill = require('quill')
-      const container = this.$refs.quill
-      const editor = new Quill(container, {
-        theme: 'snow'
-      })
-      editor.setText(`${this.content}\n`)
-      this.quillEditor = editor
+      if (document.querySelector('#quill')) {
+        require('quill/dist/quill.snow.css')
+        const Quill = require('quill')
+        const container = this.$refs.quill
+        const editor = new Quill(container, {
+          theme: 'snow'
+        })
+        editor.setText(`${this.content}\n`)
+        this.quillEditor = editor
+      }
     },
     async uploadAudioFile(id, audio, newPlace) {
       const audiodata = new FormData()
@@ -974,21 +1188,15 @@ export default {
         // for now assume this always succeeds.
       }
     },
-    uploadFiles(id) {
-      this.files.map(async file => {
-        const data = new FormData()
-        data.append('name', file.name)
-        data.append('description', '')
-        data.append('file_type', file.type)
-        data.append('placename', id)
-        data.append('media_file', file)
-        data.append('csrftoken', getCookie('csrftoken'))
-        data.append('_method', 'POST')
-        try {
-          await this.$axios.$post(`/api/media/`, data)
-        } catch (e) {}
-      })
+    submitType(e) {
+      this.isLoading = true
+      if (this.queryMode === 'placename' || this.queryType) {
+        this.submitPlacename(e)
+      } else {
+        this.submitContribute(e)
+      }
     },
+
     async submitContribute(e) {
       let id
       this.errors = []
@@ -1011,6 +1219,7 @@ export default {
       } else {
         return
       }
+
       const data = {
         name: this.tname,
         common_name: this.wname,
@@ -1021,6 +1230,7 @@ export default {
         community_only: this.communityOnly === 'accepted',
         status
       }
+
       if (this.drawnFeatures.length) {
         data.geom = this.drawnFeatures[0].geometry
       }
@@ -1041,7 +1251,9 @@ export default {
           )
           newPlace = modified
           id = modified.id
+          this.isLoading = false
         } catch (e) {
+          this.isLoading = false
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
               return e[0] + ': ' + e[1]
@@ -1058,7 +1270,9 @@ export default {
           )
           id = created.id
           newPlace = created
+          this.isLoading = false
         } catch (e) {
+          this.isLoading = false
           console.error(Object.entries(e.response.data))
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
@@ -1091,10 +1305,287 @@ export default {
     },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+
+    async submitPlacename(e) {
+      let id
+      const headers = this.getCookies
+      this.errors = []
+      if (!this.drawnFeatures.length && !this.place) {
+        this.errors.push('Please choose a location first.')
+        return
+      }
+
+      let community_id = null
+      if (this.community) {
+        community_id = this.community.id
+      }
+
+      let status = 'UN'
+      if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
+        status = 'UN'
+      }
+      if (this.quillEditor) {
+        this.content = this.quillEditor.getText()
+      } else {
+        return
+      }
+
+      const data = {
+        name: this.traditionalName,
+        other_names: this.alternateName,
+        description: this.content,
+        kind:
+          this.queryType === 'Public Art'
+            ? 'public_art'
+            : this.queryType.toLowerCase(),
+        community: community_id,
+        language: this.languageUserSelected.id,
+        community_only: false,
+        status
+      }
+
+      if (this.drawnFeatures.length) {
+        data.geom = this.drawnFeatures[0].geometry
+      }
+
+      // if on edit mode
+      if (this.$route.query.id) {
+        // Append patch data
+
+        id = this.$route.query.id
+        const appendedData = { ...data, ...this.getPatchData(id) }
+        console.log(appendedData)
+        try {
+          const modified = await this.$axios.$patch(
+            `/api/placename/${id}/`,
+            appendedData,
+            headers
+          )
+
+          if (modified) {
+            // Upload new medias added
+            this.uploadMedias(id)
+
+            // Upload Placename Thumbnail if changed
+            this.uploadPlacenameThumbnail(id, headers)
+
+            // If finish, redirect to Placename
+            this.redirectToPlacename()
+          }
+        } catch (e) {
+          this.isLoading = false
+          this.errors = this.errors.concat(
+            Object.entries(e.response.data).map(e => {
+              return e[0] + ': ' + e[1]
+            })
+          )
+        }
+      } else {
+        try {
+          const created = await this.$axios.$post(
+            '/api/placename/',
+            data,
+            headers
+          )
+          id = created.id
+
+          // If Placename is successfully created, then PATCH data
+          if (created) {
+            // PATCH DATA AFTER POSTING
+            const data1 = this.getPatchData(id)
+
+            // Patch placename thumbnail
+            this.uploadPlacenameThumbnail(id, headers)
+
+            // UPLOAD MEDIAS
+            this.uploadMedias(id)
+
+            try {
+              const modified = await this.$axios.$patch(
+                `/api/placename/${id}/`,
+                data1,
+                headers
+              )
+
+              console.log('MODIFIED DATA', modified)
+              // this.$store.commit('file/setMediaFiles', [])
+
+              // If finish, redirect to Placename
+              this.redirectToPlacename()
+            } catch (e) {
+              this.isLoading = false
+              this.errors = this.errors.concat(
+                Object.entries(e.response.data).map(e => {
+                  return e[0] + ': ' + e[1]
+                })
+              )
+            }
+          }
+        } catch (e) {
+          this.isLoading = false
+          console.error(Object.entries(e.response.data))
+          this.errors = this.errors.concat(
+            Object.entries(e.response.data).map(e => {
+              return e[0] + ': ' + e[1]
+            })
+          )
+        }
+      }
+    },
+    postRelatedData(id) {
+      if (this.queryType === 'Event') {
+        this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
+      }
+      const filteredRelatedData = Object.entries(this.relatedData).filter(
+        data => {
+          if (data[0] === 'websiteList' || data[0] === 'awardsList') {
+            return data[1].length !== 0
+          } else if (data[1]) {
+            return data[1] !== ''
+          } else {
+            return data[1] !== null
+          }
+        }
+      )
+
+      const relatedData = filteredRelatedData.map(field => {
+        // if element is array, get values one by one
+        if (field[0] === 'websiteList' || field[0] === 'awardsList') {
+          return field[1]
+            .filter(data => data.value !== null)
+            .map(data => {
+              return {
+                data_type: field[0] === 'websiteList' ? 'website' : 'award',
+                label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
+                value: data.value,
+                is_private: false,
+                placename: id
+              }
+            })
+        } else {
+          return {
+            data_type: field[0],
+            label:
+              field[0] === 'organization_access'
+                ? 'Organization Access'
+                : field[0].charAt(0).toUpperCase() + field[0].slice(1),
+            value: field[1],
+            is_private: false,
+            placename: id
+          }
+        }
+      })
+
+      const listElement = []
+      const noListData = relatedData.filter(data => {
+        if (Array.isArray(data)) {
+          data.map(value => {
+            listElement.push(value)
+          })
+        } else {
+          return data
+        }
+      })
+
+      return [...listElement, ...noListData]
+    },
+    getPatchData(id) {
+      const artistList = this.artistSelected.map(artist => artist.id)
+      const publicArt = this.publicArtSelected.map(art => art.id)
+      const taxoList = this.taxonomySelected.map(taxo => taxo.id)
+
+      return {
+        related_data: this.postRelatedData(id),
+        artists: artistList,
+        public_arts: publicArt,
+        taxonomies: taxoList
+      }
+    },
+    uploadMedias(id) {
+      const values = this.getMediaFiles
+        .map(media => {
+          delete media.id
+          delete media.type
+          // Change media file type to generic
+          if (media.file_type.includes('audio')) {
+            media.file_type = 'audio'
+          } else if (media.file_type.includes('image')) {
+            media.file_type = 'image'
+          }
+          media.placename = id
+          media.is_artwork = true
+
+          return media
+        })
+        .map(async file => {
+          if (file.creator || file.status) {
+            // if media has been created by a creator, it means its existing, so do nothing
+          } else {
+            const data = new FormData()
+            data.append('name', file.name)
+            data.append('description', file.description)
+            data.append('file_type', file.file_type)
+            data.append('community_only', file.community_only)
+            data.append('placename', id)
+            data.append('is_artwork', true)
+            if (file.url) {
+              data.append('url', file.url)
+            }
+            if (file.media_file) {
+              data.append('media_file', file.media_file)
+            }
+
+            try {
+              const result = await this.$store.dispatch(
+                'file/uploadMedia',
+                data
+              )
+              return result
+            } catch (e) {}
+          }
+        })
+
+      console.log(values)
+    },
+    async uploadPlacenameThumbnail(id, headers) {
+      if (this.fileImg) {
+        const formDatas = new FormData()
+        formDatas.append('image', this.fileImg)
+
+        await this.$axios.$patch(`/api/placename/${id}/`, formDatas, headers)
+      }
+    },
+    redirectToPlacename() {
+      if (this.getMediaFiles.length !== 0) {
+        this.$root.$emit('refetchArtwork')
+      }
+
+      this.$router.push({
+        path: `/art/${encodeFPCC(this.traditionalName)}`
+      })
+    },
+    uploadFiles(id) {
+      this.files.map(async file => {
+        const data = new FormData()
+        data.append('name', file.name)
+        data.append('description', '')
+        data.append('file_type', file.type)
+        data.append('placename', id)
+        data.append('media_file', file)
+        data.append('csrftoken', getCookie('csrftoken'))
+        data.append('_method', 'POST')
+        try {
+          await this.$axios.$post(`/api/media/`, data)
+        } catch (e) {}
+      })
     }
   },
+
   beforeRouteEnter(to, from, next) {
     next(vm => {
+      vm.$store.commit('sidebar/setDrawerContent', false)
+      vm.$root.$emit('resetMap')
       vm.$store.commit('sidebar/set', true)
       vm.$store.commit('contribute/setIsDrawMode', true)
       if (vm.$route.query.mode === 'point') {
@@ -1379,9 +1870,5 @@ export default {
   padding: 1em;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
-}
-
-.badge-notification {
-  border: 1px solid red;
 }
 </style>

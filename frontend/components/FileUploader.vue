@@ -111,9 +111,8 @@ export default {
         return (this.errorMessage = 'Please enter the name of the file')
       }
 
-      if (this.$route.query.mode === 'placename') {
+      if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
-        console.log(this.$store.state.file.fileList)
       } else {
         const formData = this.getFormData()
         try {
@@ -134,6 +133,9 @@ export default {
             time: 1500,
             variant: 'danger'
           })
+          if (this.$route.name === 'index-art-art') {
+            this.$root.$emit('fileUploadSuccess')
+          }
         }
       }
 
@@ -154,12 +156,12 @@ export default {
     getMediaData() {
       return {
         name: this.fileName,
-        file_type: this.file.type,
+        file_type: 'image',
         description: this.description,
         media_file: this.file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: false
       }
     },
     async uploadFile(formData) {
