@@ -252,6 +252,7 @@ export default {
       if (this.$route.name === 'index-art' && this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
+      this.$root.$emit('closeEventPopover')
       this.showContributeModal = !this.showContributeModal
     },
     toggleMessageBox() {
@@ -273,7 +274,8 @@ export default {
         }
       })
       // This solution is temporary
-      window.location.href = `/contribute?mode=${data}`
+      // window.location.href = `/contribute?mode=${data}`
+      this.$root.$emit('resetValues')
     },
     handlePlaceClick(e, data, type) {
       this.hideModal()
@@ -285,8 +287,9 @@ export default {
           type
         }
       })
+      this.$root.$emit('resetValues')
       // This solution is temporary
-      window.location.href = `/contribute?mode=${data}&type=${type}`
+      // window.location.href = `/contribute?mode=${data}&type=${type}`
     },
     validateArtist($event) {
       this.hideModal()
@@ -301,6 +304,7 @@ export default {
             profile: true
           }
         })
+        this.$root.$emit('resetValues')
         this.showMessage = true
       }
       // If has Artist profile, redirect to Profile, then add Media
