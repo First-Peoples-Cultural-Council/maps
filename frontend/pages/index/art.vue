@@ -22,7 +22,7 @@
           <BadgeFilter :child-taxonomy="[]" :color="'#5A8467'">
             <template v-slot:badge>
               <Badge
-                content="Arts"
+                content="Art"
                 :number="artworksCount"
                 class="cursor-pointer"
                 bgcolor="#5A8467"
@@ -268,23 +268,28 @@ export default {
       return this.$store.state.arts.artworks
     },
     previewArtworkOnly() {
-      return this.artworks.reduce((unique, item) => {
-        return unique.some(
-          items =>
-            items.properties.placename.id === item.properties.placename.id
-        )
-          ? unique
-          : [
-              ...unique,
-              this.artworks
-                .filter(
-                  items =>
-                    items.properties.placename.id ===
-                    item.properties.placename.id
-                )
-                .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
-            ]
-      }, [])
+      console.log(this.artworks)
+      return this.artworks
+        .reduce((unique, item) => {
+          return unique.some(
+            items =>
+              items.properties.placename.id === item.properties.placename.id
+          )
+            ? unique
+            : [
+                ...unique,
+                this.artworks
+                  .filter(
+                    items =>
+                      items.properties.placename.id ===
+                      item.properties.placename.id
+                  )
+                  .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
+              ]
+        }, [])
+        .sort((a, b) => {
+          return b.id - a.id
+        })
     },
     selectedArtwork() {
       return this.isSearchMode ? this.artworks : this.previewArtworkOnly

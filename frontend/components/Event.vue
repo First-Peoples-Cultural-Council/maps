@@ -11,6 +11,7 @@
       <!-- Shows List of Events  -->
       <EventCard />
     </b-popover>
+    <!-- <span class="notify-badge"></span> -->
   </div>
 </template>
 
@@ -83,6 +84,16 @@ export default {
       display: none;
     }
   }
+}
+
+.notify-badge {
+  position: absolute;
+  top: 2.5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
 }
 
 .popover {

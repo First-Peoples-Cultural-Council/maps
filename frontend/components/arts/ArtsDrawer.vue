@@ -1,5 +1,10 @@
 <template>
   <div class="arts-right-panel">
+    <div v-if="isLoading" class="loading-overlay">
+      <transition name="fade">
+        <LoadingSpinner></LoadingSpinner>
+      </transition>
+    </div>
     <div class="panel-close-btn" @click="togglePanel">
       <img src="@/assets/images/return_icon_hover.svg" />
       Collapse
@@ -95,11 +100,13 @@
 import MediaCard from '@/components/MediaCard.vue'
 import { encodeFPCC, getApiUrl, getMediaUrl } from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   components: {
     MediaCard,
-    Gallery
+    Gallery,
+    LoadingSpinner
   },
   props: {
     art: {
@@ -118,7 +125,8 @@ export default {
   data() {
     return {
       currentMedia: this.art,
-      listOfMedias: []
+      listOfMedias: [],
+      isLoading: false
     }
   },
   computed: {
@@ -362,5 +370,18 @@ export default {
   .arts-main-wrapper .panel-close-btn {
     display: none !important;
   }
+}
+
+/*** Loading Overlay CSS ***/
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 9999999;
+  right: 0;
 }
 </style>
