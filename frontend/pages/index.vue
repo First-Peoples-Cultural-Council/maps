@@ -373,8 +373,7 @@ export default {
       $axios.$get(getApiUrl('placename-search')),
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
-      $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event'))
+      $axios.$get(getApiUrl('taxonomy'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -386,7 +385,6 @@ export default {
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
     store.commit('arts/setTaxonomySearchSet', results[5])
-    store.commit('arts/setNextEvents', results[6].features)
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -1116,7 +1114,7 @@ export default {
 }
 
 .map-controls-overlay > * {
-  margin-bottom: 0.25em;
+  margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
 }
 .sidebar-divider {
