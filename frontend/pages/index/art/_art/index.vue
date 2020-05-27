@@ -100,6 +100,28 @@
             >
           </div>
 
+          <section
+            v-if="getAwardList.length !== 0 && isArtist"
+            class="artist-content-field"
+          >
+            <h5 class="field-title">
+              Artist Awards
+            </h5>
+            <ul class="field-content-list">
+              <li v-for="award in getAwardList" :key="award.id">
+                <img src="@/assets/images/arts/award_icon.svg" />
+                {{ award.value }}
+              </li>
+            </ul>
+          </section>
+
+          <section v-if="getEventDate" class="artist-content-field">
+            <h5 class="field-title">
+              Event Date
+            </h5>
+            <span class="field-content"> {{ getDateValue() }} </span>
+          </section>
+
           <section v-if="artDetails.description" class="artist-content-field">
             <h5 class="field-title">
               {{
@@ -135,6 +157,18 @@
               <span v-else class="field-content">{{ data.value }}</span>
             </section>
           </template>
+
+          <!-- Render List of Websites -->
+          <section
+            v-for="(web, index) in getWebsiteList"
+            :key="web.id"
+            class="artist-content-field"
+          >
+            <h5 class="field-title">{{ `Website #${index + 1}` }}:</h5>
+            <a :href="checkUrlValid(web.value)" target="_blank">
+              {{ checkUrlValid(web.value) }}</a
+            >
+          </section>
 
           <!-- Render LIst of Social Media -->
           <section v-if="socialMedia.length !== 0" class="artist-content-field">
@@ -282,7 +316,28 @@ export default {
       return this.artDetails.related_data.filter(element => {
         return (
           !this.socialMedia.includes(element) &&
-          (!element.is_private && (element.value && element.value.length !== 0))
+          (!element.is_private &&
+            (element.value && element.value.length !== 0)) &&
+          (element.data_type !== 'Event Date' &&
+            element.data_type !== 'award' &&
+            element.data_type !== 'website')
+        )
+      })
+    },
+    getEventDate() {
+      return this.artDetails.related_data.find(element => {
+        return element.data_type === 'Event Date'
+      })
+    },
+    getAwardList() {
+      return this.artDetails.related_data.filter(element => {
+        return element.data_type === 'award'
+      })
+    },
+    getWebsiteList() {
+      return this.artDetails.related_data.filter(element => {
+        return (
+          !this.socialMedia.includes(element) && element.data_type === 'website'
         )
       })
     },
@@ -320,6 +375,7 @@ export default {
       if (art.id) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
+        console.log(artDetails)
         const isServer = !!process.server
         return {
           art,
@@ -412,6 +468,41 @@ export default {
           type: kind === 'Public_art' ? 'Public Art' : kind
         }
       })
+    },
+    getDateValue() {
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }
+      let dateDescription = ''
+      const eventDate = new Date(this.getEventDate.value)
+      const dateString = eventDate.toLocaleDateString('en-US', options)
+
+      if (eventDate > Date.now()) {
+        const resultDate = eventDate - Date.now()
+        const differenceInHours = Math.ceil(Math.abs(resultDate) / 36e5)
+        const differenceInDays = Math.ceil(resultDate / (1000 * 60 * 60 * 24))
+        const differenceInMins = Math.floor(resultDate / 1000 / 60)
+
+        if (differenceInMins < 60) {
+          dateDescription = `(Happening in ${differenceInMins}) minute${
+            differenceInMins <= 1 ? '' : 's'
+          })`
+        } else if (differenceInHours > 24) {
+          dateDescription = `(Happening in ${differenceInDays} day${
+            differenceInDays === 1 ? '' : 's'
+          })`
+        } else {
+          dateDescription = `(Happening in ${differenceInHours} hour${
+            differenceInHours === 1 ? '' : 's'
+          })`
+        }
+      } else {
+        dateDescription = '(Event finished)'
+      }
+      return `${dateString} ${dateDescription}`
     },
     widthChecker(e) {
       if (this.mobileContent) {
@@ -565,11 +656,15 @@ export default {
 .artist-content-field > .field-content-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .field-content-list li {
   display: flex;
   align-items: center;
+  & > * {
+    margin-right: 0.4em;
+  }
 }
 
 .artist-social-icons {
