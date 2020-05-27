@@ -38,15 +38,15 @@
             <a
               v-for="artist in artists"
               :key="artist.name"
-              @click.stop.prevent="handleCardClick(mediaData.placename.name)"
+              @click.stop.prevent="handleCardClick(placename.name)"
             >
               {{ artist.name }}</a
             >
           </span>
           <span v-else class="artist-name">
             By
-            <a @click.stop.prevent="handleCardClick(mediaData.placename.name)">
-              {{ mediaData.placename.name }}
+            <a @click.stop.prevent="handleCardClick(placename.name)">
+              {{ placename.name }}
             </a>
           </span>
         </div>
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
+import { encodeFPCC, getMediaUrl, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   props: {
@@ -93,15 +93,18 @@ export default {
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      artists: []
     }
   },
   computed: {
     mediaData() {
       return this.media.properties
     },
-    artists() {
-      return this.mediaData.placename.artists
+    placename() {
+      return this.$store.state.arts.artworksPlacenames.find(
+        placename => placename.id === this.mediaData.placename
+      )
     },
     mediaType() {
       return this.mediaData.file_type
@@ -124,19 +127,6 @@ export default {
         ? this.videoThumbnail
         : require('@/assets/images/artwork_icon.svg')
     },
-    returnArtists() {
-      const listOfArtist =
-        this.artists.length !== 0
-          ? this.artists.map((artist, index) => {
-              return `<a href="art/${encodeFPCC(artist.name)}"> ${
-                artist.name
-              }</a>`
-            })
-          : `<a href="art/${encodeFPCC(this.mediaData.placename.name)}"> ${
-              this.mediaData.placename.name
-            }</a>`
-      return `By ${listOfArtist}`
-    },
     returnMediaType() {
       const type = this.mediaType
       if (type.includes('image')) {
@@ -148,6 +138,17 @@ export default {
       } else {
         return 'image'
       }
+    }
+  },
+  mounted() {
+    if (this.placename.kind === 'public_art') {
+      this.$axios
+        .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
+        .then(result => {
+          if (result) {
+            this.artists = [...this.artists, ...result]
+          }
+        })
     }
   },
   methods: {

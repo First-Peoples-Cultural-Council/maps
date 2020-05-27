@@ -375,13 +375,15 @@ export default {
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event'))
+      $axios.$get(getApiUrl('arts/event')),
+      $axios.$get(getApiUrl('arts/placename'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
     store.commit('communities/setSearchStore', results[1])
     store.commit('places/setSearchStore', results[2])
     store.commit('arts/setSearchStore', results[3])
+    store.commit('arts/setArtworksPlacenames', results[7])
 
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
