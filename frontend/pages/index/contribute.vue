@@ -106,7 +106,7 @@
                 id="traditionalName"
                 v-model="traditionalName"
                 type="text"
-                placeholder="Input placename here..."
+                placeholder="(ex. John Doe)"
                 :disabled="
                   (!isArtistProfileFound &&
                     queryType === 'Artist' &&
@@ -130,7 +130,7 @@
                 id="alternateName"
                 v-model="alternateName"
                 type="text"
-                placeholder="Input other name here..."
+                placeholder="(ex. BigJohnDoe)"
               ></b-form-input>
             </b-row>
 
@@ -246,7 +246,7 @@
                 id="location"
                 v-model="relatedData.location"
                 type="text"
-                placeholder="Input location here..."
+                placeholder="(ex. Vancouver, Canada)"
               ></b-form-input>
             </b-row>
 
@@ -267,7 +267,7 @@
                 id="email"
                 v-model="relatedData.email"
                 type="text"
-                placeholder="Input email here..."
+                placeholder="(ex. johndoe@gmail.com)"
               ></b-form-input>
             </b-row>
 
@@ -287,7 +287,7 @@
                 id="organizationAccess"
                 v-model="relatedData.organization_access"
                 type="text"
-                placeholder="Input Organization Access here..."
+                placeholder="(ex. Open year-round or By Appointment only)"
               ></b-form-input>
             </b-row>
 
@@ -307,7 +307,7 @@
                   id="phone"
                   v-model="relatedData.phone"
                   type="text"
-                  placeholder="Input phone here..."
+                  placeholder="(ex. (604) 509-6995)"
                 ></b-form-input>
               </b-row>
 
@@ -328,7 +328,7 @@
                     :id="`site-${index}`"
                     v-model="award.value"
                     type="text"
-                    placeholder="Input the title of your award here..."
+                    placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
                   ></b-form-input>
                   <span
                     v-if="
@@ -385,7 +385,7 @@
                     :id="`site-${index}`"
                     v-model="site.value"
                     type="text"
-                    placeholder="Input the URL of your website/social media account..."
+                    placeholder="(ex. http://facebook.com/johndoe)"
                   ></b-form-input>
                   <span
                     v-if="
@@ -975,6 +975,7 @@ export default {
         contactedOnly: null,
         commercialOnly: null
       }
+
       // Loop to Related data, and check data
       if (place.related_data.length !== 0) {
         place.related_data.map(related => {
@@ -1088,16 +1089,14 @@ export default {
       window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
     this.initQuill()
-
-    if (this.queryType !== 'Event') {
-      this.addSite()
-    }
-    if (this.queryType === 'Artist') {
-      this.contactedOnly = false
-      this.commercialOnly = false
-      this.addAward()
-    }
+    this.addAward()
+    this.addSite()
     this.setDateTimeNow()
+
+    if (this.queryType === 'Artist') {
+      this.relatedData.contactedOnly = false
+      this.relatedData.commercialOnly = false
+    }
 
     // Check if user has artist profile, if not, declare the values
     if (
@@ -1109,13 +1108,41 @@ export default {
       this.traditionalName = this.userGivenName
     }
 
-    if (this.queryType === 'Event') {
+    if (this.queryType === 'Event' && this.queryType !== 'existing') {
       this.dateValue = new Date().toISOString().slice(0, 10)
     }
+
+    this.$root.$on('resetValues', () => {
+      this.resetData()
+    })
   },
   methods: {
     isValidEmail,
     isValidURL,
+    resetData() {
+      this.fileSrc = null
+      this.fileImg = null
+      this.taxonomySelected = []
+      this.artistSelected = []
+      this.traditionalName = ''
+      this.alternateName = ''
+      this.relatedData.email = null
+      this.relatedData.phone = null
+      this.relatedData.organization_access = null
+      this.relatedData.location = null
+      this.relatedData.copyright = null
+      this.relatedData.websiteList = []
+      this.addSite()
+      this.relatedData.awardsList = []
+      this.addAward()
+      this.content = ''
+      this.relatedData.contactedOnly = false
+      this.relatedData.commercialOnly = false
+      this.$store.commit('file/setNewMediaFiles', [])
+
+      // this.removeQuill()
+      // this.initQuill()
+    },
     setDateTimeNow() {
       const now = new Date()
       this.timeValue = now.toTimeString().slice(0, 8)
@@ -1163,6 +1190,11 @@ export default {
         this.quillEditor = editor
       }
     },
+    removeQuill() {
+      // Removes an element from the document
+      const element = document.querySelector('.ql-toolbar')
+      element.parentNode.removeChild(element)
+    },
     async uploadAudioFile(id, audio, newPlace) {
       const audiodata = new FormData()
       audiodata.append('audio_file', audio)
@@ -1196,10 +1228,7 @@ export default {
             }
           }
         )
-        // console.log('Modified', modified)
-      } catch (e) {
-        // for now assume this always succeeds.
-      }
+      } catch (e) {}
     },
     submitType(e) {
       this.isLoading = true
@@ -1380,7 +1409,6 @@ export default {
 
         id = this.$route.query.id
         const appendedData = { ...data, ...this.getPatchData(id) }
-        console.log(appendedData)
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
@@ -1434,7 +1462,6 @@ export default {
               )
 
               console.log('MODIFIED DATA', modified)
-              // this.$store.commit('file/setMediaFiles', [])
 
               // If finish, redirect to Placename
               this.redirectToPlacename()
@@ -1455,22 +1482,24 @@ export default {
               return e[0] + ': ' + e[1]
             })
           )
-          console.log(this.errors)
         }
       }
     },
     postRelatedData(id) {
       if (this.queryType === 'Event') {
-        this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
+        this.relatedData['Event Date'] = `${this.dateValue} ${this.timeValue}`
       }
+
       const filteredRelatedData = Object.entries(this.relatedData).filter(
         data => {
           if (data[0] === 'websiteList' || data[0] === 'awardsList') {
             return data[1].length !== 0
-          } else if (data[1]) {
-            return data[1] !== ''
-          } else {
-            return data[1] !== null
+          } else if (data[1] === null) {
+            return false
+          } else if (data[1] === '') {
+            return false
+          } else if (data[1].length !== 0) {
+            return true
           }
         }
       )
