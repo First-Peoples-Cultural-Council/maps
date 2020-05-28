@@ -310,7 +310,10 @@ export default {
       // If has Artist profile, redirect to Profile, then add Media
       else {
         this.$router.push({
-          path: `/art/${encodeFPCC(this.validatedArtist.name)}`
+          path: `/art/${encodeFPCC(this.validatedArtist.name)}`,
+          query: {
+            upload_artwork: true
+          }
         })
 
         this.$store.commit('sidebar/setDrawerContent', false)

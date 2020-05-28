@@ -164,8 +164,9 @@ export default {
       return this.isArtsDetailPage ? this.art.kind : this.placename.kind
     }
   },
-  mounted() {
+  async mounted() {
     // Checks if what page currently, then decide what ID to use
+
     const id = !this.isArtsDetailPage ? this.placename.id : this.art.id
     this.$store.commit(
       'sidebar/setGallery',
@@ -175,18 +176,19 @@ export default {
     // Fetch Medias for this placename
     const url = `${getApiUrl('media/?placename=')}${id}`
 
-    this.$axios.$get(url).then(result => {
-      if (result) {
-        this.listOfMedias = result.sort((a, b) => b.id - a.id)
-      }
-    })
-
+    const result = await this.$axios.$get(url)
+    if (result) {
+      this.listOfMedias = result.sort((a, b) => b.id - a.id)
+    }
     // check if query URL exist
     const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
-    const foundMedia = allArtworks.find(
-      media => encodeFPCC(media.name) === this.$route.query.artwork
-    )
-    if (foundMedia) {
+    const foundMedia = allArtworks.find(media => {
+      return encodeFPCC(media.name) === this.$route.query.artwork
+    })
+
+    if (this.$route.query.upload_artwork) {
+      // do nothing
+    } else if (foundMedia) {
       this.currentMedia = foundMedia
       this.toggleGallery()
     } else if (this.isArtsDetailPage) {

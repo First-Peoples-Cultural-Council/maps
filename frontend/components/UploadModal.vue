@@ -101,6 +101,18 @@ export default {
       }
     })
 
+    this.$root.$on('fileUploadFailed', type => {
+      this.$root.$emit('notification', {
+        title: 'Failed',
+        message: `${type} Upload Failed, please try again`,
+        time: 2000,
+        variant: 'danger'
+      })
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      }
+    })
+
     this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {
       if (modalId === 'uploadModal') {
         this.view = 'UploadOptions'

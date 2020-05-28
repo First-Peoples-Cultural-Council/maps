@@ -268,7 +268,6 @@ export default {
       return this.$store.state.arts.artworks
     },
     previewArtworkOnly() {
-      console.log(this.artworks)
       return this.artworks
         .reduce((unique, item) => {
           return unique.some(

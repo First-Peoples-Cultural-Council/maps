@@ -35,16 +35,19 @@
             v-for="taxonomy in childTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
+            class="badge-option-child"
             @click="optionSelected([taxonomy.name])"
           >
             {{ taxonomy.name }}
+            <!-- <span v-if="hasTaxonomyChild(taxonomy.id)">></span> -->
+
             <!-- Child Popover -->
             <b-popover
               v-if="hasTaxonomyChild(taxonomy.id)"
               :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
-              triggers="hover"
+              triggers="hover focus"
             >
               <div class="badge-option-container">
                 <span
@@ -53,6 +56,7 @@
                   :key="taxChild.id"
                   @click="optionSelected([taxonomy.name, taxChild.name])"
                   >{{ taxChild.name }}
+
                   <!-- Child Child Popover -->
                   <!-- <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
@@ -121,7 +125,9 @@ export default {
       return this.$store.state.arts.taxonomySearchSet
     }
   },
-
+  mounted() {
+    console.log('child', this.childTaxonomy)
+  },
   methods: {
     toggleOption() {
       this.showOption = !this.showOption
@@ -134,7 +140,7 @@ export default {
     },
     optionSelected(taxList) {
       this.$store.commit('arts/setTaxonomyTag', taxList)
-      this.showOption = false
+      // this.showOption = false
     },
     getTags() {
       return this.getTaxonomies.reduce((result, item, index) => {
@@ -191,6 +197,8 @@ export default {
   flex-direction: column;
 
   span {
+    display: flex;
+    flex-direction: column;
     color: #707070;
     padding: 0.5em 1em;
     cursor: pointer;
