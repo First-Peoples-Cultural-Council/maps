@@ -249,12 +249,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$emit('notification', {
-            title: 'Failed',
-            message: 'Audio Upload Failed, please try again',
-            time: 2000,
-            variant: 'danger'
-          })
+          this.$root.$on('fileUploadFailed', 'Audio')
         }
       }
 
@@ -269,7 +264,8 @@ export default {
         media_file: file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: this.commonly === 'accepted',
+        is_artwork: !!this.$route.query.upload_artwork
       }
     },
     blobToFile(blob) {

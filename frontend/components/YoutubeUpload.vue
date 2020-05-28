@@ -130,12 +130,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$emit('notification', {
-            title: 'Failed',
-            message: 'Note/Text Upload Failed, please try again',
-            time: 1500,
-            variant: 'danger'
-          })
+          this.$root.$on('fileUploadFailed', 'Note/Text')
         }
       }
 
@@ -155,7 +150,8 @@ export default {
         type: this.type,
         id: this.id,
         community_only: this.commonly === 'accepted',
-        url: this.youtubeLink
+        url: this.youtubeLink,
+        is_artwork: !!this.$route.query.upload_artwork
       }
     }
   }
