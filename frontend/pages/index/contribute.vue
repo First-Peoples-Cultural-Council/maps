@@ -64,6 +64,7 @@
           <!-- If Placename Contribution -->
           <section
             v-if="queryMode === 'placename' || queryType"
+            id="contribute-main-container"
             class="pr-3 pl-3"
           >
             <div class="upload-img-container mt-3">
@@ -71,7 +72,7 @@
                 <img
                   v-if="fileSrc === null"
                   class="upload-placeholder"
-                  src="@/assets/images/user_icon.svg"
+                  :src="thumbnailPlaceholder()"
                 />
                 <img v-else :src="fileSrc" />
                 <b-button
@@ -106,7 +107,7 @@
                 id="traditionalName"
                 v-model="traditionalName"
                 type="text"
-                placeholder="(ex. John Doe)"
+                :placeholder="placenamePlaceholder()"
                 :disabled="
                   (!isArtistProfileFound &&
                     queryType === 'Artist' &&
@@ -430,22 +431,6 @@
               ></b-time>
             </div>
 
-            <h5 class="contribute-title-one mt-3 mb-1">
-              {{
-                queryType === 'Artist'
-                  ? 'Bio / Artist Statement'
-                  : `${queryType} Description`
-              }}
-
-              <ToolTip
-                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
-              ></ToolTip>
-            </h5>
-            <div id="quill" ref="quill"></div>
-
-            <MediaGallery :media-list="getMediaFiles" :type="queryType">
-            </MediaGallery>
-
             <template v-if="queryType === 'Artist'">
               <b-row class="field-row mt-3">
                 <label
@@ -455,7 +440,7 @@
                 >
                 <b-form-checkbox
                   id="commercial-only"
-                  v-model="relatedData.commercialOnly"
+                  v-model="relatedData.commercial_only"
                   class="d-inline-block ml-2"
                   name="commercial-only"
                   value="accepted"
@@ -472,7 +457,7 @@
                 </label>
                 <b-form-checkbox
                   id="contacted-only"
-                  v-model="relatedData.contactedOnly"
+                  v-model="relatedData.contacted_only"
                   class="d-inline-block ml-2"
                   name="contacted-only"
                   value="accepted"
@@ -481,6 +466,22 @@
                 </b-form-checkbox>
               </b-row>
             </template>
+            <h5 class="contribute-title-one mt-3 mb-1">
+              {{
+                queryType === 'Artist'
+                  ? 'Bio / Artist Statement'
+                  : `${queryType} Description`
+              }}
+
+              <ToolTip
+                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
+              ></ToolTip>
+            </h5>
+
+            <div id="quill" ref="quill"></div>
+
+            <MediaGallery :media-list="getMediaFiles" :type="queryType">
+            </MediaGallery>
           </section>
 
           <!-- Other Contributions -->
@@ -694,8 +695,8 @@ export default {
         copyright: null,
         websiteList: [],
         awardsList: [],
-        contactedOnly: null,
-        commercialOnly: null
+        contacted_only: null,
+        commercial_only: null
       },
 
       isLoading: false,
@@ -972,8 +973,8 @@ export default {
         copyright: null,
         websiteList: [],
         awardsList: [],
-        contactedOnly: null,
-        commercialOnly: null
+        contacted_only: null,
+        commercial_only: null
       }
 
       // Loop to Related data, and check data
@@ -1001,6 +1002,10 @@ export default {
             data.relatedData.organization_access = related.value
           } else if (related.data_type === 'copyright') {
             data.relatedData.copyright = related.value
+          } else if (related.data_type === 'contacted_only') {
+            data.relatedData.contacted_only = !!related.value.includes('true')
+          } else if (related.data_type === 'commercial_only') {
+            data.relatedData.commercial_only = !!related.value.includes('true')
           }
         })
       }
@@ -1094,8 +1099,8 @@ export default {
     this.setDateTimeNow()
 
     if (this.queryType === 'Artist') {
-      this.relatedData.contactedOnly = false
-      this.relatedData.commercialOnly = false
+      this.relatedData.contacted_only = false
+      this.relatedData.commercial_only = false
     }
 
     // Check if user has artist profile, if not, declare the values
@@ -1136,12 +1141,16 @@ export default {
       this.relatedData.awardsList = []
       this.addAward()
       this.content = ''
-      this.relatedData.contactedOnly = false
-      this.relatedData.commercialOnly = false
+      this.relatedData.contacted_only = null
+      this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
 
       // this.removeQuill()
       // this.initQuill()
+      const contributeContainer = document.querySelector(
+        '#contribute-main-container'
+      )
+      contributeContainer.scrollTop = 0
     },
     setDateTimeNow() {
       const now = new Date()
@@ -1177,6 +1186,28 @@ export default {
     },
     onTimeContext(ctx) {
       this.timeContext = ctx
+    },
+    placenamePlaceholder() {
+      if (this.queryType === 'Artist') {
+        return '(ex. John Doe)'
+      } else if (this.queryType === 'Event') {
+        return '(ex. Art Museum Anniversary)'
+      } else if (this.queryType === 'Public Art') {
+        return '(ex. The Statue of David)'
+      } else if (this.queryType === 'Organization') {
+        return '(ex. Canadian Musuem)'
+      }
+    },
+    thumbnailPlaceholder() {
+      if (this.queryType === 'Artist') {
+        return require(`@/assets/images/artist_icon.svg`)
+      } else if (this.queryType === 'Event') {
+        return require(`@/assets/images/event_icon.svg`)
+      } else if (this.queryType === 'Public Art') {
+        return require(`@/assets/images/public_art_icon.svg`)
+      } else if (this.queryType === 'Organization') {
+        return require(`@/assets/images/organization_icon.svg`)
+      }
     },
     initQuill() {
       if (document.querySelector('#quill')) {
@@ -1428,6 +1459,7 @@ export default {
           }
         } catch (e) {
           this.isLoading = false
+          console.log(e.response.data)
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
               return e[0] + ': ' + e[1]
@@ -1519,14 +1551,31 @@ export default {
               }
             })
         } else {
+          let value = ''
+          let is_private = false
+          //
+          if (field[0] === 'contacted_only') {
+            value = field[1] ? 'contact_true' : 'contacted_false'
+          } else if (field[0] === 'commercial_only') {
+            value = field[1] ? 'commercial_true' : 'commerical_false'
+          } else {
+            value = field[1]
+          }
+
+          // Set Privacy values
+          if (field[0] === 'contacted_only' || field[0] === 'commercial_only') {
+            is_private = true
+          } else {
+            is_private = false
+          }
           return {
             data_type: field[0],
             label:
               field[0] === 'organization_access'
                 ? 'Organization Access'
                 : field[0].charAt(0).toUpperCase() + field[0].slice(1),
-            value: field[1],
-            is_private: false,
+            value,
+            is_private,
             placename: id
           }
         }
@@ -1889,8 +1938,8 @@ export default {
   }
 
   .upload-placeholder {
-    width: 75px;
-    height: 75px;
+    width: 90px;
+    height: 90px;
     object-fit: contain;
     border-radius: 0;
   }
