@@ -576,6 +576,10 @@ export default {
         }
       ]
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('sidebar/setDrawerContent', false)
+    next()
   }
 }
 </script>
