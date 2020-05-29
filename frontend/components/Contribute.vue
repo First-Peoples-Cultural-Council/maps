@@ -188,15 +188,7 @@
         >
       </b-list-group>
     </b-modal>
-    <MessageBox
-      v-if="showMessage"
-      :show-modal="showMessage"
-      :message="
-        `You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to
-          Artist Creation. If done, you will be able to upload Artwork under your name.`
-      "
-      :toggle-modal="toggleMessageBox"
-    ></MessageBox>
+    <MessageBox></MessageBox>
     <UploadModal :id="validatedArtist.id" :type="'placename'"></UploadModal>
   </div>
 </template>
@@ -213,7 +205,6 @@ export default {
   },
   data() {
     return {
-      showMessage: false,
       showContributeModal: false
     }
   },
@@ -240,6 +231,9 @@ export default {
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
     }
   },
   mounted() {
@@ -254,9 +248,6 @@ export default {
       }
       this.$root.$emit('closeEventPopover')
       this.showContributeModal = !this.showContributeModal
-    },
-    toggleMessageBox() {
-      this.showMessage = !this.showMessage
     },
     handleClick(e, data) {
       this.hideModal()
@@ -273,8 +264,6 @@ export default {
           mode: data
         }
       })
-      // This solution is temporary
-      // window.location.href = `/contribute?mode=${data}`
       this.$root.$emit('resetValues')
     },
     handlePlaceClick(e, data, type) {
@@ -288,11 +277,10 @@ export default {
         }
       })
       this.$root.$emit('resetValues')
-      // This solution is temporary
-      // window.location.href = `/contribute?mode=${data}&type=${type}`
     },
     validateArtist($event) {
       this.hideModal()
+
       // If doesnt have Artist profile, redirect to Artist creation
       if (!this.validatedArtist) {
         this.$store.commit('contribute/setIsDrawMode', true)
@@ -305,7 +293,12 @@ export default {
           }
         })
         this.$root.$emit('resetValues')
-        this.showMessage = true
+        if (this.isLoggedIn) {
+          this.$root.$emit(
+            'toggleMessageBox',
+            'You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to Artist Creation. If done, you will be able to upload Artwork under your name.'
+          )
+        }
       }
       // If has Artist profile, redirect to Profile, then add Media
       else {
