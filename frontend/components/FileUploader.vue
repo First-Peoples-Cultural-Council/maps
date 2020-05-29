@@ -42,7 +42,10 @@
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
 
-        <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
+        <CommunityOnly
+          v-if="!isArtwork"
+          :commonly.sync="commonly"
+        ></CommunityOnly>
 
         <b-button variant="dark" size="sm" @click="handleUpload"
           >Upload</b-button
@@ -91,6 +94,11 @@ export default {
       errorMessage: null,
       successMessage: null,
       commonly: 'not_accepted'
+    }
+  },
+  computed: {
+    isArtwork() {
+      return this.$route.query.type || this.$route.query.upload_artwork
     }
   },
   methods: {
