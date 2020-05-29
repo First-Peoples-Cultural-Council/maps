@@ -63,7 +63,6 @@
 
 <script>
 import CardBadge from '@/components/CardBadge.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -127,21 +126,7 @@ export default {
       }
     },
     handleReturn() {
-      if (!this.detail) {
-        if (this.server) {
-          this.$router.push({ path: '/languages' })
-        } else if (this.comingFromDetail) {
-          this.$router.push({ path: '/languages' })
-          this.$store.commit('languages/setComingFromDetail', false)
-        } else {
-          this.$router.go(-1)
-        }
-      } else {
-        this.$store.commit('languages/setComingFromDetail', true)
-        this.$router.push({
-          path: `/languages/${encodeFPCC(this.$route.params.lang)}`
-        })
-      }
+      this.$router.push({ path: '/languages' })
     },
     handleMouseOver() {
       this.hover = true
