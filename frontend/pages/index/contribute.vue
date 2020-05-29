@@ -99,7 +99,13 @@
                   >{{ queryType }} Name (required)</label
                 >
                 <ToolTip
-                  content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
+                  :content="
+                    `${
+                      isArtist
+                        ? `What is the name of this Artist? `
+                        : `What is this ${queryType} called in your language? Enter the name or title in your language, using your alphabet.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
@@ -109,21 +115,25 @@
                 type="text"
                 :placeholder="placenamePlaceholder()"
                 :disabled="
-                  (!isArtistProfileFound &&
-                    queryType === 'Artist' &&
-                    queryProfile) ||
+                  (!isArtistProfileFound && isArtist && queryProfile) ||
                     ($route.query.id && traditionalName === userGivenName)
                 "
               ></b-form-input>
             </b-row>
 
-            <b-row v-if="queryType === 'Artist'" class="field-row mt-3">
+            <b-row v-if="isArtist" class="field-row mt-3">
               <div>
                 <label for="alternateName" class="contribute-title-one"
                   >Alternate Name</label
                 >
                 <ToolTip
-                  content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+                  :content="
+                    `${
+                      isArtist
+                        ? 'Does this Artist goes with another name, perhaps a stage name? Write the other name of the artist.'
+                        : `Is this ${queryType} already known by a different name? For example in English? Enter that name here so people can find it through that name.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
@@ -136,9 +146,17 @@
             </b-row>
 
             <b-row class="mt-3 field-row">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Language</label
-              >
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1">
+                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                >
+                <ToolTip
+                  :content="
+                    `What is the primary language of this ${queryType}?`
+                  "
+                ></ToolTip>
+              </div>
+
               <multiselect
                 v-model="languageUserSelected"
                 :options="languageList"
@@ -149,9 +167,15 @@
             </b-row>
 
             <b-row class="mt-3 field-row">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Community</label
-              >
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Community</label
+                >
+                <ToolTip
+                  :content="`What community does this ${queryType} belong to? `"
+                ></ToolTip>
+              </div>
+
               <multiselect
                 v-model="community"
                 placeholder="Select a community"
@@ -166,10 +190,12 @@
                 <label
                   for="taxonomy-container"
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
-                  >Taxonomies</label
+                  >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
                 >
                 <ToolTip
-                  content="What would this placename be classified as? Select tags for your placename. This will help users find it."
+                  :content="
+                    `What would this ${queryType} be classified as? Select tags for your ${queryType}. This will help users find it.`
+                  "
                 ></ToolTip>
               </div>
 
@@ -183,7 +209,7 @@
                 :multiple="true"
               ></multiselect>
               <b-tooltip target="taxonomy-container" placement="top">
-                Select many Taxonomy tags as you want.
+                Select as many Taxonomy tags as you want.
               </b-tooltip>
             </b-row>
 
@@ -239,7 +265,9 @@
                   >Location</label
                 >
                 <ToolTip
-                  content="Tell people about the Location of that Placename."
+                  :content="
+                    `Tell people about the Location of that ${queryType}.`
+                  "
                 ></ToolTip>
               </div>
 
@@ -252,7 +280,7 @@
             </b-row>
 
             <b-row
-              v-if="queryType === 'Artist' || queryType === 'Organization'"
+              v-if="isArtist || queryType === 'Organization'"
               class="field-row mt-3"
             >
               <div>
@@ -292,7 +320,7 @@
               ></b-form-input>
             </b-row>
 
-            <template v-if="queryType === 'Artist'">
+            <template v-if="isArtist">
               <b-row class="field-row mt-3">
                 <div>
                   <label for="phone" class="contribute-title-one mb-1"
@@ -356,7 +384,7 @@
                   >Copyright</label
                 >
                 <ToolTip
-                  content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
+                  content="If you wish your Artwork to be protected, a copyright tag will be included upon showing the Artwork."
                 ></ToolTip>
               </div>
 
@@ -373,7 +401,7 @@
                 <div>
                   <label class="contribute-title-one">Website</label>
                   <ToolTip
-                    content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
+                    content="If you wish to be contacted through social media for inquiries. Add as many as you want."
                   ></ToolTip>
                 </div>
 
@@ -410,9 +438,7 @@
             <div v-if="queryType === 'Event'" class="mt-3">
               <div>
                 <label class="contribute-title-one">Event Date/Time</label>
-                <ToolTip
-                  content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
-                ></ToolTip>
+                <ToolTip content="Enter the Event Date/Time."></ToolTip>
               </div>
               <b-form-datepicker
                 id="event-datepicker"
@@ -431,7 +457,7 @@
               ></b-time>
             </div>
 
-            <template v-if="queryType === 'Artist'">
+            <template v-if="isArtist">
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
@@ -468,13 +494,13 @@
             </template>
             <h5 class="contribute-title-one mt-3 mb-1">
               {{
-                queryType === 'Artist'
-                  ? 'Bio / Artist Statement'
-                  : `${queryType} Description`
+                isArtist ? 'Bio / Artist Statement' : `${queryType} Description`
               }}
 
               <ToolTip
-                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
+                :content="
+                  `Tell people more about this ${queryType}. You can add history, credit/acknowledgement, links, contact information, notes, etc.`
+                "
               ></ToolTip>
             </h5>
 
@@ -761,6 +787,9 @@ export default {
     queryType() {
       return this.$route.query.type
     },
+    isArtist() {
+      return this.queryType === 'Artist'
+    },
     queryProfile() {
       return !!this.$route.query.profile
     },
@@ -1005,7 +1034,7 @@ export default {
           } else if (related.data_type === 'contacted_only') {
             data.relatedData.contacted_only = !!related.value.includes('true')
           } else if (related.data_type === 'commercial_only') {
-            data.relatedData.commercial_only = !!related.value.includes('true')
+            data.relatedData.commercial_only = !related.value.includes('Not')
           }
         })
       }
@@ -1088,38 +1117,48 @@ export default {
     return data
   },
   mounted() {
-    this.languageUserSelected =
-      this.userDetail.length !== 0 ? this.userDetail.languages[0] : null
-    if (!this.isLoggedIn) {
-      window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
-    }
-    this.initQuill()
-    this.addAward()
-    this.addSite()
-    this.setDateTimeNow()
+    // PUT IF LOGGED IN THEN DO THIS
+    if (this.isLoggedIn) {
+      this.languageUserSelected =
+        this.userDetail.languages.length !== 0
+          ? this.userDetail.languages[0]
+          : null
 
-    if (this.queryType === 'Artist') {
-      this.relatedData.contacted_only = false
-      this.relatedData.commercial_only = false
-    }
+      this.initQuill()
+      this.addAward()
+      this.addSite()
+      this.setDateTimeNow()
 
-    // Check if user has artist profile, if not, declare the values
-    if (
-      this.userDetail &&
-      this.queryMode !== 'existing' &&
-      !this.isArtistProfileFound &&
-      this.queryType === 'Artist'
-    ) {
-      this.traditionalName = this.userGivenName
-    }
+      if (this.isArtist) {
+        this.relatedData.contacted_only = false
+        this.relatedData.commercial_only = false
+      }
 
-    if (this.queryType === 'Event' && this.queryType !== 'existing') {
-      this.dateValue = new Date().toISOString().slice(0, 10)
-    }
+      // Check if user has artist profile, if not, declare the values
+      if (
+        this.userDetail &&
+        this.queryMode !== 'existing' &&
+        !this.isArtistProfileFound &&
+        this.isArtist
+      ) {
+        console.log(this.userDetail)
+        this.traditionalName = this.userGivenName
+        this.relatedData.email = this.userDetail.email
+      }
 
-    this.$root.$on('resetValues', () => {
-      this.resetData()
-    })
+      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+        this.dateValue = new Date().toISOString().slice(0, 10)
+      }
+
+      this.$root.$on('resetValues', () => {
+        this.resetData()
+      })
+    } else {
+      this.$root.$emit(
+        'toggleMessageBox',
+        `You need to be logged in first, before proceeding.\n Press "OK" to proceed to Login/Register. `
+      )
+    }
   },
   methods: {
     isValidEmail,
@@ -1150,7 +1189,9 @@ export default {
       const contributeContainer = document.querySelector(
         '#contribute-main-container'
       )
-      contributeContainer.scrollTop = 0
+      if (contributeContainer) {
+        contributeContainer.scrollTop = 0
+      }
     },
     setDateTimeNow() {
       const now = new Date()
@@ -1188,7 +1229,7 @@ export default {
       this.timeContext = ctx
     },
     placenamePlaceholder() {
-      if (this.queryType === 'Artist') {
+      if (this.isArtist) {
         return '(ex. John Doe)'
       } else if (this.queryType === 'Event') {
         return '(ex. Art Museum Anniversary)'
@@ -1199,7 +1240,7 @@ export default {
       }
     },
     thumbnailPlaceholder() {
-      if (this.queryType === 'Artist') {
+      if (this.isArtist) {
         return require(`@/assets/images/artist_icon.svg`)
       } else if (this.queryType === 'Event') {
         return require(`@/assets/images/event_icon.svg`)
@@ -1406,6 +1447,11 @@ export default {
         community_id = this.community.id
       }
 
+      let language_id = null
+      if (this.languageUserSelected) {
+        language_id = this.languageUserSelected.id
+      }
+
       let status = 'UN'
       if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
         status = 'UN'
@@ -1425,7 +1471,7 @@ export default {
             ? 'public_art'
             : this.queryType.toLowerCase(),
         community: community_id,
-        language: this.languageUserSelected.id,
+        language: language_id,
         community_only: false,
         status
       }
@@ -1553,27 +1599,37 @@ export default {
         } else {
           let value = ''
           let is_private = false
-          //
+          let label = ''
+          // Set return Values
           if (field[0] === 'contacted_only') {
             value = field[1] ? 'contact_true' : 'contacted_false'
           } else if (field[0] === 'commercial_only') {
-            value = field[1] ? 'commercial_true' : 'commerical_false'
+            value = field[1]
+              ? 'Interested in Commercial Inquiry'
+              : 'Not interested in Commercial Inquiry'
           } else {
             value = field[1]
           }
 
           // Set Privacy values
-          if (field[0] === 'contacted_only' || field[0] === 'commercial_only') {
+          if (field[0] === 'contacted_only') {
             is_private = true
           } else {
             is_private = false
           }
+
+          // Set Label Return Values
+          if (field[0] === 'organization_access') {
+            label = 'Organization Access'
+          } else if (field[0] === 'commercial_only') {
+            label = 'Commercial Inquiry'
+          } else {
+            label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
+          }
+
           return {
             data_type: field[0],
-            label:
-              field[0] === 'organization_access'
-                ? 'Organization Access'
-                : field[0].charAt(0).toUpperCase() + field[0].slice(1),
+            label,
             value,
             is_private,
             placename: id
@@ -1634,7 +1690,7 @@ export default {
             data.append('placename', id)
             data.append(
               'is_artwork',
-              !!(this.queryType === 'Artist' || this.queryType === 'Public Art')
+              !!(this.isArtist || this.queryType === 'Public Art')
             )
             if (file.url) {
               data.append('url', file.url)

@@ -22,7 +22,7 @@
       :class="{
         'content-mobile': mobileContent,
         'mobile-content': mobileContent && isArtist,
-        'hide-scroll-y': showGallery
+        'hide-scroll-y': isGalleryShown
       }"
     >
       <div class="artist-detail-container">
@@ -209,17 +209,17 @@
       v-if="(mobileContent || isDrawerShown) && isGalleryNotEmpty"
       :art="artDetails"
       :show-panel="isDrawerShown"
-      :toggle-panel="toggleSidePanel"
+      :toggle-panel="toggleArtsDrawer"
       class="sidebar-side-panel hide-mobile"
       :class="{
-        'hide-scroll-y': showGallery
+        'hide-scroll-y': isGalleryShown
       }"
     />
     <div
       v-if="isGalleryNotEmpty && !isDrawerShown"
       class="panel-collapsable hide-mobile "
     >
-      <div class="btn-collapse cursor-pointer" @click="toggleSidePanel">
+      <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
         <img src="@/assets/images/go_icon_hover.svg" />
         Expand
       </div>
@@ -270,8 +270,8 @@ export default {
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
-    showGallery() {
-      return this.$store.state.sidebar.showGallery
+    isGalleryShown() {
+      return this.$store.state.sidebar.isGalleryShown
     },
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
@@ -531,7 +531,7 @@ export default {
     toggleDescription() {
       this.collapseDescription = !this.collapseDescription
     },
-    toggleSidePanel() {
+    toggleArtsDrawer() {
       this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     stringSplit(string) {

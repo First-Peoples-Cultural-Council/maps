@@ -123,6 +123,9 @@ export default {
     },
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
     }
   },
   mounted() {
@@ -140,7 +143,10 @@ export default {
     },
     optionSelected(taxList) {
       this.$store.commit('arts/setTaxonomyTag', taxList)
-      // this.showOption = false
+      this.showOption = false
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
+      }
     },
     getTags() {
       return this.getTaxonomies.reduce((result, item, index) => {
@@ -202,6 +208,7 @@ export default {
     color: #707070;
     padding: 0.5em 1em;
     cursor: pointer;
+    text-transform: capitalize;
 
     &:hover {
       color: #fff;
