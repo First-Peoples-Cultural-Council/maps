@@ -271,6 +271,7 @@ class TaxonomySerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
+            'order',
             'parent'
         )
 
