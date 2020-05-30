@@ -473,7 +473,7 @@ class PublicArtArtist(models.Model):
 
 class Taxonomy(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(default='')
+    description = models.TextField(default='', blank=True, null=True)
     order = models.IntegerField(
         default=None,
         null=True,
