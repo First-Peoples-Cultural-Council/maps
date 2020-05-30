@@ -243,7 +243,7 @@ class PlaceNameCategory(BaseModel):
 
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
-    image = models.ImageField(null=True, default=None)
+    image = models.ImageField(null=True, blank=True, default=None)
 
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
@@ -257,19 +257,19 @@ class PlaceName(CulturalModel):
     kind = models.CharField(max_length=20, default="")
 
     category = models.ForeignKey(
-        PlaceNameCategory, on_delete=models.SET_NULL, null=True
+        PlaceNameCategory, on_delete=models.SET_NULL, null=True, blank=True
     )
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")
 
     creator = models.ForeignKey(
-        "users.User", null=True, on_delete=models.SET_NULL)
+        "users.User", null=True, blank=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
-        Language, null=True, default=None, on_delete=models.SET_NULL, related_name="places"
+        Language, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
     community = models.ForeignKey(
-        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
+        Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
     taxonomies = models.ManyToManyField(
         'Taxonomy',
