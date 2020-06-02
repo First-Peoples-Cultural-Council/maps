@@ -11,7 +11,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile  " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -19,8 +19,8 @@
       >
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div v-if="isLangAdmin" class="ml-3 mr-3">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile "></Logo>
+      <div v-if="isLangAdmin" class="p-3 approval-container">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>
@@ -90,7 +90,7 @@
         </div>
         <div v-if="usersToVerify && usersToVerify.length > 0">
           <h5>Users Waiting For Verification</h5>
-          <div v-for="utv in usersToVerify" :key="`utv${utv.id}`">
+          <div v-for="utv in usersToVerify" :key="`utv-${utv.id}`">
             <ul>
               <li>UserName: {{ utv.user.username }}</li>
               <li>First Name: {{ utv.user.first_name }}</li>
@@ -111,6 +111,12 @@
               </li>
             </ul>
           </div>
+
+          <UserApproveCard
+            v-for="utv in usersToVerify"
+            :key="`utv${utv.id}`"
+            :verify="utv"
+          ></UserApproveCard>
         </div>
       </div>
     </div>
@@ -122,13 +128,15 @@ import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
+import UserApproveCard from '@/components/user/UserApproveCard.vue'
 
 export default {
   components: {
     Logo,
     PlacesCard,
     Media,
-    Reject
+    Reject,
+    UserApproveCard
   },
   computed: {
     isLangAdmin() {
@@ -212,4 +220,9 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.approval-container {
+}
+
+/* User-Approval Card */
+</style>
