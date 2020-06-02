@@ -136,16 +136,12 @@ export const getCookie = name => {
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
+  } else if (media_file.includes('http://nginx')) {
+    return media_file.replace('http://nginx', '')
+  } else if (media_file.includes('https://nginx')) {
+    return media_file.replace('https://nginx', '')
   }
-  if (!isServer) {
-    if (media_file.includes('http://nginx')) {
-      return media_file.replace('http://nginx', '')
-    }
 
-    if (media_file.includes('https://nginx')) {
-      return media_file.replace('https://nginx', '')
-    }
-  }
   return media_file
 }
 export const imageTypes = {
