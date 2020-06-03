@@ -182,7 +182,9 @@ class PlaceNameViewSet(BaseModelViewSet):
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
-            queryset = queryset.filter(
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
                 Q(status__exact=PlaceName.VERIFIED) 
                 | Q(status__exact=PlaceName.UNVERIFIED) 
                 | Q(status__isnull=True)
@@ -284,7 +286,9 @@ class PlaceNameGeoList(generics.ListAPIView):
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
-            queryset = queryset.filter(
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
                 Q(status__exact=PlaceName.VERIFIED) 
                 | Q(status__exact=PlaceName.UNVERIFIED) 
                 | Q(status__isnull=True)

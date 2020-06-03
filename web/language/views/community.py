@@ -55,6 +55,34 @@ class CommunityViewSet(BaseModelViewSet):
     def detail(self, request):
         return super().detail(request)
 
+
+    @method_decorator(never_cache)
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = CommunityDetailSerializer(instance)
+        serialized_data = serializer.data
+        
+        user_logged_in = False
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                user_logged_in = True
+        
+        if not user_logged_in:
+            serialized_data['places'] = [place for place in serialized_data['places'] if not place['community_only']]
+        else:
+            user_communities = CommunityMember.objects.filter(user=request.user.id).values_list('community', flat=True)
+            
+            updated_places = []
+            for place in serialized_data['places']:
+                # Check if the user belongs to the community 
+                if (place['community_only'] and instance.id in user_communities):
+                    updated_places.append(place)
+                else:
+                    updated_places.append(place)
+            serialized_data['places'] = updated_places   
+        return Response(serialized_data)
+
+
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
         if 'recording_id' not in request.data.keys():
