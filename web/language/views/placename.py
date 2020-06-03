@@ -55,10 +55,16 @@ class PlaceNameViewSet(BaseModelViewSet):
     queryset = PlaceName.objects.all().order_by("name")
 
     def perform_create(self, serializer):
-        if self.request.user.is_superuser:
-            serializer.save(creator=self.request.user, status="VE")
-        else:
-            serializer.save(creator=self.request.user)
+        obj = serializer.save(creator=self.request.user)
+
+        admin_communities = list(Administrator.objects.filter(
+            user__id=int(self.request.user.id)).values_list('community', flat=True))
+        admin_languages = list(Administrator.objects.filter(
+            user__id=int(self.request.user.id)).values_list('language', flat=True))
+
+        if obj.community.id in admin_communities or obj.language.id in admin_languages:
+            obj.status = 'VE'
+            obj.save()
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
