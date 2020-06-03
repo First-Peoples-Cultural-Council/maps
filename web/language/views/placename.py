@@ -55,7 +55,16 @@ class PlaceNameViewSet(BaseModelViewSet):
     queryset = PlaceName.objects.all().order_by("name")
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+        obj = serializer.save(creator=self.request.user)
+
+        admin_communities = list(Administrator.objects.filter(
+            user__id=int(self.request.user.id)).values_list('community', flat=True))
+        admin_languages = list(Administrator.objects.filter(
+            user__id=int(self.request.user.id)).values_list('language', flat=True))
+
+        if obj.community.id in admin_communities or obj.language.id in admin_languages:
+            obj.status = 'VE'
+            obj.save()
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
@@ -182,7 +191,9 @@ class PlaceNameViewSet(BaseModelViewSet):
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
-            queryset = queryset.filter(
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
                 Q(status__exact=PlaceName.VERIFIED) 
                 | Q(status__exact=PlaceName.UNVERIFIED) 
                 | Q(status__isnull=True)
@@ -208,9 +219,9 @@ class PlaceNameViewSet(BaseModelViewSet):
                 admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
                 if admin_languages and admin_communities:
-                    # Filter Medias by admin's languages 
+                    # Filter admin's places 
                     queryset_places = queryset.filter(
-                        language__in=admin_languages, community__in=admin_communities
+                        Q(language__in=admin_languages) | Q(community__in=admin_communities)
                     )
 
                     serializer = self.serializer_class(queryset_places, many=True)
@@ -284,7 +295,9 @@ class PlaceNameGeoList(generics.ListAPIView):
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
-            queryset = queryset.filter(
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
                 Q(status__exact=PlaceName.VERIFIED) 
                 | Q(status__exact=PlaceName.UNVERIFIED) 
                 | Q(status__isnull=True)
