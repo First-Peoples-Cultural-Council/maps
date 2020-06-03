@@ -114,7 +114,7 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names")
+        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):
@@ -318,9 +318,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         permalink = "https://maps.fpcc.ca/lna/"
         try:
             lna_external_id = lna_name.split('-')[0].strip().replace("LNA","")
-            print(lna_external_id)
             lna_link = permalink + lna_external_id
-            print(lna_link)
         except:
             lna_link = permalink
         return lna_link

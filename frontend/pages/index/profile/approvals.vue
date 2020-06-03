@@ -177,7 +177,7 @@ export default {
         verify: getApiUrl('community/verify_member/'),
         reject: getApiUrl('community/reject_member/')
       }
-      const result = await this.$axios.$patch(
+      const result = await this.$axios.$post(
         url[verify || reject],
         {
           user_id: tv.user.id,

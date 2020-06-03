@@ -541,6 +541,10 @@ export default {
       let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
+
+        // Exclude status from the patch request
+        delete data.status
+
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
