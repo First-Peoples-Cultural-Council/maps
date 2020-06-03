@@ -72,7 +72,6 @@ class CommunityViewSet(BaseModelViewSet):
         else:
             user_communities = CommunityMember.objects.filter(user=request.user.id).values_list('community', flat=True)
 
-            print(serialized_data['places'])
             # Update list of places - exclude community_only if necessary
             updated_places = []
             for place in serialized_data['places']:
