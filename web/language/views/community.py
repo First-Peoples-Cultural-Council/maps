@@ -77,9 +77,6 @@ class CommunityViewSet(BaseModelViewSet):
                 if place['community_only'] and instance.id in user_communities:
                     # Append if the user is a member of this community
                     updated_places.append(place)
-                elif request.user.id == place['creator']:
-                    # Append if the user is the creator regardless of community
-                    updated_places.append(place)
                 elif not place['community_only']:
                     # Append if available to the public
                     updated_places.append(place)
@@ -90,9 +87,6 @@ class CommunityViewSet(BaseModelViewSet):
             for media in serialized_data['medias']:
                 if media['community_only'] and instance.id in user_communities:
                     # Append if the user is a member of this community
-                    updated_medias.append(media)
-                elif request.user.id == place['creator']:
-                    # Append if the user is the creator regardless of community
                     updated_medias.append(media)
                 elif not media['community_only']:
                     # Append if available to the public
