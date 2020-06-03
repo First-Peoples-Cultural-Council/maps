@@ -53,10 +53,13 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     queryset = Media.objects.all()
 
     def perform_create(self, serializer):
-        if self.request.user.is_superuser:
-            serializer.save(creator=self.request.user, status="VE")
-        else:
-            serializer.save(creator=self.request.user)
+        obj = serializer.save(creator=self.request.user)
+
+        admin_communities = list(Administrator.objects.filter(user__id=int(self.request.user.id)).values_list('community', flat=True))
+
+        if obj.community.id in admin_communities:
+            obj.status = 'VE'
+            obj.save()
 
     @method_decorator(never_cache)
     @action(detail=False)
