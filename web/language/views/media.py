@@ -53,7 +53,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     queryset = Media.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+        if self.request.user.is_superuser:
+            serializer.save(creator=self.request.user, status="VE")
+        else:
+            serializer.save(creator=self.request.user)
 
     @method_decorator(never_cache)
     @action(detail=False)
