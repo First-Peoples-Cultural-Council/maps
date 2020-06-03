@@ -114,7 +114,7 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names", "community", "community_only")
+        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
 
 
 class LanguageDetailSerializer(serializers.ModelSerializer):

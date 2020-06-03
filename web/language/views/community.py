@@ -72,25 +72,32 @@ class CommunityViewSet(BaseModelViewSet):
         else:
             user_communities = CommunityMember.objects.filter(user=request.user.id).values_list('community', flat=True)
 
+            print(serialized_data['places'])
             # Update list of places - exclude community_only if necessary
             updated_places = []
             for place in serialized_data['places']:
-                # Check if the user belongs to the community 
                 if place['community_only'] and instance.id in user_communities:
+                    # Append if the user is a member of this community
                     updated_places.append(place)
-                
-                if not place['community_only']:
+                elif request.user.id == place['creator']:
+                    # Append if the user is the creator regardless of community
+                    updated_places.append(place)
+                elif not place['community_only']:
+                    # Append if available to the public
                     updated_places.append(place)
             serialized_data['places'] = updated_places
 
             # Update list of medias - exclude community_only if necessary
             updated_medias = []
             for media in serialized_data['medias']:
-                # Check if the user belongs to the community 
                 if media['community_only'] and instance.id in user_communities:
+                    # Append if the user is a member of this community
                     updated_medias.append(media)
-                
-                if not media['community_only']:
+                elif request.user.id == place['creator']:
+                    # Append if the user is the creator regardless of community
+                    updated_places.append(place)
+                elif not media['community_only']:
+                    # Append if available to the public
                     updated_medias.append(media)
             serialized_data['medias'] = updated_medias
         return Response(serialized_data)
