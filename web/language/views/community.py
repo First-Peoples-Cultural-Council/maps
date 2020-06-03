@@ -36,8 +36,6 @@ from web.permissions import IsAdminOrReadOnly
 
 
 class CommunityViewSet(BaseModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
-
     serializer_class = CommunitySerializer
     detail_serializer_class = CommunityDetailSerializer
     queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
@@ -148,25 +146,33 @@ class CommunityViewSet(BaseModelViewSet):
                     return Response(serializer.data)
         return Response([])
 
-    @action(detail=False, methods=["patch"])
+    @action(detail=False, methods=["post"])
     def verify_member(self, request):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 user_id = int(request.data["user_id"])
-                community_id = int(request.data["community_id"])
-                if CommunityMember.member_exists(user_id, community_id):
-                    member = CommunityMember.objects.filter(user__id=user_id).filter(
-                        community__id=community_id
-                    )
-                    CommunityMember.verify_member(member[0].id)
+                community_id = request.data["community_id"]
 
-                    return Response({"message": "Verified!"})
+                # Check if the current user is an admin for this community
+                admin_communities = list(Administrator.objects.filter(user=request.user.id).values_list('community', flat=True))
+
+                if community_id in admin_communities:
+                    if CommunityMember.member_exists(user_id, community_id):
+                        member = CommunityMember.objects.filter(user__id=user_id).filter(
+                            community__id=community_id
+                        )
+                        CommunityMember.verify_member(member[0].id)
+
+                        return Response({"message": "Verified!"})
+                    else:
+                        return Response({"message", "User is already a community member"})
                 else:
-                    return Response({"message", "User is already a community member"})
-        
-        return Response({"message", "Only Administrators can verify community members"})
+                    return Response({"message", "Only Administrators can verify community members"})
 
-    @action(detail=False, methods=["patch"])
+        return Response({"message", "You need to be logged in to verify community members"})
+
+
+    @action(detail=False, methods=["post"])
     def reject_member(self, request):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
@@ -177,22 +183,31 @@ class CommunityViewSet(BaseModelViewSet):
 
                 user_id = int(request.data["user_id"])
                 community_id = int(request.data["community_id"])
-                try:            
-                    if CommunityMember.member_exists(user_id, community_id):
-                        member = CommunityMember.objects.filter(user__id=user_id).filter(
-                            community__id=community_id
-                        )
-                        CommunityMember.reject_member(member[0].id)
 
-                        return Response({"message": "Rejected!"})
-                    else:
-                        return Response({"message", "Membership not found"})
-                except User.DoesNotExist:
-                    return Response({"message": "No User with the given id was found"})
-                except Community.DoesNotExist:
-                    return Response({"message": "No Community with the given id was found"})
+                # Check if the current user is an admin for this community
+                admin_communities = list(Administrator.objects.filter(user=request.user.id).values_list('community', flat=True))
+
+                if community_id in admin_communities:
+                    try:            
+                        if CommunityMember.member_exists(user_id, community_id):
+                            member = CommunityMember.objects.filter(user__id=user_id).filter(
+                                community__id=community_id
+                            )
+                            CommunityMember.reject_member(member[0].id)
+
+                            return Response({"message": "Rejected!"})
+                        else:
+                            return Response({"message", "Membership not found"})
+                    except User.DoesNotExist:
+                        return Response({"message": "No User with the given id was found"})
+                    except Community.DoesNotExist:
+                        return Response({"message": "No Community with the given id was found"})
+                else:
+                    return Response({"message", "Only Administrators can reject community members"})
+
+        return Response({"message", "You need to be logged in to reject community members"})
         
-        return Response({"message", "Only Administrators can reject community members"})
+        
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
