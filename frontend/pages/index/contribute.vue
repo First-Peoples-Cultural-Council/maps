@@ -510,10 +510,6 @@ export default {
         community_id = this.community.id
       }
 
-      let status = 'UN'
-      if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
-        status = 'UN'
-      }
       if (this.quillEditor) {
         this.content = this.quillEditor.getText()
       } else {
@@ -541,6 +537,10 @@ export default {
       let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
+
+        // Exclude status from the patch request
+        delete data.status
+
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
