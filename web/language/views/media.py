@@ -213,7 +213,9 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 queryset = queryset_user.union(queryset_community)
 
         else: #no user is logged in
-            queryset = queryset.filter(
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
                 Q(status__exact=Media.VERIFIED) 
                 | Q(status__exact=Media.UNVERIFIED) 
                 | Q(status__isnull=True)
