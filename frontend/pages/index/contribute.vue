@@ -510,6 +510,10 @@ export default {
         community_id = this.community.id
       }
 
+      let status = 'UN'
+      if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
+        status = 'UN'
+      }
       if (this.quillEditor) {
         this.content = this.quillEditor.getText()
       } else {
