@@ -30,6 +30,10 @@ class LNADataAdmin(admin.ModelAdmin):
     list_display = ("fluent_speakers", "name")
 
 
+class CommunityMemberAdmin(admin.ModelAdmin):
+    list_display = ("user", "community")
+
+
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
     search_fields = (
@@ -48,7 +52,7 @@ admin.site.register(PlaceNameCategory)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(Community, CommunityAdmin)
-admin.site.register(CommunityMember)
+admin.site.register(CommunityMember, CommunityMemberAdmin)
 admin.site.register(Media)
 admin.site.register(Favourite)
 admin.site.register(Notification)
