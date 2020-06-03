@@ -95,7 +95,7 @@ class CommunityViewSet(BaseModelViewSet):
                     updated_medias.append(media)
                 elif request.user.id == place['creator']:
                     # Append if the user is the creator regardless of community
-                    updated_places.append(place)
+                    updated_medias.append(place)
                 elif not media['community_only']:
                     # Append if available to the public
                     updated_medias.append(media)
