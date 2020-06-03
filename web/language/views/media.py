@@ -69,10 +69,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 if admin_languages and admin_communities:
                     # Filter Medias by admin's languages 
                     queryset_places = queryset.filter(
-                        placename__language__in=admin_languages, placename__community__in=admin_communities
+                        Q(placename__language__in=admin_languages) | Q(placename__community__in=admin_communities)
                     )
                     queryset_communities = queryset.filter(
-                        community__languages__in=admin_languages, community__in=admin_communities
+                        Q(community__languages__in=admin_languages) | Q(community__in=admin_communities)
                     )
                     queryset = queryset_communities.union(queryset_places)
 
