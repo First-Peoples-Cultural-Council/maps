@@ -42,6 +42,7 @@
       size="sm"
       class=""
       :state="youtubestate"
+      @input="checkValidYtLink"
     ></b-form-input>
 
     <b-form-invalid-feedback id="youtube-feedback">
@@ -63,7 +64,7 @@
   </div>
 </template>
 <script>
-import { getFormData } from '@/plugins/utils.js'
+import { getFormData, isValidYoutubeLink } from '@/plugins/utils.js'
 import CommunityOnly from '@/components/CommunityOnly.vue'
 export default {
   components: {
@@ -90,6 +91,7 @@ export default {
     }
   },
   methods: {
+    isValidYoutubeLink,
     resetState() {
       this.title = null
       this.text = null
@@ -125,26 +127,30 @@ export default {
         true
       )
 
-      try {
-        const result = await this.uploadNote(formData)
-        if (
-          result.request.status === 201 &&
-          result.request.statusText === 'Created'
-        ) {
-          this.$root.$emit('fileUploaded', result.data)
-        } else {
-          throw result
+      if (this.$route.query.mode === 'placename' || this.$route.query.type) {
+        this.$store.commit('file/setMediaFiles', this.getMediaData())
+      } else {
+        try {
+          const result = await this.uploadNote(formData)
+
+          if (
+            result.request.status === 201 &&
+            result.request.statusText === 'Created'
+          ) {
+            this.$root.$emit('fileUploaded', result.data)
+          } else {
+            throw result
+          }
+        } catch (e) {
+          console.error(e)
+          this.$root.$on('fileUploadFailed', 'Note/Text')
         }
-      } catch (e) {
-        console.error(e)
-        this.$root.$emit('notification', {
-          title: 'Failed',
-          message: 'Note/Text Upload Failed, please try again',
-          time: 1500,
-          variant: 'danger'
-        })
       }
       this.resetState()
+    },
+
+    checkValidYtLink() {
+      this.youtubestate = !!this.isValidYoutubeLink(this.youtubeLink)
     },
 
     async uploadNote(formData) {
