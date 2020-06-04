@@ -72,10 +72,10 @@ export const actions = {
 
   async getCommunityMedias({ commit }, data) {
     const result = await this.$axios.$get(
-      getApiUrl(`media/?community=${data.id}`)
+      getApiUrl(`community/${data.id}?timestamp=${new Date().getTime()}/`)
     )
 
-    commit('setMedias', result.sort((a, b) => b.id - a.id))
+    commit('setMedias', result.medias)
     return result
   },
 
