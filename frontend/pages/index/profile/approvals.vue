@@ -24,10 +24,10 @@
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>
+        <div v-else class="mt-1">
+          <b-alert show>These items are waiting for Verification</b-alert>
+        </div>
         <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
-          <h5 class="font-1 color-dark-gray">
-            Places Waiting For Verification
-          </h5>
           <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
             <PlacesCard
               :place="{ properties: { name: ptv.name } }"
@@ -60,58 +60,35 @@
           </div>
         </div>
 
-        <div v-if="mediaToVerify && mediaToVerify.length > 0">
-          <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
-          <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
-            <div>
-              Place {{ mtv.place }}
-              <Media :media="mtv" :community-only="mtv.community_only"></Media>
-              <b-row no-gutters class="mt-2">
-                <b-col xs="6" class="pr-1">
-                  <b-button
-                    variant="dark"
-                    block
-                    size="sm"
-                    @click="
-                      handleApproval($event, mtv, {
-                        verify: true,
-                        type: 'media'
-                      })
-                    "
-                    >Verify</b-button
-                  >
-                </b-col>
-                <b-col xs="6" class="pl-1">
-                  <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
-                </b-col>
-              </b-row>
-            </div>
-          </div>
-        </div>
-        <div v-if="usersToVerify && usersToVerify.length > 0">
-          <h5>Users Waiting For Verification</h5>
-          <div v-for="utv in usersToVerify" :key="`utv-${utv.id}`">
-            <ul>
-              <li>UserName: {{ utv.user.username }}</li>
-              <li>First Name: {{ utv.user.first_name }}</li>
-              <li>Last Name: {{ utv.user.last_name }}</li>
-              <li>Community: {{ utv.community.name }}</li>
-              <li>
-                <b-button
-                  @click="
-                    handleUser($event, utv, {
-                      verify: 'verify'
-                    })
-                  "
-                  >Verify</b-button
-                >
-              </li>
-              <li>
-                <Reject :id="utv.id" type="community" :member="utv"></Reject>
-              </li>
-            </ul>
-          </div>
+        <div v-if="mediaToVerify && mediaToVerify.length > 0" class="mt-2 mb-2">
+          <Media
+            v-for="mtv in mediaToVerify"
+            :key="`mtv${mtv.id}`"
+            :media="mtv"
+            :community-only="mtv.community_only"
+          >
+            <template v-slot:verify>
+              <b-button
+                variant="dark"
+                block
+                size="sm"
+                @click="
+                  handleApproval($event, mtv, {
+                    verify: true,
+                    type: 'media'
+                  })
+                "
+                >Verify</b-button
+              >
+            </template>
 
+            <template v-slot:reject>
+              <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
+            </template>
+          </Media>
+        </div>
+
+        <div v-if="usersToVerify && usersToVerify.length > 0">
           <UserApproveCard
             v-for="utv in usersToVerify"
             :key="`utv${utv.id}`"
