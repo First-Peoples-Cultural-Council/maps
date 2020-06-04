@@ -64,7 +64,7 @@
           <Media
             v-for="mtv in mediaToVerify"
             :key="`mtv${mtv.id}`"
-            class="mt-2 mb-2"
+            class="mb-3"
             :media="mtv"
             :community-only="mtv.community_only"
           >
@@ -93,6 +93,7 @@
           <UserApproveCard
             v-for="utv in usersToVerify"
             :key="`utv${utv.id}`"
+            class="mb-3"
             :verify="utv"
           ></UserApproveCard>
         </div>
