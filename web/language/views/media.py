@@ -44,6 +44,7 @@ class MediaCustomViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     GenericViewSet
 ):
     pass
@@ -54,7 +55,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     queryset = Media.objects.all()
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['placename']
+    filterset_fields = ['placename', 'community']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
