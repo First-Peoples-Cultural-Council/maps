@@ -42,6 +42,7 @@
       size="sm"
       class=""
       :state="youtubestate"
+      @input="checkValidYtLink"
     ></b-form-input>
 
     <b-form-invalid-feedback id="youtube-feedback">
@@ -67,7 +68,7 @@
   </div>
 </template>
 <script>
-import { getFormData } from '@/plugins/utils.js'
+import { getFormData, isValidYoutubeLink } from '@/plugins/utils.js'
 import CommunityOnly from '@/components/CommunityOnly.vue'
 export default {
   components: {
@@ -95,11 +96,11 @@ export default {
   },
   computed: {
     isArtwork() {
-      console.log(this.$route.query.type, this.$route.query.upload_artwork)
       return this.$route.query.type || this.$route.query.upload_artwork
     }
   },
   methods: {
+    isValidYoutubeLink,
     resetState() {
       this.title = null
       this.text = null
@@ -130,6 +131,7 @@ export default {
       } else {
         try {
           const result = await this.uploadNote(formData)
+
           if (
             result.request.status === 201 &&
             result.request.statusText === 'Created'
@@ -145,6 +147,10 @@ export default {
       }
 
       this.resetState()
+    },
+
+    checkValidYtLink() {
+      this.youtubestate = !!this.isValidYoutubeLink(this.youtubeLink)
     },
 
     async uploadNote(formData) {
