@@ -2,6 +2,7 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
 from language.models import (
