@@ -222,22 +222,18 @@
           </b-col>
         </b-row>
       </section>
-      <section>
+      <section class="ml-4 mr-4">
         <div v-if="isLoggedIn">
           <hr />
           <UploadTool
             :id="community.id"
-            class="m-1 ml-4 mr-4 mb-3"
+            class="m-1 mb-3"
             type="community"
           ></UploadTool>
-          <div
-            v-for="media in commDetails.medias"
-            :key="'media' + media.id"
-            class="mb-4"
-          >
+          <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
             <Media
-              class="ml-4 mr-4"
               :media="media"
+              :is-owner="isMediaCreator(media, user)"
               :server="isServer"
               type="community"
             ></Media>
@@ -357,6 +353,9 @@ export default {
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
+    user() {
+      return this.$store.state.user.user
+    },
     communities() {
       return this.$store.state.communities.communitySet
     },
@@ -368,6 +367,9 @@ export default {
     },
     notifications() {
       return this.$store.state.user.notifications
+    },
+    medias() {
+      return this.$store.state.places.medias
     },
     commDetails() {
       const filteredCommDetails = omit(this.communityDetail)
@@ -441,6 +443,7 @@ export default {
     console.log('audio', audio_obj)
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
+    store.commit('places/setMedias', communityDetail.medias)
     const isServer = !!process.server
 
     return {
@@ -481,12 +484,17 @@ export default {
     this.setupMap()
   },
   mounted() {
-    this.$root.$on('fileUploaded', r => {
-      this.commDetails.medias.push(r)
+    this.$root.$on('fileUploadedCommunity', r => {
+      this.$store.dispatch('places/getCommunityMedias', {
+        id: this.commDetails.id
+      })
     })
   },
   methods: {
     getMediaUrl,
+    isMediaCreator(media, user) {
+      return user.id === media.creator.id || user.id === media.creator
+    },
     handleRowClick() {
       this.showCollapse = !this.showCollapse
     },
