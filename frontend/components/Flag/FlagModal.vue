@@ -1,16 +1,17 @@
 <template>
-  <div>
-    <div class="cursor-pointer" @click="modalShow = true">
-      <b-button block variant="danger" class="flag-button">
-        <MdFlagIcon
-          class="d-inline-block mr-1"
-          w="15"
-          h="15"
-          style="fill: white;"
-        ></MdFlagIcon
-        >{{ title || 'Flag' }}</b-button
-      >
-    </div>
+  <b-button
+    block
+    variant="danger"
+    class="flag-button"
+    @click="modalShow = true"
+  >
+    <MdFlagIcon
+      class="d-inline-block mr-1"
+      w="15"
+      h="15"
+      style="fill: white;"
+    ></MdFlagIcon
+    >{{ title || 'Flag' }}
     <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
       <b-alert
         v-if="errorMessage"
@@ -34,9 +35,8 @@
           rows="3"
           max-rows="6"
         ></b-form-textarea>
-      </div>
-    </b-modal>
-  </div>
+      </div> </b-modal
+  ></b-button>
 </template>
 <script>
 import MdFlagIcon from 'vue-ionicons/dist/md-flag.vue'
