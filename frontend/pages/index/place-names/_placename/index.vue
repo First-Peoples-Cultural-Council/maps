@@ -176,7 +176,7 @@
             <Media
               :media="media"
               :server="isServer"
-              :delete="isMediaCreator(media, user)"
+              :is-owner="isMediaCreator(media, user)"
               :community-only="media.community_only"
               type="placename"
             ></Media>
@@ -386,13 +386,12 @@ export default {
     }
   },
   mounted() {
-    this.$root.$on('fileUploaded', r => {
+    this.$root.$on('fileUploadedPlaces', r => {
       this.$store.dispatch('places/getPlaceMedias', {
         id: this.place.id
       })
       this.$store.dispatch('user/getMediaToVerify')
     })
-    // console.log('Place', this.place)
   },
   created() {
     this.setupMap(this.geo_place.geometry)
@@ -403,7 +402,7 @@ export default {
       return mtv.find(m => m.id === media.id)
     },
     isMediaCreator(media, user) {
-      return user.id === media.creator
+      return user.id === media.creator.id || user.id === media.creator
     },
     handleCreatorClick(e, creator) {
       this.$router.push({
