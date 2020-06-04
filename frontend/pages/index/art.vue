@@ -303,7 +303,6 @@ export default {
     selectedArt() {
       let artsArray = []
 
-      console.log(this.allArts)
       // Filter by SearchQuery and by Artist/Public Art owned by the Placename
       if (this.isSearchMode) {
         const query = this.searchQuery.toLowerCase()

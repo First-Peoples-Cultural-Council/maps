@@ -128,9 +128,6 @@ export default {
       return this.$store.state.sidebar.isArtsMode
     }
   },
-  mounted() {
-    console.log('child', this.childTaxonomy)
-  },
   methods: {
     toggleOption() {
       this.showOption = !this.showOption
