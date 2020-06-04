@@ -34,6 +34,10 @@
         </div>
       </template>
     </Card>
+    <div class="action-container">
+      <slot name="verify"></slot>
+      <slot name="reject"></slot>
+    </div>
   </div>
 </template>
 
@@ -82,4 +86,15 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.action-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  & > * {
+    flex: 0 0 30%;
+    margin-right: 0.25em;
+    font-size: 0.8em;
+  }
+}
+</style>

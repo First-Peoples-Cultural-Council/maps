@@ -64,6 +64,7 @@
           <Media
             v-for="mtv in mediaToVerify"
             :key="`mtv${mtv.id}`"
+            class="mt-2 mb-2"
             :media="mtv"
             :community-only="mtv.community_only"
           >

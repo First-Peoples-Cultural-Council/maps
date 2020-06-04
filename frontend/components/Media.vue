@@ -309,7 +309,7 @@ export default {
       flex-wrap: wrap;
 
       & > * {
-        flex: 0 0 25%;
+        flex: 0 0 30%;
         margin-right: 0.25em;
         font-size: 0.8em;
       }
