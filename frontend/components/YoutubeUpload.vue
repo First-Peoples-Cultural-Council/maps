@@ -90,14 +90,6 @@ export default {
       youtubestate: null
     }
   },
-<<<<<<< HEAD
-=======
-  computed: {
-    isArtwork() {
-      return this.$route.query.type || this.$route.query.upload_artwork
-    }
-  },
->>>>>>> be54ef1... [update] added verification if link is a youtube link
   methods: {
     isValidYoutubeLink,
     resetState() {
