@@ -1,54 +1,54 @@
 <template>
   <div
-    class="user-card"
+    class="user-main-card"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
-    <Card :variant="variant">
-      <template v-slot:header>
+    <div class="user-card" :class="{ 'user-card-white': variant == 'white' }">
+      <div class="user-card-header">
         <div
           class="user-icon-container"
           :style="'background-color:' + color"
           :class="{ 'icon-sm': icon === 'small' }"
         >
-          <img src="@/assets/images/community_icon.svg" alt="community" />
+          <img src="@/assets/images/user_icon.svg" alt="community" />
         </div>
-      </template>
-      <template v-slot:body>
+      </div>
+      <div class="user-card-body">
         <div>
-          <h5 class="field-kinds">
-            {{ verify.community.name }}
-          </h5>
           <h5 class="field-names">
             {{ getName() }}
           </h5>
+          <h5 class="field-kinds">
+            {{ verify.community.name }}
+          </h5>
         </div>
-        <div class="user-btn-container">
-          <b-button
-            class="verify-btn"
-            @click="
-              handleUser($event, verify, {
-                verify: 'verify'
-              })
-            "
-            >Verify</b-button
-          >
-          <Reject :id="verify.id" type="community" :member="verify"></Reject>
-        </div>
-      </template>
-      <template v-slot:footer> </template>
-    </Card>
+      </div>
+    </div>
+
+    <div class="user-btn-container">
+      <b-button
+        variant="dark"
+        block
+        size="sm"
+        @click="
+          handleUser($event, verify, {
+            verify: 'verify'
+          })
+        "
+        >Verify</b-button
+      >
+      <Reject :id="verify.id" type="community" :member="verify"></Reject>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
 import Reject from '@/components/RejectModal.vue'
 import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card,
     Reject
   },
   props: {
@@ -122,9 +122,50 @@ export default {
 </script>
 
 <style lang="scss">
-.user-card {
+.user-main-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ebe6dc;
+  padding: 0.5em 0em 0.5em 0.5em;
+  border-radius: 0.25em;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+
+  &:hover {
+    border: 1px solid #b57936;
+  }
 }
+
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+
+  display: table;
+  height: 100%;
+}
+.user-card-header {
+  display: table-cell;
+  vertical-align: middle;
+  width: 10%;
+}
+.user-card-body {
+  display: table-cell;
+  vertical-align: middle;
+  width: 75%;
+  padding-right: 0.5em;
+}
+.user-card-footer {
+  display: table-cell;
+  vertical-align: middle;
+  width: 55px;
+}
+
+.user-card-white {
+  background-color: White;
+}
+
 .user-icon-container {
   background-color: black;
   border-radius: 50%;
@@ -136,18 +177,6 @@ export default {
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more {
-  background-color: #b47a2b;
-  display: flex;
-  align-items: center;
-  height: 35px;
-  justify-content: center;
-  border-top-left-radius: 1em;
-  border-bottom-left-radius: 1em;
-}
-.fpcc-card:hover .fpcc-card-more {
-  background-color: #00333a;
-}
 
 .user-icon-container.icon-sm {
   width: 30px;
@@ -156,15 +185,12 @@ export default {
 
 .user-btn-container {
   display: flex;
+  margin-top: 0.5em;
 
   & > * {
-    flex: 1 1 auto;
-  }
-  .verify-btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    margin-right: 0.5em;
-    border-radius: 0.2rem;
+    flex: 0 0 25%;
+    margin-right: 0.25em;
+    font-size: 0.8em;
   }
 }
 </style>
