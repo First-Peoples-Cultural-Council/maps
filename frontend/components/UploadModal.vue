@@ -86,9 +86,8 @@ export default {
       this.mode = mode
     })
 
-    this.$root.$on('fileUploaded', () => {
+    this.$root.$on('fileUploaded', data => {
       this.modalShow = false
-
       this.$root.$emit('notification', {
         title: 'Success',
         message: 'Media Successfully uploaded',
@@ -98,6 +97,10 @@ export default {
 
       if (this.$route.name === 'index-art-art') {
         this.$root.$emit('fileUploadSuccess')
+      } else if (this.$route.name === 'index-place-names-placename') {
+        this.$root.$emit('fileUploadedPlaces', data)
+      } else if (this.$route.name === 'index-content-fn') {
+        this.$root.$emit('fileUploadedCommunity', data)
       }
     })
 
