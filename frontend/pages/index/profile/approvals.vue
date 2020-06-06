@@ -94,7 +94,7 @@
             v-for="utv in usersToVerify"
             :key="`utv${utv.id}`"
             class="mb-3"
-            :verify="utv"
+            :user-to-verify="utv"
           ></UserApproveCard>
         </div>
       </div>
@@ -103,7 +103,7 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
@@ -157,26 +157,6 @@ export default {
   },
   methods: {
     encodeFPCC,
-    async handleUser(e, tv, { verify, reject }) {
-      const url = {
-        verify: getApiUrl('community/verify_member/'),
-        reject: getApiUrl('community/reject_member/')
-      }
-      const result = await this.$axios.$post(
-        url[verify || reject],
-        {
-          user_id: tv.user.id,
-          community_id: tv.community.id
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-      await this.$store.dispatch('user/getMembersToVerify')
-      console.log('Result', result)
-    },
     async handleApproval(e, tv, { verify, reject, type }) {
       const data = {
         tv,
