@@ -20,7 +20,7 @@
             {{ getName() }}
           </h5>
           <h5 class="field-kinds">
-            {{ verify.community.name }}
+            {{ userToVerify.community.name }}
           </h5>
         </div>
       </div>
@@ -32,13 +32,17 @@
         block
         size="sm"
         @click="
-          handleUser($event, verify, {
-            verify: 'verify'
+          submitUserVerification(userToVerify, {
+            userToVerify: 'verify'
           })
         "
         >Verify</b-button
       >
-      <Reject :id="verify.id" type="community" :member="verify"></Reject>
+      <Reject
+        :id="userToVerify.id"
+        type="community"
+        :member="userToVerify"
+      ></Reject>
     </div>
   </div>
 </template>
@@ -52,7 +56,7 @@ export default {
     Reject
   },
   props: {
-    verify: {
+    userToVerify: {
       type: Object,
       default: () => {
         return {}
@@ -82,14 +86,14 @@ export default {
   },
   methods: {
     getName() {
-      const user = this.verify.user
+      const user = this.userToVerify.user
       if (user.first_name === '' || user.last_name === '') {
         return user.username
       } else {
         return `${user.first_name} ${user.last_name}`
       }
     },
-    async handleUser(e, tv, { verify, reject }) {
+    async submitUserVerification(toVerify, { verify, reject }) {
       const url = {
         verify: getApiUrl('community/verify_member/'),
         reject: getApiUrl('community/reject_member/')
@@ -97,8 +101,8 @@ export default {
       await this.$axios.$patch(
         url[verify || reject],
         {
-          user_id: tv.user.id,
-          community_id: tv.community.id
+          user_id: toVerify.user.id,
+          community_id: toVerify.community.id
         },
         {
           headers: {
@@ -107,11 +111,10 @@ export default {
         }
       )
       await this.$store.dispatch('user/getMembersToVerify')
-      // console.log('Result', result)
     },
     handleMouseOver() {
       this.hover = true
-      this.$eventHub.revealArea(this.verify.community.point)
+      this.$eventHub.revealArea(this.userToVerify.community.point)
     },
     handleMouseLeave() {
       this.hover = false
