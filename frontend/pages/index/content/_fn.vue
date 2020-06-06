@@ -493,7 +493,9 @@ export default {
   methods: {
     getMediaUrl,
     isMediaCreator(media, user) {
-      return user.id === media.creator.id || user.id === media.creator
+      if (media.creator && user) {
+        return user.id === media.creator.id || user.id === media.creator
+      }
     },
     handleRowClick() {
       this.showCollapse = !this.showCollapse

@@ -402,7 +402,9 @@ export default {
       return mtv.find(m => m.id === media.id)
     },
     isMediaCreator(media, user) {
-      return user.id === media.creator.id || user.id === media.creator
+      if (media.creator && user) {
+        return user.id === media.creator.id || user.id === media.creator
+      }
     },
     handleCreatorClick(e, creator) {
       this.$router.push({
