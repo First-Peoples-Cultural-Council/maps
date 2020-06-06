@@ -82,7 +82,7 @@
           >
           <b-form-checkbox
             id="community-only"
-            v-model="commonly"
+            v-model="community_only"
             class="d-inline-block ml-2"
             name="community-only"
             value="accepted"
@@ -154,7 +154,7 @@ export default {
       media_file: null,
       fileSrc: null,
       file: null,
-      commonly: 'not_accepted',
+      community_only: 'not_accepted',
       youtubestate: null
     }
   },
@@ -206,7 +206,7 @@ export default {
 
     this.title = name
     this.description = description
-    this.commonly = community_only ? 'accepted' : 'not_accepted'
+    this.community_only = community_only ? 'accepted' : 'not_accepted'
     this.showModal = this.showState
 
     if (url) {
@@ -258,7 +258,7 @@ export default {
       formData.append('name', this.title)
       formData.append('file_type', getType)
       formData.append('description', this.description)
-      formData.append('community_only', this.commonly === 'accepted')
+      formData.append('community_only', this.community_only === 'accepted')
 
       if (this.url) {
         formData.append('url', this.url)
