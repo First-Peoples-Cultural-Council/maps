@@ -143,7 +143,6 @@ const addNationsLayers = map => {
 
 const getHTMLMarker = function(map, feature, el) {
   // const layer = map.getLayer('fn-arts-clusters')
-  console.log(feature.properties.cluster_id)
   if (!feature.properties.cluster_id) return
   map
     .getSource('arts1')

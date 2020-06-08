@@ -12,7 +12,7 @@
 
     <!-- Render List of Artist -->
     <template v-if="this.$route.name !== 'index-art-art'">
-      <div class="panel-artist">
+      <div v-if="placename" class="panel-artist">
         <img
           v-lazy="renderArtistImg(placename.image)"
           class="artist-img-small"
@@ -126,6 +126,7 @@ export default {
     return {
       currentMedia: this.art,
       listOfMedias: [],
+      listOfArtists: [],
       isLoading: false
     }
   },
@@ -137,13 +138,14 @@ export default {
       return this.$store.state.sidebar.showGallery
     },
     placename() {
-      return this.art.placename
+      const id = this.art.id ? this.art.id : this.art.placename
+
+      return this.$store.state.arts.artworksPlacenames.find(
+        placename => placename.id === id
+      )
     },
     listOfPublicArt() {
       return this.art.public_arts || []
-    },
-    listOfArtists() {
-      return this.isArtsDetailPage ? this.art.artists : this.placename.artists
     },
     listOfImageMedia() {
       return [
@@ -172,6 +174,17 @@ export default {
       'sidebar/setGallery',
       !this.isArtsDetailPage ? !!this.currentMedia : false
     )
+
+    // Fetch artists for this placename if it is a public_art
+    if (this.placename.kind === 'public_art') {
+      this.$axios
+        .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
+        .then(result => {
+          if (result) {
+            this.artists = [...this.artists, ...result]
+          }
+        })
+    }
 
     // Fetch Medias for this placename
     const url = `${getApiUrl('media/?placename=')}${id}`
