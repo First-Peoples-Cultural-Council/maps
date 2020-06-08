@@ -483,7 +483,7 @@ export default {
     async loadKindData() {
       const kind = this.filterMode
       this.$store.commit('sidebar/toggleLoading', true) // Start loading
-      const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
+      const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}?format=json`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
       const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
