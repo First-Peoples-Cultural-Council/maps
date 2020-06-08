@@ -40,6 +40,7 @@ from language.serializers import (
     PlaceNameSearchSerializer,
     ArtPlaceNameSerializer,
     PublicArtSerializer,
+    EventArtSerializer,
     ArtistSerializer,
     ArtworkSerializer,
     ArtworkPlaceNameSerializer
@@ -472,7 +473,7 @@ class EventList(BasePlaceNameListAPIView):
         kind='event',
         geom__isnull=False
     )
-    serializer_class = ArtPlaceNameSerializer
+    serializer_class = EventArtSerializer
 
 
 class OrganizationList(BasePlaceNameListAPIView):

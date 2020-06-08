@@ -15,9 +15,11 @@ Vue.mixin({
         .isMobileSideBarOpen
       if (this.mode === data) {
         this.mode = 'All'
-        this.$store.commit('arts/setFilter', 'All')
       } else {
         this.mode = data
+      }
+
+      if (this.$route.name === 'index-art') {
         this.$store.commit('arts/setFilter', data)
       }
 

@@ -218,12 +218,16 @@ export default {
     returnMediaType() {
       const type = this.mediaData.file_type
 
-      if (type.includes('image')) {
-        return 'image'
-      } else if (type.includes('audio')) {
-        return 'audio'
-      } else if (type === 'youtube' || type.includes('video')) {
-        return 'video'
+      if (type) {
+        if (type.includes('image')) {
+          return 'image'
+        } else if (type.includes('audio')) {
+          return 'audio'
+        } else if (type === 'youtube' || type.includes('video')) {
+          return 'video'
+        } else {
+          return 'image'
+        }
       } else {
         return 'image'
       }

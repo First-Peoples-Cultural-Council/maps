@@ -131,7 +131,10 @@
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
 
-        <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
+        <CommunityOnly
+          v-if="!isArtwork"
+          :commonly.sync="commonly"
+        ></CommunityOnly>
 
         <b-button variant="dark" size="sm" @click="externalAudioUpload"
           >Upload</b-button
@@ -197,6 +200,9 @@ export default {
     },
     audioFile() {
       return this.$store.state.contribute.audioFile
+    },
+    isArtwork() {
+      return this.$route.query.type || this.$route.query.upload_artwork
     }
   },
   watch: {
@@ -249,12 +255,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$emit('notification', {
-            title: 'Failed',
-            message: 'Audio Upload Failed, please try again',
-            time: 2000,
-            variant: 'danger'
-          })
+          this.$root.$on('fileUploadFailed', 'Audio')
         }
       }
 
@@ -269,7 +270,8 @@ export default {
         media_file: file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: this.commonly === 'accepted',
+        is_artwork: !!this.$route.query.upload_artwork
       }
     },
     blobToFile(blob) {

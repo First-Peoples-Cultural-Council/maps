@@ -1,42 +1,92 @@
 <template>
   <div class="event-list-container">
-    <div
-      v-for="event in eventsList"
-      :key="event.id"
-      class="event-card-container"
-      @click="redirectToEvent(event.properties.name)"
-    >
-      <img class="event-img" :src="getEventImg(event.properties.image)" />
-      <div class="event-details">
-        <span class="event-date">MAY 23, 2020</span>
-        <h4 class="event-title">{{ event.properties.name }}</h4>
-        <div class="events-tags-container">
-          <span
-            v-for="taxonomy in event.properties.taxonomies"
-            :key="taxonomy.name"
-            @click.stop.prevent="redirectToFilter(taxonomy.name)"
-            >{{ taxonomy.name }}</span
-          >
+    <template v-if="upcomingEventList.length !== 0">
+      <div
+        v-for="event in upcomingEventList"
+        :key="event.id"
+        class="event-card-container"
+        @click="redirectToEvent(event.properties.name)"
+      >
+        <img class="event-img" :src="getEventImg(event.properties.image)" />
+        <div class="event-details">
+          <span class="event-date">{{
+            getDateValue(event.properties.related_data)
+          }}</span>
+          <h4 class="event-title">{{ event.properties.name }}</h4>
+          <div class="events-tags-container">
+            <span
+              v-for="taxonomy in event.properties.taxonomies"
+              :key="taxonomy.name"
+              @click.stop.prevent="redirectToFilter(taxonomy.name)"
+              >{{ taxonomy.name }}</span
+            >
+          </div>
         </div>
-      </div>
 
-      <!-- <p class="event-description">
+        <!-- <p class="event-description">
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, unde qui
       quos iste praesentium laborum? Aliquam at fuga veniam quis id, neque quod
       alias obcaecati porro suscipit ullam ea temporibus!
     </p> -->
-      <!-- <button>CHECK EVENT</button> -->
+        <!-- <button>CHECK EVENT</button> -->
+      </div>
+    </template>
+    <div v-else class="event-card-container">
+      <div class="no-event-container">
+        <img src="@/assets/images/event_icon.svg" class="menu-icon" />
+        <h4 class="event-title">There are no upcoming Events</h4>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getMediaUrl, encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   computed: {
-    eventsList() {
-      return this.$store.state.arts.eventsSet.slice(0, 7)
+    upcomingEventList() {
+      return this.$store.state.arts.eventsSet
+        .filter(event => {
+          const hasEventDate = this.findEventDateInRD(
+            event.properties.related_data
+          )
+
+          return !!hasEventDate
+        })
+        .filter(event => {
+          const findEventDate = this.findEventDateInRD(
+            event.properties.related_data
+          )
+
+          const eventDate = new Date(findEventDate.value)
+          if (eventDate > Date.now()) {
+            const resultDate = eventDate - Date.now()
+            const differenceInDays = Math.ceil(
+              resultDate / (1000 * 60 * 60 * 24)
+            )
+            if (differenceInDays <= 10) {
+              return true
+            }
+          }
+        })
+        .sort((a, b) => {
+          const dateA = new Date(
+            this.findEventDateInRD(a.properties.related_data).value
+          )
+
+          const dateB = new Date(
+            this.findEventDateInRD(b.properties.related_data).value
+          )
+
+          return dateA - dateB
+        })
+    }
+  },
+  async mounted() {
+    const result = await this.$axios.$get(getApiUrl('arts/event'))
+    if (result) {
+      this.$store.commit('arts/setNextEvents', result.features)
     }
   },
   methods: {
@@ -62,6 +112,50 @@ export default {
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$root.$emit('closeEventPopover')
       this.$root.$emit('toggleEventOverlay', false)
+    },
+    getDateValue(relatedData) {
+      const findDate = this.findEventDateInRD(relatedData)
+
+      if (findDate) {
+        const options = {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }
+        let dateDescription = ''
+        const eventDate = new Date(findDate.value)
+        const dateString = eventDate.toLocaleDateString('en-US', options)
+
+        if (eventDate > Date.now()) {
+          const resultDate = eventDate - Date.now()
+          const differenceInHours = Math.ceil(Math.abs(resultDate) / 36e5)
+          const differenceInDays = Math.ceil(resultDate / (1000 * 60 * 60 * 24))
+          const differenceInMins = Math.floor(resultDate / 1000 / 60)
+
+          if (differenceInMins < 60) {
+            dateDescription = `(Happening in ${differenceInMins}) minute${
+              differenceInMins <= 1 ? '' : 's'
+            })`
+          } else if (differenceInHours > 24) {
+            dateDescription = `(Happening in ${differenceInDays} day${
+              differenceInDays === 1 ? '' : 's'
+            })`
+          } else {
+            dateDescription = `(Happening in ${differenceInHours} hour${
+              differenceInHours === 1 ? '' : 's'
+            })`
+          }
+        } else {
+          dateDescription = '(Event finished)'
+        }
+        return `${dateString} ${dateDescription}`
+      } else {
+        return 'No date found'
+      }
+    },
+    findEventDateInRD(relatedData) {
+      return relatedData.find(data => data.data_type === 'Event Date')
     }
   }
 }
@@ -125,6 +219,19 @@ export default {
 
   .event-details {
     width: 235px;
+  }
+
+  .no-event-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1.5em 0;
+
+    & > * {
+      margin-bottom: 0.5em;
+    }
   }
 
   &:hover {

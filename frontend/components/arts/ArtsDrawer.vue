@@ -1,5 +1,10 @@
 <template>
   <div class="arts-right-panel">
+    <div v-if="isLoading" class="loading-overlay">
+      <transition name="fade">
+        <LoadingSpinner></LoadingSpinner>
+      </transition>
+    </div>
     <div class="panel-close-btn" @click="togglePanel">
       <img src="@/assets/images/return_icon_hover.svg" />
       Collapse
@@ -95,11 +100,13 @@
 import MediaCard from '@/components/MediaCard.vue'
 import { encodeFPCC, getApiUrl, getMediaUrl } from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   components: {
     MediaCard,
-    Gallery
+    Gallery,
+    LoadingSpinner
   },
   props: {
     art: {
@@ -119,7 +126,8 @@ export default {
     return {
       currentMedia: this.art,
       listOfMedias: [],
-      listOfArtists: []
+      listOfArtists: [],
+      isLoading: false
     }
   },
   computed: {
@@ -158,8 +166,9 @@ export default {
       return this.isArtsDetailPage ? this.art.kind : this.placename.kind
     }
   },
-  mounted() {
+  async mounted() {
     // Checks if what page currently, then decide what ID to use
+
     const id = !this.isArtsDetailPage ? this.placename.id : this.art.id
     this.$store.commit(
       'sidebar/setGallery',
@@ -180,18 +189,19 @@ export default {
     // Fetch Medias for this placename
     const url = `${getApiUrl('media/?placename=')}${id}`
 
-    this.$axios.$get(url).then(result => {
-      if (result) {
-        this.listOfMedias = result.sort((a, b) => b.id - a.id)
-      }
-    })
-
+    const result = await this.$axios.$get(url)
+    if (result) {
+      this.listOfMedias = result.sort((a, b) => b.id - a.id)
+    }
     // check if query URL exist
     const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
-    const foundMedia = allArtworks.find(
-      media => encodeFPCC(media.name) === this.$route.query.artwork
-    )
-    if (foundMedia) {
+    const foundMedia = allArtworks.find(media => {
+      return encodeFPCC(media.name) === this.$route.query.artwork
+    })
+
+    if (this.$route.query.upload_artwork) {
+      // do nothing
+    } else if (foundMedia) {
       this.currentMedia = foundMedia
       this.toggleGallery()
     } else if (this.isArtsDetailPage) {
@@ -375,5 +385,18 @@ export default {
   .arts-main-wrapper .panel-close-btn {
     display: none !important;
   }
+}
+
+/*** Loading Overlay CSS ***/
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 9999999;
+  right: 0;
 }
 </style>

@@ -132,6 +132,7 @@ export default {
   },
   data() {
     return {
+      oldUser: {},
       quillEditor: null,
       errors: [],
       user: {},
@@ -237,6 +238,12 @@ export default {
       )
     },
     async save() {
+      this.oldUser = this.user
+      const headers = {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
       const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
@@ -253,12 +260,34 @@ export default {
         notification_frequency: this.user.notification_frequency
       }
       try {
-        await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
+        const result = await this.$axios.$patch(
+          getApiUrl(`user/${this.user.id}/`),
+          data,
+          headers
+        )
+
+        if (result) {
+          const findUserArtist = this.oldUser.placename_set.find(
+            placename =>
+              placename.kind === 'artist' &&
+              placename.name ===
+                `${this.oldUser.first_name} ${this.oldUser.last_name}`
+          )
+
+          // Also update the Artist Placename name
+          if (findUserArtist) {
+            const patchData = {
+              name: `${data.first_name} ${data.last_name}`
+            }
+            const modified = await this.$axios.$patch(
+              `/api/placename/${findUserArtist.id}/`,
+              patchData,
+              headers
+            )
+            console.log(modified)
           }
-        })
-        await this.$store.dispatch('user/setLoggedInUser')
+          await this.$store.dispatch('user/setLoggedInUser')
+        }
       } catch (e) {
         console.warn(e.response)
         this.errors = this.errors.concat(

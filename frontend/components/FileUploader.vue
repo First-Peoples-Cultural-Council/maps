@@ -42,7 +42,10 @@
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
 
-        <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
+        <CommunityOnly
+          v-if="!isArtwork"
+          :commonly.sync="commonly"
+        ></CommunityOnly>
 
         <b-button variant="dark" size="sm" @click="handleUpload"
           >Upload</b-button
@@ -93,6 +96,11 @@ export default {
       commonly: 'not_accepted'
     }
   },
+  computed: {
+    isArtwork() {
+      return this.$route.query.type || this.$route.query.upload_artwork
+    }
+  },
   methods: {
     resetToInitialState() {
       this.fileName = null
@@ -126,16 +134,7 @@ export default {
             throw result
           }
         } catch (e) {
-          console.error(e)
-          this.$root.$emit('notification', {
-            title: 'Failed',
-            message: 'File Upload Failed, please try again',
-            time: 1500,
-            variant: 'danger'
-          })
-          if (this.$route.name === 'index-art-art') {
-            this.$root.$emit('fileUploadSuccess')
-          }
+          this.$root.$on('fileUploadFailed', 'File')
         }
       }
 
@@ -149,7 +148,8 @@ export default {
         media_file: this.file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: this.commonly === 'accepted',
+        is_artwork: !!this.$route.query.upload_artwork
       })
     },
 

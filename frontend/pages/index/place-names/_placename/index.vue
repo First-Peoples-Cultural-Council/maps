@@ -115,7 +115,7 @@
               </b-col>
             </b-row>
           </div>
-          <div v-if="placeCommunity" class="mb-4">
+          <div v-if="placeCommunity" class="mb-2">
             <CommunityCard
               :name="placeCommunity.name"
               :community="placeCommunity"
@@ -126,7 +126,7 @@
               "
             ></CommunityCard>
           </div>
-          <div v-if="placeLanguage" class="mb-4">
+          <div v-if="placeLanguage" class="mb-2">
             <LanguageCard
               class="hover-left-move"
               :name="placeLanguage.name"

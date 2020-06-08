@@ -188,15 +188,7 @@
         >
       </b-list-group>
     </b-modal>
-    <MessageBox
-      v-if="showMessage"
-      :show-modal="showMessage"
-      :message="
-        `You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to
-          Artist Creation. If done, you will be able to upload Artwork under your name.`
-      "
-      :toggle-modal="toggleMessageBox"
-    ></MessageBox>
+    <MessageBox></MessageBox>
     <UploadModal :id="validatedArtist.id" :type="'placename'"></UploadModal>
   </div>
 </template>
@@ -213,7 +205,6 @@ export default {
   },
   data() {
     return {
-      showMessage: false,
       showContributeModal: false
     }
   },
@@ -240,6 +231,9 @@ export default {
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
     }
   },
   mounted() {
@@ -252,10 +246,8 @@ export default {
       if (this.$route.name === 'index-art' && this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
+      this.$root.$emit('closeEventPopover')
       this.showContributeModal = !this.showContributeModal
-    },
-    toggleMessageBox() {
-      this.showMessage = !this.showMessage
     },
     handleClick(e, data) {
       this.hideModal()
@@ -272,6 +264,7 @@ export default {
           mode: data
         }
       })
+      this.$root.$emit('resetValues')
     },
     handlePlaceClick(e, data, type) {
       this.hideModal()
@@ -283,9 +276,11 @@ export default {
           type
         }
       })
+      this.$root.$emit('resetValues')
     },
     validateArtist($event) {
       this.hideModal()
+
       // If doesnt have Artist profile, redirect to Artist creation
       if (!this.validatedArtist) {
         this.$store.commit('contribute/setIsDrawMode', true)
@@ -297,12 +292,21 @@ export default {
             profile: true
           }
         })
-        this.showMessage = true
+        this.$root.$emit('resetValues')
+        if (this.isLoggedIn) {
+          this.$root.$emit(
+            'toggleMessageBox',
+            'You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to Artist Creation. If done, you will be able to upload Artwork under your name.'
+          )
+        }
       }
       // If has Artist profile, redirect to Profile, then add Media
       else {
         this.$router.push({
-          path: `/art/${encodeFPCC(this.validatedArtist.name)}`
+          path: `/art/${encodeFPCC(this.validatedArtist.name)}`,
+          query: {
+            upload_artwork: true
+          }
         })
 
         this.$store.commit('sidebar/setDrawerContent', false)

@@ -48,7 +48,11 @@
       Youtube link is required
     </b-form-invalid-feedback>
 
-    <CommunityOnly class="mt-3" :commonly.sync="commonly"></CommunityOnly>
+    <CommunityOnly
+      v-if="!isArtwork"
+      class="mt-3"
+      :commonly.sync="commonly"
+    ></CommunityOnly>
 
     <b-button size="sm" variant="dark" class="mt-2" @click="handleYoutubeUpload"
       >Upload</b-button
@@ -87,6 +91,12 @@ export default {
       commonly: null,
       youtubeLink: null,
       youtubestate: null
+    }
+  },
+  computed: {
+    isArtwork() {
+      console.log(this.$route.query.type, this.$route.query.upload_artwork)
+      return this.$route.query.type || this.$route.query.upload_artwork
     }
   },
   methods: {
@@ -130,12 +140,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$emit('notification', {
-            title: 'Failed',
-            message: 'Note/Text Upload Failed, please try again',
-            time: 1500,
-            variant: 'danger'
-          })
+          this.$root.$on('fileUploadFailed', 'Note/Text')
         }
       }
 
@@ -155,7 +160,8 @@ export default {
         type: this.type,
         id: this.id,
         community_only: this.commonly === 'accepted',
-        url: this.youtubeLink
+        url: this.youtubeLink,
+        is_artwork: !!this.$route.query.upload_artwork
       }
     }
   }

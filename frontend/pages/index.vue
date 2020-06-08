@@ -389,7 +389,6 @@ export default {
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
     store.commit('arts/setTaxonomySearchSet', results[5])
-    store.commit('arts/setNextEvents', results[6].features)
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -1128,7 +1127,7 @@ export default {
 }
 
 .map-controls-overlay > * {
-  margin-bottom: 0.25em;
+  margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
 }
 .sidebar-divider {

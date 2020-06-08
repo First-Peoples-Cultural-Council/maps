@@ -200,7 +200,17 @@ export const getGenericFileType = fileType => {
 }
 
 export const getFormData = (
-  { name, file_type, description, type, id, media_file, community_only, url },
+  {
+    name,
+    file_type,
+    description,
+    type,
+    id,
+    media_file,
+    community_only,
+    url,
+    is_artwork
+  },
   note
 ) => {
   if (note) {
@@ -225,6 +235,10 @@ export const getFormData = (
   formData.append('media_file', media_file)
   formData.append(type, id)
 
+  if (is_artwork) {
+    formData.append('is_artwork', is_artwork)
+  }
+
   if (community_only) {
     formData.append('community_only', community_only)
   }
@@ -240,6 +254,21 @@ export const getYoutubeId = link => {
 export const getVimeoEmbed = async link => {
   const result = axios.get(`https://vimeo.com/api/oembed.json?url=${link}`)
   return result.video_id
+}
+
+export const isValidEmail = email => {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return regex.test(email.toLowerCase())
+}
+
+export const isValidURL = email => {
+  const regex = new RegExp('^(https?:\\/\\/)?'+ 
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ 
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
+    '(\\#[-a-z\\d_]*)?$','i'); 
+  return !!regex.test(email.toLowerCase());
 }
 
 

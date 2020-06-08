@@ -64,6 +64,7 @@
           <!-- If Placename Contribution -->
           <section
             v-if="queryMode === 'placename' || queryType"
+            id="contribute-main-container"
             class="pr-3 pl-3"
           >
             <div class="upload-img-container mt-3">
@@ -71,7 +72,7 @@
                 <img
                   v-if="fileSrc === null"
                   class="upload-placeholder"
-                  src="@/assets/images/user_icon.svg"
+                  :src="thumbnailPlaceholder()"
                 />
                 <img v-else :src="fileSrc" />
                 <b-button
@@ -98,7 +99,13 @@
                   >{{ queryType }} Name (required)</label
                 >
                 <ToolTip
-                  content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
+                  :content="
+                    `${
+                      isArtist
+                        ? `What is the name of this Artist? `
+                        : `What is this ${queryType} called in your language? Enter the name or title in your language, using your alphabet.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
@@ -106,22 +113,27 @@
                 id="traditionalName"
                 v-model="traditionalName"
                 type="text"
-                placeholder="Input placename here..."
+                :placeholder="placenamePlaceholder()"
                 :disabled="
-                  !isArtistProfileFound &&
-                    queryType === 'Artist' &&
-                    queryProfile
+                  (!isArtistProfileFound && isArtist && queryProfile) ||
+                    ($route.query.id && traditionalName === userGivenName)
                 "
               ></b-form-input>
             </b-row>
 
-            <b-row v-if="queryType === 'Artist'" class="field-row mt-3">
+            <b-row v-if="isArtist" class="field-row mt-3">
               <div>
                 <label for="alternateName" class="contribute-title-one"
                   >Alternate Name</label
                 >
                 <ToolTip
-                  content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+                  :content="
+                    `${
+                      isArtist
+                        ? 'Does this Artist goes with another name, perhaps a stage name? Write the other name of the artist.'
+                        : `Is this ${queryType} already known by a different name? For example in English? Enter that name here so people can find it through that name.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
@@ -129,14 +141,22 @@
                 id="alternateName"
                 v-model="alternateName"
                 type="text"
-                placeholder="Input other name here..."
+                placeholder="(ex. BigJohnDoe)"
               ></b-form-input>
             </b-row>
 
             <b-row class="mt-3 field-row">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Language</label
-              >
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1">
+                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                >
+                <ToolTip
+                  :content="
+                    `What is the primary language of this ${queryType}?`
+                  "
+                ></ToolTip>
+              </div>
+
               <multiselect
                 v-model="languageUserSelected"
                 :options="languageList"
@@ -147,9 +167,15 @@
             </b-row>
 
             <b-row class="mt-3 field-row">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Community</label
-              >
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Community</label
+                >
+                <ToolTip
+                  :content="`What community does this ${queryType} belong to? `"
+                ></ToolTip>
+              </div>
+
               <multiselect
                 v-model="community"
                 placeholder="Select a community"
@@ -164,10 +190,12 @@
                 <label
                   for="taxonomy-container"
                   class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
-                  >Taxonomies</label
+                  >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
                 >
                 <ToolTip
-                  content="What would this placename be classified as? Select tags for your placename. This will help users find it."
+                  :content="
+                    `What would this ${queryType} be classified as? Select tags for your ${queryType}. This will help users find it.`
+                  "
                 ></ToolTip>
               </div>
 
@@ -181,7 +209,7 @@
                 :multiple="true"
               ></multiselect>
               <b-tooltip target="taxonomy-container" placement="top">
-                Select many Taxonomy tags as you want.
+                Select as many Taxonomy tags as you want.
               </b-tooltip>
             </b-row>
 
@@ -237,7 +265,9 @@
                   >Location</label
                 >
                 <ToolTip
-                  content="Tell people about the Location of that Placename."
+                  :content="
+                    `Tell people about the Location of that ${queryType}.`
+                  "
                 ></ToolTip>
               </div>
 
@@ -245,12 +275,12 @@
                 id="location"
                 v-model="relatedData.location"
                 type="text"
-                placeholder="Input location here..."
+                placeholder="(ex. Vancouver, Canada)"
               ></b-form-input>
             </b-row>
 
             <b-row
-              v-if="queryType === 'Artist' || queryType === 'Organization'"
+              v-if="isArtist || queryType === 'Organization'"
               class="field-row mt-3"
             >
               <div>
@@ -266,7 +296,7 @@
                 id="email"
                 v-model="relatedData.email"
                 type="text"
-                placeholder="Input email here..."
+                placeholder="(ex. johndoe@gmail.com)"
               ></b-form-input>
             </b-row>
 
@@ -286,11 +316,11 @@
                 id="organizationAccess"
                 v-model="relatedData.organization_access"
                 type="text"
-                placeholder="Input Organization Access here..."
+                placeholder="(ex. Open year-round or By Appointment only)"
               ></b-form-input>
             </b-row>
 
-            <template v-if="queryType === 'Artist'">
+            <template v-if="isArtist">
               <b-row class="field-row mt-3">
                 <div>
                   <label for="phone" class="contribute-title-one mb-1"
@@ -306,7 +336,7 @@
                   id="phone"
                   v-model="relatedData.phone"
                   type="text"
-                  placeholder="Input phone here..."
+                  placeholder="(ex. (604) 509-6995)"
                 ></b-form-input>
               </b-row>
 
@@ -327,7 +357,7 @@
                     :id="`site-${index}`"
                     v-model="award.value"
                     type="text"
-                    placeholder="Input the title of your award here..."
+                    placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
                   ></b-form-input>
                   <span
                     v-if="
@@ -354,7 +384,7 @@
                   >Copyright</label
                 >
                 <ToolTip
-                  content="If you wish your Artworks to be protected, a copyright tag will be included upon showing the Artwork."
+                  content="If you wish your Artwork to be protected, a copyright tag will be included upon showing the Artwork."
                 ></ToolTip>
               </div>
 
@@ -371,7 +401,7 @@
                 <div>
                   <label class="contribute-title-one">Website</label>
                   <ToolTip
-                    content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
+                    content="If you wish to be contacted through social media for inquiries. Add as many as you want."
                   ></ToolTip>
                 </div>
 
@@ -384,7 +414,7 @@
                     :id="`site-${index}`"
                     v-model="site.value"
                     type="text"
-                    placeholder="Input the URL of your website/social media account..."
+                    placeholder="(ex. http://facebook.com/johndoe)"
                   ></b-form-input>
                   <span
                     v-if="
@@ -408,9 +438,7 @@
             <div v-if="queryType === 'Event'" class="mt-3">
               <div>
                 <label class="contribute-title-one">Event Date/Time</label>
-                <ToolTip
-                  content="If you wish to be contacted through social media for inquiries. This information can be confidential. Add as many as you want."
-                ></ToolTip>
+                <ToolTip content="Enter the Event Date/Time."></ToolTip>
               </div>
               <b-form-datepicker
                 id="event-datepicker"
@@ -429,22 +457,7 @@
               ></b-time>
             </div>
 
-            <h5 class="contribute-title-one mt-3 mb-1">
-              {{
-                queryType === 'Artist'
-                  ? 'Bio / Artist Statement'
-                  : `${queryType} Description`
-              }}
-
-              <ToolTip
-                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
-              ></ToolTip>
-            </h5>
-            <div id="quill" ref="quill"></div>
-
-            <MediaGallery :media-list="getMediaFiles"> </MediaGallery>
-
-            <template v-if="queryType === 'Artist'">
+            <template v-if="isArtist">
               <b-row class="field-row mt-3">
                 <label
                   class="d-inline-block contribute-title-one"
@@ -453,7 +466,7 @@
                 >
                 <b-form-checkbox
                   id="commercial-only"
-                  v-model="relatedData.commercialOnly"
+                  v-model="relatedData.commercial_only"
                   class="d-inline-block ml-2"
                   name="commercial-only"
                   value="accepted"
@@ -470,7 +483,7 @@
                 </label>
                 <b-form-checkbox
                   id="contacted-only"
-                  v-model="relatedData.contactedOnly"
+                  v-model="relatedData.contacted_only"
                   class="d-inline-block ml-2"
                   name="contacted-only"
                   value="accepted"
@@ -479,6 +492,22 @@
                 </b-form-checkbox>
               </b-row>
             </template>
+            <h5 class="contribute-title-one mt-3 mb-1">
+              {{
+                isArtist ? 'Bio / Artist Statement' : `${queryType} Description`
+              }}
+
+              <ToolTip
+                :content="
+                  `Tell people more about this ${queryType}. You can add history, credit/acknowledgement, links, contact information, notes, etc.`
+                "
+              ></ToolTip>
+            </h5>
+
+            <div id="quill" ref="quill"></div>
+
+            <MediaGallery :media-list="getMediaFiles" :type="queryType">
+            </MediaGallery>
           </section>
 
           <!-- Other Contributions -->
@@ -634,7 +663,9 @@ import {
   getCookie,
   encodeFPCC,
   getLanguagesFromDraw,
-  getMediaUrl
+  getMediaUrl,
+  isValidEmail,
+  isValidURL
 } from '@/plugins/utils.js'
 
 const base64Encode = data =>
@@ -680,6 +711,7 @@ export default {
       timeValue: '',
       dateContext: null,
       dateValue: '',
+      isEmailValid: null,
 
       relatedData: {
         email: null,
@@ -689,8 +721,8 @@ export default {
         copyright: null,
         websiteList: [],
         awardsList: [],
-        contactedOnly: null,
-        commercialOnly: null
+        contacted_only: null,
+        commercial_only: null
       },
 
       isLoading: false,
@@ -755,6 +787,9 @@ export default {
     queryType() {
       return this.$route.query.type
     },
+    isArtist() {
+      return this.queryType === 'Artist'
+    },
     queryProfile() {
       return !!this.$route.query.profile
     },
@@ -794,6 +829,9 @@ export default {
     },
     userDetail() {
       return this.$store.state.user.user
+    },
+    userGivenName() {
+      return `${this.userDetail.first_name} ${this.userDetail.last_name}`
     },
     isArtistProfileFound() {
       const isArtistProfileFound = this.userDetail.placename_set.find(
@@ -905,7 +943,6 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
-    store.commit('file/setNewMediaFiles', [])
     if (query.id && query.type) {
       const now = new Date()
       const place = await $axios.$get(
@@ -965,9 +1002,10 @@ export default {
         copyright: null,
         websiteList: [],
         awardsList: [],
-        contactedOnly: null,
-        commercialOnly: null
+        contacted_only: null,
+        commercial_only: null
       }
+
       // Loop to Related data, and check data
       if (place.related_data.length !== 0) {
         place.related_data.map(related => {
@@ -976,12 +1014,14 @@ export default {
           } else if (related.data_type === 'award') {
             data.relatedData.awardsList.push({
               id: related.id,
-              value: related.value
+              value: related.value,
+              isError: null
             })
           } else if (related.data_type === 'website') {
             data.relatedData.websiteList.push({
               id: related.id,
-              value: related.value
+              value: related.value,
+              isError: null
             })
           } else if (related.data_type === 'email') {
             data.relatedData.email = related.value
@@ -991,6 +1031,10 @@ export default {
             data.relatedData.organization_access = related.value
           } else if (related.data_type === 'copyright') {
             data.relatedData.copyright = related.value
+          } else if (related.data_type === 'contacted_only') {
+            data.relatedData.contacted_only = !!related.value.includes('true')
+          } else if (related.data_type === 'commercial_only') {
+            data.relatedData.commercial_only = !related.value.includes('Not')
           }
         })
       }
@@ -1073,45 +1117,90 @@ export default {
     return data
   },
   mounted() {
-    this.languageUserSelected =
-      this.userDetail.length !== 0 ? this.userDetail.languages[0] : null
-    if (!this.isLoggedIn) {
-      window.location = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
-    }
-    this.initQuill()
+    // PUT IF LOGGED IN THEN DO THIS
+    if (this.isLoggedIn) {
+      this.languageUserSelected =
+        this.userDetail.languages.length !== 0
+          ? this.userDetail.languages[0]
+          : null
 
-    if (this.queryType !== 'Event') {
-      this.addSite()
-    }
-    if (this.queryType === 'Artist') {
-      this.contactedOnly = false
-      this.commercialOnly = false
+      this.initQuill()
       this.addAward()
-    }
-    this.setDateTimeNow()
+      this.addSite()
+      this.setDateTimeNow()
 
-    // Check if user has artist profile, if not, declare the values
-    if (
-      this.userDetail &&
-      this.queryMode !== 'existing' &&
-      !this.isArtistProfileFound &&
-      this.queryType === 'Artist'
-    ) {
-      this.traditionalName = `${this.userDetail.first_name} ${this.userDetail.last_name}`
-    }
+      if (this.isArtist) {
+        this.relatedData.contacted_only = false
+        this.relatedData.commercial_only = false
+      }
 
-    if (this.queryType === 'Event') {
-      this.dateValue = new Date().toISOString().slice(0, 10)
+      // Check if user has artist profile, if not, declare the values
+      if (
+        this.userDetail &&
+        this.queryMode !== 'existing' &&
+        !this.isArtistProfileFound &&
+        this.isArtist
+      ) {
+        console.log(this.userDetail)
+        this.traditionalName = this.userGivenName
+        this.relatedData.email = this.userDetail.email
+      }
+
+      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+        this.dateValue = new Date().toISOString().slice(0, 10)
+      }
+
+      this.$root.$on('resetValues', () => {
+        this.resetData()
+      })
+    } else {
+      this.$root.$emit(
+        'toggleMessageBox',
+        `You need to be logged in first, before proceeding.\n Press "OK" to proceed to Login/Register. `
+      )
     }
   },
   methods: {
+    isValidEmail,
+    isValidURL,
+    resetData() {
+      this.fileSrc = null
+      this.fileImg = null
+      this.taxonomySelected = []
+      this.artistSelected = []
+      this.traditionalName = ''
+      this.alternateName = ''
+      this.relatedData.email = null
+      this.relatedData.phone = null
+      this.relatedData.organization_access = null
+      this.relatedData.location = null
+      this.relatedData.copyright = null
+      this.relatedData.websiteList = []
+      this.addSite()
+      this.relatedData.awardsList = []
+      this.addAward()
+      this.content = ''
+      this.relatedData.contacted_only = null
+      this.relatedData.commercial_only = null
+      this.$store.commit('file/setNewMediaFiles', [])
+
+      // this.removeQuill()
+      // this.initQuill()
+      const contributeContainer = document.querySelector(
+        '#contribute-main-container'
+      )
+      if (contributeContainer) {
+        contributeContainer.scrollTop = 0
+      }
+    },
     setDateTimeNow() {
       const now = new Date()
       this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
       this.relatedData.websiteList.push({
-        value: null
+        value: null,
+        isError: null
       })
     },
     removeSite(index) {
@@ -1119,7 +1208,8 @@ export default {
     },
     addAward() {
       this.relatedData.awardsList.push({
-        value: null
+        value: null,
+        isError: null
       })
     },
     removeAward(index) {
@@ -1138,6 +1228,28 @@ export default {
     onTimeContext(ctx) {
       this.timeContext = ctx
     },
+    placenamePlaceholder() {
+      if (this.isArtist) {
+        return '(ex. John Doe)'
+      } else if (this.queryType === 'Event') {
+        return '(ex. Art Museum Anniversary)'
+      } else if (this.queryType === 'Public Art') {
+        return '(ex. The Statue of David)'
+      } else if (this.queryType === 'Organization') {
+        return '(ex. Canadian Musuem)'
+      }
+    },
+    thumbnailPlaceholder() {
+      if (this.isArtist) {
+        return require(`@/assets/images/artist_icon.svg`)
+      } else if (this.queryType === 'Event') {
+        return require(`@/assets/images/event_icon.svg`)
+      } else if (this.queryType === 'Public Art') {
+        return require(`@/assets/images/public_art_icon.svg`)
+      } else if (this.queryType === 'Organization') {
+        return require(`@/assets/images/organization_icon.svg`)
+      }
+    },
     initQuill() {
       if (document.querySelector('#quill')) {
         require('quill/dist/quill.snow.css')
@@ -1149,6 +1261,11 @@ export default {
         editor.setText(`${this.content}\n`)
         this.quillEditor = editor
       }
+    },
+    removeQuill() {
+      // Removes an element from the document
+      const element = document.querySelector('.ql-toolbar')
+      element.parentNode.removeChild(element)
     },
     async uploadAudioFile(id, audio, newPlace) {
       const audiodata = new FormData()
@@ -1183,10 +1300,7 @@ export default {
             }
           }
         )
-        // console.log('Modified', modified)
-      } catch (e) {
-        // for now assume this always succeeds.
-      }
+      } catch (e) {}
     },
     submitType(e) {
       this.isLoading = true
@@ -1195,6 +1309,17 @@ export default {
       } else {
         this.submitContribute(e)
       }
+    },
+
+    validateRelatedData() {
+      // Check if Email is valid
+      // this.isValidEmail = this.isValidEmail(this.relatedData.email)
+      // this.relatedData.websiteList.forEach(web => {
+      //   web.isError = !this.isValidURL(web.value)
+      //   if (web.isError === false) {
+      //     this.error.push(`${web.value} is not a valid website URL`)
+      //   }
+      // })
     },
 
     async submitContribute(e) {
@@ -1279,6 +1404,7 @@ export default {
               return e[0] + ': ' + e[1]
             })
           )
+
           return
         }
       }
@@ -1321,6 +1447,11 @@ export default {
         community_id = this.community.id
       }
 
+      let language_id = null
+      if (this.languageUserSelected) {
+        language_id = this.languageUserSelected.id
+      }
+
       let status = 'UN'
       if (this.isLangAdmin || this.isStaff || this.isSuperUser) {
         status = 'UN'
@@ -1340,7 +1471,7 @@ export default {
             ? 'public_art'
             : this.queryType.toLowerCase(),
         community: community_id,
-        language: this.languageUserSelected.id,
+        language: language_id,
         community_only: false,
         status
       }
@@ -1355,7 +1486,6 @@ export default {
 
         id = this.$route.query.id
         const appendedData = { ...data, ...this.getPatchData(id) }
-        console.log(appendedData)
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
@@ -1375,6 +1505,7 @@ export default {
           }
         } catch (e) {
           this.isLoading = false
+          console.log(e.response.data)
           this.errors = this.errors.concat(
             Object.entries(e.response.data).map(e => {
               return e[0] + ': ' + e[1]
@@ -1409,7 +1540,6 @@ export default {
               )
 
               console.log('MODIFIED DATA', modified)
-              // this.$store.commit('file/setMediaFiles', [])
 
               // If finish, redirect to Placename
               this.redirectToPlacename()
@@ -1435,16 +1565,19 @@ export default {
     },
     postRelatedData(id) {
       if (this.queryType === 'Event') {
-        this.relatedData['Event Date'] = `${this.dateValue} - ${this.timeValue}`
+        this.relatedData['Event Date'] = `${this.dateValue} ${this.timeValue}`
       }
+
       const filteredRelatedData = Object.entries(this.relatedData).filter(
         data => {
           if (data[0] === 'websiteList' || data[0] === 'awardsList') {
             return data[1].length !== 0
-          } else if (data[1]) {
-            return data[1] !== ''
-          } else {
-            return data[1] !== null
+          } else if (data[1] === null) {
+            return false
+          } else if (data[1] === '') {
+            return false
+          } else if (data[1].length !== 0) {
+            return true
           }
         }
       )
@@ -1464,14 +1597,41 @@ export default {
               }
             })
         } else {
+          let value = ''
+          let is_private = false
+          let label = ''
+          // Set return Values
+          if (field[0] === 'contacted_only') {
+            value = field[1] ? 'contact_true' : 'contacted_false'
+          } else if (field[0] === 'commercial_only') {
+            value = field[1]
+              ? 'Interested in Commercial Inquiry'
+              : 'Not interested in Commercial Inquiry'
+          } else {
+            value = field[1]
+          }
+
+          // Set Privacy values
+          if (field[0] === 'contacted_only') {
+            is_private = true
+          } else {
+            is_private = false
+          }
+
+          // Set Label Return Values
+          if (field[0] === 'organization_access') {
+            label = 'Organization Access'
+          } else if (field[0] === 'commercial_only') {
+            label = 'Commercial Inquiry'
+          } else {
+            label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
+          }
+
           return {
             data_type: field[0],
-            label:
-              field[0] === 'organization_access'
-                ? 'Organization Access'
-                : field[0].charAt(0).toUpperCase() + field[0].slice(1),
-            value: field[1],
-            is_private: false,
+            label,
+            value,
+            is_private,
             placename: id
           }
         }
@@ -1528,7 +1688,10 @@ export default {
             data.append('file_type', file.file_type)
             data.append('community_only', file.community_only)
             data.append('placename', id)
-            data.append('is_artwork', true)
+            data.append(
+              'is_artwork',
+              !!(this.isArtist || this.queryType === 'Public Art')
+            )
             if (file.url) {
               data.append('url', file.url)
             }
@@ -1831,8 +1994,8 @@ export default {
   }
 
   .upload-placeholder {
-    width: 75px;
-    height: 75px;
+    width: 90px;
+    height: 90px;
     object-fit: contain;
     border-radius: 0;
   }

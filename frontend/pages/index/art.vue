@@ -19,10 +19,14 @@
         <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
           <!-- Art Work Badge Filter  -->
-          <BadgeFilter :child-taxonomy="[]" :color="'#5A8467'">
+          <BadgeFilter
+            :is-selected="filterMode === 'artwork'"
+            :child-taxonomy="artworkTaxonomy()"
+            :color="'#5A8467'"
+          >
             <template v-slot:badge>
               <Badge
-                content="Arts"
+                content="Art"
                 :number="artworksCount"
                 class="cursor-pointer"
                 bgcolor="#5A8467"
@@ -40,7 +44,7 @@
           >
             <template v-slot:badge>
               <Badge
-                content="Person"
+                content="Artist"
                 :number="artistsCount"
                 class="cursor-pointer"
                 bgcolor="#B45339"
@@ -274,21 +278,25 @@ export default {
       return this.$store.state.arts.artworks
     },
     previewArtworkOnly() {
-      return this.artworks.reduce((unique, item) => {
-        return unique.some(
-          items => items.properties.placename === item.properties.placename
-        )
-          ? unique
-          : [
-              ...unique,
-              this.artworks
-                .filter(
-                  items =>
-                    items.properties.placename === item.properties.placename
-                )
-                .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
-            ]
-      }, [])
+      return this.artworks
+        .reduce((unique, item) => {
+          return unique.some(
+            items => items.properties.placename === item.properties.placename
+          )
+            ? unique
+            : [
+                ...unique,
+                this.artworks
+                  .filter(
+                    items =>
+                      items.properties.placename === item.properties.placename
+                  )
+                  .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
+              ]
+        }, [])
+        .sort((a, b) => {
+          return b.id - a.id
+        })
     },
     selectedArtwork() {
       return this.isSearchMode ? this.artworks : this.previewArtworkOnly
@@ -299,18 +307,53 @@ export default {
     selectedArt() {
       let artsArray = []
 
-      // TO DO FILTER BY NAME AND KIND
+      console.log(this.allArts)
+      // Filter by SearchQuery and by Artist/Public Art owned by the Placename
       if (this.isSearchMode) {
+        const query = this.searchQuery.toLowerCase()
         artsArray = this.allArts
           .filter(art => {
-            if (art.kind === 'artwork') {
-              return art.name
-                .toLowerCase()
-                .includes(this.searchQuery.toLowerCase())
+            if (art.properties.kind === 'artwork') {
+              // find list of Artist if exist
+              const artistList = art.properties.placename.artists
+                ? art.properties.placename.artists.map(artist => artist.name)
+                : []
+
+              // if list of string contains the query, return true
+              const isArtistFound = artistList.find(pub =>
+                pub.toLowerCase().includes(query)
+              )
+
+              return (
+                art.properties.name.toLowerCase().includes(query) ||
+                art.properties.placename.name.toLowerCase().includes(query) ||
+                isArtistFound
+              )
             } else {
-              return art.properties.name
-                .toLowerCase()
-                .includes(this.searchQuery.toLowerCase())
+              // find list of Artist if exist
+              const artistList = art.properties.artists
+                ? art.properties.artists.map(artist => artist.name)
+                : []
+              // find list of Public art of exist
+              const publicArtList = art.properties.public_arts
+                ? art.properties.public_arts.map(pub => pub.name)
+                : []
+
+              // if list of string contains the query, return true
+              const isPublicArtFound = publicArtList.find(pub =>
+                pub.toLowerCase().includes(query)
+              )
+
+              // if list of string contains the query, return true
+              const isArtistFound = artistList.find(pub =>
+                pub.toLowerCase().includes(query)
+              )
+
+              return (
+                art.properties.name.toLowerCase().includes(query) ||
+                isPublicArtFound ||
+                isArtistFound
+              )
             }
           })
           .filter(art => {
@@ -322,15 +365,28 @@ export default {
         })
       }
 
-      return this.isTaxonomyFilterMode
-        ? artsArray.filter(art => {
+      // Filtering by Taxonomy tags
+      if (this.isTaxonomyFilterMode) {
+        // if filterMode is on Artwork
+        if (this.filterMode === 'artwork') {
+          return artsArray.filter(art => {
+            return (
+              this.artMediaType(art.properties.file_type) ===
+              this.taxonomyFilter[0]
+            )
+          })
+        } else {
+          return artsArray.filter(art => {
             return art.properties.taxonomies.some(
               taxonomy =>
                 taxonomy.name ===
                 this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
             )
           })
-        : artsArray
+        }
+      } else {
+        return artsArray
+      }
     },
     paginatedArts() {
       return this.selectedArt.slice(0, this.maximumLength)
@@ -525,6 +581,29 @@ export default {
       return this.taxonomies.filter(
         taxonomy => taxonomy.parent === this.getTaxonomyID(taxName).id
       )
+    },
+    artworkTaxonomy() {
+      return Array.from(['image', 'video', 'audio']).map(type => {
+        return {
+          id: type,
+          name: type
+        }
+      })
+    },
+    artMediaType(type) {
+      if (type) {
+        if (type.includes('image')) {
+          return 'image'
+        } else if (type.includes('audio')) {
+          return 'audio'
+        } else if (type === 'youtube' || type.includes('video')) {
+          return 'video'
+        } else {
+          return 'image'
+        }
+      } else {
+        return 'image'
+      }
     }
   }
 }
