@@ -653,18 +653,18 @@ class CommunitySearchSerializer(serializers.ModelSerializer):
 # ARTS SERIALIZERS
 # Base serializer
 class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
+    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
+
     class Meta:
         model = PlaceName
         fields = (
             "id",
             "name",
-            "image",
             "kind",
             "taxonomies"
    
         )
         geo_field = "geom"
-        depth = 1
 
 
 class EventArtSerializer(ArtPlaceNameSerializer):
