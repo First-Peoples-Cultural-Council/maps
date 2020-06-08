@@ -317,10 +317,6 @@ export default {
   .alert {
     margin-bottom: 0.5em !important;
   }
-
-  &:hover {
-    border: 1px solid #b57936;
-  }
 }
 
 .media-file-container {

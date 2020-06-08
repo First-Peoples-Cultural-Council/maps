@@ -111,16 +111,7 @@ export default {
         return (this.errorMessage = 'Please enter the name of the file')
       }
       const formData = this.getFormData()
-      const idk = {
-        name: this.fileName,
-        file_type: this.file.type,
-        description: this.description,
-        media_file: this.file,
-        type: this.type,
-        id: this.id,
-        community_only: this.commonly === 'accepted'
-      }
-      console.log(idk)
+
       try {
         result = await this.uploadFile(formData)
         if (

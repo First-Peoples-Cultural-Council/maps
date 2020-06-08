@@ -28,8 +28,10 @@
           <b-alert show>These items are waiting for Verification</b-alert>
         </div>
         <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
-          <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
+          <div>
             <PlacesCard
+              v-for="ptv in placesToVerify"
+              :key="`ptv${ptv.id}`"
               :place="{ properties: { name: ptv.name } }"
               class="mb-2"
               @click.native="
@@ -37,9 +39,8 @@
                   path: `/place-names/${encodeFPCC(ptv.name)}`
                 })
               "
-            ></PlacesCard>
-            <b-row no-gutters>
-              <b-col xs="6" class="pr-1">
+            >
+              <template v-slot:verify>
                 <b-button
                   variant="dark"
                   block
@@ -52,11 +53,11 @@
                   "
                   >Verify</b-button
                 >
-              </b-col>
-              <b-col xs="6" class="pl-1">
+              </template>
+              <template v-slot:reject>
                 <Reject :id="ptv.id" type="placename"></Reject>
-              </b-col>
-            </b-row>
+              </template>
+            </PlacesCard>
           </div>
         </div>
 
