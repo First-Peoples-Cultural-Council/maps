@@ -98,7 +98,7 @@ export default {
         verify: getApiUrl('community/verify_member/'),
         reject: getApiUrl('community/reject_member/')
       }
-      await this.$axios.$patch(
+      const result = await this.$axios.$post(
         url[verify || reject],
         {
           user_id: toVerify.user.id,
@@ -110,7 +110,9 @@ export default {
           }
         }
       )
-      await this.$store.dispatch('user/getMembersToVerify')
+      if (result) {
+        await this.$store.dispatch('user/getMembersToVerify')
+      }
     },
     handleMouseOver() {
       this.hover = true
