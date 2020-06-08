@@ -39,9 +39,7 @@ from language.serializers import (
     PlaceNameCategorySerializer,
     PlaceNameSearchSerializer,
     ArtPlaceNameSerializer,
-    PublicArtSerializer,
     EventArtSerializer,
-    ArtistSerializer,
     ArtworkSerializer,
     ArtworkPlaceNameSerializer
 )
@@ -457,7 +455,7 @@ class PublicArtList(BasePlaceNameListAPIView):
         kind='public_art',
         geom__isnull=False
     )
-    serializer_class = PublicArtSerializer
+    serializer_class = ArtPlaceNameSerializer
 
 
 class ArtistList(BasePlaceNameListAPIView):
@@ -465,7 +463,7 @@ class ArtistList(BasePlaceNameListAPIView):
         kind='artist',
         geom__isnull=False
     )
-    serializer_class = ArtistSerializer
+    serializer_class = ArtPlaceNameSerializer
 
 
 class EventList(BasePlaceNameListAPIView):

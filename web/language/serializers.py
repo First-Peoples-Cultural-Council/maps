@@ -668,18 +668,6 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
         geo_field = "geom"
 
 
-class PublicArtSerializer(ArtPlaceNameSerializer):
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = ArtPlaceNameSerializer.Meta.fields + (
-            "taxonomies",
-            "artists"
-        )
-        geo_field = "geom"
-
 class EventArtSerializer(ArtPlaceNameSerializer):
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
     related_data = RelatedDataSerializer(many=True, read_only=True)
@@ -687,18 +675,7 @@ class EventArtSerializer(ArtPlaceNameSerializer):
     class Meta:
         model = PlaceName
         fields = ArtPlaceNameSerializer.Meta.fields + (
-            "taxonomies",
-            "related_data"
-        )
-        geo_field = "geom"
-
-class ArtistSerializer(ArtPlaceNameSerializer):
-    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = ArtPlaceNameSerializer.Meta.fields + (
-            "public_arts",
+            "related_data",
         )
         geo_field = "geom"
 
