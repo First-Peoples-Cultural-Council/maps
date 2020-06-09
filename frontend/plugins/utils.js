@@ -136,16 +136,12 @@ export const getCookie = name => {
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
+  } else if (media_file.includes('http://nginx')) {
+    return media_file.replace('http://nginx', '')
+  } else if (media_file.includes('https://nginx')) {
+    return media_file.replace('https://nginx', '')
   }
-  if (!isServer) {
-    if (media_file.includes('http://nginx')) {
-      return media_file.replace('http://nginx', '')
-    }
 
-    if (media_file.includes('https://nginx')) {
-      return media_file.replace('https://nginx', '')
-    }
-  }
   return media_file
 }
 export const imageTypes = {
@@ -270,5 +266,19 @@ export const isValidURL = email => {
     '(\\#[-a-z\\d_]*)?$','i'); 
   return !!regex.test(email.toLowerCase());
 }
+
+export const isValidYoutubeLink = url => {
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      const match = url.match(regExp)
+      return match && match[7].length === 11 ? match[7] : false
+}
+export const getYoutubeThumbnail = url => {
+
+  return `https://img.youtube.com/vi/${isValidYoutubeLink(
+        url
+      )}/hqdefault.jpg`
+}
+
+
 
 

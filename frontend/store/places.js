@@ -64,6 +64,15 @@ export const actions = {
     return result
   },
 
+  async getCommunityMedias({ commit }, data) {
+    const result = await this.$axios.$get(
+      getApiUrl(`media/?community=${data.id}`)
+    )
+
+    commit('setMedias', result.sort((a, b) => b.id - a.id))
+    return result
+  },
+
   async getPlace({ commit, dispatch }, data) {
     const result = await this.$axios.$get(
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)

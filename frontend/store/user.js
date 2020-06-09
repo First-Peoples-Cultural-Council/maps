@@ -216,7 +216,7 @@ export const actions = {
       }
     }
     const url = `${getApiUrl('community/reject_member/')}`
-    const result = await this.$axios.patch(url, data, headers)
+    const result = await this.$axios.post(url, data, headers)
     await dispatch('user/getMembersToVerify', {}, { root: true })
     return result
   },

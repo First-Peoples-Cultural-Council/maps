@@ -5,14 +5,14 @@
   >
     <div v-if="logoAlt === 1 || logoAlt === 2" class="p-3 logo-container">
       <img
-        src="../assets/images/logo.png"
+        src="../assets/images/symbol@2x.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"
         class="d-inline-block mb-2"
       />
       <div
-        style="color: white; font-size: 1.1em;"
+        style="color: white; font-size: 1.2em;"
         class="d-inline-block font-weight-bold ml-3"
       >
         First Peoples'

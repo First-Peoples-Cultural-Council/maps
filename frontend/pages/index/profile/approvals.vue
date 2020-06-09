@@ -11,7 +11,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile  " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -19,17 +19,19 @@
       >
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div v-if="isLangAdmin" class="ml-3 mr-3">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile "></Logo>
+      <div v-if="isLangAdmin" class="p-3 approval-container">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>
+        <div v-else class="mt-1">
+          <b-alert show>These items are waiting for Verification</b-alert>
+        </div>
         <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
-          <h5 class="font-1 color-dark-gray">
-            Places Waiting For Verification
-          </h5>
-          <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
+          <div>
             <PlacesCard
+              v-for="ptv in placesToVerify"
+              :key="`ptv${ptv.id}`"
               :place="{ properties: { name: ptv.name } }"
               class="mb-2"
               @click.native="
@@ -37,9 +39,8 @@
                   path: `/place-names/${encodeFPCC(ptv.name)}`
                 })
               "
-            ></PlacesCard>
-            <b-row no-gutters>
-              <b-col xs="6" class="pr-1">
+            >
+              <template v-slot:verify>
                 <b-button
                   variant="dark"
                   block
@@ -52,65 +53,50 @@
                   "
                   >Verify</b-button
                 >
-              </b-col>
-              <b-col xs="6" class="pl-1">
+              </template>
+              <template v-slot:reject>
                 <Reject :id="ptv.id" type="placename"></Reject>
-              </b-col>
-            </b-row>
+              </template>
+            </PlacesCard>
           </div>
         </div>
 
-        <div v-if="mediaToVerify && mediaToVerify.length > 0">
-          <h5 class="color-dark-gray font-1">Media Waiting For Verification</h5>
-          <div v-for="mtv in mediaToVerify" :key="`mtv${mtv.id}`" class="mb-4">
-            <div>
-              Place {{ mtv.place }}
-              <Media :media="mtv" :community-only="mtv.community_only"></Media>
-              <b-row no-gutters class="mt-2">
-                <b-col xs="6" class="pr-1">
-                  <b-button
-                    variant="dark"
-                    block
-                    size="sm"
-                    @click="
-                      handleApproval($event, mtv, {
-                        verify: true,
-                        type: 'media'
-                      })
-                    "
-                    >Verify</b-button
-                  >
-                </b-col>
-                <b-col xs="6" class="pl-1">
-                  <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
-                </b-col>
-              </b-row>
-            </div>
-          </div>
+        <div v-if="mediaToVerify && mediaToVerify.length > 0" class="mt-2 mb-2">
+          <Media
+            v-for="mtv in mediaToVerify"
+            :key="`mtv${mtv.id}`"
+            class="mb-3"
+            :media="mtv"
+            :community-only="mtv.community_only"
+          >
+            <template v-slot:verify>
+              <b-button
+                variant="dark"
+                block
+                size="sm"
+                @click="
+                  handleApproval($event, mtv, {
+                    verify: true,
+                    type: 'media'
+                  })
+                "
+                >Verify</b-button
+              >
+            </template>
+
+            <template v-slot:reject>
+              <Reject :id="mtv.id" type="media" :media="mtv"></Reject>
+            </template>
+          </Media>
         </div>
+
         <div v-if="usersToVerify && usersToVerify.length > 0">
-          <h5>Users Waiting For Verification</h5>
-          <div v-for="utv in usersToVerify" :key="`utv${utv.id}`">
-            <ul>
-              <li>UserName: {{ utv.user.username }}</li>
-              <li>First Name: {{ utv.user.first_name }}</li>
-              <li>Last Name: {{ utv.user.last_name }}</li>
-              <li>Community: {{ utv.community.name }}</li>
-              <li>
-                <b-button
-                  @click="
-                    handleUser($event, utv, {
-                      verify: 'verify'
-                    })
-                  "
-                  >Verify</b-button
-                >
-              </li>
-              <li>
-                <Reject :id="utv.id" type="community" :member="utv"></Reject>
-              </li>
-            </ul>
-          </div>
+          <UserApproveCard
+            v-for="utv in usersToVerify"
+            :key="`utv${utv.id}`"
+            class="mb-3"
+            :user-to-verify="utv"
+          ></UserApproveCard>
         </div>
       </div>
     </div>
@@ -118,17 +104,19 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
+import UserApproveCard from '@/components/user/UserApproveCard.vue'
 
 export default {
   components: {
     Logo,
     PlacesCard,
     Media,
-    Reject
+    Reject,
+    UserApproveCard
   },
   computed: {
     isLangAdmin() {
@@ -172,26 +160,6 @@ export default {
   },
   methods: {
     encodeFPCC,
-    async handleUser(e, tv, { verify, reject }) {
-      const url = {
-        verify: getApiUrl('community/verify_member/'),
-        reject: getApiUrl('community/reject_member/')
-      }
-      await this.$axios.$patch(
-        url[verify || reject],
-        {
-          user_id: tv.user.id,
-          community_id: tv.community.id
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-      await this.$store.dispatch('user/getMembersToVerify')
-      // console.log('Result', result)
-    },
     async handleApproval(e, tv, { verify, reject, type }) {
       const data = {
         tv,

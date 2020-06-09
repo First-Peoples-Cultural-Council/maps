@@ -104,6 +104,7 @@ export default {
       }
     },
     handleReturn() {
+      this.$root.$emit('resetMap')
       if (this.server) {
         this.$router.push({
           path: '/first-nations'

@@ -1,5 +1,5 @@
 <template>
-  <div class="media-add-btn">
+  <div class="media-add-btn" @click="handleImageClick($event, file)">
     <img v-if="file.file_type.includes('image')" :src="fileSrc" />
     <img v-else-if="file.file_type === 'youtube'" :src="videoThumbnail()" />
     <img v-else class="media-other" src="@/assets/images/clip_icon.svg" />
@@ -86,6 +86,15 @@ export default {
       const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
       const match = url.match(regExp)
       return match && match[7].length === 11 ? match[7] : false
+    },
+    handleImageClick(e, media) {
+      require('basiclightbox/dist/basicLightbox.min.css')
+      const basicLightbox = require('basiclightbox')
+      basicLightbox
+        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`, {
+          closable: true
+        })
+        .show()
     }
   }
 }
