@@ -245,6 +245,12 @@ export default {
     artsGeo() {
       return this.$store.state.arts.artsGeo
     },
+    artsGeoSet() {
+      return this.$store.state.arts.artsGeoSet
+    },
+    artworkSet() {
+      return this.$store.state.arts.artworkSet
+    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -275,8 +281,7 @@ export default {
       return this.artworks
         .reduce((unique, item) => {
           return unique.some(
-            items =>
-              items.properties.placename.id === item.properties.placename.id
+            items => items.properties.placename === item.properties.placename
           )
             ? unique
             : [
@@ -284,8 +289,7 @@ export default {
                 this.artworks
                   .filter(
                     items =>
-                      items.properties.placename.id ===
-                      item.properties.placename.id
+                      items.properties.placename === item.properties.placename
                   )
                   .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
               ]
@@ -393,9 +397,17 @@ export default {
     const currentArtworks = this.$store.state.arts.artworkSet
 
     if (currentArtworks.length === 0 && this.filterMode === 'artwork') {
-      const artworks = await this.$axios.$get(
+      let artworks = await this.$axios.$get(
         getApiUrl('arts/artwork?format=json')
       )
+      artworks = artworks.map(artwork => {
+        const artGeo = this.artsGeoSet.features.find(
+          artGeo => artGeo.id === artwork.properties.placename
+        )
+        artwork.geometry = artGeo.geometry
+
+        return artwork
+      })
       if (artworks) {
         this.$store.commit('arts/setArtworksStore', artworks) // All data
         this.$store.commit('arts/setArtworks', artworks) // All data
@@ -470,7 +482,7 @@ export default {
     async loadKindData() {
       const kind = this.filterMode
       this.$store.commit('sidebar/toggleLoading', true) // Start loading
-      const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}`
+      const url = `${getApiUrl('arts')}/${kind.replace('_', '-')}?format=json`
 
       const loaded = await this.$store.dispatch('arts/isKindLoaded', kind)
       const artsIds = await this.$store.dispatch('arts/getArtsGeoIds')
@@ -494,9 +506,19 @@ export default {
       }
     },
     async refetchArtwork() {
-      const artworks = await this.$axios.$get(
+      let artworks = await this.$axios.$get(
         getApiUrl('arts/artwork?format=json')
       )
+
+      artworks = artworks.map(artwork => {
+        const artGeo = this.artsGeoSet.features.find(
+          artGeo => artGeo.id === artwork.properties.placename
+        )
+        artwork.geometry = artGeo.geometry
+
+        return artwork
+      })
+
       if (artworks) {
         this.$store.commit('arts/setArtworksStore', artworks) // All data
         this.$store.commit('arts/setArtworks', artworks) // All data
@@ -519,7 +541,6 @@ export default {
       // If another artwork is selected when there's open, close it to recalibrate data, then open
       else if (currentArt !== this.artDetails && this.showDrawer) {
         this.artDetails = currentArt
-        this.updateURL(currentArt)
         // Important to open it after closing the drawer
         this.closeDrawer()
         setTimeout(() => {
@@ -530,20 +551,9 @@ export default {
       else if (currentArt !== this.artDetails || !this.showDrawer) {
         this.artDetails = currentArt
         this.openDrawer()
-        this.updateURL(currentArt)
       }
       // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
-    },
-    updateURL(artDetails) {
-      // Update URL with Artist name, and media name, so when you copy it, it redirects to the Artist page
-      history.pushState(
-        {},
-        null,
-        `${this.$route.path}/${encodeFPCC(
-          artDetails.placename.name
-        )}?artwork=${encodeFPCC(artDetails.name)}`
-      )
     },
     toggleSidePanel() {
       this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)

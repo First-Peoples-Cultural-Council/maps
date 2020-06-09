@@ -39,10 +39,9 @@ from language.serializers import (
     PlaceNameCategorySerializer,
     PlaceNameSearchSerializer,
     ArtPlaceNameSerializer,
-    PublicArtSerializer,
     EventArtSerializer,
-    ArtistSerializer,
-    ArtworkSerializer
+    ArtworkSerializer,
+    ArtworkPlaceNameSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -63,7 +62,7 @@ class PlaceNameFilterSet(FilterSet):
 
     class Meta:
         model = PlaceName
-        fields = ('kinds', 'taxonomies', 'creator')
+        fields = ('kinds', 'taxonomies', 'creator', 'public_arts')
 
 
 class PlaceNameViewSet(BaseModelViewSet):
@@ -465,7 +464,7 @@ class PublicArtList(BasePlaceNameListAPIView):
         kind='public_art',
         geom__isnull=False
     )
-    serializer_class = PublicArtSerializer
+    serializer_class = ArtPlaceNameSerializer
 
 
 class ArtistList(BasePlaceNameListAPIView):
@@ -473,7 +472,7 @@ class ArtistList(BasePlaceNameListAPIView):
         kind='artist',
         geom__isnull=False
     )
-    serializer_class = ArtistSerializer
+    serializer_class = ArtPlaceNameSerializer
 
 
 class EventList(BasePlaceNameListAPIView):
@@ -512,6 +511,14 @@ class GrantList(BasePlaceNameListAPIView):
 class ArtworkList(generics.ListAPIView):
     queryset = Media.objects.filter(is_artwork=True, placename__geom__isnull=False).select_related("placename")
     serializer_class = ArtworkSerializer
+
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)
+
+class ArtworkPlaceNameList(generics.ListAPIView):
+    queryset = PlaceName.objects.exclude(medias__isnull=True)
+    serializer_class = ArtworkPlaceNameSerializer
 
     @method_decorator(never_cache)
     def list(self, request):

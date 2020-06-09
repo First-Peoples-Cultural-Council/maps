@@ -658,7 +658,6 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
         fields = (
             "id",
             "name",
-            "image",
             "kind",
             "taxonomies"
    
@@ -666,44 +665,18 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
         geo_field = "geom"
 
 
-class PublicArtSerializer(ArtPlaceNameSerializer):
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
-    artists = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = ArtPlaceNameSerializer.Meta.fields + (
-            "taxonomies",
-            "artists"
-        )
-        geo_field = "geom"
-
 class EventArtSerializer(ArtPlaceNameSerializer):
-    taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
     related_data = RelatedDataSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlaceName
         fields = ArtPlaceNameSerializer.Meta.fields + (
-            "taxonomies",
-            "related_data"
-        )
-        geo_field = "geom"
-
-class ArtistSerializer(ArtPlaceNameSerializer):
-    public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlaceName
-        fields = ArtPlaceNameSerializer.Meta.fields + (
-            "public_arts",
+            "related_data",
         )
         geo_field = "geom"
 
 
 class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
-    artists = PlaceNameLightSerializer(many=True, read_only=True)
-
     class Meta:
         model = PlaceName
         fields = (
@@ -711,14 +684,11 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "geom",
-            "artists"
+            "geom"
         )
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
-    placename = ArtworkPlaceNameSerializer(read_only=True)
-
     class Meta:
         model = Media
         fields = (
@@ -732,12 +702,10 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
         representation = super().to_representation(value)
-#        return representation
 
         updated_representation = {}
         # Add a kind field
         updated_representation["id"] = representation["id"]
-        updated_representation["geometry"] = representation["placename"]["geom"]
         updated_representation["type"] = "Feature"
         updated_representation["properties"] = {
             "name": representation["name"],

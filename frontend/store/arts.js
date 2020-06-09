@@ -10,6 +10,7 @@ export const state = () => ({
   artsGeoSet: [],
   artworks: [],
   artworkSet: [],
+  artworksPlacenames: [],
   eventsSet: []
 })
 
@@ -49,6 +50,9 @@ export const mutations = {
   },
   setNextEvents(state, events) {
     state.eventsSet = events
+  },
+  setArtworksPlacenames(state, placenames) {
+    state.artworksPlacenames = placenames
   }
 }
 
