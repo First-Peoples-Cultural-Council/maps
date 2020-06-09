@@ -174,6 +174,7 @@
         </div>
       </div>
     </div>
+    <Splashscreen v-if="showSplashscreen && $route.path === '/'"></Splashscreen>
   </div>
 </template>
 
@@ -202,6 +203,7 @@ import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
+import Splashscreen from '@/components/Splashscreen.vue'
 
 import {
   getApiUrl,
@@ -243,7 +245,8 @@ export default {
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    EventOverlay
+    EventOverlay,
+    Splashscreen
   },
   head() {
     return {
@@ -262,6 +265,7 @@ export default {
     ]
     const bounds = [bbox[0], bbox[1]]
     return {
+      showSplashscreen: true,
       maximumLength: 0,
       loggingIn: false,
       showSearchOverlay: false,
@@ -449,12 +453,22 @@ export default {
     }
     next()
   },
+  beforeMount() {
+    // if (localStorage.getItem('fpcc-splashscreen') === 'false') {
+    //   this.showSplashscreen = false
+    // }
+  },
   async mounted() {
     this.$root.$on('updateData', () => {
       // console.log('Update Called')
       this.$eventHub.whenMap(map => {
         this.updateData(map)
       })
+    })
+
+    this.$root.$on('closeSplashscreen', () => {
+      this.showSplashscreen = false
+      localStorage.setItem('fpcc-splashscreen', false)
     })
 
     this.setMobile(window.innerWidth)
@@ -540,11 +554,11 @@ export default {
     }
 
     // Redirect to /languages
-    if (this.$route.path === '/') {
-      this.$router.push({
-        path: '/languages'
-      })
-    }
+    // if (this.$route.path === '/') {
+    //   this.$router.push({
+    //     path: '/languages'
+    //   })
+    // }
 
     // Redirect to claim page if during invite mode
     if (Cookies.get('inviteMode')) {
