@@ -561,7 +561,7 @@
                 >
 
                 <ToolTip
-                  content="What would this location be classified as? This will help users find it."
+                  content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
                 ></ToolTip>
                 <b-form-select
                   v-model="categorySelected"
@@ -636,6 +636,26 @@
                 >
               </b-col>
             </b-row>
+          </section>
+
+          <section>
+            <div>
+              <p class="text-center p-3">
+                <br />
+                For more categories please see
+                <a
+                  href="https://apps.gov.bc.ca/pub/bcgnws/featureTypes?outputFormat=pdf"
+                  >this list</a
+                >
+                provided by BC Geographical Names and email us at
+                <a
+                  :href="
+                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                  "
+                  >info@fpcc.ca</a
+                >.
+              </p>
+            </div>
           </section>
         </div>
         <div v-else>
@@ -1116,6 +1136,16 @@ export default {
     data.isServer = !!process.server
     return data
   },
+  head() {
+    return {
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: 'wWf4WAoDmF6R3jjEYapgr3-ymFwS6o-qfLob4WOErRA'
+        }
+      ]
+    }
+  },
   mounted() {
     // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
@@ -1368,6 +1398,10 @@ export default {
       let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
+
+        // Exclude status from the patch request
+        delete data.status
+
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,

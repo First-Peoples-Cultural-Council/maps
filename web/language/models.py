@@ -332,14 +332,14 @@ class Media(BaseModel):
     name = models.CharField(max_length=255, default="")
     description = models.TextField(default="", blank=True)
     file_type = models.CharField(max_length=16, default=None, null=True)
-    url = models.URLField(max_length=255, default=None, null=True)
+    url = models.URLField(max_length=255, default=None, null=True, blank=True)
     media_file = models.FileField(null=True, blank=True)
     community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
-        PlaceName, on_delete=models.SET_NULL, null=True, related_name="medias"
+        PlaceName, on_delete=models.SET_NULL, null=True, blank=True, related_name="medias"
     )
     community = models.ForeignKey(
-        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="medias"
+        Community, on_delete=models.SET_NULL, null=True, blank=True, default=None, related_name="medias"
     )
     creator = models.ForeignKey(
         "users.User", null=True, on_delete=models.SET_NULL)

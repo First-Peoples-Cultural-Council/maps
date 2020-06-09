@@ -58,31 +58,43 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filterset_fields = ['placename', 'community']
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+        obj = serializer.save(creator=self.request.user)
+
+        admin_communities = list(Administrator.objects.filter(
+            user__id=int(self.request.user.id)).values_list('community', flat=True))
+
+        if obj.community.id in admin_communities:
+            obj.status = 'VE'
+            obj.save()
 
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):
         # 'VERIFIED' Media do not need to the verified
-        queryset = self.get_queryset().exclude(status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)
+        queryset = self.get_queryset().exclude(
+            status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)
 
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
-                admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
-                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+                admin_languages = Administrator.objects.filter(
+                    user__id=int(request.user.id)).values('language')
+                admin_communities = Administrator.objects.filter(
+                    user__id=int(request.user.id)).values('community')
 
                 if admin_languages and admin_communities:
-                    # Filter Medias by admin's languages 
+                    # Filter Medias by admin's languages
                     queryset_places = queryset.filter(
-                        placename__language__in=admin_languages, placename__community__in=admin_communities
+                        Q(placename__language__in=admin_languages) | Q(
+                            placename__community__in=admin_communities)
                     )
                     queryset_communities = queryset.filter(
-                        community__languages__in=admin_languages, community__in=admin_communities
+                        Q(community__languages__in=admin_languages) | Q(
+                            community__in=admin_communities)
                     )
                     queryset = queryset_communities.union(queryset_places)
 
                     serializer = self.serializer_class(queryset, many=True)
-                    
+
                     return Response(serializer.data)
         return Response([])
 
@@ -95,7 +107,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     return Response({"message": "Verified!"})
                 except Media.DoesNotExist:
                     return Response({"message": "No Media with the given id was found"})
-        
+
         return Response({"message", "Only Administrators can verify contributions"})
 
     @action(detail=True, methods=["patch"])
@@ -106,9 +118,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     if 'status_reason' in request.data.keys():
                         Media.reject(int(pk), request.data["status_reason"])
 
-                        #Notifying the creator
+                        # Notifying the creator
                         try:
-                            inform_media_rejected_or_flagged(int(pk), request.data["status_reason"], Media.REJECTED)
+                            inform_media_rejected_or_flagged(
+                                int(pk), request.data["status_reason"], Media.REJECTED)
                         except Exception as e:
                             pass
 
@@ -117,7 +130,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                         return Response({"message": "Reason must be provided"})
                 except Media.DoesNotExist:
                     return Response({"message": "No Media with the given id was found"})
-        
+
         return Response({"message", "Only Administrators can reject contributions"})
 
     @action(detail=True, methods=["patch"])
@@ -130,18 +143,19 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 if 'status_reason' in request.data.keys():
                     Media.flag(int(pk), request.data["status_reason"])
 
-                    #Notifying Administrators
+                    # Notifying Administrators
                     try:
                         inform_media_to_be_verified(int(pk))
                     except Exception as e:
                         pass
 
-                    #Notifying the creator
+                    # Notifying the creator
                     try:
-                        inform_media_rejected_or_flagged(int(pk), request.data["status_reason"], Media.FLAGGED)
+                        inform_media_rejected_or_flagged(
+                            int(pk), request.data["status_reason"], Media.FLAGGED)
                     except Exception as e:
                         pass
-                    
+
                     return Response({"message": "Flagged!"})
                 else:
                     return Response({"message": "Reason must be provided"})
@@ -152,12 +166,8 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
-        queryset = self.filter_queryset(queryset)
-
-        user_logged_in = False
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                user_logged_in = True
+        if request.user.is_authenticated:
+            user_logged_in = True
 
         # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, shows:
@@ -170,7 +180,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         if user_logged_in:
 
             # 2.1) user's contribution regardless the status
-            queryset_user = queryset.filter(creator__id = request.user.id)
+            queryset_user = queryset.filter(creator__id=request.user.id)
 
             # 2.2) community_only content from user's communities
             user_communities = CommunityMember.objects.filter(
@@ -197,7 +207,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
             if admin_languages and admin_communities:
-                # Filter Medias by admin's languages 
+                # Filter Medias by admin's languages
                 qry_adm_community = queryset.filter(
                     community__languages__in=admin_languages, community__in=admin_communities
                 )
@@ -205,20 +215,25 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     placename__language__in=admin_languages, placename__community__in=admin_communities
                 )
                 if qry_adm_community and qry_adm_places:
-                    queryset = queryset_user.union(queryset_community).union(qry_adm_community).union(qry_adm_places)
+                    queryset = queryset_user.union(queryset_community).union(
+                        qry_adm_community).union(qry_adm_places)
                 elif qry_adm_community:
-                    queryset = queryset_user.union(queryset_community).union(qry_adm_community)
+                    queryset = queryset_user.union(
+                        queryset_community).union(qry_adm_community)
                 elif qry_adm_places:
-                    queryset = queryset_user.union(qry_adm_community).union(qry_adm_places)
+                    queryset = queryset_user.union(
+                        qry_adm_community).union(qry_adm_places)
                 else:
                     queryset = queryset_user.union(qry_adm_community)
-            else: #user is not Administrator of anything
+            else:  # user is not Administrator of anything
                 queryset = queryset_user.union(queryset_community)
 
-        else: #no user is logged in
-            queryset = queryset.filter(
-                Q(status__exact=Media.VERIFIED) 
-                | Q(status__exact=Media.UNVERIFIED) 
+        else:  # no user is logged in
+            queryset = queryset.exclude(
+                community_only=True
+            ).filter(
+                Q(status__exact=Media.VERIFIED)
+                | Q(status__exact=Media.UNVERIFIED)
                 | Q(status__isnull=True)
             )
 

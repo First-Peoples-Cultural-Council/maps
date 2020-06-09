@@ -171,6 +171,8 @@ import {
   getMediaUrl,
   getYoutubeId
 } from '@/plugins/utils.js'
+require('basiclightbox/dist/basicLightbox.min.css')
+
 export default {
   components: {
     FlagModal,
@@ -222,7 +224,6 @@ export default {
     getGenericFileType,
     getMediaUrl,
     handleImageClick(e, media) {
-      require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
         .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`, {
@@ -231,7 +232,6 @@ export default {
         .show()
     },
     handleYoutube(e, media) {
-      require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
         .create(
@@ -250,7 +250,6 @@ export default {
         .show()
     },
     handleVimeo(e, media) {
-      require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
         .create(

@@ -564,11 +564,9 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     def build_lna_external_url(self, lna_name):
         permalink = "https://maps.fpcc.ca/lna/"
         try:
-            lna_external_id = lna_name.split('-')[0].strip().replace("LNA", "")
-            print(lna_external_id)
+            lna_external_id = lna_name.split('-')[0].strip().replace("LNA","")
             lna_link = permalink + lna_external_id
-            print(lna_link)
-        except e:
+        except:
             lna_link = permalink
         return lna_link
 

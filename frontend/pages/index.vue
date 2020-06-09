@@ -773,6 +773,18 @@ export default {
         zoomToIdealBox({ map })
       })
 
+      this.$root.$on('getLocation', () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            onZoomLocationSuccess,
+            onGetLocationError,
+            locationFetchOptions
+          )
+        } else {
+          alert('Sorry, your browser does not support geolocation!')
+        }
+      })
+
       map.addSource('langs1', {
         type: 'geojson',
         data: '/api/language-geo/'
@@ -813,6 +825,74 @@ export default {
       })
       map.addControl(draw, 'bottom-left')
 
+      const locationFetchOptions = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+
+      // Functions triggered after getCurrentPosition
+      const onGetLocationSuccess = position => {
+        // We want to define our own FeatureCollection with only one point -- the current location
+        const geojson = {
+          name: 'CurrentLocationFeature',
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              id: 'current-location-id',
+              geometry: {
+                type: 'Point',
+                // coordinates: [-143.798273768994, 58.829496604496455]
+                coordinates: [
+                  position.coords.longitude,
+                  position.coords.latitude
+                ]
+              },
+              properties: {}
+            }
+          ]
+        }
+        draw.set(geojson)
+
+        // Redirect to current location in map
+        map.flyTo({ center: geojson.features[0].geometry.coordinates })
+
+        // We update state data for storage later on and for detecting which
+        // languages the user can select when updating the point's info
+        const featureCollection = draw.getAll()
+        const features = featureCollection.features
+
+        this.$store.commit('contribute/setDrawnFeatures', features)
+        this.$store.commit(
+          'contribute/setLanguagesInFeature',
+          getLanguagesFromDraw(features, this.languageSet)
+        )
+
+        // We trigger this function in order to select the newly created
+        // point by default - this would make it easier to delete the point
+        draw.changeMode('simple_select', {
+          featureIds: ['current-location-id']
+        })
+      }
+      function onGetLocationError(error) {
+        if (error.code === 1) {
+          alert('Error: Location access denied!')
+        } else if (error.code === 2) {
+          alert('Error: Cannot get current location.')
+        }
+      }
+
+      // Zoom to my location
+      const onZoomLocationSuccess = position => {
+        map.flyTo({
+          center: [position.coords.longitude, position.coords.latitude],
+          zoom: 10,
+          speed: 3,
+          curve: 1
+        })
+      }
+
       let drawInit = false
       const self = this
       map.on('draw.render', e => {
@@ -832,7 +912,6 @@ export default {
           }
 
           self.$root.$on('mode_change_draw', data => {
-            // console.log('This got called')
             if (data === 'point') {
               draw.changeMode('draw_point')
             }
@@ -846,6 +925,18 @@ export default {
 
             if (data === 'line_string') {
               draw.changeMode('draw_line_string')
+            }
+
+            if (data === 'location') {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  onGetLocationSuccess,
+                  onGetLocationError,
+                  locationFetchOptions
+                )
+              } else {
+                alert('Sorry, your browser does not support geolocation!')
+              }
             }
           })
         }

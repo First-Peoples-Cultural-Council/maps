@@ -101,17 +101,18 @@
             @click.native="handleClick($event, language.fv_archive_link)"
           ></LanguageSeeAll>
         </div>
-        <div class="mt-3">
-          <b-table
-            hover
-            :items="lna"
-            responsive
-            small
-            table-class="lna-table"
-            thead-class="lna-table-thead"
-            tbody-class="lna-table-tbody"
-          ></b-table>
-        </div>
+        <!--  Commented out until data is fixed -->
+        <!--        <div class="mt-3">-->
+        <!--          <b-table-->
+        <!--            hover-->
+        <!--            :items="lna"-->
+        <!--            responsive-->
+        <!--            small-->
+        <!--            table-class="lna-table"-->
+        <!--            thead-class="lna-table-thead"-->
+        <!--            tbody-class="lna-table-tbody"-->
+        <!--          ></b-table>-->
+        <!--        </div>-->
         <p>
           Source:
           <a

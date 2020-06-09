@@ -28,8 +28,10 @@
           <b-alert show>These items are waiting for Verification</b-alert>
         </div>
         <div v-if="placesToVerify && placesToVerify.length > 0" class="mt-2">
-          <div v-for="ptv in placesToVerify" :key="`ptv${ptv.id}`" class="mb-3">
+          <div>
             <PlacesCard
+              v-for="ptv in placesToVerify"
+              :key="`ptv${ptv.id}`"
               :place="{ properties: { name: ptv.name } }"
               class="mb-2"
               @click.native="
@@ -37,9 +39,8 @@
                   path: `/place-names/${encodeFPCC(ptv.name)}`
                 })
               "
-            ></PlacesCard>
-            <b-row no-gutters>
-              <b-col xs="6" class="pr-1">
+            >
+              <template v-slot:verify>
                 <b-button
                   variant="dark"
                   block
@@ -52,11 +53,11 @@
                   "
                   >Verify</b-button
                 >
-              </b-col>
-              <b-col xs="6" class="pl-1">
+              </template>
+              <template v-slot:reject>
                 <Reject :id="ptv.id" type="placename"></Reject>
-              </b-col>
-            </b-row>
+              </template>
+            </PlacesCard>
           </div>
         </div>
 
@@ -64,6 +65,7 @@
           <Media
             v-for="mtv in mediaToVerify"
             :key="`mtv${mtv.id}`"
+            class="mb-3"
             :media="mtv"
             :community-only="mtv.community_only"
           >
@@ -92,7 +94,8 @@
           <UserApproveCard
             v-for="utv in usersToVerify"
             :key="`utv${utv.id}`"
-            :verify="utv"
+            class="mb-3"
+            :user-to-verify="utv"
           ></UserApproveCard>
         </div>
       </div>
@@ -101,7 +104,7 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
@@ -157,26 +160,6 @@ export default {
   },
   methods: {
     encodeFPCC,
-    async handleUser(e, tv, { verify, reject }) {
-      const url = {
-        verify: getApiUrl('community/verify_member/'),
-        reject: getApiUrl('community/reject_member/')
-      }
-      await this.$axios.$patch(
-        url[verify || reject],
-        {
-          user_id: tv.user.id,
-          community_id: tv.community.id
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-      await this.$store.dispatch('user/getMembersToVerify')
-      // console.log('Result', result)
-    },
     async handleApproval(e, tv, { verify, reject, type }) {
       const data = {
         tv,
@@ -197,9 +180,4 @@ export default {
   }
 }
 </script>
-<style>
-.approval-container {
-}
-
-/* User-Approval Card */
-</style>
+<style></style>
