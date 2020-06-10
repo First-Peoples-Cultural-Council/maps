@@ -7,7 +7,7 @@
             src="../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
           />
-          <span class="mt-3">
+          <span class="mt-3 hide-mobile">
             First Peoples'
             <p>Map of B.C.</p>
           </span>
@@ -21,6 +21,11 @@
       </div>
       <div class="splash-detail-content">
         <div class="splash-detail">
+          <img
+            src="../assets/images/splashscreen/hero_img.svg"
+            alt="Language Map Of British Columbia"
+            class="fpcc-splash-img"
+          />
           <span class="fpcc-title">First Peoples' Map of B.C.</span>
           <img
             src="../assets/images/splashscreen/zigzag.svg"
@@ -31,11 +36,6 @@
             Explore and contribute to the interactive map of the Indigenous
             Languages, Arts and Heritage in B.C.
           </span>
-          <img
-            src="../assets/images/splashscreen/hero_img.svg"
-            alt="Language Map Of British Columbia"
-            class="fpcc-splash-img"
-          />
         </div>
         <div class="splash-nav">
           <img
@@ -51,7 +51,7 @@
             <div class="splash-btn" @click="redirectToPath(nav.path)">
               {{ nav.title }}
             </div>
-            <span class="splash-description">
+            <span class="splash-description hide-mobile">
               {{ nav.description }}
             </span>
           </div>
@@ -141,7 +141,6 @@ export default {
       .header-logo {
         display: flex;
         align-items: center;
-
         margin-left: 2%;
         color: #a32720;
         height: 100%;
@@ -152,7 +151,8 @@ export default {
 
         img {
           width: 70px;
-          height: 70px;
+          height: 100%;
+          padding: 0.5em 0;
           object-fit: contain;
           margin-right: 1em;
         }
@@ -178,6 +178,7 @@ export default {
       height: 90%;
       width: 50%;
       color: #fff;
+      padding: 1em 0;
 
       .splash-detail {
         display: flex;
@@ -264,8 +265,51 @@ export default {
 }
 
 @media screen and (max-width: 992px) {
-  .splash-main-container {
-    border: 1px solid green;
+  .splash-content-container {
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow-y: auto;
+  }
+
+  .splash-detail-content {
+    height: auto !important;
+  }
+
+  .splash-detail {
+    align-items: center !important;
+    height: auto;
+
+    .fpcc-title {
+      font-size: 1.5em !important;
+      text-align: center;
+    }
+    .fpcc-description {
+      font-size: 1.2em !important;
+    }
+    .fpcc-splash-img {
+      position: initial !important;
+      margin-top: 2em;
+      margin-bottom: 1em;
+      width: 150px;
+      height: 150px;
+    }
+
+    .fpcc-description {
+      text-align: center;
+      width: 100% !important;
+    }
+  }
+
+  .splash-nav {
+    width: 100%;
+
+    .splash-navigation-btn {
+      flex: 0 0 100% !important;
+
+      .splash-btn {
+        font-size: 0.8em !important;
+      }
+    }
   }
 }
 </style>
