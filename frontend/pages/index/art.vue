@@ -516,7 +516,9 @@ export default {
         const artGeo = this.artsGeoSet.features.find(
           artGeo => artGeo.id === artwork.properties.placename
         )
-        artwork.geometry = artGeo.geometry
+        if (artGeo) {
+          artwork.geometry = artGeo.geometry
+        }
 
         return artwork
       })
