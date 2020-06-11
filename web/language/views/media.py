@@ -166,6 +166,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
         if request.user.is_authenticated:
             user_logged_in = True
 
