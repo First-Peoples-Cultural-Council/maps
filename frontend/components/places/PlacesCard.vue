@@ -1,6 +1,6 @@
 <template>
   <div
-    class="community-card"
+    class="places-main-card"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style lang="scss">
-.community-card {
+.places-main-card {
   border: 1px solid #ebe6dc;
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
@@ -96,13 +96,12 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-
   display: table;
 }
 .places-card-header {
   display: table-cell;
   vertical-align: middle;
-  width: 15%;
+  width: 10%;
 }
 .places-card-body {
   display: table-cell;
