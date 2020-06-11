@@ -31,7 +31,7 @@ def send_claim_profile_invite(email):
     encoded_email = email.encode('utf-8')
     key = hashlib.sha256(salt + encoded_email).hexdigest()
 
-    email_data = RelatedData.objects.filter(data_type='user_email', value=email)
+    email_data = RelatedData.objects.filter(data_type='user_email', placename__creator__isnull=True, value=email)
 
     fully_claimed = True
 
@@ -55,7 +55,7 @@ def send_claim_profile_invite(email):
             <h4>Claim Your Profile</h4>
             <p>If you own the following profile(s), please click on the link below to claim it:</p>
             <p>&emsp;<a href='{host}/claim?email={email}&key={key}' target='_blank'>Claim Profile</a></p>
-            <p>If it isn't, please report that your email is being used by another person on our website by sending an email to <a href='mailto:{fpcc_email}' target='_blank'>{fpcc_email}</a>.</p><br/>
+            <p>If you don't own the profile(s) listed, please report that your email is being used by another person on our website by sending an email to <a href='mailto:{fpcc_email}' target='_blank'>{fpcc_email}</a>.</p><br/>
             <p>Thank you very much, and have a good day!</p>
         """.format(
             fp_artsmap_website='https://fp-artsmap.ca',
@@ -85,7 +85,7 @@ def send_claim_profile_invites():
     """
     # This is actual data which we won't use yet
     emails = RelatedData.objects.exclude(value='').filter(
-        data_type='user_email').distinct('value').values_list('value', flat=True)
+        data_type='user_email', placename__creator__isnull=True).distinct('value').values_list('value', flat=True)
 
     for email in emails:
         # In the case of bulk sending, user_email = profile_email
