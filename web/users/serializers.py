@@ -72,6 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
             "language_ids",
             "notification_frequency",
             "picture",
+            "image",
         )
 
 

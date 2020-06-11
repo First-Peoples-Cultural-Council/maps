@@ -46,6 +46,7 @@ class User(AbstractUser):
         auto_now_add=True
     )
     picture = models.URLField(max_length=255, null=True)
+    image = models.ImageField(null=True, blank=True, default=None)
     notification_frequency = models.IntegerField(default=7)
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
