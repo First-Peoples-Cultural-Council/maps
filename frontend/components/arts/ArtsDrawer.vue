@@ -172,7 +172,7 @@ export default {
     )
 
     // Fetch artists for this placename if it is a public_art
-    if (this.placename.kind === 'public_art') {
+    if (!this.isArtsDetailPage && this.placename.kind === 'public_art') {
       this.$axios
         .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
         .then(result => {
