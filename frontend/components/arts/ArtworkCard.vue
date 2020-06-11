@@ -102,9 +102,7 @@ export default {
       return this.media.properties
     },
     placename() {
-      return this.$store.state.arts.artworksPlacenames.find(
-        placename => placename.id === this.mediaData.placename
-      )
+      return this.mediaData.placename
     },
     mediaType() {
       return this.mediaData.file_type
