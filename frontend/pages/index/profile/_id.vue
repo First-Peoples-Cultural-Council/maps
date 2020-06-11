@@ -24,9 +24,11 @@
       <UserDetailCard
         :id="user.id"
         :name="getUserName()"
+        :art-image="getUserImg()"
         type="none"
         :edit="isAdmin()"
         :approval="isLangAdmin && isOwner"
+        :handle-return="handleReturn"
       ></UserDetailCard>
       <section class="ml-2 mr-2 mt-2">
         <div
@@ -202,7 +204,7 @@
 
 <script>
 import UserDetailCard from '@/components/user/UserDetailCard.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -290,8 +292,15 @@ export default {
     },
     getUserName() {
       return (
-        this.user && (this.user.first_name || this.user.username.split('__')[0])
+        this.user &&
+        (`${this.user.first_name} ${this.user.last_name}` ||
+          this.user.username.split('__')[0])
       )
+    },
+    getUserImg() {
+      return this.user.image
+        ? getMediaUrl(this.user.image)
+        : require(`@/assets/images/artist_icon.svg`)
     },
     handleLocation(e, sl) {
       this.$eventHub.whenMap(map => {
@@ -307,7 +316,9 @@ export default {
         favourite: sl
       }
       await this.$store.dispatch('user/removeSavedLocation', data)
-      // console.log('Location Remove Result', result)
+    },
+    handleReturn() {
+      this.$router.push({ path: '/languages' })
     }
   }
 }
