@@ -397,19 +397,10 @@ export default {
     const currentArtworks = this.$store.state.arts.artworkSet
 
     if (currentArtworks.length === 0 && this.filterMode === 'artwork') {
-      let artworks = await this.$axios.$get(
+      const artworks = await this.$axios.$get(
         getApiUrl('arts/artwork?format=json')
       )
-      artworks = artworks.map(artwork => {
-        const artGeo = this.artsGeoSet.features.find(
-          artGeo => artGeo.id === artwork.properties.placename
-        )
-        if (artGeo) {
-          artwork.geometry = artGeo.geometry
-        }
 
-        return artwork
-      })
       if (artworks) {
         this.$store.commit('arts/setArtworksStore', artworks) // All data
         this.$store.commit('arts/setArtworks', artworks) // All data
@@ -508,20 +499,9 @@ export default {
       }
     },
     async refetchArtwork() {
-      let artworks = await this.$axios.$get(
+      const artworks = await this.$axios.$get(
         getApiUrl('arts/artwork?format=json')
       )
-
-      artworks = artworks.map(artwork => {
-        const artGeo = this.artsGeoSet.features.find(
-          artGeo => artGeo.id === artwork.properties.placename
-        )
-        if (artGeo) {
-          artwork.geometry = artGeo.geometry
-        }
-
-        return artwork
-      })
 
       if (artworks) {
         this.$store.commit('arts/setArtworksStore', artworks) // All data

@@ -138,11 +138,7 @@ export default {
       return this.$store.state.sidebar.showGallery
     },
     placename() {
-      const id = this.art.id ? this.art.id : this.art.placename
-
-      return this.$store.state.arts.artworksPlacenames.find(
-        placename => placename.id === id
-      )
+      return this.art.placename
     },
     listOfPublicArt() {
       return this.art.public_arts || []
@@ -176,7 +172,7 @@ export default {
     )
 
     // Fetch artists for this placename if it is a public_art
-    if (this.placename.kind === 'public_art') {
+    if (!this.isArtsDetailPage && this.placename.kind === 'public_art') {
       this.$axios
         .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
         .then(result => {
