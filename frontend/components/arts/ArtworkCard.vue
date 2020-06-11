@@ -266,7 +266,7 @@ export default {
     .card-teaser-img {
       object-fit: cover;
       width: 100%;
-      background: #000;
+      background: rgba(0, 0, 0, 0.5);
     }
     .card-teaser-null {
       object-fit: none;

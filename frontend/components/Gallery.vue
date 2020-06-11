@@ -434,7 +434,7 @@ export default {
   opacity: 1;
   border: 5px solid #fff;
   transition: border 0.2s ease-in;
-  background: #000;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .arts-img-item img {
