@@ -3,6 +3,7 @@
     <span>EVENTS</span>
     <img src="@/assets/images/event_icons.svg" alt="Menu" class="menu-icon" />
     <b-popover
+      custom-class="event-popover"
       target="event-icon-container"
       placement="bottom"
       triggers="click"
@@ -103,7 +104,7 @@ export default {
   max-height: 650px;
 }
 
-.popover-body {
-  padding: 0;
+.event-popover .popover-body {
+  padding: 0 !important;
 }
 </style>
