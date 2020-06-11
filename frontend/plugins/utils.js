@@ -136,6 +136,8 @@ export const getCookie = name => {
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
+  } else if (media_file.name) {
+    return media_file.name
   } else if (media_file.includes('http://nginx')) {
     return media_file.replace('http://nginx', '')
   } else if (media_file.includes('https://nginx')) {
@@ -180,7 +182,7 @@ export const getGenericFileType = fileType => {
   if (fileType === 'vimeo') {
     return 'vimeo'
   }
-  if (imageTypes[fileType]) {
+  if (imageTypes[fileType] || fileType === 'image') {
     return 'image'
   }
 
@@ -231,9 +233,9 @@ export const getFormData = (
   formData.append('media_file', media_file)
   formData.append(type, id)
 
-  if (is_artwork) {
-    formData.append('is_artwork', is_artwork)
-  }
+  // if (is_artwork) {
+  //   formData.append('is_artwork', is_artwork)
+  // }
 
   if (community_only) {
     formData.append('community_only', community_only)
