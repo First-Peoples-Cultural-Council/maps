@@ -1,10 +1,21 @@
 <template>
-  <div class="media-add-btn" @click="handleImageClick($event, file)">
+  <div class="media-add-btn" @click.prevent="handleImageClick($event, file)">
     <img v-if="file.file_type.includes('image')" :src="fileSrc" />
     <img v-else-if="file.file_type === 'youtube'" :src="videoThumbnail()" />
     <img v-else class="media-other" src="@/assets/images/clip_icon.svg" />
     <!-- <span v-if="typeMedia === 'existing'" class="media-status"> Old </span> -->
-    <div class="media-remove-btn" @click="toggleDeleteModal" />
+    <div class="media-action-btns">
+      <div class="media-edit-btn" @click.stop.prevent="toggleEditModal" />
+      <div class="media-remove-btn" @click.stop.prevent="toggleDeleteModal" />
+    </div>
+    <MediaEdit
+      v-if="showEditModal"
+      :id="file.id"
+      :show-state="showEditModal"
+      :media="file"
+      :toggle-modal="toggleEditModal"
+    ></MediaEdit>
+
     <b-modal v-model="modalShow" hide-header @ok="removeMedia(file)">{{
       `Are you sure you want to remove media named "${file.name}"?`
     }}</b-modal>
@@ -13,6 +24,8 @@
 
 <script>
 import { getMediaUrl, getCookie, getApiUrl } from '@/plugins/utils.js'
+import MediaEdit from '@/components/MediaEdit.vue'
+
 const base64Encode = data =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -21,6 +34,9 @@ const base64Encode = data =>
     reader.onerror = error => reject(error)
   })
 export default {
+  components: {
+    MediaEdit
+  },
   props: {
     file: {
       type: Object,
@@ -42,7 +58,8 @@ export default {
   data() {
     return {
       fileSrc: null,
-      modalShow: false
+      modalShow: false,
+      showEditModal: false
     }
   },
   created() {
@@ -62,6 +79,9 @@ export default {
   methods: {
     toggleDeleteModal() {
       this.modalShow = !this.modalShow
+    },
+    toggleEditModal() {
+      this.showEditModal = !this.showEditModal
     },
     removeMedia(file) {
       const filteredData = this.allMedia.filter(media => media !== file)
@@ -88,10 +108,11 @@ export default {
       return match && match[7].length === 11 ? match[7] : false
     },
     handleImageClick(e, media) {
+      console.log(media)
       require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
-        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`, {
+        .create(`<img src="${getMediaUrl(this.fileSrc, this.isServer)}">`, {
           closable: true
         })
         .show()
