@@ -132,6 +132,7 @@ export default {
   },
   data() {
     return {
+      oldUser: {},
       quillEditor: null,
       errors: [],
       user: {},
@@ -171,7 +172,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('sidebar/set', true)
+      vm.$store.commit('sidebar/set', false)
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -204,7 +205,7 @@ export default {
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
       window.open(
-        'https://login.firstvoices.io/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
+        `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
       )
       window.location.reload()
     }
@@ -237,6 +238,12 @@ export default {
       )
     },
     async save() {
+      this.oldUser = this.user
+      const headers = {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
       const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
@@ -253,12 +260,34 @@ export default {
         notification_frequency: this.user.notification_frequency
       }
       try {
-        await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
+        const result = await this.$axios.$patch(
+          getApiUrl(`user/${this.user.id}/`),
+          data,
+          headers
+        )
+
+        if (result) {
+          const findUserArtist = this.oldUser.placename_set.find(
+            placename =>
+              placename.kind === 'artist' &&
+              placename.name ===
+                `${this.oldUser.first_name} ${this.oldUser.last_name}`
+          )
+
+          // Also update the Artist Placename name
+          if (findUserArtist) {
+            const patchData = {
+              name: `${data.first_name} ${data.last_name}`
+            }
+            const modified = await this.$axios.$patch(
+              `/api/placename/${findUserArtist.id}/`,
+              patchData,
+              headers
+            )
+            console.log(modified)
           }
-        })
-        await this.$store.dispatch('user/setLoggedInUser')
+          await this.$store.dispatch('user/setLoggedInUser')
+        }
       } catch (e) {
         console.warn(e.response)
         this.errors = this.errors.concat(

@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
 from arts.models import Art
+from language.models import PlaceName
 from django.contrib.gis.geos import Point
 
 import os
@@ -11,12 +12,12 @@ import pymysql
 from web import dedruplify
 
 
-
 class Command(BaseCommand):
     help = "Loads arts from fixtures/arts.json."
 
     def handle(self, *args, **options):
         sync_arts()
+
 
 def sync_arts():
 
@@ -30,7 +31,6 @@ def sync_arts():
     c.load_arts()
 
 
-
 TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
 
 
@@ -39,6 +39,9 @@ class Client(dedruplify.DeDruplifierClient):
     def load_arts(self):
 
         arts_geojson = self.nodes_to_geojson()
+        # OLD IMPLEMENTATION FOR SAVING ARTS IN ART MODEL
+        # TEMPORARILY COMMENTING BEFORE COMPLETELY OVERRIDING
+
         # Removing every Art object from the database.
         # We are loading everything from the scratch
         arts = Art.objects.all()
@@ -73,6 +76,33 @@ class Client(dedruplify.DeDruplifierClient):
         #         + ", unexpected error: "
         #         + str(e)
         #     )
+
+        # Removing every Art PlaceName object from the database.
+        # We are loading everything from the scratch
+        # arts = PlaceName.objects.filter(is_art=True)
+        # arts.delete()
+
+        # error_log = []
+        # for rec in arts_geojson["features"]:
+
+        #     with transaction.atomic():
+        #         # avoid duplicates on remote data source.
+        #         try:
+        #             art = PlaceName.objects.get(name=rec["properties"]["name"])
+        #         except PlaceName.DoesNotExist:
+        #             art = PlaceName(name=rec["properties"]["name"])
+
+        #         # Geometry map point with latitude and longitude
+        #         art.geom = Point(
+        #             float(rec["geometry"]["coordinates"][0]),  # latitude
+        #             float(rec["geometry"]["coordinates"][1]),
+        #         )  # longitude
+        #         art.node_type = rec["properties"]["type"]
+        #         art.ndoe_details = rec["properties"]["details"]
+        #         art.node_id = rec["properties"]["node_id"]
+        #         art.is_art = True
+
+        #         art.save()
 
         if len(error_log) > 0:
             for error in error_log:

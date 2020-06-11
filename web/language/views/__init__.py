@@ -4,3 +4,4 @@ from .language import *
 from .media import *
 from .others import *
 from .placename import *
+from .taxonomy import *

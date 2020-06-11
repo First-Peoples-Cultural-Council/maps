@@ -44,6 +44,7 @@ import UploadOptions from '@/components/UploadOptions.vue'
 import NoteUploader from '@/components/NoteUploader.vue'
 import YoutubeUploader from '@/components/YoutubeUpload.vue'
 import VimeoUploader from '@/components/VimeoUpload.vue'
+
 export default {
   components: {
     FileUploader,

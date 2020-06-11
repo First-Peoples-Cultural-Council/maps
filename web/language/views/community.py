@@ -2,6 +2,7 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
 from language.models import (
@@ -28,6 +29,7 @@ from language.serializers import (
     CommunityGeoSerializer,
     ChampionSerializer,
     CommunityLanguageStatsSerializer,
+    CommunitySearchSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -210,6 +212,9 @@ class CommunityLanguageStatsViewSet(BaseModelViewSet):
     detail_serializer_class = CommunityLanguageStatsSerializer
     queryset = CommunityLanguageStats.objects.all()
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['community', 'language', ]
+
 
 class ChampionViewSet(BaseModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -219,6 +224,13 @@ class ChampionViewSet(BaseModelViewSet):
     queryset = Champion.objects.all()
 
 
+# Geo List APIViews
 class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
+
+
+# Search List APIViews
+class CommunitySearchList(generics.ListAPIView):
+    queryset = Community.objects.filter(point__isnull=False).order_by("name")
+    serializer_class = CommunitySearchSerializer

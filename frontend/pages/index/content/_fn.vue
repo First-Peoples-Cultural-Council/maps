@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo :logo-alt="1" class="cursor-pointer "></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -292,7 +292,7 @@ export default {
         legend: {
           labels: {
             filter(legendItem, chartData) {
-              console.log('Legend Item', legendItem)
+              // console.log('Legend Item', legendItem)
               if (legendItem.index === 3) {
                 return false
               }
@@ -303,8 +303,8 @@ export default {
         tooltips: {
           callbacks: {
             label(tooltipItems, data) {
-              console.log('Data', data)
-              console.log('tool', tooltipItems)
+              // console.log('Data', data)
+              // console.log('tool', tooltipItems)
               return `${data.labels[tooltipItems.index]}: ${(
                 data.datasets[0].data[tooltipItems.index] * 100
               ).toFixed(1) + '%'}`
@@ -421,7 +421,7 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, $route }) {
-    console.log('asyncData*****')
+    // console.log('asyncData*****')
     const communities = await $axios.$get(
       getApiUrl(`community?timestamp=${new Date().getTime()}/`)
     )
@@ -440,7 +440,7 @@ export default {
         audio_obj: null
       }
     }
-    console.log('audio', audio_obj)
+    // console.log('audio', audio_obj)
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     store.commit('places/setMedias', communityDetail.medias)
@@ -507,8 +507,10 @@ export default {
       const fluent_speakers = parseFloat(l.fluent_speakers) / 100
       const some_speakers = parseFloat(l.some_speakers) / 100
       const learners = parseFloat(l.learners) / 100
-      const others = (100 - (fluent_speakers * 100 + some_speakers * 100)) / 100
-      console.log('Others', others)
+      const others =
+        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
+        100
+      // console.log('Others', others)
       return {
         name: l.language,
         labels: ['Fluent', 'Some', 'Other'],

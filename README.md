@@ -42,6 +42,46 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 ./docs/restore-pg
 ```
 
+For loading arts data in your local environment, acquire a database dump for the data in `fp-artsmap.ca`. If the file is `arts.sql` in your repo root, follow the instructions below:
+
+- Add another service in your docker-compose.override.yml with the following data:
+    ```
+    arts_db:
+        image: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: mysql
+            MYSQL_USER: mysql
+            MYSQL_DATABASE: arts
+            MYSQL_PASSWORD: mysql
+            MYSQL_ROOT_HOST: '%'
+        networks:
+            - back-tier
+        volumes:
+            - mysqldb-files:/var/lib/mysql
+    ```
+- Add volume for the new service:
+    ```
+    volumes:
+        ...
+        mysqldb-files:
+            driver: local
+    ```
+- Run the command below in another terminal to start the new service without stopping the others:
+    ```
+    docker-compose up -d
+    ```
+- Restore the `arts.sql` dump:
+    ```
+    docker cp arts.sql maps_arts_db_1:/tmp
+    docker-compose exec arts_db bash
+    cd /tmp
+    mysql -u mysql -p arts < arts.sql
+    ```
+- Trigger load_arts command in web:
+    ```
+    docker-compose exec web python manage.py load_arts
+    ```
+
 ## Deployment
 
   * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps.fpcc.ca` nightly.

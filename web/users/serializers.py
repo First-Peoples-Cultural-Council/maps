@@ -20,7 +20,7 @@ class LanguageUserSerializer(serializers.ModelSerializer):
 class PlaceNameUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id")
+        fields = ("name", "id", "kind")
 
 
 class AdministratorUserSerializer(serializers.ModelSerializer):

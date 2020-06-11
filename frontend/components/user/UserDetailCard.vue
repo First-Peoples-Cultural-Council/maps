@@ -1,84 +1,71 @@
 <template>
   <div class="user-detail-card">
-    <Card>
-      <template v-slot:header>
-        <div
-          class="user-detail-icon-container"
-          :style="'background-color:' + color"
-        >
-          <img src="@/assets/images/language_icon.svg" alt="Language" />
-        </div>
-      </template>
-      <template v-slot:body>
-        <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              User
-            </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold">
-              {{ name }}
-            </h5>
-          </div>
-        </div>
-        <div v-if="edit && id" class="d-inline-block">
-          <CardBadge
-            content="Edit"
-            type="edit"
-            @click.native="
-              $router.push({
-                path: `/profile/edit/${id}`
-              })
-            "
-          ></CardBadge>
-        </div>
-        <div v-if="approval && id" class="d-inline-block">
-          <CardBadge
-            content="Approval"
-            type="edit"
-            @click.native="
-              $router.push({
-                path: `/profile/approvals`
-              })
-            "
-          ></CardBadge>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div
-          class="fpcc-card-more"
-          @click.prevent="handleReturn"
-          @mouseover.prevent="handleMouseOver"
-          @mouseleave="handleMouseLeave"
-        >
-          <img
-            v-if="!hover"
-            class="ml-1"
-            src="@/assets/images/return_icon_hover.svg"
-            alt="Go"
-          />
-          <img
-            v-else
-            class="ml-1"
-            src="@/assets/images/return_icon_hover.svg"
-            alt="Go"
-          />
-          <span class="ml-1 font-weight-bold">Return</span>
-        </div>
-      </template>
-    </Card>
+    <div
+      class="user-detail-icon-container"
+      :style="'background-color:' + color"
+    >
+      <img src="@/assets/images/language_icon.svg" alt="Language" />
+    </div>
+
+    <div class="arts-detail-text">
+      <h5 class="field-kind">
+        User
+      </h5>
+      <h5 class="field-name">
+        {{ name }}
+      </h5>
+      <div v-if="edit && id" class="d-inline-block">
+        <CardBadge
+          content="Edit"
+          type="edit"
+          @click.native="
+            $router.push({
+              path: `/profile/edit/${id}`
+            })
+          "
+        ></CardBadge>
+      </div>
+      <div v-if="approval && id" class="d-inline-block">
+        <CardBadge
+          content="Approval"
+          type="edit"
+          @click.native="
+            $router.push({
+              path: `/profile/approvals`
+            })
+          "
+        ></CardBadge>
+      </div>
+    </div>
+
+    <div
+      class="fpcc-card-more"
+      @click.prevent="handleReturn"
+      @mouseover.prevent="handleMouseOver"
+      @mouseleave="handleMouseLeave"
+    >
+      <img
+        v-if="hover"
+        class="ml-1"
+        src="@/assets/images/return_icon.svg"
+        alt="Go"
+      />
+      <img
+        v-else
+        class="ml-1"
+        src="@/assets/images/return_icon_hover.svg"
+        alt="Go"
+      />
+      <span class="ml-1 font-weight-bold">Return</span>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
 import CardBadge from '@/components/CardBadge.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
-    Card,
     CardBadge
   },
   props: {
@@ -139,21 +126,7 @@ export default {
       }
     },
     handleReturn() {
-      if (!this.detail) {
-        if (this.server) {
-          this.$router.push({ path: '/languages' })
-        } else if (this.comingFromDetail) {
-          this.$router.push({ path: '/languages' })
-          this.$store.commit('languages/setComingFromDetail', false)
-        } else {
-          this.$router.go(-1)
-        }
-      } else {
-        this.$store.commit('languages/setComingFromDetail', true)
-        this.$router.push({
-          path: `/languages/${encodeFPCC(this.$route.params.lang)}`
-        })
-      }
+      this.$router.push({ path: '/languages' })
     },
     handleMouseOver() {
       this.hover = true
@@ -167,33 +140,47 @@ export default {
 
 <style scoped>
 .user-detail-card {
-  cursor: pointer;
+  border-bottom: 3px solid #f9f9f9;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  border: 1px solid #ebe6dc;
+  padding: 1em 0 1em 1em;
+  border-radius: 0.25em;
+  position: relative;
 }
 .user-detail-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 50px;
+  width: 50px;
 }
 .user-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more {
-  background-color: #c46156;
-  display: flex;
-  align-items: center;
-  height: 35px;
-  justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
-  color: white;
+
+.arts-detail-text {
+  margin-left: 0.5em;
+  width: 65%;
 }
 
 .fpcc-card-more {
-  padding: 0.3em;
-  font-size: 0.7em;
+  width: 90px;
+  background-color: #b47a2b;
+  height: 35px;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  position: absolute;
+  right: 0;
+  top: 25%;
 }
 
 .fpcc-card-more:hover {
@@ -210,5 +197,22 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
+}
+
+.field-kind {
+  font: Bold 15px/18px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 0.1em;
+  padding: 0;
+}
+
+.field-name {
+  font: Bold 16px/20px Proxima Nova;
+  color: #151515;
+  margin: 0.1em;
+  padding: 0;
+  letter-spacing: 0.5px;
 }
 </style>

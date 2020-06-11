@@ -12,6 +12,7 @@
       </div>
     </div>
     <div class="hide-mobile pb-4" :class="{ 'content-mobile': mobileContent }">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -19,6 +20,7 @@
       >
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
+
       <UserDetailCard
         :id="user.id"
         :name="getUserName()"
@@ -82,15 +84,32 @@
         >
           Contributions ({{ user.placename_set.length }})
         </h5>
-        <PlacesCard
-          v-for="place in user.placename_set"
-          :key="`place${place.id}`"
-          :place="{ properties: place }"
-          class="mt-3 hover-left-move"
-          @click.native="
-            $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
-          "
-        ></PlacesCard>
+        <template v-for="place in user.placename_set">
+          <!-- Render this card if not Art Placename -->
+          <PlacesCard
+            v-if="place.kind === ''"
+            :key="`place${place.id}`"
+            :place="{ properties: place }"
+            class="mt-1 hover-left-move"
+            @click.native="
+              $router.push({ path: '/place-names/' + encodeFPCC(place.name) })
+            "
+          ></PlacesCard>
+          <!-- Render this card if Art Placename -->
+          <ArtsCard
+            v-else
+            :key="`place${place.id}`"
+            :name="place.name"
+            :kind="place.kind"
+            class="mt-1 hover-left-move"
+            @click.native="
+              $router.push({
+                path: `/art/${encodeFPCC(place.name)}`
+              })
+            "
+          ></ArtsCard>
+        </template>
+
         <div v-if="savedLocations.length > 0 && isOwner">
           <h5
             class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
@@ -189,6 +208,8 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
+import ArtsCard from '@/components/arts/ArtsCard.vue'
+import Logo from '@/components/Logo.vue'
 
 export default {
   components: {
@@ -196,7 +217,9 @@ export default {
     LanguageDetailBadge,
     PlacesCard,
     LanguageCard,
-    CommunityCard
+    CommunityCard,
+    Logo,
+    ArtsCard
   },
   computed: {
     isLoggedIn() {
@@ -229,7 +252,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('sidebar/set', true)
+      vm.$store.commit('sidebar/set', false)
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -244,6 +267,7 @@ export default {
     const authUser = await $axios.$get(
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
+
     let isOwner = false
     if (authUser.is_authenticated === true) {
       if (parseInt(params.id) === authUser.user.id) {
@@ -257,7 +281,7 @@ export default {
     return { user, isOwner }
   },
   mounted() {
-    console.log('mounted, user=', this.user)
+    console.log('mounted, user=', this.$store.state.user)
   },
   methods: {
     encodeFPCC,
@@ -282,14 +306,52 @@ export default {
       const data = {
         favourite: sl
       }
-      const result = await this.$store.dispatch(
-        'user/removeSavedLocation',
-        data
-      )
-      console.log('Location Remove Result', result)
+      await this.$store.dispatch('user/removeSavedLocation', data)
+      // console.log('Location Remove Result', result)
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.placename-list-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  .placename-container {
+    flex: 0 0 32%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 0.25em;
+    box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-sizing: border-box;
+    margin-right: 1%;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 85px;
+    }
+
+    .placename-details {
+      display: flex;
+      flex-direction: column;
+      margin: 0 0.5em 0.5em 0.5em;
+    }
+  }
+
+  .add-placename {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+</style>

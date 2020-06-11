@@ -8,7 +8,7 @@ from language.notifications import send
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
-from arts.management.commands.load_arts import sync_arts
+from arts.management.commands.load_nodes import sync_arts
 
 
 @register_job(
@@ -41,7 +41,9 @@ def notifier_job():
     replace_existing=True,
 )
 def arts():
-    sync_arts()
+    # Old website will be deleted, so will no longer have to sync frequently
+    # sync_arts()
+    pass
 
 
 register_events(scheduler)

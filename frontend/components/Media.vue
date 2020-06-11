@@ -172,6 +172,7 @@ import {
   getYoutubeId
 } from '@/plugins/utils.js'
 require('basiclightbox/dist/basicLightbox.min.css')
+
 export default {
   components: {
     FlagModal,
@@ -307,7 +308,7 @@ export default {
       flex-wrap: wrap;
 
       & > * {
-        flex: 0 0 30%;
+        flex: 0 0 25%;
         margin-right: 0.25em;
         font-size: 0.8em;
       }
@@ -316,6 +317,10 @@ export default {
 
   .alert {
     margin-bottom: 0.5em !important;
+  }
+
+  &:hover {
+    border: 1px solid #b57936;
   }
 }
 

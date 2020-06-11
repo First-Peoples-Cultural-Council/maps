@@ -203,7 +203,7 @@ export const actions = {
     const result = await this.$axios.$get(
       `${getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)}`
     )
-    console.log('Dispatch Result', result)
+    // console.log('Dispatch Result', result)
     commit('setUser', result.user)
     commit('setPicture', result.user.picture)
     return result

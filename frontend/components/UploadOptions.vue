@@ -33,6 +33,7 @@
       </b-list-group-item>
 
       <b-list-group-item
+        v-if="queryMode ? false : true"
         class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
@@ -66,6 +67,7 @@
         <small class="text-muted">Embed A Youtube Video</small>
       </b-list-group-item>
       <b-list-group-item
+        v-if="queryMode ? false : true"
         class="flex-column align-items-start cursor-pointer"
         @click="
           chooseUploadType($event, {
@@ -85,6 +87,11 @@
 </template>
 <script>
 export default {
+  computed: {
+    queryMode() {
+      return this.$route.query.mode || this.$route.query.upload_artwork
+    }
+  },
   methods: {
     chooseUploadType(e, module) {
       this.$root.$emit('uploadModeChosen', module)

@@ -7,7 +7,6 @@ body,
 
 html,
 body,
-.popover
     font-family: 'Lato', sans-serif
 
 \:root
@@ -66,9 +65,14 @@ body,
 .valign-middle
     vertical-align: middle
 
+.show-mobile
+    display: none !important;
+
 @media (max-width: 992px)
     .hide-mobile
         display: none !important
+    .show-mobile
+        display: flex !important
 
 .art-marker, .place-marker, .nation-marker
   width: 35px

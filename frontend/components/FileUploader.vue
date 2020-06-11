@@ -42,7 +42,10 @@
           class="mt-2 mb-2 font-08"
         ></b-form-textarea>
 
-        <CommunityOnly :commonly.sync="commonly"></CommunityOnly>
+        <CommunityOnly
+          v-if="!isArtwork"
+          :commonly.sync="commonly"
+        ></CommunityOnly>
 
         <b-button variant="dark" size="sm" @click="handleUpload"
           >Upload</b-button
@@ -93,6 +96,11 @@ export default {
       commonly: 'not_accepted'
     }
   },
+  computed: {
+    isArtwork() {
+      return this.$route.query.type || this.$route.query.upload_artwork
+    }
+  },
   methods: {
     resetToInitialState() {
       this.fileName = null
@@ -110,30 +118,28 @@ export default {
       if (this.fileName === '' || !this.fileName) {
         return (this.errorMessage = 'Please enter the name of the file')
       }
-      const formData = this.getFormData()
 
-      try {
-        result = await this.uploadFile(formData)
-        if (
-          result.request.status === 201 &&
-          result.request.statusText === 'Created'
-        ) {
-          this.$root.$emit('fileUploaded', result.data)
-        } else {
-          throw result
+      if (this.$route.query.mode === 'placename' || this.$route.query.type) {
+        this.$store.commit('file/setMediaFiles', this.getMediaData())
+      } else {
+        const formData = this.getFormData()
+        try {
+          result = await this.uploadFile(formData)
+          if (
+            result.request.status === 201 &&
+            result.request.statusText === 'Created'
+          ) {
+            this.$root.$emit('fileUploaded', result.data)
+          } else {
+            throw result
+          }
+        } catch (e) {
+          this.$root.$on('fileUploadFailed', 'File')
         }
-      } catch (e) {
-        console.error(e)
-        this.$root.$emit('notification', {
-          title: 'Failed',
-          message: 'File Upload Failed, please try again',
-          time: 1500,
-          variant: 'danger'
-        })
       }
+
       this.resetToInitialState()
     },
-
     getFormData() {
       return getFormData({
         name: this.fileName,
@@ -142,8 +148,21 @@ export default {
         media_file: this.file,
         type: this.type,
         id: this.id,
-        community_only: this.commonly === 'accepted'
+        community_only: this.commonly === 'accepted',
+        is_artwork: !!this.$route.query.upload_artwork
       })
+    },
+
+    getMediaData() {
+      return {
+        name: this.fileName,
+        file_type: 'image',
+        description: this.description,
+        media_file: this.file,
+        type: this.type,
+        id: this.id,
+        community_only: false
+      }
     },
     async uploadFile(formData) {
       const result = await this.$store.dispatch('file/uploadMedia', formData)
