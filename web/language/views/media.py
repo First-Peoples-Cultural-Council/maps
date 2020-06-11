@@ -2,6 +2,7 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
 from language.models import (
@@ -43,6 +44,7 @@ class MediaCustomViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     GenericViewSet
 ):
     pass
@@ -51,6 +53,9 @@ class MediaCustomViewSet(
 class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     serializer_class = MediaSerializer
     queryset = Media.objects.all()
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['placename', 'community']
 
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)

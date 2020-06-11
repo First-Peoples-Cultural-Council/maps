@@ -85,7 +85,7 @@ export default {
       this.mode = mode
     })
 
-    this.$root.$on('fileUploaded', () => {
+    this.$root.$on('fileUploaded', data => {
       this.modalShow = false
       this.$root.$emit('notification', {
         title: 'Success',
@@ -93,6 +93,26 @@ export default {
         time: 2000,
         variant: 'success'
       })
+
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      } else if (this.$route.name === 'index-place-names-placename') {
+        this.$root.$emit('fileUploadedPlaces', data)
+      } else if (this.$route.name === 'index-content-fn') {
+        this.$root.$emit('fileUploadedCommunity', data)
+      }
+    })
+
+    this.$root.$on('fileUploadFailed', type => {
+      this.$root.$emit('notification', {
+        title: 'Failed',
+        message: `${type} Upload Failed, please try again`,
+        time: 2000,
+        variant: 'danger'
+      })
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      }
     })
 
     this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {

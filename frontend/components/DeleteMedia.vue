@@ -1,12 +1,10 @@
 <template>
-  <div>
-    <b-button variant="dark" size="sm" @click="showModal = true"
-      >Delete</b-button
-    >
+  <b-button variant="dark" size="sm" @click="showModal = true"
+    >Delete
     <b-modal v-model="showModal" hide-header @ok="handleDelete">
       Are you sure you want to delete this media?</b-modal
-    >
-  </div>
+    ></b-button
+  >
 </template>
 <script>
 export default {

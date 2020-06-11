@@ -4,16 +4,19 @@
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
-    <Card>
-      <template v-slot:header>
+    <div
+      class="places-card"
+      :class="{ 'places-card-white': variant == 'white' }"
+    >
+      <div class="places-card-header">
         <div
           class="community-icon-container"
           :style="'background-color:' + color"
         >
           <img src="@/assets/images/poi_icon.svg" alt="community" />
         </div>
-      </template>
-      <template v-slot:body>
+      </div>
+      <div class="places-card-body">
         <div>
           <div>
             <h5
@@ -26,24 +29,24 @@
             </h5>
           </div>
         </div>
-      </template>
-      <template v-slot:footer>
+      </div>
+      <div class="places-card-footer">
         <div class="fpcc-card-more">
           <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
           <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
         </div>
-      </template>
-    </Card>
+      </div>
+    </div>
+
+    <div class="action-container">
+      <slot name="verify"></slot>
+      <slot name="reject"></slot>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
-
 export default {
-  components: {
-    Card
-  },
   props: {
     place: {
       type: Object,
@@ -54,6 +57,10 @@ export default {
     color: {
       type: String,
       default: 'transparent'
+    },
+    variant: {
+      type: String,
+      default: 'normal'
     }
   },
   data() {
@@ -82,4 +89,49 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.community-card {
+  border: 1px solid #ebe6dc;
+  padding: 0.5em 0em 0.5em 0.5em;
+  border-radius: 0.25em;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+}
+.places-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  display: table;
+}
+.places-card-header {
+  display: table-cell;
+  vertical-align: middle;
+  width: 15%;
+}
+.places-card-body {
+  display: table-cell;
+  padding: 0 0.5em;
+  vertical-align: middle;
+  width: 70%;
+}
+.places-card-footer {
+  display: table-cell;
+  vertical-align: middle;
+  width: 15%;
+}
+
+.places-card-white {
+  background-color: White;
+}
+.action-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
+
+  & > * {
+    flex: 0 0 30%;
+    margin-right: 0.25em;
+    font-size: 0.8em;
+  }
+}
+</style>
