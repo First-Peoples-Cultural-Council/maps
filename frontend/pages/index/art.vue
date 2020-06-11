@@ -133,7 +133,7 @@
           <b-row>
             <b-col
               v-for="(art, index) in paginatedArts"
-              :key="'arts' + index"
+              :key="'arts' + art.id + index"
               lg="12"
               xl="12"
               md="6"
