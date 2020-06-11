@@ -4,6 +4,7 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
 from rest_framework.filters import SearchFilter
+from django.contrib.gis.geos import Point
 
 from users.models import User, Administrator
 from language.models import (
@@ -160,11 +161,9 @@ class PlaceNameViewSet(BaseModelViewSet):
     def detail(self, request):
         return super().detail(request)
 
-
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request)
-
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -353,7 +352,7 @@ class PlaceNameGeoList(generics.ListAPIView):
 
 class ArtGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", geom__isnull=False
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource'],
@@ -442,7 +441,7 @@ class ArtGeoList(generics.ListAPIView):
 # SEARCH LIST APIVIEWS
 class PlaceNameSearchList(BasePlaceNameListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", geom__isnull=False
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
         kind__in=['poi', '']
     )
@@ -450,7 +449,9 @@ class PlaceNameSearchList(BasePlaceNameListAPIView):
 
 
 class ArtSearchList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource', 'grant'],
         geom__isnull=False
@@ -460,7 +461,9 @@ class ArtSearchList(BasePlaceNameListAPIView):
 
 # ART TYPES
 class PublicArtList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='public_art',
         geom__isnull=False
     )
@@ -468,7 +471,9 @@ class PublicArtList(BasePlaceNameListAPIView):
 
 
 class ArtistList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='artist',
         geom__isnull=False
     )
@@ -476,7 +481,9 @@ class ArtistList(BasePlaceNameListAPIView):
 
 
 class EventList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='event',
         geom__isnull=False
     )
@@ -484,7 +491,9 @@ class EventList(BasePlaceNameListAPIView):
 
 
 class OrganizationList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='organization',
         geom__isnull=False
     )
@@ -492,7 +501,9 @@ class OrganizationList(BasePlaceNameListAPIView):
 
 
 class ResourceList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='resource',
         geom__isnull=False
     )
@@ -500,7 +511,9 @@ class ResourceList(BasePlaceNameListAPIView):
 
 
 class GrantList(BasePlaceNameListAPIView):
-    queryset = PlaceName.objects.filter(
+    queryset = PlaceName.objects.exclude(
+        Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
+    ).filter(
         kind='grant',
         geom__isnull=False
     )
@@ -509,15 +522,19 @@ class GrantList(BasePlaceNameListAPIView):
 
 # ARTWORKS
 class ArtworkList(generics.ListAPIView):
-    queryset = Media.objects.filter(is_artwork=True, placename__geom__isnull=False).select_related("placename")
+    queryset = Media.objects.exclude(
+        Q(placename__name__icontains="FirstVoices")
+    ).filter(is_artwork=True, placename__geom__isnull=False).select_related("placename")
     serializer_class = ArtworkSerializer
 
     @method_decorator(never_cache)
     def list(self, request):
         return super().list(request)
 
+
 class ArtworkPlaceNameList(generics.ListAPIView):
-    queryset = PlaceName.objects.exclude(medias__isnull=True)
+    queryset = PlaceName.objects.exclude(Q(medias__isnull=True) | Q(
+        geom__exact=Point(0.0, 0.0)))
     serializer_class = ArtworkPlaceNameSerializer
 
     @method_decorator(never_cache)

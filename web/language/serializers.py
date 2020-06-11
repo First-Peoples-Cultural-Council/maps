@@ -689,6 +689,8 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
+    placename = ArtworkPlaceNameSerializer(read_only=True)
+
     class Meta:
         model = Media
         fields = (
@@ -706,6 +708,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
         updated_representation = {}
         # Add a kind field
         updated_representation["id"] = representation["id"]
+        updated_representation["geometry"] = representation["placename"]["geom"]
         updated_representation["type"] = "Feature"
         updated_representation["properties"] = {
             "name": representation["name"],
