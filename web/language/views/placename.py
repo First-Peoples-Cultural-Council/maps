@@ -88,7 +88,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         admin_languages = list(Administrator.objects.filter(
             user__id=int(self.request.user.id)).values_list('language', flat=True))
 
-        if obj.community.id in admin_communities or obj.language.id in admin_languages:
+        if (obj.community and obj.community.id in admin_communities) or (obj.language and obj.language.id in admin_languages):
             obj.status = 'VE'
             obj.save()
 
@@ -452,9 +452,7 @@ class ArtSearchList(BasePlaceNameListAPIView):
     queryset = PlaceName.objects.exclude(
         Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
-        kind__in=['public_art', 'artist', 'organization',
-                  'event', 'resource', 'grant'],
-        geom__isnull=False
+        kind__in=['public_art', 'artist', 'organization', 'event']
     )
     serializer_class = PlaceNameSearchSerializer
 
