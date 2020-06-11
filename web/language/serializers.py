@@ -58,7 +58,7 @@ class MediaLightSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names")
+        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
 
 
 # NORMAL SERIALIZERS
