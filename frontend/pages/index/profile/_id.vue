@@ -48,6 +48,15 @@
             ></b-alert
           >
         </div>
+        <div v-if="isLoggedIn && isOwner && !isArtistProfileExist()">
+          <b-alert variant="danger" show
+            >Please create your artist profile by clicking
+            <router-link
+              :to="`/contribute?mode=placename&type=Artist&profile=true`"
+              >here</router-link
+            ></b-alert
+          >
+        </div>
         <div v-if="user.languages && user.languages.length > 0">
           <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
             Spoken Languages
@@ -284,9 +293,24 @@ export default {
   },
   mounted() {
     console.log('mounted, user=', this.$store.state.user)
+    console.log(this.isArtistProfileExist())
   },
   methods: {
     encodeFPCC,
+    isArtistProfileExist() {
+      const { placename_set, first_name, last_name } = this.user
+      if (placename_set) {
+        const foundUserArtist = placename_set.find(
+          placename =>
+            placename.kind === 'artist' &&
+            placename.name === `${first_name} ${last_name}`
+        )
+
+        return !!foundUserArtist
+      } else {
+        return false
+      }
+    },
     isAdmin() {
       return this.user && this.user.id === this.$store.state.user.user.id
     },
