@@ -1699,14 +1699,8 @@ export default {
         .map(media => {
           delete media.id
           delete media.type
-          // Change media file type to generic
-          if (media.file_type.includes('audio')) {
-            media.file_type = 'audio'
-          } else if (media.file_type.includes('image')) {
-            media.file_type = 'image'
-          }
+
           media.placename = id
-          media.is_artwork = true
 
           return media
         })
@@ -1744,7 +1738,7 @@ export default {
       console.log(values)
     },
     async uploadPlacenameThumbnail(id, headers) {
-      if (this.fileImg !== this.getMediaUrl(this.place.image)) {
+      if (this.fileSrc !== getMediaUrl(this.place.image)) {
         const formDatas = new FormData()
         formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
 
@@ -1758,21 +1752,6 @@ export default {
 
       this.$router.push({
         path: `/art/${encodeFPCC(this.traditionalName)}`
-      })
-    },
-    uploadFiles(id) {
-      this.files.map(async file => {
-        const data = new FormData()
-        data.append('name', file.name)
-        data.append('description', '')
-        data.append('file_type', file.type)
-        data.append('placename', id)
-        data.append('media_file', file)
-        data.append('csrftoken', getCookie('csrftoken'))
-        data.append('_method', 'POST')
-        try {
-          await this.$axios.$post(`/api/media/`, data)
-        } catch (e) {}
       })
     }
   },
