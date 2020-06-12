@@ -45,6 +45,7 @@
         <CardBadge
           content="Edit"
           type="edit"
+          text="Placename"
           :class="{ 'md-size-badge': variant === 'md' }"
           @click.native="handleEdit"
         ></CardBadge>
@@ -53,6 +54,7 @@
         <CardBadge
           content="Delete"
           type="delete"
+          text="Placename"
           :class="{ 'md-size-badge': variant === 'md' }"
           @click.native="modalShow = true"
         ></CardBadge>

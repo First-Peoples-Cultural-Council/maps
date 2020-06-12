@@ -20,6 +20,13 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile "></Logo>
+      <UserDetailCard
+        :id="user.id"
+        :name="getUserName()"
+        :art-image="getUserImg()"
+        type="none"
+        :handle-return="handleReturn"
+      ></UserDetailCard>
       <div v-if="isLangAdmin" class="p-3 approval-container">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
@@ -104,11 +111,12 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
 import UserApproveCard from '@/components/user/UserApproveCard.vue'
+import UserDetailCard from '@/components/user/UserDetailCard.vue'
 
 export default {
   components: {
@@ -116,7 +124,8 @@ export default {
     PlacesCard,
     Media,
     Reject,
-    UserApproveCard
+    UserApproveCard,
+    UserDetailCard
   },
   computed: {
     isLangAdmin() {
@@ -135,8 +144,7 @@ export default {
       return this.$store.state.user.mediaToVerify
     },
     user() {
-      const user = this.$store.state.user.user
-      return user
+      return this.$store.state.user.user
     },
     nothingToVerify() {
       return (
@@ -176,6 +184,21 @@ export default {
           this.$store.dispatch('user/getMediaToVerify')
         }
       }
+    },
+    getUserName() {
+      return (
+        this.user &&
+        (`${this.user.first_name} ${this.user.last_name}` ||
+          this.user.username.split('__')[0])
+      )
+    },
+    getUserImg() {
+      return this.user.image
+        ? getMediaUrl(this.user.image)
+        : require(`@/assets/images/artist_icon.svg`)
+    },
+    handleReturn() {
+      this.$router.push({ path: '/profile/' + this.user.id })
     }
   }
 }

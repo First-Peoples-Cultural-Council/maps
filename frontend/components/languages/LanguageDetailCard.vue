@@ -16,15 +16,7 @@
           {{ name }}
         </h5>
       </div>
-      <div v-if="audioFile" @click.prevent.stop="handlePronounce">
-        <CardBadge content="Pronounce"></CardBadge>
-      </div>
-      <CardBadge
-        v-if="link"
-        type="learn"
-        content="Learn Language"
-        :link="link"
-      ></CardBadge>
+
       <div
         v-if="audioFile"
         class="d-inline-block"
@@ -39,6 +31,12 @@
       >
         <CardBadge content="Greeting"></CardBadge>
       </div>
+      <CardBadge
+        v-if="link"
+        type="learn"
+        content="Learn Language"
+        :link="link"
+      ></CardBadge>
     </div>
 
     <div

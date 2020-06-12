@@ -280,16 +280,20 @@ export default {
     previewArtworkOnly() {
       return this.artworks
         .reduce((unique, item) => {
-          return unique.some(
-            items => items.properties.placename === item.properties.placename
+          const isUnique = unique.some(
+            items =>
+              items.properties.placename.id === item.properties.placename.id
           )
+
+          return isUnique
             ? unique
             : [
                 ...unique,
                 this.artworks
                   .filter(
                     items =>
-                      items.properties.placename === item.properties.placename
+                      items.properties.placename.id ===
+                      item.properties.placename.id
                   )
                   .sort((a, b) => b.id - a.id)[0] // Get the Latest Artwork
               ]

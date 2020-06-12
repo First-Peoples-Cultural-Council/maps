@@ -48,7 +48,7 @@ export default {
   line-height: 0;
   text-align: center;
   height: 100%;
-  padding: 0.35em 0.5em;
+  padding: 0.5em 0.75em;
 }
 
 .zoomin {

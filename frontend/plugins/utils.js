@@ -136,6 +136,8 @@ export const getCookie = name => {
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
+  } else if (media_file.name) {
+    return media_file.name
   } else if (media_file.includes('http://nginx')) {
     return media_file.replace('http://nginx', '')
   } else if (media_file.includes('https://nginx')) {
@@ -180,7 +182,7 @@ export const getGenericFileType = fileType => {
   if (fileType === 'vimeo') {
     return 'vimeo'
   }
-  if (imageTypes[fileType]) {
+  if (imageTypes[fileType] || fileType === 'image') {
     return 'image'
   }
 

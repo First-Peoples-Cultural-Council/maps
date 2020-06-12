@@ -5,7 +5,7 @@
       :value="searchQuery"
       type="search"
       class="search-input"
-      placeholder="Filter for a person, artwork, event or medium..."
+      :placeholder="`Search filter based on ${filterMode}`"
       autocomplete="off"
       @input="updateQuery"
     >
@@ -26,6 +26,9 @@ export default {
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    filterMode() {
+      return this.$store.state.arts.filter
     }
   },
   methods: {

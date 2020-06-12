@@ -40,15 +40,21 @@
         </div>
 
         <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
-          <CardBadge content="Owned" type="owner"></CardBadge>
+          <CardBadge
+            content="Owned"
+            type="owner"
+            :placeholder="arttype | kind"
+          ></CardBadge>
           <CardBadge
             content="Edit"
             type="edit"
+            :placeholder="arttype"
             @click.native="editPlacename"
           ></CardBadge>
           <CardBadge
             content="Delete"
             type="delete"
+            :placeholder="arttype"
             @click.native="showOwnerModal"
           ></CardBadge>
         </div>

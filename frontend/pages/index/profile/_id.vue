@@ -24,9 +24,11 @@
       <UserDetailCard
         :id="user.id"
         :name="getUserName()"
+        :art-image="getUserImg()"
         type="none"
         :edit="isAdmin()"
         :approval="isLangAdmin && isOwner"
+        :handle-return="handleReturn"
       ></UserDetailCard>
       <section class="ml-2 mr-2 mt-2">
         <div
@@ -42,6 +44,15 @@
           <b-alert variant="danger" show
             >Please select your community or language by clicking
             <router-link :to="`/profile/edit/${user.id}`"
+              >here</router-link
+            ></b-alert
+          >
+        </div>
+        <div v-if="isLoggedIn && isOwner && !isArtistProfileExist()">
+          <b-alert variant="danger" show
+            >Please create your artist profile by clicking
+            <router-link
+              :to="`/contribute?mode=placename&type=Artist&profile=true`"
               >here</router-link
             ></b-alert
           >
@@ -202,7 +213,7 @@
 
 <script>
 import UserDetailCard from '@/components/user/UserDetailCard.vue'
-import { getApiUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
@@ -282,16 +293,38 @@ export default {
   },
   mounted() {
     console.log('mounted, user=', this.$store.state.user)
+    console.log(this.isArtistProfileExist())
   },
   methods: {
     encodeFPCC,
+    isArtistProfileExist() {
+      const { placename_set, first_name, last_name } = this.user
+      if (placename_set) {
+        const foundUserArtist = placename_set.find(
+          placename =>
+            placename.kind === 'artist' &&
+            placename.name === `${first_name} ${last_name}`
+        )
+
+        return !!foundUserArtist
+      } else {
+        return false
+      }
+    },
     isAdmin() {
       return this.user && this.user.id === this.$store.state.user.user.id
     },
     getUserName() {
       return (
-        this.user && (this.user.first_name || this.user.username.split('__')[0])
+        this.user &&
+        (`${this.user.first_name} ${this.user.last_name}` ||
+          this.user.username.split('__')[0])
       )
+    },
+    getUserImg() {
+      return this.user.image
+        ? getMediaUrl(this.user.image)
+        : require(`@/assets/images/artist_icon.svg`)
     },
     handleLocation(e, sl) {
       this.$eventHub.whenMap(map => {
@@ -307,7 +340,9 @@ export default {
         favourite: sl
       }
       await this.$store.dispatch('user/removeSavedLocation', data)
-      // console.log('Location Remove Result', result)
+    },
+    handleReturn() {
+      this.$router.push({ path: '/languages' })
     }
   }
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="event-list-container">
-    <template v-if="upcomingEventList.length !== 0">
+    <template v-if="finalListOfEvents.length !== 0">
       <div
-        v-for="event in upcomingEventList"
+        v-for="event in finalListOfEvents"
         :key="event.id"
         class="event-card-container"
         @click="redirectToEvent(event.properties.name)"
@@ -45,42 +45,53 @@ import { getMediaUrl, encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   computed: {
+    hasDateList() {
+      return this.$store.state.arts.eventsSet.filter(event => {
+        const hasEventDate = this.findEventDateInRD(
+          event.properties.related_data
+        )
+
+        return !!hasEventDate
+      })
+    },
     upcomingEventList() {
-      return this.$store.state.arts.eventsSet
-        .filter(event => {
-          const hasEventDate = this.findEventDateInRD(
-            event.properties.related_data
-          )
+      return this.hasDateList.filter(event => {
+        const findEventDate = this.findEventDateInRD(
+          event.properties.related_data
+        )
 
-          return !!hasEventDate
-        })
-        .filter(event => {
-          const findEventDate = this.findEventDateInRD(
-            event.properties.related_data
-          )
-
-          const eventDate = new Date(findEventDate.value)
-          if (eventDate > Date.now()) {
-            const resultDate = eventDate - Date.now()
-            const differenceInDays = Math.ceil(
-              resultDate / (1000 * 60 * 60 * 24)
-            )
-            if (differenceInDays <= 10) {
-              return true
-            }
+        const eventDate = new Date(findEventDate.value)
+        if (eventDate > Date.now()) {
+          const resultDate = eventDate - Date.now()
+          const differenceInDays = Math.ceil(resultDate / (1000 * 60 * 60 * 24))
+          if (differenceInDays <= 10) {
+            return true
           }
-        })
-        .sort((a, b) => {
-          const dateA = new Date(
-            this.findEventDateInRD(a.properties.related_data).value
-          )
+        }
+      })
+    },
+    finishedEventList() {
+      return this.hasDateList.filter(event => {
+        const findEventDate = this.findEventDateInRD(
+          event.properties.related_data
+        )
 
-          const dateB = new Date(
-            this.findEventDateInRD(b.properties.related_data).value
-          )
-
-          return dateA - dateB
-        })
+        const eventDate = new Date(findEventDate.value)
+        if (eventDate < Date.now()) {
+          const resultDate = eventDate - Date.now()
+          const differenceInDays = Math.ceil(resultDate / (1000 * 60 * 60 * 24))
+          if (differenceInDays <= 7) {
+            return true
+          }
+        }
+      })
+    },
+    finalListOfEvents() {
+      console.log(this.finishedEventList)
+      return [
+        ...this.sortedEventDates(this.upcomingEventList, 'desc'),
+        ...this.sortedEventDates(this.finishedEventList, 'asc')
+      ]
     }
   },
   async mounted() {
@@ -156,6 +167,23 @@ export default {
     },
     findEventDateInRD(relatedData) {
       return relatedData.find(data => data.data_type === 'Event Date')
+    },
+    sortedEventDates(eventList, mood) {
+      return eventList.sort((a, b) => {
+        const dateA = new Date(
+          this.findEventDateInRD(a.properties.related_data).value
+        )
+
+        const dateB = new Date(
+          this.findEventDateInRD(b.properties.related_data).value
+        )
+
+        if (mood === 'desc') {
+          return dateA - dateB
+        } else if (mood === 'asc') {
+          return dateB - dateA
+        }
+      })
     }
   }
 }

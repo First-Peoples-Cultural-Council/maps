@@ -94,7 +94,9 @@ export default {
       this.$router.push({
         path
       })
-      this.closeSplashscreen()
+      setTimeout(() => {
+        this.closeSplashscreen()
+      }, 1000)
     },
     closeSplashscreen() {
       this.$root.$emit('closeSplashscreen')
