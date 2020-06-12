@@ -19,19 +19,12 @@
             USER
           </h5>
         </div>
-        <!-- <div class="artist-tags-container">
-          <span
-            v-for="tag in tags"
-            :key="tag.name"
-            @click="redirectToHome(tag.name)"
-            >{{ tag.name }}</span
-          >
-        </div> -->
 
         <div v-if="edit && id" class="d-inline-block">
           <CardBadge
             content="Edit"
             type="edit"
+            placeholder="Profile"
             @click.native="
               $router.push({
                 path: `/profile/edit/${id}`

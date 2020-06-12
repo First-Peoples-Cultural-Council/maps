@@ -15,10 +15,10 @@
     <div v-if="type === 'edit'" id="card-edit">
       <span class="font-07">{{ content }}</span>
       <img class="card-icon" src="@/assets/images/edit_small.svg" alt="Learn" />
-      <b-tooltip target="card-edit"
-        >You are the owner of this placename. You can edit the info in this
-        placename.</b-tooltip
-      >
+      <b-tooltip target="card-edit">{{
+        `You are the owner of this ${placeholder}. You can edit the info in this
+        ${placeholder}.`
+      }}</b-tooltip>
     </div>
     <div v-if="type === 'delete'" id="card-delete">
       <span class="font-07">{{ content }}</span>
@@ -27,10 +27,10 @@
         src="@/assets/images/delete_small_icon.svg"
         alt="Learn"
       />
-      <b-tooltip target="card-delete"
-        >You are the owner of this placename. You can delete this
-        placename.</b-tooltip
-      >
+      <b-tooltip target="card-delete">{{
+        `You are the owner of this ${placeholder}. You can delete this
+        ${placeholder}.`
+      }}</b-tooltip>
     </div>
     <div v-if="type === 'owner'" id="card-owned">
       <span class="font-07">{{ content }}</span>
@@ -40,7 +40,7 @@
         alt="Learn"
       />
       <b-tooltip target="card-owned"
-        >You are the owner of this placename.</b-tooltip
+        >{{ `You are the owner of this ${placeholder} ` }}.</b-tooltip
       >
     </div>
   </div>
@@ -58,6 +58,10 @@ export default {
       default: 'pronounce'
     },
     link: {
+      type: String,
+      default: ''
+    },
+    placeholder: {
       type: String,
       default: ''
     }
