@@ -370,7 +370,7 @@ export default {
       })
     },
     async uploadUserDP(id, headers) {
-      if (this.fileImg !== this.getMediaUrl(this.user.image)) {
+      if (this.fileSrc !== this.getMediaUrl(this.user.image)) {
         const formDatas = new FormData()
         formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
 

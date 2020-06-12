@@ -233,9 +233,9 @@ export const getFormData = (
   formData.append('media_file', media_file)
   formData.append(type, id)
 
-  // if (is_artwork) {
-  //   formData.append('is_artwork', is_artwork)
-  // }
+  if (is_artwork) {
+    formData.append('is_artwork', is_artwork)
+  }
 
   if (community_only) {
     formData.append('community_only', community_only)
