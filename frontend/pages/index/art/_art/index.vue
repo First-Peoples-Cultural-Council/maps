@@ -522,10 +522,13 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          zoomToPoint({ map, geom: this.artDetails.geom, zoom: 11 })
+          if (this.artDetails.geom)
+            zoomToPoint({ map, geom: this.artDetails.geom, zoom: 11 })
         }
-        const icon = this.artDetails.kind + '_icon.svg'
-        makeMarker(this.artDetails.geom, icon, 'art-marker').addTo(map)
+        if (this.artDetails.geom) {
+          const icon = this.artDetails.kind + '_icon.svg'
+          makeMarker(this.artDetails.geom, icon, 'art-marker').addTo(map)
+        }
       })
     },
     toggleDescription() {
