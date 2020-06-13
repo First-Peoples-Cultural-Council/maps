@@ -161,7 +161,7 @@ class Client(dedruplify.DeDruplifierClient):
 
                     # Append province if it exists
                     if row.get("province"):
-                        value += ", {}".format(row.get("province"))
+                        value += "\n{}".format(row.get("province"))
 
                     # Append Country if it exists
                     if row.get("name"):
