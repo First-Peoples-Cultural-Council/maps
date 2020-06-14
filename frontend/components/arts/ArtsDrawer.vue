@@ -171,16 +171,16 @@ export default {
       !this.isArtsDetailPage ? !!this.currentMedia : false
     )
 
-    // Fetch artists for this placename if it is a public_art
-    if (!this.isArtsDetailPage && this.placename.kind === 'public_art') {
-      this.$axios
-        .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
-        .then(result => {
-          if (result) {
-            this.artists = [...this.artists, ...result]
-          }
-        })
-    }
+    // // Fetch artists for this placename if it is a public_art
+    // if (!this.isArtsDetailPage && this.placename.kind === 'public_art') {
+    //   this.$axios
+    //     .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
+    //     .then(result => {
+    //       if (result) {
+    //         this.artists = [...this.artists, ...result]
+    //       }
+    //     })
+    // }
 
     // Fetch Medias for this placename
     const url = `${getApiUrl('media/?placename=')}${id}`
