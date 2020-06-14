@@ -91,6 +91,10 @@ export default {
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    border: 1px solid #b57936;
+  }
 }
 .places-card {
   display: flex;
