@@ -6,6 +6,7 @@
       detailModeContainer: isDetailMode,
       'arts-container': isArt
     }"
+    @click.stop.prevent="closePopover"
   >
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <template v-slot:content>
@@ -570,6 +571,9 @@ export default {
     }
   },
   methods: {
+    closePopover() {
+      this.$root.$emit('closeEventPopover')
+    },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
