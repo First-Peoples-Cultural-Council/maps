@@ -208,30 +208,28 @@
                   mode !== 'lang'
               "
             >
-              <PlacesCard
-                v-for="(place, index) in filteredPlaces"
-                :key="`placescomm${index}`"
-                class="mt-2 hover-left-move"
-                :name="place.name"
-                :place="{ properties: place }"
-                @click.native.prevent="
-                  handleCardClick($event, place.name, 'place')
-                "
-              ></PlacesCard>
-            </div>
-
-            <div v-if="placenameInCommunity.length !== 0">
-              <ArtsCard
-                v-for="art in placenameInCommunity"
-                :key="art.id"
-                :name="art.properties.name"
-                :kind="art.properties.kind"
-                :geometry="art.geometry"
-                class="mt-2 hover-left-move"
-                @click.native.prevent="
-                  handleCardClick($event, art.properties.name, 'placename')
-                "
-              ></ArtsCard>
+              <template v-for="(place, index) in filteredPlaces">
+                <PlacesCard
+                  v-if="place.kind === ''"
+                  :key="`placescomm${index}`"
+                  class="mt-2 hover-left-move"
+                  :name="place.name"
+                  :place="{ properties: place }"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'place')
+                  "
+                ></PlacesCard>
+                <ArtsCard
+                  v-else
+                  :key="`placescomm${index}`"
+                  :name="place.name"
+                  :kind="place.kind"
+                  class="mt-1 hover-left-move"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'placename')
+                  "
+                ></ArtsCard>
+              </template>
             </div>
           </b-col>
         </b-row>
@@ -354,11 +352,6 @@ export default {
   },
 
   computed: {
-    placenameInCommunity() {
-      return this.$store.state.arts.artsGeo.filter(
-        arts => arts.properties.community === this.commDetails.id
-      )
-    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
