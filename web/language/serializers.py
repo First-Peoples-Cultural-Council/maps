@@ -58,7 +58,7 @@ class MediaLightSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
+        fields = ("name", "id", "category", "kind", "other_names", "community", "community_only", "creator")
 
 
 # NORMAL SERIALIZERS
@@ -659,8 +659,8 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
             "id",
             "name",
             "kind",
+            "image",
             "taxonomies"
-   
         )
         geo_field = "geom"
 
