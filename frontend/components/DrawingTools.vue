@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="drawing-mode-panel">
     <div
       v-if="drawMode && drawMode !== 'existing' && drawMode !== 'placename'"
       class="font-weight-bold"
@@ -25,33 +25,68 @@
           : `Please click on the map where this ${queryType} can be found.`
       }}
     </div>
-    <div class="dt-container d-flex align-items-center justify-content-center">
+    <div
+      class="mt-2 mb-2 dt-container d-flex align-items-center justify-content-center"
+    >
       <div
         v-if="
           drawMode === 'point' ||
             drawMode === 'placename' ||
             drawMode === 'existing'
         "
+        id="tool-point"
         class="draw-tool draw-point"
         @click="setMode($event, 'point')"
-      ></div>
+      >
+        <b-tooltip target="tool-point"
+          >Draw a point in the map to indicate a single location.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'point' || drawMode === 'existing'"
+        id="tool-current"
         class="draw-tool draw-current-location"
         @click="setMode($event, 'location')"
-      ></div>
+      >
+        <b-tooltip target="tool-current"
+          >Draw a current location in the map.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'polygon' || drawMode === 'existing'"
+        id="tool-polygon"
         class="draw-tool draw-polygon"
         @click="setMode($event, 'polygon')"
-      ></div>
+      >
+        <b-tooltip target="tool-polygon"
+          >Draw a polygon in the map to indicate location range.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'line' || drawMode === 'existing'"
+        id="tool-line"
         class="draw-tool draw-line-string"
         @click="setMode($event, 'line_string')"
-      ></div>
-      <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
-      <div class="draw-tool" @click="cancelDrawingMode">X</div>
+      >
+        <b-tooltip target="tool-line"
+          >Draw a line in the map, to indiciate range of location.</b-tooltip
+        >
+      </div>
+      <div
+        id="tool-remove"
+        class="draw-tool draw-trash"
+        @click="setMode($event, 'trash')"
+      >
+        <b-tooltip target="tool-remove"
+          >Remove a drawn portion in the map.</b-tooltip
+        >
+      </div>
+      <div id="tool-close" class="draw-tool" @click="cancelDrawingMode">
+        X
+        <b-tooltip target="tool-close"
+          >Close Drawing mode, and return to home page.</b-tooltip
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -109,6 +144,12 @@ export default {
 </script>
 
 <style scoped>
+.drawing-mode-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2em;
+}
 .draw-tool {
   width: 30px;
   height: 30px;
