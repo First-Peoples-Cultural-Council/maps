@@ -37,7 +37,7 @@
             </template>
           </BadgeFilter>
           <!-- Artist Badge Filter -->
-          <BadgeFilter
+          <!-- <BadgeFilter
             :is-selected="filterMode === 'artist'"
             :child-taxonomy="getChildTaxonomy('Person')"
             :color="'#B45339'"
@@ -51,6 +51,25 @@
                 type="artist"
                 :mode="getBadgeStatus(filterMode, 'artist')"
                 @click.native.prevent="badgeClick($event, 'artist')"
+              ></Badge>
+            </template>
+          </BadgeFilter> -->
+
+          <!-- Event Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'event'"
+            :child-taxonomy="getChildTaxonomy('Event')"
+            :color="'#DA531E'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Events"
+                :number="eventsCount"
+                class="cursor-pointer"
+                bgcolor="#DA531E"
+                type="event"
+                :mode="getBadgeStatus(filterMode, 'event')"
+                @click.native.prevent="badgeClick($event, 'event')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -75,7 +94,7 @@
           </BadgeFilter>
 
           <!-- Public Art Badge Filter -->
-          <BadgeFilter
+          <!-- <BadgeFilter
             :is-selected="filterMode === 'public_art'"
             :child-taxonomy="getChildTaxonomy('Public Art')"
             :color="'#848159'"
@@ -91,26 +110,7 @@
                 @click.native.prevent="badgeClick($event, 'public_art')"
               ></Badge>
             </template>
-          </BadgeFilter>
-
-          <!-- Event Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'event'"
-            :child-taxonomy="getChildTaxonomy('Event')"
-            :color="'#DA531E'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Events"
-                :number="eventsCount"
-                class="cursor-pointer"
-                bgcolor="#DA531E"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'event')"
-                @click.native.prevent="badgeClick($event, 'event')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
+          </BadgeFilter> -->
 
           <!-- Grant Badge Filter -->
           <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
