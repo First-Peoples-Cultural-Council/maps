@@ -584,13 +584,25 @@
             ></b-form-input>
 
             <b-row class="mt-3">
-              <b-col xl="12">
+              <b-col xl="6">
                 <label for="traditionalName" class="contribute-title-one mb-1"
                   >Language</label
                 >
                 <b-form-select
                   v-model="languageSelected"
                   :options="languageOptions"
+                ></b-form-select>
+              </b-col>
+              <b-col xl="6">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Category</label
+                >
+                <ToolTip
+                  content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
+                ></ToolTip>
+                <b-form-select
+                  v-model="categorySelected"
+                  :options="categoryOptions"
                 ></b-form-select>
               </b-col>
             </b-row>
@@ -841,6 +853,17 @@ export default {
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    categories() {
+      // Fetch parent of the taxonomy called Point of Interest
+      // to be used for searching its child taxonomies
+      const poiTaxonomy = this.taxonomies.find(
+        taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
+      )
+
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === poiTaxonomy.id
+      )
     },
     categoryOptions() {
       return this.categories
@@ -1424,7 +1447,7 @@ export default {
         description: this.content,
         community: community_id,
         language: this.languageSelected,
-        category: this.categorySelected,
+        taxonomies: [this.categorySelected],
         community_only: this.communityOnly === 'accepted',
         status
       }
@@ -1464,6 +1487,7 @@ export default {
           return
         }
       } else {
+        console.log(data)
         try {
           const created = await this.$axios.$post(
             '/api/placename/',
