@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { getApiUrl } from '@/plugins/utils.js'
+// import { getApiUrl } from '@/plugins/utils.js'
 
 export default {
   props: {
@@ -90,20 +90,17 @@ export default {
   },
   methods: {
     async handleClick() {
-      if (this.type !== 'poi') return false
-
-      if (this.mode === 'active') {
-        this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
-        return false
-      }
-      const url = getApiUrl('placenamecategory/')
-
-      if (this.categories.length === 0) {
-        const result = await this.$axios.$get(url)
-        this.categories = result
-      }
-
-      this.showModal = true
+      // if (this.type !== 'poi') return false
+      // if (this.mode === 'active') {
+      //   this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
+      //   return false
+      // }
+      // const url = getApiUrl('placenamecategory/')
+      // if (this.categories.length === 0) {
+      //   const result = await this.$axios.$get(url)
+      //   this.categories = result
+      // }
+      // this.showModal = true
     },
 
     handleOk(e) {
