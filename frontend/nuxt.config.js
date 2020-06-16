@@ -9,6 +9,12 @@ module.exports = {
     host: '0.0.0.0' // default: localhost
   },
 
+  env: {
+    COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
+    COGNITO_URL: process.env.COGNITO_URL,
+    COGNITO_HOST: process.env.COGNITO_HOST
+  },
+
   /*
    ** Headers of the page
    */
@@ -45,6 +51,11 @@ module.exports = {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Faustina:400,500,700&display=swap'
       }
     ]
   },
@@ -73,6 +84,7 @@ module.exports = {
   plugins: [
     '~/mixins/mixins.js',
     '~/plugins/global',
+    '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' }
   ],
   /*

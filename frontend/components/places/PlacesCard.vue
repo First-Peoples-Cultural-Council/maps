@@ -1,6 +1,6 @@
 <template>
   <div
-    class="community-card"
+    class="places-main-card"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -18,16 +18,12 @@
       </div>
       <div class="places-card-body">
         <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              Point Of Interest
-            </h5>
-            <h5 class="font-09 m-0 p-0 color-gray font-weight-bold place-name">
-              {{ place.properties.name }}
-            </h5>
-          </div>
+          <h5 class="field-kinds">
+            Point Of Interest
+          </h5>
+          <h5 class="field-names">
+            {{ place.properties.name }}
+          </h5>
         </div>
       </div>
       <div class="places-card-footer">
@@ -90,23 +86,26 @@ export default {
 </script>
 
 <style lang="scss">
-.community-card {
+.places-main-card {
   border: 1px solid #ebe6dc;
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    border: 1px solid #b57936;
+  }
 }
 .places-card {
   display: flex;
   align-items: center;
   width: 100%;
-
   display: table;
 }
 .places-card-header {
   display: table-cell;
   vertical-align: middle;
-  width: 15%;
+  width: 10%;
 }
 .places-card-body {
   display: table-cell;

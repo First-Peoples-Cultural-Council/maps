@@ -19,6 +19,10 @@ Vue.mixin({
         this.mode = data
       }
 
+      if (this.$route.name === 'index-art') {
+        this.$store.commit('arts/setFilter', data)
+      }
+
       if (isMobileSideBarOpen) {
         e.stopPropagation()
       }

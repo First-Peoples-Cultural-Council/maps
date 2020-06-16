@@ -3,7 +3,8 @@ export const state = () => ({
   languagesCount: null,
   languageSet: [],
   languageGeo: [],
-  comingFromDetail: false
+  comingFromDetail: false,
+  languageSearchSet: []
 })
 
 export const mutations = {
@@ -13,15 +14,16 @@ export const mutations = {
   setStore(state, languageSet) {
     state.languageSet = languageSet
   },
-
   setGeo(state, languageGeo) {
     state.languageGeo = languageGeo
   },
   setComingFromDetail(state, comingFromDetail) {
     state.comingFromDetail = comingFromDetail
   },
-
   setLanguagesCount(state, languagesCount) {
     state.languagesCount = languagesCount
+  },
+  setSearchStore(state, languageSearchSet) {
+    state.languageSearchSet = languageSearchSet
   }
 }

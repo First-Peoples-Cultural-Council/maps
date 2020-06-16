@@ -103,6 +103,24 @@ class DeDruplifierClient:
         for node in nodes:
             # "nid": 273, "vid": 330, "type": "tm_language", "language": "und", "title": "Wakashan", "uid": 1, "status": 1, "created": 1372273871, "changed": 1372273871, "comment": 0, "promote": 0, "sticky": 0, "tnid": 0, "translate": 0, "uuid"
             new_node = {"type": node["type"], "title": node["title"]}
+
+            # Store Taxonomies
+            taxonomy_list = []
+            for row in self.query("""
+                SELECT
+                    taxonomy_term_data.name,
+                    taxonomy_index.nid
+                FROM
+                    taxonomy_index
+                    JOIN taxonomy_term_data ON taxonomy_term_data.tid = taxonomy_index.tid
+                WHERE
+                    taxonomy_index.nid={};
+                """.format(node["nid"])):
+                taxonomy_list.append(row["name"])
+
+            if len(taxonomy_list) > 0:
+                new_node["taxonomy_list"] = taxonomy_list
+
             if node["type"] not in _nodes:
                 _nodes[node["type"]] = {}
             _nodes[node["type"]][node["nid"]] = new_node

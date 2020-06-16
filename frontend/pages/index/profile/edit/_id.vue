@@ -31,6 +31,32 @@
             Edit Profile
           </h4>
           <section class="pl-3 pr-3">
+            <div class="upload-img-container mt-3">
+              <div class="upload-img">
+                <img
+                  v-if="fileSrc === null"
+                  class="upload-placeholder"
+                  :src="thumbnailPlaceholder()"
+                />
+                <img v-else :src="fileSrc" />
+                <b-button
+                  v-if="fileSrc !== null"
+                  class="upload-remove"
+                  @click="removeImg()"
+                  >Remove Image</b-button
+                >
+              </div>
+
+              <b-form-file
+                ref="fileUpload"
+                v-model="fileImg"
+                class="file-upload-input mt-2"
+                placeholder="choose your display image"
+                drop-placeholder="Drop file here..."
+                accept="image/*"
+              ></b-form-file>
+            </div>
+
             <label
               for="firstname"
               class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
@@ -123,8 +149,16 @@
 </template>
 
 <script>
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
+import { getApiUrl, getCookie, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+
+const base64Encode = data =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(data)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
 
 export default {
   components: {
@@ -132,6 +166,9 @@ export default {
   },
   data() {
     return {
+      fileSrc: null,
+      fileImg: null,
+      oldUser: {},
       quillEditor: null,
       errors: [],
       user: {},
@@ -169,9 +206,26 @@ export default {
       })
     }
   },
+  watch: {
+    fileImg(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (newValue) {
+          base64Encode(newValue)
+            .then(value => {
+              this.fileSrc = value
+            })
+            .catch(() => {
+              this.fileSrc = null
+            })
+        } else {
+          this.fileSrc = null
+        }
+      }
+    }
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('sidebar/set', true)
+      vm.$store.commit('sidebar/set', false)
     })
   },
   beforeRouteLeave(to, from, next) {
@@ -180,6 +234,7 @@ export default {
   },
   async asyncData({ params, $axios, store }) {
     const now = new Date()
+    const data = {}
     const user = await $axios.$get(
       getApiUrl(`user/${params.id}/?${now.getTime()}`)
     )
@@ -194,6 +249,7 @@ export default {
 
     return {
       user,
+      data,
       options,
       value: user.languages,
       community: user.communities[0],
@@ -204,14 +260,18 @@ export default {
   mounted() {
     if (this.user.id !== this.$store.state.user.user.id) {
       window.open(
-        'https://login.firstvoices.io/logout?response_type=token&client_id=3b9okcenun1vherojjv4hc6rb3&redirect_uri=https://maps.fpcc.ca'
+        `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
       )
       window.location.reload()
     }
+
+    this.fileSrc = this.getMediaUrl(this.user.image)
+
     this.initQuill()
   },
 
   methods: {
+    getMediaUrl,
     initQuill() {
       require('quill/dist/quill.snow.css')
       const Quill = require('quill')
@@ -236,7 +296,20 @@ export default {
         this.user && (this.user.first_name || this.user.username.split('__')[0])
       )
     },
+    removeImg() {
+      this.fileImg = null
+      this.fileSrc = null
+    },
+    thumbnailPlaceholder() {
+      return require(`@/assets/images/artist_icon.svg`)
+    },
     async save() {
+      this.oldUser = this.user
+      const headers = {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      }
       const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
@@ -253,12 +326,36 @@ export default {
         notification_frequency: this.user.notification_frequency
       }
       try {
-        await this.$axios.$patch(getApiUrl(`user/${this.user.id}/`), data, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
+        const result = await this.$axios.$patch(
+          getApiUrl(`user/${this.user.id}/`),
+          data,
+          headers
+        )
+
+        const imgResult = this.uploadUserDP(this.user.id, headers)
+
+        if (result || imgResult) {
+          const findUserArtist = this.oldUser.placename_set.find(
+            placename =>
+              placename.kind === 'artist' &&
+              placename.name ===
+                `${this.oldUser.first_name} ${this.oldUser.last_name}`
+          )
+
+          // Also update the Artist Placename name
+          if (findUserArtist) {
+            const patchData = {
+              name: `${data.first_name} ${data.last_name}`
+            }
+            const modified = await this.$axios.$patch(
+              `/api/placename/${findUserArtist.id}/`,
+              patchData,
+              headers
+            )
+            console.log(modified)
           }
-        })
-        await this.$store.dispatch('user/setLoggedInUser')
+          await this.$store.dispatch('user/setLoggedInUser')
+        }
       } catch (e) {
         console.warn(e.response)
         this.errors = this.errors.concat(
@@ -271,12 +368,20 @@ export default {
       this.$router.push({
         path: '/profile/' + this.user.id
       })
+    },
+    async uploadUserDP(id, headers) {
+      if (this.fileSrc !== this.getMediaUrl(this.user.image)) {
+        const formDatas = new FormData()
+        formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
+
+        await this.$axios.$patch(`/api/user/${id}/`, formDatas, headers)
+      }
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
 .multiselect__element span {
   word-break: break-all;
   white-space: normal;
@@ -314,5 +419,56 @@ export default {
 #quill {
   height: 300px;
   margin-bottom: 1em;
+}
+
+.upload-img-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  margin: 0 auto;
+
+  .upload-img {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.125);
+
+    &:hover {
+      img {
+        opacity: 0.5;
+      }
+      .upload-remove {
+        display: block;
+        opacity: 1;
+      }
+    }
+  }
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    object-fit: cover;
+  }
+
+  .upload-placeholder {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 0;
+  }
+
+  .upload-remove {
+    display: none;
+    position: absolute;
+    margin: auto auto;
+    font-size: 0.75em;
+    display: none;
+  }
 }
 </style>
