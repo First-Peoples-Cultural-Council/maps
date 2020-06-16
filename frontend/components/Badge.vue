@@ -121,7 +121,7 @@ export default {
         this.$store.commit(
           'places/setFilteredBadgePlaces',
           this.badgePlaces.filter(bp => {
-            return this.selected.find(s => s === bp.category)
+            return this.selected.find(s => bp.taxonomies.includes(s))
           })
         )
       }
