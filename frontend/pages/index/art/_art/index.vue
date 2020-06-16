@@ -74,10 +74,7 @@
         >
           <!-- Show the Placename image if Public Art and Event -->
           <div
-            v-if="
-              artDetails.image &&
-                (isPublicArt || artDetails.kind.toLowerCase() === 'event')
-            "
+            v-if="artDetails.image && (isPublicArt || isEvent)"
             class="placename-img-container"
           >
             <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
@@ -291,6 +288,9 @@ export default {
     isPublicArt() {
       return this.artDetails.kind.toLowerCase() === 'public_art'
     },
+    isEvent() {
+      return this.artDetails.kind.toLowerCase() === 'event'
+    },
     isGalleryNotEmpty() {
       return (
         this.artDetails.medias.filter(media => media.file_type !== 'default')
@@ -375,7 +375,6 @@ export default {
       if (art.id) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
-        console.log(artDetails)
         const isServer = !!process.server
         return {
           art,
@@ -653,7 +652,9 @@ export default {
 
 .field-content p,
 .field-content span,
-.field-content pre {
+.field-content pre,
+.field-content label,
+.field-content legend {
   font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
@@ -701,6 +702,7 @@ export default {
   width: 100%;
   margin: 1em 0;
 }
+
 .placename-img {
   width: 275px;
   height: 275px;

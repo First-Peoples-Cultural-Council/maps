@@ -266,8 +266,8 @@ export default {
           )
           if (result) {
             this.$root.$emit('fileUploaded', result)
-
             this.toggleModal()
+            this.$root.$emit('updateFileList')
           }
         } catch (e) {
           this.toggleModal()

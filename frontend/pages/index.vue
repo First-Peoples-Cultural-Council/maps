@@ -6,6 +6,7 @@
       detailModeContainer: isDetailMode,
       'arts-container': isArt
     }"
+    @click.stop.prevent="closePopover"
   >
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <template v-slot:content>
@@ -110,7 +111,7 @@
         'hide-scroll-y': isGalleryShown
       }"
     >
-      <nuxt-child class="w-100" />
+      <nuxt-child class="route-child-container" />
     </div>
     <div v-else>
       <nuxt-child />
@@ -570,6 +571,9 @@ export default {
     }
   },
   methods: {
+    closePopover() {
+      this.$root.$emit('closeEventPopover')
+    },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
@@ -1301,6 +1305,11 @@ export default {
   z-index: 1000;
   height: 100%;
   overflow-y: auto;
+}
+
+.route-child-container {
+  width: 100%;
+  height: 100%;
 }
 
 .sb-detail {
