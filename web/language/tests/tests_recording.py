@@ -28,17 +28,17 @@ class RecordingAPITests(BaseTestCase):
         super().setUp()
         self.now = timezone.now()
 
-    # ONE TEST TESTS ONLY ONE SCENARIO
+    ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
     def test_recording_detail(self):
         """
-        Ensure we can retrieve a newly created recording object.
-        """
+		Ensure we can retrieve a newly created recording object.
+		"""
         test_recording = Recording.objects.create(
-            speaker="Test speaker",
-            recorder="Test recorder",
-            created=self.now,
-            date_recorded=self.now,
+            speaker = "Test speaker",
+            recorder = "Test recorder",
+            created = self.now,
+            date_recorded = self.now,
         )
 
         response = self.client.get(
@@ -50,11 +50,10 @@ class RecordingAPITests(BaseTestCase):
 
     def test_recording_post(self):
         """
-        Ensure recording API POST method API works
-        """
+		Ensure recording API POST method API works
+		"""
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -78,21 +77,20 @@ class RecordingAPITests(BaseTestCase):
 
     def test_recording_patch(self):
         """
-        Ensure recording API PATCH method API works
-        """
+		Ensure recording API PATCH method API works
+		"""
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
         self.assertEqual(response.json()["is_authenticated"], True)
 
         test_recording = Recording.objects.create(
-            speaker="Test speaker",
-            recorder="Test recorder",
-            created=self.now,
-            date_recorded=self.now,
+            speaker = "Test speaker",
+            recorder = "Test recorder",
+            created = self.now,
+            date_recorded = self.now,
         )
 
         response = self.client.patch(
@@ -111,15 +109,15 @@ class RecordingAPITests(BaseTestCase):
 
     def test_recording_delete(self):
         """
-        Ensure recording API DELETE method API works
-        """
+		Ensure recording API DELETE method API works
+		"""
         test_recording = Recording.objects.create(
-            speaker="Test speaker",
-            recorder="Test recorder",
-            created=self.now,
-            date_recorded=self.now,
+            speaker = "Test speaker",
+            recorder = "Test recorder",
+            created = self.now,
+            date_recorded = self.now,
         )
-
+        
         response = self.client.delete(
             "/api/recording/{}/".format(test_recording.id), format="json"
         )

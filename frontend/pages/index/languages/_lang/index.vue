@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo class="cursor-pointer" :logo-alt="1"></Logo>
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -74,7 +74,7 @@
           @click.native="handleMoreDetails"
         ></LanguageSeeAll>
       </section>
-      <!-- <Filters class="mb-1 mt-2"></Filters> -->
+      <Filters class="mb-1 mt-2"></Filters>
       <div class="badge-container mt-2 ml-3 mr-3">
         <Badge
           content="Communities"
@@ -197,9 +197,7 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :name="art.properties.name"
-                  :kind="art.properties.kind"
-                  :geometry="art.geometry"
+                  :art="art"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -227,9 +225,7 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :name="art.properties.name"
-                  :kind="art.properties.kind"
-                  :geometry="art.geometry"
+                  :art="art"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -257,10 +253,7 @@
               >
                 <ArtsCard
                   class="mt-3 hover-left-move"
-                  :name="art.properties.name"
-                  :kind="art.properties.kind"
-                  :geometry="art.geometry"
-                  :layout="'landscape'"
+                  :art="art"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -284,6 +277,7 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
+import Filters from '@/components/Filters.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
@@ -298,6 +292,7 @@ export default {
     CommunityCard,
     PlacesCard,
     ArtsCard,
+    Filters,
     Badge,
     Logo,
     Notification
@@ -325,17 +320,17 @@ export default {
     },
     publicArts() {
       return this.arts
-        ? this.arts.filter(art => art.properties.kind === 'public_art')
+        ? this.arts.filter(art => art.properties.art_type === 'public_art')
         : []
     },
     orgs() {
       return this.arts
-        ? this.arts.filter(art => art.properties.kind === 'organization')
+        ? this.arts.filter(art => art.properties.art_type === 'organization')
         : []
     },
     artists() {
       return this.arts
-        ? this.arts.filter(art => art.properties.kind === 'artist')
+        ? this.arts.filter(art => art.properties.art_type === 'artist')
         : []
     },
     mapinstance() {
@@ -373,7 +368,7 @@ export default {
         getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
       ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`))
+      $axios.$get(getApiUrl(`art/?lang=${languageId}`))
     ])
 
     try {
@@ -382,7 +377,7 @@ export default {
       })
     } catch (e) {}
 
-    // console.log('RegExp Url')
+    console.log('RegExp Url')
 
     store.commit('places/setBadgePlaces', result[0].places)
     store.commit('places/setFilteredBadgePlaces', result[0].places)

@@ -11,46 +11,52 @@ export const state = () => ({
   badgePlaces: [],
   filteredBadgePlaces: [],
   filterCategories: [],
-  audio_obj: {},
-  placeSearchSet: []
+  audio_obj: {}
 })
 
 export const mutations = {
   set(state, places) {
     state.places = places
   },
+
   setAudioObj(state, audio_obj) {
     state.audio_obj = audio_obj
   },
+
   setPlace(state, place) {
     state.place = place
   },
+
   setPlaceCommunity(state, placeComm) {
     state.placeCommunity = placeComm
   },
+
   setStore(state, placesSet) {
     state.placesSet = placesSet
   },
+
   setMedias(state, medias) {
     state.medias = medias
   },
+
   setFavourites(state, favourites) {
     state.favourites = favourites
   },
+
   setBadgePlaces(state, bplaces) {
     state.badgePlaces = bplaces
   },
+
   setFilteredBadgePlaces(state, fplaces) {
     state.filteredBadgePlaces = fplaces
   },
+
   setFilterCategories(state, fcategories) {
     state.filterCategories = fcategories
   },
+
   setPlaceLanguage(state, language) {
     state.placeLanguage = language
-  },
-  setSearchStore(state, placeSearchSet) {
-    state.placeSearchSet = placeSearchSet
   }
 }
 
@@ -59,17 +65,17 @@ export const actions = {
     const result = await this.$axios.$get(
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
-    // console.log('Dispatch', result.medias)
+    console.log('Dispatch', result.medias)
     commit('setMedias', result.medias)
     return result
   },
 
   async getCommunityMedias({ commit }, data) {
     const result = await this.$axios.$get(
-      getApiUrl(`media/?community=${data.id}`)
+      getApiUrl(`community/${data.id}?timestamp=${new Date().getTime()}/`)
     )
 
-    commit('setMedias', result.sort((a, b) => b.id - a.id))
+    commit('setMedias', result.medias)
     return result
   },
 

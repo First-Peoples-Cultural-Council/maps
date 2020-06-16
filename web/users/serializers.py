@@ -20,7 +20,7 @@ class LanguageUserSerializer(serializers.ModelSerializer):
 class PlaceNameUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "kind")
+        fields = ("name", "id")
 
 
 class AdministratorUserSerializer(serializers.ModelSerializer):
@@ -72,7 +72,6 @@ class UserSerializer(serializers.ModelSerializer):
             "language_ids",
             "notification_frequency",
             "picture",
-            "image",
         )
 
 

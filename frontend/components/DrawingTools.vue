@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="drawMode && drawMode !== 'existing' && drawMode !== 'placename'"
-      class="font-weight-bold"
-    >
+    <div v-if="drawMode && drawMode !== 'existing'" class="font-weight-bold">
       Click the map to draw a {{ drawMode
       }}<span v-if="drawMode && drawMode !== 'point'"
         >, double-click when done</span
@@ -15,23 +12,9 @@
     <div v-if="!drawMode" class="font-weight-bold">
       You are contributing to an existing point.
     </div>
-    <div
-      v-if="drawMode === 'placename' && drawMode !== 'existing'"
-      class="font-weight-bold"
-    >
-      {{
-        queryType === 'Artist'
-          ? 'First, we need to make an artist profile. Please click where you are from on the map.'
-          : `Please click on the map where this ${queryType} can be found.`
-      }}
-    </div>
     <div class="dt-container d-flex align-items-center justify-content-center">
       <div
-        v-if="
-          drawMode === 'point' ||
-            drawMode === 'placename' ||
-            drawMode === 'existing'
-        "
+        v-if="drawMode === 'point' || drawMode === 'existing'"
         class="draw-tool draw-point"
         @click="setMode($event, 'point')"
       ></div>
@@ -51,7 +34,6 @@
         @click="setMode($event, 'line_string')"
       ></div>
       <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
-      <div class="draw-tool" @click="cancelDrawingMode">X</div>
     </div>
   </div>
 </template>
@@ -67,18 +49,13 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    queryType() {
-      return this.$route.query.type
-    }
-  },
   mounted() {
     this.setMode(null, this.drawMode)
   },
   methods: {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
-        if (data === 'point' || data === 'placename') {
+        if (data === 'point') {
           this.$root.$emit('mode_change_draw', 'point')
         }
 
@@ -98,11 +75,6 @@ export default {
           this.$root.$emit('mode_change_draw', 'location')
         }
       })
-    },
-    cancelDrawingMode() {
-      this.$store.commit('contribute/setIsDrawMode', false)
-      this.$root.$emit('resetMap')
-      this.$router.go(-1)
     }
   }
 }
@@ -112,9 +84,7 @@ export default {
 .draw-tool {
   width: 30px;
   height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
   padding: 0.5em;
   outline: none;
   border: 0;

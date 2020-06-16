@@ -5,13 +5,13 @@ from rest_framework import status
 from users.models import User, Administrator
 
 from language.models import (
-    Language,
-    PlaceName,
-    PlaceNameCategory,
-    Community,
-    CommunityMember,
-    Champion,
-    Media,
+    Language, 
+    PlaceName, 
+    PlaceNameCategory, 
+    Community, 
+    CommunityMember, 
+    Champion, 
+    Media, 
     Notification,
     Notification,
 )
@@ -48,15 +48,15 @@ class NotificationAPITests(BaseTestCase):
         self.community1 = Community.objects.create(name="Test Community 1")
         self.language1 = Language.objects.create(name="Test Language 01")
 
-    # ONE TEST TESTS ONLY ONE SCENARIO
+    ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 
     def test_notification_detail(self):
         """
-        Ensure we can retrieve a newly created notification object.
-        """
+		Ensure we can retrieve a newly created notification object.
+		"""
         test_notification = Notification.objects.create(
-            name="Test notification 001",
-            language=self.language1,
+            name = "Test notification 001",
+            language = self.language1,
         )
         response = self.client.get(
             "/api/notification/{}/".format(test_notification.id), format="json"
@@ -66,8 +66,8 @@ class NotificationAPITests(BaseTestCase):
 
     def test_notification_list_authorized_access(self):
         """
-        Ensure Notification list API route exists
-        """
+		Ensure Notification list API route exists
+		"""
         # Must be logged in
         self.client.login(username="testuser001", password="password")
 
@@ -76,15 +76,15 @@ class NotificationAPITests(BaseTestCase):
 
     def test_notification_list_unauthorized_access(self):
         """
-        Ensure Notification list API route exists
-        """
+		Ensure Notification list API route exists
+		"""
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_notification_list_different_users(self):
         """
-        Ensure Notification API DELETE method API works
-        """
+		Ensure Notification API DELETE method API works
+		"""
         # Must be logged in
         self.client.login(username="testuser001", password="password")
 
@@ -92,7 +92,7 @@ class NotificationAPITests(BaseTestCase):
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
-
+        
         # Creating an object which BELONGS to the user
         # GET must return one object
         response = self.client.post(
@@ -108,20 +108,20 @@ class NotificationAPITests(BaseTestCase):
         response2 = self.client.get("/api/notification/", format="json")
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response2.data), 1)
-
+        
         # Creating an object which DOES NOT BELONG to the user
         # GET must return one object
         test_notification2 = Notification.objects.create(
-            user=self.user2, name="test notification2"
+            user=self.user2, name= "test notification2"
         )
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-
+        
         # Creating an object which BELONGS to the user
         # GET must return two objects
         test_notification3 = Notification.objects.create(
-            user=self.user, name="test notification3"
+            user=self.user, name= "test notification3"
         )
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,11 +149,10 @@ class NotificationAPITests(BaseTestCase):
 
     def test_notification_post_with_language(self):
         """
-        Ensure notification API POST method API works
-        """
+		Ensure notification API POST method API works
+		"""
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -173,11 +172,10 @@ class NotificationAPITests(BaseTestCase):
 
     def test_notification_post_with_community(self):
         """
-        Ensure notification API POST method API works
-        """
+		Ensure notification API POST method API works
+		"""
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -197,10 +195,9 @@ class NotificationAPITests(BaseTestCase):
 
     def test_notification_delete(self):
         """
-        Ensure notification API DELETE method API works
-        """
-        test_notification = Notification.objects.create(
-            name="Test notification 001")
+		Ensure notification API DELETE method API works
+		"""
+        test_notification = Notification.objects.create(name="Test notification 001")
         response = self.client.delete(
             "/api/notification/{}/".format(test_notification.id), format="json"
         )

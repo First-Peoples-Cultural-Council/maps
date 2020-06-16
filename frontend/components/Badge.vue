@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-block badge-wrapper">
+  <div class="d-inline-block">
     <b-badge
       class="badge"
       :style="'background-color: ' + bgcolor"
@@ -81,10 +81,7 @@ export default {
         org: '/organization_icon_white.svg',
         event: '/event_icon_white.svg',
         part: '/public_art_icon_white.svg',
-        poi: '/poi_icon_white.svg',
-        resource: '/resource_icon.svg',
-        artworks: '/resource_icon.svg',
-        artist: '/artist_icon_white.svg'
+        poi: '/poi_icon_white.svg'
       }[this.type]
     }
   },
@@ -126,19 +123,15 @@ export default {
 
       this.showModal = false
 
-      // console.log('Ok!')
+      console.log('Ok!')
     }
   }
 }
 </script>
 
 <style>
-.badge-wrapper {
-  line-height: 0;
-}
 .badge {
   border-radius: 1em;
-  margin: 0.25em 0.3em;
 }
 .badge-content {
   display: inline-block;

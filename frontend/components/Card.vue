@@ -25,37 +25,31 @@ export default {
 .fpcc-card {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   width: 100%;
   border: 1px solid #ebe6dc;
   padding: 0.5em 0em 0.5em 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
   display: table;
-  height: 100%;
 }
 .fpcc-card-header {
   display: table-cell;
   vertical-align: middle;
-  width: 10%;
+  width: 15%;
 }
 .fpcc-card-body {
   display: table-cell;
   padding: 0 0.5em;
   vertical-align: middle;
-  width: 75%;
+  width: 70%;
 }
 .fpcc-card-footer {
   display: table-cell;
   vertical-align: middle;
-  width: 55px;
+  width: 15%;
 }
 
 .fpcc-card-white {
   background-color: White;
-}
-
-.fpcc-card:hover {
-  border: 1px solid #b57936;
 }
 </style>

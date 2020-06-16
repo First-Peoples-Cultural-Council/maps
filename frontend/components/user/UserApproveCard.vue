@@ -135,10 +135,6 @@ export default {
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-
-  &:hover {
-    border: 1px solid #b57936;
-  }
 }
 
 .user-card {

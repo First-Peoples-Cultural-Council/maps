@@ -74,7 +74,7 @@
           </b-form-invalid-feedback>
         </div>
 
-        <div v-if="!isArtwork">
+        <div>
           <label
             class="font-08 d-inline-block contribute-title-one"
             for="community-only"
@@ -166,29 +166,22 @@ export default {
     getGenericType() {
       return this.getGenericFileType(this.media.file_type)
     },
-
     isPlacename() {
       return this.$route.query.type || this.$route.query.upload_artwork
     },
-    // isArtwork() {
-    //   return (
-    //     this.$route.query.type &&
-    //     (this.$route.query.type === 'Artist' ||
-    //       this.$route.query.type === 'Public Art')
-    //   )
-    // },
+    isArtwork() {
+      return (
+        this.$route.query.type &&
+        (this.$route.query.type === 'Artist' ||
+          this.$route.query.type === 'Public Art')
+      )
+    },
     getCookies() {
       return {
         headers: {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
-    },
-    isArtwork() {
-      return this.$route.query.type || this.$route.query.upload_artwork
-    },
-    getMediaFiles() {
-      return this.$store.state.file.fileList
     }
   },
   watch: {
@@ -208,21 +201,7 @@ export default {
       }
     }
   },
-  created() {
-    if (this.media.media_file instanceof File) {
-      base64Encode(this.media.media_file)
-        .then(value => {
-          this.fileSrc = value
-          this.file = this.media.media_file
-        })
-
-        .catch(() => {
-          this.fileSrc = null
-        })
-    }
-  },
   mounted() {
-    console.log(this.media)
     const { name, description, community_only, url, media_file } = this.media
 
     this.title = name
@@ -254,34 +233,21 @@ export default {
       }
     },
     async patchMedia() {
-      // for existing medias
-      if (this.media.placename || this.media.community) {
-        const getData = this.getFormData()
+      const getData = this.getFormData()
 
-        try {
-          const result = await this.$axios.$patch(
-            `/api/media/${this.media.id}/`,
-            getData,
-            this.getCookies
-          )
-          if (result) {
-            this.$root.$emit('fileUploaded', result)
-
-            this.toggleModal()
-          }
-        } catch (e) {
-          this.toggleModal()
-          console.error(e)
-        }
-      } else {
-        const filteredData = this.getMediaFiles.filter(
-          media => media !== this.media
+      try {
+        const result = await this.$axios.$patch(
+          `/api/media/${this.media.id}/`,
+          getData,
+          this.getCookies
         )
-        this.$store.commit('file/setNewMediaFiles', filteredData)
-        setTimeout(() => {
-          this.$store.commit('file/setMediaFiles', this.getData())
-        }, 100)
+        if (result) {
+          this.$root.$emit('fileUploaded', result)
+          this.toggleModal()
+        }
+      } catch (e) {
         this.toggleModal()
+        console.error(e)
       }
     },
     getFormData() {
@@ -302,22 +268,6 @@ export default {
       // formData.append('is_artwork', this.isArtwork)
 
       return formData
-    },
-    getData() {
-      const getFile = this.file ? this.file : this.media_file
-      const getType = this.file ? this.file.type : this.media.file_type
-      const media = {
-        name: this.title,
-        file_type: getType,
-        description: this.description,
-        community_only: this.community_only === 'accepted'
-      }
-      if (this.url) {
-        media.url = this.url
-      } else if (this.file) {
-        media.media_file = getFile
-      }
-      return media
     }
   }
 }

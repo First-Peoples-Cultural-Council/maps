@@ -44,7 +44,6 @@ import UploadOptions from '@/components/UploadOptions.vue'
 import NoteUploader from '@/components/NoteUploader.vue'
 import YoutubeUploader from '@/components/YoutubeUpload.vue'
 import VimeoUploader from '@/components/VimeoUpload.vue'
-
 export default {
   components: {
     FileUploader,
@@ -95,8 +94,6 @@ export default {
         variant: 'success'
       })
 
-      this.$root.$emit('closeUploadModal')
-
       if (this.$route.name === 'index-art-art') {
         this.$root.$emit('fileUploadSuccess')
       } else if (this.$route.name === 'index-place-names-placename') {
@@ -113,7 +110,6 @@ export default {
         time: 2000,
         variant: 'danger'
       })
-      this.$root.$emit('closeUploadModal')
       if (this.$route.name === 'index-art-art') {
         this.$root.$emit('fileUploadSuccess')
       }
