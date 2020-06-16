@@ -26,7 +26,7 @@
               sm="6"
             >
               <CommunityCard
-                class="mt-3 hover-left-move"
+                class="mt-2 hover-left-move"
                 :name="community.name"
                 :community="community"
                 @click.native.prevent="handleCardClick($event, community.name)"

@@ -623,7 +623,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "kind")
+        fields = ("id", "name", "kind", "community")
         geo_field = "geom"
 
 
@@ -684,7 +684,8 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "geom"
+            "geom",
+            
         )
 
 
