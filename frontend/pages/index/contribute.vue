@@ -21,7 +21,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -30,10 +30,10 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div class="position-relative pb-3">
+      <div class="position-relative pb-3 contribute-form-container">
         <div
           v-if="(drawnFeatures.length === 0 && !place) || isLoading"
-          class="required-overlay d-flex align-items-center justify-content-center"
+          class="required-overlay"
         >
           <b-alert
             v-if="drawnFeatures.length === 0 && !place"
@@ -57,7 +57,7 @@
             </div>
             <div>
               <h4 class="text-uppercase contribute-title mr-2">
-                Contribute
+                {{ `Contribute | ${contributeTitle()}` }}
               </h4>
             </div>
           </div>
@@ -67,6 +67,14 @@
             id="contribute-main-container"
             class="pr-3 pl-3"
           >
+            <b-alert
+              v-if="!isArtistProfileFound && isArtist && queryProfile"
+              show
+              variant="danger"
+            >
+              You cannot add an Artwork, you need to create your Artist profile
+              before uploading Artwork. Please fill up the following:
+            </b-alert>
             <div class="upload-img-container mt-3">
               <div class="upload-img">
                 <img
@@ -259,7 +267,7 @@
               ></multiselect>
             </b-row>
 
-            <b-row class="field-row mt-3">
+            <b-row class="field-row-group mt-3">
               <div>
                 <label for="location" class="contribute-title-one"
                   >Location</label
@@ -270,13 +278,43 @@
                   "
                 ></ToolTip>
               </div>
-
+              <b-form-group
+                v-if="queryType === 'Event'"
+                id="location-fieldset"
+                description="For Online Events, type a location near you, or leave it blank. "
+                label-for="location"
+              >
+                <b-form-input
+                  id="location"
+                  v-model="relatedData.location"
+                  type="text"
+                  placeholder="(ex. Vancouver, Canada)"
+                ></b-form-input>
+              </b-form-group>
               <b-form-input
+                v-else
                 id="location"
                 v-model="relatedData.location"
                 type="text"
                 placeholder="(ex. Vancouver, Canada)"
               ></b-form-input>
+            </b-row>
+
+            <b-row v-if="queryType === 'Event'" class="field-row mt-3">
+              <label
+                class="d-inline-block contribute-title-one"
+                for="online-event"
+                >Is this an Online Event?</label
+              >
+              <b-form-checkbox
+                id="online-event"
+                v-model="relatedData.is_online"
+                class="d-inline-block ml-2"
+                name="online-event"
+                value="accepted"
+                unchecked-value="not_accepted"
+              >
+              </b-form-checkbox>
             </b-row>
 
             <b-row
@@ -721,6 +759,7 @@ export default {
       isEmailValid: null,
 
       relatedData: {
+        is_online: null,
         email: null,
         phone: null,
         organization_access: null,
@@ -987,9 +1026,7 @@ export default {
             getApiUrl(`language/${place.language}`)
           )
           if (language) {
-            data.languageSelected = language.id
-            data.languageOptions = [{ value: language.id, text: language.name }]
-            data.languageSelectedName = language.name
+            data.languageUserSelected = { id: language.id, name: language.name }
           }
         } catch (e) {
           console.error(e)
@@ -1002,6 +1039,7 @@ export default {
       }
 
       data.relatedData = {
+        is_online: null,
         email: null,
         phone: null,
         organization_access: null,
@@ -1039,9 +1077,17 @@ export default {
           } else if (related.data_type === 'copyright') {
             data.relatedData.copyright = related.value
           } else if (related.data_type === 'contacted_only') {
-            data.relatedData.contacted_only = !!related.value.includes('true')
+            data.relatedData.contacted_only = related.value.includes('true')
+              ? 'accepted'
+              : 'not_accepted'
           } else if (related.data_type === 'commercial_only') {
             data.relatedData.commercial_only = !related.value.includes('Not')
+              ? 'accepted'
+              : 'not_accepted'
+          } else if (related.data_type === 'is_online') {
+            data.relatedData.is_online = related.value.includes('Online')
+              ? 'accepted'
+              : 'not_accepted'
           }
         })
       }
@@ -1135,31 +1181,20 @@ export default {
   mounted() {
     // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
-      this.languageUserSelected =
-        this.userDetail.languages.length !== 0
-          ? this.userDetail.languages[0]
-          : null
+      if (this.languageUserSelected === null) {
+        this.languageUserSelected =
+          this.userDetail.languages.length !== 0
+            ? this.userDetail.languages[0]
+            : null
+      }
 
       this.initQuill()
       this.addAward()
       this.addSite()
       this.setDateTimeNow()
 
-      if (this.isArtist) {
-        this.relatedData.contacted_only = false
-        this.relatedData.commercial_only = false
-      }
-
       // Check if user has artist profile, if not, declare the values
-      if (
-        this.userDetail &&
-        this.queryMode !== 'existing' &&
-        !this.isArtistProfileFound &&
-        this.isArtist
-      ) {
-        this.traditionalName = this.userGivenName
-        this.relatedData.email = this.userDetail.email
-      }
+      this.setArtistDetail()
 
       if (this.queryType === 'Event' && this.queryType !== 'existing') {
         this.dateValue = new Date().toISOString().slice(0, 10)
@@ -1167,6 +1202,10 @@ export default {
 
       this.$root.$on('resetValues', () => {
         this.resetData()
+      })
+
+      this.$root.$on('updateFileList', () => {
+        this.$store.dispatch('file/getUploadMedia', this.place.id)
       })
     } else {
       this.$root.$emit(
@@ -1198,6 +1237,7 @@ export default {
       this.relatedData.contacted_only = null
       this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
+      this.setArtistDetail()
 
       // this.removeQuill()
       // this.initQuill()
@@ -1206,6 +1246,17 @@ export default {
       )
       if (contributeContainer) {
         contributeContainer.scrollTop = 0
+      }
+    },
+    setArtistDetail() {
+      if (
+        this.userDetail &&
+        this.queryMode !== 'existing' &&
+        !this.isArtistProfileFound &&
+        this.isArtist
+      ) {
+        this.traditionalName = this.userGivenName
+        this.relatedData.email = this.userDetail.email
       }
     },
     setDateTimeNow() {
@@ -1252,6 +1303,13 @@ export default {
         return '(ex. The Statue of David)'
       } else if (this.queryType === 'Organization') {
         return '(ex. Canadian Musuem)'
+      }
+    },
+    contributeTitle() {
+      if (this.$route.query.id) {
+        return `Edit ${this.queryType ? this.queryType : 'Placename'}`
+      } else {
+        return `${this.queryType ? this.queryType : 'Placename'} Creation`
       }
     },
     thumbnailPlaceholder() {
@@ -1512,15 +1570,18 @@ export default {
             headers
           )
 
+          console.log(modified)
           if (modified) {
-            // Upload new medias added
-            this.uploadMedias(id)
-
             // Upload Placename Thumbnail if changed
-            this.uploadPlacenameThumbnail(id, headers)
+            const thumbnailResult = this.uploadPlacenameThumbnail(id, headers)
+
+            // Upload new medias added
+            const mediaResult = this.uploadMedias(id)
 
             // If finish, redirect to Placename
-            this.redirectToPlacename()
+            if (mediaResult || thumbnailResult) {
+              this.redirectToPlacename()
+            }
           }
         } catch (e) {
           this.isLoading = false
@@ -1541,11 +1602,11 @@ export default {
 
           // If Placename is successfully created, then PATCH data
           if (created) {
-            // PATCH DATA AFTER POSTING
-            const data1 = this.getPatchData(id)
-
             // Patch placename thumbnail
             this.uploadPlacenameThumbnail(id, headers)
+
+            // PATCH DATA AFTER POSTING
+            const data1 = this.getPatchData(id)
 
             // UPLOAD MEDIAS
             this.uploadMedias(id)
@@ -1557,10 +1618,10 @@ export default {
                 headers
               )
 
-              console.log('MODIFIED DATA', modified)
-
               // If finish, redirect to Placename
-              this.redirectToPlacename()
+              if (modified) {
+                this.redirectToPlacename()
+              }
             } catch (e) {
               this.isLoading = false
               this.errors = this.errors.concat(
@@ -1625,6 +1686,8 @@ export default {
             value = field[1]
               ? 'Interested in Commercial Inquiry'
               : 'Not interested in Commercial Inquiry'
+          } else if (field[0] === 'is_online') {
+            value = field[1] ? 'Online Event' : 'Physical Event'
           } else {
             value = field[1]
           }
@@ -1641,6 +1704,8 @@ export default {
             label = 'Organization Access'
           } else if (field[0] === 'commercial_only') {
             label = 'Commercial Inquiry'
+          } else if (field[0] === 'is_online') {
+            label = 'Event Type'
           } else {
             label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
           }
@@ -1721,14 +1786,22 @@ export default {
           }
         })
 
-      console.log(values)
+      return values
     },
     async uploadPlacenameThumbnail(id, headers) {
-      if (this.fileSrc !== getMediaUrl(this.place.image)) {
+      if (
+        (this.place && this.fileSrc !== getMediaUrl(this.place.image)) ||
+        this.fileImg !== null
+      ) {
         const formDatas = new FormData()
         formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
 
-        await this.$axios.$patch(`/api/placename/${id}/`, formDatas, headers)
+        const result = await this.$axios.$patch(
+          `/api/placename/${id}/`,
+          formDatas,
+          headers
+        )
+        return result
       }
     },
     redirectToPlacename() {
@@ -1736,9 +1809,10 @@ export default {
         this.$root.$emit('refetchArtwork')
       }
 
-      this.$router.push({
-        path: `/art/${encodeFPCC(this.traditionalName)}`
-      })
+      location.href = `/art/${encodeFPCC(this.traditionalName)}`
+      // this.$router.push({
+      //   path: `/art/${encodeFPCC(this.traditionalName)}`
+      // })
     }
   },
 
@@ -1828,7 +1902,14 @@ export default {
   padding: 0;
   margin: 0;
 }
+
+.contribute-form-container {
+  min-height: 92vh;
+}
 .required-overlay {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   position: absolute;
   top: 0;
   left: 0;
@@ -1836,6 +1917,11 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 50;
   right: 0;
+
+  & > * {
+    position: absolute;
+    top: 40vh;
+  }
 }
 
 .multiselect__tag {
@@ -1883,6 +1969,12 @@ export default {
 
 /* Placename Form Style */
 .field-row {
+  padding: 0 1em;
+}
+
+.field-row-group {
+  display: flex;
+  flex-direction: column;
   padding: 0 1em;
 }
 

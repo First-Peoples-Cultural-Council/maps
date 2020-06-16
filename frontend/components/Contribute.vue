@@ -293,12 +293,12 @@ export default {
           }
         })
         this.$root.$emit('resetValues')
-        if (this.isLoggedIn) {
-          this.$root.$emit(
-            'toggleMessageBox',
-            'You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to Artist Creation. If done, you will be able to upload Artwork under your name.'
-          )
-        }
+        // if (this.isLoggedIn) {
+        //   this.$root.$emit(
+        //     'toggleMessageBox',
+        //     'You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to Artist Creation. If done, you will be able to upload Artwork under your name.'
+        //   )
+        // }
       }
       // If has Artist profile, redirect to Profile, then add Media
       else {

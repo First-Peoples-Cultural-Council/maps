@@ -60,6 +60,7 @@ class PlaceNameLightSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "id",
+            "kind",
             "other_names",
             "community",
             "community_only",
@@ -617,7 +618,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "kind")
+        fields = ("id", "name", "kind", "community")
         geo_field = "geom"
 
 
@@ -653,8 +654,8 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
             "id",
             "name",
             "kind",
+            "image",
             "taxonomies"
-   
         )
         geo_field = "geom"
 
@@ -678,7 +679,8 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "geom"
+            "geom",
+            
         )
 
 
