@@ -9,7 +9,6 @@ from django.contrib.gis.geos import GEOSGeometry
 from language.models import (
     Language,
     PlaceName,
-    PlaceNameCategory,
     Community,
     CommunityMember,
     Champion,
@@ -80,7 +79,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.community2 = Community.objects.create(name="Test Community 02")
         self.language1 = Language.objects.create(name="Test Language 01")
         self.language2 = Language.objects.create(name="Test Language 02")
-        self.category = PlaceNameCategory.objects.create(name="Test Category", icon_name="icon")
         self.taxonomy = Taxonomy.objects.create(name="Test Taxonomy", description="Test taxonomy desc.")
 
         self.user2 = User.objects.create(

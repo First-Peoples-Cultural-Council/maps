@@ -7,7 +7,6 @@ from users.models import User, Administrator
 from language.models import (
     Language,
     PlaceName,
-    PlaceNameCategory,
     Community,
     CommunityMember,
     Champion,

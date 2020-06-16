@@ -6,7 +6,6 @@ from .models import (
     Language,
     PlaceName,
     Recording,
-    PlaceNameCategory,
     Community,
     Champion,
     LanguageFamily,
@@ -58,7 +57,7 @@ class MediaLightSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
+        fields = ("name", "id", "other_names", "community", "community_only", "creator")
 
 
 # NORMAL SERIALIZERS
@@ -179,12 +178,6 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
         )
 
 
-class PlaceNameCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceNameCategory
-        fields = ("id", "name", "icon_name")
-
-
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
@@ -292,11 +285,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     language = serializers.PrimaryKeyRelatedField(
         queryset=Language.objects.all(), allow_null=True, required=False
     )
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
-    )
-    category_obj = PlaceNameCategorySerializer(
-        source="category", read_only=True)
     favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
     audio = serializers.PrimaryKeyRelatedField(
         queryset=Recording.objects.all(), allow_null=True, required=False
@@ -387,8 +375,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "description",
             "status",
             "status_reason",
-            "category",
-            "category_obj",
             "medias",
             "community",
             "language",

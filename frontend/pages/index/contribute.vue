@@ -546,26 +546,13 @@
             ></b-form-input>
 
             <b-row class="mt-3">
-              <b-col xl="6">
+              <b-col xl="12">
                 <label for="traditionalName" class="contribute-title-one mb-1"
                   >Language</label
                 >
                 <b-form-select
                   v-model="languageSelected"
                   :options="languageOptions"
-                ></b-form-select>
-              </b-col>
-              <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
-                  >Category</label
-                >
-
-                <ToolTip
-                  content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
-                ></ToolTip>
-                <b-form-select
-                  v-model="categorySelected"
-                  :options="categoryOptions"
                 ></b-form-select>
               </b-col>
             </b-row>
@@ -1132,7 +1119,6 @@ export default {
       }
     }
 
-    data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     data.isServer = !!process.server
     return data
   },

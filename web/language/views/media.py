@@ -11,7 +11,6 @@ from language.models import (
     Community,
     CommunityMember,
     Champion,
-    PlaceNameCategory,
     Media,
     Favourite,
     Notification,
