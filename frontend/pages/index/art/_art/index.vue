@@ -235,7 +235,6 @@ import { zoomToPoint } from '@/mixins/map.js'
 import {
   getApiUrl,
   encodeFPCC,
-  decodeFPCC,
   makeMarker,
   getMediaUrl,
   getCookie
@@ -363,8 +362,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $router }) {
-    const artParam = decodeFPCC(params.art)
-    const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
+    const arts = await $axios.$get(getApiUrl(`art-search?format=json`))
     if (arts) {
       const art = arts.find(a => {
         if (a.name) {
