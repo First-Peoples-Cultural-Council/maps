@@ -5,6 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from .models import (
     Language,
     PlaceName,
+    PublicArtArtist,
     Recording,
     Community,
     Champion,
@@ -311,14 +312,30 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # If related_data is included in the payload, pop it first
         related_data = validated_data.pop('related_data', [])
+        artists = validated_data.pop('artists', [])
+        taxonomies = validated_data.pop('taxonomies', [])
 
         # Save the PlaceName without a related_data
         placename = PlaceName.objects.create(**validated_data)
 
         # Save all related data one by one if they were added in the payload
-        if len(related_data) > 0:
+        if related_data:
             for data in related_data:
                 RelatedData.objects.create(**data)
+        
+        if artists:
+            for artist in artists:
+                PublicArtArtist.objects.create(
+                    public_art=placename,
+                    artist=artist
+                )
+        
+        if taxonomies:
+            for taxonomy in taxonomies:
+                PlaceNameTaxonomy.objects.create(
+                    placename=placename,
+                    taxonomy=taxonomy
+                )
 
         return placename
 
