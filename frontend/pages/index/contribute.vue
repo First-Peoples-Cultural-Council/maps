@@ -21,7 +21,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -30,10 +30,10 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div class="position-relative pb-3">
+      <div class="position-relative pb-3 contribute-form-container">
         <div
           v-if="(drawnFeatures.length === 0 && !place) || isLoading"
-          class="required-overlay d-flex align-items-center justify-content-center"
+          class="required-overlay"
         >
           <b-alert
             v-if="drawnFeatures.length === 0 && !place"
@@ -1916,7 +1916,14 @@ export default {
   padding: 0;
   margin: 0;
 }
+
+.contribute-form-container {
+  min-height: 92vh;
+}
 .required-overlay {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   position: absolute;
   top: 0;
   left: 0;
@@ -1924,6 +1931,11 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 50;
   right: 0;
+
+  & > * {
+    position: absolute;
+    top: 40vh;
+  }
 }
 
 .multiselect__tag {

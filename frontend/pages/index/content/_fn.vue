@@ -242,15 +242,21 @@
             class="m-1 mb-3"
             type="community"
           ></UploadTool>
-          <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
-            <Media
-              :media="media"
-              :is-owner="isMediaCreator(media, user)"
-              :server="isServer"
-              type="community"
-            ></Media>
-            <hr class="mb-2" />
-          </div>
+          <section v-if="medias && medias.length > 0">
+            <h5 class="font-08 text-uppercase color-gray mb-3">
+              {{ medias.length }} Uploaded Media
+            </h5>
+            <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
+              <Media
+                :media="media"
+                :is-owner="isMediaCreator(media, user)"
+                :server="isServer"
+                type="community"
+                :community-only="media.community_only"
+              ></Media>
+              <hr class="mb-2" />
+            </div>
+          </section>
         </div>
       </section>
     </div>
@@ -359,7 +365,9 @@ export default {
       return this.$store.state.places.badgePlaces
     },
     filteredPlaces() {
-      return this.$store.state.places.filteredBadgePlaces
+      const placesList = this.$store.state.places.filteredBadgePlaces
+
+      return placesList.sort((a, b) => a.kind.localeCompare(b.kind))
     },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
@@ -450,6 +458,10 @@ export default {
         audio_obj: null
       }
     }
+
+    console.log(communityDetail)
+
+    console.log(communityDetail.medias)
 
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)

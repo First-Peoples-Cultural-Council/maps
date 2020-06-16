@@ -111,7 +111,7 @@
         'hide-scroll-y': isGalleryShown
       }"
     >
-      <nuxt-child class="w-100" />
+      <nuxt-child class="route-child-container" />
     </div>
     <div v-else>
       <nuxt-child />
@@ -1305,6 +1305,11 @@ export default {
   z-index: 1000;
   height: 100%;
   overflow-y: auto;
+}
+
+.route-child-container {
+  width: 100%;
+  height: 100%;
 }
 
 .sb-detail {
