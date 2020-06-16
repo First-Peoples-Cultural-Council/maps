@@ -45,4 +45,4 @@ describe('on the community page', () => {
 afterAll(() => browser.close())
 */
 
-// console.log('Process', process)
+console.log('Process', process)

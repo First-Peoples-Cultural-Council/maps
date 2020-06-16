@@ -49,11 +49,7 @@
       Youtube link is required
     </b-form-invalid-feedback>
 
-    <CommunityOnly
-      v-if="!isArtwork"
-      class="mt-3"
-      :commonly.sync="commonly"
-    ></CommunityOnly>
+    <CommunityOnly class="mt-3" :commonly.sync="commonly"></CommunityOnly>
 
     <b-button size="sm" variant="dark" class="mt-2" @click="handleYoutubeUpload"
       >Upload</b-button
@@ -94,18 +90,12 @@ export default {
       youtubestate: null
     }
   },
-  computed: {
-    isArtwork() {
-      return this.$route.query.type || this.$route.query.upload_artwork
-    }
-  },
   methods: {
     isValidYoutubeLink,
     resetState() {
       this.title = null
       this.text = null
       this.titlestate = null
-      this.youtubeLink = null
     },
     async handleYoutubeUpload(e) {
       if (!this.title) {
@@ -124,7 +114,18 @@ export default {
         return false
       }
 
-      const formData = getFormData(this.getMediaData(), true)
+      const formData = getFormData(
+        {
+          name: this.title,
+          description: this.text,
+          file_type: 'youtube',
+          type: this.type,
+          id: this.id,
+          community_only: this.commonly === 'accepted',
+          url: this.youtubeLink
+        },
+        true
+      )
 
       if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
@@ -145,7 +146,6 @@ export default {
           this.$root.$on('fileUploadFailed', 'Note/Text')
         }
       }
-
       this.resetState()
     },
 
@@ -156,19 +156,6 @@ export default {
     async uploadNote(formData) {
       const result = await this.$store.dispatch('file/uploadMedia', formData)
       return result
-    },
-
-    getMediaData() {
-      return {
-        name: this.title,
-        description: this.text,
-        file_type: 'youtube',
-        type: this.type,
-        id: this.id,
-        community_only: this.commonly === 'accepted',
-        url: this.youtubeLink,
-        is_artwork: !!this.$route.query.upload_artwork
-      }
     }
   }
 }

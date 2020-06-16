@@ -17,9 +17,7 @@ services:
       - FPLM_DB=fpmaps_d7_live
       - FPLM_USER=
       - FPLM_PW=
-      - COGNITO_REGION=ca-central-1
-      - COGNITO_USERPOOL_ID=ca-central-1_MHa7IjSrw
-      - COGNITO_APP_CLIENT_ID=3b9okcenun1vherojjv4hc6rb3
+
     command: ./prod.sh
     restart: always
   frontend:
@@ -27,8 +25,6 @@ services:
     environment:
       - HOST=https://maps.fpcc.ca
       - NODE_ENV=production
-      - COGNITO_HOST=https://fplm.countable.ca
-      - COGNITO_URL=https://login.firstvoices.io
     restart: always
   test:
     command: sleep 1000000

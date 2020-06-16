@@ -23,14 +23,15 @@ export default {
 .reset-map-container {
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 3em;
+  border-radius: 0.2em;
   cursor: pointer;
 }
 .reset-map-control h5 {
-  font: Bold 15px/18px Proxima Nova;
-  color: #151515;
+  font-size: 0.75em;
   margin: 0;
   padding: 0.5em 0.75em;
+  color: #7b7b7b;
+  font-weight: 700;
   text-transform: uppercase;
 }
 </style>

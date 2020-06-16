@@ -31,4 +31,10 @@ class UserAdmin(UserAdmin):
     #     ),
     # )
 
+
+class AdministratorAdmin(admin.ModelAdmin):
+    list_display = ("user", "language", "community")
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Administrator, AdministratorAdmin)

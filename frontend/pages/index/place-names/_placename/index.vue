@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="1" class="cursor-pointer hide-mobile"></Logo>
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
       <div>
         <div
           class="text-center d-none mobile-close"
@@ -115,7 +115,7 @@
               </b-col>
             </b-row>
           </div>
-          <div v-if="placeCommunity" class="mb-2">
+          <div v-if="placeCommunity" class="mb-4">
             <CommunityCard
               :name="placeCommunity.name"
               :community="placeCommunity"
@@ -126,7 +126,7 @@
               "
             ></CommunityCard>
           </div>
-          <div v-if="placeLanguage" class="mb-2">
+          <div v-if="placeLanguage" class="mb-4">
             <LanguageCard
               class="hover-left-move"
               :name="placeLanguage.name"
@@ -347,7 +347,7 @@ export default {
   watch: {
     place(newPlace, oldPlace) {
       if (newPlace !== oldPlace) {
-        // console.log('new Place', newPlace)
+        console.log('new Place', newPlace)
         this.setupMap(newPlace.geom)
       }
     }

@@ -166,11 +166,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
-        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
-        if request.user.is_authenticated:
-            user_logged_in = True
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                user_logged_in = True
 
         # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, shows:
@@ -206,8 +206,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             )
 
             # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+            admin_languages = Administrator.objects.filter(
+                user__id=int(request.user.id)).values('language')
+            admin_communities = Administrator.objects.filter(
+                user__id=int(request.user.id)).values('community')
 
             if admin_languages and admin_communities:
                 # Filter Medias by admin's languages

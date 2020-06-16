@@ -1,12 +1,7 @@
 <template>
-  <div
-    id="sidebar-container"
-    ref="sidebarContainer"
-    class="sidebar-container"
-    :class="{ 'sidebar-arts-container': showSidePanel }"
-  >
+  <div ref="sidebarContainer" class="sidebar-container">
     <div class="sidebarRelative position-relative">
-      <div class="sidebar-desktop position-relative">
+      <div class="sidebar-desktop">
         <div class="sidebar-header">
           <Logo class="cursor-pointer" :logo-alt="1"></Logo>
         </div>
@@ -27,11 +22,6 @@
             <slot name="content"></slot>
             <slot name="badges"></slot>
             <slot name="cards"></slot>
-            <transition v-if="showLoading" name="fade">
-              <div class="loading-spinner">
-                <img src="@/assets/images/loading.gif" />
-              </div>
-            </transition>
           </div>
           <Contact
             :subject="
@@ -39,25 +29,9 @@
             "
           ></Contact>
         </div>
-        <div
-          v-if="showSidePanel"
-          class="sidebar-side-panel"
-          :class="{ 'hide-scroll-y': showGallery }"
-        >
-          <slot name="side-panel"></slot>
-        </div>
       </div>
       <div class="sidebar-mobile d-none">
         <SideBarFold>
-          <template v-slot:side-panel>
-            <div
-              v-if="showSidePanel"
-              class="sidebar-side-panel"
-              :class="{ 'hide-scroll-y': showGallery }"
-            >
-              <slot name="side-panel"></slot>
-            </div>
-          </template>
           <template v-slot:tabs>
             <div class="sidebar-tabs">
               <b-nav tabs fill>
@@ -108,10 +82,6 @@ export default {
       default() {
         return []
       }
-    },
-    showSidePanel: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -139,14 +109,6 @@ export default {
       fold: true
     }
   },
-  computed: {
-    showLoading() {
-      return this.$store.state.sidebar.showLoading
-    },
-    showGallery() {
-      return this.$store.state.sidebar.showGallery
-    }
-  },
   mounted() {
     const sideBarContainer = this.$refs.sidebarContainer
     const el = document.getElementById('innerToggleHead')
@@ -160,53 +122,29 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
-      // Recalibrate Vuex Values
-      this.resetState()
-
       const path = this.navigationTabs.find(nt => nt.name === data).path
-      this.$router.push({
+      const self = this
+      self.$router.push({
         path
       })
     },
     toggleFold(e) {
       this.fold = !this.fold
-    },
-    resetState() {
-      this.$store.commit('arts/setTaxonomyTag', [])
-      this.$store.commit('arts/setArtSearch', '')
-      this.$store.commit('sidebar/setDrawerContent', false)
-      this.$root.$emit('resetMap')
     }
   }
 }
 </script>
 
 <style>
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
 .sidebar-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-width, 425px);
-  overflow-y: scroll;
+  width: var(--sidebar-width, 350px);
+  overflow-y: auto;
   padding-bottom: 1em;
-  font-family: 'Proxima Nova', sans-serif;
 }
-
-.sidebar-arts-container {
-  width: var(--sidebar-width, 425px);
-}
-
 .sidebar-header {
   background-color: transparent;
   overflow-x: hidden;
@@ -215,33 +153,29 @@ export default {
 .sidebar-body {
   background-color: white;
 }
-.nav-tabs {
-  display: flex;
-  border-bottom: 0;
+
+.nav-tabs .nav-link {
+  font-size: 0.8em;
+  background-color: #f4eee9;
 }
 
-.nav-tabs .nav-item {
-  flex: 1;
-}
 .nav-tabs .nav-link {
-  font-family: 'Faustina', serif;
-  font-size: 15px;
-  font-weight: 500;
-  background-color: #03333a;
-  color: #fff;
-  border-top-left-radius: 0rem;
-  border-top-right-radius: 0rem;
+  color: var(--color-gray, #707070);
+  font-weight: 700;
+  opacity: 0.8;
+  text-decoration: underline;
 }
 .nav-tabs .nav-link.active {
-  color: #b47a2b;
+  color: var(--color-red, #c46257);
   position: relative;
   font-weight: 700;
   border: 0;
+  line-height: 10px;
   opacity: 1;
   text-transform: capitalize !important;
 }
 
-.sidebar-desktop .nav-tabs .nav-link.active::before {
+.nav-tabs .nav-link.active::before {
   content: '';
   display: block;
   width: 100%;
@@ -253,23 +187,12 @@ export default {
   border-top-right-radius: 0.5em;
 }
 
-.sidebar-desktop .nav-tabs .nav-item.arts .nav-link.active::before {
+.nav-tabs .nav-item.arts .nav-link.active::before {
   border-top-left-radius: 0.5em;
 }
-.sidebar-desktop .nav-tabs .nav-item.heritage .nav-link.active::before {
+.nav-tabs .nav-item.heritage .nav-link.active::before {
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0em;
-}
-
-/* Sidebar style when screen width is 1300px and drawer is open */
-@media (min-width: 993px) and (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
 }
 
 @media (max-width: 992px) {
@@ -296,26 +219,6 @@ export default {
     background-color: white;
   }
 
-  .sidebar-mobile .sidebar-tabs ul li {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f4eee9;
-    height: 50px;
-  }
-
-  .sidebar-mobile .sidebar-tabs ul .nav-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-  }
-
-  .sidebar-mobile .sidebar-tabs ul .nav-link.active {
-    border-radius: 0;
-  }
-
   .sidebar-tabs-fold {
     position: fixed;
     bottom: 0;
@@ -330,42 +233,5 @@ export default {
   .sidebar-tabs-fold .nav-fill .nav-item {
     background-color: white;
   }
-
-  .nav-tabs .nav-link .active {
-    border: 0;
-  }
-
-  .sidebar-side-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 325px;
-    height: 100vh;
-    overflow-x: hidden;
-    z-index: 999999;
-  }
-
-  .sidebar-side-panel .panel-artist {
-  }
-}
-
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.loading-spinner img {
-  width: 75px;
-  height: 75px;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

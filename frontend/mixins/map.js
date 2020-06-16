@@ -19,7 +19,7 @@ export const zoomToIdealBox = ({ map }) => {
 }
 
 export const zoomToPoint = ({ map, geom, zoom }) => {
-  // console.log(geom.coordinates)
+  console.log(geom.coordinates)
   const currentZoom = map.getZoom()
   if (currentZoom > zoom) zoom = currentZoom
   map.flyTo({

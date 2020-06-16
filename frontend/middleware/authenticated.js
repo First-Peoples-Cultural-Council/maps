@@ -4,7 +4,7 @@ export default function({ store, redirect }) {
   console.log('Is Logged In?', store.state.user.isLoggedIn)
   if (!store.state.user.isLoggedIn) {
     return redirect(
-      `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=https://countable.ca`
+      'https://fplm.auth.ca-central-1.amazoncognito.com/login?response_type=token&client_id=7rj6th7pknck3tih16ihekk1ik&redirect_uri=https://countable.ca'
     )
   }
   */

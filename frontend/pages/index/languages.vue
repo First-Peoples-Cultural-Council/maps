@@ -11,12 +11,12 @@
             :content="accordionContent"
           ></Accordion>
         </section>
-        <section class="badge-section pl-3 pr-3 mt-3"></section>
+
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="badge-section pl-2 pr-3 mt-3">
+        <section class="badge-section pl-3 pr-3 mt-3">
           <Badge
             :content="badgeContent"
             :number="languagesCount"
@@ -42,7 +42,7 @@
             <div
               v-for="(familyLanguages, family) in languages"
               :key="'langfamily' + family"
-              class="language-family-container"
+              class="language-family-container mt-3 shadow-sm"
             >
               <h5 class="language-family mt-0">
                 <span class="language-family-header">Language Family:</span>
@@ -75,10 +75,9 @@
             </div>
           </div>
           <div v-if="mode !== 'lang'">
-            <h5 class="language-family mt-2 ">Communities</h5>
             <b-row>
               <b-col
-                v-for="community in paginatedCommunities"
+                v-for="community in communities"
                 :key="'community ' + community.name"
                 lg="12"
                 xl="12"
@@ -86,7 +85,7 @@
                 sm="6"
               >
                 <CommunityCard
-                  class="mb-2 hover-left-move"
+                  class="mt-3 hover-left-move"
                   :name="community.name"
                   :community="community"
                   @click.native.prevent="
@@ -106,14 +105,13 @@
 </template>
 
 <script>
-import groupBy from 'lodash/groupBy'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
+import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -127,12 +125,11 @@ export default {
   data() {
     return {
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
+        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in BC. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
       detailOneWidth: 375,
       detailTwoWidth: 500,
-      mode: 'All',
-      maximumLength: 0
+      mode: 'All'
     }
   },
   computed: {
@@ -146,62 +143,14 @@ export default {
     communities() {
       return this.$store.state.communities.communities
     },
-    paginatedCommunities() {
-      return this.communities.slice(0, this.maximumLength)
-    },
     languagesCount() {
       return this.$store.state.languages.languagesCount
-    },
-    isMobile() {
-      return this.$store.state.responsive.isMobileSideBarOpen
-    }
-  },
-  async fetch({ $axios, store }) {
-    const currentLanguages = store.state.languages.languageSet
-
-    if (currentLanguages.length === 0) {
-      // Fetch languages and communites data
-      const languages = await $axios.$get(getApiUrl('language'))
-      const communities = await $axios.$get(getApiUrl('community'))
-
-      // Set language stores
-      store.commit('languages/set', groupBy(languages, 'family.name')) // All data
-      store.commit('languages/setStore', languages) // Updating data based on map
-
-      // Set community stores
-      store.commit('communities/set', communities) // All data
-      store.commit('communities/setStore', communities) // Updating data based on map
     }
   },
   mounted() {
     this.$eventHub.whenMap(map => {
       this.$root.$emit('updateData')
     })
-
-    // Trigger addeventlistener only if there's Sidebar, used for Pagination
-    if (this.$route.name === 'index-languages') {
-      const mobileContainer = document.querySelector('#side-inner-collapse')
-      const desktopContainer = document.querySelector('#sidebar-container')
-
-      const containerArray = [mobileContainer, desktopContainer]
-
-      containerArray.forEach(elem => {
-        elem.addEventListener('scroll', e => {
-          if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-            elem.scrollTop !== 0
-          ) {
-            if (this.communities.length > this.maximumLength) {
-              this.loadMoreData()
-            }
-          }
-        })
-      })
-      this.loadMoreData()
-    }
-  },
-  destroyed() {
-    window.removeEventListener('scroll', () => {})
   },
   methods: {
     handleCardClick($event, name, type) {
@@ -217,13 +166,6 @@ export default {
           })
           break
       }
-    },
-    loadMoreData() {
-      this.$store.commit('sidebar/toggleLoading', true)
-      setTimeout(() => {
-        this.maximumLength += 10
-        this.$store.commit('sidebar/toggleLoading', false)
-      }, 250)
     }
   },
 
