@@ -50,7 +50,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
-                    picture=result['picture'],
+                    picture=result.get('picture'), # not currently used, default to None
                     first_name=result['given_name'],
                     last_name=result['family_name']
                 )
