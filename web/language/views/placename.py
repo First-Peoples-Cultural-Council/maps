@@ -13,7 +13,6 @@ from language.models import (
     Community,
     CommunityMember,
     Champion,
-    PlaceNameCategory,
     Media,
     Favourite,
     Notification,
@@ -37,7 +36,6 @@ from language.serializers import (
     PlaceNameSerializer,
     PlaceNameDetailSerializer,
     PlaceNameGeoSerializer,
-    PlaceNameCategorySerializer,
     PlaceNameSearchSerializer,
     ArtPlaceNameSerializer,
     EventArtSerializer,
@@ -48,14 +46,6 @@ from language.serializers import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
-
-
-class PlaceNameCategoryViewSet(BaseModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
-
-    serializer_class = PlaceNameCategorySerializer
-    detail_serializer_class = PlaceNameCategorySerializer
-    queryset = PlaceNameCategory.objects.all()
 
 
 class PlaceNameFilterSet(FilterSet):

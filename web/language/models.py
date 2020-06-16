@@ -232,15 +232,6 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceNameCategory(BaseModel):
-    icon_name = models.CharField(
-        max_length=32, blank=True, default=None, help_text="Name of the icon in MapBox"
-    )
-
-    class Meta:
-        verbose_name_plural = "Place name Categories"
-
-
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
@@ -255,10 +246,6 @@ class PlaceName(CulturalModel):
     )
 
     kind = models.CharField(max_length=20, default="")
-
-    category = models.ForeignKey(
-        PlaceNameCategory, on_delete=models.SET_NULL, null=True, blank=True
-    )
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")

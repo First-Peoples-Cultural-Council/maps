@@ -7,7 +7,6 @@ from .models import (
     CommunityMember,
     Dialect,
     PlaceName,
-    PlaceNameCategory,
     Champion,
     LNA,
     LNAData,
@@ -57,7 +56,6 @@ class PlaceNameAdmin(admin.ModelAdmin):
 
 admin.site.register(Champion)
 admin.site.register(PlaceName, PlaceNameAdmin)
-admin.site.register(PlaceNameCategory)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(Community, CommunityAdmin)

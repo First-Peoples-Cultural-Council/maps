@@ -25,7 +25,6 @@ from .views import (
     LanguageViewSet,
     CommunityViewSet,
     PlaceNameViewSet,
-    PlaceNameCategoryViewSet,
     ChampionViewSet,
     MediaViewSet,
     FavouriteViewSet,
@@ -39,8 +38,6 @@ router = routers.DefaultRouter()
 # Used only for data managmement by admins
 router.register(r"stats", CommunityLanguageStatsViewSet, basename="placename")
 router.register(r"champion", ChampionViewSet, basename="champion")
-router.register(r"placenamecategory",
-                PlaceNameCategoryViewSet, basename="placename")
 
 # Used for data management and application usage
 router.register(r"language", LanguageViewSet, basename="language")

@@ -28,8 +28,6 @@
 </template>
 
 <script>
-import { getApiUrl } from '@/plugins/utils.js'
-
 export default {
   props: {
     content: {
@@ -66,7 +64,6 @@ export default {
   data() {
     return {
       showModal: false,
-      categories: [],
       selected: this.$store.state.places.filterCategories
     }
   },
@@ -86,23 +83,26 @@ export default {
         artworks: '/resource_icon.svg',
         artist: '/artist_icon_white.svg'
       }[this.type]
+    },
+    categories() {
+      // Fetch parent of the taxonomy called Point of Interest
+      // to be used for searching its child taxonomies
+      const poiTaxonomy = this.$store.state.arts.taxonomySearchSet.find(
+        taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
+      )
+
+      return this.$store.state.arts.taxonomySearchSet.filter(
+        taxonomy => taxonomy.parent === poiTaxonomy.id
+      )
     }
   },
   methods: {
-    async handleClick() {
+    handleClick() {
       if (this.type !== 'poi') return false
-
       if (this.mode === 'active') {
         this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
         return false
       }
-      const url = getApiUrl('placenamecategory/')
-
-      if (this.categories.length === 0) {
-        const result = await this.$axios.$get(url)
-        this.categories = result
-      }
-
       this.showModal = true
     },
 
@@ -119,7 +119,7 @@ export default {
         this.$store.commit(
           'places/setFilteredBadgePlaces',
           this.badgePlaces.filter(bp => {
-            return this.selected.find(s => s === bp.category)
+            return this.selected.find(s => bp.taxonomies.includes(s))
           })
         )
       }

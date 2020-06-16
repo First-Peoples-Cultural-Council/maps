@@ -597,7 +597,6 @@
                 <label for="traditionalName" class="contribute-title-one mb-1"
                   >Category</label
                 >
-
                 <ToolTip
                   content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
                 ></ToolTip>
@@ -854,6 +853,17 @@ export default {
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    categories() {
+      // Fetch parent of the taxonomy called Point of Interest
+      // to be used for searching its child taxonomies
+      const poiTaxonomy = this.taxonomies.find(
+        taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
+      )
+
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === poiTaxonomy.id
+      )
     },
     categoryOptions() {
       return this.categories
@@ -1178,7 +1188,6 @@ export default {
       }
     }
 
-    data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     data.isServer = !!process.server
     return data
   },
@@ -1438,7 +1447,7 @@ export default {
         description: this.content,
         community: community_id,
         language: this.languageSelected,
-        category: this.categorySelected,
+        taxonomies: [this.categorySelected],
         community_only: this.communityOnly === 'accepted',
         status
       }
@@ -1478,6 +1487,7 @@ export default {
           return
         }
       } else {
+        console.log(data)
         try {
           const created = await this.$axios.$post(
             '/api/placename/',
