@@ -28,8 +28,6 @@
 </template>
 
 <script>
-// import { getApiUrl } from '@/plugins/utils.js'
-
 export default {
   props: {
     content: {
