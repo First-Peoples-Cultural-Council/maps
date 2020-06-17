@@ -62,7 +62,7 @@ export default {
   methods: {
     openModal(e) {
       this.showUploadModal = !this.showUploadModal
-      this.$root.$emit('openUploadModal')
+      this.$root.$emit('openUploadModal', { id: 1, type: 'placename' })
     }
   }
 }
