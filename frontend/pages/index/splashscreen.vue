@@ -1,45 +1,54 @@
 <template>
-  <div class="splash-main-container" @click.prevent="closeSplashscreen">
-    <div class="splash-content-container" @click.stop="doNothing">
+  <div class="splash-main-container">
+    <div class="splash-content-container">
       <div class="splash-header">
-        <div class="header-logo">
+        <div class="header-logo" @click="redirectToHome">
           <img
-            src="../assets/images/symbol@2x.png"
+            class="fpcc-logo"
+            src="../../assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
           />
-          <span class="mt-3 hide-mobile">
+          <img
+            class="fpcc-logo-text hide-mobile"
+            src="../../assets/images/splashscreen/fpcc_logo2x.png"
+            alt="Language Map Of British Columbia"
+          />
+          <!-- <span class="mt-3 hide-mobile">
             First Peoples'
-            <p>Map of B.C.</p>
-          </span>
+            <p>CULTURAL COUNCIL</p>
+          </span> -->
         </div>
 
         <img
-          src="../assets/images/splashscreen/stars_dark.svg"
+          src="../../assets/images/splashscreen/stars_dark.svg"
           alt="Language Map Of British Columbia"
           class="fpcc-star-dark"
         />
       </div>
       <div class="splash-detail-content">
-        <div class="splash-detail">
+        <div class="splash-detail-container">
+          <div class="splash-detail">
+            <span class="fpcc-title">First Peoples' Map of B.C.</span>
+            <img
+              src="../../assets/images/splashscreen/zigzag.svg"
+              alt="Language Map Of British Columbia"
+              class="mt-4 mb-4"
+            />
+            <span class="fpcc-description">
+              Explore and contribute to the interactive map of the Indigenous
+              Languages, Arts and Heritage in B.C.
+            </span>
+          </div>
           <img
-            src="../assets/images/splashscreen/hero_img.svg"
+            src="../../assets/images/splashscreen/hero_img.svg"
             alt="Language Map Of British Columbia"
             class="fpcc-splash-img"
           />
-          <span class="fpcc-title">First Peoples' Map of B.C.</span>
-          <img
-            src="../assets/images/splashscreen/zigzag.svg"
-            alt="Language Map Of British Columbia"
-            class="mt-4 mb-4"
-          />
-          <span class="fpcc-description">
-            Explore and contribute to the interactive map of the Indigenous
-            Languages, Arts and Heritage in B.C.
-          </span>
         </div>
+
         <div class="splash-nav">
           <img
-            src="../assets/images/splashscreen/stars_light.svg"
+            src="../../assets/images/splashscreen/stars_light.svg"
             alt="Language Map Of British Columbia"
             class="fpcc-star-light"
           />
@@ -94,14 +103,12 @@ export default {
       this.$router.push({
         path
       })
-      setTimeout(() => {
-        this.closeSplashscreen()
-      }, 1000)
     },
-    closeSplashscreen() {
-      this.$root.$emit('closeSplashscreen')
-    },
-    doNothing() {}
+    redirectToHome() {
+      this.$router.push({
+        path: '/languages'
+      })
+    }
   }
 }
 </script>
@@ -117,7 +124,6 @@ export default {
   left: 0;
   width: 100vw;
   height: 100vh;
-  overflow-y: hidden;
   overflow-x: hidden;
   z-index: 500000;
   background-color: rgba(0, 0, 0, 0.8);
@@ -126,42 +132,55 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90vw;
-    height: 90vh;
-    border-radius: 0.25em;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
     box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
-    background: url('../assets/images/splashscreen/greetings_green.svg');
+    background-image: url('../../assets/images/splashscreen/green_greetings_1920.svg');
+    background-size: auto 100%;
+    background-position: center center;
     background-color: #00343b;
 
     .splash-header {
       position: relative;
-      height: 10%;
+      height: 100px;
       width: 100%;
-      background: url('../assets/images/splashscreen/greetings_white.svg');
+      background-image: url('../../assets/images/splashscreen/white_greetings_1920.svg');
       background-color: #fff;
 
       .header-logo {
         display: flex;
         align-items: center;
-        margin-left: 2%;
+        margin-left: 5%;
         color: #a32720;
         height: 100%;
-        font: Bold 15px/18px Proxima Nova;
-        font-size: 1.2em;
         text-transform: uppercase;
         letter-spacing: 1.5px;
+        cursor: pointer;
 
-        img {
+        .fpcc-logo {
+          display: none;
           width: 70px;
           height: 100%;
-          padding: 0.5em 0;
+          padding: 1em 0;
           object-fit: contain;
-          margin-right: 1em;
+          margin-right: 0.75em;
+        }
+
+        .fpcc-logo-text {
+          width: 250px;
+        }
+
+        span {
+          font: Bold 15px/18px Proxima Nova;
+          font-weight: 800;
+          font-size: 1.2em;
         }
 
         p {
           margin-top: 0.25em;
           color: #000;
+          font-size: 0.5em;
         }
       }
 
@@ -177,33 +196,32 @@ export default {
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      height: 90%;
+      min-height: auto;
+      margin: auto auto;
       width: 50%;
       color: #fff;
       padding: 1em 0;
 
-      .splash-detail {
+      .splash-detail-container {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        position: relative;
-        font-family: 'Faustina', serif;
 
-        .fpcc-title {
-          font-size: 34px;
-          font-weight: 500;
-        }
+        .splash-detail {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          position: relative;
+          font-family: 'Faustina', serif;
 
-        .fpcc-description {
-          font-size: 20px;
-          font-weight: 500;
-          width: 37.5%;
-        }
+          .fpcc-title {
+            font-size: 34px;
+            font-weight: 500;
+          }
 
-        .fpcc-splash-img {
-          position: absolute;
-          top: -25%;
-          right: 5%;
+          .fpcc-description {
+            font-size: 20px;
+            font-weight: 500;
+            width: 50%;
+          }
         }
       }
 
@@ -211,6 +229,7 @@ export default {
         position: relative;
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         margin-top: 3.5em;
 
         .fpcc-star-light {
@@ -220,17 +239,21 @@ export default {
         }
 
         .splash-navigation-btn {
-          flex: 0 0 33.33%;
+          flex: 0 0 30%;
           display: flex;
+          align-items: center;
           flex-direction: column;
-          padding: 0 1.5em;
           z-index: 50;
           cursor: pointer;
           margin-bottom: 1em;
 
           .splash-btn {
+            width: 180px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 0.8em;
-            text-align: center;
             background: #00343b;
             border-radius: 2em;
             border: 2px solid #b47a2b;
@@ -243,7 +266,6 @@ export default {
           .splash-description {
             font: Regular 16px/20px Proxima Nova;
             text-align: center;
-            padding: 0 1.75em;
           }
 
           &:hover {
@@ -258,23 +280,60 @@ export default {
   }
 }
 
-@media screen and (max-width: 1300px) {
-  .splash-main-container {
-    .splash-detail-content {
-      width: 80% !important;
-    }
+@media screen and (min-width: 993px) and (max-width: 1300px) {
+  .splash-content-container {
+    background-image: url('../../assets/images/splashscreen/green_greetings_1280.svg') !important;
+  }
+  .splash-header {
+    background-image: url('../../assets/images/splashscreen/white_greetings_1280.svg') !important;
+  }
+
+  .splash-detail-content {
+    width: 60% !important;
+  }
+
+  .fpcc-splash-img {
+    width: 200px;
+    height: 200px;
   }
 }
 
 @media screen and (max-width: 992px) {
   .splash-content-container {
+    background-image: url('../../assets/images/splashscreen/green_greetings_mobile.svg') !important;
     width: 100vw !important;
     height: 100vh !important;
     overflow-y: auto;
   }
 
+  .splash-header {
+    height: 80px !important;
+    background-image: url('../../assets/images/splashscreen/white_greetings_mobile.svg') !important;
+
+    .header-logo {
+      margin-left: 2% !important;
+
+      .fpcc-logo {
+        display: block !important;
+      }
+    }
+  }
+
   .splash-detail-content {
+    width: 80% !important;
     height: auto !important;
+  }
+
+  .splash-detail-container {
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fpcc-splash-img {
+    margin-bottom: 1em;
+    width: 150px;
+    height: 150px;
   }
 
   .splash-detail {
@@ -288,13 +347,6 @@ export default {
     .fpcc-description {
       font-size: 1.2em !important;
     }
-    .fpcc-splash-img {
-      position: initial !important;
-      margin-top: 2em;
-      margin-bottom: 1em;
-      width: 150px;
-      height: 150px;
-    }
 
     .fpcc-description {
       text-align: center;
@@ -304,6 +356,7 @@ export default {
 
   .splash-nav {
     width: 100%;
+    justify-content: center !important;
 
     .splash-navigation-btn {
       flex: 0 0 100% !important;

@@ -87,6 +87,7 @@ export default {
     categories() {
       // Fetch parent of the taxonomy called Point of Interest
       // to be used for searching its child taxonomies
+
       const poiTaxonomy = this.$store.state.arts.taxonomySearchSet.find(
         taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
       )

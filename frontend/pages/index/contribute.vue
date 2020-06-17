@@ -40,7 +40,9 @@
             show
             variant="danger"
           >
-            Please draw at least one feature from the map
+            <ul>
+              <li v-for="text in getRequiredTitle()" :key="text">{{ text }}</li>
+            </ul>
           </b-alert>
         </div>
         <div v-if="isLoggedIn">
@@ -67,14 +69,6 @@
             id="contribute-main-container"
             class="pr-3 pl-3"
           >
-            <b-alert
-              v-if="!isArtistProfileFound && isArtist && queryProfile"
-              show
-              variant="danger"
-            >
-              You cannot add an Artwork, you need to create your Artist profile
-              before uploading Artwork. Please fill up the following:
-            </b-alert>
             <div class="upload-img-container mt-3">
               <div class="upload-img">
                 <img
@@ -1215,13 +1209,10 @@ export default {
       this.addAward()
       this.addSite()
       this.setDateTimeNow()
-
       // Check if user has artist profile, if not, declare the values
       this.setArtistDetail()
-
-      if (this.queryType === 'Event' && this.queryType !== 'existing') {
-        this.dateValue = new Date().toISOString().slice(0, 10)
-      }
+      // Setup event details on form
+      this.setEventDetails()
 
       this.$root.$on('resetValues', () => {
         this.resetData()
@@ -1261,6 +1252,7 @@ export default {
       this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
       this.setArtistDetail()
+      this.setEventDetails()
 
       // this.removeQuill()
       // this.initQuill()
@@ -1280,6 +1272,17 @@ export default {
       ) {
         this.traditionalName = this.userGivenName
         this.relatedData.email = this.userDetail.email
+      }
+
+      if (this.isArtist && this.queryMode !== 'existing') {
+        this.relatedData.contacted_only = false
+        this.relatedData.commercial_only = false
+      }
+    },
+    setEventDetails() {
+      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+        this.dateValue = new Date().toISOString().slice(0, 10)
+        this.relatedData.is_online = false
       }
     },
     setDateTimeNow() {
@@ -1327,6 +1330,17 @@ export default {
       } else if (this.queryType === 'Organization') {
         return '(ex. Canadian Musuem)'
       }
+    },
+    getRequiredTitle() {
+      const requiredText = []
+      requiredText.push('Please draw at least one feature from the map.')
+
+      if (!this.isArtistProfileFound && this.isArtist && this.queryProfile) {
+        requiredText.push(
+          'You need to create your Artist profile before uploading Artwork.'
+        )
+      }
+      return requiredText
     },
     contributeTitle() {
       if (this.$route.query.id) {
@@ -1487,7 +1501,6 @@ export default {
           return
         }
       } else {
-        console.log(data)
         try {
           const created = await this.$axios.$post(
             '/api/placename/',
@@ -1594,7 +1607,6 @@ export default {
             headers
           )
 
-          console.log(modified)
           if (modified) {
             // Upload Placename Thumbnail if changed
             const thumbnailResult = this.uploadPlacenameThumbnail(id, headers)
@@ -1943,8 +1955,14 @@ export default {
   right: 0;
 
   & > * {
-    position: absolute;
+    position: sticky;
     top: 40vh;
+    width: 80%;
+  }
+
+  ul {
+    padding-left: 0.5em;
+    margin-bottom: 0;
   }
 }
 

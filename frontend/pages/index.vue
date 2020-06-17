@@ -175,7 +175,6 @@
         </div>
       </div>
     </div>
-    <Splashscreen v-if="showSplashscreen && $route.path === '/'"></Splashscreen>
   </div>
 </template>
 
@@ -204,7 +203,6 @@ import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
-import Splashscreen from '@/components/Splashscreen.vue'
 
 import {
   getApiUrl,
@@ -246,8 +244,7 @@ export default {
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    EventOverlay,
-    Splashscreen
+    EventOverlay
   },
   head() {
     return {
@@ -459,9 +456,50 @@ export default {
       })
     })
 
+    // Showing the Notification on Media success
+    this.$root.$on('fileUploaded', data => {
+      // this.modalShow = false
+      this.$root.$emit('notification', {
+        title: 'Success',
+        message: 'Media Successfully uploaded',
+        time: 2000,
+        variant: 'success'
+      })
+
+      this.$root.$emit('closeUploadModal')
+
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      } else if (this.$route.name === 'index-place-names-placename') {
+        this.$root.$emit('fileUploadedPlaces', data)
+      } else if (this.$route.name === 'index-content-fn') {
+        this.$root.$emit('fileUploadedCommunity', data)
+      }
+    })
+
+    // Showing of Notification on Media failure
+    this.$root.$on('fileUploadFailed', type => {
+      this.$root.$emit('notification', {
+        title: 'Failed',
+        message: `${type} Upload Failed, please try again`,
+        time: 2000,
+        variant: 'danger'
+      })
+      this.$root.$emit('closeUploadModal')
+      if (this.$route.name === 'index-art-art') {
+        this.$root.$emit('fileUploadSuccess')
+      }
+    })
+
     // Decides to show the splashscreen, if values exist, then its no longer first time visit
     if (localStorage.getItem('fpcc-splashscreen') === null) {
       this.showSplashscreen = true
+      // Redirect to /languages
+      if (this.$route.path === '/') {
+        this.$router.push({
+          path: '/splashscreen'
+        })
+      }
     } else if (localStorage.getItem('fpcc-splashscreen') === 'false') {
       this.showSplashscreen = false
     }
@@ -553,13 +591,6 @@ export default {
       })
       this.loadMoreData()
     }
-
-    // Redirect to /languages
-    // if (this.$route.path === '/') {
-    //   this.$router.push({
-    //     path: '/languages'
-    //   })
-    // }
 
     // Redirect to claim page if during invite mode
     if (Cookies.get('inviteMode')) {
