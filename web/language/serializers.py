@@ -5,8 +5,8 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from .models import (
     Language,
     PlaceName,
+    PublicArtArtist,
     Recording,
-    PlaceNameCategory,
     Community,
     Champion,
     LanguageFamily,
@@ -58,7 +58,16 @@ class MediaLightSerializer(serializers.ModelSerializer):
 class PlaceNameLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "id", "category", "other_names", "community", "community_only", "creator")
+        fields = (
+            "name",
+            "id",
+            "kind",
+            "other_names",
+            "community",
+            "community_only",
+            "creator",
+            "taxonomies"
+        )
 
 
 # NORMAL SERIALIZERS
@@ -179,12 +188,6 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
         )
 
 
-class PlaceNameCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlaceNameCategory
-        fields = ("id", "name", "icon_name")
-
-
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
@@ -292,11 +295,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     language = serializers.PrimaryKeyRelatedField(
         queryset=Language.objects.all(), allow_null=True, required=False
     )
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceNameCategory.objects.all(), allow_null=True, required=False
-    )
-    category_obj = PlaceNameCategorySerializer(
-        source="category", read_only=True)
     favourites = FavouritePlaceNameSerializer(many=True, read_only=True)
     audio = serializers.PrimaryKeyRelatedField(
         queryset=Recording.objects.all(), allow_null=True, required=False
@@ -314,14 +312,30 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # If related_data is included in the payload, pop it first
         related_data = validated_data.pop('related_data', [])
+        artists = validated_data.pop('artists', [])
+        taxonomies = validated_data.pop('taxonomies', [])
 
         # Save the PlaceName without a related_data
         placename = PlaceName.objects.create(**validated_data)
 
         # Save all related data one by one if they were added in the payload
-        if len(related_data) > 0:
+        if related_data:
             for data in related_data:
                 RelatedData.objects.create(**data)
+        
+        if artists:
+            for artist in artists:
+                PublicArtArtist.objects.create(
+                    public_art=placename,
+                    artist=artist
+                )
+        
+        if taxonomies:
+            for taxonomy in taxonomies:
+                PlaceNameTaxonomy.objects.create(
+                    placename=placename,
+                    taxonomy=taxonomy
+                )
 
         return placename
 
@@ -387,8 +401,6 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "description",
             "status",
             "status_reason",
-            "category",
-            "category_obj",
             "medias",
             "community",
             "language",
@@ -631,7 +643,7 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("name", "other_names", "kind")
+        fields = ("id", "name", "other_names", "kind")
 
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
@@ -659,8 +671,8 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
             "id",
             "name",
             "kind",
+            "image",
             "taxonomies"
-   
         )
         geo_field = "geom"
 

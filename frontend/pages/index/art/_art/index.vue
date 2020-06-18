@@ -74,10 +74,7 @@
         >
           <!-- Show the Placename image if Public Art and Event -->
           <div
-            v-if="
-              artDetails.image &&
-                (isPublicArt || artDetails.kind.toLowerCase() === 'event')
-            "
+            v-if="artDetails.image && (isPublicArt || isEvent)"
             class="placename-img-container"
           >
             <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
@@ -238,7 +235,6 @@ import { zoomToPoint } from '@/mixins/map.js'
 import {
   getApiUrl,
   encodeFPCC,
-  decodeFPCC,
   makeMarker,
   getMediaUrl,
   getCookie
@@ -290,6 +286,9 @@ export default {
     },
     isPublicArt() {
       return this.artDetails.kind.toLowerCase() === 'public_art'
+    },
+    isEvent() {
+      return this.artDetails.kind.toLowerCase() === 'event'
     },
     isGalleryNotEmpty() {
       return (
@@ -363,8 +362,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $router }) {
-    const artParam = decodeFPCC(params.art)
-    const arts = await $axios.$get(getApiUrl(`placename/?search=${artParam}`))
+    const arts = await $axios.$get(getApiUrl(`art-search?format=json`))
     if (arts) {
       const art = arts.find(a => {
         if (a.name) {
@@ -375,7 +373,6 @@ export default {
       if (art.id) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
-        console.log(artDetails)
         const isServer = !!process.server
         return {
           art,
@@ -653,7 +650,9 @@ export default {
 
 .field-content p,
 .field-content span,
-.field-content pre {
+.field-content pre,
+.field-content label,
+.field-content legend {
   font: normal 16px/25px Proxima Nova !important;
   color: #151515 !important;
   background: none !important;
@@ -701,6 +700,7 @@ export default {
   width: 100%;
   margin: 1em 0;
 }
+
 .placename-img {
   width: 275px;
   height: 275px;

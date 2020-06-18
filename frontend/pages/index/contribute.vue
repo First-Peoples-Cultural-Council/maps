@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         <b-badge
@@ -21,7 +21,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -30,17 +30,19 @@
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
       <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div class="position-relative pb-3">
+      <div class="position-relative pb-3 contribute-form-container">
         <div
           v-if="(drawnFeatures.length === 0 && !place) || isLoading"
-          class="required-overlay d-flex align-items-center justify-content-center"
+          class="required-overlay"
         >
           <b-alert
             v-if="drawnFeatures.length === 0 && !place"
             show
             variant="danger"
           >
-            Please draw at least one feature from the map
+            <ul>
+              <li v-for="text in getRequiredTitle()" :key="text">{{ text }}</li>
+            </ul>
           </b-alert>
         </div>
         <div v-if="isLoggedIn">
@@ -57,7 +59,7 @@
             </div>
             <div>
               <h4 class="text-uppercase contribute-title mr-2">
-                Contribute
+                {{ `Contribute | ${contributeTitle()}` }}
               </h4>
             </div>
           </div>
@@ -86,8 +88,8 @@
               <b-form-file
                 ref="fileUpload"
                 v-model="fileImg"
-                class="file-upload-input mt-2"
-                placeholder="choose a thumbnail image"
+                class="file-upload-input mt-2 "
+                :placeholder="filePlaceholder()"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
               ></b-form-file>
@@ -259,7 +261,7 @@
               ></multiselect>
             </b-row>
 
-            <b-row class="field-row mt-3">
+            <b-row class="field-row-group mt-3">
               <div>
                 <label for="location" class="contribute-title-one"
                   >Location</label
@@ -270,13 +272,43 @@
                   "
                 ></ToolTip>
               </div>
-
+              <b-form-group
+                v-if="queryType === 'Event'"
+                id="location-fieldset"
+                description="For Online Events, type a location near you, or leave it blank. "
+                label-for="location"
+              >
+                <b-form-input
+                  id="location"
+                  v-model="relatedData.location"
+                  type="text"
+                  placeholder="(ex. Vancouver, Canada)"
+                ></b-form-input>
+              </b-form-group>
               <b-form-input
+                v-else
                 id="location"
                 v-model="relatedData.location"
                 type="text"
                 placeholder="(ex. Vancouver, Canada)"
               ></b-form-input>
+            </b-row>
+
+            <b-row v-if="queryType === 'Event'" class="field-row mt-3">
+              <label
+                class="d-inline-block contribute-title-one"
+                for="online-event"
+                >Is this an Online Event?</label
+              >
+              <b-form-checkbox
+                id="online-event"
+                v-model="relatedData.is_online"
+                class="d-inline-block ml-2"
+                name="online-event"
+                value="accepted"
+                unchecked-value="not_accepted"
+              >
+              </b-form-checkbox>
             </b-row>
 
             <b-row
@@ -354,7 +386,7 @@
                   class="site-input-container"
                 >
                   <b-form-input
-                    :id="`site-${index}`"
+                    :id="`award-${index}`"
                     v-model="award.value"
                     type="text"
                     placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
@@ -559,7 +591,6 @@
                 <label for="traditionalName" class="contribute-title-one mb-1"
                   >Category</label
                 >
-
                 <ToolTip
                   content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
                 ></ToolTip>
@@ -611,9 +642,6 @@
               ></ToolTip>
             </h5>
             <div id="quill" ref="quill"></div>
-
-            <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
-            <!--<MediaUploader></MediaUploader>-->
           </section>
 
           <hr />
@@ -734,6 +762,7 @@ export default {
       isEmailValid: null,
 
       relatedData: {
+        is_online: null,
         email: null,
         phone: null,
         organization_access: null,
@@ -815,6 +844,17 @@ export default {
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    categories() {
+      // Fetch parent of the taxonomy called Point of Interest
+      // to be used for searching its child taxonomies
+      const poiTaxonomy = this.taxonomies.find(
+        taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
+      )
+
+      return this.taxonomies.filter(
+        taxonomy => taxonomy.parent === poiTaxonomy.id
+      )
     },
     categoryOptions() {
       return this.categories
@@ -986,7 +1026,7 @@ export default {
         content: place.description,
         categorySelected: place.category,
         fileSrc: getMediaUrl(place.image),
-        fileImg: place.fileImg
+        fileImg: null
       }
       if (community) {
         data.community = community
@@ -1000,9 +1040,7 @@ export default {
             getApiUrl(`language/${place.language}`)
           )
           if (language) {
-            data.languageSelected = language.id
-            data.languageOptions = [{ value: language.id, text: language.name }]
-            data.languageSelectedName = language.name
+            data.languageUserSelected = { id: language.id, name: language.name }
           }
         } catch (e) {
           console.error(e)
@@ -1015,6 +1053,7 @@ export default {
       }
 
       data.relatedData = {
+        is_online: null,
         email: null,
         phone: null,
         organization_access: null,
@@ -1052,9 +1091,15 @@ export default {
           } else if (related.data_type === 'copyright') {
             data.relatedData.copyright = related.value
           } else if (related.data_type === 'contacted_only') {
-            data.relatedData.contacted_only = !!related.value.includes('true')
+            data.relatedData.contacted_only = related.value.includes('true')
+              ? 'accepted'
+              : 'not_accepted'
           } else if (related.data_type === 'commercial_only') {
             data.relatedData.commercial_only = !related.value.includes('Not')
+              ? 'accepted'
+              : 'not_accepted'
+          } else if (related.data_type === 'is_online') {
+            data.relatedData.is_online = related.value.includes('Online')
           }
         })
       }
@@ -1132,7 +1177,6 @@ export default {
       }
     }
 
-    data.categories = await $axios.$get(getApiUrl(`placenamecategory/`))
     data.isServer = !!process.server
     return data
   },
@@ -1149,38 +1193,28 @@ export default {
   mounted() {
     // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
-      this.languageUserSelected =
-        this.userDetail.languages.length !== 0
-          ? this.userDetail.languages[0]
-          : null
+      if (this.languageUserSelected === null) {
+        this.languageUserSelected =
+          this.userDetail.languages.length !== 0
+            ? this.userDetail.languages[0]
+            : null
+      }
 
       this.initQuill()
       this.addAward()
       this.addSite()
       this.setDateTimeNow()
-
-      if (this.isArtist) {
-        this.relatedData.contacted_only = false
-        this.relatedData.commercial_only = false
-      }
-
       // Check if user has artist profile, if not, declare the values
-      if (
-        this.userDetail &&
-        this.queryMode !== 'existing' &&
-        !this.isArtistProfileFound &&
-        this.isArtist
-      ) {
-        this.traditionalName = this.userGivenName
-        this.relatedData.email = this.userDetail.email
-      }
-
-      if (this.queryType === 'Event' && this.queryType !== 'existing') {
-        this.dateValue = new Date().toISOString().slice(0, 10)
-      }
+      this.setArtistDetail()
+      // Setup event details on form
+      this.setEventDetails()
 
       this.$root.$on('resetValues', () => {
         this.resetData()
+      })
+
+      this.$root.$on('updateFileList', () => {
+        this.$store.dispatch('file/getUploadMedia', this.place.id)
       })
     } else {
       this.$root.$emit(
@@ -1212,6 +1246,8 @@ export default {
       this.relatedData.contacted_only = null
       this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
+      this.setArtistDetail()
+      this.setEventDetails()
 
       // this.removeQuill()
       // this.initQuill()
@@ -1220,6 +1256,28 @@ export default {
       )
       if (contributeContainer) {
         contributeContainer.scrollTop = 0
+      }
+    },
+    setArtistDetail() {
+      if (
+        this.userDetail &&
+        this.queryMode !== 'existing' &&
+        !this.isArtistProfileFound &&
+        this.isArtist
+      ) {
+        this.traditionalName = this.userGivenName
+        this.relatedData.email = this.userDetail.email
+      }
+
+      if (this.isArtist && this.queryMode !== 'existing') {
+        this.relatedData.contacted_only = false
+        this.relatedData.commercial_only = false
+      }
+    },
+    setEventDetails() {
+      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+        this.dateValue = new Date().toISOString().slice(0, 10)
+        this.relatedData.is_online = false
       }
     },
     setDateTimeNow() {
@@ -1268,6 +1326,29 @@ export default {
         return '(ex. Canadian Musuem)'
       }
     },
+    getRequiredTitle() {
+      const requiredText = []
+      requiredText.push('Please draw at least one feature from the map.')
+
+      if (
+        this.isLoggedIn &&
+        !this.isArtistProfileFound &&
+        this.isArtist &&
+        this.queryProfile
+      ) {
+        requiredText.push(
+          'You need to create your Artist profile before uploading Artwork.'
+        )
+      }
+      return requiredText
+    },
+    contributeTitle() {
+      if (this.$route.query.id) {
+        return `Edit ${this.queryType ? this.queryType : 'Placename'}`
+      } else {
+        return `${this.queryType ? this.queryType : 'Placename'} Creation`
+      }
+    },
     thumbnailPlaceholder() {
       if (this.isArtist) {
         return require(`@/assets/images/artist_icon.svg`)
@@ -1278,6 +1359,11 @@ export default {
       } else if (this.queryType === 'Organization') {
         return require(`@/assets/images/organization_icon.svg`)
       }
+    },
+    filePlaceholder() {
+      return this.place && this.place.image && this.fileSrc
+        ? getMediaUrl(this.fileSrc)
+        : 'choose a thumbnail image'
     },
     initQuill() {
       if (document.querySelector('#quill')) {
@@ -1380,7 +1466,7 @@ export default {
         description: this.content,
         community: community_id,
         language: this.languageSelected,
-        category: this.categorySelected,
+        taxonomies: [this.categorySelected],
         community_only: this.communityOnly === 'accepted',
         status
       }
@@ -1527,14 +1613,16 @@ export default {
           )
 
           if (modified) {
-            // Upload new medias added
-            this.uploadMedias(id)
-
             // Upload Placename Thumbnail if changed
-            this.uploadPlacenameThumbnail(id, headers)
+            const thumbnailResult = this.uploadPlacenameThumbnail(id, headers)
+
+            // Upload new medias added
+            const mediaResult = this.uploadMedias(id)
 
             // If finish, redirect to Placename
-            this.redirectToPlacename()
+            if (mediaResult || thumbnailResult) {
+              this.redirectToPlacename()
+            }
           }
         } catch (e) {
           this.isLoading = false
@@ -1555,11 +1643,11 @@ export default {
 
           // If Placename is successfully created, then PATCH data
           if (created) {
-            // PATCH DATA AFTER POSTING
-            const data1 = this.getPatchData(id)
-
             // Patch placename thumbnail
             this.uploadPlacenameThumbnail(id, headers)
+
+            // PATCH DATA AFTER POSTING
+            const data1 = this.getPatchData(id)
 
             // UPLOAD MEDIAS
             this.uploadMedias(id)
@@ -1571,10 +1659,10 @@ export default {
                 headers
               )
 
-              console.log('MODIFIED DATA', modified)
-
               // If finish, redirect to Placename
-              this.redirectToPlacename()
+              if (modified) {
+                this.redirectToPlacename()
+              }
             } catch (e) {
               this.isLoading = false
               this.errors = this.errors.concat(
@@ -1634,11 +1722,14 @@ export default {
           let label = ''
           // Set return Values
           if (field[0] === 'contacted_only') {
-            value = field[1] ? 'contact_true' : 'contacted_false'
+            value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
           } else if (field[0] === 'commercial_only') {
-            value = field[1]
-              ? 'Interested in Commercial Inquiry'
-              : 'Not interested in Commercial Inquiry'
+            value =
+              field[1] === 'accepted'
+                ? 'Interested in Commercial Inquiry'
+                : 'Not interested in Commercial Inquiry'
+          } else if (field[0] === 'is_online') {
+            value = field[1] ? 'Online Event' : 'Physical Event'
           } else {
             value = field[1]
           }
@@ -1655,6 +1746,8 @@ export default {
             label = 'Organization Access'
           } else if (field[0] === 'commercial_only') {
             label = 'Commercial Inquiry'
+          } else if (field[0] === 'is_online') {
+            label = 'Event Type'
           } else {
             label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
           }
@@ -1735,14 +1828,23 @@ export default {
           }
         })
 
-      console.log(values)
+      return values
     },
     async uploadPlacenameThumbnail(id, headers) {
-      if (this.fileSrc !== getMediaUrl(this.place.image)) {
+      if (
+        (this.place && this.fileSrc !== getMediaUrl(this.place.image)) ||
+        this.fileImg !== null
+      ) {
         const formDatas = new FormData()
         formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
 
-        await this.$axios.$patch(`/api/placename/${id}/`, formDatas, headers)
+        const result = await this.$axios.$patch(
+          `/api/placename/${id}/`,
+          formDatas,
+          headers
+        )
+
+        return result
       }
     },
     redirectToPlacename() {
@@ -1750,9 +1852,7 @@ export default {
         this.$root.$emit('refetchArtwork')
       }
 
-      this.$router.push({
-        path: `/art/${encodeFPCC(this.traditionalName)}`
-      })
+      location.href = `/art/${encodeFPCC(this.traditionalName)}`
     }
   },
 
@@ -1842,7 +1942,14 @@ export default {
   padding: 0;
   margin: 0;
 }
+
+.contribute-form-container {
+  min-height: 92vh;
+}
 .required-overlay {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   position: absolute;
   top: 0;
   left: 0;
@@ -1850,6 +1957,18 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 50;
   right: 0;
+
+  & > * {
+    position: sticky;
+    top: 40vh;
+    width: 80%;
+    height: fit-content;
+  }
+
+  ul {
+    padding-left: 0.5em;
+    margin-bottom: 0;
+  }
 }
 
 .multiselect__tag {
@@ -1897,6 +2016,12 @@ export default {
 
 /* Placename Form Style */
 .field-row {
+  padding: 0 1em;
+}
+
+.field-row-group {
+  display: flex;
+  flex-direction: column;
   padding: 0 1em;
 }
 

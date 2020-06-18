@@ -222,7 +222,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.media)
     const { name, description, community_only, url, media_file } = this.media
 
     this.title = name
@@ -266,8 +265,8 @@ export default {
           )
           if (result) {
             this.$root.$emit('fileUploaded', result)
-
             this.toggleModal()
+            this.$root.$emit('updateFileList')
           }
         } catch (e) {
           this.toggleModal()

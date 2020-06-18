@@ -10,8 +10,13 @@
         <img class="event-img" :src="getEventImg(event.properties.image)" />
         <div class="event-details">
           <span class="event-date">{{
-            getDateValue(event.properties.related_data)
+            getDate(event.properties.related_data)
           }}</span>
+          <span
+            class="event-date-description"
+            :class="getDateStatus(event.properties.related_data)"
+            >{{ getDateValue(event.properties.related_data) }}</span
+          >
           <h4 class="event-title">{{ event.properties.name }}</h4>
           <div class="events-tags-container">
             <span
@@ -22,13 +27,6 @@
             >
           </div>
         </div>
-
-        <!-- <p class="event-description">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, unde qui
-      quos iste praesentium laborum? Aliquam at fuga veniam quis id, neque quod
-      alias obcaecati porro suscipit ullam ea temporibus!
-    </p> -->
-        <!-- <button>CHECK EVENT</button> -->
       </div>
     </template>
     <div v-else class="event-card-container">
@@ -87,7 +85,6 @@ export default {
       })
     },
     finalListOfEvents() {
-      console.log(this.finishedEventList)
       return [
         ...this.sortedEventDates(this.upcomingEventList, 'desc'),
         ...this.sortedEventDates(this.finishedEventList, 'asc')
@@ -112,6 +109,7 @@ export default {
     },
     redirectToFilter(taxonomy) {
       this.resetState()
+      this.$root.$emit('resetMap')
       this.$store.commit('arts/setFilter', 'event')
       this.$store.commit('arts/setTaxonomyTag', [taxonomy])
       this.$root.$emit('triggerLoadKindData')
@@ -124,7 +122,7 @@ export default {
       this.$root.$emit('closeEventPopover')
       this.$root.$emit('toggleEventOverlay', false)
     },
-    getDateValue(relatedData) {
+    getDate(relatedData) {
       const findDate = this.findEventDateInRD(relatedData)
 
       if (findDate) {
@@ -134,9 +132,16 @@ export default {
           month: 'long',
           day: 'numeric'
         }
+        const eventDate = new Date(findDate.value)
+        return eventDate.toLocaleDateString('en-US', options)
+      }
+    },
+    getDateValue(relatedData) {
+      const findDate = this.findEventDateInRD(relatedData)
+
+      if (findDate) {
         let dateDescription = ''
         const eventDate = new Date(findDate.value)
-        const dateString = eventDate.toLocaleDateString('en-US', options)
 
         if (eventDate > Date.now()) {
           const resultDate = eventDate - Date.now()
@@ -145,24 +150,35 @@ export default {
           const differenceInMins = Math.floor(resultDate / 1000 / 60)
 
           if (differenceInMins < 60) {
-            dateDescription = `(Happening in ${differenceInMins}) minute${
+            dateDescription = `Happening in ${differenceInMins}) minute${
               differenceInMins <= 1 ? '' : 's'
-            })`
+            }`
           } else if (differenceInHours > 24) {
-            dateDescription = `(Happening in ${differenceInDays} day${
+            dateDescription = `Happening in ${differenceInDays} day${
               differenceInDays === 1 ? '' : 's'
-            })`
+            }`
           } else {
-            dateDescription = `(Happening in ${differenceInHours} hour${
+            dateDescription = `Happening in ${differenceInHours} hour${
               differenceInHours === 1 ? '' : 's'
-            })`
+            }`
           }
         } else {
-          dateDescription = '(Event finished)'
+          dateDescription = 'Event finished'
         }
-        return `${dateString} ${dateDescription}`
+        return `${dateDescription}`
       } else {
         return 'No date found'
+      }
+    },
+    getDateStatus(relatedData) {
+      const result = this.getDateValue(relatedData)
+
+      if (result.includes('Happpening') && result.includes('day')) {
+        return 'event-happening'
+      } else if (result.includes('Happening')) {
+        return 'event-now'
+      } else if (result.includes('finished')) {
+        return 'event-finished'
       }
     },
     findEventDateInRD(relatedData) {
@@ -215,6 +231,31 @@ export default {
     text-transform: uppercase;
   }
 
+  .event-date-description {
+    font: Bold 12px Proxima Nova;
+    text-transform: uppercase;
+    width: fit-content;
+    padding: 0.25em;
+    border-radius: 2rem;
+    padding: 2px 5px;
+    text-align: center;
+  }
+
+  .event-now {
+    background: #155724;
+    color: #fff;
+  }
+
+  .event-happening {
+    background: #0c5460;
+    color: #fff;
+  }
+
+  .event-finished {
+    background-color: #721c24;
+    color: #fff;
+  }
+
   .event-title {
     font: Bold 16px/20px Proxima Nova;
     letter-spacing: 0.8px;
@@ -239,14 +280,17 @@ export default {
   }
 
   .event-img {
-    width: 135px;
+    width: 135px !important;
     height: 135px;
     object-fit: cover;
     margin-right: 1em;
   }
 
   .event-details {
-    width: 235px;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    max-width: 280px;
   }
 
   .no-event-container {

@@ -293,12 +293,6 @@ export default {
           }
         })
         this.$root.$emit('resetValues')
-        if (this.isLoggedIn) {
-          this.$root.$emit(
-            'toggleMessageBox',
-            'You cannot add an Artwork, you need to create your Artist profile before uploading Artwork. You will be redirected to Artist Creation. If done, you will be able to upload Artwork under your name.'
-          )
-        }
       }
       // If has Artist profile, redirect to Profile, then add Media
       else {
@@ -314,7 +308,10 @@ export default {
         // Decide for UploadModal popup time
         const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500
         setTimeout(() => {
-          this.$root.$emit('openUploadModal')
+          this.$root.$emit('openUploadModal', {
+            id: this.validatedArtist.id,
+            type: 'placename'
+          })
         }, timeOut)
       }
     },

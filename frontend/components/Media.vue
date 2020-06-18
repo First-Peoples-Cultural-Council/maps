@@ -65,15 +65,15 @@
 
     <div
       v-if="getGenericFileType(media.file_type) === 'other'"
-      class="word-break-all d-flex justify-content-center"
+      class="w-100 word-break-all d-flex justify-content-center"
     >
       <div class="media-file-container">
-        <img class="media-placeholder" src="@/assets/images/volume.svg" />
+        <img class="media-placeholder" src="@/assets/images/attach.svg" />
         <b-button
           variant="dark"
           size="sm"
           class="mt-3"
-          :href="getMediaUrl(media.file_type, server)"
+          @click="downloadFile(media)"
           >Click here to Download</b-button
         >
       </div>
@@ -298,6 +298,9 @@ export default {
           }
         )
         .show()
+    },
+    downloadFile(media) {
+      window.open(getMediaUrl(media.media_file))
     },
     async getVimeoEmbed(link) {
       const result = await this.$axios.$get(

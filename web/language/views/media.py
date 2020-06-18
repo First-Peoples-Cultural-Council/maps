@@ -11,7 +11,6 @@ from language.models import (
     Community,
     CommunityMember,
     Champion,
-    PlaceNameCategory,
     Media,
     Favourite,
     Notification,
@@ -63,7 +62,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         admin_communities = list(Administrator.objects.filter(
             user__id=int(self.request.user.id)).values_list('community', flat=True))
 
-        if obj.community.id in admin_communities:
+        if (obj.community and obj.community.id in admin_communities):
             obj.status = 'VE'
             obj.save()
 

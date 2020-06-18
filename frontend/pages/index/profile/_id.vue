@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         User: <b-badge variant="primary">{{ getUserName() }}</b-badge>
@@ -30,7 +30,7 @@
         :approval="isLangAdmin && isOwner"
         :handle-return="handleReturn"
       ></UserDetailCard>
-      <section class="ml-2 mr-2 mt-2">
+      <section class="mt-2 pl-3 pr-3">
         <div
           v-if="
             isLoggedIn &&
@@ -95,7 +95,7 @@
         >
           Contributions ({{ user.placename_set.length }})
         </h5>
-        <template v-for="place in user.placename_set">
+        <template v-for="place in placenameSet">
           <!-- Render this card if not Art Placename -->
           <PlacesCard
             v-if="place.kind === ''"
@@ -259,6 +259,10 @@ export default {
     },
     notifications() {
       return this.$store.state.user.notifications
+    },
+    placenameSet() {
+      const placenameSet = this.user.placename_set
+      return placenameSet.sort((a, b) => a.kind.localeCompare(b.kind))
     }
   },
   beforeRouteEnter(to, from, next) {

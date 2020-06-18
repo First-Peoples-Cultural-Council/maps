@@ -2,7 +2,7 @@
   <div class="w-100">
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         Language:
@@ -144,7 +144,7 @@
                 <CommunityCard
                   :name="community.name"
                   :community="community"
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   @click.native="
                     handleCardClick($event, community.name, 'comm')
                   "
@@ -172,7 +172,7 @@
                 <PlacesCard
                   :name="place.name"
                   :place="{ properties: place }"
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   @click.native="handleCardClick($event, place.name, 'places')"
                 ></PlacesCard>
               </b-col>

@@ -30,7 +30,7 @@ export default {
   methods: {
     toggleUploadModal() {
       this.showModal = !this.showModal
-      this.$root.$emit('openUploadModal')
+      this.$root.$emit('openUploadModal', { id: this.id, type: this.type })
     },
     openModal(e) {}
   }

@@ -14,7 +14,7 @@ def _format_fpcc(s):
 
     s = s.strip().lower()
     s = re.sub(
-        r"\\|\/|>|<|\)|\(|~|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|\"",
+        r"\\|\/|>|<|\?|\)|\(|~|!|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|'|\"",
         "",
         s,
     )
@@ -31,7 +31,8 @@ def send_claim_profile_invite(email):
     encoded_email = email.encode('utf-8')
     key = hashlib.sha256(salt + encoded_email).hexdigest()
 
-    email_data = RelatedData.objects.filter(data_type='user_email', placename__creator__isnull=True, value=email)
+    email_data = RelatedData.objects.filter(
+        data_type='user_email', placename__creator__isnull=True, value=email)
 
     fully_claimed = True
 
@@ -79,13 +80,22 @@ def send_claim_profile_invite(email):
         print('User has no profiles to claim.')
 
 
-def send_claim_profile_invites():
+def send_claim_profile_invites(email=None):
     """
     Bulk Invite - Sends to every registered
     """
     # This is actual data which we won't use yet
-    emails = RelatedData.objects.exclude(value='').filter(
-        data_type='user_email', placename__creator__isnull=True).distinct('value').values_list('value', flat=True)
+    if not email:
+        emails = RelatedData.objects.exclude(value='').filter(
+            data_type='user_email',
+            placename__creator__isnull=True
+        ).distinct('value').values_list('value', flat=True)
+    else:
+        emails = RelatedData.objects.exclude(value='').filter(
+            data_type='user_email',
+            placename__creator__isnull=True,
+            value=email
+        ).distinct('value').values_list('value', flat=True)
 
     for email in emails:
         # In the case of bulk sending, user_email = profile_email

@@ -232,15 +232,6 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceNameCategory(BaseModel):
-    icon_name = models.CharField(
-        max_length=32, blank=True, default=None, help_text="Name of the icon in MapBox"
-    )
-
-    class Meta:
-        verbose_name_plural = "Place name Categories"
-
-
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
@@ -255,10 +246,6 @@ class PlaceName(CulturalModel):
     )
 
     kind = models.CharField(max_length=20, default="")
-
-    category = models.ForeignKey(
-        PlaceNameCategory, on_delete=models.SET_NULL, null=True, blank=True
-    )
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")
@@ -333,7 +320,7 @@ class Media(BaseModel):
     description = models.TextField(default="", blank=True)
     file_type = models.CharField(max_length=16, default=None, null=True)
     url = models.URLField(max_length=255, default=None, null=True, blank=True)
-    media_file = models.FileField(null=True, blank=True)
+    media_file = models.FileField(null=True, blank=True, max_length=500)
     community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, blank=True, related_name="medias"
