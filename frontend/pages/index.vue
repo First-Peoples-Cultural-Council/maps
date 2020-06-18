@@ -6,7 +6,7 @@
       detailModeContainer: isDetailMode,
       'arts-container': isArt
     }"
-    @click.stop.prevent="closePopover"
+    ￼￼
   >
     <SideBar v-if="this.$route.name === 'index'" active="Languages">
       <template v-slot:content>
@@ -1227,7 +1227,7 @@ export default {
 
 .drawing-mode-container {
   position: absolute;
-  top: 10px;
+  top: 20px;
   left: 0;
   background-color: transparent;
   display: flex;
@@ -1241,6 +1241,8 @@ export default {
   padding: 0.75em !important;
   margin: auto auto;
   color: #151515;
+  width: fit-content;
+  max-width: 80%;
 }
 
 .map-navigation-container {
@@ -1340,7 +1342,6 @@ export default {
 
 .route-child-container {
   width: 100%;
-  height: 100%;
 }
 
 .sb-detail {
