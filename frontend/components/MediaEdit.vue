@@ -222,7 +222,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.media)
     const { name, description, community_only, url, media_file } = this.media
 
     this.title = name

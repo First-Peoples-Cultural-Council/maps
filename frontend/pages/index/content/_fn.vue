@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         Community:

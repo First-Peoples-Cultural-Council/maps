@@ -3,7 +3,7 @@
     <b-collapse id="outer-collapse" visible>
       <div id="innerToggleHead" :class="{ fixTop: visible }">
         <slot name="tabs"></slot>
-        <div class="innerToggle pl-2 pr-2">
+        <div class="innerToggle pl-3 pr-3">
           <div class="d-table innerHeader">
             <span
               class="d-inline-block badge-section d-table-cell valign-middle"

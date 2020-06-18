@@ -186,6 +186,7 @@ export default {
 <style>
 .file-upload-input {
   font-size: 0.8em;
+  overflow: hidden;
 }
 .fade-enter-active,
 .fade-leave-active {
