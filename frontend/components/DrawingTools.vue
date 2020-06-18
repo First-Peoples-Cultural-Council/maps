@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div v-if="drawMode && drawMode !== 'existing'" class="font-weight-bold">
+  <div class="drawing-mode-panel">
+    <div
+      v-if="drawMode && drawMode !== 'existing' && drawMode !== 'placename'"
+      class="font-weight-bold"
+    >
       Click the map to draw a {{ drawMode
       }}<span v-if="drawMode && drawMode !== 'point'"
         >, double-click when done</span
@@ -12,28 +15,78 @@
     <div v-if="!drawMode" class="font-weight-bold">
       You are contributing to an existing point.
     </div>
-    <div class="dt-container d-flex align-items-center justify-content-center">
+    <div
+      v-if="drawMode === 'placename' && drawMode !== 'existing'"
+      class="font-weight-bold w-80"
+    >
+      {{
+        queryType === 'Artist'
+          ? 'First, we need to make an artist profile. Please click where you are from on the map.'
+          : `Please click on the map where this ${queryType} can be found.`
+      }}
+    </div>
+    <div
+      class="mt-2 mb-2 dt-container d-flex align-items-center justify-content-center"
+    >
       <div
-        v-if="drawMode === 'point' || drawMode === 'existing'"
+        v-if="
+          drawMode === 'point' ||
+            drawMode === 'placename' ||
+            drawMode === 'existing'
+        "
+        id="tool-point"
         class="draw-tool draw-point"
         @click="setMode($event, 'point')"
-      ></div>
+      >
+        <b-tooltip target="tool-point"
+          >Draw a point in the map to indicate a single location.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'point' || drawMode === 'existing'"
+        id="tool-current"
         class="draw-tool draw-current-location"
         @click="setMode($event, 'location')"
-      ></div>
+      >
+        <b-tooltip target="tool-current"
+          >Draw a current location in the map.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'polygon' || drawMode === 'existing'"
+        id="tool-polygon"
         class="draw-tool draw-polygon"
         @click="setMode($event, 'polygon')"
-      ></div>
+      >
+        <b-tooltip target="tool-polygon"
+          >Draw a polygon in the map to indicate location range.</b-tooltip
+        >
+      </div>
       <div
         v-if="drawMode === 'line' || drawMode === 'existing'"
+        id="tool-line"
         class="draw-tool draw-line-string"
         @click="setMode($event, 'line_string')"
-      ></div>
-      <div class="draw-tool draw-trash" @click="setMode($event, 'trash')"></div>
+      >
+        <b-tooltip target="tool-line"
+          >Draw a line in the map, to indiciate range of location.</b-tooltip
+        >
+      </div>
+      <div
+        id="tool-remove"
+        class="draw-tool draw-trash"
+        @click="setMode($event, 'trash')"
+      >
+        <b-tooltip target="tool-remove"
+          >Remove a drawn portion in the map.</b-tooltip
+        >
+      </div>
+      <div id="tool-close" class="draw-tool" @click="cancelDrawingMode">
+        X
+        <b-tooltip target="tool-close"
+          >Close Drawing mode, and return to home page.</b-tooltip
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -49,13 +102,18 @@ export default {
   data() {
     return {}
   },
+  computed: {
+    queryType() {
+      return this.$route.query.type
+    }
+  },
   mounted() {
     this.setMode(null, this.drawMode)
   },
   methods: {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
-        if (data === 'point') {
+        if (data === 'point' || data === 'placename') {
           this.$root.$emit('mode_change_draw', 'point')
         }
 
@@ -75,16 +133,29 @@ export default {
           this.$root.$emit('mode_change_draw', 'location')
         }
       })
+    },
+    cancelDrawingMode() {
+      this.$store.commit('contribute/setIsDrawMode', false)
+      this.$root.$emit('resetMap')
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
 <style scoped>
+.drawing-mode-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2em;
+}
 .draw-tool {
   width: 30px;
   height: 30px;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5em;
   outline: none;
   border: 0;

@@ -16,18 +16,12 @@
       </template>
       <template v-slot:body>
         <div>
-          <div>
-            <h5
-              class="font-07 m-0 p-0 color-gray text-uppercase font-weight-normal"
-            >
-              Language
-            </h5>
-            <h5
-              class="font-09 m-0 p-0 color-gray font-weight-bold language-card-title"
-            >
-              {{ name }}
-            </h5>
-          </div>
+          <h5 class="field-kinds">
+            Language
+          </h5>
+          <h5 class="field-names">
+            {{ name }}
+          </h5>
         </div>
       </template>
       <template v-slot:footer>
@@ -48,6 +42,7 @@
 
 <script>
 import Card from '@/components/Card.vue'
+
 export default {
   components: {
     Card
@@ -98,8 +93,8 @@ export default {
 .language-icon-container {
   background-color: black;
   border-radius: 50%;
-  height: 43px;
-  width: 43px;
+  height: 30px;
+  width: 30px;
 }
 .language-icon-container img {
   display: inline-block;
@@ -107,16 +102,16 @@ export default {
   height: 100%;
 }
 .fpcc-card-more {
-  background-color: #c46156;
+  background-color: #b47a2b;
   display: flex;
   align-items: center;
   height: 35px;
   justify-content: center;
-  border-top-left-radius: 0.5em;
-  border-bottom-left-radius: 0.5em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
 }
 .fpcc-card:hover .fpcc-card-more {
-  background-color: #454545;
+  background-color: #00333a;
 }
 
 .language-icon-container.icon-sm {

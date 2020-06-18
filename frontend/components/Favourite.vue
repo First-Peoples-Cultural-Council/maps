@@ -60,14 +60,11 @@ export default {
         favourite: this.favourite
       }
       if (!this.favourited) {
-        const result = await this.$store.dispatch('places/setFavourite', data)
-        console.log('Result', result)
+        await this.$store.dispatch('places/setFavourite', data)
+        // console.log('Result', result)
       } else {
-        const result = await this.$store.dispatch(
-          'places/removeFavourite',
-          data
-        )
-        console.log('Result', result)
+        await this.$store.dispatch('places/removeFavourite', data)
+        // console.log('Result', result)
       }
       await this.$store.dispatch('places/getPlace', { id: this.id })
     }

@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         <b-badge variant="primary">Expand To See Approvals</b-badge>
@@ -11,7 +11,7 @@
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+    <div class="hide-mobile  " :class="{ 'content-mobile': mobileContent }">
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -19,8 +19,15 @@
       >
         <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
       </div>
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div v-if="isLangAdmin" class="ml-3 mr-3">
+      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile "></Logo>
+      <UserDetailCard
+        :id="user.id"
+        :name="getUserName()"
+        :art-image="getUserImg()"
+        type="none"
+        :handle-return="handleReturn"
+      ></UserDetailCard>
+      <div v-if="isLangAdmin" class="p-3 approval-container">
         <div v-if="nothingToVerify" class="mt-2">
           <b-alert show>Nothing to approve</b-alert>
         </div>
@@ -104,17 +111,21 @@
 </template>
 <script>
 import Logo from '@/components/Logo.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Media from '@/components/Media.vue'
 import Reject from '@/components/RejectModal.vue'
+import UserApproveCard from '@/components/user/UserApproveCard.vue'
+import UserDetailCard from '@/components/user/UserDetailCard.vue'
 
 export default {
   components: {
     Logo,
     PlacesCard,
     Media,
-    Reject
+    Reject,
+    UserApproveCard,
+    UserDetailCard
   },
   computed: {
     isLangAdmin() {
@@ -133,8 +144,7 @@ export default {
       return this.$store.state.user.mediaToVerify
     },
     user() {
-      const user = this.$store.state.user.user
-      return user
+      return this.$store.state.user.user
     },
     nothingToVerify() {
       return (
@@ -174,6 +184,21 @@ export default {
           this.$store.dispatch('user/getMediaToVerify')
         }
       }
+    },
+    getUserName() {
+      return (
+        this.user &&
+        (`${this.user.first_name} ${this.user.last_name}` ||
+          this.user.username.split('__')[0])
+      )
+    },
+    getUserImg() {
+      return this.user.image
+        ? getMediaUrl(this.user.image)
+        : require(`@/assets/images/artist_icon.svg`)
+    },
+    handleReturn() {
+      this.$router.push({ path: '/profile/' + this.user.id })
     }
   }
 }

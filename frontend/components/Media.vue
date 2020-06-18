@@ -12,11 +12,8 @@
       />
     </div>
 
-    <div
-      v-if="getGenericFileType(media.file_type) === 'audio'"
-      class="w-100 p-2"
-    >
-      <audio controls class="uploaded-audio">
+    <div v-if="getGenericFileType(media.file_type) === 'audio'" class="w-100 ">
+      <!-- <audio controls class="uploaded-audio">
         <source
           :src="getMediaUrl(media.media_file, server)"
           :type="media.file_type"
@@ -26,7 +23,13 @@
           <a :href="getMediaUrl(media.media_file, server)">link to the audio</a>
           instead.
         </p>
-      </audio>
+      </audio> -->
+      <div
+        class="media-file-container"
+        @click="handleAudioClick($event, media)"
+      >
+        <img class="media-placeholder" src="@/assets/images/volume.svg" />
+      </div>
     </div>
 
     <div
@@ -62,21 +65,28 @@
 
     <div
       v-if="getGenericFileType(media.file_type) === 'other'"
-      class="word-break-all d-flex justify-content-center"
+      class="w-100 word-break-all d-flex justify-content-center"
     >
-      <b-button
-        variant="dark"
-        size="sm"
-        class="mt-2"
-        :href="getMediaUrl(media.file_type, server)"
-        >Download</b-button
-      >
+      <div class="media-file-container">
+        <img class="media-placeholder" src="@/assets/images/attach.svg" />
+        <b-button
+          variant="dark"
+          size="sm"
+          class="mt-3"
+          @click="downloadFile(media)"
+          >Click here to Download</b-button
+        >
+      </div>
     </div>
 
     <div
       v-if="getGenericFileType(media.file_type) === 'note'"
-      class="word-break-all d-flex justify-content-center"
-    ></div>
+      class="w-100 word-break-all d-flex justify-content-center"
+    >
+      <div class="media-file-container">
+        <img class="media-placeholder" src="@/assets/images/attach.svg" />
+      </div>
+    </div>
 
     <div class="media-content-container">
       <div v-if="media.name">
@@ -172,6 +182,7 @@ import {
   getYoutubeId
 } from '@/plugins/utils.js'
 require('basiclightbox/dist/basicLightbox.min.css')
+
 export default {
   components: {
     FlagModal,
@@ -267,6 +278,30 @@ export default {
         )
         .show()
     },
+    handleAudioClick(e, media) {
+      const basicLightbox = require('basiclightbox')
+      basicLightbox
+        .create(
+          ` <audio controls controlsList="nodownload" class="frame-audio">
+        <source
+          src="${getMediaUrl(media.media_file)}"
+          type="${media.file_type}"
+        />
+        <p>
+          Your browser doesn't support HTML5 audio. Here is a
+          <a href="${getMediaUrl(media.media_file)}">link to the audio</a>
+          instead.
+        </p>
+      </audio> `,
+          {
+            closable: true
+          }
+        )
+        .show()
+    },
+    downloadFile(media) {
+      window.open(getMediaUrl(media.media_file))
+    },
     async getVimeoEmbed(link) {
       const result = await this.$axios.$get(
         `https://vimeo.com/api/oembed.json?url=${link}`
@@ -305,9 +340,10 @@ export default {
     .media-action-container {
       display: flex;
       flex-wrap: wrap;
+      margin: 0.5em 0;
 
       & > * {
-        flex: 0 0 30%;
+        flex: 0 0 25%;
         margin-right: 0.25em;
         font-size: 0.8em;
       }
@@ -317,13 +353,27 @@ export default {
   .alert {
     margin-bottom: 0.5em !important;
   }
+
+  &:hover {
+    border: 1px solid #b57936;
+  }
 }
 
 .media-file-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 250px;
   object-fit: cover;
   background: rgba(0, 0, 0, 0.2);
+}
+
+.media-placeholder {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
 }
 
 .frame-thumbnail-video {
@@ -333,5 +383,10 @@ export default {
 .frame-video {
   width: 60%;
   height: 60%;
+}
+
+.frame-audio {
+  width: 1000px;
+  position: relative;
 }
 </style>

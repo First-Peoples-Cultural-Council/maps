@@ -1,7 +1,7 @@
 <template>
   <div>
-    <UploadButton @click.native="openModal"></UploadButton>
-    <UploadModal :id="id" :type="type"></UploadModal>
+    <UploadButton @click.native="toggleUploadModal"></UploadButton>
+    <UploadModal v-if="showModal" :id="id" :type="type"></UploadModal>
   </div>
 </template>
 <script>
@@ -22,10 +22,17 @@ export default {
       type: String
     }
   },
-  methods: {
-    openModal(e) {
-      this.$root.$emit('openUploadModal')
+  data() {
+    return {
+      showModal: false
     }
+  },
+  methods: {
+    toggleUploadModal() {
+      this.showModal = !this.showModal
+      this.$root.$emit('openUploadModal', { id: this.id, type: this.type })
+    },
+    openModal(e) {}
   }
 }
 </script>

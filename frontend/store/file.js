@@ -1,10 +1,18 @@
-import { getCookie } from '@/plugins/utils.js'
+import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export const state = () => ({
-  file: null
+  file: null,
+  fileList: []
 })
 
-export const mutations = {}
+export const mutations = {
+  setMediaFiles(state, value) {
+    state.fileList.unshift(value)
+  },
+  setNewMediaFiles(state, value) {
+    state.fileList = value
+  }
+}
 
 export const actions = {
   async uploadMedia({ commit }, formData) {
@@ -14,11 +22,29 @@ export const actions = {
       }
     }
 
-    console.log('Headers', headers)
-    console.log('FormData', formData)
     try {
       const result = await this.$axios.post(`/api/media/`, formData, headers)
       return result
+    } catch (e) {
+      return { error: e, status: 'failed' }
+    }
+  },
+
+  async getUploadMedia({ state, commit }, id) {
+    const removeOld = state.fileList.filter(file => {
+      return !file.creator
+    })
+
+    // Reset list of Media, removed existing ones
+    commit('setNewMediaFiles', removeOld)
+
+    try {
+      const result = await this.$axios.get(getApiUrl(`media/?placename=${id}`))
+      if (result) {
+        const newMedia = result.data.sort((a, b) => b.id - a.id)
+        commit('setNewMediaFiles', [...removeOld, ...newMedia])
+        return result
+      }
     } catch (e) {
       return { error: e, status: 'failed' }
     }

@@ -1,9 +1,10 @@
 <template>
   <div class="nav-container">
-    <div class="hide-mobile">
+    <div class="navigation-container hide-mobile">
+      <Event />
       <div
         v-if="isLoggedIn"
-        class="user-container cursor-pointer hide-mobile"
+        class="user-container menu-container cursor-pointer hide-mobile"
         @click="profile"
       >
         <div
@@ -19,7 +20,7 @@
         <nav class="navbar-icon-container">
           <img
             v-if="!picture"
-            src="@/assets/images/user_icon_red.svg"
+            src="@/assets/images/user_icon.svg"
             alt="Menu"
             class="navbar-icon user_icon"
           />
@@ -31,14 +32,13 @@
           />
         </nav>
       </div>
-      <div class="navbar-container cursor-pointer hide-mobile" @click="openNav">
-        <nav class="navbar-icon-container">
-          <img
-            src="@/assets/images/menu_icon.svg"
-            alt="Menu"
-            class="navbar-icon"
-          />
-        </nav>
+      <div v-else class="menu-container hide-mobile" @click="redirectLogin">
+        <span>LOGIN</span>
+        <img src="@/assets/images/user_icon.svg" alt="Menu" />
+      </div>
+      <div class="menu-container  hide-mobile" @click="openNav">
+        <span>MENU</span>
+        <img src="@/assets/images/menu_icon.svg" alt="Menu" />
       </div>
     </div>
 
@@ -46,13 +46,20 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
+      <div class="navbar-icon-container cursor-pointer" @click="showEvent">
+        <img
+          src="@/assets/images/event_icons.svg"
+          alt="Event"
+          class="navbar-icon"
+        />
+      </div>
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
       >
         <img
-          src="@/assets/images/plus_medium_red.svg"
-          alt="Search"
+          src="@/assets/images/plus_bigger_icon.svg"
+          alt="Contribute"
           class="navbar-icon"
         />
       </div>
@@ -62,7 +69,7 @@
       >
         <img
           src="@/assets/images/share_icon_red.svg"
-          alt="Search"
+          alt="Share"
           class="navbar-icon"
         />
       </div>
@@ -73,14 +80,12 @@
           class="navbar-icon"
         />
       </div>
-      <div class="navbar-container cursor-pointer" @click="openNav">
-        <nav class="navbar-icon-container">
-          <img
-            src="@/assets/images/menu_icon.svg"
-            alt="Menu"
-            class="navbar-icon"
-          />
-        </nav>
+      <div class="navbar-icon-container cursor-pointer" @click="openNav">
+        <img
+          src="@/assets/images/menu_icon.svg"
+          alt="Menu"
+          class="navbar-icon"
+        />
       </div>
     </div>
     <transition name="fade">
@@ -113,7 +118,7 @@
             <div class="text-center d-inline-block">
               <img
                 v-if="!picture"
-                src="@/assets/images/user_icon_red.svg"
+                src="@/assets/images/user_icon.svg"
                 alt="Menu"
                 class="navbar-icon user_icon d-inline-block"
               />
@@ -140,12 +145,7 @@
               <a class="color-gray" href="/page/contact">Contact Us</a>
             </li>
             <li class="login-nav cursor-pointer">
-              <a
-                v-if="!email"
-                href="https://auth.firstvoices.com/login?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca"
-                class="d-block"
-                >Login</a
-              >
+              <a v-if="!email" :href="getLoginUrl" class="d-block">Login</a>
               <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
@@ -167,10 +167,12 @@
 import { mapState } from 'vuex'
 import { getApiUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
+import Event from '@/components/Event.vue'
 
 export default {
   components: {
-    Logo
+    Logo,
+    Event
   },
   data() {
     return {
@@ -199,13 +201,17 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted')
+    // console.log('mounted')
   },
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
     },
+    showEvent() {
+      this.$root.$emit('toggleEventOverlay', true)
+    },
     profile() {
+      this.$root.$emit('resetMap')
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
     },
     async logout() {
@@ -242,36 +248,63 @@ export default {
     resetMap() {
       this.$root.$emit('resetMap')
       this.closeNav()
+    },
+    redirectLogin() {
+      window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+    redirectLogout() {
+      window.location.href = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+    getLoginUrl() {
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
+.navigation-container {
+  display: flex;
+}
 .notify-badge {
   position: absolute;
   top: 2.5px;
-  right: 2.5px;
+  right: 5px;
   width: 10px;
   height: 10px;
   background-color: rgba(173, 20, 20, 0.753);
   border-radius: 50%;
 }
-.navbar-container,
-.user-container {
-  position: fixed;
-  top: 10px;
-  right: 10px;
+
+.menu-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: white;
-  padding: 1em;
-  border-radius: 50%;
   z-index: 50;
+  border: 1px solid #beb2a5;
+  padding: 0.8em;
+  border-radius: 1.5em;
+  margin-right: 0.5em;
+  box-shadow: 0px 3px 6px #00000022;
+  color: #151515;
+  font: Bold 15px/18px Proxima Nova;
+
+  & > * {
+    margin: 0 0.4em 0 0.2em;
+  }
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
 }
+
 .user-container {
-  padding: 0.67em;
-  width: 45px;
-  height: 45px;
-  right: 60px;
+  display: relative;
+  width: 47px;
+  height: 47px;
 }
 .navigation {
   position: fixed;
@@ -281,7 +314,7 @@ export default {
   background-color: white;
   top: 0;
   left: 0;
-  z-index: 10000;
+  z-index: 999999;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
@@ -294,11 +327,14 @@ export default {
 }
 .navbar-icon-container {
   line-height: 0;
+  color: #151515;
+  font: Bold 15px/18px Proxima Nova;
 }
+
 .navbar-icon {
   display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 22px;
   line-height: 0;
   padding: 0;
   margin: 0;
@@ -343,6 +379,36 @@ export default {
   display: inline-block;
   width: 23px;
   height: 23px;
+}
+
+@media (max-width: 1200px) {
+  .menu-container {
+    width: 45px;
+    height: 45px;
+    margin: 0 0.25em;
+  }
+  .menu-container span {
+    display: none;
+  }
+  .user-container {
+    margin: 0 0.25em;
+  }
+}
+
+/* Navigation Icons when Drawer is open */
+.arts-container .menu-container {
+  width: 45px;
+  height: 45px;
+}
+.arts-container .menu-container span {
+  display: none;
+}
+
+.arts-container .menu-container img {
+  margin: 0;
+}
+.arts-container .user-container {
+  margin: 0 0.25em;
 }
 
 @media (max-width: 992px) {

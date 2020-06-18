@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         Community:
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo :logo-alt="1" class="cursor-pointer "></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -194,7 +194,7 @@
           >
             <LanguageCard
               v-if="mode !== 'place'"
-              class="mt-3 hover-left-move"
+              class="mt-2 hover-left-move"
               :name="language.name"
               :color="language.color"
               @click.native.prevent="
@@ -208,16 +208,28 @@
                   mode !== 'lang'
               "
             >
-              <PlacesCard
-                v-for="(place, index) in filteredPlaces"
-                :key="`placescomm${index}`"
-                class="mt-3 hover-left-move"
-                :name="place.name"
-                :place="{ properties: place }"
-                @click.native.prevent="
-                  handleCardClick($event, place.name, 'place')
-                "
-              ></PlacesCard>
+              <template v-for="(place, index) in filteredPlaces">
+                <PlacesCard
+                  v-if="place.kind === ''"
+                  :key="`placescomm${index}`"
+                  class="mt-2 hover-left-move"
+                  :name="place.name"
+                  :place="{ properties: place }"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'place')
+                  "
+                ></PlacesCard>
+                <ArtsCard
+                  v-else
+                  :key="`placescomm${index}`"
+                  :name="place.name"
+                  :kind="place.kind"
+                  class="mt-1 hover-left-move"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'placename')
+                  "
+                ></ArtsCard>
+              </template>
             </div>
           </b-col>
         </b-row>
@@ -230,15 +242,21 @@
             class="m-1 mb-3"
             type="community"
           ></UploadTool>
-          <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
-            <Media
-              :media="media"
-              :is-owner="isMediaCreator(media, user)"
-              :server="isServer"
-              type="community"
-            ></Media>
-            <hr class="mb-2" />
-          </div>
+          <section v-if="medias && medias.length > 0">
+            <h5 class="font-08 text-uppercase color-gray mb-3">
+              {{ medias.length }} Uploaded Media
+            </h5>
+            <div v-for="media in medias" :key="'media' + media.id" class="mb-4">
+              <Media
+                :media="media"
+                :is-owner="isMediaCreator(media, user)"
+                :server="isServer"
+                type="community"
+                :community-only="media.community_only"
+              ></Media>
+              <hr class="mb-2" />
+            </div>
+          </section>
         </div>
       </section>
     </div>
@@ -265,6 +283,7 @@ import PlacesCard from '@/components/places/PlacesCard.vue'
 import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Notification from '@/components/Notification.vue'
+import ArtsCard from '@/components/arts/ArtsCard.vue'
 // Commented out until data is fixed
 // import PieChart from '@/components/PieChart.vue'
 export default {
@@ -279,7 +298,8 @@ export default {
     Logo,
     UploadTool,
     Media,
-    Notification
+    Notification,
+    ArtsCard
     // Commented out until data is fixed
     // ,PieChart
   },
@@ -292,7 +312,6 @@ export default {
         legend: {
           labels: {
             filter(legendItem, chartData) {
-              console.log('Legend Item', legendItem)
               if (legendItem.index === 3) {
                 return false
               }
@@ -303,8 +322,6 @@ export default {
         tooltips: {
           callbacks: {
             label(tooltipItems, data) {
-              console.log('Data', data)
-              console.log('tool', tooltipItems)
               return `${data.labels[tooltipItems.index]}: ${(
                 data.datasets[0].data[tooltipItems.index] * 100
               ).toFixed(1) + '%'}`
@@ -348,7 +365,9 @@ export default {
       return this.$store.state.places.badgePlaces
     },
     filteredPlaces() {
-      return this.$store.state.places.filteredBadgePlaces
+      const placesList = this.$store.state.places.filteredBadgePlaces
+
+      return placesList.sort((a, b) => a.kind.localeCompare(b.kind))
     },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
@@ -421,7 +440,6 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, $route }) {
-    console.log('asyncData*****')
     const communities = await $axios.$get(
       getApiUrl(`community?timestamp=${new Date().getTime()}/`)
     )
@@ -440,10 +458,15 @@ export default {
         audio_obj: null
       }
     }
-    console.log('audio', audio_obj)
+
+    console.log(communityDetail)
+
+    console.log(communityDetail.medias)
+
     store.commit('places/setBadgePlaces', communityDetail.places)
     store.commit('places/setFilteredBadgePlaces', communityDetail.places)
     store.commit('places/setMedias', communityDetail.medias)
+
     const isServer = !!process.server
 
     return {
@@ -507,8 +530,10 @@ export default {
       const fluent_speakers = parseFloat(l.fluent_speakers) / 100
       const some_speakers = parseFloat(l.some_speakers) / 100
       const learners = parseFloat(l.learners) / 100
-      const others = (100 - (fluent_speakers * 100 + some_speakers * 100)) / 100
-      console.log('Others', others)
+      const others =
+        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
+        100
+
       return {
         name: l.language,
         labels: ['Fluent', 'Some', 'Other'],
@@ -536,11 +561,13 @@ export default {
         return this.$router.push({
           path: `/languages/${encodeFPCC(name)}`
         })
-      }
-
-      if (type === 'place') {
+      } else if (type === 'place') {
         return this.$router.push({
           path: `/place-names/${encodeFPCC(name)}`
+        })
+      } else if (type === 'placename') {
+        this.$router.push({
+          path: `/art/${encodeFPCC(name)}`
         })
       }
     }

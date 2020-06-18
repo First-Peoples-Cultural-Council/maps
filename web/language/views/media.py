@@ -11,7 +11,6 @@ from language.models import (
     Community,
     CommunityMember,
     Champion,
-    PlaceNameCategory,
     Media,
     Favourite,
     Notification,
@@ -63,7 +62,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         admin_communities = list(Administrator.objects.filter(
             user__id=int(self.request.user.id)).values_list('community', flat=True))
 
-        if obj.community.id in admin_communities:
+        if (obj.community and obj.community.id in admin_communities):
             obj.status = 'VE'
             obj.save()
 
@@ -166,11 +165,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                user_logged_in = True
+        if request.user.is_authenticated:
+            user_logged_in = True
 
         # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
         # 2) if USER IS LOGGED IN, shows:
@@ -206,10 +205,8 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             )
 
             # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('community')
+            admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
+            admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
 
             if admin_languages and admin_communities:
                 # Filter Medias by admin's languages

@@ -22,6 +22,7 @@ from language.serializers import (
     LanguageGeoSerializer,
     LanguageSerializer,
     LanguageDetailSerializer,
+    LanguageSearchSerializer
 )
 
 from django.utils.decorators import method_decorator
@@ -90,6 +91,13 @@ class LanguageViewSet(BaseModelViewSet):
         #     return Response(serializer.data)
 
 
+# Geo List APIViews
 class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
+
+
+# Search List APIViews
+class LanguageSearchList(generics.ListAPIView):
+    queryset = Language.objects.filter(geom__isnull=False)
+    serializer_class = LanguageSearchSerializer

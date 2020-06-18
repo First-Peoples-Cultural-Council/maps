@@ -26,8 +26,8 @@
           <transition name="component-fade" mode="out-in">
             <component
               :is="view"
-              :id="id"
-              :type="type"
+              :id="dataId"
+              :type="dataType"
               :placeholder="placeholder"
               :mode="mode"
             ></component>
@@ -44,6 +44,7 @@ import UploadOptions from '@/components/UploadOptions.vue'
 import NoteUploader from '@/components/NoteUploader.vue'
 import YoutubeUploader from '@/components/YoutubeUpload.vue'
 import VimeoUploader from '@/components/VimeoUpload.vue'
+
 export default {
   components: {
     FileUploader,
@@ -68,11 +69,15 @@ export default {
       modalShow: false,
       view: 'UploadOptions',
       placeholder: 'Drop or select photo',
-      mode: null
+      mode: null,
+      dataId: this.id,
+      dataType: this.type
     }
   },
   mounted() {
-    this.$root.$on('openUploadModal', () => {
+    this.$root.$on('openUploadModal', data => {
+      this.dataId = data.id
+      this.dataType = data.type
       this.modalShow = true
     })
 
@@ -83,36 +88,6 @@ export default {
     this.$root.$on('uploadModeChosen', ({ comp, mode }) => {
       this.view = comp
       this.mode = mode
-    })
-
-    this.$root.$on('fileUploaded', data => {
-      this.modalShow = false
-      this.$root.$emit('notification', {
-        title: 'Success',
-        message: 'Media Successfully uploaded',
-        time: 2000,
-        variant: 'success'
-      })
-
-      if (this.$route.name === 'index-art-art') {
-        this.$root.$emit('fileUploadSuccess')
-      } else if (this.$route.name === 'index-place-names-placename') {
-        this.$root.$emit('fileUploadedPlaces', data)
-      } else if (this.$route.name === 'index-content-fn') {
-        this.$root.$emit('fileUploadedCommunity', data)
-      }
-    })
-
-    this.$root.$on('fileUploadFailed', type => {
-      this.$root.$emit('notification', {
-        title: 'Failed',
-        message: `${type} Upload Failed, please try again`,
-        time: 2000,
-        variant: 'danger'
-      })
-      if (this.$route.name === 'index-art-art') {
-        this.$root.$emit('fileUploadSuccess')
-      }
     })
 
     this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {

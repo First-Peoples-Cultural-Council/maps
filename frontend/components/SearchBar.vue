@@ -14,7 +14,7 @@
             v-model="searchQuery"
             type="text"
             class="search-input"
-            placeholder="Search for a language, community, or place name..."
+            placeholder="Search for any terms, like Secwepemctsin..."
             autocomplete="off"
             @update="handleSearchUpdate"
             @focus="handleInputFocus"
@@ -29,18 +29,25 @@
           />
         </div>
       </div>
-      <b-form-input
-        v-else
-        id="search-input"
-        v-model="searchQuery"
-        type="search"
-        class="search-input"
-        placeholder="Search for a language, community, or place name..."
-        autocomplete="off"
-        @update="handleSearchUpdate"
-        @focus="handleInputFocus"
-      >
-      </b-form-input>
+      <div v-else class="searchbar-not-mobile">
+        <b-form-input
+          id="search-input"
+          v-model="searchQuery"
+          type="search"
+          class="search-input"
+          placeholder="Search for places, people, languages or grants..."
+          autocomplete="off"
+          @update="handleSearchUpdate"
+          @focus="handleInputFocus"
+        >
+        </b-form-input>
+        <img
+          class="search-icon"
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+        />
+      </div>
+
       <div v-if="mobile">
         <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
           Search Term: {{ searchQuery }}
@@ -62,10 +69,10 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key }}
+                {{ key.replace(/_/g, ' ') }}
               </h5>
               <div
                 v-for="(result, index) in results"
@@ -82,35 +89,20 @@
                   ></div>
                 </h5>
                 <h5
-                  v-else-if="key === 'Places'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
+                  v-else-if="
+                    key === 'Places' ||
+                      key === 'Artists' ||
+                      key === 'Public_Arts' ||
+                      key === 'Organizations' ||
+                      key === 'Resources' ||
+                      key === 'Events' ||
+                      key === 'Grants'
                   "
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
                   <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
-                  ></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Arts'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
-                  "
-                >
-                  <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
+                    v-html="highlightSearch(result.item.name, result.matches)"
                   ></div>
                 </h5>
                 <h5
@@ -126,7 +118,7 @@
                     )
                   "
                 >
-                  {{ result.properties.name }} -
+                  {{ result.name }} -
                   {{ result.properties.feature.relativeLocation }}
                 </h5>
                 <h5
@@ -163,8 +155,8 @@
         triggers=""
         @click.native="handlePopOverClick"
       >
-        <template slot="title"
-          >Search Term: {{ searchQuery }}
+        <template slot="title">
+          Search Term: {{ searchQuery }}
         </template>
         <div v-if="isSearchEmpty" class="nosearch-results p-3">
           <Contact
@@ -183,10 +175,10 @@
                 v-if="key === 'Locations'"
                 class="search-result-group font-1 pl-3 pr-3"
               >
-                Locations from the BC Geographical Names Database
+                Locations from the B.C. Geographical Names Database
               </h5>
               <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key }}
+                {{ key.replace(/_/g, ' ') }}
               </h5>
               <div
                 v-for="(result, index) in results"
@@ -203,35 +195,20 @@
                   ></div>
                 </h5>
                 <h5
-                  v-else-if="key === 'Places'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
+                  v-else-if="
+                    key === 'Places' ||
+                      key === 'Artists' ||
+                      key === 'Public_Arts' ||
+                      key === 'Organizations' ||
+                      key === 'Resources' ||
+                      key === 'Events' ||
+                      key === 'Grants'
                   "
+                  class="search-result-title font-1 font-weight-normal"
+                  @click="handleResultClick($event, key, result.item.name)"
                 >
                   <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
-                  ></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Arts'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick($event, key, result.item.properties.name)
-                  "
-                >
-                  <div
-                    v-html="
-                      highlightSearch(
-                        result.item.properties.name,
-                        result.matches
-                      )
-                    "
+                    v-html="highlightSearch(result.item.name, result.matches)"
                   ></div>
                 </h5>
                 <h5
@@ -247,7 +224,7 @@
                     )
                   "
                 >
-                  {{ result.properties.name }} -
+                  {{ result.name }} -
                   {{ result.properties.feature.relativeLocation }}
                 </h5>
                 <h5
@@ -276,7 +253,7 @@
           </div>
         </div>
       </b-popover>
-      <span class="searchbar-icon"></span>
+      <!-- <span class="searchbar-icon"></span> -->
     </div>
   </div>
 </template>
@@ -308,7 +285,12 @@ export default {
       languageResults: [],
       communityResults: [],
       placesResults: [],
+      artistsResults: [],
       artsResults: [],
+      organizationsResults: [],
+      resourcesResults: [],
+      eventsResults: [],
+      grantsResults: [],
       locationResults: [],
       addressResults: [],
       popup: null,
@@ -320,16 +302,16 @@ export default {
       return this.$store.state.sidebar.isDetailMode
     },
     communities() {
-      return this.$store.state.communities.communitySet
+      return this.$store.state.communities.communitySearchSet
     },
     languages() {
-      return this.$store.state.languages.languageSet
+      return this.$store.state.languages.languageSearchSet
     },
     places() {
-      return this.$store.state.places.placesSet
+      return this.$store.state.places.placeSearchSet
     },
     arts() {
-      return this.$store.state.arts.artsSet
+      return this.$store.state.arts.artsSearchSet
     },
     isSearchEmpty() {
       return (
@@ -337,7 +319,12 @@ export default {
         this.languageResults.length === 0 &&
         this.communityResults.length === 0 &&
         this.placesResults.length === 0 &&
+        this.artistsResults.length === 0 &&
         this.artsResults.length === 0 &&
+        this.organizationsResults.length === 0 &&
+        this.resourcesResults.length === 0 &&
+        this.eventsResults.length === 0 &&
+        this.grantsResults.length === 0 &&
         this.locationResults.length === 0 &&
         this.addressResults.length === 0
       )
@@ -347,7 +334,12 @@ export default {
         Languages: this.languageResults,
         Communities: this.communityResults,
         Places: this.placesResults,
-        Arts: this.artsResults,
+        Artists: this.artistsResults,
+        Public_Arts: this.artsResults,
+        Organizations: this.organizationsResults,
+        Resources: this.resourcesResults,
+        Events: this.eventsResults,
+        Grants: this.grantsResults,
         Locations: this.locationResults,
         Address: this.addressResults
       }
@@ -383,6 +375,7 @@ export default {
         return
       } else {
         this.show = true
+        this.$store.commit('sidebar/setDrawerContent', false)
       }
       this.languageResults = this.fuzzySearch(
         this.languages,
@@ -408,23 +401,37 @@ export default {
         ['name']
       )
 
-      const placeFuzzy = this.fuzzySearch(this.places, this.searchQuery, [
+      this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
         {
-          name: 'properties.name',
+          name: 'name',
           weight: 0.3
         },
         {
-          name: 'properties.other_names',
+          name: 'other_names',
           weight: 0.7
         }
       ])
-      this.placesResults = placeFuzzy.filter(
-        p => p.item.properties.status !== 'FL'
+
+      const artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
+        'name'
+      ])
+
+      this.artistsResults = artsResults.filter(p => p.item.kind === 'artist')
+
+      this.artsResults = artsResults.filter(p => p.item.kind === 'public_art')
+
+      this.organizationsResults = artsResults.filter(
+        p => p.item.kind === 'organization'
       )
 
-      this.artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
-        'properties.name'
-      ])
+      this.resourcessResults = artsResults.filter(
+        p => p.item.kind === 'resource'
+      )
+
+      this.eventsResults = artsResults.filter(p => p.item.kind === 'event')
+
+      this.grantsResults = artsResults.filter(p => p.item.kind === 'grant')
+
       try {
         const geoCodeResults = await Promise.all([
           this.$axios.$get(
@@ -437,8 +444,8 @@ export default {
 
         this.locationResults = geoCodeResults[0].features
         this.addressResults = geoCodeResults[1].features
-        console.log('Government', this.locationResults)
-        console.log('Mapbox', this.addressResults)
+        // console.log('Government', this.locationResults)
+        // console.log('Mapbox', this.addressResults)
       } catch (e) {
         console.error(e)
       }
@@ -459,7 +466,7 @@ export default {
       try {
         const fuse = new Fuse(data, options)
         const result = fuse.search(query)
-        console.log('Fuse Result', result)
+        // console.log('Fuse Result', result)
 
         return result
       } catch (e) {
@@ -475,7 +482,7 @@ export default {
     //   if (mode === 1) {
     //     results = data.filter(d => {
     //       return (
-    //         d.properties.name.toLowerCase().includes(lowerCasedQuery) ||
+    //         d.name.toLowerCase().includes(lowerCasedQuery) ||
     //         (d.properties.other_names || '')
     //           .toLowerCase()
     //           .includes(lowerCasedQuery)
@@ -507,7 +514,7 @@ export default {
         this.show = true
       }
     },
-    handleResultClick(event, type, data, geom, result) {
+    handleResultClick(event, type, data, geom = null, result = null) {
       if (this.popup) {
         this.popup.remove()
         this.popup = null
@@ -524,6 +531,19 @@ export default {
       if (type === 'Places') {
         return this.$router.push({
           path: `/place-names/${encodeFPCC(data)}`
+        })
+      }
+
+      if (
+        type === 'Artists' ||
+        type === 'Public_Arts' ||
+        type === 'Organizations' ||
+        type === 'Resources' ||
+        type === 'Events' ||
+        type === 'Grants'
+      ) {
+        return this.$router.push({
+          path: `/art/${encodeFPCC(data)}`
         })
       }
 
@@ -559,7 +579,7 @@ export default {
           let locationHtml = ''
           if (type === 'Locations') {
             govLink = `http://${result.properties.uri}.html`
-            locationHtml = `<div class="mb-1 word-break-all">Location provided from BC Geographical Names website. To view the entry on that site, 
+            locationHtml = `<div class="mb-1 word-break-all">Location provided from B.C. Geographical Names website. To view the entry on that site, 
                 <a class="white-space-normal" href="${govLink}" target=_blank>click here</a>.</div>`
           }
 
@@ -576,12 +596,9 @@ export default {
 
                 ${locationHtml}
                 
-                <a class="d-block text-center" href="/contribute?lat=${
-                  geom.coordinates[1]
-                }&lng=${
-                geom.coordinates[0]
-              }&cname=${data}">Contribute To This Point.</a>
-
+                <a class="d-block text-center" href="/contribute?lat=
+                ${geom.coordinates[1]}&lng=${geom.coordinates[0]}
+                  &cname=${data}">Contribute To This Point.</a>
                 </div>`
             )
             .addTo(map)
@@ -592,21 +609,34 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .address-popup {
   border-radius: 0.5em;
 }
 .searchbar-container {
-  position: fixed;
-  top: 10px;
-  left: calc(50% - 200px);
-  width: 500px;
+  width: 600px;
+  margin: 0 auto;
 }
+
 .searchbar-container-detail {
   left: 45%;
 }
 .searchbar-input-container {
   display: flex;
+}
+.searchbar-not-mobile {
+  width: 100%;
+  display: flex;
+  position: relative;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 20px;
+  top: 30%;
+  margin-left: 0.5em;
 }
 .searchbar-input {
   flex: 10 1 0;
@@ -626,10 +656,11 @@ export default {
   border-left: 0;
 }
 .popover {
-  width: var(--searchbar-width, 500px);
-  max-width: var(--searchbar-width, 500px);
+  width: var(--searchbar-width, 600px);
+  max-width: var(--searchbar-width, 600px);
   max-height: 500px;
   overflow-y: auto;
+  z-index: 9999999;
 }
 
 .popover-body {
@@ -651,19 +682,24 @@ export default {
 }
 
 .search-input::placeholder {
-  color: rgba(0, 0, 0, 0.2);
+  color: #707070;
+  font-size: 16px;
+  opacity: 1;
 }
 
-@media (max-width: 1200px) {
-  .searchbar-container {
-    position: fixed;
-    top: 10px;
-    left: 40%;
+.search-input.form-control {
+  border-radius: 3em;
+  padding: 1.4em;
+  box-shadow: 0px 3px 6px #00000022;
+}
+
+@media (min-width: 993px) and (max-width: 1350px) {
+  .searchbar-container,
+  .popover {
     width: 400px;
   }
 
   .searchbar-container-detail {
-    left: 55%;
     width: 300px;
   }
 }

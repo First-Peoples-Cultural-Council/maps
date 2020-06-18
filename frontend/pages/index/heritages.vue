@@ -26,7 +26,7 @@
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(place, index) in places"
+              v-for="(place, index) in paginatedPlaces"
               :key="index"
               lg="12"
               xl="12"
@@ -35,7 +35,7 @@
             >
               <PlacesCard
                 :place="place"
-                class="mt-3 hover-left-move"
+                class="mt-2 hover-left-move"
                 @click.native="handleCardClick($event, place.properties.name)"
               ></PlacesCard>
             </b-col>
@@ -52,7 +52,7 @@ import Accordion from '@/components/Accordion.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -76,7 +76,8 @@ export default {
     return {
       selected: [],
       accordionContent:
-        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.'
+        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.',
+      maximumLength: 0
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -87,13 +88,65 @@ export default {
   computed: {
     places() {
       return this.$store.state.places.places
+    },
+    paginatedPlaces() {
+      return this.places.slice(0, this.maximumLength)
+    },
+    isMobile() {
+      return this.$store.state.responsive.isMobileSideBarOpen
     }
+  },
+  async mounted() {
+    // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
+    this.$store.commit('sidebar/toggleLoading', true)
+    const currentPlaces = this.$store.state.places.places
+
+    if (currentPlaces.length === 0) {
+      const heritage = await this.$axios.$get(
+        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
+      )
+      if (heritage) {
+        // Set Heritage stores
+        this.$store.commit('places/set', heritage.features)
+        this.$store.commit('places/setStore', heritage.features)
+        this.$store.commit('sidebar/toggleLoading', false)
+      } else {
+        this.$store.commit('sidebar/toggleLoading', true)
+      }
+    }
+
+    // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    const mobileContainer = document.querySelector('#side-inner-collapse')
+    const desktopContainer = document.querySelector('#sidebar-container')
+
+    const containerArray = [mobileContainer, desktopContainer]
+
+    containerArray.forEach(elem => {
+      elem.addEventListener('scroll', e => {
+        if (
+          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+          elem.scrollTop !== 0
+        ) {
+          if (this.places.length > this.maximumLength) {
+            this.loadMoreData()
+          }
+        }
+      })
+    })
+    this.loadMoreData()
   },
   methods: {
     handleCardClick(e, name) {
       this.$router.push({
         path: `/place-names/${encodeFPCC(name)}`
       })
+    },
+    loadMoreData() {
+      this.$store.commit('sidebar/toggleLoading', true)
+      setTimeout(() => {
+        this.maximumLength += 16
+        this.$store.commit('sidebar/toggleLoading', false)
+      }, 250)
     }
   }
 }

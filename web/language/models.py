@@ -81,8 +81,10 @@ class Language(CulturalModel):
     fluent_speakers = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_on_fluent_sum_value
-    some_speakers = models.IntegerField(default=0)  # field_tm_lna2_on_some_sum_value
-    learners = models.IntegerField(default=0)  # sum of field_tm_lna2_on_lrn_sum_value
+    # field_tm_lna2_on_some_sum_value
+    some_speakers = models.IntegerField(default=0)
+    # sum of field_tm_lna2_on_lrn_sum_value
+    learners = models.IntegerField(default=0)
     pop_total_value = models.IntegerField(
         default=0
     )  # sum of field_tm_lna2_pop_total_value
@@ -126,8 +128,10 @@ class Community(CulturalModel):
     # @Denis, I suspect this should be represented as an attribute of the membership object, not another m2m [cvo]
     # language_admins = models.ManyToManyField(LanguageMember)
 
-    email = models.EmailField(max_length=255, default=None, null=True, blank=True)
-    website = models.URLField(max_length=255, default=None, null=True, blank=True)
+    email = models.EmailField(
+        max_length=255, default=None, null=True, blank=True)
+    website = models.URLField(
+        max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
@@ -183,12 +187,15 @@ class CommunityMember(models.Model):
         (VERIFIED, "Verified"),
         (REJECTED, "Rejected"),
     ]
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
 
     ROLE_ADMIN = "RA"
     ROLE_MEMBER = "RM"
-    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"), (ROLE_MEMBER, "Community Member"))
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"),
+                    (ROLE_MEMBER, "Community Member"))
+    role = models.CharField(
+        max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
 
     class Meta:
         unique_together = ("user", "community")
@@ -225,17 +232,9 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceNameCategory(BaseModel):
-    icon_name = models.CharField(
-        max_length=32, blank=True, default=None, help_text="Name of the icon in MapBox"
-    )
-
-    class Meta:
-        verbose_name_plural = "Place name Categories"
-
-
 class PlaceName(CulturalModel):
     geom = models.GeometryField(null=True, default=None)
+    image = models.ImageField(null=True, blank=True, default=None)
 
     # 3 deprecated. Use Recording.
     audio_file = models.FileField(null=True, blank=True)
@@ -246,21 +245,36 @@ class PlaceName(CulturalModel):
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    kind = models.CharField(max_length=15, default="")
-
-    category = models.ForeignKey(
-        PlaceNameCategory, on_delete=models.SET_NULL, null=True
-    )
+    kind = models.CharField(max_length=20, default="")
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.TextField(default="")
 
-    creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(
+        "users.User", null=True, blank=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
-        Language, null=True, default=None, on_delete=models.SET_NULL, related_name="places"
+        Language, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
     community = models.ForeignKey(
-        Community, on_delete=models.SET_NULL, null=True, default=None, related_name="places"
+        Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
+    )
+    taxonomies = models.ManyToManyField(
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
+    )
+    public_arts = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('artist', 'public_art'),
+        related_name='public_arts+'
+    )
+    artists = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='PublicArtArtist',
+        through_fields=('public_art', 'artist'),
+        related_name='artists+'
     )
 
     # Choices Constants:
@@ -306,7 +320,7 @@ class Media(BaseModel):
     description = models.TextField(default="", blank=True)
     file_type = models.CharField(max_length=16, default=None, null=True)
     url = models.URLField(max_length=255, default=None, null=True, blank=True)
-    media_file = models.FileField(null=True, blank=True)
+    media_file = models.FileField(null=True, blank=True, max_length=500)
     community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, blank=True, related_name="medias"
@@ -314,7 +328,13 @@ class Media(BaseModel):
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True, blank=True, default=None, related_name="medias"
     )
-    creator = models.ForeignKey("users.User", null=True, blank=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(
+        "users.User", null=True, on_delete=models.SET_NULL)
+
+    # Artwork specific types
+    mime_type = models.CharField(
+        max_length=100, default=None, null=True, blank=True)
+    is_artwork = models.BooleanField(default=False)
 
     # Choices Constants:
     FLAGGED = "FL"
@@ -353,29 +373,46 @@ class Media(BaseModel):
         media.status_reason = status_reason
         media.save()
 
+    class Meta:
+        ordering = ('-id', )
+
+
+class RelatedData(models.Model):
+    data_type = models.CharField(max_length=100, unique=False)
+    label = models.CharField(max_length=100, unique=False, default='')
+    value = models.CharField(max_length=255, default='')
+    is_private = models.BooleanField(default=False)
+    placename = models.ForeignKey(
+        PlaceName, related_name='related_data', on_delete=models.CASCADE)
+
 
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, default=None, null=True)
     place = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="favourites"
     )
     media = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True)
 
-    favourite_type = models.CharField(max_length=16, null=True, blank=True, default="")
-    description = models.CharField(max_length=255, null=True, blank=True, default="")
+    favourite_type = models.CharField(
+        max_length=16, null=True, blank=True, default="")
+    description = models.CharField(
+        max_length=255, null=True, blank=True, default="")
     point = models.PointField(null=True, default=None)
     zoom = models.IntegerField(default=0)
 
     def favourite_place_already_exists(user_id, place_id):
-        favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)
+        favourite = Favourite.objects.filter(
+            user__id=user_id).filter(place_id=place_id)
         if favourite:
             return True
         else:
             return False
 
     def favourite_media_already_exists(user_id, media_id):
-        favourite = Favourite.objects.filter(user__id=user_id).filter(media_id=media_id)
+        favourite = Favourite.objects.filter(
+            user__id=user_id).filter(media_id=media_id)
         if favourite:
             return True
         else:
@@ -384,7 +421,8 @@ class Favourite(BaseModel):
 
 class Notification(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
-    user = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey("users.User", null=True,
+                             on_delete=models.SET_NULL)
     language = models.ForeignKey(
         Language, null=True, default=None, on_delete=models.SET_NULL
     )
@@ -410,6 +448,45 @@ class Dialect(BaseModel):
     )
 
 
+class PublicArtArtist(models.Model):
+    public_art = models.ForeignKey(
+        PlaceName, on_delete=models.CASCADE, related_name='art_artists')
+    artist = models.ForeignKey(
+        PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
+
+    def __str__(self):
+        return "{} ({})".format(self.public_art, self.artist)
+
+
+class Taxonomy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default='', blank=True, null=True)
+    order = models.IntegerField(
+        default=None,
+        null=True,
+        blank=True,
+        help_text='Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list')
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='child_taxonomies')
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class PlaceNameTaxonomy(models.Model):
+    placename = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(
+        Taxonomy, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} ({})".format(self.placename, self.taxonomy)
+
+
 class LNA(BaseModel):
     """
     Deprecated
@@ -429,15 +506,20 @@ class LNAData(BaseModel):
     lna = models.ForeignKey(
         LNA, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna2_lna_target_id
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True)
     fluent_speakers = models.IntegerField(
         default=0
     )  # field_tm_lna2_on_fluent_sum_value
-    some_speakers = models.IntegerField(default=0)  # field_tm_lna2_on_some_sum_value
+    # field_tm_lna2_on_some_sum_value
+    some_speakers = models.IntegerField(default=0)
     learners = models.IntegerField(default=0)  # field_tm_lna2_on_lrn_sum_value
-    pop_off_res = models.IntegerField(default=0)  # field_tm_lna2_pop_off_res_value
-    pop_on_res = models.IntegerField(default=0)  # field_tm_lna2_pop_on_res_value
-    pop_total_value = models.IntegerField(default=0)  # field_tm_lna2_pop_total_value
+    # field_tm_lna2_pop_off_res_value
+    pop_off_res = models.IntegerField(default=0)
+    # field_tm_lna2_pop_on_res_value
+    pop_on_res = models.IntegerField(default=0)
+    pop_total_value = models.IntegerField(
+        default=0)  # field_tm_lna2_pop_total_value
 
     num_schools = models.IntegerField(default=0)
     nest_hours = models.FloatField(default=0)

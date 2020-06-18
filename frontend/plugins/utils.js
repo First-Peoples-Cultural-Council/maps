@@ -54,11 +54,11 @@ export const filterLanguages = (
   context,
   sleepingLayer
 ) => {
-  console.log('it Got here 1')
+  // console.log('it Got here 1')
   if (mode === 'draw' && point) {
     return languageSet.filter(lang => {
       if (!sleepingLayer && lang.sleeping) {
-        console.log('it Got here mode')
+        // console.log('it Got here mode')
         return false
       }
       const langBounds = formatLangBounds(lang)
@@ -68,7 +68,7 @@ export const filterLanguages = (
 
   const filteredLanguages = languageSet.filter(lang => {
     if (!sleepingLayer && lang.sleeping) {
-      console.log('it Got here')
+      // console.log('it Got here')
       return false
     }
     const langBounds = formatLangBounds(lang)
@@ -119,6 +119,10 @@ export const encodeFPCC = s => {
     .replace(/\s+/g, '-')
 }
 
+export const decodeFPCC = s => {
+  return s.replace(/-/g, ' ')
+}
+
 export const getCookie = name => {
   const value = '; ' + document.cookie
   const parts = value.split('; ' + name + '=')
@@ -132,16 +136,14 @@ export const getCookie = name => {
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
+  } else if (media_file.name) {
+    return media_file.name
+  } else if (media_file.includes('http://nginx')) {
+    return media_file.replace('http://nginx', '')
+  } else if (media_file.includes('https://nginx')) {
+    return media_file.replace('https://nginx', '')
   }
-  if (isServer) {
-    if (media_file.includes('http://nginx')) {
-      return media_file.replace('http://nginx', '')
-    }
 
-    if (media_file.includes('https://nginx')) {
-      return media_file.replace('https://nginx', '')
-    }
-  }
   return media_file
 }
 export const imageTypes = {
@@ -180,7 +182,7 @@ export const getGenericFileType = fileType => {
   if (fileType === 'vimeo') {
     return 'vimeo'
   }
-  if (imageTypes[fileType]) {
+  if (imageTypes[fileType] || fileType === 'image') {
     return 'image'
   }
 
@@ -196,7 +198,17 @@ export const getGenericFileType = fileType => {
 }
 
 export const getFormData = (
-  { name, file_type, description, type, id, media_file, community_only, url },
+  {
+    name,
+    file_type,
+    description,
+    type,
+    id,
+    media_file,
+    community_only,
+    url,
+    is_artwork
+  },
   note
 ) => {
   if (note) {
@@ -220,6 +232,10 @@ export const getFormData = (
   formData.append('description', description)
   formData.append('media_file', media_file)
   formData.append(type, id)
+
+  if (is_artwork) {
+    formData.append('is_artwork', is_artwork)
+  }
 
   if (community_only) {
     formData.append('community_only', community_only)

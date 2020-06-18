@@ -2,7 +2,7 @@
   <div class="w-100">
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         Language:
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+      <Logo class="cursor-pointer" :logo-alt="1"></Logo>
       <div
         class="text-center d-none mobile-close"
         :class="{ 'content-mobile': mobileContent }"
@@ -74,7 +74,7 @@
           @click.native="handleMoreDetails"
         ></LanguageSeeAll>
       </section>
-      <Filters class="mb-1 mt-2"></Filters>
+      <!-- <Filters class="mb-1 mt-2"></Filters> -->
       <div class="badge-container mt-2 ml-3 mr-3">
         <Badge
           content="Communities"
@@ -144,7 +144,7 @@
                 <CommunityCard
                   :name="community.name"
                   :community="community"
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   @click.native="
                     handleCardClick($event, community.name, 'comm')
                   "
@@ -170,10 +170,11 @@
                 sm="6"
               >
                 <PlacesCard
-                  :name="place.name"
-                  :place="{ properties: place }"
-                  class="mt-3 hover-left-move"
-                  @click.native="handleCardClick($event, place.name, 'places')"
+                  :place="place"
+                  class="mt-2 hover-left-move"
+                  @click.native="
+                    handleCardClick($event, place.properties.name, 'places')
+                  "
                 ></PlacesCard>
               </b-col>
             </b-row>
@@ -196,8 +197,10 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
-                  :art="art"
+                  class="mt-2 hover-left-move"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -224,8 +227,10 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
-                  :art="art"
+                  class="mt-2 hover-left-move"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -252,8 +257,11 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
-                  :art="art"
+                  class="mt-2 hover-left-move"
+                  :name="art.properties.name"
+                  :kind="art.properties.kind"
+                  :geometry="art.geometry"
+                  :layout="'landscape'"
                   @click.native="
                     handleCardClick($event, art.properties.name, 'art')
                   "
@@ -277,7 +285,6 @@ import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
-import Filters from '@/components/Filters.vue'
 import Badge from '@/components/Badge.vue'
 import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
@@ -292,7 +299,6 @@ export default {
     CommunityCard,
     PlacesCard,
     ArtsCard,
-    Filters,
     Badge,
     Logo,
     Notification
@@ -320,17 +326,17 @@ export default {
     },
     publicArts() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'public_art')
+        ? this.arts.filter(art => art.properties.kind === 'public_art')
         : []
     },
     orgs() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'organization')
+        ? this.arts.filter(art => art.properties.kind === 'organization')
         : []
     },
     artists() {
       return this.arts
-        ? this.arts.filter(art => art.properties.art_type === 'artist')
+        ? this.arts.filter(art => art.properties.kind === 'artist')
         : []
     },
     mapinstance() {
@@ -368,7 +374,8 @@ export default {
         getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
       ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`art/?lang=${languageId}`))
+      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`)),
+      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
     ])
 
     try {
@@ -377,10 +384,8 @@ export default {
       })
     } catch (e) {}
 
-    console.log('RegExp Url')
-
-    store.commit('places/setBadgePlaces', result[0].places)
-    store.commit('places/setFilteredBadgePlaces', result[0].places)
+    store.commit('places/setBadgePlaces', result[3].features)
+    store.commit('places/setFilteredBadgePlaces', result[3].features)
 
     let audio_obj = {}
     if (result[0].language_audio) {
@@ -395,7 +400,7 @@ export default {
     return {
       language: result[0],
       communities: result[1],
-      places: result[0].places,
+      places: result[3].features,
       arts: result[2].features,
       isServer,
       audio_obj,
