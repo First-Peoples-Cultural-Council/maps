@@ -12,7 +12,6 @@
       <!-- Shows List of Events  -->
       <EventCard />
     </b-popover>
-    <!-- <span class="notify-badge"></span> -->
   </div>
 </template>
 
@@ -102,6 +101,7 @@ export default {
   max-width: 425px !important;
   height: auto;
   max-height: 650px;
+  overflow-y: hidden;
 }
 
 .event-popover .popover-body {

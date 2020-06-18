@@ -17,7 +17,7 @@
     </div>
     <div
       v-if="drawMode === 'placename' && drawMode !== 'existing'"
-      class="font-weight-bold"
+      class="font-weight-bold w-80"
     >
       {{
         queryType === 'Artist'

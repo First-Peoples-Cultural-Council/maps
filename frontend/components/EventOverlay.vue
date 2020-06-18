@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     closeEvent() {
-      this.$root.$emit('toggleEventOverlay', true)
+      this.$root.$emit('toggleEventOverlay', false)
     }
   }
 }

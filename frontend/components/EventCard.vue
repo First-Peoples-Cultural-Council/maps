@@ -280,16 +280,17 @@ export default {
   }
 
   .event-img {
-    width: 135px;
+    width: 135px !important;
     height: 135px;
     object-fit: cover;
     margin-right: 1em;
   }
 
   .event-details {
-    width: 235px;
     display: flex;
     flex-direction: column;
+    width: fit-content;
+    max-width: 280px;
   }
 
   .no-event-container {
