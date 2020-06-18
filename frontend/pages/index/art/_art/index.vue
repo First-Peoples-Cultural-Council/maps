@@ -330,13 +330,18 @@ export default {
     },
     getAwardList() {
       return this.artDetails.related_data.filter(element => {
-        return element.data_type === 'award'
+        return (
+          element.data_type === 'award' &&
+          (element.value && element.value.length !== 0)
+        )
       })
     },
     getWebsiteList() {
       return this.artDetails.related_data.filter(element => {
         return (
-          !this.socialMedia.includes(element) && element.data_type === 'website'
+          !this.socialMedia.includes(element) &&
+          element.data_type === 'website' &&
+          (element.value && element.value.length !== 0)
         )
       })
     },
