@@ -100,14 +100,19 @@ export default {
       ]
     },
     redirectToPath(path) {
+      this.closeSplashscreen()
       this.$router.push({
         path
       })
     },
     redirectToHome() {
+      this.closeSplashscreen()
       this.$router.push({
         path: '/languages'
       })
+    },
+    closeSplashscreen() {
+      this.$root.$emit('closeSplashscreen')
     }
   }
 }
