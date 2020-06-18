@@ -320,7 +320,7 @@ class Media(BaseModel):
     description = models.TextField(default="", blank=True)
     file_type = models.CharField(max_length=16, default=None, null=True)
     url = models.URLField(max_length=255, default=None, null=True, blank=True)
-    media_file = models.FileField(null=True, blank=True)
+    media_file = models.FileField(null=True, blank=True, max_length=500)
     community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, blank=True, related_name="medias"
