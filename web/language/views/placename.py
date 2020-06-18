@@ -261,11 +261,14 @@ class PlaceNameGeoList(generics.ListAPIView):
         kind__in=['poi', '']
     )
     serializer_class = PlaceNameGeoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['language', ]
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):
@@ -349,11 +352,14 @@ class ArtGeoList(generics.ListAPIView):
         geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['language', ]
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):
