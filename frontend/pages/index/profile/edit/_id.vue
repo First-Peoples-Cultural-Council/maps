@@ -4,7 +4,7 @@
       <div>
         <div
           v-if="!mobileContent"
-          class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+          class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
         >
           <div>
             User: <b-badge variant="primary">{{ getUserName() }}</b-badge
@@ -27,9 +27,12 @@
             />
           </div>
 
-          <h4 class="profile-title pl-3 pr-3 color-gray font-weight-bold">
-            Edit Profile
+          <h4 class="profile-title pt-3 pb-3 color-gray">
+            <h4 class="text-uppercase contribute-title mr-2">
+              Edit Profile
+            </h4>
           </h4>
+
           <section class="pl-3 pr-3">
             <div class="upload-img-container mt-3">
               <div class="upload-img">
@@ -51,7 +54,7 @@
                 ref="fileUpload"
                 v-model="fileImg"
                 class="file-upload-input mt-2"
-                placeholder="choose your display image"
+                :placeholder="filePlaceholder()"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
               ></b-form-file>
@@ -117,6 +120,7 @@
     <div class="pl-3 pr-3">
       <div id="quill" ref="quill"></div>
     </div>
+
     <client-only>
       <section class="pl-3 pr-3 pb-2">
         <label
@@ -272,6 +276,11 @@ export default {
 
   methods: {
     getMediaUrl,
+    filePlaceholder() {
+      return this.fileSrc && this.user.image
+        ? getMediaUrl(this.fileSrc)
+        : 'choose your display image'
+    },
     initQuill() {
       require('quill/dist/quill.snow.css')
       const Quill = require('quill')
@@ -347,12 +356,11 @@ export default {
             const patchData = {
               name: `${data.first_name} ${data.last_name}`
             }
-            const modified = await this.$axios.$patch(
+            await this.$axios.$patch(
               `/api/placename/${findUserArtist.id}/`,
               patchData,
               headers
             )
-            console.log(modified)
           }
           await this.$store.dispatch('user/setLoggedInUser')
         }
@@ -391,7 +399,16 @@ export default {
   background-color: #efeae2;
   padding-top: 3rem;
   padding-bottom: 1rem;
-  font-size: 1.2em;
+  font-size: 1em;
+}
+
+.contribute-title {
+  background-color: #591d14;
+  color: white;
+  font-size: 0.8em;
+  padding: 0.65em;
+  text-align: right;
+  font-weight: bold;
 }
 
 .multiselect__tag {
