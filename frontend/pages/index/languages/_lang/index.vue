@@ -170,10 +170,11 @@
                 sm="6"
               >
                 <PlacesCard
-                  :name="place.name"
-                  :place="{ properties: place }"
+                  :place="place"
                   class="mt-2 hover-left-move"
-                  @click.native="handleCardClick($event, place.name, 'places')"
+                  @click.native="
+                    handleCardClick($event, place.properties.name, 'places')
+                  "
                 ></PlacesCard>
               </b-col>
             </b-row>
@@ -196,7 +197,7 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   :name="art.properties.name"
                   :kind="art.properties.kind"
                   :geometry="art.geometry"
@@ -226,7 +227,7 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   :name="art.properties.name"
                   :kind="art.properties.kind"
                   :geometry="art.geometry"
@@ -256,7 +257,7 @@
                 sm="6"
               >
                 <ArtsCard
-                  class="mt-3 hover-left-move"
+                  class="mt-2 hover-left-move"
                   :name="art.properties.name"
                   :kind="art.properties.kind"
                   :geometry="art.geometry"
@@ -373,7 +374,8 @@ export default {
         getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
       ),
       $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`))
+      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`)),
+      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
     ])
 
     try {
@@ -382,10 +384,8 @@ export default {
       })
     } catch (e) {}
 
-    // console.log('RegExp Url')
-
-    store.commit('places/setBadgePlaces', result[0].places)
-    store.commit('places/setFilteredBadgePlaces', result[0].places)
+    store.commit('places/setBadgePlaces', result[3].features)
+    store.commit('places/setFilteredBadgePlaces', result[3].features)
 
     let audio_obj = {}
     if (result[0].language_audio) {
@@ -400,7 +400,7 @@ export default {
     return {
       language: result[0],
       communities: result[1],
-      places: result[0].places,
+      places: result[3].features,
       arts: result[2].features,
       isServer,
       audio_obj,
