@@ -220,7 +220,8 @@ export default {
       )
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+      window.location =
+        'https://auth.firstvoices.com/logout?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca'
     },
     handleLogoClick() {
       this.$router.push({
