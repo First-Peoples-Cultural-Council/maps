@@ -20,8 +20,9 @@
           </h5>
         </div>
 
-        <div v-if="edit && id" class="d-inline-block">
+        <div class="user-action-container">
           <CardBadge
+            v-if="edit && id"
             content="Edit"
             type="edit"
             placeholder="Profile"
@@ -31,9 +32,9 @@
               })
             "
           ></CardBadge>
-        </div>
-        <div v-if="approval && id" class="d-inline-block">
+
           <CardBadge
+            v-if="approval && id"
             content="Approval"
             type="edit"
             @click.native="
@@ -124,7 +125,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .arts-detail-icon-container {
   background-color: black;
   border-radius: 50%;
@@ -275,5 +276,17 @@ export default {
   color: #707070;
   text-transform: capitalize;
   margin: 0;
+}
+
+.user-action-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
+
+  & > * {
+    flex: 0 0 auto;
+    margin-left: 0.25em;
+    cursor: pointer;
+  }
 }
 </style>
