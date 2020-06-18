@@ -4,7 +4,7 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
 from rest_framework.filters import SearchFilter
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 
 from users.models import User, Administrator
 from language.models import (
@@ -334,9 +334,12 @@ class PlaceNameGeoList(generics.ListAPIView):
             )
 
         if "lang" in request.GET:
-            queryset = queryset.filter(
-                geom__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")).geom
+            language_id = request.GET.get("lang")
+            language = Language.objects.get(pk=language_id)
+
+            queryset = self.queryset.filter(
+                Q(geom__intersects=language.geom) |
+                Q(language=language)
             )
 
         serializer = self.serializer_class(queryset, many=True)
@@ -425,9 +428,12 @@ class ArtGeoList(generics.ListAPIView):
             )
 
         if "lang" in request.GET:
-            queryset = queryset.filter(
-                geom__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")).geom
+            language_id = request.GET.get("lang")
+            language = Language.objects.get(pk=language_id)
+
+            queryset = self.queryset.filter(
+                Q(geom__intersects=language.geom) |
+                Q(language=language)
             )
 
         serializer = self.serializer_class(queryset, many=True)
