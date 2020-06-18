@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 d-none content-mobile-title"
+      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
     >
       <div>
         <b-badge
@@ -88,8 +88,8 @@
               <b-form-file
                 ref="fileUpload"
                 v-model="fileImg"
-                class="file-upload-input mt-2"
-                placeholder="choose a thumbnail image"
+                class="file-upload-input mt-2 "
+                :placeholder="filePlaceholder()"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
               ></b-form-file>
@@ -386,7 +386,7 @@
                   class="site-input-container"
                 >
                   <b-form-input
-                    :id="`site-${index}`"
+                    :id="`award-${index}`"
                     v-model="award.value"
                     type="text"
                     placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
@@ -642,9 +642,6 @@
               ></ToolTip>
             </h5>
             <div id="quill" ref="quill"></div>
-
-            <!--<h5 class="mt-3 contribute-title-one mb-1">Upload Files</h5>-->
-            <!--<MediaUploader></MediaUploader>-->
           </section>
 
           <hr />
@@ -1029,7 +1026,7 @@ export default {
         content: place.description,
         categorySelected: place.category,
         fileSrc: getMediaUrl(place.image),
-        fileImg: place.fileImg
+        fileImg: null
       }
       if (community) {
         data.community = community
@@ -1103,8 +1100,6 @@ export default {
               : 'not_accepted'
           } else if (related.data_type === 'is_online') {
             data.relatedData.is_online = related.value.includes('Online')
-              ? 'accepted'
-              : 'not_accepted'
           }
         })
       }
@@ -1335,7 +1330,12 @@ export default {
       const requiredText = []
       requiredText.push('Please draw at least one feature from the map.')
 
-      if (!this.isArtistProfileFound && this.isArtist && this.queryProfile) {
+      if (
+        this.isLoggedIn &&
+        !this.isArtistProfileFound &&
+        this.isArtist &&
+        this.queryProfile
+      ) {
         requiredText.push(
           'You need to create your Artist profile before uploading Artwork.'
         )
@@ -1359,6 +1359,11 @@ export default {
       } else if (this.queryType === 'Organization') {
         return require(`@/assets/images/organization_icon.svg`)
       }
+    },
+    filePlaceholder() {
+      return this.place && this.place.image && this.fileSrc
+        ? getMediaUrl(this.fileSrc)
+        : 'choose a thumbnail image'
     },
     initQuill() {
       if (document.querySelector('#quill')) {
@@ -1717,11 +1722,12 @@ export default {
           let label = ''
           // Set return Values
           if (field[0] === 'contacted_only') {
-            value = field[1] ? 'contact_true' : 'contacted_false'
+            value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
           } else if (field[0] === 'commercial_only') {
-            value = field[1]
-              ? 'Interested in Commercial Inquiry'
-              : 'Not interested in Commercial Inquiry'
+            value =
+              field[1] === 'accepted'
+                ? 'Interested in Commercial Inquiry'
+                : 'Not interested in Commercial Inquiry'
           } else if (field[0] === 'is_online') {
             value = field[1] ? 'Online Event' : 'Physical Event'
           } else {
@@ -1837,6 +1843,7 @@ export default {
           formDatas,
           headers
         )
+
         return result
       }
     },
@@ -1846,9 +1853,6 @@ export default {
       }
 
       location.href = `/art/${encodeFPCC(this.traditionalName)}`
-      // this.$router.push({
-      //   path: `/art/${encodeFPCC(this.traditionalName)}`
-      // })
     }
   },
 
@@ -1958,6 +1962,7 @@ export default {
     position: sticky;
     top: 40vh;
     width: 80%;
+    height: fit-content;
   }
 
   ul {
