@@ -186,6 +186,7 @@ export default {
       } else {
         this.$router.go(-1)
       }
+      this.$root.$emit('resetMap')
     },
     handleEdit() {
       this.$router.push({
