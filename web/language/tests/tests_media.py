@@ -546,11 +546,11 @@ class MediaAPITests(BaseTestCase):
             community=self.community1,
         )
 
-        # PlaceName out of the same language as the user (language admin)
+        # PlaceName out of the same language and community as the user (language admin)
         placename2 = PlaceName.objects.create(
             name="test place02",
             language=self.language2,
-            community=self.community1,
+            community=self.community2,
         )
 
         # VERIFIED Media MATCHING admin's language. It MUST NOT be returned by the route
@@ -629,7 +629,7 @@ class MediaAPITests(BaseTestCase):
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data), 4)
 
     def test_verify_media(self):
 

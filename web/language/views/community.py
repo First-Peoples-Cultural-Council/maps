@@ -229,8 +229,16 @@ class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
 
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)
+
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunitySearchSerializer
+
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)

@@ -278,7 +278,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # VERIFYING CommunityMember
-        response = self.client.patch(
+        response = self.client.post(
             "/api/community/verify_member/",
             {
                 "user_id": user_member01.id,
@@ -331,7 +331,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # VERIFYING CommunityMember
-        response = self.client.patch(
+        response = self.client.post(
             "/api/community/reject_member/",
             {
                 "user_id": user_member01.id,
@@ -374,3 +374,49 @@ class ChampionAPITests(APITestCase):
         """
         response = self.client.get("/api/champion/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Geo API for Community
+    def test_community_geo_route_exists(self):
+        """
+        Ensure Community Geo API route exists
+        """
+        response = self.client.get("/api/community-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Search API for Community
+    def test_community_search_route_exists(self):
+        """
+        Ensure Community Search API route exists
+        """
+        response = self.client.get("/api/community-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class CommunityGeoAPITests(BaseTestCase):
+
+    # ONE TEST TESTS ONLY ONE SCENARIO ######
+
+    def test_language_geo(self):
+        """
+        Ensure Community Geo API works
+        """
+        # Only include if it has a geometry
+        test_community1 = Community.objects.create(  # Included (1)
+            name="test community1",
+            point=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        test_community2 = Community.objects.create(  # Exclude
+            name="test community2",
+        )
+        response = self.client.get(
+            "/api/community-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)
