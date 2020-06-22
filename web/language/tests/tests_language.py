@@ -226,15 +226,29 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class LanguageGeoAPITests(APITestCase):
+class LanguageGeoAPITests(BaseTestCase):
 
     # ONE TEST TESTS ONLY ONE SCENARIO ######
 
-    def test_language_geo_list_route_exists(self):
+    def test_language_geo(self):
         """
-        Ensure language list API route exists
+        Ensure Language Geo API works
         """
-        response = self.client.get("/api/language-geo/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        poly = GEOSGeometry(self.FAKE_GEOM)
+        # Only include if it has a geometry
+        test_language1 = Language.objects.create(  # Included (1)
+            name="test language1",
+            geom=poly
+        )
+        test_language2 = Language.objects.create(  # Exclude
+            name="test language2",
+        )
+        response = self.client.get(
+            "/api/language-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
 
-    # Only the LIST operations exists in this API.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)
