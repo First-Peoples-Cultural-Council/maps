@@ -256,9 +256,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 # GEO LIST APIVIEWS
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", geom__isnull=False
+        name__icontains="FirstVoices"
     ).filter(
-        kind__in=['poi', '']
+        kind__in=['poi', ''],
+        geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
