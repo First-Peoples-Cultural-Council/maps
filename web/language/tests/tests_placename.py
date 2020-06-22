@@ -873,10 +873,6 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place13",
             kind="poi"
         )
-
-        response = self.client.get(
-            "/api/art-geo/", format="json"
-        )
         # This placename should not be a part of the result
         # because this has an invalid coordinates [0, 0]
         test_placename14 = PlaceName.objects.create(  # Excluded
@@ -888,9 +884,48 @@ class PlaceNameAPITests(BaseTestCase):
             }""")
         )
 
+        response = self.client.get(
+            "/api/art-geo/", format="json"
+        )
+
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName
         self.assertEqual(data[0].get("id"), test_placename09.id)  # Check first data
         self.assertEqual(data[2].get("id"), test_placename12.id)  # Check last data - should not be test_placename12
+
+    def test_placename_geo(self):
+        # Even if the geometry is non-sense, include them
+        # If kind is blank or poi, include them
+        test_placename15 = PlaceName.objects.create(  # Included (1)
+            name="test place15",
+            kind="poi",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        test_placename16 = PlaceName.objects.create(  # Included (2)
+            name="test place16",
+            kind="",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        # If no geometry, exclude them
+        test_placename17 = PlaceName.objects.create(  # Excluded
+            name="test place17",
+            kind="poi",
+        )
+
+        response = self.client.get(
+            "/api/placename-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 2)
