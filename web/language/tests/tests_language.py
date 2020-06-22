@@ -209,6 +209,22 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
+    # Geo API for Language
+    def test_language_geo_route_exists(self):
+        """
+        Ensure Language Geo API route exists
+        """
+        response = self.client.get("/api/language-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Search API for Language
+    def test_language_search_route_exists(self):
+        """
+        Ensure Language Search API route exists
+        """
+        response = self.client.get("/api/language-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class LanguageGeoAPITests(APITestCase):
 

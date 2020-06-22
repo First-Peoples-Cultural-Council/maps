@@ -56,20 +56,6 @@ class PlaceNameAPIRouteTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     # GEO APIs
-    def test_language_geo_route_exists(self):
-        """
-        Ensure Language Geo API route exists
-        """
-        response = self.client.get("/api/language-geo/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_community_geo_route_exists(self):
-        """
-        Ensure Community Geo API route exists
-        """
-        response = self.client.get("/api/community-geo/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_placename_geo_route_exists(self):
         """
         Ensure PlaceName Geo API route exists
@@ -85,20 +71,6 @@ class PlaceNameAPIRouteTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     # Search APIs
-    def test_language_search_route_exists(self):
-        """
-        Ensure Language Search API route exists
-        """
-        response = self.client.get("/api/language-search/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_community_search_route_exists(self):
-        """
-        Ensure Community Search API route exists
-        """
-        response = self.client.get("/api/community-search/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_placename_search_route_exists(self):
         """
         Ensure PlaceName Search API route exists

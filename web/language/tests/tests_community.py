@@ -374,3 +374,19 @@ class ChampionAPITests(APITestCase):
         """
         response = self.client.get("/api/champion/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Geo API for Community
+    def test_community_geo_route_exists(self):
+        """
+        Ensure Community Geo API route exists
+        """
+        response = self.client.get("/api/community-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Search API for Community
+    def test_community_search_route_exists(self):
+        """
+        Ensure Community Search API route exists
+        """
+        response = self.client.get("/api/community-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
