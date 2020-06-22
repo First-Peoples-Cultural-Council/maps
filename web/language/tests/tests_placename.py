@@ -54,6 +54,21 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # GEO APIs
+    def test_language_geo_route_exists(self):
+        """
+        Ensure Language Geo API route exists
+        """
+        response = self.client.get("/api/language-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_geo_route_exists(self):
+        """
+        Ensure Community Geo API route exists
+        """
+        response = self.client.get("/api/community-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_placename_geo_route_exists(self):
         """
@@ -67,6 +82,92 @@ class PlaceNameAPIRouteTests(APITestCase):
         Ensure Art Geo API route exists
         """
         response = self.client.get("/api/art-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # Search APIs
+    def test_language_search_route_exists(self):
+        """
+        Ensure Language Search API route exists
+        """
+        response = self.client.get("/api/language-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_search_route_exists(self):
+        """
+        Ensure Community Search API route exists
+        """
+        response = self.client.get("/api/community-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_placename_search_route_exists(self):
+        """
+        Ensure PlaceName Search API route exists
+        """
+        response = self.client.get("/api/placename-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_art_search_route_exists(self):
+        """
+        Ensure Art Search API route exists
+        """
+        response = self.client.get("/api/art-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # Lists for Arts tab
+    def test_public_art_list_route_exists(self):
+        """
+        Ensure Public Arts List API route exists
+        """
+        response = self.client.get("/api/arts/public-art/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_artist_list_route_exists(self):
+        """
+        Ensure Artist List API route exists
+        """
+        response = self.client.get("/api/arts/artist/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_event_list_route_exists(self):
+        """
+        Ensure Event List API route exists
+        """
+        response = self.client.get("/api/arts/event/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_organization_list_route_exists(self):
+        """
+        Ensure Organization API route exists
+        """
+        response = self.client.get("/api/arts/organization/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_resource_list_route_exists(self):
+        """
+        Ensure Resource List API route exists
+        """
+        response = self.client.get("/api/arts/resource/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_grant_list_route_exists(self):
+        """
+        Ensure Grant List API route exists
+        """
+        response = self.client.get("/api/arts/grant/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_artwork_list_route_exists(self):
+        """
+        Ensure Artwork List API route exists
+        """
+        response = self.client.get("/api/arts/artwork/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_poi_list_route_exists(self):
+        """
+        Ensure Art Search API route exists
+        """
+        response = self.client.get("/api/arts/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
