@@ -929,3 +929,176 @@ class PlaceNameAPITests(BaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 2)
+    
+    def test_art_types_geo_api(self):
+        """
+        Ensure we can get the data to display on the Arts Tab Lists
+        """
+        # Don't show Place Names without Geom or cooridinates = [0, 0]
+        test_placename18 = PlaceName.objects.create(
+            name="test place18",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename19 = PlaceName.objects.create(
+            name="test place19",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename20 = PlaceName.objects.create(
+            name="test place20",
+            kind="public_art",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename21 = PlaceName.objects.create(
+            name="test place21",
+            kind="public_art",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename22 = PlaceName.objects.create(
+            name="test place22",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename23 = PlaceName.objects.create(
+            name="test place23",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename24 = PlaceName.objects.create(
+            name="test place24",
+            kind="organization",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename25 = PlaceName.objects.create(
+            name="test place25",
+            kind="organization",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename26 = PlaceName.objects.create(
+            name="test place26",
+            kind="event",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename27 = PlaceName.objects.create(
+            name="test place27",
+            kind="event",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename28 = PlaceName.objects.create(
+            name="test place28",
+            kind="grant",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename29 = PlaceName.objects.create(
+            name="test place29",
+            kind="grant",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        # Test Public Arts
+        response = self.client.get(
+            "/api/arts/public-art/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Artists
+        response = self.client.get(
+            "/api/arts/artist/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Organizations
+        response = self.client.get(
+            "/api/arts/organization/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Events
+        response = self.client.get(
+            "/api/arts/event/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Grants
+        response = self.client.get(
+            "/api/arts/grant/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Resource
+        response = self.client.get(
+            "/api/arts/resource/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
