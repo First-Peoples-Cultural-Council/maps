@@ -1102,3 +1102,30 @@ class PlaceNameAPITests(BaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+    
+    def test_artworks_geo_api(self):
+        """
+        Ensure we can get the data to display on the Arts Tab Lists
+        """
+        # Don't show Medias whose Place Name is without Geom
+        test_placename30 = PlaceName.objects.create(
+            name="test place30",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        
+        test_media1 = Media.objects.create(
+            name="test media1",
+            placename=test_placename30,
+            is_artwork=True
+        )
+
+        response = self.client.get(
+            "/api/arts/artwork/", format="json"
+        )
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
