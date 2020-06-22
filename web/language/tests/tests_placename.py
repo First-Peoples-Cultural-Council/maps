@@ -126,7 +126,6 @@ class PlaceNameAPITests(BaseTestCase):
             audio_description="string",
             community=self.community,
             language=self.language1,
-            category=self.category,
         )
         response = self.client.get(
             "/api/placename/{}/".format(test_placename.id), format="json"
@@ -136,7 +135,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.data["audio"], self.recording.id)
         self.assertEqual(response.data["community"], self.community.id)
         self.assertEqual(response.data["language"], self.language1.id)
-        self.assertEqual(response.data["category"], self.category.id)
         # self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
         self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
         self.assertEqual(response.data["audio_obj"]["recorder"], self.recording.recorder)
@@ -528,7 +526,6 @@ class PlaceNameAPITests(BaseTestCase):
                 "common_name": "string",
                 "community_only": True,
                 "description": "string",
-                "category": self.category.id,
                 "community": self.community.id,
                 "language": self.language1.id,
                 "audio": self.recording.id,
@@ -542,7 +539,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.name, "test place")
         self.assertEqual(place.community_id, self.community.id)
         self.assertEqual(place.language_id, self.language1.id)
-        self.assertEqual(place.category_id, self.category.id)
         self.assertEqual(place.audio_id, self.recording.id)
 
         # now update it.
@@ -557,7 +553,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.other_names, "updated other names")
         self.assertEqual(place.community_id, self.community.id)
         self.assertEqual(place.language_id, self.language1.id)
-        self.assertEqual(place.category_id, self.category.id)
         self.assertEqual(place.audio_id, self.recording.id)
 
     def test_placename_verify(self):
@@ -767,41 +762,41 @@ class PlaceNameAPITests(BaseTestCase):
         """
         # This placename should not be a part of the result
         # because this does not have a geo
-        test_placename08 = PlaceName.objects.create(
+        test_placename08 = PlaceName.objects.create(  # Excluded
             name="test place08",
             kind="public_art"
         )
-        test_placename09 = PlaceName.objects.create(
+        test_placename09 = PlaceName.objects.create(  # Included (1)
             name="test place09",
             kind="artist",
             geom=GEOSGeometry("""{
                 "type": "Point",
-                "coordinates": [0, 0]
+                "coordinates": [1, 1]
             }""")
         )
         test_placename10 = PlaceName.objects.create(  # Excluded
             name="test place10",
             kind="organization"
         )
-        test_placename11 = PlaceName.objects.create(
+        test_placename11 = PlaceName.objects.create(  # Included (2)
             name="test place11",
             kind="event",
             geom=GEOSGeometry("""{
                 "type": "Point",
-                "coordinates": [0, 0]
+                "coordinates": [1, 1]
             }""")
         )
-        test_placename12 = PlaceName.objects.create(
+        test_placename12 = PlaceName.objects.create(  # Included (3)
             name="test place12",
             kind="resource",
             geom=GEOSGeometry("""{
                 "type": "Point",
-                "coordinates": [0, 0]
+                "coordinates": [1, 1]
             }""")
         )
         # This placename should not be a part of the result
         # because this is not a node_placename
-        test_placename13 = PlaceName.objects.create(
+        test_placename13 = PlaceName.objects.create(  # Excluded
             name="test place13",
             kind="poi"
         )
@@ -809,10 +804,18 @@ class PlaceNameAPITests(BaseTestCase):
         response = self.client.get(
             "/api/art-geo/", format="json"
         )
+        # This placename should not be a part of the result
+        # because this has an invalid coordinates [0, 0]
+        test_placename14 = PlaceName.objects.create(  # Excluded
+            name="test place14",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
 
         data = response.json().get("features")
-
-        print(data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName

@@ -278,7 +278,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # VERIFYING CommunityMember
-        response = self.client.patch(
+        response = self.client.post(
             "/api/community/verify_member/",
             {
                 "user_id": user_member01.id,
@@ -331,7 +331,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # VERIFYING CommunityMember
-        response = self.client.patch(
+        response = self.client.post(
             "/api/community/reject_member/",
             {
                 "user_id": user_member01.id,
