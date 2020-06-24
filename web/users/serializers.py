@@ -66,6 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "communities",
             "languages",
+            "non_bc_languages",
             "placename_set",
             "administrator_set",
             "community_ids",

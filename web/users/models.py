@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.postgres.fields import ArrayField
 
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
@@ -53,6 +54,8 @@ class User(AbstractUser):
     )
 
     languages = models.ManyToManyField("language.Language")
+    non_bc_languages = ArrayField(models.CharField(
+        max_length=200), blank=True, null=True, default=None)
     bio = models.TextField(null=True, blank=True, default="")
 
     def __str__(self):
