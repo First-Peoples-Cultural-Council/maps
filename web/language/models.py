@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from users.models import User
 
@@ -255,6 +256,8 @@ class PlaceName(CulturalModel):
     language = models.ForeignKey(
         Language, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
+    non_bc_languages = ArrayField(models.CharField(
+        max_length=200), blank=True, null=True,  default=None)
     community = models.ForeignKey(
         Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
