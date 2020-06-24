@@ -66,6 +66,6 @@ urlpatterns = [
     url("arts/organization", OrganizationList.as_view(), name="arts-organization"),
     url("arts/resource", ResourceList.as_view(), name="arts-resource"),
     url("arts/grant", GrantList.as_view(), name="arts-grant"),
-    url("arts/artwork", ArtworkList.as_view(), name="arts-artwork"),
-    url("arts/placename", ArtworkPlaceNameList.as_view(), name="artwork-placename")
+    url("arts/placename", ArtworkPlaceNameList.as_view(), name="artwork-placename"),
+    url("arts/artwork", ArtworkList.as_view(), name="arts-artwork")
 ] + router.urls

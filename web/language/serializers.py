@@ -404,6 +404,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "medias",
             "community",
             "language",
+            "non_bc_languages",
             "creator",
             "favourites",
             "taxonomies",
