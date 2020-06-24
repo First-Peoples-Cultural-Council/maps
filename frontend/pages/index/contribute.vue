@@ -170,6 +170,21 @@
 
             <b-row class="mt-3 field-row">
               <div>
+                <label for="otherLanguage" class="contribute-title-one mb-1">
+                  Specify Other Language</label
+                >
+              </div>
+
+              <b-form-input
+                id="otherLanguage"
+                v-model="alternateName"
+                type="text"
+                placeholder="(ex. Spanish, English)"
+              ></b-form-input>
+            </b-row>
+
+            <b-row class="mt-3 field-row">
+              <div>
                 <label for="traditionalName" class="contribute-title-one mb-1"
                   >Community</label
                 >
@@ -916,12 +931,14 @@ export default {
       return this.$store.state.languages.languageSet
     },
     languageList() {
-      return this.languageSet.map(lang => {
+      const languageSet = this.languageSet.map(lang => {
         return {
           id: lang.id,
           name: lang.name
         }
       })
+      languageSet.unshift({ id: 'others', name: 'Others (please specify...)' })
+      return languageSet
     },
     languagesInFeature() {
       return this.$store.state.contribute.languagesInFeature
