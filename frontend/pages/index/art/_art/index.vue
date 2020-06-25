@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 arts-main-wrapper">
+  <div v-if="artDetails" class="w-100 arts-main-wrapper">
     <div
       v-if="!mobileContent"
       class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
@@ -375,19 +375,15 @@ export default {
         }
       })
 
-      if (art.id) {
+      if (art) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
         const isServer = !!process.server
         return {
-          art,
           isServer,
           artDetails
         }
       } else {
-        $router.push({
-          path: `/art`
-        })
       }
     }
   },
@@ -401,6 +397,7 @@ export default {
   mounted() {
     window.addEventListener('resize', this.widthChecker)
     if (
+      this.artDetails &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
       window.innerWidth > 992
@@ -564,20 +561,30 @@ export default {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    getHeaderTitle() {
+      if (this.artDetails) {
+        return (
+          this.artDetails.name +
+          ' Indigenous ' +
+          this.artDetails.kind +
+          " on First Peoples' Language Map"
+        )
+      } else {
+        return 'Art page not found '
+      }
     }
   },
   head() {
     return {
-      title:
-        this.artDetails.name +
-        ' Indigenous ' +
-        this.artDetails.kind +
-        " on First Peoples' Language Map",
+      title: this.getHeaderTitle(),
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.artDetails.description
+          content: this.artDetails
+            ? this.artDetails.description
+            : 'Art page not found.'
         }
       ]
     }

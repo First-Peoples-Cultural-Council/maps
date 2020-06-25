@@ -45,7 +45,7 @@
             </h5>
             <div class="artist-tags-container">
               <span
-                v-for="tag in taxonomy"
+                v-for="tag in taxonomies"
                 :key="tag.name"
                 :class="taxonomyClass(tag.name)"
                 @click.stop.prevent="filterTaxonomy([tag.name])"
@@ -113,16 +113,16 @@ export default {
     }
   },
   computed: {
-    taxonomyNotEmpty() {
-      return this.taxonomy
-    },
     taxonomies() {
-      return this.taxonomyNotEmpty
-        ? this.art.taxonomy.filter(taxo => !this.blockedTag.includes(taxo.name))
+      return this.taxonomy
+        ? this.taxonomy.filter(taxo => !this.blockedTag.includes(taxo.name))
         : []
     },
     taxonomyFilter() {
       return this.$store.state.arts.taxonomyFilter
+    },
+    searchQuery() {
+      return this.$store.state.arts.artSearch
     }
   },
   methods: {
@@ -137,7 +137,7 @@ export default {
     taxonomyClass(tag) {
       return this.taxonomyFilter.some(taxonomy => {
         return taxonomy === tag
-      })
+      }) || tag.toLowerCase() === this.searchQuery.toLowerCase()
         ? 'taxonomy-selected'
         : ''
     },
