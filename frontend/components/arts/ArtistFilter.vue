@@ -5,7 +5,7 @@
       :value="searchQuery"
       type="search"
       class="search-input"
-      :placeholder="`Search filter based on ${filterMode}`"
+      :placeholder="filterPlaceholder()"
       autocomplete="off"
       @input="updateQuery"
     >
@@ -40,6 +40,14 @@ export default {
     },
     resetValue() {
       this.$store.commit('arts/setArtSearch', '')
+    },
+    filterPlaceholder() {
+      const mode = this.filterMode
+      if (mode === 'artwork') {
+        return `Filter based of name, medium, and description...`
+      } else {
+        return `Filter based on ${mode}'s name...`
+      }
     }
   }
 }

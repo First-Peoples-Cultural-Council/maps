@@ -108,7 +108,6 @@ export default {
       return match && match[7].length === 11 ? match[7] : false
     },
     handleImageClick(e, media) {
-      console.log(media)
       require('basiclightbox/dist/basicLightbox.min.css')
       const basicLightbox = require('basiclightbox')
       basicLightbox
