@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="community">
     <div
       v-if="!mobileContent"
       class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
@@ -446,52 +446,53 @@ export default {
     const community = communities.find(
       comm => encodeFPCC(comm.name) === params.fn
     )
-    const communityDetail = await $axios.$get(
-      getApiUrl(`community/${community.id}?timestamp=${new Date().getTime()}/`)
-    )
 
-    let audio_obj = {}
-    if (communityDetail.audio_obj) {
-      audio_obj = communityDetail.audio_obj
-    } else {
-      audio_obj = {
-        audio_obj: null
+    if (community) {
+      const communityDetail = await $axios.$get(
+        getApiUrl(
+          `community/${community.id}?timestamp=${new Date().getTime()}/`
+        )
+      )
+
+      let audio_obj = {}
+      if (communityDetail.audio_obj) {
+        audio_obj = communityDetail.audio_obj
+      } else {
+        audio_obj = {
+          audio_obj: null
+        }
       }
-    }
 
-    console.log(communityDetail)
+      store.commit('places/setBadgePlaces', communityDetail.places)
+      store.commit('places/setFilteredBadgePlaces', communityDetail.places)
+      store.commit('places/setMedias', communityDetail.medias)
 
-    console.log(communityDetail.medias)
+      const isServer = !!process.server
 
-    store.commit('places/setBadgePlaces', communityDetail.places)
-    store.commit('places/setFilteredBadgePlaces', communityDetail.places)
-    store.commit('places/setMedias', communityDetail.medias)
-
-    const isServer = !!process.server
-
-    return {
-      audio_obj,
-      mode: 'All',
-      communityDetail,
-      isServer,
-      community,
-      datacollection: {
-        labels: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July'
-        ],
-        datasets: [
-          {
-            label: 'Data One',
-            backgroundColor: '#f87979',
-            data: [40, 39, 10, 40, 39, 80, 40]
-          }
-        ]
+      return {
+        audio_obj,
+        mode: 'All',
+        communityDetail,
+        isServer,
+        community,
+        datacollection: {
+          labels: [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July'
+          ],
+          datasets: [
+            {
+              label: 'Data One',
+              backgroundColor: '#f87979',
+              data: [40, 39, 10, 40, 39, 80, 40]
+            }
+          ]
+        }
       }
     }
   },
@@ -570,16 +571,30 @@ export default {
           path: `/art/${encodeFPCC(name)}`
         })
       }
+    },
+    getHeaderTitle() {
+      if (this.community) {
+        return this.community.name + ' Language Speaker Details and Stats'
+      } else {
+        return 'Community page not found'
+      }
+    },
+    getHeaderDescription() {
+      if (this.community) {
+        return `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
+      } else {
+        return 'Community page not found.'
+      }
     }
   },
   head() {
     return {
-      title: this.community.name + ' Language Speaker Details and Stats',
+      title: this.getHeaderTitle(),
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
+          content: this.getHeaderDescription()
         }
       ]
     }
