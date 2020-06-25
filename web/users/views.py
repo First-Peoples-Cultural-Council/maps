@@ -1,5 +1,6 @@
 import os
 import hashlib
+import copy
 
 from rest_framework import viewsets, generics, mixins
 from rest_framework.views import APIView
@@ -153,12 +154,26 @@ class ConfirmClaimView(APIView):
                 user = User.objects.get(id=user_id)
                 
                 with transaction.atomic():
-                    data_list = RelatedData.objects.filter(data_type='user_email', value=email)
+                    email_data = RelatedData.objects.exclude(value='').filter(
+                        (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email)
+                    email_data_copy = copy.deepcopy(email_data)
 
-                    for data in data_list:
+                    # Exclude data if there is an actual_email. Used to give notif to 
+                    # the actual email rather than the FPCC admin who seeded the profile
+                    for data in email_data:
+                        if data.data_type == 'user_email':
+                            actual_email = RelatedData.objects.exclude(value='').filter(placename=data.placename, data_type='email')
+
+                            if actual_email:
+                                email_data_copy = email_data_copy.exclude(id=data.id)
+                    
+                    email_data = email_data_copy
+                    for data in email_data:
                         profile = data.placename
-                        profile.creator = user
-                        profile.save()
+
+                        if not profile.creator:
+                            profile.creator = user
+                            profile.save()
 
                         print(profile.name)
                     
