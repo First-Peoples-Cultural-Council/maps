@@ -44,8 +44,6 @@ def send_claim_profile_invite(email):
             actual_email = RelatedData.objects.exclude(value='').filter(placename=data.placename, data_type='email')
 
             if actual_email:
-                print('actual_email')
-                print(actual_email)
                 email_data_copy = email_data_copy.exclude(id=data.id)
     
     email_data = email_data_copy
