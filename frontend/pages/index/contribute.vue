@@ -930,12 +930,14 @@ export default {
       return `${this.userDetail.first_name} ${this.userDetail.last_name}`
     },
     userNonBCLanguage() {
-      return this.userDetail.non_bc_languages.map(lang => {
-        return {
-          id: lang,
-          name: lang
-        }
-      })
+      return this.userDetail.non_bc_languages
+        ? this.userDetail.non_bc_languages.map(lang => {
+            return {
+              id: lang,
+              name: lang
+            }
+          })
+        : []
     },
     isArtistProfileFound() {
       if (this.isLoggedIn) {
