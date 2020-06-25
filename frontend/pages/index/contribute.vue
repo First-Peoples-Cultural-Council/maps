@@ -1254,7 +1254,10 @@ export default {
   mounted() {
     // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
-      if (this.languageUserSelected === null || this.languageNonBC === null) {
+      if (
+        (this.languageUserSelected === null || this.languageNonBC === null) &&
+        !this.place
+      ) {
         this.languageUserSelected =
           this.userDetail.languages.length !== 0
             ? this.userDetail.languages[0]
@@ -1263,7 +1266,8 @@ export default {
 
       if (
         this.userNonBCLanguage.length !== 0 &&
-        (this.place.non_bc_languages &&
+        (this.place &&
+          this.place.non_bc_languages &&
           this.place.non_bc_languages.length !== 0)
       ) {
         const previousLang = this.languageNonBC
