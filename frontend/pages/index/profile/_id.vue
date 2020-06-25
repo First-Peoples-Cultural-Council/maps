@@ -295,10 +295,6 @@ export default {
     await store.dispatch('places/getFavourites')
     return { user, isOwner }
   },
-  mounted() {
-    console.log('mounted, user=', this.$store.state.user)
-    console.log(this.isArtistProfileExist())
-  },
   methods: {
     encodeFPCC,
     isArtistProfileExist() {
