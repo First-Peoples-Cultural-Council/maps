@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100">
+  <div v-if="language" class="w-100">
     <div
       v-if="!mobileContent"
       class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
@@ -367,44 +367,47 @@ export default {
     const language = languages.find(
       lang => encodeFPCC(lang.name) === languageName
     )
-    const languageId = language.id
-    const isServer = !!process.server
-    const result = await Promise.all([
-      $axios.$get(
-        getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
-      ),
-      $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`)),
-      $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
-    ])
 
-    try {
-      await store.dispatch('user/getNotifications', {
-        isServer: !!process.server
-      })
-    } catch (e) {}
+    if (language) {
+      const languageId = language.id
+      const isServer = !!process.server
+      const result = await Promise.all([
+        $axios.$get(
+          getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
+        ),
+        $axios.$get(getApiUrl(`community/?lang=${languageId}`)),
+        $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`)),
+        $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
+      ])
 
-    store.commit('places/setBadgePlaces', result[3].features)
-    store.commit('places/setFilteredBadgePlaces', result[3].features)
+      try {
+        await store.dispatch('user/getNotifications', {
+          isServer: !!process.server
+        })
+      } catch (e) {}
 
-    let audio_obj = {}
-    if (result[0].language_audio) {
-      audio_obj = result[0].language_audio
-    }
+      store.commit('places/setBadgePlaces', result[3].features)
+      store.commit('places/setFilteredBadgePlaces', result[3].features)
 
-    let greeting_obj = {}
-    if (result[0].greeting_audio) {
-      greeting_obj = result[0].greeting_audio
-    }
+      let audio_obj = {}
+      if (result[0].language_audio) {
+        audio_obj = result[0].language_audio
+      }
 
-    return {
-      language: result[0],
-      communities: result[1],
-      places: result[3].features,
-      arts: result[2].features,
-      isServer,
-      audio_obj,
-      greeting_obj
+      let greeting_obj = {}
+      if (result[0].greeting_audio) {
+        greeting_obj = result[0].greeting_audio
+      }
+
+      return {
+        language: result[0],
+        communities: result[1],
+        places: result[3].features,
+        arts: result[2].features,
+        isServer,
+        audio_obj,
+        greeting_obj
+      }
     }
   },
   async fetch({ store }) {
@@ -459,16 +462,30 @@ export default {
           })
           break
       }
+    },
+    getHeaderTitle() {
+      if (this.language) {
+        return this.language.name + ' Language Resources and Stats'
+      } else {
+        return 'Language page not found'
+      }
+    },
+    getHeaderDescription() {
+      if (this.language) {
+        return `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
+      } else {
+        return 'Language page not found.'
+      }
     }
   },
   head() {
     return {
-      title: this.language.name + ' Language Resources and Stats',
+      title: this.getHeaderTitle(),
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
+          content: this.getHeaderDescription()
         }
       ]
     }
