@@ -151,6 +151,7 @@ export default {
       })
     },
     handleReturn() {
+      this.$root.$emit('resetMap')
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$router.push({
         path: '/art'
