@@ -218,10 +218,15 @@ export default {
       await this.$axios.$get(
         `${getApiUrl('user/logout/')}?timestamp=${new Date().getTime()}`
       )
+
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      window.location =
-        'https://auth.firstvoices.com/logout?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca'
+      this.$store.commit('user/setPicture', null)
+
+      setTimeout(() => {
+        window.location.href =
+          'https://auth.firstvoices.com/logout?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca'
+      }, 500)
     },
     handleLogoClick() {
       this.$router.push({

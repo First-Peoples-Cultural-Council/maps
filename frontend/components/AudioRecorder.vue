@@ -238,7 +238,6 @@ export default {
           'file/setMediaFiles',
           this.getMediaData(file, file_type)
         )
-        console.log(this.$store.state.file.fileList)
       } else {
         try {
           const result = await this.$store.dispatch(

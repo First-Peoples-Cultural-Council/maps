@@ -37,7 +37,7 @@
             </template>
           </BadgeFilter>
           <!-- Artist Badge Filter -->
-          <!-- <BadgeFilter
+          <BadgeFilter
             :is-selected="filterMode === 'artist'"
             :child-taxonomy="getChildTaxonomy('Person')"
             :color="'#B45339'"
@@ -53,7 +53,7 @@
                 @click.native.prevent="badgeClick($event, 'artist')"
               ></Badge>
             </template>
-          </BadgeFilter> -->
+          </BadgeFilter>
 
           <!-- Event Badge Filter -->
           <BadgeFilter
@@ -94,7 +94,7 @@
           </BadgeFilter>
 
           <!-- Public Art Badge Filter -->
-          <!-- <BadgeFilter
+          <BadgeFilter
             :is-selected="filterMode === 'public_art'"
             :child-taxonomy="getChildTaxonomy('Public Art')"
             :color="'#848159'"
@@ -110,7 +110,7 @@
                 @click.native.prevent="badgeClick($event, 'public_art')"
               ></Badge>
             </template>
-          </BadgeFilter> -->
+          </BadgeFilter>
 
           <!-- Grant Badge Filter -->
           <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
@@ -130,7 +130,7 @@
       </template>
       <template v-slot:cards>
         <section id="card-item-list" class="pl-3 pr-3">
-          <b-row>
+          <b-row v-if="paginatedArts.length !== 0">
             <b-col
               v-for="(art, index) in paginatedArts"
               :key="'arts' + art.id + index"
@@ -160,6 +160,13 @@
                 "
               ></ArtsCard>
             </b-col>
+          </b-row>
+          <b-row
+            v-else-if="paginatedArts.length === 0 && isSearchMode"
+            class="search-empty-container"
+          >
+            <img src="@/assets/images/search_icon.svg" />
+            Filter result not found. Please try again.
           </b-row>
         </section>
       </template>
@@ -212,7 +219,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'Zoom in on the map to view Indigenous Artwork in your area. You can also view Organization, Event, Public Art and Grant information.',
+        'Indigenous artistic practices in B.C. are diverse. Artists working across all disciplines are honouring traditions and experimenting with contemporary approaches. The Arts Map provides an online environment for Indigenous artists and arts groups to create profiles and share images, video, sound, and news. Users can explore the map by focusing on specific locations or by defining their search with keywords and filters. This is a community-driven platform dedicated to highlighting the important creative voices of Indigenous artists.',
       artDetails: {},
       maximumLength: 0
     }
@@ -342,6 +349,10 @@ export default {
                 ? art.properties.public_arts.map(pub => pub.name)
                 : []
 
+              const isTaxonomyFound = art.properties.taxonomies.some(
+                taxonomy => taxonomy.name.toLowerCase() === query
+              )
+
               // if list of string contains the query, return true
               const isPublicArtFound = publicArtList.find(pub =>
                 pub.toLowerCase().includes(query)
@@ -355,7 +366,8 @@ export default {
               return (
                 art.properties.name.toLowerCase().includes(query) ||
                 isPublicArtFound ||
-                isArtistFound
+                isArtistFound ||
+                isTaxonomyFound
               )
             }
           })
@@ -595,9 +607,22 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .badge-list-container {
   display: flex;
   flex-wrap: wrap;
+}
+
+.search-empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em 1em;
+
+  img {
+    margin-bottom: 1em;
+    width: 50px;
+    height: 50px;
+  }
 }
 </style>

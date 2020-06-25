@@ -36,6 +36,7 @@
         "
         id="tool-point"
         class="draw-tool draw-point"
+        :disabled="drawnFeatureCount !== 0"
         @click="setMode($event, 'point')"
       >
         <b-tooltip target="tool-point"
@@ -46,6 +47,7 @@
         v-if="drawMode === 'point' || drawMode === 'existing'"
         id="tool-current"
         class="draw-tool draw-current-location"
+        :disabled="drawnFeatureCount !== 0"
         @click="setMode($event, 'location')"
       >
         <b-tooltip target="tool-current"
@@ -56,6 +58,7 @@
         v-if="drawMode === 'polygon' || drawMode === 'existing'"
         id="tool-polygon"
         class="draw-tool draw-polygon"
+        :disabled="drawnFeatureCount !== 0"
         @click="setMode($event, 'polygon')"
       >
         <b-tooltip target="tool-polygon"
@@ -66,6 +69,7 @@
         v-if="drawMode === 'line' || drawMode === 'existing'"
         id="tool-line"
         class="draw-tool draw-line-string"
+        :disabled="drawnFeatureCount !== 0"
         @click="setMode($event, 'line_string')"
       >
         <b-tooltip target="tool-line"
@@ -75,6 +79,7 @@
       <div
         id="tool-remove"
         class="draw-tool draw-trash"
+        :disabled="drawnFeatureCount === 0"
         @click="setMode($event, 'trash')"
       >
         <b-tooltip target="tool-remove"
@@ -105,6 +110,9 @@ export default {
   computed: {
     queryType() {
       return this.$route.query.type
+    },
+    drawnFeatureCount() {
+      return this.$store.state.contribute.drawnFeatures.length
     }
   },
   mounted() {
@@ -185,5 +193,14 @@ export default {
 
 .draw-current-location {
   background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgOGMtMi4yMSAwLTQgMS43OS00IDRzMS43OSA0IDQgNCA0LTEuNzkgNC00LTEuNzktNC00LTR6bTguOTQgM2MtLjQ2LTQuMTctMy43Ny03LjQ4LTcuOTQtNy45NFYxaC0ydjIuMDZDNi44MyAzLjUyIDMuNTIgNi44MyAzLjA2IDExSDF2MmgyLjA2Yy40NiA0LjE3IDMuNzcgNy40OCA3Ljk0IDcuOTRWMjNoMnYtMi4wNmM0LjE3LS40NiA3LjQ4LTMuNzcgNy45NC03Ljk0SDIzdi0yaC0yLjA2ek0xMiAxOWMtMy44NyAwLTctMy4xMy03LTdzMy4xMy03IDctNyA3IDMuMTMgNyA3LTMuMTMgNy03IDd6Ii8+PC9zdmc+);
+}
+
+.draw-tool:disabled,
+.draw-tool[disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+
+  color: #666666;
+  cursor: default;
 }
 </style>

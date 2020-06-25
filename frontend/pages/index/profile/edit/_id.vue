@@ -85,7 +85,7 @@
             ></b-form-input>
 
             <label
-              class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+              class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
               >Languages</label
             >
             <multiselect
@@ -96,6 +96,40 @@
               :options="options"
               :multiple="true"
             ></multiselect>
+
+            <div v-if="isNonBCLanguage" class="website-container mt-3">
+              <div>
+                <label class="contribute-title-one">Non B.C. Language</label>
+              </div>
+
+              <div
+                v-for="(lang, index) in languageNonBC"
+                :key="index"
+                class="site-input-container"
+              >
+                <b-form-input
+                  :id="`language-${lang}`"
+                  v-model="lang.value"
+                  type="text"
+                  placeholder="(ex. Spanish, English, etc.)"
+                ></b-form-input>
+                <span
+                  v-if="
+                    (index !== 0 && languageNonBC.length !== 1) ||
+                      languageNonBC.length > 1
+                  "
+                  class="site-btn"
+                  @click="removeLanguage(index)"
+                  >-</span
+                >
+                <span
+                  v-if="index + 1 === languageNonBC.length"
+                  class="site-btn"
+                  @click="addLanguage()"
+                  >+</span
+                >
+              </div>
+            </div>
 
             <label
               class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
@@ -177,6 +211,7 @@ export default {
       errors: [],
       user: {},
       language: null,
+      languageNonBC: [],
       value: [],
       options: [],
       content: '',
@@ -208,6 +243,9 @@ export default {
           value: l.id
         }
       })
+    },
+    isNonBCLanguage() {
+      return this.value.find(val => val.id === 'others')
     }
   },
   watch: {
@@ -250,12 +288,32 @@ export default {
         id: l.id
       }
     })
+    const otherLanguage = { id: 'others', name: 'Others (please specify...)' }
+    // Add Other options in the Languages
+    options.unshift(otherLanguage)
+
+    // Add Others on the selected list if Non B.C Language exists
+    let languageValue = []
+    let languageNonBC = []
+
+    if (user.languages && user.languages.length !== 0) {
+      languageValue = user.languages
+    }
+    if (user.non_bc_languages && user.non_bc_languages.length !== 0) {
+      languageValue.push(otherLanguage)
+      languageNonBC = user.non_bc_languages.map(lang => {
+        return {
+          value: lang
+        }
+      })
+    }
 
     return {
       user,
       data,
       options,
-      value: user.languages,
+      value: languageValue,
+      languageNonBC,
       community: user.communities[0],
       isServer: !!process.server
     }
@@ -270,12 +328,20 @@ export default {
     }
 
     this.fileSrc = this.getMediaUrl(this.user.image)
-
+    this.addLanguage()
     this.initQuill()
   },
 
   methods: {
     getMediaUrl,
+    addLanguage() {
+      this.languageNonBC.push({
+        value: null
+      })
+    },
+    removeLanguage(index) {
+      this.languageNonBC.splice(index, 1)
+    },
     filePlaceholder() {
       return this.fileSrc && this.user.image
         ? getMediaUrl(this.fileSrc)
@@ -330,9 +396,16 @@ export default {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
         bio: this.user.bio,
-        language_ids: this.value.map(lang => lang.id),
+        language_ids: this.value
+          .filter(lang => lang.id !== 'others')
+          .map(lang => lang.id),
         community_ids: communityId,
-        notification_frequency: this.user.notification_frequency
+        notification_frequency: this.user.notification_frequency,
+        non_bc_languages: this.value.find(lang => lang.id === 'others')
+          ? this.languageNonBC
+              .filter(lang => lang.value !== null)
+              .map(lang => lang.value)
+          : []
       }
       try {
         const result = await this.$axios.$patch(
@@ -487,5 +560,35 @@ export default {
     font-size: 0.75em;
     display: none;
   }
+}
+
+.field-row {
+  padding: 0 1em;
+}
+
+.website-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+
+  & > * {
+    margin-right: 0.5em;
+  }
+}
+
+.site-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
 }
 </style>

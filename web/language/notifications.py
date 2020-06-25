@@ -291,17 +291,17 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     if creator.email in [a[1] for a in settings.ADMINS]:
         message = intro + message
 
-    print("sending to ", creator.email)
-    print(message)
+        print("sending to ", creator.email)
+        print(message)
 
-    send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(
-            state),
-        message,
-        "info@fpcc.ca",
-        [creator.email],
-        html_message=message,
-    )
+        send_mail(
+            "Your contribution has been {} on the First Peoples' Language Map".format(
+                state),
+            message,
+            "info@fpcc.ca",
+            [creator.email],
+            html_message=message,
+        )
     return message
 
 

@@ -1,211 +1,214 @@
 <template>
-  <div class="w-100">
-    <div
-      v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
-    >
-      <div>
-        Point Of Interest:
-        <span class="font-weight-bold">{{ place.name }}</span>
-      </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
-        <img src="@/assets/images/arrow_up_icon.svg" />
-      </div>
-    </div>
-    <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-      <Logo :logo-alt="1" class="cursor-pointer hide-mobile"></Logo>
-      <div>
-        <div
-          class="text-center d-none mobile-close"
-          :class="{ 'content-mobile': mobileContent }"
-          @click="$store.commit('sidebar/setMobileContent', false)"
-        >
-          <img
-            class="d-inline-block"
-            src="@/assets/images/arrow_down_icon.svg"
-          />
-        </div>
+  <div>
+    <div v-if="geo_place" class="w-100">
+      <div
+        v-if="!mobileContent"
+        class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+      >
         <div>
-          <PlacesDetailCard
-            :id="place.id"
-            :name="place.name"
-            :server="isServer"
-            :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
-            :allow-edit="isPlaceOwner()"
-            variant="md"
-            :delete-place="isPlaceOwner()"
-            :status="place.status"
-          ></PlacesDetailCard>
+          Point Of Interest:
+          <span class="font-weight-bold">{{ place.name }}</span>
         </div>
-        <section class="mt-3 ml-4 mr-4 ">
-          <div class="mb-2">
-            <b-row>
-              <b-col xs="6">
-                <div
-                  v-if="creator"
-                  class="cursor-pointer mb-2"
-                  @click="handleCreatorClick($event, creator)"
-                >
-                  <div class="place-sub-header">Uploaded By</div>
-                  <div class="place-sub-content">{{ getCreatorName() }}</div>
-                </div>
-              </b-col>
-              <b-col xs="6">
-                <div v-if="place.category">
-                  <div
-                    class="font-08 text-uppercase color-gray place-sub-header"
-                  >
-                    Category
-                  </div>
-                  <div class="font-08 place-sub-content">
-                    {{ place.category_obj.name }}
-                  </div>
-                </div>
-              </b-col>
-            </b-row>
-          </div>
-          <div>
-            <div v-if="place.description">
-              <h5 class="font-08 text-uppercase color-gray">Description</h5>
-              <p class="font-08">{{ place.description }}</p>
-            </div>
-          </div>
-          <div>
-            <b-row no-gutters class="mb-2">
-              <b-col xl="6">
-                <FlagModal
-                  v-if="place.status !== 'FL' && place.status !== 'VE'"
-                  :id="place.id"
-                  type="placename"
-                  title="Report"
-                  class="mr-1"
-                ></FlagModal>
-              </b-col>
-              <b-col xl="6">
-                <Favourite
-                  v-if="isLoggedIn"
-                  :id="place.id"
-                  :favourited="isFavourited"
-                  :favourite="favourite"
-                  :num-favourites="place.favourites.length"
-                  type="placename"
-                  class="ml-1"
-                ></Favourite>
-              </b-col>
-            </b-row>
-          </div>
-          <div v-if="isPTV" class="mt-2">
-            <b-row no-gutters class="mt-2 mb-4">
-              <b-col xs="6" class="pr-1">
-                <b-button
-                  variant="dark"
-                  block
-                  size="sm"
-                  @click="
-                    handleApproval($event, place, {
-                      verify: true,
-                      type: 'placename'
-                    })
-                  "
-                  >Verify</b-button
-                >
-              </b-col>
-              <b-col xs="6" class="pl-1">
-                <Reject :id="place.id" type="placename"></Reject>
-              </b-col>
-            </b-row>
-          </div>
-          <div v-if="placeCommunity" class="mb-2">
-            <CommunityCard
-              :name="placeCommunity.name"
-              :community="placeCommunity"
-              @click.native="
-                $router.push({
-                  path: `/content/${encodeFPCC(placeCommunity.name)}`
-                })
-              "
-            ></CommunityCard>
-          </div>
-          <div v-if="placeLanguage" class="mb-2">
-            <LanguageCard
-              class="hover-left-move"
-              :name="placeLanguage.name"
-              :color="placeLanguage.color"
-              @click.native.prevent="
-                $router.push({
-                  path: `/languages/${encodeFPCC(placeLanguage.name)}`
-                })
-              "
-            ></LanguageCard>
-          </div>
-
-          <div v-if="place.common_name">
-            <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
-            <p class="font-08">{{ place.common_name }}</p>
-          </div>
-          <div v-if="place.other_names">
-            <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
-            <p class="font-08">{{ place.other_names }}</p>
-          </div>
-          <div v-if="place.community_only">
-            <h5 class="font-08 text-uppercase color-gray font-weight-bold">
-              Community Only
-            </h5>
-          </div>
-        </section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-4"></Filters>
-        <section class="m-1 ml-4 mr-4">
-          <div v-if="isLoggedIn">
-            <UploadTool :id="place.id" type="placename"></UploadTool>
-          </div>
-        </section>
-        <section
-          v-if="mediasFiltered && mediasFiltered.length > 0"
-          class="mt-4 ml-4 mr-4"
-        >
-          <h5 class="font-08 text-uppercase color-gray mb-3">
-            {{ mediasFiltered.length }} Uploaded Media
-          </h5>
-
+        <div @click="$store.commit('sidebar/setMobileContent', true)">
+          <img src="@/assets/images/arrow_up_icon.svg" />
+        </div>
+      </div>
+      <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
+        <Logo :logo-alt="1" class="cursor-pointer hide-mobile"></Logo>
+        <div>
           <div
-            v-for="media in mediasFiltered"
-            :key="'media' + media.id"
-            class="mb-4"
+            class="text-center d-none mobile-close"
+            :class="{ 'content-mobile': mobileContent }"
+            @click="$store.commit('sidebar/setMobileContent', false)"
           >
-            <Media
-              :media="media"
+            <img
+              class="d-inline-block"
+              src="@/assets/images/arrow_down_icon.svg"
+            />
+          </div>
+          <div>
+            <PlacesDetailCard
+              :id="place.id"
+              :name="place.name"
               :server="isServer"
-              :is-owner="isMediaCreator(media, user)"
-              :community-only="media.community_only"
-              type="placename"
-            ></Media>
-            <div v-if="isMTV(media, mediaToVerify)">
-              <b-row no-gutters class="mt-2">
+              :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
+              :allow-edit="isPlaceOwner()"
+              variant="md"
+              :delete-place="isPlaceOwner()"
+              :status="place.status"
+            ></PlacesDetailCard>
+          </div>
+          <section class="mt-3 ml-4 mr-4 ">
+            <div class="mb-2">
+              <b-row>
+                <b-col xs="6">
+                  <div
+                    v-if="creator"
+                    class="cursor-pointer mb-2"
+                    @click="handleCreatorClick($event, creator)"
+                  >
+                    <div class="place-sub-header">Uploaded By</div>
+                    <div class="place-sub-content">{{ getCreatorName() }}</div>
+                  </div>
+                </b-col>
+                <b-col xs="6">
+                  <div v-if="place.category">
+                    <div
+                      class="font-08 text-uppercase color-gray place-sub-header"
+                    >
+                      Category
+                    </div>
+                    <div class="font-08 place-sub-content">
+                      {{ place.category_obj.name }}
+                    </div>
+                  </div>
+                </b-col>
+              </b-row>
+            </div>
+            <div>
+              <div v-if="place.description">
+                <h5 class="font-08 text-uppercase color-gray">Description</h5>
+                <p class="font-08">{{ place.description }}</p>
+              </div>
+            </div>
+            <div>
+              <b-row no-gutters class="mb-2">
+                <b-col xl="6">
+                  <FlagModal
+                    v-if="place.status !== 'FL' && place.status !== 'VE'"
+                    :id="place.id"
+                    type="placename"
+                    title="Report"
+                    class="mr-1"
+                  ></FlagModal>
+                </b-col>
+                <b-col xl="6">
+                  <Favourite
+                    v-if="isLoggedIn"
+                    :id="place.id"
+                    :favourited="isFavourited"
+                    :favourite="favourite"
+                    :num-favourites="place.favourites.length"
+                    type="placename"
+                    class="ml-1"
+                  ></Favourite>
+                </b-col>
+              </b-row>
+            </div>
+            <div v-if="isPTV" class="mt-2">
+              <b-row no-gutters class="mt-2 mb-4">
                 <b-col xs="6" class="pr-1">
                   <b-button
                     variant="dark"
                     block
                     size="sm"
                     @click="
-                      handleApproval($event, media, {
+                      handleApproval($event, place, {
                         verify: true,
-                        type: 'media'
+                        type: 'placename'
                       })
                     "
                     >Verify</b-button
                   >
                 </b-col>
                 <b-col xs="6" class="pl-1">
-                  <Reject :id="media.id" type="media" :media="media"></Reject>
+                  <Reject :id="place.id" type="placename"></Reject>
                 </b-col>
               </b-row>
             </div>
-            <hr class="mb-2" />
-          </div>
-        </section>
+            <div v-if="placeCommunity" class="mb-2">
+              <CommunityCard
+                :name="placeCommunity.name"
+                :community="placeCommunity"
+                @click.native="
+                  $router.push({
+                    path: `/content/${encodeFPCC(placeCommunity.name)}`
+                  })
+                "
+              ></CommunityCard>
+            </div>
+            <div v-if="placeLanguage" class="mb-2">
+              <LanguageCard
+                class="hover-left-move"
+                :name="placeLanguage.name"
+                :color="placeLanguage.color"
+                @click.native.prevent="
+                  $router.push({
+                    path: `/languages/${encodeFPCC(placeLanguage.name)}`
+                  })
+                "
+              ></LanguageCard>
+            </div>
+
+            <div v-if="place.common_name">
+              <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
+              <p class="font-08">{{ place.common_name }}</p>
+            </div>
+            <div v-if="place.other_names">
+              <h5 class="font-08 text-uppercase color-gray">Other Names</h5>
+              <p class="font-08">{{ place.other_names }}</p>
+            </div>
+            <div v-if="place.community_only">
+              <h5 class="font-08 text-uppercase color-gray font-weight-bold">
+                Community Only
+              </h5>
+            </div>
+          </section>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-4"></Filters>
+          <section class="m-1 ml-4 mr-4">
+            <div v-if="isLoggedIn">
+              <UploadTool :id="place.id" type="placename"></UploadTool>
+            </div>
+          </section>
+          <section
+            v-if="mediasFiltered && mediasFiltered.length > 0"
+            class="mt-4 ml-4 mr-4"
+          >
+            <h5 class="font-08 text-uppercase color-gray mb-3">
+              {{ mediasFiltered.length }} Uploaded Media
+            </h5>
+
+            <div
+              v-for="media in mediasFiltered"
+              :key="'media' + media.id"
+              class="mb-4"
+            >
+              <Media
+                :media="media"
+                :server="isServer"
+                :is-owner="isMediaCreator(media, user)"
+                :community-only="media.community_only"
+                type="placename"
+              ></Media>
+              <div v-if="isMTV(media, mediaToVerify)">
+                <b-row no-gutters class="mt-2">
+                  <b-col xs="6" class="pr-1">
+                    <b-button
+                      variant="dark"
+                      block
+                      size="sm"
+                      @click="
+                        handleApproval($event, media, {
+                          verify: true,
+                          type: 'media'
+                        })
+                      "
+                      >Verify</b-button
+                    >
+                  </b-col>
+                  <b-col xs="6" class="pl-1">
+                    <Reject :id="media.id" type="media" :media="media"></Reject>
+                  </b-col>
+                </b-row>
+              </div>
+              <hr class="mb-2" />
+            </div>
+          </section>
+        </div>
       </div>
     </div>
+    <ErrorScreen v-else></ErrorScreen>
   </div>
 </template>
 
@@ -221,6 +224,7 @@ import Media from '@/components/Media.vue'
 import Favourite from '@/components/Favourite.vue'
 import Reject from '@/components/RejectModal.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
+import ErrorScreen from '@/layouts/error.vue'
 
 import {
   getApiUrl,
@@ -241,7 +245,8 @@ export default {
     Media,
     Favourite,
     Reject,
-    LanguageCard
+    LanguageCard,
+    ErrorScreen
   },
   data() {
     return {
@@ -364,25 +369,27 @@ export default {
       }
     })
 
-    await Promise.all([
-      store.dispatch('places/getPlace', {
-        id: geo_place.id
-      }),
-      store.dispatch('places/getPlaceMedias', {
-        id: geo_place.id
-      }),
-      store.dispatch('user/getPlacesToVerify'),
-      store.dispatch('user/getMediaToVerify')
-    ])
+    if (geo_place) {
+      await Promise.all([
+        store.dispatch('places/getPlace', {
+          id: geo_place.id
+        }),
+        store.dispatch('places/getPlaceMedias', {
+          id: geo_place.id
+        }),
+        store.dispatch('user/getPlacesToVerify'),
+        store.dispatch('user/getMediaToVerify')
+      ])
 
-    if (store.state.user.isLoggedIn) {
-      await Promise.all([store.dispatch('places/getFavourites')])
-    }
+      if (store.state.user.isLoggedIn) {
+        await Promise.all([store.dispatch('places/getFavourites')])
+      }
 
-    const isServer = !!process.server
-    return {
-      geo_place,
-      isServer
+      const isServer = !!process.server
+      return {
+        geo_place,
+        isServer
+      }
     }
   },
   mounted() {
@@ -394,8 +401,10 @@ export default {
     })
   },
   created() {
-    this.setupMap(this.geo_place.geometry)
-    // We don't always catch language routing updates, so also zoom to language on create.
+    if (this.geo_place) {
+      // We don't always catch language routing updates, so also zoom to language on create.
+      this.setupMap(this.geo_place.geometry)
+    }
   },
   methods: {
     isMTV(media, mtv) {
@@ -503,16 +512,21 @@ export default {
       this.$router.push('/contribute?id=' + this.place.id)
     },
     getMediaUrl,
-    getGenericFileType
+    getGenericFileType,
+    getHeaderTitle() {
+      return this.place ? this.place.name : 'Placename page not found'
+    }
   },
   head() {
     return {
-      title: this.place.name,
+      title: this.getHeaderTitle(),
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.place.description
+          content: this.place
+            ? this.place.description
+            : 'Placename page not found.'
         }
       ]
     }

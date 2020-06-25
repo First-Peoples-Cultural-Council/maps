@@ -124,18 +124,7 @@ export default {
       } else {
         const formData = this.getFormData()
         try {
-          console.log({
-            name: this.fileName,
-            file_type: this.file.type,
-            description: this.description,
-            media_file: this.file,
-            type: this.type,
-            id: this.id,
-            community_only: this.commonly === 'accepted',
-            is_artwork: !!this.$route.query.upload_artwork
-          })
           result = await this.uploadFile(formData)
-          console.log('RESULT IS', result)
           if (
             result.request.status === 201 &&
             result.request.statusText === 'Created'

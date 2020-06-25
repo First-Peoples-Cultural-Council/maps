@@ -122,6 +122,38 @@
         <LogInOverlay v-if="loggingIn"></LogInOverlay>
         <div v-if="isDrawMode" class="drawing-mode-container">
           <b-alert
+            v-if="!isLoggedIn"
+            show
+            variant="danger"
+            class="p-1 pr-2 pl-2 draw-mode-container"
+          >
+            <h4 class="alert-heading">Please Log In</h4>
+            <p>
+              This feature requires you to be
+              <a :href="getLoginUrl()">logged in.</a>
+            </p>
+          </b-alert>
+          <b-alert
+            v-else-if="notAuthenticatedUser"
+            show
+            class="p-1 pr-2 pl-2 draw-mode-container"
+            variant="danger"
+          >
+            <ul>
+              <li>
+                You can't proceed, you need to select your default Language, and
+                Community
+              </li>
+              <li>
+                Please select your community or language by clicking
+                <router-link :to="`/profile/edit/${userDetail.id}`"
+                  >here</router-link
+                >
+              </li>
+            </ul>
+          </b-alert>
+          <b-alert
+            v-else-if="!notAuthenticatedUser"
             show
             class="p-1 pr-2 pl-2 draw-mode-container"
             variant="light"
@@ -290,6 +322,21 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    userDetail() {
+      return this.$store.state.user.user
+    },
+    notAuthenticatedUser() {
+      return (
+        this.isLoggedIn &&
+        this.userDetail.languages &&
+        this.userDetail.languages.length === 0 &&
+        this.userDetail.communities &&
+        this.userDetail.communities.length === 0
+      )
+    },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -598,6 +645,9 @@ export default {
     }
   },
   methods: {
+    getLoginUrl() {
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
     closePopover() {
       this.$root.$emit('closeEventPopover')
     },
