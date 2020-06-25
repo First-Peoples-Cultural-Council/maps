@@ -54,7 +54,8 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+    
+    # GEO APIs
     def test_placename_geo_route_exists(self):
         """
         Ensure PlaceName Geo API route exists
@@ -67,6 +68,78 @@ class PlaceNameAPIRouteTests(APITestCase):
         Ensure Art Geo API route exists
         """
         response = self.client.get("/api/art-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # Search APIs
+    def test_placename_search_route_exists(self):
+        """
+        Ensure PlaceName Search API route exists
+        """
+        response = self.client.get("/api/placename-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_art_search_route_exists(self):
+        """
+        Ensure Art Search API route exists
+        """
+        response = self.client.get("/api/art-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # Lists for Arts tab
+    def test_public_art_list_route_exists(self):
+        """
+        Ensure Public Arts List API route exists
+        """
+        response = self.client.get("/api/arts/public-art/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_artist_list_route_exists(self):
+        """
+        Ensure Artist List API route exists
+        """
+        response = self.client.get("/api/arts/artist/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_event_list_route_exists(self):
+        """
+        Ensure Event List API route exists
+        """
+        response = self.client.get("/api/arts/event/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_organization_list_route_exists(self):
+        """
+        Ensure Organization API route exists
+        """
+        response = self.client.get("/api/arts/organization/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_resource_list_route_exists(self):
+        """
+        Ensure Resource List API route exists
+        """
+        response = self.client.get("/api/arts/resource/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_grant_list_route_exists(self):
+        """
+        Ensure Grant List API route exists
+        """
+        response = self.client.get("/api/arts/grant/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_artwork_list_route_exists(self):
+        """
+        Ensure Artwork List API route exists
+        """
+        response = self.client.get("/api/arts/artwork/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_poi_list_route_exists(self):
+        """
+        Ensure Art Search API route exists
+        """
+        response = self.client.get("/api/arts/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -126,7 +199,6 @@ class PlaceNameAPITests(BaseTestCase):
             audio_description="string",
             community=self.community,
             language=self.language1,
-            category=self.category,
         )
         response = self.client.get(
             "/api/placename/{}/".format(test_placename.id), format="json"
@@ -136,7 +208,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.data["audio"], self.recording.id)
         self.assertEqual(response.data["community"], self.community.id)
         self.assertEqual(response.data["language"], self.language1.id)
-        self.assertEqual(response.data["category"], self.category.id)
         # self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
         self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
         self.assertEqual(response.data["audio_obj"]["recorder"], self.recording.recorder)
@@ -528,7 +599,6 @@ class PlaceNameAPITests(BaseTestCase):
                 "common_name": "string",
                 "community_only": True,
                 "description": "string",
-                "category": self.category.id,
                 "community": self.community.id,
                 "language": self.language1.id,
                 "audio": self.recording.id,
@@ -542,7 +612,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.name, "test place")
         self.assertEqual(place.community_id, self.community.id)
         self.assertEqual(place.language_id, self.language1.id)
-        self.assertEqual(place.category_id, self.category.id)
         self.assertEqual(place.audio_id, self.recording.id)
 
         # now update it.
@@ -557,7 +626,6 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(place.other_names, "updated other names")
         self.assertEqual(place.community_id, self.community.id)
         self.assertEqual(place.language_id, self.language1.id)
-        self.assertEqual(place.category_id, self.category.id)
         self.assertEqual(place.audio_id, self.recording.id)
 
     def test_placename_verify(self):
@@ -767,43 +835,53 @@ class PlaceNameAPITests(BaseTestCase):
         """
         # This placename should not be a part of the result
         # because this does not have a geo
-        test_placename08 = PlaceName.objects.create(
+        test_placename08 = PlaceName.objects.create(  # Excluded
             name="test place08",
             kind="public_art"
         )
-        test_placename09 = PlaceName.objects.create(
+        test_placename09 = PlaceName.objects.create(  # Included (1)
             name="test place09",
             kind="artist",
             geom=GEOSGeometry("""{
                 "type": "Point",
-                "coordinates": [0, 0]
+                "coordinates": [1, 1]
             }""")
         )
         test_placename10 = PlaceName.objects.create(  # Excluded
             name="test place10",
             kind="organization"
         )
-        test_placename11 = PlaceName.objects.create(
+        test_placename11 = PlaceName.objects.create(  # Included (2)
             name="test place11",
             kind="event",
             geom=GEOSGeometry("""{
                 "type": "Point",
-                "coordinates": [0, 0]
+                "coordinates": [1, 1]
             }""")
         )
-        test_placename12 = PlaceName.objects.create(
+        test_placename12 = PlaceName.objects.create(  # Included (3)
             name="test place12",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        # This placename should not be a part of the result
+        # because this is not a node_placename
+        test_placename13 = PlaceName.objects.create(  # Excluded
+            name="test place13",
+            kind="poi"
+        )
+        # This placename should not be a part of the result
+        # because this has an invalid coordinates [0, 0]
+        test_placename14 = PlaceName.objects.create(  # Excluded
+            name="test place14",
             kind="resource",
             geom=GEOSGeometry("""{
                 "type": "Point",
                 "coordinates": [0, 0]
             }""")
-        )
-        # This placename should not be a part of the result
-        # because this is not a node_placename
-        test_placename13 = PlaceName.objects.create(
-            name="test place13",
-            kind="poi"
         )
 
         response = self.client.get(
@@ -812,9 +890,242 @@ class PlaceNameAPITests(BaseTestCase):
 
         data = response.json().get("features")
 
-        print(data)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName
         self.assertEqual(data[0].get("id"), test_placename09.id)  # Check first data
         self.assertEqual(data[2].get("id"), test_placename12.id)  # Check last data - should not be test_placename12
+
+    def test_placename_geo(self):
+        # Even if the geometry is non-sense, include them
+        # If kind is blank or poi, include them
+        test_placename15 = PlaceName.objects.create(  # Included (1)
+            name="test place15",
+            kind="poi",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        test_placename16 = PlaceName.objects.create(  # Included (2)
+            name="test place16",
+            kind="",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+        # If no geometry, exclude them
+        test_placename17 = PlaceName.objects.create(  # Excluded
+            name="test place17",
+            kind="poi",
+        )
+
+        response = self.client.get(
+            "/api/placename-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 2)
+    
+    def test_art_types_geo_api(self):
+        """
+        Ensure we can get the data to display on the Arts Tab Lists
+        """
+        # Don't show Place Names without Geom or cooridinates = [0, 0]
+        test_placename18 = PlaceName.objects.create(
+            name="test place18",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename19 = PlaceName.objects.create(
+            name="test place19",
+            kind="resource",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename20 = PlaceName.objects.create(
+            name="test place20",
+            kind="public_art",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename21 = PlaceName.objects.create(
+            name="test place21",
+            kind="public_art",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename22 = PlaceName.objects.create(
+            name="test place22",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename23 = PlaceName.objects.create(
+            name="test place23",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename24 = PlaceName.objects.create(
+            name="test place24",
+            kind="organization",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename25 = PlaceName.objects.create(
+            name="test place25",
+            kind="organization",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename26 = PlaceName.objects.create(
+            name="test place26",
+            kind="event",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename27 = PlaceName.objects.create(
+            name="test place27",
+            kind="event",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        test_placename28 = PlaceName.objects.create(
+            name="test place28",
+            kind="grant",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        test_placename29 = PlaceName.objects.create(
+            name="test place29",
+            kind="grant",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [0, 0]
+            }""")
+        )
+
+        # Test Public Arts
+        response = self.client.get(
+            "/api/arts/public-art/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Artists
+        response = self.client.get(
+            "/api/arts/artist/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Organizations
+        response = self.client.get(
+            "/api/arts/organization/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Events
+        response = self.client.get(
+            "/api/arts/event/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Grants
+        response = self.client.get(
+            "/api/arts/grant/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+
+        # Test Resource
+        response = self.client.get(
+            "/api/arts/resource/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+    
+    def test_artworks_geo_api(self):
+        """
+        Ensure we can get the data to display on the Arts Tab Lists
+        """
+        # Don't show Medias whose Place Name is without Geom
+        test_placename30 = PlaceName.objects.create(
+            name="test place30",
+            kind="artist",
+            geom=GEOSGeometry("""{
+                "type": "Point",
+                "coordinates": [1, 1]
+            }""")
+        )
+        
+        test_media1 = Media.objects.create(
+            name="test media1",
+            placename=test_placename30,
+            is_artwork=True
+        )
+
+        response = self.client.get(
+            "/api/arts/artwork/", format="json"
+        )
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

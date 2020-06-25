@@ -2,9 +2,11 @@ import os
 import re
 import hashlib
 import uuid
+import copy
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Q
 
 from users.models import User
 from language.models import RelatedData
@@ -31,16 +33,30 @@ def send_claim_profile_invite(email):
     encoded_email = email.encode('utf-8')
     key = hashlib.sha256(salt + encoded_email).hexdigest()
 
-    email_data = RelatedData.objects.filter(
-        data_type='user_email', placename__creator__isnull=True, value=email)
+    email_data = RelatedData.objects.exclude(value='').filter(
+        (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email)
+    email_data_copy = copy.deepcopy(email_data)
 
+    # Exclude data if there is an actual_email. Used to give notif to 
+    # the actual email rather than the FPCC admin who seeded the profile
+    for data in email_data:
+        if data.data_type == 'user_email':
+            actual_email = RelatedData.objects.exclude(value='').filter(placename=data.placename, data_type='email')
+
+            if actual_email:
+                print('actual_email')
+                print(actual_email)
+                email_data_copy = email_data_copy.exclude(id=data.id)
+    
+    email_data = email_data_copy
+
+    # Check if the profile is already claimed. Otherwise, don't include it in the list of profiles to claim
     fully_claimed = True
-
     for data in email_data:
         if data.placename.creator is None:
             fully_claimed = False
             break
-
+    
     if email_data and not fully_claimed:
         profile_links = ''
         for data in email_data:
@@ -72,13 +88,15 @@ def send_claim_profile_invite(email):
         send_mail(
             subject="Claim Your FPCC Profile",
             message=message,
-            from_email="info@fpcc.ca",
+            from_email="First Peoples' Cultural Council <info@fpcc.ca>",
             recipient_list=[email],
             html_message=message,
         )
-    else:
-        print('User has no profiles to claim.')
 
+        print('Sent mail to: {}'.format(email))
+    else:
+        print('User {} has no profiles to claim.'.format(email))
+    
 
 def send_claim_profile_invites(email=None):
     """
@@ -87,16 +105,15 @@ def send_claim_profile_invites(email=None):
     # This is actual data which we won't use yet
     if not email:
         emails = RelatedData.objects.exclude(value='').filter(
-            data_type='user_email',
+            (Q(data_type='email') | Q(data_type='user_email')),
             placename__creator__isnull=True
         ).distinct('value').values_list('value', flat=True)
     else:
         emails = RelatedData.objects.exclude(value='').filter(
-            data_type='user_email',
+            (Q(data_type='email') | Q(data_type='user_email')),
             placename__creator__isnull=True,
             value=email
         ).distinct('value').values_list('value', flat=True)
 
     for email in emails:
-        # In the case of bulk sending, user_email = profile_email
         send_claim_profile_invite(email)
