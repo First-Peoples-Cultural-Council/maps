@@ -251,7 +251,7 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     # Getting user
     creator = placename.creator
 
-    intro = "<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>"
+    intro = "<p>New notification from First Peoples' Cultural Council</p>"
 
     # Defining the label for the status
     state = ""
@@ -288,20 +288,20 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
 
     # if the creator is a system admin
-    if creator.email in [a[1] for a in settings.ADMINS]:
+    if creator and creator.email:
         message = intro + message
 
-    print("sending to ", creator.email)
-    print(message)
+        print("sending to ", creator.email)
+        print(message)
 
-    send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(
-            state),
-        message,
-        "info@fpcc.ca",
-        [creator.email],
-        html_message=message,
-    )
+        send_mail(
+            "Your contribution has been {} on the First Peoples' Language Map".format(
+                state),
+            message,
+            "info@fpcc.ca",
+            [creator.email],
+            html_message=message,
+        )
     return message
 
 
