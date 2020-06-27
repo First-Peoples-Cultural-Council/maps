@@ -207,6 +207,7 @@
         </div>
       </div>
     </div>
+    <FullscreenLoading v-if="showLoading"></FullscreenLoading>
   </div>
 </template>
 
@@ -235,6 +236,7 @@ import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
+import FullscreenLoading from '@/components/FullscreenLoading.vue'
 
 import {
   getApiUrl,
@@ -276,7 +278,8 @@ export default {
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    EventOverlay
+    EventOverlay,
+    FullscreenLoading
   },
   head() {
     return {
@@ -296,6 +299,7 @@ export default {
     const bounds = [bbox[0], bbox[1]]
     return {
       maximumLength: 0,
+      showLoading: true,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -403,7 +407,7 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, hash }) {
-    // Check if already logged in here
+    // Decides to show the splashscreen, if values exist, then its no longer first time visit
     const user = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
@@ -501,6 +505,14 @@ export default {
         this.updateData(map)
       })
     })
+
+    this.$root.$on('closeLoading', () => {
+      this.showLoading = false
+    })
+
+    setTimeout(() => {
+      this.showLoading = false
+    }, 2000)
 
     // Showing the Notification on Media success
     this.$root.$on('fileUploaded', data => {
@@ -1298,8 +1310,13 @@ export default {
   top: 0;
   justify-content: flex-end;
   padding-top: 17.5px;
-  padding-left: 5px;
+  padding-left: 4.5em;
   padding-right: 5px;
+}
+
+/* When drawer is open */
+.arts-container .map-navigation-container {
+  padding: 5px !important;
 }
 
 .map-controls-overlay {

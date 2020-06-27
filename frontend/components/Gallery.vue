@@ -109,7 +109,10 @@
             v-lazy="getMediaUrl(mediaData.image)"
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
           />
-          <span class="media-copyright">
+          <span
+            v-if="returnMediaType === 'image' || mediaData.image"
+            class="media-copyright"
+          >
             Copyright &copy; {{ returnCopyright(false) }}
           </span>
         </div>
