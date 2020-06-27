@@ -133,6 +133,17 @@ export const getCookie = name => {
       .shift()
 }
 
+export const setCookie = value => {
+  let expires = ''
+  if (value.days) {
+    const date = new Date()
+    date.setTime(date.getTime() + value.days * 24 * 60 * 60 * 1000)
+    expires = '; expires=' + date.toUTCString()
+  }
+  document.cookie =
+    value.name + '=' + (value.value || '') + expires + '; path=/'
+}
+
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
