@@ -1653,11 +1653,14 @@ export default {
         this.languageUserSelected &&
         this.languageUserSelected.id !== 'others'
       ) {
-        language_id = this.languageUserSelected.isd
+        language_id = this.languageUserSelected.id
       }
 
       let non_bc_language = null
-      if (this.languageUserSelected.id === 'others' && this.languageNonBC) {
+      if (
+        this.languageUserSelected &&
+        (this.languageUserSelected.id === 'others' && this.languageNonBC)
+      ) {
         non_bc_language =
           this.userNonBCLanguage.length !== 0
             ? [this.languageNonBC.name]
