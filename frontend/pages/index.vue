@@ -207,7 +207,11 @@
         </div>
       </div>
     </div>
-    <FullscreenLoading v-if="showLoading"></FullscreenLoading>
+    <FullscreenLoading
+      v-if="
+        showLoading && ($route.path === '/' || $route.path === '/splashscreen')
+      "
+    ></FullscreenLoading>
   </div>
 </template>
 
