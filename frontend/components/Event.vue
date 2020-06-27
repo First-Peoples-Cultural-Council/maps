@@ -74,7 +74,7 @@ export default {
     margin: 0;
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: 1350px) {
     & {
       width: 45px;
       height: 45px;

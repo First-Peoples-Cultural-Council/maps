@@ -200,9 +200,7 @@ export default {
       return this.$store.state.user.user
     }
   },
-  mounted() {
-    // console.log('mounted')
-  },
+
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
@@ -386,7 +384,7 @@ export default {
   height: 23px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1350px) {
   .menu-container {
     width: 45px;
     height: 45px;

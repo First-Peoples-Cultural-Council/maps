@@ -693,7 +693,7 @@ export default {
   box-shadow: 0px 3px 6px #00000022;
 }
 
-@media (min-width: 993px) and (max-width: 1350px) {
+@media (min-width: 993px) and (max-width: 1550px) {
   .searchbar-container,
   .popover {
     width: 400px;
