@@ -695,9 +695,9 @@
                   <li v-for="err in errors" :key="err">{{ err }}</li>
                 </ul>
               </b-alert>
-              <b-button block variant="danger" @click="submitType"
-                >Submit</b-button
-              >
+              <b-button block variant="danger" @click="submitType">{{
+                $route.query.id ? 'Update' : 'Save'
+              }}</b-button>
             </b-col>
           </b-row>
         </section>
@@ -1653,7 +1653,7 @@ export default {
         this.languageUserSelected &&
         this.languageUserSelected.id !== 'others'
       ) {
-        language_id = this.languageUserSelected.id
+        language_id = this.languageUserSelected.isd
       }
 
       let non_bc_language = null
