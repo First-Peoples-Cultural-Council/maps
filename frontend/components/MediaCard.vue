@@ -37,7 +37,16 @@
     <!-- Render if Public Art -->
     <div v-else class="arts-card-landscape">
       <div class="arts-card-body">
-        <img v-lazy="getMediaUrl(media.image)" :class="`card-teaser-img`" />
+        <img
+          v-if="media.image"
+          v-lazy="getMediaUrl(media.image)"
+          :class="`card-teaser-img`"
+        />
+        <img
+          v-else
+          :src="require(`@/assets/images/public_art_icon.svg`)"
+          class="public-art-placeholder"
+        />
       </div>
       <div class="arts-card-right">
         <div class="arts-card-footer">
@@ -153,5 +162,11 @@ export default {
 <style lang="scss">
 .arts-card-landscape {
   background-color: #fff;
+}
+.public-art-placeholder {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  object-fit: contain;
 }
 </style>
