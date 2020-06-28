@@ -1455,6 +1455,14 @@ export default {
         const editor = new Quill(container, {
           theme: 'snow'
         })
+
+        // Make sure that spans are rendered in quill
+        const Embed = Quill.import('blots/embed')
+        class SpanBlot extends Embed {}
+        SpanBlot.blotName = 'span'
+        SpanBlot.tagName = 'span'
+        Quill.register('formats/span', SpanBlot)
+
         editor.root.innerHTML = this.content
         this.quillEditor = editor
       }
@@ -1537,7 +1545,7 @@ export default {
         status = 'UN'
       }
       if (this.quillEditor) {
-        this.content = this.quillEditor.getText()
+        this.content = this.quillEditor.root.innerHTML
       } else {
         return
       }
@@ -2103,6 +2111,10 @@ export default {
 #quill {
   height: 300px;
   margin-bottom: 1em;
+  font: normal 16px/25px Proxima Nova !important;
+}
+
+#quill font {
   font: normal 16px/25px Proxima Nova !important;
 }
 

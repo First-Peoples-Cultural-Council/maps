@@ -657,6 +657,10 @@ export default {
   color: #151515;
 }
 
+.field-content font {
+  font: normal 16px/25px Proxima Nova !important;
+}
+
 .field-content a {
   text-decoration: underline;
   color: #c46257;
