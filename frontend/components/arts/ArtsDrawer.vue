@@ -19,7 +19,7 @@
         />
         <div class="panel-details">
           <span class="item-title">{{ placename.name }}</span>
-          <span class="item-subtitle">{{ placename.kind }}</span>
+          <span class="item-subtitle">{{ placename.kind | kind }}</span>
           <div
             class="cursor-pointer pl-2 pr-2 profile-btn"
             @click="checkArtistProfile(placename.name)"
@@ -107,6 +107,14 @@ export default {
     MediaCard,
     Gallery,
     LoadingSpinner
+  },
+  filters: {
+    kind(d) {
+      if (d === 'public_art') {
+        return 'Public Art'
+      }
+      return d
+    }
   },
   props: {
     art: {

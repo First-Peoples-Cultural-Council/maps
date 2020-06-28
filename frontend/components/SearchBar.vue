@@ -84,9 +84,7 @@
                   class="search-result-title font-1 font-weight-normal"
                   @click="handleResultClick($event, key, result.item.name)"
                 >
-                  <div
-                    v-html="highlightSearch(result.item.name, result.matches)"
-                  ></div>
+                  <div v-html="highlightSearch(result.item.name, result)"></div>
                 </h5>
                 <h5
                   v-else-if="
@@ -101,9 +99,7 @@
                   class="search-result-title font-1 font-weight-normal"
                   @click="handleResultClick($event, key, result.item.name)"
                 >
-                  <div
-                    v-html="highlightSearch(result.item.name, result.matches)"
-                  ></div>
+                  <div v-html="highlightSearch(result.item.name, result)"></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Locations'"
@@ -190,9 +186,7 @@
                   class="search-result-title font-1 font-weight-normal"
                   @click="handleResultClick($event, key, result.item.name)"
                 >
-                  <div
-                    v-html="highlightSearch(result.item.name, result.matches)"
-                  ></div>
+                  <div v-html="highlightSearch(result.item.name, result)"></div>
                 </h5>
                 <h5
                   v-else-if="
@@ -207,9 +201,7 @@
                   class="search-result-title font-1 font-weight-normal"
                   @click="handleResultClick($event, key, result.item.name)"
                 >
-                  <div
-                    v-html="highlightSearch(result.item.name, result.matches)"
-                  ></div>
+                  <div v-html="highlightSearch(result.item.name, result)"></div>
                 </h5>
                 <h5
                   v-else-if="key === 'Locations'"
@@ -353,21 +345,28 @@ export default {
   },
 
   methods: {
-    generateHighlightedText(s, indices) {
-      return indices
+    generateHighlightedText(s, result) {
+      return result.matches[0].indices
         .reduce((str, [start, end]) => {
-          str[start] = `<span class="font-weight-bold">${str[start]}`
-          str[end] = `${str[end]}</span>`
+          if (result.item.name === result.matches[0].value) {
+            str[start] = `<span class="font-weight-bold">${str[start]}`
+            str[end] = `${str[end]}</span>`
+          } else {
+            const str2 = result.matches[0].value.split('')
+            str2[start] = `<span class="font-weight-bold">${str2[start]}`
+            str2[end] = `${str2[end]}</span>`
+            str = str.concat([' - ', ...str2])
+          }
           return str
         }, s.split(''))
         .join('')
     },
-    highlightSearch(s, matches) {
-      if (!matches || matches.length === 0) {
+    highlightSearch(s, result) {
+      if (!result.matches || result.matches.length === 0) {
         return s
       }
 
-      return this.generateHighlightedText(s, matches[0].indices)
+      return this.generateHighlightedText(s, result)
     },
     handleSearchUpdate: debounce(async function() {
       if (this.searchQuery === '') {
@@ -693,7 +692,7 @@ export default {
   box-shadow: 0px 3px 6px #00000022;
 }
 
-@media (min-width: 993px) and (max-width: 1350px) {
+@media (min-width: 993px) and (max-width: 1550px) {
   .searchbar-container,
   .popover {
     width: 400px;

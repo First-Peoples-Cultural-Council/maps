@@ -226,7 +226,7 @@
       >
         <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
           <img src="@/assets/images/go_icon_hover.svg" />
-          Expand
+          <span>Expand</span>
         </div>
       </div>
       <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
@@ -279,7 +279,7 @@ export default {
       return this.$store.state.user.isLoggedIn
     },
     isGalleryShown() {
-      return this.$store.state.sidebar.isGalleryShown
+      return this.$store.state.sidebar.showGallery
     },
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
@@ -657,6 +657,10 @@ export default {
   color: #151515;
 }
 
+.field-content font {
+  font: normal 16px/25px Proxima Nova !important;
+}
+
 .field-content a {
   text-decoration: underline;
   color: #c46257;
@@ -784,6 +788,16 @@ export default {
   .arts-container .sidebar-side-panel {
     width: 350px;
     left: 350px;
+  }
+}
+
+@media (min-width: 993px) and (max-width: 1150px) {
+  .btn-collapse {
+    width: 50px;
+
+    span {
+      display: none;
+    }
   }
 }
 
