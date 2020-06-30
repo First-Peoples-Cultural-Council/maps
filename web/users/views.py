@@ -154,8 +154,11 @@ class ConfirmClaimView(APIView):
                 user = User.objects.get(id=user_id)
                 
                 with transaction.atomic():
-                    email_data = RelatedData.objects.exclude(value='').filter(
-                        (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email)
+                    email_data = RelatedData.objects.exclude(
+                        (Q(value='') | Q(placename__kind__in=['resource', 'grant']))
+                    ).filter(
+                        (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email
+                    )
                     email_data_copy = copy.deepcopy(email_data)
 
                     # Exclude data if there is an actual_email. Used to give notif to 
