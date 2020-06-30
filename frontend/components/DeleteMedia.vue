@@ -34,8 +34,9 @@ export default {
         type_id = this.media.placename
       } else if (this.media.community) {
         type = 'community'
-        type_id = this.community
+        type_id = this.media.community
       }
+
       try {
         const result = await this.$store.dispatch('user/deleteMedia', {
           id: this.id,
