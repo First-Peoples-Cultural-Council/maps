@@ -51,12 +51,6 @@
             :placeholder="arttype"
             @click.native="editPlacename"
           ></CardBadge>
-          <CardBadge
-            content="Delete"
-            type="delete"
-            :placeholder="arttype"
-            @click.native="showOwnerModal"
-          ></CardBadge>
         </div>
 
         <span
@@ -127,12 +121,6 @@ export default {
     isOwner: {
       type: Boolean,
       default: false
-    },
-    showOwnerModal: {
-      type: Function,
-      default: () => {
-        return true
-      }
     },
     editPlacename: {
       type: Function,
