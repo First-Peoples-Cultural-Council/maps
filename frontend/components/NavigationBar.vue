@@ -28,7 +28,7 @@
             v-if="picture"
             :src="picture"
             alt="Menu"
-            class="navbar-icon user_icon"
+            class="navbar-icon user-display-img"
           />
         </nav>
       </div>
@@ -194,13 +194,13 @@ export default {
       return this.$store.state.user.user && this.$store.state.user.user.email
     },
     ...mapState({
-      picture: state => state.user.picture
+      picture: state =>
+        state.user.user.image ? state.user.user.image : state.user.picture
     }),
     user() {
       return this.$store.state.user.user
     }
   },
-
   methods: {
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
@@ -301,6 +301,15 @@ export default {
   img {
     width: 18px;
     height: 18px;
+  }
+
+  .user-display-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 1.5em;
+    object-fit: cover;
+    margin-left: 4px;
+    border: 1px solid #beb2a5;
   }
 }
 
