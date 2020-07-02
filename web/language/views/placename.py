@@ -1,4 +1,5 @@
 import sys
+import copy
 
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
@@ -253,7 +254,32 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request)
+        placename = PlaceName.objects.get(pk=kwargs.get('pk'))
+        serializer = self.get_serializer(placename)
+        serializer_data = serializer.data
+
+        # CLEAN RELATED DATA - Set private data to confidential if necessary
+        related_data = []
+        for data in serializer_data['related_data']:
+            # If value needs to be set to confidential, set it
+            if data['value'] is not '' and data['is_private']:
+                if request and hasattr(request, "user") and request.user.is_authenticated:
+                    # Only hide the data if the user accessing it is not the owner
+                    if placename.creator.id is not request.user.id:
+                        data['value'] = 'CONFIDENTIAL'
+                else:
+                    data['value'] = 'CONFIDENTIAL'
+
+            if data['value'] is not '':
+                related_data.append(data)
+        
+        serializer_data['related_data'] = related_data
+
+        return Response(serializer_data)
+        # if request and hasattr(request, "user"):
+        #     if request.user.is_authenticated:
+
+        # return super().retrieve(request)
 
     @method_decorator(never_cache)
     @action(detail=False)
