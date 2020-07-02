@@ -97,6 +97,27 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             "message": "You need to log in in order to update this Media record."
         })
 
+    def destroy(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                media = Media.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if media is owned by current user
+                owned_media = True if media.creator == request.user else False
+
+                if owned_media:
+                    return super().destroy(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner can delete this Media record."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to delete this Media record."
+        })
+
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):

@@ -128,6 +128,27 @@ class PlaceNameViewSet(BaseModelViewSet):
             "message": "You need to log in in order to update this PlaceName."
         })
 
+    def destroy(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                placename = PlaceName.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if placename is owned by current user
+                owned_placename = True if placename.creator == request.user else False
+
+                if owned_placename:
+                    return super().destroy(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner can delete this PlaceName."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to delete this PlaceName."
+        })
+
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
         if request and hasattr(request, "user"):
