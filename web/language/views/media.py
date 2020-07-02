@@ -56,6 +56,16 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['placename', 'community']
 
+    def create(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                return super().create(request)
+
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to create a Media record."
+        })
+
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
 
@@ -65,6 +75,48 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         if (obj.community and obj.community.id in admin_communities):
             obj.status = 'VE'
             obj.save()
+
+    def update(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                media = Media.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if media is owned by current user
+                owned_media = True if media.creator == request.user else False
+
+                if owned_media:
+                    return super().update(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner can update this Media record."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to update this Media record."
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                media = Media.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if media is owned by current user
+                owned_media = True if media.creator == request.user else False
+
+                if owned_media:
+                    return super().destroy(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner can delete this Media record."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to delete this Media record."
+        })
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -103,11 +155,20 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             if request.user.is_authenticated:
                 try:
                     Media.verify(int(pk))
-                    return Response({"message": "Verified!"})
+                    return Response({
+                        "success": True,
+                        "message": "Verified."
+                    })
                 except Media.DoesNotExist:
-                    return Response({"message": "No Media with the given id was found"})
+                    return Response({
+                        "success": False,
+                        "message": "No Media with the given id was found."
+                    })
 
-        return Response({"message", "Only Administrators can verify contributions"})
+        return Response({
+            "success": False,
+            "message": "Only Administrators can verify contributions."
+        })
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
@@ -124,20 +185,35 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                         except Exception as e:
                             pass
 
-                        return Response({"message": "Rejected!"})
+                        return Response({
+                            "success": True,
+                            "message": "Rejected."
+                        })
                     else:
-                        return Response({"message": "Reason must be provided"})
+                        return Response({
+                            "success": False,
+                            "message": "Reason must be provided."
+                        })
                 except Media.DoesNotExist:
-                    return Response({"message": "No Media with the given id was found"})
+                    return Response({
+                        "success": False,
+                        "message": "No Media with the given id was found."
+                    })
 
-        return Response({"message", "Only Administrators can reject contributions"})
+        return Response({
+            "success": False,
+            "message": "Only Administrators can reject contributions."
+        })
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
         try:
             media = Media.objects.get(pk=int(pk))
             if media.status == Media.VERIFIED:
-                return Response({"message": "Media has already been verified"})
+                return Response({
+                    "success": False,
+                    "message": "Media has already been verified."
+                })
             else:
                 if 'status_reason' in request.data.keys():
                     Media.flag(int(pk), request.data["status_reason"])
@@ -155,11 +231,20 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     except Exception as e:
                         pass
 
-                    return Response({"message": "Flagged!"})
+                    return Response({
+                        "success": True,
+                        "message": "Flagged."
+                    })
                 else:
-                    return Response({"message": "Reason must be provided"})
+                    return Response({
+                        "success": False,
+                        "message": "Reason must be provided."
+                    })
         except Media.DoesNotExist:
-            return Response({"message": "No Media with the given id was found"})
+            return Response({
+                "success": False,
+                "message": "No Media with the given id was found."
+            })
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
