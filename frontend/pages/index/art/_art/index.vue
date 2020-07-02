@@ -53,7 +53,6 @@
             :server="isServer"
             :arts-banner="artistBanner"
             :is-owner="isPlacenameOwner()"
-            :show-owner-modal="showOwnerModal"
             :edit-placename="handlePlacenameEdit"
           ></ArtsBanner>
 
@@ -64,7 +63,6 @@
             :server="isServer"
             :tags="taxonomies"
             :is-owner="isPlacenameOwner()"
-            :show-owner-modal="showOwnerModal"
             :edit-placename="handlePlacenameEdit"
           ></ArtsDetailCard>
           <!-- END Conditional Render Arts Header  -->

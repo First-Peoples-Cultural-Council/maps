@@ -55,12 +55,6 @@
           :placeholder="arttype | kind"
           @click.native="editPlacename"
         ></CardBadge>
-        <CardBadge
-          content="Delete"
-          type="delete"
-          :placeholder="arttype | kind"
-          @click.native="showOwnerModal"
-        ></CardBadge>
       </div>
     </div>
 
@@ -123,12 +117,7 @@ export default {
       type: Boolean,
       default: false
     },
-    showOwnerModal: {
-      type: Function,
-      default: () => {
-        return true
-      }
-    },
+
     editPlacename: {
       type: Function,
       default: () => {

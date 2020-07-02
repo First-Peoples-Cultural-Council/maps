@@ -29,6 +29,14 @@ export default {
         nextPath = 'heritages'
       } else if (firstPath === 'content') {
         nextPath = 'languages'
+      } else if (
+        firstPath !== 'art' ||
+        firstPath !== 'heritages' ||
+        firstPath !== 'languages' ||
+        firstPath === 'place-names' ||
+        firstPath === 'content'
+      ) {
+        nextPath = ''
       } else {
         nextPath = firstPath
       }

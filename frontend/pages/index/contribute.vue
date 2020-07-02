@@ -685,6 +685,35 @@
           <div id="quill" ref="quill"></div>
         </section>
 
+        <template v-if="$route.query.id">
+          <b-row class="delete-row-group">
+            <div>
+              <label for="delete-btn" class="contribute-title-warning"
+                >{{
+                  `WARNING: Do you want to Archive this ${
+                    queryType ? queryType : 'placename'
+                  }?`
+                }}
+              </label>
+              <ToolTip
+                content="By doing this your data will no longer be visible in the maps. Contact FPCC if you want to restore it. "
+              ></ToolTip>
+            </div>
+            <b-button
+              name="delete-btn"
+              class="delete-btn"
+              variant="warning"
+              @click="showArchiveModal"
+            >
+              Archive
+            </b-button>
+          </b-row>
+
+          <b-modal v-model="showDeleteModal" hide-header @ok="handleDelete">{{
+            `Are you sure you want to archive "${place.name}"? All data will be archived.`
+          }}</b-modal>
+        </template>
+
         <hr />
 
         <section class="pl-3 pr-3">
@@ -800,6 +829,7 @@ export default {
       },
 
       isLoading: false,
+      showDeleteModal: false,
       quillEditor: null,
       place: null,
       showDismissibleAlert: true,
@@ -1302,6 +1332,34 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
+    showArchiveModal() {
+      this.showDeleteModal = !this.showDeleteModal
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(`${getApiUrl(`placename/${this.place.id}`)}`, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+
+      await this.$store.dispatch('user/setLoggedInUser')
+
+      this.$root.$emit('refetchArtwork')
+      // Delete all Medias in this Placename
+      this.place.medias.forEach(async media => {
+        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        })
+      })
+
+      this.$router.push({
+        path: `/art`
+      })
+      this.$store.commit('sidebar/setDrawerContent', false)
+    },
     resetData() {
       this.fileSrc = null
       this.fileImg = null
@@ -1585,7 +1643,6 @@ export default {
           )
           newPlace = modified
           id = modified.id
-          this.isLoading = false
         } catch (e) {
           this.isLoading = false
           this.errors = this.errors.concat(
@@ -1604,7 +1661,6 @@ export default {
           )
           id = created.id
           newPlace = created
-          this.isLoading = false
         } catch (e) {
           this.isLoading = false
           console.error(Object.entries(e.response.data))
@@ -2048,6 +2104,14 @@ export default {
   margin: 0;
 }
 
+.contribute-title-warning {
+  color: #721c24;
+  font-weight: bold;
+  font-size: 0.85em;
+  padding: 0;
+  margin: 0;
+}
+
 .contribute-form-container {
   min-height: 92vh;
 }
@@ -2137,6 +2201,18 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0 1em;
+}
+
+.delete-row-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5em;
+  margin: 3em 0;
+
+  .delete-btn {
+    width: 50%;
+    color: #721c24;
+  }
 }
 
 .form-control::placeholder {
