@@ -271,8 +271,26 @@ export default {
     notifications() {
       return this.$store.state.user.notifications
     },
-    placenameSet() {
+    getContributedPublicArt() {
       const placenameSet = this.user.placename_set
+      if (placenameSet && placenameSet.length !== 0) {
+        const getPlacenameId = placenameSet
+          .filter(place => place.kind === 'artist')
+          .map(place => place.id)
+        return this.allArts.filter(art => {
+          if (art.kind === 'public_art' && art.artists.length !== 0) {
+            return art.artists.some(ar => getPlacenameId.includes(ar))
+          }
+        })
+      } else {
+        return []
+      }
+    },
+    placenameSet() {
+      const placenameSet = [
+        ...this.user.placename_set,
+        ...this.getContributedPublicArt
+      ]
       return placenameSet.sort((a, b) => a.kind.localeCompare(b.kind))
     }
   },
@@ -294,7 +312,8 @@ export default {
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
 
-    console.log(user, authUser)
+    const allArts = await $axios.$get(getApiUrl(`art-search?format=json`))
+
     let isOwner = false
     if (authUser.is_authenticated === true) {
       if (parseInt(params.id) === authUser.user.id) {
@@ -307,7 +326,7 @@ export default {
       await store.dispatch('places/getFavourites')
     }
 
-    return { user, isOwner }
+    return { user, isOwner, allArts }
   },
   methods: {
     encodeFPCC,

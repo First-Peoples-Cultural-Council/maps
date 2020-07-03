@@ -46,7 +46,9 @@ export default {
       if (mode === 'artwork') {
         return `Filter based of name, medium, and description...`
       } else {
-        return `Filter based on ${mode}'s name...`
+        return `Filter based on ${
+          mode === 'public_art' ? 'public art' : mode
+        }'s name...`
       }
     }
   }

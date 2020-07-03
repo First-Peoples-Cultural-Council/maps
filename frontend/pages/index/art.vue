@@ -36,6 +36,7 @@
               ></Badge>
             </template>
           </BadgeFilter>
+
           <!-- Artist Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'artist'"
@@ -51,6 +52,25 @@
                 type="artist"
                 :mode="getBadgeStatus(filterMode, 'artist')"
                 @click.native.prevent="badgeClick($event, 'artist')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
+
+          <!-- Public Art Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'public_art'"
+            :child-taxonomy="getChildTaxonomy('Public Art')"
+            :color="'#848159'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Public Art"
+                :number="publicArtsCount"
+                class="cursor-pointer"
+                bgcolor="#848159"
+                type="part"
+                :mode="getBadgeStatus(filterMode, 'public_art')"
+                @click.native.prevent="badgeClick($event, 'public_art')"
               ></Badge>
             </template>
           </BadgeFilter>
@@ -89,25 +109,6 @@
                 type="org"
                 :mode="getBadgeStatus(filterMode, 'organization')"
                 @click.native.prevent="badgeClick($event, 'organization')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
-          <!-- Public Art Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'public_art'"
-            :child-taxonomy="getChildTaxonomy('Public Art')"
-            :color="'#848159'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Public Art"
-                :number="publicArtsCount"
-                class="cursor-pointer"
-                bgcolor="#848159"
-                type="part"
-                :mode="getBadgeStatus(filterMode, 'public_art')"
-                @click.native.prevent="badgeClick($event, 'public_art')"
               ></Badge>
             </template>
           </BadgeFilter>

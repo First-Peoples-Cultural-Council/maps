@@ -2,7 +2,7 @@
   <div class="error-container">
     <div class="error-main-container">
       <img src="@/assets/images/splashscreen/hero_img.svg" />
-      <h1>Page not found</h1>
+      <h1>{{ getTitle() }}</h1>
       <p class="error-description">
         We're sorry, the page you requested could not be found. If you didn't
         find what you were looking for, please contact us at
@@ -21,9 +21,12 @@ export default {
     return {}
   },
   methods: {
+    getBaseURL() {
+      return window.location.pathname.split('/')[1]
+    },
     returnToHome() {
       let nextPath = ''
-      const firstPath = window.location.pathname.split('/')[1]
+      const firstPath = this.getBaseURL()
 
       if (firstPath === 'place-names') {
         nextPath = 'heritages'
@@ -41,6 +44,51 @@ export default {
         nextPath = firstPath
       }
       window.location = `/${nextPath}`
+    },
+    getTitle() {
+      const firstPath = this.$route.path.split('/')[1]
+      // const isQueryValid =
+
+      const isURLQueryValid = Object.entries(this.$route.query)
+        .filter(query => query[0] !== 'id' && query[0] !== 'profile')
+        .map(query => {
+          if (query[0] === 'mode') {
+            if (
+              query[1] === 'point' ||
+              query[1] === 'existing' ||
+              query[1] === 'polygon' ||
+              query[1] === 'line' ||
+              query[1] === 'placename'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else if (query[0] === 'type') {
+            if (
+              query[1] === 'Artist' ||
+              query[1] === 'Event' ||
+              query[1] === 'Public Art' ||
+              query[1] === 'Organization'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return false
+          }
+        })
+        .every(result => result === true)
+
+      if (
+        firstPath === 'profile' ||
+        (firstPath === 'contribute' && isURLQueryValid)
+      ) {
+        return `You don't have access to this page`
+      } else {
+        return 'Page not found'
+      }
     }
   }
 }

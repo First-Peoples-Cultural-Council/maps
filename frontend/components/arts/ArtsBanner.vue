@@ -39,9 +39,12 @@
           >
         </div>
 
-        <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+        <div
+          v-if="isOwner || isContributer"
+          class="d-inline-block cursor-pointer mt-2"
+        >
           <CardBadge
-            content="Owned"
+            :content="isOwner ? 'Owned' : 'Contributer'"
             type="owner"
             :placeholder="arttype | kind"
           ></CardBadge>
@@ -119,6 +122,10 @@ export default {
       default: ''
     },
     isOwner: {
+      type: Boolean,
+      default: false
+    },
+    isContributer: {
       type: Boolean,
       default: false
     },
