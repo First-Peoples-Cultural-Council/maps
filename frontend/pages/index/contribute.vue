@@ -1,651 +1,245 @@
 <template>
   <div>
-    <div
-      v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
-    >
-      <div>
-        <b-badge
-          v-if="drawnFeatures.length === 0 && !place"
-          show
-          variant="danger"
-          class="p-2"
-        >
-          Please draw at least one feature from the map
-        </b-badge>
-        <b-badge v-else show variant="primary" class="p-2">
-          Expand to fill out the form
-        </b-badge>
-      </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
-        <img src="@/assets/images/arrow_up_icon.svg" />
-      </div>
-    </div>
-    <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+    <ErrorScreen
+      v-if="
+        ($route.query.id &&
+          (!place || (!isUserPlacenameOwner && !isUserPlacenameContributer))) ||
+          !isURLQueryValid
+      "
+    ></ErrorScreen>
+    <template v-else>
       <div
-        class="text-center d-none mobile-close"
-        :class="{ 'content-mobile': mobileContent }"
-        @click="$store.commit('sidebar/setMobileContent', false)"
+        v-if="!mobileContent"
+        class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
       >
-        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
-      </div>
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div class="position-relative pb-3 contribute-form-container">
-        <div
-          v-if="
-            (drawnFeatures.length === 0 && !place) ||
-              isLoading ||
-              !isLoggedIn ||
-              notAuthenticatedUser
-          "
-          class="required-overlay"
-        >
-          <b-alert v-if="notAuthenticatedUser" show variant="danger">
-            <ul>
-              <li>
-                You can't proceed, you need to select your default Language, and
-                Community
-              </li>
-              <li>
-                Please select your community or language by clicking
-                <router-link :to="`/profile/edit/${userDetail.id}`"
-                  >here</router-link
-                >
-              </li>
-            </ul>
-          </b-alert>
-          <b-alert
-            v-else-if="(drawnFeatures.length === 0 && !place) || !isLoggedIn"
+        <div>
+          <b-badge
+            v-if="drawnFeatures.length === 0 && !place"
             show
             variant="danger"
+            class="p-2"
           >
-            <ul>
-              <li v-for="text in getRequiredTitle()" :key="text">{{ text }}</li>
-            </ul>
-          </b-alert>
+            Please draw at least one feature from the map
+          </b-badge>
+          <b-badge v-else show variant="primary" class="p-2">
+            Expand to fill out the form
+          </b-badge>
         </div>
-
-        <div class="contribute-header pt-3 pb-3">
-          <div class="text-center pl-2 pr-2">
+        <div @click="$store.commit('sidebar/setMobileContent', true)">
+          <img src="@/assets/images/arrow_up_icon.svg" />
+        </div>
+      </div>
+      <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+        <div
+          class="text-center d-none mobile-close"
+          :class="{ 'content-mobile': mobileContent }"
+          @click="$store.commit('sidebar/setMobileContent', false)"
+        >
+          <img
+            class="d-inline-block"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
+        </div>
+        <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+        <div class="position-relative pb-3 contribute-form-container">
+          <div
+            v-if="
+              (drawnFeatures.length === 0 && !place) ||
+                isLoading ||
+                !isLoggedIn ||
+                notAuthenticatedUser
+            "
+            class="required-overlay"
+          >
+            <b-alert v-if="notAuthenticatedUser" show variant="danger">
+              <ul>
+                <li>
+                  You can't proceed, you need to select your default Language,
+                  and Community
+                </li>
+                <li>
+                  Please select your community or language by clicking
+                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                    >here</router-link
+                  >
+                </li>
+              </ul>
+            </b-alert>
             <b-alert
-              v-if="drawnFeatures.length > 1 && !place"
+              v-else-if="(drawnFeatures.length === 0 && !place) || !isLoggedIn"
               show
-              variant="warning"
-              dismissible
+              variant="danger"
             >
-              You may only contribute to one area at a time
+              <ul>
+                <li v-for="text in getRequiredTitle()" :key="text">
+                  {{ text }}
+                </li>
+              </ul>
             </b-alert>
           </div>
-          <div>
-            <h4 class="text-uppercase contribute-title mr-2">
-              {{ `Contribute | ${contributeTitle()}` }}
-            </h4>
+
+          <div class="contribute-header pt-3 pb-3">
+            <div class="text-center pl-2 pr-2">
+              <b-alert
+                v-if="drawnFeatures.length > 1 && !place"
+                show
+                variant="warning"
+                dismissible
+              >
+                You may only contribute to one area at a time
+              </b-alert>
+            </div>
+            <div>
+              <h4 class="text-uppercase contribute-title mr-2">
+                {{ `Contribute | ${contributeTitle()}` }}
+              </h4>
+            </div>
           </div>
-        </div>
-        <!-- If Placename Contribution -->
-        <section
-          v-if="queryMode === 'placename' || queryType"
-          id="contribute-main-container"
-          class="pr-3 pl-3"
-        >
-          <div class="upload-img-container mt-3">
-            <div class="upload-img">
-              <img
-                v-if="fileSrc === null"
-                class="upload-placeholder"
-                :src="thumbnailPlaceholder()"
-              />
-              <img v-else :src="fileSrc" />
-              <b-button
-                v-if="fileSrc !== null"
-                class="upload-remove"
-                @click="removeImg()"
-                >Remove Image</b-button
-              >
-            </div>
-
-            <b-form-file
-              ref="fileUpload"
-              v-model="fileImg"
-              class="file-upload-input mt-2 "
-              :placeholder="filePlaceholder()"
-              drop-placeholder="Drop file here..."
-              accept="image/*"
-            ></b-form-file>
-          </div>
-
-          <b-row class="field-row mt-3">
-            <div>
-              <label for="traditionalName" class="contribute-title-one"
-                >{{ queryType }} Name (required)</label
-              >
-              <ToolTip
-                :content="
-                  `${
-                    isArtist
-                      ? `What is the name of this Artist? `
-                      : `What is this ${queryType} called in your language? Enter the name or title in your language, using your alphabet.`
-                  }`
-                "
-              ></ToolTip>
-            </div>
-
-            <b-form-input
-              id="traditionalName"
-              v-model="traditionalName"
-              type="text"
-              :placeholder="placenamePlaceholder()"
-              :disabled="
-                (!isArtistProfileFound && isArtist && queryProfile) ||
-                  ($route.query.id && traditionalName === userGivenName)
-              "
-            ></b-form-input>
-          </b-row>
-
-          <b-row v-if="isArtist" class="field-row mt-3">
-            <div>
-              <label for="alternateName" class="contribute-title-one"
-                >Alternate Name</label
-              >
-              <ToolTip
-                :content="
-                  `${
-                    isArtist
-                      ? 'Does this Artist goes with another name, perhaps a stage name? Write the other name of the artist.'
-                      : `Is this ${queryType} already known by a different name? For example in English? Enter that name here so people can find it through that name.`
-                  }`
-                "
-              ></ToolTip>
-            </div>
-
-            <b-form-input
-              id="alternateName"
-              v-model="alternateName"
-              type="text"
-              placeholder="(ex. BigJohnDoe)"
-            ></b-form-input>
-          </b-row>
-
-          <b-row class="mt-3 field-row">
-            <div>
-              <label for="traditionalName" class="contribute-title-one mb-1">
-                {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
-              >
-              <ToolTip
-                :content="`What is the primary language of this ${queryType}?`"
-              ></ToolTip>
-            </div>
-
-            <multiselect
-              v-model="languageUserSelected"
-              :options="languageList"
-              label="name"
-              track-by="id"
-              placeholder="Select a Language"
-            ></multiselect>
-          </b-row>
-
-          <b-row
-            v-if="languageUserSelected && languageUserSelected.id === 'others'"
-            class="mt-3 field-row"
+          <!-- If Placename Contribution -->
+          <section
+            v-if="queryMode === 'placename' || queryType"
+            id="contribute-main-container"
+            class="pr-3 pl-3"
           >
-            <div>
-              <label for="otherLanguage" class="contribute-title-one mb-1">
-                Non B.C. Language</label
-              >
+            <div class="upload-img-container mt-3">
+              <div class="upload-img">
+                <img
+                  v-if="fileSrc === null"
+                  class="upload-placeholder"
+                  :src="thumbnailPlaceholder()"
+                />
+                <img v-else :src="fileSrc" />
+                <b-button
+                  v-if="fileSrc !== null"
+                  class="upload-remove"
+                  @click="removeImg()"
+                  >Remove Image</b-button
+                >
+              </div>
+
+              <b-form-file
+                ref="fileUpload"
+                v-model="fileImg"
+                class="file-upload-input mt-2 "
+                :placeholder="filePlaceholder()"
+                drop-placeholder="Drop file here..."
+                accept="image/*"
+              ></b-form-file>
             </div>
 
-            <multiselect
-              v-if="userNonBCLanguage.length !== 0"
-              id="otherLanguage"
-              v-model="languageNonBC"
-              placeholder="Select a Non B.C. Language"
-              label="name"
-              track-by="id"
-              :options="userNonBCLanguage"
-            ></multiselect>
-            <b-form-input
-              v-else
-              id="otherLanguage"
-              v-model="languageNonBC"
-              type="text"
-              placeholder="(ex. Spanish, English, etc.)                                                                                                                                                                                                        , English)"
-            ></b-form-input>
-          </b-row>
-
-          <b-row class="mt-3 field-row">
-            <div>
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Community</label
-              >
-              <ToolTip
-                :content="`What community does this ${queryType} belong to? `"
-              ></ToolTip>
-            </div>
-
-            <multiselect
-              v-model="community"
-              placeholder="Select a community"
-              label="name"
-              track-by="id"
-              :options="communities"
-            ></multiselect>
-          </b-row>
-
-          <b-row class="field-row">
-            <div>
-              <label
-                for="taxonomy-container"
-                class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
-                >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
-              >
-              <ToolTip
-                :content="
-                  `What would this ${queryType} be classified as? Select tags for your ${queryType}. This will help users find it.`
-                "
-              ></ToolTip>
-            </div>
-
-            <multiselect
-              id="taxonomy-container"
-              v-model="taxonomySelected"
-              placeholder="Search or Select a Taxonomy"
-              label="name"
-              track-by="id"
-              :options="getTaxonomy"
-              :multiple="true"
-            ></multiselect>
-            <b-tooltip target="taxonomy-container" placement="top">
-              Select as many Taxonomy tags as you want.
-            </b-tooltip>
-          </b-row>
-
-          <b-row
-            v-if="queryType === 'Event' || queryType === 'Public Art'"
-            class="field-row"
-          >
-            <div>
-              <label
-                for="contributing-artist"
-                class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
-                >Contributing Artist</label
-              >
-              <ToolTip
-                content="Who are the contributing Artist? This will help users know who are involved in this Placename."
-              ></ToolTip>
-            </div>
-
-            <multiselect
-              id="contributing-artist"
-              v-model="artistSelected"
-              placeholder="Search or Select an Artist"
-              label="name"
-              track-by="id"
-              :options="listOfArtist"
-              :multiple="true"
-            ></multiselect>
-          </b-row>
-
-          <b-row v-if="queryType === 'Event'" class="field-row">
-            <div>
-              <label
-                class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
-                >Public Art</label
-              >
-              <ToolTip
-                content="What are the Public Arts involved in this Placename? This will let users see Public Arts on a Placename."
-              ></ToolTip>
-            </div>
-            <multiselect
-              v-model="publicArtSelected"
-              placeholder="Search or Select a Public Art"
-              label="name"
-              track-by="id"
-              :options="listOfPublicArt"
-              :multiple="true"
-            ></multiselect>
-          </b-row>
-
-          <b-row class="field-row-group mt-3">
-            <div>
-              <label for="location" class="contribute-title-one"
-                >Location</label
-              >
-              <ToolTip
-                :content="
-                  `Tell people about the Location of that ${queryType}.`
-                "
-              ></ToolTip>
-            </div>
-            <b-form-group
-              v-if="queryType === 'Event'"
-              id="location-fieldset"
-              description="For Online Events, type a location near you, or leave it blank. "
-              label-for="location"
-            >
-              <b-form-input
-                id="location"
-                v-model="relatedData.location"
-                type="text"
-                placeholder="(ex. Vancouver, Canada)"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-input
-              v-else
-              id="location"
-              v-model="relatedData.location"
-              type="text"
-              placeholder="(ex. Vancouver, Canada)"
-            ></b-form-input>
-          </b-row>
-
-          <b-row v-if="queryType === 'Event'" class="field-row mt-3">
-            <label
-              class="d-inline-block contribute-title-one"
-              for="online-event"
-              >Is this an Online Event?</label
-            >
-            <b-form-checkbox
-              id="online-event"
-              v-model="relatedData.is_online"
-              class="d-inline-block ml-2"
-              name="online-event"
-              value="accepted"
-              unchecked-value="not_accepted"
-            >
-            </b-form-checkbox>
-          </b-row>
-
-          <b-row
-            v-if="isArtist || queryType === 'Organization'"
-            class="field-row mt-3"
-          >
-            <div>
-              <label for="email" class="contribute-title-one mb-1">Email</label>
-              <ToolTip
-                content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
-              ></ToolTip>
-            </div>
-
-            <b-form-input
-              id="email"
-              v-model="relatedData.email"
-              type="text"
-              placeholder="(ex. johndoe@gmail.com)"
-            ></b-form-input>
-          </b-row>
-
-          <b-row v-if="queryType === 'Organization'" class="field-row mt-3">
-            <div>
-              <label for="organizationAccess" class="contribute-title-one mb-1"
-                >Organization Access</label
-              >
-              <ToolTip
-                content="When is the organization open (E.g. 'open year-round'), or the person available (E.g. 'By appointment only')"
-              ></ToolTip>
-            </div>
-
-            <b-form-input
-              id="organizationAccess"
-              v-model="relatedData.organization_access"
-              type="text"
-              placeholder="(ex. Open year-round or By Appointment only)"
-            ></b-form-input>
-          </b-row>
-
-          <template v-if="isArtist">
             <b-row class="field-row mt-3">
               <div>
-                <label for="phone" class="contribute-title-one mb-1"
-                  >Phone</label
+                <label for="traditionalName" class="contribute-title-one"
+                  >{{ queryType }} Name (required)</label
                 >
-
                 <ToolTip
-                  content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
+                  :content="
+                    `${
+                      isArtist
+                        ? `What is the name of this Artist? `
+                        : `What is this ${queryType} called in your language? Enter the name or title in your language, using your alphabet.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
               <b-form-input
-                id="phone"
-                v-model="relatedData.phone"
+                id="traditionalName"
+                v-model="traditionalName"
                 type="text"
-                placeholder="(ex. (604) 509-6995)"
+                :placeholder="placenamePlaceholder()"
+                :disabled="
+                  (!isArtistProfileFound && isArtist && queryProfile) ||
+                    ($route.query.id && traditionalName === userGivenName)
+                "
               ></b-form-input>
             </b-row>
 
-            <div class="website-container mt-3">
+            <b-row v-if="isArtist" class="field-row mt-3">
               <div>
-                <label class="contribute-title-one">Awards</label>
+                <label for="alternateName" class="contribute-title-one"
+                  >Alternate Name</label
+                >
                 <ToolTip
-                  content="Show the list of Awards that this Artist have achieved. Add as many as you want."
+                  :content="
+                    `${
+                      isArtist
+                        ? 'Does this Artist goes with another name, perhaps a stage name? Write the other name of the artist.'
+                        : `Is this ${queryType} already known by a different name? For example in English? Enter that name here so people can find it through that name.`
+                    }`
+                  "
                 ></ToolTip>
               </div>
 
-              <div
-                v-for="(award, index) in relatedData.awardsList"
-                :key="index"
-                class="site-input-container"
-              >
-                <b-form-input
-                  :id="`award-${index}`"
-                  v-model="award.value"
-                  type="text"
-                  placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
-                ></b-form-input>
-                <span
-                  v-if="
-                    (index !== 0 && relatedData.awardsList.length !== 1) ||
-                      relatedData.awardsList.length > 1
-                  "
-                  class="site-btn"
-                  @click="removeAward(index)"
-                  >-</span
-                >
-                <span
-                  v-if="index + 1 === relatedData.awardsList.length"
-                  class="site-btn"
-                  @click="addAward()"
-                  >+</span
-                >
-              </div>
-            </div>
-          </template>
+              <b-form-input
+                id="alternateName"
+                v-model="alternateName"
+                type="text"
+                placeholder="(ex. BigJohnDoe)"
+              ></b-form-input>
+            </b-row>
 
-          <b-row v-if="queryType === 'Public Art'" class="field-row mt-3">
-            <div>
-              <label for="copyright" class="contribute-title-one"
-                >Copyright</label
-              >
-              <ToolTip
-                content="If you wish your Artwork to be protected, a copyright tag will be included upon showing the Artwork."
-              ></ToolTip>
-            </div>
-
-            <multiselect
-              id="copyright"
-              v-model="relatedData.copyright"
-              placeholder="Select a Copyright"
-              :options="copyrightOptions"
-            ></multiselect>
-          </b-row>
-
-          <template v-if="queryType !== 'Event'">
-            <div class="website-container mt-3">
+            <b-row class="mt-3 field-row">
               <div>
-                <label class="contribute-title-one">Website</label>
+                <label for="traditionalName" class="contribute-title-one mb-1">
+                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                >
                 <ToolTip
-                  content="If you wish to be contacted through social media for inquiries. Add as many as you want."
+                  :content="
+                    `What is the primary language of this ${queryType}?`
+                  "
                 ></ToolTip>
               </div>
 
-              <div
-                v-for="(site, index) in relatedData.websiteList"
-                :key="index"
-                class="site-input-container"
-              >
-                <b-form-input
-                  :id="`site-${index}`"
-                  v-model="site.value"
-                  type="text"
-                  placeholder="(ex. http://facebook.com/johndoe)"
-                ></b-form-input>
-                <span
-                  v-if="
-                    (index !== 0 && relatedData.websiteList.length !== 1) ||
-                      relatedData.websiteList.length > 1
-                  "
-                  class="site-btn"
-                  @click="removeSite(index)"
-                  >-</span
-                >
-                <span
-                  v-if="index + 1 === relatedData.websiteList.length"
-                  class="site-btn"
-                  @click="addSite()"
-                  >+</span
-                >
-              </div>
-            </div>
-          </template>
-
-          <div v-if="queryType === 'Event'" class="mt-3">
-            <div>
-              <label class="contribute-title-one">Event Date/Time</label>
-              <ToolTip content="Enter the Event Date/Time."></ToolTip>
-            </div>
-            <b-form-datepicker
-              id="event-datepicker"
-              v-model="dateValue"
-              today-button
-              reset-button
-              class="mt-2 mb-3"
-              placeholder="Please pick a date for the Event"
-            ></b-form-datepicker>
-
-            <b-time
-              id="event-timepicker"
-              v-model="timeValue"
-              locale="en"
-              @context="onTimeContext"
-            ></b-time>
-          </div>
-
-          <template v-if="isArtist">
-            <b-row class="field-row mt-3">
-              <label
-                class="d-inline-block contribute-title-one"
-                for="commercial-only"
-                >Are you interested in commercial inquiries?</label
-              >
-              <b-form-checkbox
-                id="commercial-only"
-                v-model="relatedData.commercial_only"
-                class="d-inline-block ml-2"
-                name="commercial-only"
-                value="accepted"
-                unchecked-value="not_accepted"
-              >
-              </b-form-checkbox>
+              <multiselect
+                v-model="languageUserSelected"
+                :options="languageList"
+                label="name"
+                track-by="id"
+                placeholder="Select a Language"
+              ></multiselect>
             </b-row>
 
-            <b-row class="field-row mt-3">
-              <label
-                class="d-inline-block contribute-title-one"
-                for="contacted-only"
-                >Allow public to see your contact info?
-              </label>
-              <b-form-checkbox
-                id="contacted-only"
-                v-model="relatedData.contacted_only"
-                class="d-inline-block ml-2"
-                name="contacted-only"
-                value="accepted"
-                unchecked-value="not_accepted"
-              >
-              </b-form-checkbox>
-            </b-row>
-          </template>
-          <h5 class="contribute-title-one mt-3 mb-1">
-            {{
-              isArtist ? 'Bio / Artist Statement' : `${queryType} Description`
-            }}
-
-            <ToolTip
-              :content="
-                `Tell people more about this ${queryType}. You can add history, credit/acknowledgement, links, contact information, notes, etc.`
+            <b-row
+              v-if="
+                languageUserSelected && languageUserSelected.id === 'others'
               "
-            ></ToolTip>
-          </h5>
+              class="mt-3 field-row"
+            >
+              <div>
+                <label for="otherLanguage" class="contribute-title-one mb-1">
+                  Non B.C. Language</label
+                >
+              </div>
 
-          <div id="quill" ref="quill"></div>
+              <multiselect
+                v-if="userNonBCLanguage.length !== 0"
+                id="otherLanguage"
+                v-model="languageNonBC"
+                placeholder="Select a Non B.C. Language"
+                label="name"
+                track-by="id"
+                :options="userNonBCLanguage"
+              ></multiselect>
+              <b-form-input
+                v-else
+                id="otherLanguage"
+                v-model="languageNonBC"
+                type="text"
+                placeholder="(ex. Spanish, English, etc.)                                                                                                                                                                                                        , English)"
+              ></b-form-input>
+            </b-row>
 
-          <MediaGallery :media-list="getMediaFiles" :type="queryType">
-          </MediaGallery>
-        </section>
+            <b-row class="mt-3 field-row">
+              <div>
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Community</label
+                >
+                <ToolTip
+                  :content="`What community does this ${queryType} belong to? `"
+                ></ToolTip>
+              </div>
 
-        <!-- Other Contributions -->
-        <section v-else class="pr-3 pl-3">
-          <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
-            >Traditional Name (required)</label
-          >
-          <ToolTip
-            content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
-          ></ToolTip>
-          <b-form-input
-            id="traditionalName"
-            v-model="tname"
-            type="text"
-          ></b-form-input>
-
-          <div class="contribute-title-one mt-3 mb-0">
-            Pronounciation
-            <ToolTip
-              content="How do you pronounce this name? Upload an audio recording of the pronunciation. Say it 3 times in a row, with 1-2 seconds silence in between entries. You don't have to say it English after, but you can."
-            ></ToolTip>
-          </div>
-          <AudioRecorder class="mt-1"></AudioRecorder>
-
-          <label for="westernName" class="contribute-title-one mt-3 mb-1"
-            >Common Name</label
-          >
-
-          <ToolTip
-            content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
-          ></ToolTip>
-          <b-form-input
-            id="westernName"
-            v-model="wname"
-            type="text"
-          ></b-form-input>
-
-          <b-row class="mt-3">
-            <b-col xl="6">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Language</label
-              >
-              <b-form-select
-                v-model="languageSelected"
-                :options="languageOptions"
-              ></b-form-select>
-            </b-col>
-            <b-col xl="6">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Category</label
-              >
-              <ToolTip
-                content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
-              ></ToolTip>
-              <b-form-select
-                v-model="categorySelected"
-                :options="categoryOptions"
-              ></b-form-select>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3 mb-1">
-            <b-col xl="12">
-              <label for="traditionalName" class="contribute-title-one mb-1"
-                >Community</label
-              >
               <multiselect
                 v-model="community"
                 placeholder="Select a community"
@@ -653,105 +247,538 @@
                 track-by="id"
                 :options="communities"
               ></multiselect>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3 mb-4">
-            <b-col xl="6" class="d-flex align-items-center">
+            </b-row>
+
+            <b-row class="field-row">
+              <div>
+                <label
+                  for="taxonomy-container"
+                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
+                >
+                <ToolTip
+                  :content="
+                    `What would this ${queryType} be classified as? Select tags for your ${queryType}. This will help users find it.`
+                  "
+                ></ToolTip>
+              </div>
+
+              <multiselect
+                id="taxonomy-container"
+                v-model="taxonomySelected"
+                placeholder="Search or Select a Taxonomy"
+                label="name"
+                track-by="id"
+                :options="getTaxonomy"
+                :multiple="true"
+              ></multiselect>
+              <b-tooltip target="taxonomy-container" placement="top">
+                Select as many Taxonomy tags as you want.
+              </b-tooltip>
+            </b-row>
+
+            <b-row
+              v-if="queryType === 'Event' || queryType === 'Public Art'"
+              class="field-row"
+            >
+              <div>
+                <label
+                  for="contributing-artist"
+                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  >Contributing Artist</label
+                >
+                <ToolTip
+                  content="Who are the contributing Artist? This will help users know who are involved in this Placename."
+                ></ToolTip>
+              </div>
+
+              <multiselect
+                id="contributing-artist"
+                v-model="artistSelected"
+                placeholder="Search or Select an Artist"
+                label="name"
+                track-by="id"
+                :options="listOfArtist"
+                :multiple="true"
+              ></multiselect>
+            </b-row>
+
+            <b-row v-if="queryType === 'Event'" class="field-row">
+              <div>
+                <label
+                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  >Public Art</label
+                >
+                <ToolTip
+                  content="What are the Public Arts involved in this Placename? This will let users see Public Arts on a Placename."
+                ></ToolTip>
+              </div>
+              <multiselect
+                v-model="publicArtSelected"
+                placeholder="Search or Select a Public Art"
+                label="name"
+                track-by="id"
+                :options="listOfPublicArt"
+                :multiple="true"
+              ></multiselect>
+            </b-row>
+
+            <b-row class="field-row-group mt-3">
+              <div>
+                <label for="location" class="contribute-title-one"
+                  >Location</label
+                >
+                <ToolTip
+                  :content="
+                    `Tell people about the Location of that ${queryType}.`
+                  "
+                ></ToolTip>
+              </div>
+              <b-form-group
+                v-if="queryType === 'Event'"
+                id="location-fieldset"
+                description="For Online Events, type a location near you, or leave it blank. "
+                label-for="location"
+              >
+                <b-form-input
+                  id="location"
+                  v-model="relatedData.location"
+                  type="text"
+                  placeholder="(ex. Vancouver, Canada)"
+                ></b-form-input>
+              </b-form-group>
+              <b-form-input
+                v-else
+                id="location"
+                v-model="relatedData.location"
+                type="text"
+                placeholder="(ex. Vancouver, Canada)"
+              ></b-form-input>
+            </b-row>
+
+            <b-row v-if="queryType === 'Event'" class="field-row mt-3">
               <label
                 class="d-inline-block contribute-title-one"
-                for="community-only"
-                >Community Only?</label
+                for="online-event"
+                >Is this an Online Event?</label
               >
               <b-form-checkbox
-                id="community-only"
-                v-model="communityOnly"
+                id="online-event"
+                v-model="relatedData.is_online"
                 class="d-inline-block ml-2"
-                name="community-only"
+                name="online-event"
                 value="accepted"
                 unchecked-value="not_accepted"
               >
               </b-form-checkbox>
-            </b-col>
-          </b-row>
-          <!-- Text Editor -->
+            </b-row>
 
-          <h5 class="contribute-title-one mt-3 mb-1">
-            Description
+            <b-row
+              v-if="isArtist || queryType === 'Organization'"
+              class="field-row mt-3"
+            >
+              <div>
+                <label for="email" class="contribute-title-one mb-1"
+                  >Email</label
+                >
+                <ToolTip
+                  content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
+                ></ToolTip>
+              </div>
 
-            <ToolTip
-              content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
-            ></ToolTip>
-          </h5>
-          <div id="quill" ref="quill"></div>
-        </section>
+              <b-form-input
+                id="email"
+                v-model="relatedData.email"
+                type="text"
+                placeholder="(ex. johndoe@gmail.com)"
+              ></b-form-input>
+            </b-row>
 
-        <template v-if="$route.query.id">
-          <b-row class="delete-row-group">
-            <div>
-              <label for="delete-btn" class="contribute-title-warning"
-                >{{
-                  `WARNING: Do you want to Archive this ${
-                    queryType ? queryType : 'placename'
-                  }?`
-                }}
-              </label>
+            <b-row v-if="queryType === 'Organization'" class="field-row mt-3">
+              <div>
+                <label
+                  for="organizationAccess"
+                  class="contribute-title-one mb-1"
+                  >Organization Access</label
+                >
+                <ToolTip
+                  content="When is the organization open (E.g. 'open year-round'), or the person available (E.g. 'By appointment only')"
+                ></ToolTip>
+              </div>
+
+              <b-form-input
+                id="organizationAccess"
+                v-model="relatedData.organization_access"
+                type="text"
+                placeholder="(ex. Open year-round or By Appointment only)"
+              ></b-form-input>
+            </b-row>
+
+            <template v-if="isArtist">
+              <b-row class="field-row mt-3">
+                <div>
+                  <label for="phone" class="contribute-title-one mb-1"
+                    >Phone</label
+                  >
+
+                  <ToolTip
+                    content="If you wish to be contacted personally or for commercial inquiries. This information can be confidential."
+                  ></ToolTip>
+                </div>
+
+                <b-form-input
+                  id="phone"
+                  v-model="relatedData.phone"
+                  type="text"
+                  placeholder="(ex. (604) 509-6995)"
+                ></b-form-input>
+              </b-row>
+
+              <div class="website-container mt-3">
+                <div>
+                  <label class="contribute-title-one">Awards</label>
+                  <ToolTip
+                    content="Show the list of Awards that this Artist have achieved. Add as many as you want."
+                  ></ToolTip>
+                </div>
+
+                <div
+                  v-for="(award, index) in relatedData.awardsList"
+                  :key="index"
+                  class="site-input-container"
+                >
+                  <b-form-input
+                    :id="`award-${index}`"
+                    v-model="award.value"
+                    type="text"
+                    placeholder="(ex. 2010 Music Awards Pop Album of the Year)"
+                  ></b-form-input>
+                  <span
+                    v-if="
+                      (index !== 0 && relatedData.awardsList.length !== 1) ||
+                        relatedData.awardsList.length > 1
+                    "
+                    class="site-btn"
+                    @click="removeAward(index)"
+                    >-</span
+                  >
+                  <span
+                    v-if="index + 1 === relatedData.awardsList.length"
+                    class="site-btn"
+                    @click="addAward()"
+                    >+</span
+                  >
+                </div>
+              </div>
+            </template>
+
+            <b-row v-if="queryType === 'Public Art'" class="field-row mt-3">
+              <div>
+                <label for="copyright" class="contribute-title-one"
+                  >Copyright</label
+                >
+                <ToolTip
+                  content="If you wish your Artwork to be protected, a copyright tag will be included upon showing the Artwork."
+                ></ToolTip>
+              </div>
+
+              <multiselect
+                id="copyright"
+                v-model="relatedData.copyright"
+                placeholder="Select a Copyright"
+                :options="copyrightOptions"
+              ></multiselect>
+            </b-row>
+
+            <template v-if="queryType !== 'Event'">
+              <div class="website-container mt-3">
+                <div>
+                  <label class="contribute-title-one">Website</label>
+                  <ToolTip
+                    content="If you wish to be contacted through social media for inquiries. Add as many as you want."
+                  ></ToolTip>
+                </div>
+
+                <div
+                  v-for="(site, index) in relatedData.websiteList"
+                  :key="index"
+                  class="site-input-container"
+                >
+                  <b-form-input
+                    :id="`site-${index}`"
+                    v-model="site.value"
+                    type="text"
+                    placeholder="(ex. http://facebook.com/johndoe)"
+                  ></b-form-input>
+                  <span
+                    v-if="
+                      (index !== 0 && relatedData.websiteList.length !== 1) ||
+                        relatedData.websiteList.length > 1
+                    "
+                    class="site-btn"
+                    @click="removeSite(index)"
+                    >-</span
+                  >
+                  <span
+                    v-if="index + 1 === relatedData.websiteList.length"
+                    class="site-btn"
+                    @click="addSite()"
+                    >+</span
+                  >
+                </div>
+              </div>
+            </template>
+
+            <div v-if="queryType === 'Event'" class="mt-3">
+              <div>
+                <label class="contribute-title-one">Event Date/Time</label>
+                <ToolTip content="Enter the Event Date/Time."></ToolTip>
+              </div>
+              <b-form-datepicker
+                id="event-datepicker"
+                v-model="dateValue"
+                today-button
+                reset-button
+                class="mt-2 mb-3"
+                placeholder="Please pick a date for the Event"
+              ></b-form-datepicker>
+
+              <b-time
+                id="event-timepicker"
+                v-model="timeValue"
+                locale="en"
+                @context="onTimeContext"
+              ></b-time>
+            </div>
+
+            <template v-if="isArtist">
+              <b-row class="field-row mt-3">
+                <label
+                  class="d-inline-block contribute-title-one"
+                  for="commercial-only"
+                  >Are you interested in commercial inquiries?</label
+                >
+                <b-form-checkbox
+                  id="commercial-only"
+                  v-model="relatedData.commercial_only"
+                  class="d-inline-block ml-2"
+                  name="commercial-only"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                </b-form-checkbox>
+              </b-row>
+
+              <b-row class="field-row mt-3">
+                <label
+                  class="d-inline-block contribute-title-one"
+                  for="contacted-only"
+                  >Allow public to see your contact info?
+                </label>
+                <b-form-checkbox
+                  id="contacted-only"
+                  v-model="relatedData.contacted_only"
+                  class="d-inline-block ml-2"
+                  name="contacted-only"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                </b-form-checkbox>
+              </b-row>
+            </template>
+            <h5 class="contribute-title-one mt-3 mb-1">
+              {{
+                isArtist ? 'Bio / Artist Statement' : `${queryType} Description`
+              }}
+
               <ToolTip
-                content="By doing this your data will no longer be visible in the maps. Contact FPCC if you want to restore it. "
+                :content="
+                  `Tell people more about this ${queryType}. You can add history, credit/acknowledgement, links, contact information, notes, etc.`
+                "
+              ></ToolTip>
+            </h5>
+
+            <div id="quill" ref="quill"></div>
+
+            <MediaGallery :media-list="getMediaFiles" :type="queryType">
+            </MediaGallery>
+          </section>
+
+          <!-- Other Contributions -->
+          <section v-else class="pr-3 pl-3">
+            <label for="traditionalName" class="contribute-title-one mt-3 mb-1"
+              >Traditional Name (required)</label
+            >
+            <ToolTip
+              content="What is this place called in your language? Enter the name or title in your language, using your alphabet."
+            ></ToolTip>
+            <b-form-input
+              id="traditionalName"
+              v-model="tname"
+              type="text"
+            ></b-form-input>
+
+            <div class="contribute-title-one mt-3 mb-0">
+              Pronounciation
+              <ToolTip
+                content="How do you pronounce this name? Upload an audio recording of the pronunciation. Say it 3 times in a row, with 1-2 seconds silence in between entries. You don't have to say it English after, but you can."
               ></ToolTip>
             </div>
-            <b-button
-              name="delete-btn"
-              class="delete-btn"
-              variant="warning"
-              @click="showArchiveModal"
+            <AudioRecorder class="mt-1"></AudioRecorder>
+
+            <label for="westernName" class="contribute-title-one mt-3 mb-1"
+              >Common Name</label
             >
-              Archive
-            </b-button>
-          </b-row>
 
-          <b-modal v-model="showDeleteModal" hide-header @ok="handleDelete">{{
-            `Are you sure you want to archive "${place.name}"? All data will be archived.`
-          }}</b-modal>
-        </template>
+            <ToolTip
+              content="Is this place already known by a different name? For example in English? Enter that name here so people can find it through that name."
+            ></ToolTip>
+            <b-form-input
+              id="westernName"
+              v-model="wname"
+              type="text"
+            ></b-form-input>
 
-        <hr />
+            <b-row class="mt-3">
+              <b-col xl="6">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Language</label
+                >
+                <b-form-select
+                  v-model="languageSelected"
+                  :options="languageOptions"
+                ></b-form-select>
+              </b-col>
+              <b-col xl="6">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Category</label
+                >
+                <ToolTip
+                  content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
+                ></ToolTip>
+                <b-form-select
+                  v-model="categorySelected"
+                  :options="categoryOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3 mb-1">
+              <b-col xl="12">
+                <label for="traditionalName" class="contribute-title-one mb-1"
+                  >Community</label
+                >
+                <multiselect
+                  v-model="community"
+                  placeholder="Select a community"
+                  label="name"
+                  track-by="id"
+                  :options="communities"
+                ></multiselect>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3 mb-4">
+              <b-col xl="6" class="d-flex align-items-center">
+                <label
+                  class="d-inline-block contribute-title-one"
+                  for="community-only"
+                  >Community Only?</label
+                >
+                <b-form-checkbox
+                  id="community-only"
+                  v-model="communityOnly"
+                  class="d-inline-block ml-2"
+                  name="community-only"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                </b-form-checkbox>
+              </b-col>
+            </b-row>
+            <!-- Text Editor -->
 
-        <section class="pl-3 pr-3">
-          <b-row class="mt-3">
-            <b-col xl="12">
-              <b-alert v-if="errors.length" show variant="warning" dismissible>
-                <ul>
-                  <li v-for="err in errors" :key="err">{{ err }}</li>
-                </ul>
-              </b-alert>
-              <b-button block variant="danger" @click="submitType">{{
-                $route.query.id ? 'Update' : 'Save'
-              }}</b-button>
-            </b-col>
-          </b-row>
-        </section>
+            <h5 class="contribute-title-one mt-3 mb-1">
+              Description
 
-        <section>
-          <div>
-            <p class="text-center p-3">
-              <br />
-              For more categories please see
-              <a
-                href="https://apps.gov.bc.ca/pub/bcgnws/featureTypes?outputFormat=pdf"
-                >this list</a
+              <ToolTip
+                content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
+              ></ToolTip>
+            </h5>
+            <div id="quill" ref="quill"></div>
+          </section>
+
+          <template v-if="$route.query.id">
+            <b-row class="delete-row-group">
+              <div>
+                <label for="delete-btn" class="contribute-title-warning"
+                  >{{
+                    `WARNING: Do you want to delete this ${
+                      queryType ? queryType : 'placename'
+                    }?`
+                  }}
+                </label>
+                <ToolTip
+                  content="By doing this your data will no longer be visible in the maps, and all data will no longer be available."
+                ></ToolTip>
+              </div>
+              <b-button
+                name="delete-btn"
+                class="delete-btn"
+                variant="warning"
+                @click="showArchiveModal"
               >
-              provided by BC Geographical Names and email us at
-              <a
-                :href="
-                  'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
-                "
-                >info@fpcc.ca</a
-              >.
-            </p>
-          </div>
-        </section>
+                DELETE
+              </b-button>
+            </b-row>
+
+            <b-modal v-model="showDeleteModal" hide-header @ok="handleDelete">{{
+              `Are you sure you want to Delete "${place.name}"? All data will be no longer available.`
+            }}</b-modal>
+          </template>
+
+          <hr />
+
+          <section class="pl-3 pr-3">
+            <b-row class="mt-3">
+              <b-col xl="12">
+                <b-alert
+                  v-if="errors.length"
+                  show
+                  variant="warning"
+                  dismissible
+                >
+                  <ul>
+                    <li v-for="err in errors" :key="err">{{ err }}</li>
+                  </ul>
+                </b-alert>
+                <b-button block variant="danger" @click="submitType">{{
+                  $route.query.id ? 'Update' : 'Save'
+                }}</b-button>
+              </b-col>
+            </b-row>
+          </section>
+
+          <section>
+            <div>
+              <p class="text-center p-3">
+                <br />
+                For more categories please see
+                <a
+                  href="https://apps.gov.bc.ca/pub/bcgnws/featureTypes?outputFormat=pdf"
+                  >this list</a
+                >
+                provided by BC Geographical Names and email us at
+                <a
+                  :href="
+                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                  "
+                  >info@fpcc.ca</a
+                >.
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -769,6 +796,7 @@ import {
   isValidEmail,
   isValidURL
 } from '@/plugins/utils.js'
+import ErrorScreen from '@/layouts/error.vue'
 
 const base64Encode = data =>
   new Promise((resolve, reject) => {
@@ -783,7 +811,8 @@ export default {
     AudioRecorder,
     ToolTip,
     Logo,
-    MediaGallery
+    MediaGallery,
+    ErrorScreen
   },
   middleware: 'authenticated',
   data() {
@@ -881,11 +910,15 @@ export default {
       return this.taxonomies.find(taxonomy => taxonomy.name === this.queryType)
     },
     getTaxonomy() {
-      return this.taxonomies.filter(
-        taxonomy =>
-          taxonomy.parent === this.getTaxonomyId.id ||
-          this.taxonomySelected.some(tax => taxonomy.parent === tax.id)
-      )
+      if (this.getTaxonomyId) {
+        return this.taxonomies.filter(
+          taxonomy =>
+            taxonomy.parent === this.getTaxonomyId.id ||
+            this.taxonomySelected.some(tax => taxonomy.parent === tax.id)
+        )
+      } else {
+        return []
+      }
     },
     queryMode() {
       return this.$route.query.mode
@@ -982,6 +1015,39 @@ export default {
         return {}
       }
     },
+    isUserPlacenameOwner() {
+      if (this.isLoggedIn) {
+        const isPlacenameFound = this.userDetail.placename_set.find(
+          placename => {
+            return placename.id === parseInt(this.$route.query.id)
+          }
+        )
+
+        return !!isPlacenameFound
+      } else {
+        return false
+      }
+    },
+    isUserPlacenameContributer() {
+      const place = this.place
+      const user = this.userDetail
+      if (
+        place &&
+        place.artists &&
+        place.artists.length !== 0 &&
+        user.placename_set &&
+        user.placename_set.length !== 0
+      ) {
+        const contributerID = place.artists.map(artist => artist.id)
+        const isContributer = user.placename_set.some(placename =>
+          contributerID.includes(placename.id)
+        )
+
+        return isContributer
+      } else {
+        return false
+      }
+    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null
@@ -1031,6 +1097,39 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
+    },
+    isURLQueryValid() {
+      return Object.entries(this.$route.query)
+        .filter(query => query[0] !== 'id' && query[0] !== 'profile')
+        .map(query => {
+          if (query[0] === 'mode') {
+            if (
+              query[1] === 'point' ||
+              query[1] === 'existing' ||
+              query[1] === 'polygon' ||
+              query[1] === 'line' ||
+              query[1] === 'placename'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else if (query[0] === 'type') {
+            if (
+              query[1] === 'Artist' ||
+              query[1] === 'Event' ||
+              query[1] === 'Public Art' ||
+              query[1] === 'Organization'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return false
+          }
+        })
+        .every(result => result === true)
     }
   },
   watch: {
@@ -1088,11 +1187,13 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
+
     if (query.id && query.type) {
       const now = new Date()
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
+
       let community = null
       if (place.community) {
         community = await $axios.$get(
@@ -1161,9 +1262,7 @@ export default {
       // Loop to Related data, and check data
       if (place.related_data.length !== 0) {
         place.related_data.map(related => {
-          if (related.data_type === 'location') {
-            data.relatedData.location = related.value
-          } else if (related.data_type === 'award') {
+          if (related.data_type === 'award') {
             data.relatedData.awardsList.push({
               id: related.id,
               value: related.value,
@@ -1175,14 +1274,6 @@ export default {
               value: related.value,
               isError: null
             })
-          } else if (related.data_type === 'email') {
-            data.relatedData.email = related.value
-          } else if (related.data_type === 'phone') {
-            data.relatedData.phone = related.value
-          } else if (related.data_type === 'organization_access') {
-            data.relatedData.organization_access = related.value
-          } else if (related.data_type === 'copyright') {
-            data.relatedData.copyright = related.value
           } else if (related.data_type === 'contacted_only') {
             data.relatedData.contacted_only = related.value.includes('true')
               ? 'accepted'
@@ -1193,7 +1284,22 @@ export default {
               : 'not_accepted'
           } else if (related.data_type === 'is_online') {
             data.relatedData.is_online = related.value.includes('Online')
+          } else {
+            data.relatedData[related.data_type] = related.value
           }
+
+          // if (related.data_type === 'location') {
+          //   data.relatedData.location = related.value
+          // }
+          // else if (related.data_type === 'email') {
+          //   data.relatedData.email = related.value
+          // } else if (related.data_type === 'phone') {
+          //   data.relatedData.phone = related.value
+          // } else if (related.data_type === 'organization_access') {
+          //   data.relatedData.organization_access = related.value
+          // } else if (related.data_type === 'copyright') {
+          //   data.relatedData.copyright = related.value
+          // }
         })
       }
 
@@ -1231,6 +1337,7 @@ export default {
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
+
       let community = null
       if (place.community) {
         community = await $axios.$get(
@@ -1284,7 +1391,6 @@ export default {
     }
   },
   mounted() {
-    // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
       if (
         (this.languageUserSelected === null || this.languageNonBC === null) &&
@@ -1377,6 +1483,7 @@ export default {
       this.relatedData.awardsList = []
       this.addAward()
       this.content = ''
+      this.resetQuill()
       this.relatedData.contacted_only = null
       this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
@@ -1524,6 +1631,9 @@ export default {
         editor.root.innerHTML = this.content
         this.quillEditor = editor
       }
+    },
+    resetQuill() {
+      this.quillEditor.root.innerHTML = ''
     },
     removeQuill() {
       // Removes an element from the document
@@ -2207,7 +2317,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0 1.5em;
-  margin: 3em 0;
+  margin: 6em 0;
 
   .delete-btn {
     width: 50%;

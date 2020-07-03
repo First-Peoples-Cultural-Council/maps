@@ -30,7 +30,7 @@ HOST = os.environ.get("HOST", 'https://maps.fpcc.ca')
 
 ALLOWED_HOSTS = ["*"]
 
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = "/media/"
 MEDIA_URL = "/media/"
 APPEND_SLASH = True
 

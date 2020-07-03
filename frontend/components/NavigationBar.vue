@@ -304,11 +304,11 @@ export default {
   }
 
   .user-display-img {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 1.5em;
     object-fit: cover;
-    margin-left: 4px;
+    margin-left: 3px;
     border: 1px solid #beb2a5;
   }
 }
