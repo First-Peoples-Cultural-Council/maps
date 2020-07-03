@@ -53,6 +53,7 @@
             :server="isServer"
             :arts-banner="artistBanner"
             :is-owner="isPlacenameOwner()"
+            :is-contributer="isContributer()"
             :edit-placename="handlePlacenameEdit"
           ></ArtsBanner>
 
@@ -63,6 +64,7 @@
             :server="isServer"
             :tags="taxonomies"
             :is-owner="isPlacenameOwner()"
+            :is-contributer="isContributer()"
             :edit-placename="handlePlacenameEdit"
           ></ArtsDetailCard>
           <!-- END Conditional Render Arts Header  -->
@@ -276,6 +278,9 @@ export default {
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
+    userDetail() {
+      return this.$store.state.user.user
+    },
     isGalleryShown() {
       return this.$store.state.sidebar.showGallery
     },
@@ -378,6 +383,7 @@ export default {
   },
   async asyncData({ params, $axios, store, $router }) {
     const arts = await $axios.$get(getApiUrl(`art-search?format=json`))
+    console.log(arts)
     if (arts) {
       const art = arts.find(a => {
         if (a.name) {
@@ -433,6 +439,23 @@ export default {
           return true
       }
       return false
+    },
+    isContributer() {
+      if (
+        this.userDetail.placename_set &&
+        this.userDetail.placename_set.length !== 0 &&
+        this.artDetails.artists &&
+        this.artDetails.artists.length !== 0
+      ) {
+        const contributerID = this.artDetails.artists.map(artist => artist.id)
+        const isContributer = this.userDetail.placename_set.some(placename =>
+          contributerID.includes(placename.id)
+        )
+
+        return isContributer
+      } else {
+        return false
+      }
     },
     async handleDelete(e) {
       e.preventDefault()
