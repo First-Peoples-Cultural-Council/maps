@@ -12,6 +12,8 @@ services:
       - 8099:80
     environment:
       - CACHE_LIFE=2s
+    volumes:
+      - ./web/media:/media
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:

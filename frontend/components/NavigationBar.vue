@@ -7,17 +7,17 @@
         class="user-container menu-container cursor-pointer hide-mobile"
         @click="profile"
       >
-        <div
-          v-if="
-            isLoggedIn &&
-              user.languages &&
-              user.languages.length === 0 &&
-              user.communities &&
-              user.communities.length === 0
-          "
-          class="notify-badge"
-        ></div>
         <nav class="navbar-icon-container">
+          <div
+            v-if="
+              isLoggedIn &&
+                user.languages &&
+                user.languages.length === 0 &&
+                user.communities &&
+                user.communities.length === 0
+            "
+            class="notify-badge"
+          ></div>
           <img
             v-if="!picture"
             src="@/assets/images/user_icon.svg"
@@ -269,15 +269,6 @@ export default {
 .navigation-container {
   display: flex;
 }
-.notify-badge {
-  position: absolute;
-  top: 2.5px;
-  right: 5px;
-  width: 10px;
-  height: 10px;
-  background-color: rgba(173, 20, 20, 0.753);
-  border-radius: 50%;
-}
 
 .menu-container {
   cursor: pointer;
@@ -309,14 +300,23 @@ export default {
     border-radius: 1.5em;
     object-fit: cover;
     margin-left: 3px;
+    margin-top: -10px;
     border: 1px solid #beb2a5;
   }
 }
 
 .user-container {
-  display: relative;
   width: 47px;
   height: 47px;
+}
+
+.notify-badge {
+  float: right;
+  z-index: 9999;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
 }
 .navigation {
   position: fixed;

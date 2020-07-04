@@ -229,9 +229,6 @@
           <span>Expand</span>
         </div>
       </div>
-      <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
-        `Are you sure you want to delete "${artDetails.name}"?`
-      }}</b-modal>
     </div>
     <ErrorScreen v-else></ErrorScreen>
   </div>
@@ -246,8 +243,7 @@ import {
   getApiUrl,
   encodeFPCC,
   makeMarker,
-  getMediaUrl,
-  getCookie
+  getMediaUrl
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -383,7 +379,6 @@ export default {
   },
   async asyncData({ params, $axios, store, $router }) {
     const arts = await $axios.$get(getApiUrl(`art-search?format=json`))
-    console.log(arts)
     if (arts) {
       const art = arts.find(a => {
         if (a.name) {
@@ -456,37 +451,6 @@ export default {
       } else {
         return false
       }
-    },
-    async handleDelete(e) {
-      e.preventDefault()
-      await this.$axios.$delete(
-        `${getApiUrl(`placename/${this.artDetails.id}`)}`,
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-
-      await this.$store.dispatch('user/setLoggedInUser')
-
-      this.$root.$emit('refetchArtwork')
-      // Delete all Medias in this Placename
-      this.artDetails.medias.forEach(async media => {
-        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        })
-      })
-
-      this.$router.push({
-        path: `/art`
-      })
-      this.$store.commit('sidebar/setDrawerContent', false)
-    },
-    showOwnerModal() {
-      this.modalShow = !this.modalShow
     },
     handlePlacenameEdit() {
       const kind =
