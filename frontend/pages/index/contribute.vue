@@ -3,7 +3,8 @@
     <ErrorScreen
       v-if="
         ($route.query.id &&
-          (!place || (!isUserPlacenameOwner && !isUserPlacenameContributer))) ||
+          (!place ||
+            (!isUserPlacenameOwner() && !isUserPlacenameContributer()))) ||
           !isURLQueryValid
       "
     ></ErrorScreen>
@@ -731,7 +732,7 @@
             </b-row>
 
             <b-modal v-model="showDeleteModal" hide-header @ok="handleDelete">{{
-              `Are you sure you want to Delete "${place.name}"? All data will be no longer available.`
+              `Are you sure you want to Delete "${place.name}"? All data, including medias will be no longer available.`
             }}</b-modal>
           </template>
 
@@ -1015,39 +1016,6 @@ export default {
         return {}
       }
     },
-    isUserPlacenameOwner() {
-      if (this.isLoggedIn) {
-        const isPlacenameFound = this.userDetail.placename_set.find(
-          placename => {
-            return placename.id === parseInt(this.$route.query.id)
-          }
-        )
-
-        return !!isPlacenameFound
-      } else {
-        return false
-      }
-    },
-    isUserPlacenameContributer() {
-      const place = this.place
-      const user = this.userDetail
-      if (
-        place &&
-        place.artists &&
-        place.artists.length !== 0 &&
-        user.placename_set &&
-        user.placename_set.length !== 0
-      ) {
-        const contributerID = place.artists.map(artist => artist.id)
-        const isContributer = user.placename_set.some(placename =>
-          contributerID.includes(placename.id)
-        )
-
-        return isContributer
-      } else {
-        return false
-      }
-    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null
@@ -1287,19 +1255,6 @@ export default {
           } else {
             data.relatedData[related.data_type] = related.value
           }
-
-          // if (related.data_type === 'location') {
-          //   data.relatedData.location = related.value
-          // }
-          // else if (related.data_type === 'email') {
-          //   data.relatedData.email = related.value
-          // } else if (related.data_type === 'phone') {
-          //   data.relatedData.phone = related.value
-          // } else if (related.data_type === 'organization_access') {
-          //   data.relatedData.organization_access = related.value
-          // } else if (related.data_type === 'copyright') {
-          //   data.relatedData.copyright = related.value
-          // }
         })
       }
 
@@ -1438,6 +1393,39 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
+    isUserPlacenameOwner() {
+      if (this.isLoggedIn) {
+        const isPlacenameFound = this.userDetail.placename_set.find(
+          placename => {
+            return placename.id === parseInt(this.$route.query.id)
+          }
+        )
+
+        return !!isPlacenameFound
+      } else {
+        return false
+      }
+    },
+    isUserPlacenameContributer() {
+      const place = this.place
+      const user = this.userDetail
+      if (
+        place &&
+        place.artists &&
+        place.artists.length !== 0 &&
+        user.placename_set &&
+        user.placename_set.length !== 0
+      ) {
+        const contributerID = place.artists.map(artist => artist.id)
+        const isContributer = user.placename_set.some(placename =>
+          contributerID.includes(placename.id)
+        )
+
+        return isContributer
+      } else {
+        return false
+      }
+    },
     showArchiveModal() {
       this.showDeleteModal = !this.showDeleteModal
     },
@@ -1449,7 +1437,7 @@ export default {
         }
       })
 
-      await this.$store.dispatch('user/setLoggedInUser')
+      this.$store.dispatch('user/setLoggedInUser')
 
       this.$root.$emit('refetchArtwork')
       // Delete all Medias in this Placename
@@ -1460,6 +1448,8 @@ export default {
           }
         })
       })
+
+      this.$store.commit('file/setNewMediaFiles', [])
 
       this.$router.push({
         path: `/art`
@@ -1490,8 +1480,6 @@ export default {
       this.setArtistDetail()
       this.setEventDetails()
 
-      // this.removeQuill()
-      // this.initQuill()
       const contributeContainer = document.querySelector(
         '#contribute-main-container'
       )
@@ -1955,6 +1943,7 @@ export default {
       }
     },
     postRelatedData(id) {
+      let relatedData = []
       if (this.queryType === 'Event') {
         this.relatedData['Event Date'] = `${this.dateValue} ${this.timeValue}`
       }
@@ -1973,62 +1962,87 @@ export default {
         }
       )
 
-      const relatedData = filteredRelatedData.map(field => {
-        // if element is array, get values one by one
-        if (field[0] === 'websiteList' || field[0] === 'awardsList') {
-          return field[1]
-            .filter(data => data.value !== null)
-            .map(data => {
-              return {
-                data_type: field[0] === 'websiteList' ? 'website' : 'award',
-                label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
-                value: data.value,
-                is_private: false,
-                placename: id
-              }
-            })
+      // if on edit mode
+      relatedData = filteredRelatedData.map(field => {
+        let value = ''
+        // Set return Values
+        if (field[0] === 'contacted_only') {
+          value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
+        } else if (field[0] === 'commercial_only') {
+          value =
+            field[1] === 'accepted'
+              ? 'Interested in Commercial Inquiry'
+              : 'Not interested in Commercial Inquiry'
+        } else if (field[0] === 'is_online') {
+          value = field[1] ? 'Online Event' : 'Physical Event'
         } else {
-          let value = ''
-          let is_private = false
-          let label = ''
-          // Set return Values
-          if (field[0] === 'contacted_only') {
-            value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
-          } else if (field[0] === 'commercial_only') {
-            value =
-              field[1] === 'accepted'
-                ? 'Interested in Commercial Inquiry'
-                : 'Not interested in Commercial Inquiry'
-          } else if (field[0] === 'is_online') {
-            value = field[1] ? 'Online Event' : 'Physical Event'
-          } else {
-            value = field[1]
-          }
+          value = field[1]
+        }
 
-          // Set Privacy values
-          if (field[0] === 'contacted_only') {
-            is_private = true
-          } else {
-            is_private = false
-          }
+        // Checks if related data contains this field
+        const isFieldFound = this.place
+          ? !!this.place.related_data.find(rel => rel.data_type === field[0])
+          : false
 
-          // Set Label Return Values
-          if (field[0] === 'organization_access') {
-            label = 'Organization Access'
-          } else if (field[0] === 'commercial_only') {
-            label = 'Commercial Inquiry'
-          } else if (field[0] === 'is_online') {
-            label = 'Event Type'
-          } else {
-            label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
-          }
+        // For existing related data, go inside
+        if (this.$route.query.id && isFieldFound) {
+          const related = this.place.related_data.find(
+            data => data.data_type === field[0]
+          )
 
+          const { data_type, label, is_private, placename } = related
           return {
-            data_type: field[0],
+            data_type,
             label,
             value,
             is_private,
-            placename: id
+            placename
+          }
+        }
+        // For  new related data that doesnt exist in database
+        else if (!isFieldFound) {
+          // if element is array, get values one by one
+          if (field[0] === 'websiteList' || field[0] === 'awardsList') {
+            return field[1]
+              .filter(data => data.value !== null)
+              .map(data => {
+                return {
+                  data_type: field[0] === 'websiteList' ? 'website' : 'award',
+                  label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
+                  value: data.value,
+                  is_private: false,
+                  placename: id
+                }
+              })
+          } else {
+            let is_private = false
+            let label = ''
+
+            // Set Privacy values
+            if (field[0] === 'contacted_only') {
+              is_private = true
+            } else {
+              is_private = false
+            }
+
+            // Set Label Return Values
+            if (field[0] === 'organization_access') {
+              label = 'Organization Access'
+            } else if (field[0] === 'commercial_only') {
+              label = 'Commercial Inquiry'
+            } else if (field[0] === 'is_online') {
+              label = 'Event Type'
+            } else {
+              label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
+            }
+
+            return {
+              data_type: field[0],
+              label,
+              value,
+              is_private,
+              placename: id
+            }
           }
         }
       })
