@@ -33,11 +33,11 @@ export default {
       } else if (firstPath === 'content') {
         nextPath = 'languages'
       } else if (
-        firstPath !== 'art' ||
-        firstPath !== 'heritages' ||
-        firstPath !== 'languages' ||
-        firstPath === 'place-names' ||
-        firstPath === 'content'
+        firstPath !== 'art' &&
+        firstPath !== 'heritages' &&
+        firstPath !== 'languages' &&
+        firstPath !== 'place-names' &&
+        firstPath !== 'content'
       ) {
         nextPath = ''
       } else {
@@ -47,7 +47,6 @@ export default {
     },
     getTitle() {
       const firstPath = this.$route.path.split('/')[1]
-      // const isQueryValid =
 
       const isURLQueryValid = Object.entries(this.$route.query)
         .filter(query => query[0] !== 'id' && query[0] !== 'profile')
