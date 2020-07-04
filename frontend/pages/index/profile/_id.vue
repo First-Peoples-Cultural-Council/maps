@@ -42,14 +42,13 @@
             v-if="
               isLoggedIn &&
                 isOwner &&
-                user.languages &&
-                user.languages.length === 0 &&
+                listOfLanguages.length === 0 &&
                 user.communities &&
                 user.communities.length === 0
             "
           >
             <b-alert variant="danger" show
-              >Please select your community or language by clicking
+              >Please select your community and language by clicking
               <router-link :to="`/profile/edit/${user.id}`"
                 >here</router-link
               ></b-alert
@@ -64,18 +63,21 @@
               ></b-alert
             >
           </div>
-          <div v-if="user.languages && user.languages.length > 0">
+          <div
+            v-if="
+              (user.languages && user.languages.length > 0) ||
+                (user.non_bc_languages && user.non_bc_languages.length > 0)
+            "
+          >
             <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
               Spoken Languages
             </h5>
             <LanguageDetailBadge
-              v-for="lang in user.languages"
-              :key="`badge${lang.id}`"
-              :content="lang.name"
+              v-for="lang in listOfLanguages"
+              :key="`badge-${lang.id ? lang.name : lang}`"
+              :content="lang.id ? lang.name : lang"
               class="mr-2 cursor-pointer"
-              @click.native="
-                $router.push({ path: '/languages/' + encodeFPCC(lang.name) })
-              "
+              @click.native="redirectToLanguage(lang)"
             ></LanguageDetailBadge>
           </div>
           <div
@@ -292,6 +294,21 @@ export default {
         ...this.getContributedPublicArt
       ]
       return placenameSet.sort((a, b) => a.kind.localeCompare(b.kind))
+    },
+    listOfLanguages() {
+      const { languages, non_bc_languages } = this.user
+      if (
+        (languages && languages.length > 0) ||
+        (non_bc_languages && non_bc_languages.length > 0)
+      ) {
+        const bcLanguages = languages.length !== 0 ? languages : []
+        const nonBCLanguages =
+          non_bc_languages.length !== 0 ? non_bc_languages : []
+
+        return [...bcLanguages, ...nonBCLanguages]
+      } else {
+        return []
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -330,6 +347,11 @@ export default {
   },
   methods: {
     encodeFPCC,
+    redirectToLanguage(lang) {
+      if (lang.id) {
+        this.$router.push({ path: '/languages/' + encodeFPCC(lang.name) })
+      }
+    },
     isArtistProfileExist() {
       const { placename_set, first_name, last_name } = this.user
       if (placename_set) {
