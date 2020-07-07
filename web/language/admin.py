@@ -31,7 +31,7 @@ class LanguageAdmin(admin.ModelAdmin):
     exclude = ("audio_file",)
     search_fields = (
         "name",
-        "family"
+        "family__name"
     )
     inlines = [
         DialectInline,
@@ -49,7 +49,7 @@ class DialectAdmin(admin.ModelAdmin):
     list_display = ("name", "language")
     search_fields = (
         "name",
-        "language"
+        "language__name"
     )
 
 
