@@ -5,13 +5,16 @@
         <div>
           <div
             v-if="!mobileContent"
-            class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+            class="content-collapse d-none content-mobile-title"
           >
             <div>
               User: <b-badge variant="primary">{{ getUserName() }}</b-badge
               ><b-badge class="ml-2" variant="primary">Expand To Edit</b-badge>
             </div>
-            <div @click="$store.commit('sidebar/setMobileContent', true)">
+            <div
+              class="content-collapse-btn"
+              @click="$store.commit('sidebar/setMobileContent', true)"
+            >
               <img src="@/assets/images/arrow_up_icon.svg" />
             </div>
           </div>
@@ -328,14 +331,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.$store.state.user.user.id)
-    // if (this.user.id !== this.$store.state.user.user.id) {
-    //   window.open(
-    //     `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
-    //   )
-    //   window.location.reload()
-    // }
-
     this.fileSrc = this.getMediaUrl(this.user.image)
     this.addLanguage()
     this.initQuill()
@@ -425,7 +420,7 @@ export default {
 
         const imgResult = this.uploadUserDP(this.user.id, headers)
 
-        if (result || imgResult) {
+        if (result && imgResult) {
           const findUserArtist = this.oldUser.placename_set.find(
             placename =>
               placename.kind === 'artist' &&
