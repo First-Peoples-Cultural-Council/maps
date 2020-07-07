@@ -7,22 +7,13 @@
         class="user-container menu-container cursor-pointer hide-mobile"
         @click="profile"
       >
-        <nav class="navbar-icon-container">
-          <div
-            v-if="
-              isLoggedIn &&
-                user.languages &&
-                user.languages.length === 0 &&
-                user.communities &&
-                user.communities.length === 0
-            "
-            class="notify-badge"
-          ></div>
+        <nav class="user-icon-container">
+          <div v-if="showNotificationBadge" class="notify-badge"></div>
           <img
             v-if="!picture"
             src="@/assets/images/user_icon.svg"
             alt="Menu"
-            class="navbar-icon user_icon"
+            class="navbar-icon user-icon"
           />
           <img
             v-if="picture"
@@ -46,6 +37,13 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
+      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
+        <img
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
       <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
           src="@/assets/images/event_icons.svg"
@@ -53,7 +51,7 @@
           class="navbar-icon"
         />
       </div>
-      <div
+      <!-- <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
       >
@@ -62,7 +60,7 @@
           alt="Contribute"
           class="navbar-icon"
         />
-      </div>
+      </div> -->
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openShareEmbed')"
@@ -73,13 +71,29 @@
           class="navbar-icon"
         />
       </div>
-      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
-        <img
-          src="@/assets/images/search_icon.svg"
-          alt="Search"
-          class="navbar-icon"
-        />
+
+      <div
+        v-if="isLoggedIn"
+        class="navbar-icon-container cursor-pointer"
+        @click="profile"
+      >
+        <nav class="user-icon-container">
+          <div v-if="showNotificationBadge" class="notify-badge"></div>
+          <img
+            v-if="!picture"
+            src="@/assets/images/user_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+          <img
+            v-if="picture"
+            :src="picture"
+            alt="Menu"
+            class="navbar-icon user-display-img"
+          />
+        </nav>
       </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="openNav">
         <img
           src="@/assets/images/menu_icon.svg"
@@ -199,6 +213,15 @@ export default {
     }),
     user() {
       return this.$store.state.user.user
+    },
+    showNotificationBadge() {
+      return (
+        this.isLoggedIn &&
+        this.user.languages &&
+        this.user.languages.length === 0 &&
+        this.user.communities &&
+        this.user.communities.length === 0
+      )
     }
   },
   methods: {
@@ -294,15 +317,38 @@ export default {
     height: 18px;
   }
 
-  .user-display-img {
+  .user-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
     width: 45px;
     height: 45px;
-    border-radius: 1.5em;
-    object-fit: cover;
-    margin-left: 3px;
-    margin-top: -10px;
-    border: 1px solid #beb2a5;
+
+    .user-display-img {
+      width: 45px;
+      height: 45px;
+      border-radius: 1.5em;
+      object-fit: cover;
+      margin-left: 1px;
+      border: 1px solid #beb2a5;
+    }
+
+    .user-icon {
+      width: 45px;
+      height: 23px;
+    }
   }
+}
+
+.notify-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
 }
 
 .user-container {
@@ -310,14 +356,6 @@ export default {
   height: 47px;
 }
 
-.notify-badge {
-  float: right;
-  z-index: 9999;
-  width: 10px;
-  height: 10px;
-  background-color: rgba(173, 20, 20, 0.753);
-  border-radius: 50%;
-}
 .navigation {
   position: fixed;
   height: 86px;
@@ -341,6 +379,24 @@ export default {
   line-height: 0;
   color: #151515;
   font: Bold 15px/18px Proxima Nova;
+
+  .user-icon-container {
+    position: relative;
+    width: 25px;
+    height: 25px;
+  }
+
+  .user-display-img {
+    border-radius: 1.5em;
+    object-fit: cover;
+    margin-left: 1px;
+    border: 1px solid #beb2a5;
+  }
+
+  .user-icon {
+    width: 25px;
+    height: 25px;
+  }
 }
 
 .navbar-icon {
