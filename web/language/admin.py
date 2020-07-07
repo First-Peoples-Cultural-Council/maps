@@ -20,6 +20,12 @@ from .models import (
 )
 
 
+# INLINES
+class DialectInline(admin.StackedInline):
+    model = Dialect
+
+
+# ADMINS
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ("name", "sleeping", "family")
     exclude = ("audio_file",)
@@ -27,11 +33,23 @@ class LanguageAdmin(admin.ModelAdmin):
         "name",
         "family"
     )
+    inlines = [
+        DialectInline,
+    ]
+
 
 class CommunityAdmin(admin.ModelAdmin):
     exclude = ("audio_file",)
     search_fields = (
         "name",
+    )
+
+
+class DialectAdmin(admin.ModelAdmin):
+    list_display = ("name", "language")
+    search_fields = (
+        "name",
+        "language"
     )
 
 
@@ -52,6 +70,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
         "placename__kind"
     )
 
+
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
     search_fields = (
@@ -63,6 +82,7 @@ class PlaceNameAdmin(admin.ModelAdmin):
     )
     exclude = ("audio_file",)
 
+
 class MediaAdmin(admin.ModelAdmin):
     list_display = ("name", "file_type", "media_file", "url")
     search_fields = (
@@ -70,12 +90,14 @@ class MediaAdmin(admin.ModelAdmin):
         "file_type"
     )
 
+
 class TaxonomyAdmin(admin.ModelAdmin):
     list_display = ("name", "parent")
     search_fields = (
         "name",
         "parent__name"
     )
+
 
 class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
     list_display = ("placename", "taxonomy")
@@ -86,6 +108,7 @@ class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Champion)
+admin.site.register(Dialect, DialectAdmin)
 admin.site.register(PlaceName, PlaceNameAdmin)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
