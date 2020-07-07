@@ -23,13 +23,23 @@ from .models import (
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ("name", "sleeping", "family")
     exclude = ("audio_file",)
+    search_fields = (
+        "name",
+        "family"
+    )
 
 class CommunityAdmin(admin.ModelAdmin):
     exclude = ("audio_file",)
+    search_fields = (
+        "name",
+    )
 
 
 class LNADataAdmin(admin.ModelAdmin):
-    list_display = ("fluent_speakers", "name")
+    list_display = ("name", "fluent_speakers")
+    search_fields = (
+        "name",
+    )
 
 
 class RelatedDataAdmin(admin.ModelAdmin):
@@ -53,18 +63,39 @@ class PlaceNameAdmin(admin.ModelAdmin):
     )
     exclude = ("audio_file",)
 
+class MediaAdmin(admin.ModelAdmin):
+    list_display = ("name", "file_type", "media_file", "url")
+    search_fields = (
+        "name",
+        "file_type"
+    )
+
+class TaxonomyAdmin(admin.ModelAdmin):
+    list_display = ("name", "parent")
+    search_fields = (
+        "name",
+        "parent__name"
+    )
+
+class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
+    list_display = ("placename", "taxonomy")
+    search_fields = (
+        "placename__name",
+        "taxonomy__name",
+    )
+
 
 admin.site.register(Champion)
 admin.site.register(PlaceName, PlaceNameAdmin)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(Community, CommunityAdmin)
-admin.site.register(Media)
+admin.site.register(Media, MediaAdmin)
 admin.site.register(Favourite)
 admin.site.register(Notification)
 admin.site.register(LNA)
 admin.site.register(LNAData, LNADataAdmin)
 admin.site.register(Recording)
-admin.site.register(Taxonomy)
-admin.site.register(PlaceNameTaxonomy)
+admin.site.register(Taxonomy, TaxonomyAdmin)
+admin.site.register(PlaceNameTaxonomy, PlaceNameTaxonomyAdmin)
 admin.site.register(RelatedData, RelatedDataAdmin)
