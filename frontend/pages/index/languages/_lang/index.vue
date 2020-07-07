@@ -480,7 +480,11 @@ export default {
     },
     getHeaderDescription() {
       if (this.language) {
-        return `${this.language.name}, also known as ${this.language.other_names} is an indigenous language of British Columbia.`
+        if (this.language.other_names) {
+          return `${this.language.name}, also known as ${this.language.other_names}, is an indigenous language of British Columbia.`
+        } else {
+          return `${this.language.name} is an indigenous language of British Columbia.`
+        }
       } else {
         return 'Language page not found.'
       }
