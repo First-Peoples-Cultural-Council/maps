@@ -1,6 +1,12 @@
 <template>
   <div class="contribute-container">
-    <b-button @click="toggleModal">Add to the Map</b-button>
+    <b-button @click="toggleModal">
+      <span>Add to the Map</span>
+      <img
+        src="@/assets/images/plus_white.svg"
+        alt="Contribute"
+        class="navbar-icon"
+    /></b-button>
 
     <b-modal
       id="contribute-modal"
@@ -338,6 +344,36 @@ export default {
   font: Bold 15px/18px Proxima Nova;
   color: #ffffff;
   text-transform: uppercase;
+
+  img {
+    display: none;
+    width: 25px;
+    height: 25px;
+  }
+}
+// For Mobile View
+@media screen and (max-width: 993px) {
+  .contribute-container button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 2%;
+    right: 2.75%;
+    width: 50px;
+    height: 55px;
+    border-radius: 100%;
+    z-index: 99999;
+    border: 0 !important;
+
+    span {
+      display: none;
+    }
+
+    img {
+      display: block !important;
+    }
+  }
 }
 
 .point-btn {
