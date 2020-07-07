@@ -39,7 +39,8 @@ ADMINS = (
     ("Clark", "clark@countable.ca"),
     ("Aaron", "aaron@countable.ca"),
     ("Daniel", "daniel@fpcc.ca"),
-    )
+    ("Justin", "justin@countable.ca"),
+)
 SERVER_EMAIL = "info@fpcc.ca"
 
 INSTALLED_APPS = [
