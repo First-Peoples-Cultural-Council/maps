@@ -1,6 +1,18 @@
 <template>
   <div class="accordion sidebar-fold-container">
-    <b-collapse id="outer-collapse" visible>
+    <b-collapse id="sidebar-outer-collapse" ref="outerToggleHead" visible>
+      <span
+        class="innerToggle-btn cursor-pointer"
+        :style="btnBottoms"
+        @click.prevent="toggleSideBar"
+      >
+        <img
+          v-if="!visible"
+          src="@/assets/images/arrow_up_icon.svg"
+          alt="Open"
+        />
+        <img v-else src="@/assets/images/arrow_down_icon.svg" alt="Close" />
+      </span>
       <div id="innerToggleHead" :class="{ fixTop: visible }">
         <slot name="tabs"></slot>
         <div class="innerToggle pl-3 pr-3">
@@ -10,22 +22,6 @@
               style="width: 95%"
             >
               <slot name="badges"></slot>
-            </span>
-            <span
-              class="d-inline-block d-table-cell valign-middle cursor-pointer"
-              style="width: 5%; line-height: 0;"
-              @click.prevent="toggleSideBar"
-            >
-              <img
-                v-if="!visible"
-                src="@/assets/images/arrow_up_icon.svg"
-                alt="Open"
-              />
-              <img
-                v-else
-                src="@/assets/images/arrow_down_icon.svg"
-                alt="Close"
-              />
             </span>
           </div>
         </div>
@@ -55,7 +51,9 @@
 export default {
   data() {
     return {
-      visible: false
+      visible: false,
+      btnBottom: 100,
+      showCollapseBtn: true
     }
   },
   computed: {
@@ -67,10 +65,31 @@ export default {
     },
     showLoading() {
       return this.$store.state.sidebar.showLoading
+    },
+    btnBottoms() {
+      return {
+        bottom: `${this.btnBottom}px`,
+        display: this.showCollapseBtn ? 'flex' : 'none'
+      }
     }
+  },
+  mounted() {
+    const sideBarContainer = document.querySelector('#sidebar-outer-collapse')
+    if (sideBarContainer) {
+      this.btnBottom = sideBarContainer.offsetHeight + 15
+    }
+
+    this.$root.$on('btnBottomChange', () => {
+      this.showCollapseBtn = false
+      setTimeout(() => {
+        this.btnBottom = sideBarContainer.offsetHeight + 15
+        this.showCollapseBtn = true
+      }, 1000)
+    })
   },
   methods: {
     toggleSideBar() {
+      this.$root.$emit('btnBottomChange')
       this.visible = !this.visible
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
     }
@@ -100,7 +119,7 @@ export default {
   position: relative;
 }
 .innerToggle {
-  padding: 0.5em 1em;
+  padding: 1.25em 1em;
   background-color: white;
   box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
 }
@@ -123,7 +142,7 @@ export default {
   margin: 0 !important;
 }
 
-#outer-collapse {
+#sidebar-outer-collapse {
   background-color: white;
 }
 
@@ -164,11 +183,26 @@ export default {
   margin-bottom: 0;
 }
 
+.innerToggle-btn {
+  position: fixed;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  z-index: 9999999999;
+  border: 2.5px solid #b2bedc;
+  animation: hover 2.5s infinite;
+}
+
 .innerHeader {
   width: 100%;
 }
 
-#outer-collapse .card-body {
+#sidebar-outer-collapse .card-body {
   position: relative;
 }
 </style>
