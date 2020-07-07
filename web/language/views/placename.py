@@ -265,7 +265,7 @@ class PlaceNameViewSet(BaseModelViewSet):
             if data['value'] is not '' and data['is_private']:
                 if request and hasattr(request, "user") and request.user.is_authenticated:
                     # Only hide the data if the user accessing it is not the owner
-                    if placename.creator.id is not request.user.id:
+                    if placename.creator and placename.creator.id is not request.user.id:
                         data['value'] = 'CONFIDENTIAL'
                 else:
                     data['value'] = 'CONFIDENTIAL'
