@@ -265,6 +265,10 @@ export default {
     mobile: {
       default: false,
       type: Boolean
+    },
+    query: {
+      default: '',
+      type: String
     }
   },
   data() {
@@ -338,6 +342,10 @@ export default {
     }
   },
   mounted() {
+    if (this.query) {
+      this.searchQuery = this.query
+      this.handleSearchUpdate()
+    }
     document.addEventListener('click', this.clicked)
   },
   beforeDestroy() {
