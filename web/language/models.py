@@ -316,6 +316,9 @@ class PlaceName(CulturalModel):
         media.status = PlaceName.FLAGGED
         media.status_reason = status_reason
         media.save()
+    
+    class Meta:
+        verbose_name_plural = "Place Names"
 
 
 class Media(BaseModel):
@@ -387,6 +390,9 @@ class RelatedData(models.Model):
     is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(
         PlaceName, related_name='related_data', on_delete=models.CASCADE)
+    
+    class Meta:
+        verbose_name_plural = "Related Data"
 
 
 class Favourite(BaseModel):
@@ -478,6 +484,9 @@ class Taxonomy(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+    
+    class Meta:
+        verbose_name_plural = "Taxonomies"
 
 
 class PlaceNameTaxonomy(models.Model):
@@ -488,6 +497,9 @@ class PlaceNameTaxonomy(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.placename, self.taxonomy)
+    
+    class Meta:
+        verbose_name_plural = "Place Name Taxonomies"
 
 
 class LNA(BaseModel):
@@ -499,6 +511,9 @@ class LNA(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna1_lang_target_id
+    
+    class Meta:
+        verbose_name_plural = "LNA"
 
 
 class LNAData(BaseModel):
@@ -529,3 +544,6 @@ class LNAData(BaseModel):
     oece_hours = models.FloatField(default=0)
     info = models.TextField(default="")
     school_hours = models.FloatField(default=0)
+    
+    class Meta:
+        verbose_name_plural = "LNA Data"

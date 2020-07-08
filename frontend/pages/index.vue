@@ -188,7 +188,11 @@
         </div>
         <ModalNotification></ModalNotification>
         <div v-if="!isDrawMode" class="map-navigation-container">
-          <SearchBar class="hide-mobile"></SearchBar>
+          <SearchBar
+            :key="searchKey"
+            :query="searchQuery"
+            class="hide-mobile"
+          ></SearchBar>
           <transition name="fade-topbar" mode="out-in">
             <SearchOverlay
               v-if="showSearchOverlay"
@@ -303,6 +307,8 @@ export default {
     const bounds = [bbox[0], bbox[1]]
     return {
       maximumLength: 0,
+      searchQuery: '',
+      searchKey: 'search',
       showLoading: true,
       loggingIn: false,
       showSearchOverlay: false,
@@ -516,6 +522,11 @@ export default {
 
     setTimeout(() => {
       this.showLoading = false
+
+      if (this.$route.query.search) {
+        this.searchQuery = this.$route.query.search
+        this.searchKey += this.searchQuery
+      }
     }, 2000)
 
     // Showing the Notification on Media success

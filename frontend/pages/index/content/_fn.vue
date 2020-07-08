@@ -597,7 +597,11 @@ export default {
     },
     getHeaderDescription() {
       if (this.community) {
-        return `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
+        if (this.community.other_names) {
+          return `${this.community.name}, also known as ${this.community.other_names}, is an indigenous community of British Columbia.`
+        } else {
+          return `${this.community.name} is an indigenous community of British Columbia.`
+        }
       } else {
         return 'Community page not found.'
       }
