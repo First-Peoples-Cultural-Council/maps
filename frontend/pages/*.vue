@@ -12,9 +12,7 @@ export default {
 
     if (pathMatch.startsWith('node') || pathMatch.startsWith('fphlccmap')) {
       // Redirect to home for these paths
-      this.$router.push({
-        path: '/'
-      })
+      window.location = '/'
     } else if (pathMatch.startsWith('cna')) {
       // If this is a CNA back-link, parse data then redirect
       const cnaData = pathMatch.split('/')
@@ -44,24 +42,15 @@ export default {
       // Check if cna is not null
       // Redirect to community if it is not null. Else, redirect to home
       if (cna) {
-        this.$router.push({
-          path: `/content/${encodeFPCC(cna)}`
-        })
+        window.location = `/content/${encodeFPCC(cna)}`
       } else {
-        this.$router.push({
-          path: '/'
-        })
+        window.location = '/'
       }
     } else {
       // If there is an extension that's not included in the format above,
       // convert it into a search query in the home's Search Bar
       const searchParameter = this.$route.params.pathMatch.replace('_', ' ')
-      this.$router.push({
-        path: '/',
-        query: {
-          search: searchParameter
-        }
-      })
+      window.location = `/?search=${searchParameter}`
     }
   },
   methods: {
