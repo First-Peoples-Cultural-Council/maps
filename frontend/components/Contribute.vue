@@ -82,9 +82,7 @@
             </div>
           </div></b-list-group-item
         >
-      </b-list-group>
-      <b-list-group class="placename-group-container">
-        <b-list-group-item button class="mt-1" @click="validateArtist($event)">
+        <b-list-group-item button @click="validateArtist($event)">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
@@ -363,7 +361,7 @@ export default {
     width: 50px;
     height: 55px;
     border-radius: 100%;
-    z-index: 99999;
+    z-index: 999;
     border: 0 !important;
 
     span {
@@ -385,13 +383,13 @@ export default {
   color: white !important;
 }
 
+#contribute-modal {
+  z-index: 99999;
+}
+
 #contribute-modal .modal-body {
   padding: 0;
   margin: 0;
-}
-
-.placename-group-container {
-  position: absolute;
-  top: 294px;
+  z-index: 99999;
 }
 </style>
