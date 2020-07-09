@@ -1438,6 +1438,57 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
+    checkQuillSupport(html) {
+      let supported = true
+      const supportedTags = [
+        'H1',
+        'H2',
+        'H3',
+        'P',
+        'STRONG',
+        'EM',
+        'U',
+        'OL',
+        'UL',
+        'LI',
+        'BR'
+      ]
+
+      const container = document.createElement('div')
+      container.innerHTML = html
+
+      const tags = container.getElementsByTagName('*')
+      for (let i = 0; i < tags.length; i++) {
+        if (!supportedTags.includes(tags[i].tagName)) {
+          supported = false
+          break
+        }
+      }
+
+      return supported
+    },
+    htmlToText(html) {
+      // remove code brakes and tabs
+      html = html.replace(/\n/g, '')
+      html = html.replace(/\t/g, '')
+
+      // keep html brakes and tabs
+      html = html.replace(/<\/td>/g, '\t')
+      html = html.replace(/<\/table>/g, '\n')
+      html = html.replace(/<\/tr>/g, '\n')
+      html = html.replace(/<\/p>/g, '\n')
+      html = html.replace(/<\/div>/g, '\n')
+      html = html.replace(/<\/h>/g, '\n')
+      html = html.replace(/<br>/g, '\n')
+      html = html.replace(/<br( )*\/>/g, '\n')
+
+      // parse html into text
+      const dom = new DOMParser().parseFromString(
+        '<!doctype html><body>' + html,
+        'text/html'
+      )
+      return dom.body.textContent
+    },
     isUserPlacenameOwner() {
       if (this.isLoggedIn) {
         const isPlacenameFound = this.userDetail.placename_set.find(
@@ -1651,19 +1702,24 @@ export default {
           theme: 'snow'
         })
 
-        // Make sure that spans are rendered in quill
-        const Embed = Quill.import('blots/embed')
-        class SpanBlot extends Embed {}
-        SpanBlot.blotName = 'span'
-        SpanBlot.tagName = 'span'
-        Quill.register('formats/span', SpanBlot)
+        const quillSupported = this.checkQuillSupport(this.content)
 
-        editor.root.innerHTML = this.content
+        if (quillSupported) {
+          // If the format is supported by quill, we allow
+          // the editor to retain its original formatting.
+          const delta = editor.clipboard.convert(this.content)
+          editor.setContents(delta, 'silent')
+        } else {
+          // We clean the data by wiping out its HTML nature and
+          // replacing it with bare text with escape sequences
+          editor.setText(this.htmlToText(this.content))
+        }
+
         this.quillEditor = editor
       }
     },
     resetQuill() {
-      this.quillEditor.root.innerHTML = ''
+      this.quillEditor.setText('')
     },
     removeQuill() {
       // Removes an element from the document
