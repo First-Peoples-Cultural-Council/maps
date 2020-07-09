@@ -403,6 +403,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "status_reason",
             "medias",
             "community",
+            "other_community",
             "language",
             "non_bc_languages",
             "creator",
