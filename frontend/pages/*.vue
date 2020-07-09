@@ -1,5 +1,15 @@
 <template>
-  <div></div>
+  <div>
+    <head>
+      <title>First Peoples' Map of B.C.</title>
+      <meta
+        v-if="redirect"
+        http-equiv="refresh"
+        :content="`0;URL='${redirect}`"
+      />
+    </head>
+    <body></body>
+  </div>
 </template>
 
 <script>
@@ -7,12 +17,17 @@ import moment from 'moment'
 import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
+  data() {
+    return {
+      redirect: null
+    }
+  },
   mounted() {
     const pathMatch = this.$route.params.pathMatch
 
     if (pathMatch.startsWith('node') || pathMatch.startsWith('fphlccmap')) {
       // Redirect to home for these paths
-      window.location = '/'
+      this.redirect = '/'
     } else if (pathMatch.startsWith('cna')) {
       // If this is a CNA back-link, parse data then redirect
       const cnaData = pathMatch.split('/')
@@ -42,15 +57,15 @@ export default {
       // Check if cna is not null
       // Redirect to community if it is not null. Else, redirect to home
       if (cna) {
-        window.location = `/content/${encodeFPCC(cna)}`
+        this.redirect = `/content/${encodeFPCC(cna)}`
       } else {
-        window.location = '/'
+        this.redirect = '/'
       }
     } else {
       // If there is an extension that's not included in the format above,
       // convert it into a search query in the home's Search Bar
       const searchParameter = this.$route.params.pathMatch.replace('_', ' ')
-      window.location = `/?search=${searchParameter}`
+      this.redirect = `/?search=${searchParameter}`
     }
   },
   methods: {
