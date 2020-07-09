@@ -1413,7 +1413,7 @@ export default {
   left: 0;
   width: 425px;
   background-color: white;
-  z-index: 1000;
+  z-index: 900;
   height: 100%;
   overflow-y: auto;
 }
@@ -1460,7 +1460,7 @@ export default {
     left: 0;
     right: 0;
     top: unset;
-    height: 70px;
+    height: 65px;
     width: 100%;
     display: flex;
     align-items: center;

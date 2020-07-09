@@ -186,11 +186,11 @@
             <b-row class="mt-3 field-row">
               <div>
                 <label for="traditionalName" class="contribute-title-one mb-1">
-                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                  Language</label
                 >
                 <ToolTip
                   :content="
-                    `What is the primary language of this ${queryType}?`
+                    `Choices are 34 languages of BC or ‘other’ to enter your language manually.`
                   "
                 ></ToolTip>
               </div>
@@ -251,6 +251,24 @@
                 track-by="id"
                 :options="communities"
               ></multiselect>
+            </b-row>
+
+            <b-row
+              v-if="community && community.id === 'others'"
+              class="mt-3 field-row"
+            >
+              <div>
+                <label for="otherCommunity" class="contribute-title-one mb-1">
+                  Other Community</label
+                >
+              </div>
+
+              <b-form-input
+                id="otherCommunity"
+                v-model="otherCommunity"
+                type="text"
+                placeholder="(ex. Capitals, Alberta, etc.)                                                                                                                                                                                                        , English)"
+              ></b-form-input>
             </b-row>
 
             <b-row class="field-row">
@@ -871,6 +889,7 @@ export default {
       languageUserSelected: null,
       languageNonBCUser: null,
       languageNonBC: null,
+      otherCommunity: null,
       communitySelected: null,
       categorySelected: null,
       tname: '',
@@ -1033,12 +1052,14 @@ export default {
       return this.$store.state.languages.languageSet
     },
     languageList() {
-      const languageSet = this.languageSet.map(lang => {
-        return {
-          id: lang.id,
-          name: lang.name
-        }
-      })
+      const languageSet = this.languageSet
+        .map(lang => {
+          return {
+            id: lang.id,
+            name: lang.name
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
       languageSet.unshift({
         id: 'others',
         name: 'Others (please specify...)'
@@ -1052,12 +1073,20 @@ export default {
       return this.$store.state.user.user.communities
     },
     communities() {
-      return this.$store.state.communities.communitySet.map(c => {
-        return {
-          name: c.name,
-          id: c.id
+      const communityList = this.$store.state.communities.communitySet.map(
+        c => {
+          return {
+            name: c.name,
+            id: c.id
+          }
         }
+      )
+      communityList.unshift({
+        id: 'others',
+        name: 'Others (please specify...)'
       })
+
+      return communityList
     },
     getMediaFiles() {
       return this.$store.state.file.fileList
