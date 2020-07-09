@@ -57,9 +57,17 @@ export default {
 
 <style>
 .filter-container {
+  position: relative;
   display: flex;
   width: 90%;
-  position: relative;
+  margin: 1em 1em 0.25em 1em;
+}
+
+@media (max-width: 993px) {
+  .filter-container {
+    width: 95% !important ;
+    margin: 0 0 0.25em 0 !important;
+  }
 }
 
 .search-input::placeholder {

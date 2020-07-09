@@ -3,13 +3,16 @@
     <div v-if="community" class="w-100">
       <div
         v-if="!mobileContent"
-        class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+        class="content-collapse d-none content-mobile-title"
       >
         <div>
           Community:
           <span class="font-weight-bold">{{ commDetails.name }}</span>
         </div>
-        <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
@@ -594,7 +597,11 @@ export default {
     },
     getHeaderDescription() {
       if (this.community) {
-        return `${this.community.name}, also known as ${this.community.other_names} is an indigenous community of British Columbia.`
+        if (this.community.other_names) {
+          return `${this.community.name}, also known as ${this.community.other_names}, is an indigenous community of British Columbia.`
+        } else {
+          return `${this.community.name} is an indigenous community of British Columbia.`
+        }
       } else {
         return 'Community page not found.'
       }

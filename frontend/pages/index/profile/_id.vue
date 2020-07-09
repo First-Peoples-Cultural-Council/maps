@@ -3,12 +3,15 @@
     <div v-if="user && isOwner">
       <div
         v-if="!mobileContent"
-        class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+        class="content-collapse d-none content-mobile-title"
       >
         <div>
           User: <b-badge variant="primary">{{ getUserName() }}</b-badge>
         </div>
-        <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
@@ -42,6 +45,7 @@
             v-if="
               isLoggedIn &&
                 isOwner &&
+                listOfLanguages &&
                 listOfLanguages.length === 0 &&
                 user.communities &&
                 user.communities.length === 0
@@ -301,9 +305,11 @@ export default {
         (languages && languages.length > 0) ||
         (non_bc_languages && non_bc_languages.length > 0)
       ) {
-        const bcLanguages = languages.length !== 0 ? languages : []
+        const bcLanguages = languages && languages.length !== 0 ? languages : []
         const nonBCLanguages =
-          non_bc_languages.length !== 0 ? non_bc_languages : []
+          non_bc_languages && non_bc_languages.length !== 0
+            ? non_bc_languages
+            : []
 
         return [...bcLanguages, ...nonBCLanguages]
       } else {

@@ -184,11 +184,15 @@
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
+          <Contribute class="contribute-control mr-2"></Contribute>
         </div>
         <ModalNotification></ModalNotification>
         <div v-if="!isDrawMode" class="map-navigation-container">
-          <SearchBar class="hide-mobile"></SearchBar>
+          <SearchBar
+            :key="searchKey"
+            :query="searchQuery"
+            class="hide-mobile"
+          ></SearchBar>
           <transition name="fade-topbar" mode="out-in">
             <SearchOverlay
               v-if="showSearchOverlay"
@@ -303,6 +307,8 @@ export default {
     const bounds = [bbox[0], bbox[1]]
     return {
       maximumLength: 0,
+      searchQuery: '',
+      searchKey: 'search',
       showLoading: true,
       loggingIn: false,
       showSearchOverlay: false,
@@ -516,6 +522,11 @@ export default {
 
     setTimeout(() => {
       this.showLoading = false
+
+      if (this.$route.query.search) {
+        this.searchQuery = this.$route.query.search
+        this.searchKey += this.searchQuery
+      }
     }, 2000)
 
     // Showing the Notification on Media success
@@ -1402,7 +1413,7 @@ export default {
   left: 0;
   width: 425px;
   background-color: white;
-  z-index: 1000;
+  z-index: 900;
   height: 100%;
   overflow-y: auto;
 }
@@ -1449,7 +1460,7 @@ export default {
     left: 0;
     right: 0;
     top: unset;
-    height: 50px;
+    height: 65px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -1541,5 +1552,51 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+}
+
+.content-collapse {
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.75em;
+  margin: 0 0.75em;
+}
+
+.content-collapse-btn {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  left: 50%;
+  bottom: 75px;
+  z-index: 9999999999;
+  border: 2.5px solid #b2bedc;
+  animation: hover 2.5s infinite;
+}
+
+@keyframes hover {
+  0% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(5px);
+  }
+
+  50% {
+    transform: translateY(0);
+  }
+
+  70% {
+    transform: translateY(5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 </style>

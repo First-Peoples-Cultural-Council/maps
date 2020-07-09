@@ -11,7 +11,7 @@
     <template v-else>
       <div
         v-if="!mobileContent"
-        class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+        class="content-collapse d-none content-mobile-title"
       >
         <div>
           <b-badge
@@ -26,7 +26,10 @@
             Expand to fill out the form
           </b-badge>
         </div>
-        <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
@@ -183,11 +186,11 @@
             <b-row class="mt-3 field-row">
               <div>
                 <label for="traditionalName" class="contribute-title-one mb-1">
-                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                  Language</label
                 >
                 <ToolTip
                   :content="
-                    `What is the primary language of this ${queryType}?`
+                    `Choices are 34 languages of BC or ‘other’ to enter your language manually.`
                   "
                 ></ToolTip>
               </div>
@@ -248,6 +251,24 @@
                 track-by="id"
                 :options="communities"
               ></multiselect>
+            </b-row>
+
+            <b-row
+              v-if="community && community.id === 'others'"
+              class="mt-3 field-row"
+            >
+              <div>
+                <label for="otherCommunity" class="contribute-title-one mb-1">
+                  Other Community</label
+                >
+              </div>
+
+              <b-form-input
+                id="otherCommunity"
+                v-model="otherCommunity"
+                type="text"
+                placeholder="(ex. Capitals, Alberta, etc.)                                                                                                                                                                                                        , English)"
+              ></b-form-input>
             </b-row>
 
             <b-row class="field-row">
@@ -868,6 +889,7 @@ export default {
       languageUserSelected: null,
       languageNonBCUser: null,
       languageNonBC: null,
+      otherCommunity: null,
       communitySelected: null,
       categorySelected: null,
       tname: '',
@@ -1030,12 +1052,14 @@ export default {
       return this.$store.state.languages.languageSet
     },
     languageList() {
-      const languageSet = this.languageSet.map(lang => {
-        return {
-          id: lang.id,
-          name: lang.name
-        }
-      })
+      const languageSet = this.languageSet
+        .map(lang => {
+          return {
+            id: lang.id,
+            name: lang.name
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
       languageSet.unshift({
         id: 'others',
         name: 'Others (please specify...)'
@@ -1049,12 +1073,20 @@ export default {
       return this.$store.state.user.user.communities
     },
     communities() {
-      return this.$store.state.communities.communitySet.map(c => {
-        return {
-          name: c.name,
-          id: c.id
+      const communityList = this.$store.state.communities.communitySet.map(
+        c => {
+          return {
+            name: c.name,
+            id: c.id
+          }
         }
+      )
+      communityList.unshift({
+        id: 'others',
+        name: 'Others (please specify...)'
       })
+
+      return communityList
     },
     getMediaFiles() {
       return this.$store.state.file.fileList
@@ -1173,11 +1205,19 @@ export default {
         }
       }
 
+      if (place.other_community && place.other_community !== '') {
+        community = {
+          id: 'others',
+          name: 'Others (please specify...)'
+        }
+      }
+
       data = {
         place,
         traditionalName: place.name,
         alternateName: place.other_names,
         content: place.description,
+        otherCommunity: place.other_community,
         categorySelected: place.category,
         fileSrc: getMediaUrl(place.image),
         fileImg: null
@@ -1242,6 +1282,10 @@ export default {
               value: related.value,
               isError: null
             })
+          } else if (related.data_type === 'Event Date') {
+            const date = new Date(related.value)
+            data.dateValue = date.toISOString().slice(0, 10)
+            data.timeValue = date.toTimeString().slice(0, 8)
           } else if (related.data_type === 'contacted_only') {
             data.relatedData.contacted_only = related.value.includes('true')
               ? 'accepted'
@@ -1252,6 +1296,8 @@ export default {
               : 'not_accepted'
           } else if (related.data_type === 'is_online') {
             data.relatedData.is_online = related.value.includes('Online')
+              ? 'accepted'
+              : 'not_accepted'
           } else {
             data.relatedData[related.data_type] = related.value
           }
@@ -1370,7 +1416,6 @@ export default {
       this.initQuill()
       this.addAward()
       this.addSite()
-      this.setDateTimeNow()
       // Check if user has artist profile, if not, declare the values
       this.setArtistDetail()
       // Setup event details on form
@@ -1393,6 +1438,57 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
+    checkQuillSupport(html) {
+      let supported = true
+      const supportedTags = [
+        'H1',
+        'H2',
+        'H3',
+        'P',
+        'STRONG',
+        'EM',
+        'U',
+        'OL',
+        'UL',
+        'LI',
+        'BR'
+      ]
+
+      const container = document.createElement('div')
+      container.innerHTML = html
+
+      const tags = container.getElementsByTagName('*')
+      for (let i = 0; i < tags.length; i++) {
+        if (!supportedTags.includes(tags[i].tagName)) {
+          supported = false
+          break
+        }
+      }
+
+      return supported
+    },
+    htmlToText(html) {
+      // remove code brakes and tabs
+      html = html.replace(/\n/g, '')
+      html = html.replace(/\t/g, '')
+
+      // keep html brakes and tabs
+      html = html.replace(/<\/td>/g, '\t')
+      html = html.replace(/<\/table>/g, '\n')
+      html = html.replace(/<\/tr>/g, '\n')
+      html = html.replace(/<\/p>/g, '\n')
+      html = html.replace(/<\/div>/g, '\n')
+      html = html.replace(/<\/h>/g, '\n')
+      html = html.replace(/<br>/g, '\n')
+      html = html.replace(/<br( )*\/>/g, '\n')
+
+      // parse html into text
+      const dom = new DOMParser().parseFromString(
+        '<!doctype html><body>' + html,
+        'text/html'
+      )
+      return dom.body.textContent
+    },
     isUserPlacenameOwner() {
       if (this.isLoggedIn) {
         const isPlacenameFound = this.userDetail.placename_set.find(
@@ -1504,14 +1600,11 @@ export default {
       }
     },
     setEventDetails() {
-      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+      if (this.queryType === 'Event' && this.queryMode !== 'existing') {
         this.dateValue = new Date().toISOString().slice(0, 10)
+        this.timeValue = new Date().toTimeString().slice(0, 8)
         this.relatedData.is_online = false
       }
-    },
-    setDateTimeNow() {
-      const now = new Date()
-      this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
       this.relatedData.websiteList.push({
@@ -1609,19 +1702,24 @@ export default {
           theme: 'snow'
         })
 
-        // Make sure that spans are rendered in quill
-        const Embed = Quill.import('blots/embed')
-        class SpanBlot extends Embed {}
-        SpanBlot.blotName = 'span'
-        SpanBlot.tagName = 'span'
-        Quill.register('formats/span', SpanBlot)
+        const quillSupported = this.checkQuillSupport(this.content)
 
-        editor.root.innerHTML = this.content
+        if (quillSupported) {
+          // If the format is supported by quill, we allow
+          // the editor to retain its original formatting.
+          const delta = editor.clipboard.convert(this.content)
+          editor.setContents(delta, 'silent')
+        } else {
+          // We clean the data by wiping out its HTML nature and
+          // replacing it with bare text with escape sequences
+          editor.setText(this.htmlToText(this.content))
+        }
+
         this.quillEditor = editor
       }
     },
     resetQuill() {
-      this.quillEditor.root.innerHTML = ''
+      this.quillEditor.setText('')
     },
     removeQuill() {
       // Removes an element from the document
@@ -1806,7 +1904,7 @@ export default {
       }
 
       let community_id = null
-      if (this.community) {
+      if (this.community && this.community.id !== 'others') {
         community_id = this.community.id
       }
 
@@ -1848,6 +1946,7 @@ export default {
             ? 'public_art'
             : this.queryType.toLowerCase(),
         community: community_id,
+        other_community: this.otherCommunity,
         language: language_id,
         community_only: false,
         non_bc_languages: non_bc_language,
@@ -1974,7 +2073,7 @@ export default {
               ? 'Interested in Commercial Inquiry'
               : 'Not interested in Commercial Inquiry'
         } else if (field[0] === 'is_online') {
-          value = field[1] ? 'Online Event' : 'Physical Event'
+          value = field[1] === 'accepted' ? 'Online Event' : 'Physical Event'
         } else {
           value = field[1]
         }

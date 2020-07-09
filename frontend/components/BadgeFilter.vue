@@ -24,7 +24,6 @@
       <b-popover
         v-if="showOption"
         id="filter-popover"
-        class="hide-mobile"
         target="badge-choose"
         placement="bottom"
         triggers="click"
@@ -36,18 +35,28 @@
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
             class="badge-option-child"
-            @click="optionSelected([taxonomy.name])"
           >
+            <b-form-checkbox
+              id="online-event"
+              class="d-inline-block ml-2"
+              name="online-event"
+              value="accepted"
+              unchecked-value="not_accepted"
+            >
+            </b-form-checkbox>
             {{ taxonomy.name }}
-            <!-- <span v-if="hasTaxonomyChild(taxonomy.id)">></span> -->
 
+            <img
+              v-if="hasTaxonomyChild(taxonomy.id)"
+              src="@/assets/images/right.svg"
+            />
             <!-- Child Popover -->
             <b-popover
               v-if="hasTaxonomyChild(taxonomy.id)"
               :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
-              triggers="hover focus"
+              triggers="click"
             >
               <div class="badge-option-container">
                 <span
@@ -55,10 +64,24 @@
                   :id="`badge-child-option-${taxChild.id}`"
                   :key="taxChild.id"
                   @click="optionSelected([taxonomy.name, taxChild.name])"
-                  >{{ taxChild.name }}
+                >
+                  <b-form-checkbox
+                    id="online-event"
+                    class="d-inline-block ml-2"
+                    name="online-event"
+                    value="accepted"
+                    unchecked-value="not_accepted"
+                  >
+                  </b-form-checkbox>
+                  {{ taxChild.name }}
+
+                  <img
+                    v-if="hasTaxonomyChild(taxChild.id)"
+                    src="@/assets/images/right.svg"
+                  />
 
                   <!-- Child Child Popover -->
-                  <!-- <b-popover
+                  <b-popover
                     v-if="hasTaxonomyChild(taxChild.id)"
                     :id="`child1-popover-${taxChild.name}`"
                     :target="`badge-child-option-${taxChild.id}`"
@@ -77,10 +100,24 @@
                             taxChild1.name
                           ])
                         "
-                        >{{ taxChild1.name }}</span
                       >
+                        <b-form-checkbox
+                          id="online-event"
+                          class="d-inline-block ml-2"
+                          name="online-event"
+                          value="accepted"
+                          unchecked-value="not_accepted"
+                        >
+                        </b-form-checkbox>
+                        {{ taxChild1.name }}
+
+                        <img
+                          v-if="hasTaxonomyChild(taxChild1.id)"
+                          src="@/assets/images/right.svg"
+                        />
+                      </span>
                     </div>
-                  </b-popover> -->
+                  </b-popover>
                 </span>
               </div>
             </b-popover>
@@ -200,16 +237,25 @@ export default {
   flex-direction: column;
 
   span {
+    position: relative;
     display: flex;
-    flex-direction: column;
+    justify-items: flex-end;
+    align-items: center;
     color: #707070;
-    padding: 0.5em 1em;
+    padding: 0.5em 0.25em;
     cursor: pointer;
     text-transform: capitalize;
 
     &:hover {
       color: #fff;
       background: #b47839;
+    }
+
+    img {
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      right: 1em;
     }
   }
 }
