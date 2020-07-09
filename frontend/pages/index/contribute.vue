@@ -1205,11 +1205,19 @@ export default {
         }
       }
 
+      if (place.other_community && place.other_community !== '') {
+        community = {
+          id: 'others',
+          name: 'Others (please specify...)'
+        }
+      }
+
       data = {
         place,
         traditionalName: place.name,
         alternateName: place.other_names,
         content: place.description,
+        otherCommunity: place.other_community,
         categorySelected: place.category,
         fileSrc: getMediaUrl(place.image),
         fileImg: null
@@ -1274,6 +1282,10 @@ export default {
               value: related.value,
               isError: null
             })
+          } else if (related.data_type === 'Event Date') {
+            const date = new Date(related.value)
+            data.dateValue = date.toISOString().slice(0, 10)
+            data.timeValue = date.toTimeString().slice(0, 8)
           } else if (related.data_type === 'contacted_only') {
             data.relatedData.contacted_only = related.value.includes('true')
               ? 'accepted'
@@ -1284,6 +1296,8 @@ export default {
               : 'not_accepted'
           } else if (related.data_type === 'is_online') {
             data.relatedData.is_online = related.value.includes('Online')
+              ? 'accepted'
+              : 'not_accepted'
           } else {
             data.relatedData[related.data_type] = related.value
           }
@@ -1402,7 +1416,6 @@ export default {
       this.initQuill()
       this.addAward()
       this.addSite()
-      this.setDateTimeNow()
       // Check if user has artist profile, if not, declare the values
       this.setArtistDetail()
       // Setup event details on form
@@ -1536,14 +1549,11 @@ export default {
       }
     },
     setEventDetails() {
-      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+      if (this.queryType === 'Event' && this.queryMode !== 'existing') {
         this.dateValue = new Date().toISOString().slice(0, 10)
+        this.timeValue = new Date().toTimeString().slice(0, 8)
         this.relatedData.is_online = false
       }
-    },
-    setDateTimeNow() {
-      const now = new Date()
-      this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
       this.relatedData.websiteList.push({
@@ -1838,7 +1848,7 @@ export default {
       }
 
       let community_id = null
-      if (this.community) {
+      if (this.community && this.community.id !== 'others') {
         community_id = this.community.id
       }
 
@@ -1880,6 +1890,7 @@ export default {
             ? 'public_art'
             : this.queryType.toLowerCase(),
         community: community_id,
+        other_community: this.otherCommunity,
         language: language_id,
         community_only: false,
         non_bc_languages: non_bc_language,
@@ -2006,7 +2017,7 @@ export default {
               ? 'Interested in Commercial Inquiry'
               : 'Not interested in Commercial Inquiry'
         } else if (field[0] === 'is_online') {
-          value = field[1] ? 'Online Event' : 'Physical Event'
+          value = field[1] === 'accepted' ? 'Online Event' : 'Physical Event'
         } else {
           value = field[1]
         }
