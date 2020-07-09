@@ -150,7 +150,7 @@ export const getMediaUrl = (media_file, isServer) => {
   } else if (media_file.name) {
     return media_file.name
   } else if (media_file.includes('http://nginx')) {
-    return media_file.replace('http://nginx', '')
+    return media_file.replace('https://nginx', '')
   } else if (media_file.includes('https://nginx')) {
     return media_file.replace('https://nginx', '')
   }
