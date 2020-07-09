@@ -16,7 +16,7 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
+        <ArtistFilter />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
           <!-- Art Work Badge Filter  -->
           <BadgeFilter
