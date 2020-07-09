@@ -3,7 +3,7 @@
     <div v-if="artDetails" class="w-100 arts-main-wrapper">
       <div
         v-if="!mobileContent"
-        class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
+        class="content-collapse d-none content-mobile-title"
       >
         <div class="p-1">
           <img
@@ -13,7 +13,10 @@
           {{ artDetails.kind | titleCase }}:
           <span class="font-weight-bold">{{ artDetails.name }}</span>
         </div>
-        <div @click="$store.commit('sidebar/setMobileContent', true)">
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
