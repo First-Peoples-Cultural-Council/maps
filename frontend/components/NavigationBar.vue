@@ -344,7 +344,7 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 999;
+  z-index: 99;
   width: 10px;
   height: 10px;
   background-color: rgba(173, 20, 20, 0.753);
