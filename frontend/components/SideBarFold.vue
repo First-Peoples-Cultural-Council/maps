@@ -3,7 +3,6 @@
     <b-collapse id="sidebar-outer-collapse" ref="outerToggleHead" visible>
       <span
         class="innerToggle-btn cursor-pointer"
-        :style="btnBottoms"
         @click.prevent="toggleSideBar"
       >
         <img
@@ -13,6 +12,7 @@
         />
         <img v-else src="@/assets/images/arrow_down_icon.svg" alt="Close" />
       </span>
+
       <div id="innerToggleHead" :class="{ fixTop: visible }">
         <slot name="tabs"></slot>
         <div class="innerToggle pl-3 pr-3">
@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <div ref="innerCollapse">
+      <div ref="innerCollapse" class="collapse-item-container">
         <b-collapse
           id="side-inner-collapse"
           v-model="visible"
@@ -51,9 +51,7 @@
 export default {
   data() {
     return {
-      visible: false,
-      btnBottom: 100,
-      showCollapseBtn: true
+      visible: false
     }
   },
   computed: {
@@ -65,31 +63,10 @@ export default {
     },
     showLoading() {
       return this.$store.state.sidebar.showLoading
-    },
-    btnBottoms() {
-      return {
-        bottom: `${this.btnBottom}px`,
-        display: this.showCollapseBtn ? 'flex' : 'none'
-      }
     }
-  },
-  mounted() {
-    const sideBarContainer = document.querySelector('#sidebar-outer-collapse')
-    if (sideBarContainer) {
-      this.btnBottom = sideBarContainer.offsetHeight + 15
-    }
-
-    this.$root.$on('btnBottomChange', () => {
-      this.showCollapseBtn = false
-      setTimeout(() => {
-        this.btnBottom = sideBarContainer.offsetHeight + 15
-        this.showCollapseBtn = true
-      }, 1000)
-    })
   },
   methods: {
     toggleSideBar() {
-      this.$root.$emit('btnBottomChange')
       this.visible = !this.visible
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
     }
@@ -121,7 +98,7 @@ export default {
 .innerToggle {
   padding: 1.25em 1em;
   background-color: white;
-  box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 6px 3px rgba(0, 0, 0, 0.2);
 }
 .fixTop {
   position: static;
@@ -143,7 +120,7 @@ export default {
 }
 
 #sidebar-outer-collapse {
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0);
 }
 
 #side-inner-collapse .sidebar-tabs {
@@ -184,8 +161,7 @@ export default {
 }
 
 .innerToggle-btn {
-  position: fixed;
-  left: 50%;
+  margin: auto auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,8 +174,17 @@ export default {
   animation: hover 2.5s infinite;
 }
 
+.collapse-item-container {
+  background: #fefefe;
+}
 .innerHeader {
   width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .innerHeader {
+    width: 90%;
+  }
 }
 
 #sidebar-outer-collapse .card-body {
