@@ -1393,7 +1393,7 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
-    checkQuillSupport(html) {
+    isQuillSupportedHTML(html) {
       let supported = true
       const supportedTags = [
         'H1',
@@ -1660,7 +1660,7 @@ export default {
           theme: 'snow'
         })
 
-        const quillSupported = this.checkQuillSupport(this.content)
+        const quillSupported = this.isQuillSupportedHTML(this.content)
 
         if (quillSupported) {
           // If the format is supported by quill, we allow
@@ -1757,7 +1757,13 @@ export default {
         status = 'UN'
       }
       if (this.quillEditor) {
-        this.content = this.quillEditor.root.innerHTML
+        // If there's nothing on the editor, make
+        // description blank to force an error
+        if (this.quillEditor.getText().trim() === '') {
+          this.content = ''
+        } else {
+          this.content = this.quillEditor.root.innerHTML
+        }
       } else {
         return
       }
@@ -1890,7 +1896,13 @@ export default {
         status = 'UN'
       }
       if (this.quillEditor) {
-        this.content = this.quillEditor.root.innerHTML
+        // If there's nothing on the editor, make
+        // description blank to force an error
+        if (this.quillEditor.getText().trim() === '') {
+          this.content = ''
+        } else {
+          this.content = this.quillEditor.root.innerHTML
+        }
       } else {
         return
       }
