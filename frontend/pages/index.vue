@@ -448,7 +448,23 @@ export default {
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
-    store.commit('arts/setTaxonomySearchSet', results[5])
+
+    const taxonomies = [
+      ...results[5],
+      ...Array.from(['image', 'video', 'audio']).map(type => {
+        return {
+          id: type,
+          name: type
+        }
+      })
+    ]
+    store.commit(
+      'arts/setTaxonomySearchSet',
+      taxonomies.map(tax => {
+        tax.isChecked = false
+        return tax
+      })
+    )
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -1578,6 +1594,8 @@ export default {
   animation: hover 2.5s infinite;
 }
 
+/* Animation  */
+
 @keyframes hover {
   0% {
     transform: translateY(0);
@@ -1597,6 +1615,23 @@ export default {
 
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes shadowpulse {
+  0% {
+    transform: scale(0.975);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.975);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
 }
 </style>

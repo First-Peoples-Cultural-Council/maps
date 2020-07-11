@@ -23,6 +23,7 @@
             :is-selected="filterMode === 'artwork'"
             :child-taxonomy="artworkTaxonomy()"
             :color="'#5A8467'"
+            :type="'artwork'"
           >
             <template v-slot:badge>
               <Badge
@@ -387,16 +388,19 @@ export default {
         if (this.filterMode === 'artwork') {
           return artsArray.filter(art => {
             return (
-              this.artMediaType(art.properties.file_type) ===
-              this.taxonomyFilter[0]
+              // this.artMediaType(art.properties.file_type) ===
+              // this.taxonomyFilter[0]
+              this.taxonomyFilter.find(
+                taxo => taxo === this.artMediaType(art.properties.file_type)
+              )
             )
           })
         } else {
           return artsArray.filter(art => {
-            return art.properties.taxonomies.some(
-              taxonomy =>
-                taxonomy.name ===
-                this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
+            return art.properties.taxonomies.some(taxonomy =>
+              // taxonomy.name ===
+              // this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
+              this.taxonomyFilter.find(taxo => taxonomy.name === taxo)
             )
           })
         }
@@ -479,6 +483,11 @@ export default {
       // })
     },
     resetFilter() {
+      const resetTaxonomy = this.taxonomies.map(taxonomy => {
+        taxonomy.isChecked = false
+        return taxonomy
+      })
+      this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
     },
@@ -583,12 +592,12 @@ export default {
       )
     },
     artworkTaxonomy() {
-      return Array.from(['image', 'video', 'audio']).map(type => {
-        return {
-          id: type,
-          name: type
-        }
-      })
+      return this.taxonomies.filter(
+        taxonomy =>
+          taxonomy.name === 'image' ||
+          taxonomy.name === 'audio' ||
+          taxonomy.name === 'video'
+      )
     },
     artMediaType(type) {
       if (type) {

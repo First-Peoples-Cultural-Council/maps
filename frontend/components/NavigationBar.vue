@@ -146,6 +146,11 @@
           </nuxt-link>
 
           <ul class="nav-links p-0 m-0 list-style-none">
+            <li v-if="isUserAdmin">
+              <a class="color-gray" href="/admin" target="_blank"
+                >Go to Admin Page</a
+              >
+            </li>
             <li>
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
@@ -213,6 +218,13 @@ export default {
     }),
     user() {
       return this.$store.state.user.user
+    },
+    isUserAdmin() {
+      return (
+        this.isLoggedIn &&
+        this.user &&
+        (this.user.is_staff || this.user.isSuperUser)
+      )
     },
     showNotificationBadge() {
       return (
@@ -490,10 +502,11 @@ export default {
 
   .user_icon {
     border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 0.5em;
+
     width: 80px;
     height: 80px;
     border-radius: 0.5em;
+    object-fit: cover;
   }
   .nav-container {
     height: 100%;
