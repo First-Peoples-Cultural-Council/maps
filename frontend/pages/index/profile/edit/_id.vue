@@ -152,10 +152,9 @@
               >User Description</label
             >
 
-            <section class="pl-3 pr-3 pb-2">
-              <div class="pl-3 pr-3">
-                <div id="quill" ref="quill"></div>
-              </div>
+            <section class="pb-2">
+              <div id="quill" ref="quill"></div>
+
               <label
                 class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
                 >Notifications</label

@@ -20,7 +20,7 @@
           </h5>
         </div>
 
-        <div class="user-action-container">
+        <div class="user-action-container mb-3">
           <CardBadge
             v-if="edit && id"
             content="Edit"
