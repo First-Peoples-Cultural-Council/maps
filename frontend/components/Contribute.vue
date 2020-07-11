@@ -342,6 +342,7 @@ export default {
   font: Bold 15px/18px Proxima Nova;
   color: #ffffff;
   text-transform: uppercase;
+  animation: shadowpulse 5s ease infinite;
 
   img {
     display: none;
