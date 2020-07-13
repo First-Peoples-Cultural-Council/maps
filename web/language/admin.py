@@ -2,8 +2,10 @@ from django.contrib import admin
 
 from .models import (
     Language,
+    LanguageLink,
     LanguageFamily,
     Community,
+    CommunityLink,
     CommunityMember,
     Dialect,
     PlaceName,
@@ -21,8 +23,14 @@ from .models import (
 
 
 # INLINES
-class DialectInline(admin.StackedInline):
+class DialectInline(admin.TabularInline):
     model = Dialect
+
+class LanguageLinkInline(admin.TabularInline):
+    model = LanguageLink
+
+class CommunityLinkInline(admin.TabularInline):
+    model = CommunityLink
 
 
 # ADMINS
@@ -35,6 +43,7 @@ class LanguageAdmin(admin.ModelAdmin):
     )
     inlines = [
         DialectInline,
+        LanguageLinkInline
     ]
 
 
@@ -43,6 +52,9 @@ class CommunityAdmin(admin.ModelAdmin):
     search_fields = (
         "name",
     )
+    inlines = [
+        CommunityLinkInline,
+    ]
 
 
 class DialectAdmin(admin.ModelAdmin):
