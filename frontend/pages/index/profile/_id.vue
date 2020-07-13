@@ -67,6 +67,12 @@
               ></b-alert
             >
           </div>
+          <div v-if="isStaff && isSuperUser && isLoggedIn">
+            <b-alert variant="success" show
+              >You're an admin. Open admin page
+              <a href="/admin" target="_blank">here</a>
+            </b-alert>
+          </div>
           <div
             v-if="
               (user.languages && user.languages.length > 0) ||
