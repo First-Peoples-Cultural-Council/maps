@@ -39,6 +39,8 @@ services:
       - COGNITO_APP_CLIENT_ID=7rj6th7pknck3tih16ihekk1ik
     volumes:
       - ./web/media:/media
+    volumes:
+      - ./web/media:/media
 
 volumes:
   pg-data:
