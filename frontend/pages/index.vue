@@ -180,7 +180,10 @@
           @map-moveend="mapMoveEnd"
           @map-sourcedata="mapSourceData"
         ></Mapbox>
-        <div class="map-controls-overlay">
+        <div
+          v-if="$route.path !== '/splashscreen'"
+          class="map-controls-overlay"
+        >
           <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
           <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
           <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
