@@ -89,6 +89,18 @@
             ></b-form-input>
 
             <label
+              class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+              >Artist Profile</label
+            >
+            <multiselect
+              v-model="artist_profile"
+              placeholder="Search or select an Artist Profile"
+              label="name"
+              track-by="id"
+              :options="artistPlacenames"
+            ></multiselect>
+
+            <label
               class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
               >Languages</label
             >
@@ -244,6 +256,22 @@ export default {
         }
       })
     },
+    isArtistPlacenameExist() {
+      const isPlacenameFound = this.user.placename_set.filter(
+        placename => placename.kind === 'artist'
+      )
+      return isPlacenameFound.length !== 0
+    },
+    artistPlacenames() {
+      return this.user.placename_set
+        .filter(placename => placename.kind === 'artist')
+        .map(place => {
+          return {
+            id: place.id,
+            name: place.name
+          }
+        })
+    },
     languages() {
       return this.$store.state.languages.languageSet.map(l => {
         return {
@@ -306,6 +334,7 @@ export default {
     // Add Others on the selected list if Non B.C Language exists
     let languageValue = []
     let languageNonBC = []
+    let artist_profile = {}
 
     if (user.languages && user.languages.length !== 0) {
       languageValue = user.languages
@@ -319,10 +348,23 @@ export default {
       })
     }
 
+    if (user.artist_profile) {
+      const findProfile = user.placename_set.find(
+        placename => placename.id === user.artist_profile
+      )
+      if (findProfile) {
+        artist_profile = {
+          id: findProfile.id,
+          name: findProfile.name
+        }
+      }
+    }
+
     return {
       user,
       data,
       options,
+      artist_profile,
       value: languageValue,
       languageNonBC,
       community: user.communities[0],
@@ -398,6 +440,7 @@ export default {
       } else {
         return
       }
+
       const data = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
@@ -406,6 +449,7 @@ export default {
           .filter(lang => lang.id !== 'others')
           .map(lang => lang.id),
         community_ids: communityId,
+        artist_profile: this.artist_profile ? this.artist_profile.id : '',
         notification_frequency: this.user.notification_frequency,
         non_bc_languages: this.value.find(lang => lang.id === 'others')
           ? this.languageNonBC
@@ -423,24 +467,6 @@ export default {
         const imgResult = this.uploadUserDP(this.user.id, headers)
 
         if (result && imgResult) {
-          const findUserArtist = this.oldUser.placename_set.find(
-            placename =>
-              placename.kind === 'artist' &&
-              placename.name ===
-                `${this.oldUser.first_name} ${this.oldUser.last_name}`
-          )
-
-          // Also update the Artist Placename name
-          if (findUserArtist) {
-            const patchData = {
-              name: `${data.first_name} ${data.last_name}`
-            }
-            await this.$axios.$patch(
-              `/api/placename/${findUserArtist.id}/`,
-              patchData,
-              headers
-            )
-          }
           await this.$store.dispatch('user/setLoggedInUser')
         }
       } catch (e) {
