@@ -65,6 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login",
             "date_joined",
             "communities",
+            "artist_profile",
             "languages",
             "non_bc_languages",
             "placename_set",
