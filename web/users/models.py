@@ -49,6 +49,9 @@ class User(AbstractUser):
     picture = models.URLField(max_length=255, null=True)
     image = models.ImageField(null=True, blank=True, default=None)
     notification_frequency = models.IntegerField(default=7)
+    artist_profile = models.ForeignKey(
+        "language.Placename", on_delete=models.SET_NULL, default=None, blank=True, null=True
+    )
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
     )

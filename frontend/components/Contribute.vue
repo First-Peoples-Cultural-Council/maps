@@ -218,8 +218,7 @@ export default {
         const foundUserArtist = this.userDetail.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            placename.name ===
-              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+            placename.id === this.userDetail.artist_profile
         )
         const getAllArtist = this.userDetail.placename_set.filter(
           placename => placename.kind === 'artist'

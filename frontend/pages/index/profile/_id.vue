@@ -60,9 +60,19 @@
           </div>
           <div v-if="isLoggedIn && isOwner && !isArtistProfileExist()">
             <b-alert variant="danger" show
-              >Please create your artist profile by clicking
+              >{{
+                artistProfilePlaceholder
+                  ? `Select a Artist Profile from Artists that you're handling, by clicking `
+                  : 'Please create your artist profile by clicking'
+              }}
               <router-link
-                :to="`/contribute?mode=placename&type=Artist&profile=true`"
+                :to="
+                  `${
+                    artistProfilePlaceholder
+                      ? `/profile/edit/${user.id}`
+                      : `/contribute?mode=placename&type=Artist&profile=true`
+                  }`
+                "
                 >here</router-link
               ></b-alert
             >
@@ -365,18 +375,15 @@ export default {
       }
     },
     isArtistProfileExist() {
-      const { placename_set, first_name, last_name } = this.user
-      if (placename_set) {
-        const foundUserArtist = placename_set.find(
-          placename =>
-            placename.kind === 'artist' &&
-            placename.name === `${first_name} ${last_name}`
-        )
+      return !!this.user.artist_profile
+    },
+    artistProfilePlaceholder() {
+      const { placename_set } = this.user
+      const artistProfiles = placename_set.filter(
+        placename => placename.kind === 'artist'
+      )
 
-        return !!foundUserArtist
-      } else {
-        return false
-      }
+      return artistProfiles.length !== 0
     },
     isAdmin() {
       return this.user && this.user.id === this.$store.state.user.user.id
