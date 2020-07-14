@@ -743,7 +743,7 @@ export default {
     font-size: 0.8em;
     border-radius: 0;
     outline: none;
-    padding: 0;
+    padding: 0.5em;
   }
 
   .search-mobile-input #search-input:focus {
