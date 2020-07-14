@@ -16,7 +16,7 @@
       hide-header
       title="Contribute"
     >
-      <b-list-group>
+      <b-list-group class="contribute-option-list">
         <!--<b-list-group-item button @click="handleClick($event, 'heritage')">
           <div class="contribute-list-group-title">Edit An Existing Place</div>
           <div>
@@ -371,6 +371,10 @@ export default {
     img {
       display: block !important;
     }
+  }
+
+  .contribute-option-list {
+    font: Bold 12px/15px Proxima Nova;
   }
 }
 
