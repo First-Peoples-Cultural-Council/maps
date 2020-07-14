@@ -1030,8 +1030,8 @@ export default {
         const isArtistProfileFound = this.userDetail.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            placename.name ===
-              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+            this.userDetail.artist_profile &&
+            placename.id === this.userDetail.artist_profile
         )
         return isArtistProfileFound
       } else {
@@ -2016,6 +2016,11 @@ export default {
             // Patch placename thumbnail
             this.uploadPlacenameThumbnail(id, headers)
 
+            // Update the User artist's profile if artist creation
+            if (this.queryProfile) {
+              this.patchUserData(id, headers)
+            }
+
             // PATCH DATA AFTER POSTING
             const data1 = this.getPatchData(id)
 
@@ -2242,6 +2247,17 @@ export default {
 
         return result
       }
+    },
+    async patchUserData(id, header) {
+      const data = {
+        artist_profile: id
+      }
+      const result = await this.$axios.$patch(
+        getApiUrl(`user/${this.userDetail.id}/`),
+        data,
+        header
+      )
+      return result
     },
     redirectToPlacename() {
       if (this.getMediaFiles.length !== 0) {
