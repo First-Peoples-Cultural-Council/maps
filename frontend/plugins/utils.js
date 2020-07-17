@@ -148,9 +148,11 @@ export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
   } else if (media_file.includes('http://nginx')) {
-    return media_file.replace('https://nginx', '')
+    return media_file.replace('http://nginx', '')
   } else if (media_file.includes('https://nginx')) {
     return media_file.replace('https://nginx', '')
+  } else if (media_file && media_file.includes('http://')) {
+    media_file.replace('http://', 'https://')
   }
 
   if (media_file.name) {
