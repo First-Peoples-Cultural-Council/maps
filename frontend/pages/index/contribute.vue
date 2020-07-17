@@ -22,7 +22,13 @@
           >
             Please draw at least one feature from the map
           </b-badge>
-          <b-badge v-else show variant="primary" class="p-2">
+          <b-badge
+            v-else
+            show
+            variant="primary"
+            class="p-2"
+            @click="$store.commit('sidebar/setMobileContent', true)"
+          >
             Expand to fill out the form
           </b-badge>
         </div>
