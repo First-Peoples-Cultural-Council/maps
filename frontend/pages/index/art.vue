@@ -3,7 +3,7 @@
     <SideBar
       v-if="this.$route.name === 'index-art'"
       active="Arts"
-      :show-side-panel="showDrawer"
+      :show-side-panel="isDrawerShown"
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
@@ -145,7 +145,7 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails === art.properties && showDrawer"
+                :is-selected="artDetails === art.properties && isDrawerShown"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties)"
               ></ArtworkCard>
@@ -172,8 +172,8 @@
           </b-row>
         </section>
       </template>
-      <template v-if="showDrawer" v-slot:side-panel>
-        <ArtsDrawer :art="artDetails" :toggle-panel="toggleSidePanel" />
+      <template v-if="isDrawerShown" v-slot:side-panel>
+        <ArtsDrawer :art="artDetails" />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -245,7 +245,7 @@ export default {
     isSearchMode() {
       return this.searchQuery.length !== 0
     },
-    showDrawer() {
+    isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
     arts() {
@@ -467,9 +467,12 @@ export default {
   },
   methods: {
     badgeClick($event, name) {
-      if (this.showDrawer) {
-        this.toggleSidePanel()
+      if (this.isDrawerShown) {
+        this.toggleArtsDrawer()
       }
+
+      this.$root.$emit('setMobileSideBarState')
+
       this.resetFilter()
       this.maximumLength = 0
       this.handleBadge($event, name)
@@ -535,8 +538,8 @@ export default {
       }
     },
     handleCardClick($event, name, type) {
-      if (this.showDrawer) {
-        this.toggleSidePanel()
+      if (this.isDrawerShown) {
+        this.toggleArtsDrawer()
       }
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
@@ -544,12 +547,12 @@ export default {
     },
     selectMedia(currentArt) {
       // If Same Artwork is clicked, close the drawer
-      if (currentArt === this.artDetails && this.showDrawer) {
+      if (currentArt === this.artDetails && this.isDrawerShown) {
         this.artDetails = {}
         this.closeDrawer()
       }
       // If another artwork is selected when there's open, close it to recalibrate data, then open
-      else if (currentArt !== this.artDetails && this.showDrawer) {
+      else if (currentArt !== this.artDetails && this.isDrawerShown) {
         this.artDetails = currentArt
         // Important to open it after closing the drawer
         this.closeDrawer()
@@ -558,15 +561,15 @@ export default {
         }, 100)
       }
       // If no artwork is selected, it opens the drawer
-      else if (currentArt !== this.artDetails || !this.showDrawer) {
+      else if (currentArt !== this.artDetails || !this.isDrawerShown) {
         this.artDetails = currentArt
         this.openDrawer()
       }
       // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
     },
-    toggleSidePanel() {
-      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+    toggleArtsDrawer() {
+      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     openDrawer() {
       this.$store.commit('sidebar/setDrawerContent', true)
