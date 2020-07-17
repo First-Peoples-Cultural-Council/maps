@@ -76,7 +76,7 @@
           <div
             :class="
               `artist-content-container ${
-                isCollapse ? 'collapse-content-container' : ''
+                isCollapse || !isArtist ? 'collapse-content-container' : ''
               }`
             "
           >
