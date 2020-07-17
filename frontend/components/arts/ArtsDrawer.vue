@@ -414,7 +414,10 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
   }
-  .panel-close-btn {
+  .arts-main-wrapper .panel-close-btn {
+    display: none !important;
+  }
+  .profile-container .panel-close-btn {
     display: none !important;
   }
 }

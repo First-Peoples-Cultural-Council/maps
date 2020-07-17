@@ -254,6 +254,11 @@ export default {
       }, '')
     },
     removeTag() {
+      const resetTaxonomy = this.taxonomies.map(taxonomy => {
+        taxonomy.isChecked = false
+        return taxonomy
+      })
+      this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
       this.$store.commit('arts/setTaxonomyTag', [])
     },
     checkIfSelected(value) {
