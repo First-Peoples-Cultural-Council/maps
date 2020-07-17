@@ -65,6 +65,13 @@ export default {
       return this.$store.state.sidebar.showLoading
     }
   },
+  mounted() {
+    this.$root.$on('setMobileSideBarState', () => {
+      if (!this.visible) {
+        this.toggleSideBar()
+      }
+    })
+  },
   methods: {
     toggleSideBar() {
       this.visible = !this.visible

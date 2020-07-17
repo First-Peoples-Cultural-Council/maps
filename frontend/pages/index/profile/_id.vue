@@ -236,6 +236,15 @@
             </div>
           </div>
         </section>
+        <ArtsDrawer
+          v-if="artDetails && isGalleryNotEmpty"
+          :art="artDetails"
+          :artist-profile="user.artist_profile"
+          class="sidebar-side-panel hide-mobile"
+          :class="{
+            'hide-scroll-y': isGalleryShown
+          }"
+        ></ArtsDrawer>
       </div>
     </div>
     <ErrorScreen v-else></ErrorScreen>
@@ -253,6 +262,7 @@ import CommunityCard from '@/components/communities/CommunityCard.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import Logo from '@/components/Logo.vue'
 import ErrorScreen from '@/layouts/error.vue'
+import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {
   components: {
@@ -263,7 +273,8 @@ export default {
     CommunityCard,
     Logo,
     ArtsCard,
-    ErrorScreen
+    ErrorScreen,
+    ArtsDrawer
   },
   computed: {
     isLoggedIn() {
@@ -331,6 +342,18 @@ export default {
       } else {
         return []
       }
+    },
+    isGalleryNotEmpty() {
+      return (
+        this.artDetails.medias.length !== 0 ||
+        this.artDetails.public_arts.length !== 0
+      )
+    },
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
+    },
+    isGalleryShown() {
+      return this.$store.state.sidebar.showGallery
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -340,6 +363,9 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.$store.commit('sidebar/set', false)
+    if (this.isDrawerShown) {
+      this.$store.commit('sidebar/setDrawerContent', false)
+    }
     next()
   },
   async asyncData({ params, $axios, store, dispatch }) {
@@ -352,6 +378,12 @@ export default {
     )
 
     const allArts = await $axios.$get(getApiUrl(`art-search?format=json`))
+    let artDetails = null
+    if (user.artist_profile) {
+      artDetails = await $axios.$get(
+        getApiUrl('placename/' + user.artist_profile)
+      )
+    }
 
     let isOwner = false
     if (authUser.is_authenticated === true) {
@@ -365,7 +397,16 @@ export default {
       await store.dispatch('places/getFavourites')
     }
 
-    return { user, isOwner, allArts }
+    return { user, isOwner, allArts, artDetails }
+  },
+  mounted() {
+    if (
+      this.artDetails &&
+      (this.artDetails.medias.length !== 0 ||
+        this.artDetails.public_arts.length !== 0)
+    ) {
+      this.$store.commit('sidebar/setDrawerContent', true)
+    }
   },
   methods: {
     encodeFPCC,
