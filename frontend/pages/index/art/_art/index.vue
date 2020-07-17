@@ -214,24 +214,13 @@
         </div>
       </div>
       <ArtsDrawer
-        v-if="(mobileContent || isDrawerShown) && isGalleryNotEmpty"
+        v-if="isGalleryNotEmpty"
         :art="artDetails"
-        :show-panel="isDrawerShown"
-        :toggle-panel="toggleArtsDrawer"
         class="sidebar-side-panel hide-mobile"
         :class="{
           'hide-scroll-y': isGalleryShown
         }"
       />
-      <div
-        v-if="isGalleryNotEmpty && !isDrawerShown"
-        class="panel-collapsable hide-mobile "
-      >
-        <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
-          <img src="@/assets/images/go_icon_hover.svg" />
-          <span>Expand</span>
-        </div>
-      </div>
     </div>
     <ErrorScreen v-else></ErrorScreen>
   </div>
@@ -533,9 +522,6 @@ export default {
     toggleDescription() {
       this.collapseDescription = !this.collapseDescription
     },
-    toggleArtsDrawer() {
-      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
-    },
     stringSplit(string) {
       const stringValue = this.collapseDescription
         ? `${string} `
@@ -724,82 +710,12 @@ export default {
   background-color: rgba(0, 0, 0, 1);
 }
 
-.panel-collapsable {
-  width: 15px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 425px;
-  background: #f9f9f9 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
-  border: 1px solid #d7d7de;
-}
-
-.btn-collapse {
-  padding: 1em;
-  margin-top: 1.5em;
-  margin-left: 0.8em;
-  width: 100px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top-right-radius: 1em;
-  border-bottom-right-radius: 1em;
-  color: #fff;
-  background-color: #b47a2b;
-}
-
-.btn-collapse img {
-  margin-right: 0.5em;
-}
-
 .artist-img-small {
   width: 40px;
   height: 40px;
 }
 
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
-@media (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
-}
-
-@media (min-width: 993px) and (max-width: 1150px) {
-  .btn-collapse {
-    width: 50px;
-
-    span {
-      display: none;
-    }
-  }
-}
-
 @media (max-width: 992px) {
-  .sidebar-side-panel {
-    display: block !important;
-    position: initial;
-    width: 100%;
-    height: 100vh;
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    z-index: 999999;
-  }
   .arts-main-container {
     background: #f9f9f9 0% 0% no-repeat padding-box;
   }
