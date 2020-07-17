@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="user && isOwner">
+    <div v-if="user && isOwner" class="profile-container">
       <div
         v-if="!mobileContent"
         class="content-collapse d-none content-mobile-title"
