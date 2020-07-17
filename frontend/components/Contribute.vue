@@ -374,7 +374,7 @@ export default {
   }
 
   .contribute-option-list {
-    font: Bold 12px/15px Proxima Nova;
+    font: Bold 13px/16px Proxima Nova;
   }
 }
 
