@@ -134,7 +134,7 @@
                 v-if="!picture"
                 src="@/assets/images/user_icon.svg"
                 alt="Menu"
-                class="navbar-icon user_icon d-inline-block"
+                class="navbar-icon user_default d-inline-block"
               />
               <img
                 v-if="picture"
@@ -491,23 +491,29 @@ export default {
   margin: 0 0.25em;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 993px) {
   .searchbar-mobile {
     flex: 10 1 auto;
   }
 
   .user-mobile {
     display: block !important;
+
+    .user_icon {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      width: 80px;
+      height: 80px;
+      border-radius: 0.5em;
+      object-fit: cover;
+    }
+    .user_default {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      width: 50px;
+      height: 50px;
+      border-radius: 0.5em;
+    }
   }
 
-  .user_icon {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-
-    width: 80px;
-    height: 80px;
-    border-radius: 0.5em;
-    object-fit: cover;
-  }
   .nav-container {
     height: 100%;
     display: flex;

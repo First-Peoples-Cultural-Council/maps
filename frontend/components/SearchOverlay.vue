@@ -1,7 +1,7 @@
 <template>
   <div v-if="show">
     <div class="searchbar-overlay-container">
-      <SearchBar :mobile="true"></SearchBar>
+      <SearchBar class="mt-3" :mobile="true"></SearchBar>
     </div>
   </div>
 </template>

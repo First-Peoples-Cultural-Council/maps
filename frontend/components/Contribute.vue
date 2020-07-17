@@ -16,7 +16,7 @@
       hide-header
       title="Contribute"
     >
-      <b-list-group>
+      <b-list-group class="contribute-option-list">
         <!--<b-list-group-item button @click="handleClick($event, 'heritage')">
           <div class="contribute-list-group-title">Edit An Existing Place</div>
           <div>
@@ -218,8 +218,7 @@ export default {
         const foundUserArtist = this.userDetail.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            placename.name ===
-              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+            placename.id === this.userDetail.artist_profile
         )
         const getAllArtist = this.userDetail.placename_set.filter(
           placename => placename.kind === 'artist'
@@ -372,6 +371,10 @@ export default {
     img {
       display: block !important;
     }
+  }
+
+  .contribute-option-list {
+    font: Bold 12px/15px Proxima Nova;
   }
 }
 
