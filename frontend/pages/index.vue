@@ -367,11 +367,7 @@ export default {
       return this.$store.state.sidebar.mobileContent
     },
     isArt() {
-      return (
-        this.$store.state.sidebar.isArtsMode &&
-        (this.$route.name === 'index-art' ||
-          this.$route.name === 'index-art-art')
-      )
+      return this.$store.state.sidebar.isArtsMode
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -1276,7 +1272,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 @font-face {
   font-family: 'Proxima Nova';
   src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
@@ -1351,6 +1347,7 @@ export default {
 /* When drawer is open */
 .arts-container .map-navigation-container {
   padding: 5px !important;
+  padding-top: 17.5px !important;
 }
 
 .map-controls-overlay {
@@ -1453,7 +1450,7 @@ export default {
   cursor: pointer;
 }
 
-@media (max-width: 1300px) {
+@media (min-width: 993px) and (max-width: 1300px) {
   .arts-container {
     padding-left: var(--sidebar-width, 700px);
   }
@@ -1593,8 +1590,245 @@ export default {
   left: 50%;
   bottom: 75px;
   z-index: 9999999999;
-  border: 2.5px solid #b2bedc;
+  border: 2.5px solid #b57936;
   animation: hover 2.5s infinite;
+}
+
+/* Arts Drawer */
+.sidebar-side-panel {
+  position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
+@media (max-width: 992px) {
+  .sidebar-side-panel {
+    display: block !important;
+    position: initial;
+    width: 100%;
+    height: 100vh;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 999999;
+  }
+}
+
+/* Sidebar style when screen width is 1300px and drawer is open */
+@media (min-width: 993px) and (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 350px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 350px;
+    left: 350px;
+  }
+}
+
+/* Main Arts Drawer */
+
+.panel-collapsable {
+  width: 15px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #d7d7de;
+}
+
+.btn-collapse {
+  padding: 1em;
+  margin-top: 1.5em;
+  margin-left: 0.8em;
+  width: 100px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 1em;
+  border-bottom-right-radius: 1em;
+  color: #fff;
+  background-color: #b47a2b;
+}
+
+.btn-collapse img {
+  margin-right: 0.5em;
+}
+
+/* Artwork card */
+.artist-card {
+  cursor: pointer;
+  display: flex;
+  position: relative;
+  border-radius: 0.25em;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+}
+
+.arts-card-container {
+  width: 100%;
+  height: 200px;
+  flex-direction: column;
+  margin: 0 0.25em;
+  overflow: hidden;
+}
+
+/* Bookmark ribbon */
+.arts-card-tag {
+  position: absolute;
+  right: 0;
+  top: 5px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-right: 0;
+  background: #b57936;
+  width: 40%;
+  padding: 2px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: capitalize;
+}
+.arts-card-tag img {
+  width: 17px;
+  height: 15px;
+}
+
+.arts-card-body {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.card-teaser-img {
+  object-fit: fill;
+  width: 100%;
+  height: 100%;
+}
+
+.arts-card-footer {
+  font-family: 'Lato', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.25em;
+  height: auto;
+}
+
+.artist-name a {
+  font-weight: normal;
+  color: #007bff !important;
+
+  &:hover {
+    text-decoration: underline !important;
+  }
+}
+
+/* Landscape Layout */
+.arts-card-landscape {
+  display: flex;
+  width: 100%;
+  height: 150px;
+  padding: 0;
+  border-radius: 0.25em;
+
+  .arts-card-body {
+    flex-basis: 45%;
+    overflow: hidden;
+
+    .card-teaser-img {
+      object-fit: cover;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .card-teaser-null {
+      object-fit: none;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .arts-card-right {
+    flex-basis: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    box-sizing: border-box;
+    padding-left: 0.5em;
+    color: #151515;
+
+    .arts-card-footer {
+      .artist-title {
+        width: 100%;
+        max-height: 60px;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        overflow: hidden;
+
+        font: Bold 16px/20px Proxima Nova;
+        color: #151515;
+        margin: 0.1em;
+        padding: 0;
+      }
+      .artist-name {
+        font-size: 0.7em;
+        font-weight: 800;
+        color: #707070;
+      }
+    }
+
+    .arts-card-more {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .arts-card-tag {
+        border-radius: 20px;
+        position: initial;
+        padding: 3px 8px;
+        color: #fff;
+        font-size: 0.8em;
+        font-weight: 800;
+        border: 0;
+        width: auto;
+      }
+
+      .fpcc-card-more {
+        width: 55px;
+        background-color: #b57936;
+        display: flex;
+        align-items: center;
+        height: 35px;
+        justify-content: center;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+      }
+    }
+  }
+
+  &:hover {
+    border: 1px solid #b57936;
+
+    .fpcc-card-more {
+      background-color: #3d3d3d !important;
+    }
+  }
+}
+
+.card-selected {
+  border: 1px solid #b57936;
+  transform: translateX(10px);
+
+  .fpcc-card-more {
+    background-color: #3d3d3d !important;
+  }
 }
 
 /* Animation  */
