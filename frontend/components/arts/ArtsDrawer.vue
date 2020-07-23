@@ -179,12 +179,25 @@ export default {
     },
     artKind() {
       return !this.isArtsDetailPage ? this.art.kind : this.placename.kind
+    },
+    allArtworks() {
+      return [...this.listOfPublicArt, ...this.listOfMedias]
     }
   },
-  async mounted() {
+  mounted() {
+    // Invoke this when Media upload is successful
+    this.$root.$on('fileUploadSuccess', () => {
+      this.$root.$emit('refetchArtwork')
+      this.fetchMedia()
+      this.$store.commit('sidebar/setDrawerContent', false)
+
+      setTimeout(() => {
+        this.$store.commit('sidebar/setDrawerContent', true)
+      }, 500)
+    })
+
     // Checks if what page currently, then decide what ID to use
 
-    const id = this.isArtsDetailPage ? this.placename.id : this.art.id
     this.$store.commit(
       'sidebar/setGallery',
       this.isArtsDetailPage ? !!this.currentMedia : false
@@ -201,16 +214,10 @@ export default {
     //     })
     // }
 
-    // Fetch Medias for this placename
-    const url = `${getApiUrl('media/?placename=')}${id}`
+    this.fetchMedia()
 
-    const result = await this.$axios.$get(url)
-    if (result) {
-      this.listOfMedias = result.sort((a, b) => b.id - a.id)
-    }
     // check if query URL exist
-    const allArtworks = [...this.listOfPublicArt, ...this.listOfMedias]
-    const foundMedia = allArtworks.find(media => {
+    const foundMedia = this.allArtworks.find(media => {
       return encodeFPCC(media.name) === this.$route.query.artwork
     })
 
@@ -224,6 +231,17 @@ export default {
     }
   },
   methods: {
+    async fetchMedia() {
+      // Fetch Medias for this placename
+      const id = this.placename.id
+      const result = await this.$axios.$get(
+        `${getApiUrl('media/?placename=')}${id}`
+      )
+
+      if (result) {
+        this.listOfMedias = result.sort((a, b) => b.id - a.id)
+      }
+    },
     toggleGallery() {
       this.$store.commit('sidebar/setGallery', !this.showGallery)
     },
