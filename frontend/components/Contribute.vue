@@ -200,7 +200,6 @@
 <script>
 import MessageBox from '@/components/MessageBox.vue'
 import UploadModal from '@/components/UploadModal.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -228,7 +227,6 @@ export default {
         return false
       }
     },
-
     userDetail() {
       return this.$store.state.user.user
     },
@@ -300,7 +298,7 @@ export default {
       // If has Artist profile, redirect to Profile, then add Media
       else {
         this.$router.push({
-          path: `/art/${encodeFPCC(this.validatedArtist.name)}`,
+          path: `/profile/${this.userDetail.id}`,
           query: {
             upload_artwork: true
           }

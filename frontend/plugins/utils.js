@@ -145,6 +145,7 @@ export const setCookie = value => {
 }
 
 export const getMediaUrl = (media_file, isServer) => {
+  console.log(media_file)
   if (!media_file) {
     return null
   } else if (media_file.includes('http://nginx')) {
