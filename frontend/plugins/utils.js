@@ -145,7 +145,6 @@ export const setCookie = value => {
 }
 
 export const getMediaUrl = (media_file, isServer) => {
-  console.log(media_file)
   if (!media_file) {
     return null
   } else if (media_file.includes('http://nginx')) {
@@ -153,7 +152,7 @@ export const getMediaUrl = (media_file, isServer) => {
   } else if (media_file.includes('https://nginx')) {
     return media_file.replace('https://nginx', '')
   } else if (media_file && media_file.includes('http://')) {
-    media_file.replace('http://', 'https://')
+    return media_file.replace('http://', 'https://')
   }
 
   if (media_file.name) {
