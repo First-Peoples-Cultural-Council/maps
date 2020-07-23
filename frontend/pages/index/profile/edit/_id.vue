@@ -88,17 +88,19 @@
               class="font-08"
             ></b-form-input>
 
-            <label
-              class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
-              >Artist Profile</label
-            >
-            <multiselect
-              v-model="artist_profile"
-              placeholder="Search or select an Artist Profile"
-              label="name"
-              track-by="id"
-              :options="artistPlacenames"
-            ></multiselect>
+            <template v-if="isArtistProfileExist">
+              <label
+                class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+                >Artist Profile</label
+              >
+              <multiselect
+                v-model="artist_profile"
+                placeholder="Search or select an Artist Profile"
+                label="name"
+                track-by="id"
+                :options="artistPlacenames"
+              ></multiselect>
+            </template>
 
             <label
               class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
@@ -271,6 +273,9 @@ export default {
             name: place.name
           }
         })
+    },
+    isArtistProfileExist() {
+      return this.artistPlacenames && this.artistPlacenames.length !== 0
     },
     languages() {
       return this.$store.state.languages.languageSet.map(l => {
