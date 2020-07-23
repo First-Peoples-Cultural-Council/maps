@@ -61,14 +61,14 @@
           <div v-if="isLoggedIn && isOwner && !isArtistProfileExist()">
             <b-alert variant="danger" show
               >{{
-                artistProfilePlaceholder
+                artistProfilePlaceholder()
                   ? `Select a Artist Profile from Artists that you're handling, by clicking `
                   : 'Please create your artist profile by clicking'
               }}
               <router-link
                 :to="
                   `${
-                    artistProfilePlaceholder
+                    artistProfilePlaceholder()
                       ? `/profile/edit/${user.id}`
                       : `/contribute?mode=placename&type=Artist&profile=true`
                   }`
@@ -76,6 +76,13 @@
                 >here</router-link
               ></b-alert
             >
+          </div>
+          <div v-if="placenameSet.length === 0">
+            <b-alert variant="danger" show
+              >You haven't Contributed anything in the map. Please contribute by
+              clicking
+              <a href="#" @click="openContributeModal">here</a>
+            </b-alert>
           </div>
           <div v-if="isStaff && isSuperUser && isLoggedIn">
             <b-alert variant="success" show
@@ -119,10 +126,10 @@
           </div>
 
           <h5
-            v-if="user.placename_set.length > 0"
+            v-if="placenameSet.length > 0"
             class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-2"
           >
-            Contributions ({{ user.placename_set.length }})
+            Contributions ({{ placenameSet.length }})
           </h5>
           <template v-for="place in placenameSet">
             <!-- Render this card if not Art Placename -->
@@ -458,6 +465,9 @@ export default {
     },
     handleReturn() {
       this.$router.push({ path: '/languages' })
+    },
+    openContributeModal() {
+      this.$root.$emit('openContributeModal')
     }
   }
 }
