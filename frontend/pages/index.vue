@@ -4,7 +4,7 @@
     class="map-container"
     :class="{
       detailModeContainer: isDetailMode,
-      'arts-container': isArt
+      'arts-container': isDrawerShown
     }"
     ￼￼
   >
@@ -366,7 +366,7 @@ export default {
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
-    isArt() {
+    isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
     drawMode() {
@@ -556,7 +556,7 @@ export default {
 
       this.$root.$emit('closeUploadModal')
 
-      if (this.$route.name === 'index-art-art') {
+      if (this.isDrawerShown) {
         this.$root.$emit('fileUploadSuccess')
       } else if (this.$route.name === 'index-place-names-placename') {
         this.$root.$emit('fileUploadedPlaces', data)
@@ -574,7 +574,7 @@ export default {
         variant: 'danger'
       })
       this.$root.$emit('closeUploadModal')
-      if (this.$route.name === 'index-art-art') {
+      if (this.isDrawerShown) {
         this.$root.$emit('fileUploadSuccess')
       }
     })
@@ -817,6 +817,11 @@ export default {
     mapClicked(map, e) {
       if (this.isDrawMode) {
         return
+      }
+
+      // if drawer is open, close it upon click
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
       }
 
       const features = map.queryRenderedFeatures(e.point)
