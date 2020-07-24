@@ -164,7 +164,7 @@
               <a class="color-gray" href="/page/contact">Contact Us</a>
             </li>
             <li class="login-nav cursor-pointer">
-              <a v-if="!email" :href="getLoginUrl" class="d-block">Login</a>
+              <a v-if="!email" :href="getLoginUrl()" class="d-block">Login</a>
               <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
