@@ -169,16 +169,16 @@ export default {
       ]
     },
     geometry() {
-      return !this.isArtsDetailPage ? this.art.geom : this.placename.geom
+      return this.placename.geom
     },
     artName() {
-      return !this.isArtsDetailPage ? this.art.name : this.placename.name
+      return this.placename.name
     },
     artImg() {
-      return !this.isArtsDetailPage ? this.art.image : this.placename.image
+      return this.placename.image
     },
     artKind() {
-      return !this.isArtsDetailPage ? this.art.kind : this.placename.kind
+      return this.placename.kind
     },
     allArtworks() {
       return [...this.listOfPublicArt, ...this.listOfMedias]
@@ -195,8 +195,6 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', true)
       }, 500)
     })
-
-    // Checks if what page currently, then decide what ID to use
 
     this.$store.commit(
       'sidebar/setGallery',
@@ -250,13 +248,7 @@ export default {
     },
     showMedia(media) {
       this.currentMedia = media
-      if (this.isArtsDetailPage) {
-        this.$router.push({
-          query: {
-            artwork: encodeFPCC(media.name)
-          }
-        })
-      } else {
+      if (this.$route.name === 'index-art-art') {
         // When on arts list page, manually update the URL
         history.pushState(
           {},
@@ -265,6 +257,12 @@ export default {
             media.name
           )}`
         )
+      } else {
+        this.$router.push({
+          query: {
+            artwork: encodeFPCC(media.name)
+          }
+        })
       }
 
       this.toggleGallery()
