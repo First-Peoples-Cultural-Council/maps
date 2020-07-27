@@ -307,7 +307,7 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', false)
 
         // Decide for UploadModal popup time
-        const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500
+        const timeOut = this.$route.name === 'index-profile-id' ? 0 : 1500
         setTimeout(() => {
           this.$root.$emit('openUploadModal', {
             id: this.validatedArtist.id,
