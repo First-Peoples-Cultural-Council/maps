@@ -135,7 +135,7 @@
             <!-- Render this card if not Art Placename -->
             <PlacesCard
               v-if="place.kind === ''"
-              :key="`place${place.id}`"
+              :key="`place-${place.name}-${place.id}`"
               :place="{ properties: place }"
               class="mt-1 hover-left-move"
               @click.native="
@@ -145,7 +145,7 @@
             <!-- Render this card if Art Placename -->
             <ArtsCard
               v-else
-              :key="`place${place.id}`"
+              :key="`place-${place.name}-${place.id}`"
               :name="place.name"
               :kind="place.kind"
               class="mt-1 hover-left-move"
@@ -244,7 +244,7 @@
           </div>
         </section>
         <ArtsDrawer
-          v-if="artDetails && isGalleryNotEmpty"
+          v-if="artDetails"
           :art="artDetails"
           :artist-profile="user.artist_profile"
           class="sidebar-side-panel hide-mobile"
@@ -349,12 +349,6 @@ export default {
       } else {
         return []
       }
-    },
-    isGalleryNotEmpty() {
-      return (
-        this.artDetails.medias.length !== 0 ||
-        this.artDetails.public_arts.length !== 0
-      )
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
