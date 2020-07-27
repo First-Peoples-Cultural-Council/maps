@@ -135,7 +135,7 @@
             <!-- Render this card if not Art Placename -->
             <PlacesCard
               v-if="place.kind === ''"
-              :key="`place${place.id}`"
+              :key="`place-${place.name}-${place.id}`"
               :place="{ properties: place }"
               class="mt-1 hover-left-move"
               @click.native="
@@ -145,7 +145,7 @@
             <!-- Render this card if Art Placename -->
             <ArtsCard
               v-else
-              :key="`place${place.id}`"
+              :key="`place-${place.name}-${place.id}`"
               :name="place.name"
               :kind="place.kind"
               class="mt-1 hover-left-move"
