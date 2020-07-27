@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div v-if="allArtworks.length !== 0" class="h-100">
     <div v-if="mobileContent || isDrawerShown" class="arts-right-panel">
       <div v-if="isLoading" class="loading-overlay">
         <transition name="fade">

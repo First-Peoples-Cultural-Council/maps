@@ -244,7 +244,7 @@
           </div>
         </section>
         <ArtsDrawer
-          v-if="artDetails && isGalleryNotEmpty"
+          v-if="artDetails"
           :art="artDetails"
           :artist-profile="user.artist_profile"
           class="sidebar-side-panel hide-mobile"
@@ -349,12 +349,6 @@ export default {
       } else {
         return []
       }
-    },
-    isGalleryNotEmpty() {
-      return (
-        this.artDetails.medias.length !== 0 ||
-        this.artDetails.public_arts.length !== 0
-      )
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
