@@ -369,6 +369,9 @@ export default {
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
+    isUploadArtMode() {
+      return !!this.$route.query.upload_artwork
+    },
     drawMode() {
       return this.$store.state.contribute.drawMode
     },
@@ -556,7 +559,7 @@ export default {
 
       this.$root.$emit('closeUploadModal')
 
-      if (this.isDrawerShown) {
+      if (this.isUploadArtMode) {
         this.$root.$emit('fileUploadSuccess')
       } else if (this.$route.name === 'index-place-names-placename') {
         this.$root.$emit('fileUploadedPlaces', data)
@@ -574,7 +577,7 @@ export default {
         variant: 'danger'
       })
       this.$root.$emit('closeUploadModal')
-      if (this.isDrawerShown) {
+      if (this.isUploadArtMode) {
         this.$root.$emit('fileUploadSuccess')
       }
     })

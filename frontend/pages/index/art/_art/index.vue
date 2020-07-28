@@ -185,26 +185,7 @@
                 <ul class="artist-social-icons">
                   <li v-for="soc in socialMedia" :key="soc.id">
                     <a :href="checkUrlValid(soc.value)" target="_blank">
-                      <img
-                        v-if="soc.value.includes('facebook')"
-                        src="@/assets/images/arts/facebook.svg"
-                      />
-                      <img
-                        v-else-if="soc.value.includes('twitter')"
-                        src="@/assets/images/arts/twitter.svg"
-                      />
-                      <img
-                        v-else-if="soc.value.includes('linkedin')"
-                        src="@/assets/images/arts/linkedin.svg"
-                      />
-                      <img
-                        v-else-if="soc.value.includes('instagram')"
-                        src="@/assets/images/arts/instagram.svg"
-                      />
-                      <img
-                        v-else-if="soc.value.includes('youtube')"
-                        src="@/assets/images/arts/youtube.svg"
-                      />
+                      <img :src="getSocMedIcon(soc.value)" />
                     </a>
                   </li>
                 </ul>
@@ -259,7 +240,15 @@ export default {
     return {
       collapseDescription: false,
       modalShow: false,
-      blockedTag: ['Person'] // add taxonomy to not show
+      blockedTag: ['Person'], // add taxonomy to not show
+      filterCondition: [
+        'instagram',
+        'fb',
+        'facebook',
+        'youtube',
+        'twitter',
+        'linkedin'
+      ]
     }
   },
   computed: {
@@ -300,18 +289,12 @@ export default {
       )
     },
     socialMedia() {
-      const filterCondition = [
-        'instagram',
-        'facebook',
-        'youtube',
-        'twitter',
-        'linkedin'
-      ]
-
       return this.artDetails.related_data.filter(
         filter =>
           filter.data_type === 'website' &&
-          filterCondition.some(condition => filter.value.includes(condition))
+          this.filterCondition.some(condition =>
+            filter.value.toLowerCase().includes(condition)
+          )
       )
     },
     relatedData() {
@@ -410,6 +393,15 @@ export default {
   },
   methods: {
     getMediaUrl,
+    getSocMedIcon(link) {
+      const str = link.toLowerCase()
+      const getSoc = this.filterCondition.find(soc => {
+        return str.includes(soc)
+      })
+      const value = getSoc === 'fb' ? 'facebook' : getSoc
+
+      return require(`@/assets/images/arts/${value}.svg`)
+    },
     isPlacenameOwner() {
       if (this.artDetails.creator) {
         if (this.$store.state.user.user.id === this.artDetails.creator.id)
@@ -531,7 +523,7 @@ export default {
       const pattern = /^((http|https|ftp):\/\/)/
       const newUrl = url.toLowerCase()
 
-      return pattern.test(newUrl) ? url : `http://${newUrl}`
+      return pattern.test(newUrl) ? url : `https://${newUrl}`
     },
     checkArtistProfile(name) {
       this.$router.push({
