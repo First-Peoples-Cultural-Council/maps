@@ -1,14 +1,25 @@
 <template>
   <div class="loading-container">
     <img src="@/assets/images/splashscreen/hero_img.svg" alt="Loading" />
-    Loading, Please Wait...
+    Loading, Please Wait {{ dots }}
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      dots: '.'
+    }
+  },
   mounted() {
-    this.$root.$emit('closeLoading')
+    setInterval(() => {
+      if (this.dots.length > 8) {
+        this.dots = ''
+      } else {
+        this.dots += ' .'
+      }
+    }, 400)
   }
 }
 </script>
