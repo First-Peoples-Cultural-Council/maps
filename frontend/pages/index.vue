@@ -1,224 +1,226 @@
 <template>
-  <div
-    id="map-container"
-    class="map-container"
-    :class="{
-      detailModeContainer: isDetailMode,
-      'arts-container': isDrawerShown
-    }"
-    ￼￼
-  >
-    <SideBar v-if="this.$route.name === 'index'" active="Languages">
-      <template v-slot:content>
-        <div v-html="ie"></div>
-        <section class="pl-3 pr-3 mt-3">
-          <Accordion
-            class="no-scroll-accordion"
-            :content="accordionContent"
-          ></Accordion>
-        </section>
-        <section class="badge-section pl-3 pr-3 mt-3"></section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
-      </template>
-      <template v-slot:badges>
-        <section class="pl-2 pr-3 mt-3">
-          <Badge
-            content="Languages"
-            :number="languagesCount"
-            class="cursor-pointer"
-            type="language"
-            :mode="getBadgeStatus(mode, 'lang')"
-            @click.native.prevent="handleBadge($event, 'lang')"
-          ></Badge>
-          <Badge
-            content="Communities"
-            :number="communities.length"
-            class="cursor-pointer"
-            type="community"
-            bgcolor="#6c4264"
-            :mode="getBadgeStatus(mode, 'comm')"
-            @click.native.prevent="handleBadge($event, 'comm')"
-          ></Badge>
-        </section>
-      </template>
-      <template v-slot:cards>
-        <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
-          <div
-            v-for="(familyLanguages, family) in languages"
-            :key="'langfamily' + family"
-            class="language-family-container"
-          >
-            <h5 class="language-family mt-0">
-              <span class="language-family-header">Language Family:</span>
-              <span class="language-family-title">{{
-                family === 'undefined' ? 'No Family' : family
-              }}</span>
-            </h5>
+  <div>
+    <FullscreenLoading v-if="showLoading"></FullscreenLoading>
+
+    <div
+      id="map-container"
+      class="map-container"
+      :class="{
+        detailModeContainer: isDetailMode,
+        'arts-container': isDrawerShown
+      }"
+      ￼￼
+    >
+      <SideBar v-if="this.$route.name === 'index'" active="Languages">
+        <template v-slot:content>
+          <div v-html="ie"></div>
+          <section class="pl-3 pr-3 mt-3">
+            <Accordion
+              class="no-scroll-accordion"
+              :content="accordionContent"
+            ></Accordion>
+          </section>
+          <section class="badge-section pl-3 pr-3 mt-3"></section>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-2"></Filters>
+        </template>
+        <template v-slot:badges>
+          <section class="pl-2 pr-3 mt-3">
+            <Badge
+              content="Languages"
+              :number="languagesCount"
+              class="cursor-pointer"
+              type="language"
+              :mode="getBadgeStatus(mode, 'lang')"
+              @click.native.prevent="handleBadge($event, 'lang')"
+            ></Badge>
+            <Badge
+              content="Communities"
+              :number="communities.length"
+              class="cursor-pointer"
+              type="community"
+              bgcolor="#6c4264"
+              :mode="getBadgeStatus(mode, 'comm')"
+              @click.native.prevent="handleBadge($event, 'comm')"
+            ></Badge>
+          </section>
+        </template>
+        <template v-slot:cards>
+          <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
+            <div
+              v-for="(familyLanguages, family) in languages"
+              :key="'langfamily' + family"
+              class="language-family-container"
+            >
+              <h5 class="language-family mt-0">
+                <span class="language-family-header">Language Family:</span>
+                <span class="language-family-title">{{
+                  family === 'undefined' ? 'No Family' : family
+                }}</span>
+              </h5>
+              <b-row>
+                <b-col
+                  v-for="language in familyLanguages"
+                  :key="'language' + language.id"
+                  lg="12"
+                  xl="12"
+                  md="6"
+                  sm="6"
+                >
+                  <LanguageCard
+                    class="mb-2 hover-left-move"
+                    :name="language.name"
+                    :color="
+                      (language.family && language.family.color) ||
+                        language.color
+                    "
+                    @click.native.prevent="
+                      handleCardClick($event, language.name, 'lang')
+                    "
+                  ></LanguageCard>
+                </b-col>
+              </b-row>
+            </div>
+          </section>
+          <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
+            <h5 class="language-family mt-2 ">Communities</h5>
             <b-row>
               <b-col
-                v-for="language in familyLanguages"
-                :key="'language' + language.id"
+                v-for="community in paginatedCommunities"
+                :key="'community ' + community.name"
                 lg="12"
                 xl="12"
                 md="6"
                 sm="6"
               >
-                <LanguageCard
+                <CommunityCard
                   class="mb-2 hover-left-move"
-                  :name="language.name"
-                  :color="
-                    (language.family && language.family.color) || language.color
-                  "
+                  :name="community.name"
+                  :community="community"
                   @click.native.prevent="
-                    handleCardClick($event, language.name, 'lang')
+                    handleCardClick($event, community.name, 'comm')
                   "
-                ></LanguageCard>
+                ></CommunityCard>
               </b-col>
             </b-row>
-          </div>
-        </section>
-        <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
-          <h5 class="language-family mt-2 ">Communities</h5>
-          <b-row>
-            <b-col
-              v-for="community in paginatedCommunities"
-              :key="'community ' + community.name"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
+          </section>
+        </template>
+      </SideBar>
+      <div
+        v-else-if="routesToNotRenderChild()"
+        class="sb-new-alt-one"
+        :class="{
+          'sb-detail': isDetailMode,
+          'mobile-content-open': mobileContent,
+          'hide-scroll-y': isGalleryShown
+        }"
+      >
+        <nuxt-child class="route-child-container" />
+      </div>
+      <div v-else>
+        <nuxt-child />
+      </div>
+
+      <div class="maps-panel">
+        <div class="map-main-container">
+          <LogInOverlay v-if="loggingIn"></LogInOverlay>
+          <div v-if="isDrawMode" class="drawing-mode-container">
+            <b-alert
+              v-if="!isLoggedIn"
+              show
+              variant="danger"
+              class="p-1 pr-2 pl-2 draw-mode-container"
             >
-              <CommunityCard
-                class="mb-2 hover-left-move"
-                :name="community.name"
-                :community="community"
-                @click.native.prevent="
-                  handleCardClick($event, community.name, 'comm')
-                "
-              ></CommunityCard>
-            </b-col>
-          </b-row>
-        </section>
-      </template>
-    </SideBar>
-    <div
-      v-else-if="routesToNotRenderChild()"
-      class="sb-new-alt-one"
-      :class="{
-        'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent,
-        'hide-scroll-y': isGalleryShown
-      }"
-    >
-      <nuxt-child class="route-child-container" />
-    </div>
-    <div v-else>
-      <nuxt-child />
-    </div>
-
-    <div class="maps-panel">
-      <div class="map-main-container">
-        <LogInOverlay v-if="loggingIn"></LogInOverlay>
-        <div v-if="isDrawMode" class="drawing-mode-container">
-          <b-alert
-            v-if="!isLoggedIn"
-            show
-            variant="danger"
-            class="p-1 pr-2 pl-2 draw-mode-container"
+              <h4 class="alert-heading">Please Log In</h4>
+              <p>
+                This feature requires you to be
+                <a :href="getLoginUrl()">logged in.</a>
+              </p>
+            </b-alert>
+            <b-alert
+              v-else-if="notAuthenticatedUser"
+              show
+              class="p-1 pr-2 pl-2 draw-mode-container"
+              variant="danger"
+            >
+              <ul>
+                <li>
+                  You can't proceed, you need to select your default Language,
+                  and Community
+                </li>
+                <li>
+                  Please select your community or language by clicking
+                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                    >here</router-link
+                  >
+                </li>
+              </ul>
+            </b-alert>
+            <b-alert
+              v-else-if="!notAuthenticatedUser"
+              show
+              class="p-1 pr-2 pl-2 draw-mode-container"
+              variant="light"
+            >
+              <DrawingTools
+                :draw-mode="$route.query.mode"
+                class="mt-2"
+              ></DrawingTools>
+            </b-alert>
+          </div>
+          <div class="map-loading">
+            Loading Map
+            <b-spinner type="grow" label="Spinning"></b-spinner>
+          </div>
+          <Mapbox
+            :access-token="MAPBOX_ACCESS_TOKEN"
+            :map-options="MAP_OPTIONS"
+            :nav-control="{ show: false }"
+            @map-init="mapInit"
+            @map-load="mapLoaded"
+            @map-touchend="mapClicked"
+            @map-click="mapClicked"
+            @map-zoomend="mapZoomEnd"
+            @map-moveend="mapMoveEnd"
+            @map-sourcedata="mapSourceData"
+          ></Mapbox>
+          <div
+            v-if="$route.path !== '/splashscreen'"
+            class="map-controls-overlay"
           >
-            <h4 class="alert-heading">Please Log In</h4>
-            <p>
-              This feature requires you to be
-              <a :href="getLoginUrl()">logged in.</a>
-            </p>
-          </b-alert>
-          <b-alert
-            v-else-if="notAuthenticatedUser"
-            show
-            class="p-1 pr-2 pl-2 draw-mode-container"
-            variant="danger"
-          >
-            <ul>
-              <li>
-                You can't proceed, you need to select your default Language, and
-                Community
-              </li>
-              <li>
-                Please select your community or language by clicking
-                <router-link :to="`/profile/edit/${userDetail.id}`"
-                  >here</router-link
-                >
-              </li>
-            </ul>
-          </b-alert>
-          <b-alert
-            v-else-if="!notAuthenticatedUser"
-            show
-            class="p-1 pr-2 pl-2 draw-mode-container"
-            variant="light"
-          >
-            <DrawingTools
-              :draw-mode="$route.query.mode"
-              class="mt-2"
-            ></DrawingTools>
-          </b-alert>
-        </div>
-        <div class="map-loading">
-          Loading Map
-          <b-spinner type="grow" label="Spinning"></b-spinner>
-        </div>
-        <Mapbox
-          :access-token="MAPBOX_ACCESS_TOKEN"
-          :map-options="MAP_OPTIONS"
-          :nav-control="{ show: false }"
-          @map-init="mapInit"
-          @map-load="mapLoaded"
-          @map-touchend="mapClicked"
-          @map-click="mapClicked"
-          @map-zoomend="mapZoomEnd"
-          @map-moveend="mapMoveEnd"
-          @map-sourcedata="mapSourceData"
-        ></Mapbox>
-        <div
-          v-if="$route.path !== '/splashscreen'"
-          class="map-controls-overlay"
-        >
-          <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-          <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-          <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-          <Contribute class="contribute-control mr-2"></Contribute>
-        </div>
-        <ModalNotification></ModalNotification>
-        <div v-if="!isDrawMode" class="map-navigation-container">
-          <SearchBar
-            :key="searchKey"
-            :query="searchQuery"
-            class="hide-mobile"
-          ></SearchBar>
-          <transition name="fade-topbar" mode="out-in">
-            <SearchOverlay
-              v-if="showSearchOverlay"
-              :show="showSearchOverlay"
-            ></SearchOverlay>
+            <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+            <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+            <ShareEmbed
+              class="share-embed-control hide-mobile mr-2"
+            ></ShareEmbed>
+            <Contribute class="contribute-control mr-2"></Contribute>
+          </div>
+          <ModalNotification></ModalNotification>
+          <div v-if="!isDrawMode" class="map-navigation-container">
+            <SearchBar
+              :key="searchKey"
+              :query="searchQuery"
+              class="hide-mobile"
+            ></SearchBar>
+            <transition name="fade-topbar" mode="out-in">
+              <SearchOverlay
+                v-if="showSearchOverlay"
+                :show="showSearchOverlay"
+              ></SearchOverlay>
 
-            <EventOverlay
-              v-else-if="showEventOverlay"
-              :show="showEventOverlay"
-            ></EventOverlay>
+              <EventOverlay
+                v-else-if="showEventOverlay"
+                :show="showEventOverlay"
+              ></EventOverlay>
 
-            <div v-else class="top-bar-container">
-              <NavigationBar></NavigationBar>
-            </div>
-          </transition>
+              <div v-else class="top-bar-container">
+                <NavigationBar></NavigationBar>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </div>
-    <FullscreenLoading
-      v-if="
-        showLoading && ($route.path === '/' || $route.path === '/splashscreen')
-      "
-    ></FullscreenLoading>
   </div>
 </template>
 
@@ -419,7 +421,6 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, hash }) {
-    // Decides to show the splashscreen, if values exist, then its no longer first time visit
     const user = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
@@ -428,7 +429,7 @@ export default {
       store.commit('user/setPicture', user.user.picture)
       store.commit('user/setLoggedIn', true)
     }
-    return user
+    return { user }
   },
   async fetch({ $axios, store }) {
     // Only fetch search data
@@ -534,16 +535,13 @@ export default {
       })
     })
 
-    this.$root.$on('closeLoading', () => {
-      this.showLoading = false
-    })
-
     setTimeout(() => {
-      this.showLoading = false
-
-      if (this.$route.query.search) {
-        this.searchQuery = this.$route.query.search
-        this.searchKey += this.searchQuery
+      if (this.user) {
+        this.showLoading = false
+        if (this.$route.query.search) {
+          this.searchQuery = this.$route.query.search
+          this.searchKey += this.searchQuery
+        }
       }
     }, 2000)
 
