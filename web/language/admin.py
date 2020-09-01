@@ -85,6 +85,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
 
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
+    readonly_fields = ("created",)
     search_fields = (
         "name",
         "other_names",
