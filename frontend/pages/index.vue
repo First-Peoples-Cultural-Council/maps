@@ -190,6 +190,9 @@
           >
             <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
             <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+            <CurrentLocation
+              class="current-location-control hide-mobile mr-2"
+            ></CurrentLocation>
             <ShareEmbed
               class="share-embed-control hide-mobile mr-2"
             ></ShareEmbed>
@@ -238,6 +241,7 @@ import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import CurrentLocation from '@/components/CurrentLocation.vue'
 import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -285,6 +289,7 @@ export default {
     CommunityCard,
     ShareEmbed,
     ResetMap,
+    CurrentLocation,
     Zoom,
     Filters,
     Contribute,
