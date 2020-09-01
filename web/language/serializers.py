@@ -51,7 +51,8 @@ class MediaLightSerializer(serializers.ModelSerializer):
             "creator",
             "placename",
             "community",
-            "community_only"
+            "community_only",
+            "created"
         )
 
 
@@ -223,6 +224,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "creator",
             "mime_type",
             "is_artwork",
+            "created"
         )
 
 
@@ -411,7 +413,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "taxonomies",
             "public_arts",
             "artists",
-            "related_data"
+            "related_data",
+            "created"
         )
         depth = 1
 

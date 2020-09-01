@@ -85,6 +85,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
 
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
+    readonly_fields = ("created",)
     search_fields = (
         "name",
         "other_names",
@@ -97,6 +98,7 @@ class PlaceNameAdmin(admin.ModelAdmin):
 
 class MediaAdmin(admin.ModelAdmin):
     list_display = ("name", "file_type", "media_file", "url")
+    readonly_fields = ("created",)
     search_fields = (
         "name",
         "file_type"

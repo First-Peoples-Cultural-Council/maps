@@ -92,6 +92,17 @@
       <div v-if="media.name">
         <span class="word-break-all">{{ media.name }}</span>
       </div>
+      <div v-if="media.created" class="font-07 mb-1">
+        <span class="word-break-all">
+          {{
+            new Date(media.created).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
+          }}
+        </span>
+      </div>
       <div v-if="media.description" class="font-08 color-gray mb-1">
         <span class="word-break-all">{{ media.description }}</span>
       </div>

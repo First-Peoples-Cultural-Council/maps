@@ -71,7 +71,7 @@
             <div>
               <div v-if="place.description">
                 <h5 class="font-08 text-uppercase color-gray">Description</h5>
-                <p class="font-08">{{ place.description }}</p>
+                <p v-html="place.description" class="font-08"></p>
               </div>
             </div>
             <div>
@@ -142,7 +142,18 @@
                 "
               ></LanguageCard>
             </div>
-
+            <div v-if="place.created">
+              <h5 class="font-08 text-uppercase color-gray">Date Added</h5>
+              <p class="font-08">
+                {{
+                  new Date(place.created).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })
+                }}
+              </p>
+            </div>
             <div v-if="place.common_name">
               <h5 class="font-08 text-uppercase color-gray">Common Name</h5>
               <p class="font-08">{{ place.common_name }}</p>
