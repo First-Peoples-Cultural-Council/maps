@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FullscreenLoading v-if="showLoading"></FullscreenLoading>
+    <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
 
     <div
       id="map-container"
@@ -319,7 +319,7 @@ export default {
       maximumLength: 0,
       searchQuery: '',
       searchKey: 'search',
-      showLoading: true,
+      showFullscreenLoading: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -533,6 +533,9 @@ export default {
     }
     next()
   },
+  created() {
+    this.showFullscreenLoading = true
+  },
   async mounted() {
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
@@ -542,7 +545,7 @@ export default {
 
     setTimeout(() => {
       if (this.user) {
-        this.showLoading = false
+        this.showFullscreenLoading = false
         if (this.$route.query.search) {
           this.searchQuery = this.$route.query.search
           this.searchKey += this.searchQuery
