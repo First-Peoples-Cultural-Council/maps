@@ -797,9 +797,9 @@
                 provided by BC Geographical Names and email us at
                 <a
                   :href="
-                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                    'mailto:maps@fpcc.ca?subject=FPCC Map: Categories Request'
                   "
-                  >info@fpcc.ca</a
+                  >maps@fpcc.ca</a
                 >.
               </p>
             </div>
@@ -1224,7 +1224,8 @@ export default {
         alternateName: place.other_names,
         content: place.description,
         otherCommunity: place.other_community,
-        categorySelected: place.category,
+        categorySelected:
+          place.taxonomies.length > 0 ? place.taxonomies[0].id : null,
         fileSrc: getMediaUrl(place.image),
         fileImg: null
       }
@@ -1360,7 +1361,8 @@ export default {
         tname: place.name,
         wname: place.common_name,
         content: place.description,
-        categorySelected: place.category
+        categorySelected:
+          place.taxonomies.length > 0 ? place.taxonomies[0].id : null
       }
       if (community) {
         data.community = community
@@ -1816,19 +1818,33 @@ export default {
         return
       }
 
-      const data = {
-        name: this.tname,
-        common_name: this.wname,
-        description: this.content,
-        community: community_id,
-        language: this.languageSelected,
-        taxonomies: [this.categorySelected],
-        community_only: this.communityOnly === 'accepted',
-        status
+      let audio = null
+      if (this.audioBlob && this.audioFile) {
+        return
+      } else if (this.audioBlob) {
+        audio = new File([this.audioBlob], `${this.tname}`, {
+          type: 'multipart/form-data'
+        })
+      } else {
+        audio = this.audioFile
+      }
+
+      const formData = new FormData()
+      formData.append('name', this.tname)
+      formData.append('common_name', this.wname)
+      formData.append('description', this.content)
+      formData.append('community', community_id)
+      formData.append('language', this.languageSelected)
+      formData.append('taxonomies', [this.categorySelected])
+      formData.append('community_only', this.communityOnly === 'accepted')
+
+      // Append Audio if necessary
+      if (audio) {
+        formData.append('audio_file', audio)
       }
 
       if (this.drawnFeatures.length) {
-        data.geom = this.drawnFeatures[0].geometry
+        formData.append('geom', JSON.stringify(this.drawnFeatures[0].geometry))
       }
 
       const headers = {
@@ -1836,20 +1852,15 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
-      let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
-
-        // Exclude status from the patch request
-        delete data.status
 
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
-            data,
+            formData,
             headers
           )
-          newPlace = modified
           id = modified.id
         } catch (e) {
           this.isLoading = false
@@ -1861,14 +1872,16 @@ export default {
           return
         }
       } else {
+        // Append status if creation
+        formData.append('status', status)
+
         try {
           const created = await this.$axios.$post(
             '/api/placename/',
-            data,
+            formData,
             headers
           )
           id = created.id
-          newPlace = created
         } catch (e) {
           this.isLoading = false
           console.error(Object.entries(e.response.data))
@@ -1880,19 +1893,6 @@ export default {
 
           return
         }
-      }
-      let audio = null
-      if (this.audioBlob && this.audioFile) {
-        return
-      } else if (this.audioBlob) {
-        audio = new File([this.audioBlob], `${this.tname}`, {
-          type: 'multipart/form-data'
-        })
-      } else {
-        audio = this.audioFile
-      }
-      if (audio) {
-        await this.uploadAudioFile(id, audio, newPlace)
       }
 
       this.$eventHub.whenMap(map => {

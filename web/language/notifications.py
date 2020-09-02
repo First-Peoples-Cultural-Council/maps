@@ -219,7 +219,7 @@ def notify(user, since=None):
             send_mail(
                 "Your Updates on the First Peoples' Language Map",
                 html,
-                "info@fpcc.ca",
+                "maps@fpcc.ca",
                 [user.email],
                 html_message=html,
             )
@@ -298,7 +298,7 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
             "Your contribution has been {} on the First Peoples' Language Map".format(
                 state),
             message,
-            "info@fpcc.ca",
+            "maps@fpcc.ca",
             [creator.email],
             html_message=message,
         )
@@ -372,7 +372,7 @@ def inform_placename_to_be_verified(placename_id):
                     "A contribution has been {} on the First Peoples' Language Map".format(
                         state),
                     message,
-                    "info@fpcc.ca",
+                    "maps@fpcc.ca",
                     [administrator.user.email],
                     html_message=message,
                 )
@@ -443,7 +443,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         "Your contribution has been {} on the First Peoples' Language Map".format(
             state),
         message,
-        "info@fpcc.ca",
+        "maps@fpcc.ca",
         [creator.email],
         html_message=message,
     )
@@ -529,7 +529,7 @@ def inform_media_to_be_verified(media_id):
                     "A contribution has been {} on the First Peoples' Language Map".format(
                         state),
                     message,
-                    "info@fpcc.ca",
+                    "maps@fpcc.ca",
                     [administrator.user.email],
                     html_message=message,
                 )

@@ -6,8 +6,8 @@
       <p class="error-description">
         We're sorry, the page you requested could not be found. If you didn't
         find what you were looking for, please contact us at
-        <a :href="'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'"
-          >info@fpcc.ca</a
+        <a :href="'mailto:maps@fpcc.ca?subject=FPCC Map: Categories Request'"
+          >maps@fpcc.ca</a
         >.
       </p>
       <a href="#" @click="returnToHome">Go Back to Home</a>

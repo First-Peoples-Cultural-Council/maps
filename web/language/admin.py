@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.contrib.gis.db import models as geomodels
 
 from .models import (
     Language,
@@ -20,7 +22,7 @@ from .models import (
     PlaceNameTaxonomy,
     RelatedData
 )
-
+from .widgets import LatLongWidget
 
 # INLINES
 class DialectInline(admin.TabularInline):
@@ -52,6 +54,9 @@ class CommunityAdmin(admin.ModelAdmin):
     search_fields = (
         "name",
     )
+    formfield_overrides = {
+        geomodels.PointField: {'widget': LatLongWidget},
+    }
     inlines = [
         CommunityLinkInline,
     ]
@@ -85,6 +90,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
 
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "other_names", "creator")
+    readonly_fields = ("created",)
     search_fields = (
         "name",
         "other_names",
@@ -97,6 +103,7 @@ class PlaceNameAdmin(admin.ModelAdmin):
 
 class MediaAdmin(admin.ModelAdmin):
     list_display = ("name", "file_type", "media_file", "url")
+    readonly_fields = ("created",)
     search_fields = (
         "name",
         "file_type"
