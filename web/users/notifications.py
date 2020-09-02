@@ -96,7 +96,7 @@ def send_claim_profile_invite(email):
         send_mail(
             subject="Claim Your FPCC Profile",
             message=message,
-            from_email="First Peoples' Cultural Council <info@fpcc.ca>",
+            from_email="First Peoples' Cultural Council <maps@fpcc.ca>",
             recipient_list=[email],
             html_message=message,
         )

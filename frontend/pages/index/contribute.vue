@@ -797,9 +797,9 @@
                 provided by BC Geographical Names and email us at
                 <a
                   :href="
-                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                    'mailto:maps@fpcc.ca?subject=FPCC Map: Categories Request'
                   "
-                  >info@fpcc.ca</a
+                  >maps@fpcc.ca</a
                 >.
               </p>
             </div>
