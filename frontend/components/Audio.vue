@@ -9,8 +9,7 @@
 export default {
   props: {
     audioObject: {
-      default: null,
-      type: Element
+      default: null
     },
     audioUrl: {
       default: null,
