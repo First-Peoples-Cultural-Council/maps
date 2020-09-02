@@ -36,7 +36,6 @@
         ></CommunityDetailCard>
 
         <Notification
-          v-if="isLoggedIn"
           :id="community.id"
           :is-server="isServer"
           type="community"

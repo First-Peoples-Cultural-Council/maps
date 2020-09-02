@@ -6,7 +6,7 @@
       variant="dark"
       size="sm"
       class="notify-button"
-      @click="modalShow = true"
+      @click="toggleNotificationModal"
       >{{ title }}
     </b-button>
     <b-button
@@ -73,7 +73,22 @@ export default {
       notifyState: null
     }
   },
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    }
+  },
   methods: {
+    toggleNotificationModal() {
+      if (this.isLoggedIn) {
+        this.modalShow = true
+      } else {
+        this.$root.$emit(
+          'toggleMessageBox',
+          `You need to be logged in first, before proceeding.\n Press "OK" to proceed to Login/Register. `
+        )
+      }
+    },
     async unsub() {
       const data = {
         id: this.subscription.id

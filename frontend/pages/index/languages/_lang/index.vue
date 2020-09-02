@@ -62,7 +62,6 @@
           <b-row>
             <b-col xs="6">
               <Notification
-                v-if="isLoggedIn"
                 :id="language.id"
                 :unsubscribe="!!subscribed"
                 :subscription="subscribed"
