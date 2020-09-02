@@ -196,6 +196,10 @@
             <ShareEmbed
               class="share-embed-control hide-mobile mr-2"
             ></ShareEmbed>
+            <SaveLocation
+              v-if="isLoggedIn"
+              class="share-embed-control hide-mobile mr-2"
+            ></SaveLocation>
             <Contribute class="contribute-control mr-2"></Contribute>
           </div>
           <ModalNotification></ModalNotification>
@@ -240,6 +244,7 @@ import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
+import SaveLocation from '@/components/SaveLocation.vue'
 import ResetMap from '@/components/ResetMap.vue'
 import CurrentLocation from '@/components/CurrentLocation.vue'
 import Contribute from '@/components/Contribute.vue'
@@ -288,6 +293,7 @@ export default {
     LanguageCard,
     CommunityCard,
     ShareEmbed,
+    SaveLocation,
     ResetMap,
     CurrentLocation,
     Zoom,
