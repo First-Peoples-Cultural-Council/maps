@@ -9,11 +9,12 @@
       >
         <nav class="user-icon-container">
           <div v-if="showNotificationBadge" class="notify-badge"></div>
+          <span>{{ user.email }}</span>
           <img
             v-if="!picture"
             src="@/assets/images/user_icon.svg"
             alt="Menu"
-            class="navbar-icon user-icon"
+            class="user-icon"
           />
           <img
             v-if="picture"
@@ -146,6 +147,14 @@
           </nuxt-link>
 
           <ul class="nav-links p-0 m-0 list-style-none">
+            <li v-if="isLoggedIn">
+              <nuxt-link
+                class="color-gray"
+                :to="`/profile/${userid}`"
+                @click.native="resetMap"
+                >{{ user.email }}</nuxt-link
+              >
+            </li>
             <li v-if="isUserAdmin">
               <a class="color-gray" href="/admin" target="_blank"
                 >Go to Admin Page</a
@@ -313,7 +322,7 @@ export default {
   background-color: white;
   z-index: 50;
   border: 1px solid #beb2a5;
-  padding: 0.8em;
+  padding: 0.6em;
   border-radius: 1.5em;
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
@@ -333,8 +342,12 @@ export default {
     position: relative;
     display: flex;
     align-items: center;
-    width: 45px;
     height: 45px;
+    letter-spacing: 1px;
+
+    & > * {
+      margin: 0 0.4em 0 0.2em;
+    }
 
     .user-display-img {
       width: 45px;
@@ -346,8 +359,8 @@ export default {
     }
 
     .user-icon {
-      width: 45px;
-      height: 23px;
+      width: 18px;
+      height: 18px;
     }
   }
 }
@@ -364,7 +377,7 @@ export default {
 }
 
 .user-container {
-  width: 47px;
+  padding: 0.6em;
   height: 47px;
 }
 
