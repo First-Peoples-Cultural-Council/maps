@@ -81,8 +81,8 @@ export default {
   },
   data() {
     return {
-      title: null,
-      text: null,
+      title: '',
+      text: '',
       titlestate: null,
       commonly: null,
       vimeoLink: null,
@@ -91,8 +91,8 @@ export default {
   },
   methods: {
     resetState() {
-      this.title = null
-      this.text = null
+      this.title = ''
+      this.text = ''
       this.titlestate = null
     },
     async handleVimeoUpload(e) {

@@ -103,7 +103,10 @@
           }}
         </span>
       </div>
-      <div v-if="media.description" class="font-08 color-gray mb-1">
+      <div
+        v-if="media.description && media.description !== 'null'"
+        class="font-08 color-gray mb-1"
+      >
         <span class="word-break-all">{{ media.description }}</span>
       </div>
 

@@ -86,8 +86,8 @@ export default {
   },
   data() {
     return {
-      title: null,
-      text: null,
+      title: '',
+      text: '',
       titlestate: null,
       commonly: null,
       youtubeLink: null,
@@ -102,8 +102,8 @@ export default {
   methods: {
     isValidYoutubeLink,
     resetState() {
-      this.title = null
-      this.text = null
+      this.title = ''
+      this.text = ''
       this.titlestate = null
       this.youtubeLink = null
     },
