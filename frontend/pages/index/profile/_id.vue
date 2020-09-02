@@ -134,7 +134,7 @@
           <template v-for="place in placenameSet">
             <!-- Render this card if not Art Placename -->
             <PlacesCard
-              v-if="place.kind === ''"
+              v-if="place.kind === '' || place.kind === 'poi'"
               :key="`place-${place.name}-${place.id}`"
               :place="{ properties: place }"
               class="mt-1 hover-left-move"
