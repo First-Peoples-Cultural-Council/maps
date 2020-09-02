@@ -44,10 +44,18 @@
           class="navbar-icon"
         />
       </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
           src="@/assets/images/event_icons.svg"
           alt="Event"
+          class="navbar-icon"
+        />
+      </div>
+      <div class="navbar-icon-container cursor-pointer" @click="getLocation">
+        <img
+          src="@/assets/images/my_location.png"
+          alt="Location"
           class="navbar-icon"
         />
       </div>
@@ -237,6 +245,9 @@ export default {
     }
   },
   methods: {
+    getLocation() {
+      this.$root.$emit('getLocation')
+    },
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
     },
