@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.contrib.gis.db import models as geomodels
 
 from .models import (
     Language,
@@ -20,7 +22,7 @@ from .models import (
     PlaceNameTaxonomy,
     RelatedData
 )
-
+from .widgets import LatLongWidget
 
 # INLINES
 class DialectInline(admin.TabularInline):
@@ -52,6 +54,9 @@ class CommunityAdmin(admin.ModelAdmin):
     search_fields = (
         "name",
     )
+    formfield_overrides = {
+        geomodels.PointField: {'widget': LatLongWidget},
+    }
     inlines = [
         CommunityLinkInline,
     ]
