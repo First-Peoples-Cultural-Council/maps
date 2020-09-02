@@ -34,7 +34,7 @@
               :id="place.id"
               :name="place.name"
               :server="isServer"
-              :audio-file="getMediaUrl(audio_file, isServer)"
+              :audio-file="audioFile ? getMediaUrl(audioFile, isServer) : null"
               :allow-edit="isPlaceOwner()"
               variant="md"
               :delete-place="isPlaceOwner()"
@@ -292,8 +292,8 @@ export default {
     place() {
       return this.$store.state.places.place
     },
-    audio_file() {
-      return this.$store.state.places.audio_file
+    audioFile() {
+      return this.$store.state.places.audioFile
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent

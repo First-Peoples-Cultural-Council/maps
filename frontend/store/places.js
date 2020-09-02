@@ -11,7 +11,7 @@ export const state = () => ({
   badgePlaces: [],
   filteredBadgePlaces: [],
   filterCategories: [],
-  audio_file: {},
+  audioFile: null,
   placeSearchSet: []
 })
 
@@ -19,8 +19,8 @@ export const mutations = {
   set(state, places) {
     state.places = places
   },
-  setAudioFile(state, audio_file) {
-    state.audio_file = audio_file
+  setAudioFile(state, audioFile) {
+    state.audioFile = audioFile
   },
   setPlace(state, place) {
     state.place = place
@@ -80,8 +80,6 @@ export const actions = {
     commit('setPlace', result)
     if (result.audio_file) {
       commit('setAudioFile', result.audio_file)
-    } else {
-      commit('setAudioFile', {})
     }
 
     if (result.community) {
