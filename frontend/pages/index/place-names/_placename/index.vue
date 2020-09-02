@@ -34,7 +34,7 @@
               :id="place.id"
               :name="place.name"
               :server="isServer"
-              :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
+              :audio-file="getMediaUrl(audio_file, isServer)"
               :allow-edit="isPlaceOwner()"
               variant="md"
               :delete-place="isPlaceOwner()"
@@ -71,7 +71,7 @@
             <div>
               <div v-if="place.description">
                 <h5 class="font-08 text-uppercase color-gray">Description</h5>
-                <p v-html="place.description" class="font-08"></p>
+                <p class="font-08" v-html="place.description"></p>
               </div>
             </div>
             <div>
@@ -292,8 +292,8 @@ export default {
     place() {
       return this.$store.state.places.place
     },
-    audio_obj() {
-      return this.$store.state.places.audio_obj
+    audio_file() {
+      return this.$store.state.places.audio_file
     },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
