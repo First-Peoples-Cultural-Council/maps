@@ -88,9 +88,9 @@ export default {
   },
   data() {
     return {
-      fileName: null,
+      fileName: '',
       file: null,
-      description: null,
+      description: '',
       errorMessage: null,
       successMessage: null,
       commonly: 'not_accepted'
@@ -103,9 +103,9 @@ export default {
   },
   methods: {
     resetToInitialState() {
-      this.fileName = null
+      this.fileName = ''
       this.file = null
-      this.description = null
+      this.description = ''
       this.errorMessage = null
       this.successMessage = null
       this.clearFiles()
