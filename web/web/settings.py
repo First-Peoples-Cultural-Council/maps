@@ -41,7 +41,7 @@ ADMINS = (
     ("Daniel", "daniel@fpcc.ca"),
     ("Justin", "justin@countable.ca"),
 )
-SERVER_EMAIL = "info@fpcc.ca"
+SERVER_EMAIL = "maps@fpcc.ca"
 
 INSTALLED_APPS = [
     "django.contrib.admin",

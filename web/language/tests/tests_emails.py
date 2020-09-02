@@ -26,7 +26,7 @@ from language.models import (
 
 class EmailTests(TestCase):
     def setUp(self):
-        self.from_email = 'info@fpcc.ca'
+        self.from_email = 'maps@fpcc.ca'
         self.to = 'justin@countable.ca'
 
         self.user = User.objects.create(

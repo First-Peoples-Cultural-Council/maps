@@ -14,7 +14,7 @@ export default {
   props: {
     email: {
       type: String,
-      default: 'info@fpcc.ca'
+      default: 'maps@fpcc.ca'
     },
     subject: {
       type: String,
