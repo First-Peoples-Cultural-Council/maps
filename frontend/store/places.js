@@ -11,7 +11,7 @@ export const state = () => ({
   badgePlaces: [],
   filteredBadgePlaces: [],
   filterCategories: [],
-  audio_obj: {},
+  audioFile: null,
   placeSearchSet: []
 })
 
@@ -19,8 +19,8 @@ export const mutations = {
   set(state, places) {
     state.places = places
   },
-  setAudioObj(state, audio_obj) {
-    state.audio_obj = audio_obj
+  setAudioFile(state, audioFile) {
+    state.audioFile = audioFile
   },
   setPlace(state, place) {
     state.place = place
@@ -78,10 +78,8 @@ export const actions = {
       getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
     )
     commit('setPlace', result)
-    if (result.audio_obj) {
-      commit('setAudioObj', result.audio_obj)
-    } else {
-      commit('setAudioObj', {})
+    if (result.audio_file) {
+      commit('setAudioFile', result.audio_file)
     }
 
     if (result.community) {

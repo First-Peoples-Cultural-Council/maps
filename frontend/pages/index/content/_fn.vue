@@ -36,7 +36,6 @@
         ></CommunityDetailCard>
 
         <Notification
-          v-if="isLoggedIn"
           :id="community.id"
           :is-server="isServer"
           type="community"
@@ -217,7 +216,7 @@
               >
                 <template v-for="(place, index) in filteredPlaces">
                   <PlacesCard
-                    v-if="place.kind === ''"
+                    v-if="place.kind === '' || place.kind === 'poi'"
                     :key="`placescomm${index}`"
                     class="mt-2 hover-left-move"
                     :name="place.name"

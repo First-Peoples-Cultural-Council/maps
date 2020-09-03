@@ -59,8 +59,8 @@ export default {
   },
   data() {
     return {
-      title: null,
-      text: null,
+      title: '',
+      text: '',
       titlestate: null,
       textstate: null,
       commonly: null
@@ -68,8 +68,8 @@ export default {
   },
   methods: {
     resetState() {
-      this.title = null
-      this.text = null
+      this.title = ''
+      this.text = ''
       this.titlestate = null
       this.textstate = null
     },

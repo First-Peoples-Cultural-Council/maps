@@ -233,7 +233,26 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceName(CulturalModel):
+class PlaceName(CulturalModel):# Choices Constants:
+    # DIFFERENT TYPES OF PLACENAMES
+    PUBLIC_ART = "public_art"
+    ORGANIZATION = "organization"
+    ARTIST = "artist"
+    EVENT = "event"
+    RESOURCE = "resource"
+    GRANT = "grant"
+    POI = "poi"
+
+    KIND_CHOICES = [
+        (PUBLIC_ART, "Public Art"),
+        (ORGANIZATION, "Organization"),
+        (ARTIST, "Artist"),
+        (EVENT, "Event"),
+        (RESOURCE, "Resource"),
+        (GRANT, "Grant"),
+        (POI, "Point of Interest"),
+    ]
+
     geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
 
@@ -246,7 +265,7 @@ class PlaceName(CulturalModel):
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    kind = models.CharField(max_length=20, default="")
+    kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")

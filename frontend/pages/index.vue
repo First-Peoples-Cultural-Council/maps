@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FullscreenLoading v-if="showLoading"></FullscreenLoading>
+    <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
 
     <div
       id="map-container"
@@ -190,9 +190,16 @@
           >
             <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
             <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+            <CurrentLocation
+              class="current-location-control hide-mobile mr-2"
+            ></CurrentLocation>
             <ShareEmbed
               class="share-embed-control hide-mobile mr-2"
             ></ShareEmbed>
+            <SaveLocation
+              v-if="isLoggedIn"
+              class="share-embed-control hide-mobile mr-2"
+            ></SaveLocation>
             <Contribute class="contribute-control mr-2"></Contribute>
           </div>
           <ModalNotification></ModalNotification>
@@ -237,7 +244,9 @@ import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
+import SaveLocation from '@/components/SaveLocation.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import CurrentLocation from '@/components/CurrentLocation.vue'
 import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -284,7 +293,9 @@ export default {
     LanguageCard,
     CommunityCard,
     ShareEmbed,
+    SaveLocation,
     ResetMap,
+    CurrentLocation,
     Zoom,
     Filters,
     Contribute,
@@ -314,7 +325,7 @@ export default {
       maximumLength: 0,
       searchQuery: '',
       searchKey: 'search',
-      showLoading: true,
+      showFullscreenLoading: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -528,6 +539,9 @@ export default {
     }
     next()
   },
+  created() {
+    this.showFullscreenLoading = true
+  },
   async mounted() {
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
@@ -537,7 +551,7 @@ export default {
 
     setTimeout(() => {
       if (this.user) {
-        this.showLoading = false
+        this.showFullscreenLoading = false
         if (this.$route.query.search) {
           this.searchQuery = this.$route.query.search
           this.searchKey += this.searchQuery

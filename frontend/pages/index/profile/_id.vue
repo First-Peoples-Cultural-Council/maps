@@ -134,7 +134,7 @@
           <template v-for="place in placenameSet">
             <!-- Render this card if not Art Placename -->
             <PlacesCard
-              v-if="place.kind === ''"
+              v-if="place.kind === '' || place.kind === 'poi'"
               :key="`place-${place.name}-${place.id}`"
               :place="{ properties: place }"
               class="mt-1 hover-left-move"
@@ -159,26 +159,16 @@
 
           <div v-if="savedLocations.length > 0 && isOwner">
             <h5
-              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+              class="color-gray font-08 text-uppercase font-weight-bold mb-3 mt-3"
             >
               Saved Locations ({{ savedLocations.length }})
             </h5>
-            <div v-for="sl in savedLocations" :key="`sl${sl.id}`">
-              <div v-if="sl.name">Name: {{ sl.name }}</div>
-              <div v-if="sl.description">Description: {{ sl.description }}</div>
-              <b-button
-                variant="dark"
-                size="sm"
-                @click="handleLocation($event, sl)"
-                >Go To Location</b-button
-              >
-              <b-button
-                variant="dark"
-                size="sm"
-                @click="removeLocation($event, sl)"
-                >Remove Location</b-button
-              >
-            </div>
+
+            <LocationItem
+              v-for="sl in savedLocations"
+              :key="`sl-${sl.id}`"
+              :item="sl"
+            ></LocationItem>
           </div>
 
           <div v-if="isOwner">
@@ -202,7 +192,7 @@
           </div>
           <div v-if="isOwner && notifications && notifications.length > 0">
             <h5
-              class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-3"
+              class="color-gray font-08 text-uppercase font-weight-bold mb-3 mt-3"
             >
               Notifications ({{ notifications.length }})
             </h5>
@@ -270,6 +260,7 @@ import ArtsCard from '@/components/arts/ArtsCard.vue'
 import Logo from '@/components/Logo.vue'
 import ErrorScreen from '@/layouts/error.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
+import LocationItem from '@/components/LocationItem.vue'
 
 export default {
   components: {
@@ -281,7 +272,8 @@ export default {
     Logo,
     ArtsCard,
     ErrorScreen,
-    ArtsDrawer
+    ArtsDrawer,
+    LocationItem
   },
   computed: {
     isLoggedIn() {
