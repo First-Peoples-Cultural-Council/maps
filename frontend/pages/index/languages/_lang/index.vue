@@ -57,6 +57,16 @@
             :learners="language.learners.toString() || 'NA'"
             class="mt-4"
           ></LanguageSummary>
+          <p class="source-link">
+            Source:
+            <a
+              :href="
+                `http://www.fpcc.ca/files/PDF/FPCC-LanguageReport-180716-WEB.pdf`
+              "
+              target="_blank"
+              >Report on the status of B.C. First Nations Languages 2018</a
+            >
+          </p>
         </section>
         <section>
           <b-row>
@@ -515,5 +525,8 @@ export default {
 .other-lang-names-title {
   color: var(--color-gray, #6f6f70);
   font-size: 0.8em;
+}
+.source-link {
+  margin: 8px 0;
 }
 </style>
