@@ -126,12 +126,16 @@ class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
     )
 
 
+class CommunityMemberAdmin(admin.ModelAdmin):
+    list_display = ("user", "community")
+
 admin.site.register(Champion)
 admin.site.register(Dialect, DialectAdmin)
 admin.site.register(PlaceName, PlaceNameAdmin)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(Community, CommunityAdmin)
+admin.site.register(CommunityMember, CommunityMemberAdmin)
 admin.site.register(Media, MediaAdmin)
 admin.site.register(Favourite)
 admin.site.register(Notification)
