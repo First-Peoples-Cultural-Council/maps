@@ -49,6 +49,7 @@ from language.serializers import (
     ArtworkPlaceNameSerializer
 )
 from web.permissions import IsAdminOrReadOnly
+from web.utils import is_user_permitted
 
 
 class PlaceNameFilterSet(FilterSet):
@@ -73,6 +74,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     # Search by name
     search_fields = ['name']
 
+    @method_decorator(login_required)
     def create(self, request):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
