@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework import status
 
 from django.conf import settings
 from django.db import transaction
@@ -43,7 +44,6 @@ def validate_key(encoded_email, key):
 # To enable only UPDATE and RETRIEVE, we create a custom ViewSet class...
 class UserCustomViewSet(
     mixins.UpdateModelMixin,
-    mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
@@ -53,6 +53,17 @@ class UserCustomViewSet(
 class UserViewSet(UserCustomViewSet, GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("first_name")
+    
+    @method_decorator(never_cache)
+    def retrieve(self, request, pk=None):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated and request.user.id == int(pk):
+                return super().retrieve(request)
+        
+        return Response(
+            {'message': 'You are not authorized to view this info.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @method_decorator(never_cache)
     def detail(self, request):
