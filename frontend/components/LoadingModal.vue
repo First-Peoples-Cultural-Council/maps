@@ -5,12 +5,8 @@
 </template>
 
 <script>
-import ProgressBar from 'vuejs-progress-bar'
-
 export default {
-  components: {
-    ProgressBar
-  },
+  components: {},
   data() {
     return {
       options: {
