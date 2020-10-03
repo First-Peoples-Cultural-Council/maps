@@ -1778,17 +1778,6 @@ export default {
       }
     },
 
-    validateRelatedData() {
-      // Check if Email is valid
-      // this.isValidEmail = this.isValidEmail(this.relatedData.email)
-      // this.relatedData.websiteList.forEach(web => {
-      //   web.isError = !this.isValidURL(web.value)
-      //   if (web.isError === false) {
-      //     this.error.push(`${web.value} is not a valid website URL`)
-      //   }
-      // })
-    },
-
     async submitContribute(e) {
       let id
       this.errors = []
@@ -1847,11 +1836,6 @@ export default {
         formData.append('geom', JSON.stringify(this.drawnFeatures[0].geometry))
       }
 
-      const headers = {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      }
       if (this.$route.query.id) {
         id = this.$route.query.id
 
@@ -1859,7 +1843,7 @@ export default {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
             formData,
-            headers
+            this.getAPIConfig()
           )
           id = modified.id
         } catch (e) {
@@ -1879,7 +1863,7 @@ export default {
           const created = await this.$axios.$post(
             '/api/placename/',
             formData,
-            headers
+            this.getAPIConfig()
           )
           id = created.id
         } catch (e) {
@@ -1906,8 +1890,27 @@ export default {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
 
+    getAPIConfig() {
+      return {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        onUploadProgress: progressEvent => {
+          const { loaded, total } = progressEvent
+          const percentCompleted = Math.round((loaded * 100) / total)
+          console.log(`${loaded}KB uploaded of ${total}KB`)
+
+          if (this.callProgressModal) {
+            this.callProgressModal(percentCompleted)
+          }
+        }
+      }
+    },
+
     async submitPlacename(e) {
+      console.log(this.getAPIConfig())
       let id
+
       const headers = this.getCookies
       this.errors = []
       if (!this.drawnFeatures.length && !this.place) {
@@ -1985,7 +1988,7 @@ export default {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
             appendedData,
-            headers
+            this.getAPIConfig()
           )
 
           if (modified) {
@@ -2013,7 +2016,7 @@ export default {
           const created = await this.$axios.$post(
             '/api/placename/',
             data,
-            headers
+            this.getAPIConfig()
           )
           id = created.id
 
@@ -2271,6 +2274,9 @@ export default {
       }
 
       location.href = `/art/${encodeFPCC(this.traditionalName)}`
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   },
 

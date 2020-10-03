@@ -1,6 +1,7 @@
 <template>
   <div>
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
+    <LoadingModal></LoadingModal>
 
     <div
       id="map-container"
@@ -259,6 +260,7 @@ import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
+import LoadingModal from '@/components/LoadingModal.vue'
 
 import {
   getApiUrl,
@@ -303,7 +305,8 @@ export default {
     ModalNotification,
     LogInOverlay,
     EventOverlay,
-    FullscreenLoading
+    FullscreenLoading,
+    LoadingModal
   },
   head() {
     return {
