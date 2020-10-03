@@ -24,8 +24,8 @@ export default {
           backgroundColor: '#333333'
         },
         layout: {
-          height: 25,
-          width: 200,
+          height: 35,
+          width: 230,
           verticalTextAlign: 61,
           horizontalTextAlign: 43,
           zeroOffset: 0,
