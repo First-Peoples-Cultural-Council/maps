@@ -1,15 +1,15 @@
 <template>
-  <div v-if="showLoading" class="progress-container">
-    <!-- <progress-bar :options="options" :value="percentage" /> -->
+  <div v-if="showLoading" class="progress-modal-container">
+    <progress-bar no-ssr :options="options" :value="percentage" />
   </div>
 </template>
 
 <script>
-// import ProgressBar from 'vuejs-progress-bar'
+import ProgressBar from 'vuejs-progress-bar'
 
 export default {
   components: {
-    // ProgressBar
+    ProgressBar
   },
   data() {
     return {
@@ -44,14 +44,37 @@ export default {
   },
 
   mounted() {
-    this.$root.$on('initiateLoadingModal', () => {
-      console.log('U HAVE ENTERED MY DOMAIN')
-      this.showLoading = true
-      this.percentage = 0
-    })
-    this.$root.$on('finishLoadingModal', () => {
-      this.showLoading = false
-      this.percentage = 0
+    this.$root.$on('initiateLoadingModal', value => {
+      /** 
+      **
+        NOTE: setTimeout is there to let us see the animation 
+      **
+      **/
+
+      // if progress is on going or existing
+      if (this.percentage !== 0) {
+        setTimeout(() => {
+          if (value === 100) {
+            this.showLoading = false
+            this.percentage = 0
+          }
+        }, 500)
+      }
+      // if progress is new, or new file upload
+      else {
+        this.showLoading = true
+        this.percentage = 0
+        setTimeout(() => {
+          this.percentage = value
+
+          setTimeout(() => {
+            if (value === 100) {
+              this.showLoading = false
+              this.percentage = 0
+            }
+          }, 500)
+        }, 500)
+      }
     })
   },
 
@@ -60,7 +83,7 @@ export default {
 </script>
 
 <style>
-.progress-container {
+.progress-modal-container {
   position: fixed;
   top: 0;
   left: 0;
