@@ -24,8 +24,8 @@ export default {
           backgroundColor: '#333333'
         },
         layout: {
-          height: 25,
-          width: 200,
+          height: 35,
+          width: 230,
           verticalTextAlign: 61,
           horizontalTextAlign: 43,
           zeroOffset: 0,
@@ -94,6 +94,10 @@ export default {
   align-items: center;
   justify-content: center;
   font: Bold 16px/20px Proxima Nova;
+}
+
+.progress-bar {
+  width: auto !important;
 }
 
 .progress-container {
