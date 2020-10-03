@@ -143,6 +143,22 @@
                 }}</a>
               </span>
             </section>
+            <section
+              v-if="!artDetails.description && artDetails.kind === 'artist'"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">
+                Artist Description:
+              </h5>
+              <span class="field-content">
+                <span>
+                  We do not yet have a bio/description for this artist. If you
+                  are this artist and would like to claim this page to create a
+                  profile please contact:
+                  <a href="mailto:maps@fpcc.ca">maps@fpcc.ca</a>
+                </span>
+              </span>
+            </section>
 
             <!-- Render List of Related Data -->
             <template v-if="relatedData">

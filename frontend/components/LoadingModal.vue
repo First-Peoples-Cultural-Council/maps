@@ -96,6 +96,10 @@ export default {
   font: Bold 16px/20px Proxima Nova;
 }
 
+.progress-bar {
+  width: auto !important;
+}
+
 .progress-container {
   display: flex;
   align-items: center;

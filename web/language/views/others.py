@@ -1,7 +1,14 @@
 import sys
 
+from rest_framework import viewsets, generics, mixins, status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import action
+
 from django.shortcuts import render
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 from users.models import User, Administrator
 from language.models import (
@@ -17,12 +24,6 @@ from language.models import (
     Recording,
 )
 
-from django.views.decorators.cache import never_cache
-from rest_framework import viewsets, generics, mixins, status
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.response import Response
-from rest_framework.decorators import action
-
 from language.views import BaseModelViewSet
 
 from language.serializers import (
@@ -34,6 +35,7 @@ from language.serializers import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
+from web.utils import is_user_permitted
 
 
 class RecordingViewSet(BaseModelViewSet):
@@ -76,10 +78,12 @@ class FavouriteCustomViewSet(
 class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
     serializer_class = FavouriteSerializer
     queryset = Favourite.objects.all()
-
+    
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @method_decorator(login_required)
     def create(self, request, *args, **kwargs):
         if 'place' in request.data.keys() or 'media' in request.data.keys():
 
@@ -104,6 +108,26 @@ class FavouriteViewSet(FavouriteCustomViewSet, GenericViewSet):
                     return super(FavouriteViewSet, self).create(request, *args, **kwargs)
         else:
             return super(FavouriteViewSet, self).create(request, *args, **kwargs)
+    
+    def retrieve(self, request, pk=None):
+        instance = self.queryset.get(pk=pk)
+        if is_user_permitted(request, instance.user.id):
+            return super().retrieve(request)
+        
+        return Response(
+            {'message': 'You are not authorized to view this info.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    def destroy(self, request, pk=None):
+        instance = self.queryset.get(pk=pk)
+        if is_user_permitted(request, instance.user.id):
+            return super().destroy(request)
+        
+        return Response(
+            {'message': 'You are not authorized to perform this action.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @method_decorator(never_cache)
     def list(self, request):

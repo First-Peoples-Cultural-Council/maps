@@ -28,6 +28,32 @@ class BaseTestCase(APITestCase):
         self.user.set_password("password")
         self.user.save()
 
+        self.user2 = User.objects.create(
+            username="testuser002",
+            first_name="Test",
+            last_name="user 002",
+            email="test2@countable.ca"
+        )
+        self.user2.set_password("password")
+        self.user2.save()
+        
+        self.user3 = User.objects.create(
+            username="testuser003",
+            first_name="Test",
+            last_name="user 003",
+            email="test2@countable.ca",
+        )
+        self.user3.set_password("password")
+        self.user3.save()
+
+        self.test_language = Language.objects.create(name="Global Test Language")
+        self.test_community = Community.objects.create(name="Global Test Community")
+        community_admin = Administrator.objects.create(
+            user=self.user3,
+            language=self.test_language,
+            community=self.test_community
+        )
+
 
 class CommunityAPITests(BaseTestCase):
     def setUp(self):
@@ -86,9 +112,9 @@ class CommunityAPITests(BaseTestCase):
         response = self.client.get("/api/community/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_community_add_audio(self):
+    def test_community_add_audio_for_admin(self):
         """
-        Ensure we can add a community audio to a community object.
+        Ensure we can add a community audio to a community object using an admin account.
         """
         # Must be logged in
         self.assertTrue(self.client.login(
@@ -119,6 +145,69 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], test_community.id)
         self.assertEqual(response.data["name"], "Test community audio")
+        self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
+        self.assertEqual(response.data["audio_obj"]
+                         ["speaker"], self.recording.speaker)
+
+    def test_community_add_audio_for_non_admin(self):
+        """
+        Ensure we can add a community audio to a community object.
+        """
+        # Must be logged in
+        self.assertTrue(self.client.login(
+            username="testuser002", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        test_community = self.test_community
+        test_community.point = self.point
+        test_community.save()
+
+        response = self.client.patch(
+            "/api/community/{}/add_audio/".format(test_community.id),
+            {
+                "recording_id": self.recording.id
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_community_add_audio_for_community_admin(self):
+        """
+        Ensure we can add a community audio to a community object using an admin account.
+        """
+        # Must be logged in
+        self.assertTrue(self.client.login(
+            username="testuser003", password="password"))
+
+        # Check we're logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], True)
+
+        test_community = self.test_community
+        test_community.point = self.point
+        test_community.save()
+
+        response = self.client.patch(
+            "/api/community/{}/add_audio/".format(test_community.id),
+            {
+                "recording_id": self.recording.id
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            "/api/community/{}/".format(test_community.id), format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], test_community.id)
+        self.assertEqual(response.data["name"], "Global Test Community")
         self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
         self.assertEqual(response.data["audio_obj"]
                          ["speaker"], self.recording.speaker)
