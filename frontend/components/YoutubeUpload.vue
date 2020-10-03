@@ -154,7 +154,12 @@ export default {
     },
 
     async uploadNote(formData) {
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
+
+      const result = await this.$store.dispatch('file/uploadMedia', dataObj)
       return result
     },
 
@@ -169,6 +174,10 @@ export default {
         url: this.youtubeLink,
         is_artwork: !!this.$route.query.upload_artwork
       }
+    },
+
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }
