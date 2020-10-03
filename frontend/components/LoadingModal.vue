@@ -49,6 +49,7 @@ export default {
 
       // if progress is on going or existing
       if (this.percentage !== 0) {
+        this.percentage = value
         setTimeout(() => {
           if (value === 100) {
             this.showLoading = false
