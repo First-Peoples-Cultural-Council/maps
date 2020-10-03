@@ -123,6 +123,7 @@ export default {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
       } else {
         const formData = this.getFormData()
+
         try {
           result = await this.uploadFile(formData)
           if (

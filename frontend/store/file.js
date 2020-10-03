@@ -16,14 +16,21 @@ export const mutations = {
 
 export const actions = {
   async uploadMedia({ commit }, formData) {
-    const headers = {
-      headers: {
-        'X-CSRFToken': getCookie('csrftoken')
+    console.log('enter here')
+
+    const config = {
+      headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        )
+        this.$root.$emit('initiateLoadingModal')
+        console.log(percentCompleted)
       }
     }
 
     try {
-      const result = await this.$axios.post(`/api/media/`, formData, headers)
+      const result = await this.$axios.post(`/api/media/`, formData, config)
       return result
     } catch (e) {
       return { error: e, status: 'failed' }
