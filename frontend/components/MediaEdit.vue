@@ -170,13 +170,6 @@ export default {
     isPlacename() {
       return this.$route.query.type || this.$route.query.upload_artwork
     },
-    // isArtwork() {
-    //   return (
-    //     this.$route.query.type &&
-    //     (this.$route.query.type === 'Artist' ||
-    //       this.$route.query.type === 'Public Art')
-    //   )
-    // },
     getCookies() {
       return {
         headers: {
@@ -257,11 +250,24 @@ export default {
       if (this.media.placename || this.media.community) {
         const getData = this.getFormData()
 
+        const config = {
+          headers: this.getCookies,
+          onUploadProgress: progressEvent => {
+            const { loaded, total } = progressEvent
+            const percentCompleted = Math.round((loaded * 100) / total)
+            console.log(`${loaded}KB uploaded of ${total}KB`)
+
+            if (this.callProgressModal) {
+              this.callProgressModal(percentCompleted)
+            }
+          }
+        }
+
         try {
           const result = await this.$axios.$patch(
             `/api/media/${this.media.id}/`,
             getData,
-            this.getCookies
+            config
           )
           if (result) {
             this.$root.$emit('fileUploaded', result)
@@ -317,6 +323,9 @@ export default {
         media.media_file = getFile
       }
       return media
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }
