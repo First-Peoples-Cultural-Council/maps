@@ -123,6 +123,7 @@ export default {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
       } else {
         const formData = this.getFormData()
+
         try {
           result = await this.uploadFile(formData)
           if (
@@ -165,8 +166,16 @@ export default {
       }
     },
     async uploadFile(formData) {
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
+
+      const result = await this.$store.dispatch('file/uploadMedia', dataObj)
       return result
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }

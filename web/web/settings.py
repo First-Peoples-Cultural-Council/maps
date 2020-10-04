@@ -41,6 +41,13 @@ ADMINS = (
 )
 SERVER_EMAIL = "maps@fpcc.ca"
 
+FPCC_ADMINS = (
+    ("Suzanne", "suzanne@fpcc.ca"),
+    ("Cathi", "cathi@fpcc.ca"),
+    ("Megan", "megan@fpcc.ca"),
+    ("Hannah", "hannah@fpcc.ca"),
+)
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
