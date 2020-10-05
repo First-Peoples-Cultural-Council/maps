@@ -1,7 +1,9 @@
 <template>
   <div class="loading-container">
-    <img src="@/assets/images/splashscreen/hero_img.svg" alt="Loading" />
-    Loading, Please Wait {{ dots }}
+    <div class="loading-inner">
+      <img src="@/assets/images/splashscreen/hero_img.svg" alt="Loading" />
+      <span> Loading, Please Wait {{ dots }} </span>
+    </div>
   </div>
 </template>
 
@@ -40,10 +42,20 @@ export default {
   justify-content: center;
   font: Bold 16px/20px Proxima Nova;
 
-  img {
-    width: 200px;
-    height: 200px;
-    animation: pulse 1s infinite;
+  .loading-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 250px;
+    img {
+      width: 200px;
+      height: 200px;
+      animation: pulse 1s infinite;
+    }
+
+    span {
+      margin-left: 1em;
+    }
   }
 }
 

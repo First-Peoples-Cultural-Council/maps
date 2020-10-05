@@ -1576,7 +1576,7 @@ export default {
 
 /* Global CSS */
 .field-kinds {
-  font: Bold 15px/18px Proxima Nova;
+  font: Bold 13px/15px Proxima Nova;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -1591,6 +1591,7 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+  word-break: break-all;
 }
 
 .content-collapse {
@@ -1793,8 +1794,8 @@ export default {
         max-height: 60px;
         overflow-wrap: break-word;
         word-wrap: break-word;
+        word-break: break-all;
         overflow: hidden;
-
         font: Bold 16px/20px Proxima Nova;
         color: #151515;
         margin: 0.1em;
