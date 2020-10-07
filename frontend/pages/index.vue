@@ -967,6 +967,7 @@ export default {
         type: 'geojson',
         data: '/api/placename-geo/'
       })
+
       layers.layers(map, this)
       this.zoomToHash(map)
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
@@ -1175,6 +1176,7 @@ export default {
       ).active
 
       const bounds = map.getBounds()
+
       this.$store.commit(
         'languages/set',
         filterLanguages(
@@ -1186,7 +1188,7 @@ export default {
           sleepingLayer
         )
       )
-      // console.log('This lanuages', this.languages)
+
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
