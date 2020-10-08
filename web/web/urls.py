@@ -55,6 +55,7 @@ urlpatterns = [
         name="auth",
     ),  # for logging in and out as a user.
     path("api/", include("language.urls"), name="language"),
+    path("api/", include("grants.urls"), name="grants"),
     path("api/", include("arts.urls"), name="arts"),
     path("api/", include("users.urls"), name="users"),
     url(r"api-token-auth/", obtain_auth_token),  # for token based api usage.
