@@ -193,7 +193,7 @@ import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
-import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtistFilter from '@/components/CardFilter.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {
