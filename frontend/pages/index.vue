@@ -1238,21 +1238,31 @@ export default {
     },
 
     toggleMapLayers(map) {
-      console.log('ENTER')
       // enumerate ids of the layers
-      const toggleableLayerIds = ['fn-nations', 'fn-arts', 'fn-places']
+      const layerIdToHide = [
+        'fn-nations',
+        'fn-arts',
+        'fn-places',
+        'fn-places-geom-labels',
+        'fn-places-poly',
+        'fn-places-lines',
+        'fn-arts-clusters-text',
+        'fn-arts-clusters',
+        'fn-lang-area-outlines-1',
+        'fn-lang-areas-highlighted',
+        'fn-lang-area-outlines-fade',
+        'fn-lang-areas-fill'
+      ]
 
-      toggleableLayerIds.forEach(layer => {
+      layerIdToHide.forEach(layer => {
         const visibility = map.getLayoutProperty(layer, 'visibility')
 
         console.log('VISIB VALUE', layer, ' ', visibility)
 
         // toggle layer visibility by changing the layout object's visibility property
-        if (visibility === 'visible') {
+        if (this.$route.name === 'index-grants') {
           map.setLayoutProperty(layer, 'visibility', 'none')
-          this.className = ''
         } else {
-          this.className = 'active'
           map.setLayoutProperty(layer, 'visibility', 'visible')
         }
       })

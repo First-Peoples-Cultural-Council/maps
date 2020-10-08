@@ -126,7 +126,7 @@ export default {
     })
 
     this.$eventHub.whenMap(map => {
-      this.$root.$emit('updateData')
+      this.$root.$emit('toggleMapLayers')
     })
 
     // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected

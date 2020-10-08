@@ -166,6 +166,7 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
+      // Hide other markers in the map
       this.$eventHub.whenMap(map => {
         this.$root.$emit('toggleMapLayers')
       })
