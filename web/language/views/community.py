@@ -35,6 +35,7 @@ from language.serializers import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
+from web.utils import is_user_permitted, is_user_community_admin
 
 
 class CommunityViewSet(BaseModelViewSet):
@@ -55,6 +56,25 @@ class CommunityViewSet(BaseModelViewSet):
     def detail(self, request):
         return super().detail(request)
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if is_user_community_admin(request, instance):
+            return super().update(request, *args, **kwargs)
+
+        return Response(
+            {'message': 'You are not authorized to perform this action.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if is_user_community_admin(request, instance):
+            return super().update(request, *args, **kwargs)
+
+        return Response(
+            {'message': 'You are not authorized to perform this action.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
@@ -98,32 +118,65 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
-        if 'recording_id' not in request.data.keys():
-            return Response({"message": "No Recording was sent in the request"})
-        if not pk:
-            return Response({"message": "No Community was sent in the request"})
-        recording_id = int(request.data["recording_id"])
-        community_id = int(pk)
-        community = Community.objects.get(pk=community_id)
-        recording = Recording.objects.get(pk=recording_id)
-        community.audio = recording
-        community.save()
-        return Response({"message": "Audio associated"}, 
-                        status=status.HTTP_200_OK)
+        instance = self.get_object()
+        if is_user_community_admin(request, instance):
+            if 'recording_id' not in request.data.keys():
+                return Response(
+                    {"message": "No Recording was sent in the request"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not pk:
+                return Response(
+                    {"message": "No Community was sent in the request"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            recording_id = int(request.data["recording_id"])
+            community_id = int(pk)
+            community = Community.objects.get(pk=community_id)
+            recording = Recording.objects.get(pk=recording_id)
+            community.audio = recording
+            community.save()
+            return Response(
+                {"message": "Audio associated"}, 
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"message": "You are not authorized to perform this action."}, 
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @action(detail=True, methods=["post"])
     def create_membership(self, request, pk):
-        if 'user_id' not in request.data.keys():
-            return Response({"message": "No User was sent in the request"})
-        if not pk:
-            return Response({"message": "No Community was sent in the request"})
-        user_id = int(request.data["user_id"])
-        community_id = int(pk)
-        community = Community.objects.get(pk=community_id)
-        user = User.objects.get(pk=user_id)
-        user.communities.add(community)
-        user.save()
-        return Response({"message": "Membership created"})
+        instance = self.get_object()
+        if is_user_community_admin(request, instance):
+            if 'user_id' not in request.data.keys():
+                return Response(
+                    {"message": "No User was sent in the request"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not pk:
+                return Response(
+                    {"message": "No Community was sent in the request"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user_id = int(request.data["user_id"])
+            community_id = int(pk)
+            community = Community.objects.get(pk=community_id)
+            user = User.objects.get(pk=user_id)
+            user.communities.add(community)
+            user.save()
+            return Response(
+                {"message": "Membership created"},
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"message": "You are not authorized to perform this action."}, 
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -229,8 +282,16 @@ class CommunityGeoList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunityGeoSerializer
 
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)
+
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
     queryset = Community.objects.filter(point__isnull=False).order_by("name")
     serializer_class = CommunitySearchSerializer
+
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)

@@ -2,13 +2,16 @@
   <div class="W-100">
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+      class="content-collapse d-none content-mobile-title"
     >
       <div>
         Language:
         <span class="font-weight-bold">{{ language.name }}</span>
       </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
+      <div
+        class="content-collapse-btn"
+        @click="$store.commit('sidebar/setMobileContent', true)"
+      >
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>
@@ -30,7 +33,7 @@
 
       <LanguageDetailCard
         :color="languageColor"
-        :name="this.$route.params.lang"
+        :name="language.name"
         :detail="true"
         audio-file=""
         :link="language.fv_archive_link"
@@ -113,16 +116,6 @@
         <!--            tbody-class="lna-table-tbody"-->
         <!--          ></b-table>-->
         <!--        </div>-->
-        <p>
-          Source:
-          <a
-            :href="
-              `http://www.fpcc.ca/files/PDF/FPCC-LanguageReport-180716-WEB.pdf`
-            "
-            target="_blank"
-            >Report on the status of B.C. First Nations Languages 2018</a
-          >
-        </p>
       </section>
     </div>
   </div>

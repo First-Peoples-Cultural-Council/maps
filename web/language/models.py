@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from users.models import User
 
@@ -232,7 +233,26 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceName(CulturalModel):
+class PlaceName(CulturalModel):# Choices Constants:
+    # DIFFERENT TYPES OF PLACENAMES
+    PUBLIC_ART = "public_art"
+    ORGANIZATION = "organization"
+    ARTIST = "artist"
+    EVENT = "event"
+    RESOURCE = "resource"
+    GRANT = "grant"
+    POI = "poi"
+
+    KIND_CHOICES = [
+        (PUBLIC_ART, "Public Art"),
+        (ORGANIZATION, "Organization"),
+        (ARTIST, "Artist"),
+        (EVENT, "Event"),
+        (RESOURCE, "Resource"),
+        (GRANT, "Grant"),
+        (POI, "Point of Interest"),
+    ]
+
     geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
 
@@ -245,7 +265,7 @@ class PlaceName(CulturalModel):
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    kind = models.CharField(max_length=20, default="")
+    kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")
@@ -255,9 +275,12 @@ class PlaceName(CulturalModel):
     language = models.ForeignKey(
         Language, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
+    non_bc_languages = ArrayField(models.CharField(
+        max_length=200), blank=True, null=True,  default=None)
     community = models.ForeignKey(
         Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
+    other_community = models.CharField(max_length=64, default="", blank=True, null=True)
     taxonomies = models.ManyToManyField(
         'Taxonomy',
         through='PlaceNameTaxonomy',
@@ -313,6 +336,9 @@ class PlaceName(CulturalModel):
         media.status = PlaceName.FLAGGED
         media.status_reason = status_reason
         media.save()
+    
+    class Meta:
+        verbose_name_plural = "Place Names"
 
 
 class Media(BaseModel):
@@ -384,6 +410,9 @@ class RelatedData(models.Model):
     is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(
         PlaceName, related_name='related_data', on_delete=models.CASCADE)
+    
+    class Meta:
+        verbose_name_plural = "Related Data"
 
 
 class Favourite(BaseModel):
@@ -475,6 +504,9 @@ class Taxonomy(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+    
+    class Meta:
+        verbose_name_plural = "Taxonomies"
 
 
 class PlaceNameTaxonomy(models.Model):
@@ -485,6 +517,9 @@ class PlaceNameTaxonomy(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.placename, self.taxonomy)
+    
+    class Meta:
+        verbose_name_plural = "Place Name Taxonomies"
 
 
 class LNA(BaseModel):
@@ -496,6 +531,9 @@ class LNA(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna1_lang_target_id
+    
+    class Meta:
+        verbose_name_plural = "LNA"
 
 
 class LNAData(BaseModel):
@@ -526,3 +564,6 @@ class LNAData(BaseModel):
     oece_hours = models.FloatField(default=0)
     info = models.TextField(default="")
     school_hours = models.FloatField(default=0)
+    
+    class Meta:
+        verbose_name_plural = "LNA Data"

@@ -7,28 +7,20 @@
         class="user-container menu-container cursor-pointer hide-mobile"
         @click="profile"
       >
-        <div
-          v-if="
-            isLoggedIn &&
-              user.languages &&
-              user.languages.length === 0 &&
-              user.communities &&
-              user.communities.length === 0
-          "
-          class="notify-badge"
-        ></div>
-        <nav class="navbar-icon-container">
+        <nav class="user-icon-container">
+          <div v-if="showNotificationBadge" class="notify-badge"></div>
+          <span>{{ user.email }}</span>
           <img
             v-if="!picture"
             src="@/assets/images/user_icon.svg"
             alt="Menu"
-            class="navbar-icon user_icon"
+            class="user-icon"
           />
           <img
             v-if="picture"
             :src="picture"
             alt="Menu"
-            class="navbar-icon user_icon"
+            class="navbar-icon user-display-img"
           />
         </nav>
       </div>
@@ -46,6 +38,14 @@
       <Logo :logo-alt="4"></Logo>
     </div>
     <div class="d-none mobile-search-container">
+      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
+        <img
+          src="@/assets/images/search_icon.svg"
+          alt="Search"
+          class="navbar-icon"
+        />
+      </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="showEvent">
         <img
           src="@/assets/images/event_icons.svg"
@@ -53,7 +53,14 @@
           class="navbar-icon"
         />
       </div>
-      <div
+      <div class="navbar-icon-container cursor-pointer" @click="getLocation">
+        <img
+          src="@/assets/images/my_location.png"
+          alt="Location"
+          class="navbar-icon"
+        />
+      </div>
+      <!-- <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openContributeModal')"
       >
@@ -62,7 +69,7 @@
           alt="Contribute"
           class="navbar-icon"
         />
-      </div>
+      </div> -->
       <div
         class="navbar-icon-container cursor-pointer"
         @click="$root.$emit('openShareEmbed')"
@@ -73,13 +80,29 @@
           class="navbar-icon"
         />
       </div>
-      <div class="navbar-icon-container cursor-pointer" @click="showSearch">
-        <img
-          src="@/assets/images/search_icon.svg"
-          alt="Search"
-          class="navbar-icon"
-        />
+
+      <div
+        v-if="isLoggedIn"
+        class="navbar-icon-container cursor-pointer"
+        @click="profile"
+      >
+        <nav class="user-icon-container">
+          <div v-if="showNotificationBadge" class="notify-badge"></div>
+          <img
+            v-if="!picture"
+            src="@/assets/images/user_icon.svg"
+            alt="Menu"
+            class="navbar-icon"
+          />
+          <img
+            v-if="picture"
+            :src="picture"
+            alt="Menu"
+            class="navbar-icon user-display-img"
+          />
+        </nav>
       </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="openNav">
         <img
           src="@/assets/images/menu_icon.svg"
@@ -120,7 +143,7 @@
                 v-if="!picture"
                 src="@/assets/images/user_icon.svg"
                 alt="Menu"
-                class="navbar-icon user_icon d-inline-block"
+                class="navbar-icon user_default d-inline-block"
               />
               <img
                 v-if="picture"
@@ -132,6 +155,19 @@
           </nuxt-link>
 
           <ul class="nav-links p-0 m-0 list-style-none">
+            <li v-if="isLoggedIn">
+              <nuxt-link
+                class="color-gray"
+                :to="`/profile/${userid}`"
+                @click.native="resetMap"
+                >{{ user.email }}</nuxt-link
+              >
+            </li>
+            <li v-if="isUserAdmin">
+              <a class="color-gray" href="/admin" target="_blank"
+                >Go to Admin Page</a
+              >
+            </li>
             <li>
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
@@ -145,7 +181,7 @@
               <a class="color-gray" href="/page/contact">Contact Us</a>
             </li>
             <li class="login-nav cursor-pointer">
-              <a v-if="!email" :href="getLoginUrl" class="d-block">Login</a>
+              <a v-if="!email" :href="getLoginUrl()" class="d-block">Login</a>
               <a v-if="email" @click="logout">Logout</a>
             </li>
           </ul>
@@ -194,16 +230,33 @@ export default {
       return this.$store.state.user.user && this.$store.state.user.user.email
     },
     ...mapState({
-      picture: state => state.user.picture
+      picture: state =>
+        state.user.user.image ? state.user.user.image : state.user.picture
     }),
     user() {
       return this.$store.state.user.user
+    },
+    isUserAdmin() {
+      return (
+        this.isLoggedIn &&
+        this.user &&
+        (this.user.is_staff || this.user.isSuperUser)
+      )
+    },
+    showNotificationBadge() {
+      return (
+        this.isLoggedIn &&
+        this.user.languages &&
+        this.user.languages.length === 0 &&
+        this.user.communities &&
+        this.user.communities.length === 0
+      )
     }
   },
-  mounted() {
-    // console.log('mounted')
-  },
   methods: {
+    getLocation() {
+      this.$root.$emit('getLocation')
+    },
     showSearch() {
       this.$root.$emit('showSearchOverlay', true)
     },
@@ -218,9 +271,15 @@ export default {
       await this.$axios.$get(
         `${getApiUrl('user/logout/')}?timestamp=${new Date().getTime()}`
       )
+
       this.$store.commit('user/setUser', null)
       this.$store.commit('user/setLoggedIn', false)
-      window.location = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+      this.$store.commit('user/setPicture', null)
+
+      setTimeout(() => {
+        window.location.href =
+          'https://auth.firstvoices.com/logout?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca'
+      }, 500)
     },
     handleLogoClick() {
       this.$router.push({
@@ -265,15 +324,6 @@ export default {
 .navigation-container {
   display: flex;
 }
-.notify-badge {
-  position: absolute;
-  top: 2.5px;
-  right: 5px;
-  width: 10px;
-  height: 10px;
-  background-color: rgba(173, 20, 20, 0.753);
-  border-radius: 50%;
-}
 
 .menu-container {
   cursor: pointer;
@@ -283,7 +333,7 @@ export default {
   background-color: white;
   z-index: 50;
   border: 1px solid #beb2a5;
-  padding: 0.8em;
+  padding: 0.6em;
   border-radius: 1.5em;
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
@@ -298,13 +348,50 @@ export default {
     width: 18px;
     height: 18px;
   }
+
+  .user-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    letter-spacing: 1px;
+
+    & > * {
+      margin: 0 0.4em 0 0.2em;
+    }
+
+    .user-display-img {
+      width: 45px;
+      height: 45px;
+      border-radius: 1.5em;
+      object-fit: cover;
+      margin-left: 1px;
+      border: 1px solid #beb2a5;
+    }
+
+    .user-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.notify-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 99;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(173, 20, 20, 0.753);
+  border-radius: 50%;
 }
 
 .user-container {
-  display: relative;
-  width: 47px;
+  padding: 0.6em;
   height: 47px;
 }
+
 .navigation {
   position: fixed;
   height: 86px;
@@ -328,6 +415,24 @@ export default {
   line-height: 0;
   color: #151515;
   font: Bold 15px/18px Proxima Nova;
+
+  .user-icon-container {
+    position: relative;
+    width: 25px;
+    height: 25px;
+  }
+
+  .user-display-img {
+    border-radius: 1.5em;
+    object-fit: cover;
+    margin-left: 1px;
+    border: 1px solid #beb2a5;
+  }
+
+  .user-icon {
+    width: 25px;
+    height: 25px;
+  }
 }
 
 .navbar-icon {
@@ -380,7 +485,7 @@ export default {
   height: 23px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1350px) {
   .menu-container {
     width: 45px;
     height: 45px;
@@ -410,22 +515,29 @@ export default {
   margin: 0 0.25em;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 993px) {
   .searchbar-mobile {
     flex: 10 1 auto;
   }
 
   .user-mobile {
     display: block !important;
+
+    .user_icon {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      width: 80px;
+      height: 80px;
+      border-radius: 0.5em;
+      object-fit: cover;
+    }
+    .user_default {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      width: 50px;
+      height: 50px;
+      border-radius: 0.5em;
+    }
   }
 
-  .user_icon {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 0.5em;
-    width: 80px;
-    height: 80px;
-    border-radius: 0.5em;
-  }
   .nav-container {
     height: 100%;
     display: flex;

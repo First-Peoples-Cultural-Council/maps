@@ -128,6 +128,7 @@ export const actions = {
         'X-CSRFToken': getCookie('csrftoken')
       }
     }
+
     const result = await this.$axios.delete(
       getApiUrl(`media/${data.id}/`),
       headers
@@ -145,7 +146,7 @@ export const actions = {
 
     if (data.type === 'community') {
       await dispatch(
-        'places/getPlaceMedias',
+        'places/getCommunityMedias',
         {
           id: data.type_id
         },

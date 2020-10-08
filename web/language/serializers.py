@@ -51,7 +51,8 @@ class MediaLightSerializer(serializers.ModelSerializer):
             "creator",
             "placename",
             "community",
-            "community_only"
+            "community_only",
+            "created"
         )
 
 
@@ -223,6 +224,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "creator",
             "mime_type",
             "is_artwork",
+            "created"
         )
 
 
@@ -393,6 +395,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "geom",
             "image",
             "other_names",
+            "audio_file",
             "audio",
             "audio_obj",
             "kind",
@@ -403,13 +406,16 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "status_reason",
             "medias",
             "community",
+            "other_community",
             "language",
+            "non_bc_languages",
             "creator",
             "favourites",
             "taxonomies",
             "public_arts",
             "artists",
-            "related_data"
+            "related_data",
+            "created"
         )
         depth = 1
 
@@ -643,7 +649,7 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "other_names", "kind")
+        fields = ("id", "name", "other_names", "kind", "artists")
 
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
@@ -696,8 +702,7 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
-            "geom",
-            
+            "geom"
         )
 
 

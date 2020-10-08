@@ -1,51 +1,93 @@
 <template>
   <div>
-    <div
-      v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
-    >
-      <div>
-        <b-badge
-          v-if="drawnFeatures.length === 0 && !place"
-          show
-          variant="danger"
-          class="p-2"
-        >
-          Please draw at least one feature from the map
-        </b-badge>
-        <b-badge v-else show variant="primary" class="p-2">
-          Expand to fill out the form
-        </b-badge>
-      </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
-        <img src="@/assets/images/arrow_up_icon.svg" />
-      </div>
-    </div>
-    <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+    <ErrorScreen
+      v-if="
+        ($route.query.id &&
+          (!place ||
+            (!isUserPlacenameOwner() && !isUserPlacenameContributer()))) ||
+          !isURLQueryValid
+      "
+    ></ErrorScreen>
+    <template v-else>
       <div
-        class="text-center d-none mobile-close"
-        :class="{ 'content-mobile': mobileContent }"
-        @click="$store.commit('sidebar/setMobileContent', false)"
+        v-if="!mobileContent"
+        class="content-collapse d-none content-mobile-title"
       >
-        <img class="d-inline-block" src="@/assets/images/arrow_down_icon.svg" />
-      </div>
-      <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
-      <div class="position-relative pb-3 contribute-form-container">
-        <div
-          v-if="(drawnFeatures.length === 0 && !place) || isLoading"
-          class="required-overlay"
-        >
-          <b-alert
+        <div>
+          <b-badge
             v-if="drawnFeatures.length === 0 && !place"
             show
             variant="danger"
+            class="p-2"
           >
-            <ul>
-              <li v-for="text in getRequiredTitle()" :key="text">{{ text }}</li>
-            </ul>
-          </b-alert>
+            Please draw at least one feature from the map
+          </b-badge>
+          <b-badge
+            v-else
+            show
+            variant="primary"
+            class="p-2"
+            @click="$store.commit('sidebar/setMobileContent', true)"
+          >
+            Expand to fill out the form
+          </b-badge>
         </div>
-        <div v-if="isLoggedIn">
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
+          <img src="@/assets/images/arrow_up_icon.svg" />
+        </div>
+      </div>
+      <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+        <div
+          class="text-center d-none mobile-close"
+          :class="{ 'content-mobile': mobileContent }"
+          @click="$store.commit('sidebar/setMobileContent', false)"
+        >
+          <img
+            class="d-inline-block"
+            src="@/assets/images/arrow_down_icon.svg"
+          />
+        </div>
+        <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
+        <div class="position-relative pb-3 contribute-form-container">
+          <div
+            v-if="
+              (drawnFeatures.length === 0 && !place) ||
+                isLoading ||
+                !isLoggedIn ||
+                notAuthenticatedUser
+            "
+            class="required-overlay"
+          >
+            <b-alert v-if="notAuthenticatedUser" show variant="danger">
+              <ul>
+                <li>
+                  You can't proceed, you need to select your default Language,
+                  and Community
+                </li>
+                <li>
+                  Please select your community or language by clicking
+                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                    >here</router-link
+                  >
+                </li>
+              </ul>
+            </b-alert>
+            <b-alert
+              v-else-if="(drawnFeatures.length === 0 && !place) || !isLoggedIn"
+              show
+              variant="danger"
+            >
+              <ul>
+                <li v-for="text in getRequiredTitle()" :key="text">
+                  {{ text }}
+                </li>
+              </ul>
+            </b-alert>
+          </div>
+
           <div class="contribute-header pt-3 pb-3">
             <div class="text-center pl-2 pr-2">
               <b-alert
@@ -150,11 +192,11 @@
             <b-row class="mt-3 field-row">
               <div>
                 <label for="traditionalName" class="contribute-title-one mb-1">
-                  {{ isArtist ? 'Ancestral Language' : 'Language' }}</label
+                  Language</label
                 >
                 <ToolTip
                   :content="
-                    `What is the primary language of this ${queryType}?`
+                    `Choices are 34 languages of BC or ‘other’ to enter your language manually.`
                   "
                 ></ToolTip>
               </div>
@@ -166,6 +208,36 @@
                 track-by="id"
                 placeholder="Select a Language"
               ></multiselect>
+            </b-row>
+
+            <b-row
+              v-if="
+                languageUserSelected && languageUserSelected.id === 'others'
+              "
+              class="mt-3 field-row"
+            >
+              <div>
+                <label for="otherLanguage" class="contribute-title-one mb-1">
+                  Non B.C. Language</label
+                >
+              </div>
+
+              <multiselect
+                v-if="userNonBCLanguage.length !== 0"
+                id="otherLanguage"
+                v-model="languageNonBC"
+                placeholder="Select a Non B.C. Language"
+                label="name"
+                track-by="id"
+                :options="userNonBCLanguage"
+              ></multiselect>
+              <b-form-input
+                v-else
+                id="otherLanguage"
+                v-model="languageNonBC"
+                type="text"
+                placeholder="(ex. Spanish, English, etc.)                                                                                                                                                                                                        , English)"
+              ></b-form-input>
             </b-row>
 
             <b-row class="mt-3 field-row">
@@ -185,6 +257,24 @@
                 track-by="id"
                 :options="communities"
               ></multiselect>
+            </b-row>
+
+            <b-row
+              v-if="community && community.id === 'others'"
+              class="mt-3 field-row"
+            >
+              <div>
+                <label for="otherCommunity" class="contribute-title-one mb-1">
+                  Other Community</label
+                >
+              </div>
+
+              <b-form-input
+                id="otherCommunity"
+                v-model="otherCommunity"
+                type="text"
+                placeholder="(ex. Capitals, Alberta, etc.)                                                                                                                                                                                                        , English)"
+              ></b-form-input>
             </b-row>
 
             <b-row class="field-row">
@@ -644,6 +734,35 @@
             <div id="quill" ref="quill"></div>
           </section>
 
+          <template v-if="$route.query.id">
+            <b-row class="delete-row-group">
+              <div>
+                <label for="delete-btn" class="contribute-title-warning"
+                  >{{
+                    `WARNING: Do you want to delete this ${
+                      queryType ? queryType : 'placename'
+                    }?`
+                  }}
+                </label>
+                <ToolTip
+                  content="By doing this your data will no longer be visible in the maps, and all data will no longer be available."
+                ></ToolTip>
+              </div>
+              <b-button
+                name="delete-btn"
+                class="delete-btn"
+                variant="warning"
+                @click="showArchiveModal"
+              >
+                DELETE
+              </b-button>
+            </b-row>
+
+            <b-modal v-model="showDeleteModal" hide-header @ok="handleDelete">{{
+              `Are you sure you want to Delete "${place.name}"? All data, including medias will be no longer available.`
+            }}</b-modal>
+          </template>
+
           <hr />
 
           <section class="pl-3 pr-3">
@@ -659,9 +778,9 @@
                     <li v-for="err in errors" :key="err">{{ err }}</li>
                   </ul>
                 </b-alert>
-                <b-button block variant="danger" @click="submitType"
-                  >Submit</b-button
-                >
+                <b-button block variant="danger" @click="submitType">{{
+                  $route.query.id ? 'Update' : 'Save'
+                }}</b-button>
               </b-col>
             </b-row>
           </section>
@@ -678,26 +797,16 @@
                 provided by BC Geographical Names and email us at
                 <a
                   :href="
-                    'mailto:info@fpcc.ca?subject=FPCC Map: Categories Request'
+                    'mailto:maps@fpcc.ca?subject=FPCC Map: Categories Request'
                   "
-                  >info@fpcc.ca</a
+                  >maps@fpcc.ca</a
                 >.
               </p>
             </div>
           </section>
         </div>
-        <div v-else>
-          <b-alert show variant="danger m-2 mt-5">
-            <h4 class="alert-heading">Please Log In</h4>
-            <p>
-              This feature requires you to be
-              <a :href="getLoginUrl()">logged in.</a>
-            </p>
-            <hr />
-          </b-alert>
-        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -715,6 +824,7 @@ import {
   isValidEmail,
   isValidURL
 } from '@/plugins/utils.js'
+import ErrorScreen from '@/layouts/error.vue'
 
 const base64Encode = data =>
   new Promise((resolve, reject) => {
@@ -729,7 +839,8 @@ export default {
     AudioRecorder,
     ToolTip,
     Logo,
-    MediaGallery
+    MediaGallery,
+    ErrorScreen
   },
   middleware: 'authenticated',
   data() {
@@ -775,12 +886,16 @@ export default {
       },
 
       isLoading: false,
+      showDeleteModal: false,
       quillEditor: null,
       place: null,
       showDismissibleAlert: true,
       content: '',
       languageSelected: null,
       languageUserSelected: null,
+      languageNonBCUser: null,
+      languageNonBC: null,
+      otherCommunity: null,
       communitySelected: null,
       categorySelected: null,
       tname: '',
@@ -824,11 +939,15 @@ export default {
       return this.taxonomies.find(taxonomy => taxonomy.name === this.queryType)
     },
     getTaxonomy() {
-      return this.taxonomies.filter(
-        taxonomy =>
-          taxonomy.parent === this.getTaxonomyId.id ||
-          this.taxonomySelected.some(tax => taxonomy.parent === tax.id)
-      )
+      if (this.getTaxonomyId) {
+        return this.taxonomies.filter(
+          taxonomy =>
+            taxonomy.parent === this.getTaxonomyId.id ||
+            this.taxonomySelected.some(tax => taxonomy.parent === tax.id)
+        )
+      } else {
+        return []
+      }
     },
     queryMode() {
       return this.$route.query.mode
@@ -890,17 +1009,40 @@ export default {
     userDetail() {
       return this.$store.state.user.user
     },
+    notAuthenticatedUser() {
+      return (
+        this.isLoggedIn &&
+        this.userDetail.languages &&
+        this.userDetail.languages.length === 0 &&
+        this.userDetail.communities &&
+        this.userDetail.communities.length === 0
+      )
+    },
     userGivenName() {
       return `${this.userDetail.first_name} ${this.userDetail.last_name}`
     },
+    userNonBCLanguage() {
+      return this.userDetail.non_bc_languages
+        ? this.userDetail.non_bc_languages.map(lang => {
+            return {
+              id: lang,
+              name: lang
+            }
+          })
+        : []
+    },
     isArtistProfileFound() {
-      const isArtistProfileFound = this.userDetail.placename_set.find(
-        placename =>
-          placename.kind === 'artist' &&
-          placename.name ===
-            `${this.userDetail.first_name} ${this.userDetail.last_name}`
-      )
-      return isArtistProfileFound
+      if (this.isLoggedIn) {
+        const isArtistProfileFound = this.userDetail.placename_set.find(
+          placename =>
+            placename.kind === 'artist' &&
+            this.userDetail.artist_profile &&
+            placename.id === this.userDetail.artist_profile
+        )
+        return isArtistProfileFound
+      } else {
+        return {}
+      }
     },
     isSuperUser() {
       if (!this.$store.state.user.user) {
@@ -916,12 +1058,19 @@ export default {
       return this.$store.state.languages.languageSet
     },
     languageList() {
-      return this.languageSet.map(lang => {
-        return {
-          id: lang.id,
-          name: lang.name
-        }
+      const languageSet = this.languageSet
+        .map(lang => {
+          return {
+            id: lang.id,
+            name: lang.name
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
+      languageSet.unshift({
+        id: 'others',
+        name: 'Others (please specify...)'
       })
+      return languageSet
     },
     languagesInFeature() {
       return this.$store.state.contribute.languagesInFeature
@@ -930,12 +1079,20 @@ export default {
       return this.$store.state.user.user.communities
     },
     communities() {
-      return this.$store.state.communities.communitySet.map(c => {
-        return {
-          name: c.name,
-          id: c.id
+      const communityList = this.$store.state.communities.communitySet.map(
+        c => {
+          return {
+            name: c.name,
+            id: c.id
+          }
         }
+      )
+      communityList.unshift({
+        id: 'others',
+        name: 'Others (please specify...)'
       })
+
+      return communityList
     },
     getMediaFiles() {
       return this.$store.state.file.fileList
@@ -946,6 +1103,39 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
+    },
+    isURLQueryValid() {
+      return Object.entries(this.$route.query)
+        .filter(query => query[0] !== 'id' && query[0] !== 'profile')
+        .map(query => {
+          if (query[0] === 'mode') {
+            if (
+              query[1] === 'point' ||
+              query[1] === 'existing' ||
+              query[1] === 'polygon' ||
+              query[1] === 'line' ||
+              query[1] === 'placename'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else if (query[0] === 'type') {
+            if (
+              query[1] === 'Artist' ||
+              query[1] === 'Event' ||
+              query[1] === 'Public Art' ||
+              query[1] === 'Organization'
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return false
+          }
+        })
+        .every(result => result === true)
     }
   },
   watch: {
@@ -1003,11 +1193,13 @@ export default {
 
   async asyncData({ query, $axios, store, redirect, params }) {
     let data = {}
+
     if (query.id && query.type) {
       const now = new Date()
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
+
       let community = null
       if (place.community) {
         community = await $axios.$get(
@@ -1019,12 +1211,21 @@ export default {
         }
       }
 
+      if (place.other_community && place.other_community !== '') {
+        community = {
+          id: 'others',
+          name: 'Others (please specify...)'
+        }
+      }
+
       data = {
         place,
         traditionalName: place.name,
         alternateName: place.other_names,
         content: place.description,
-        categorySelected: place.category,
+        otherCommunity: place.other_community,
+        categorySelected:
+          place.taxonomies.length > 0 ? place.taxonomies[0].id : null,
         fileSrc: getMediaUrl(place.image),
         fileImg: null
       }
@@ -1045,6 +1246,14 @@ export default {
         } catch (e) {
           console.error(e)
         }
+      }
+
+      if (place.non_bc_languages && place.non_bc_languages.length !== 0) {
+        data.languageUserSelected = {
+          id: 'others',
+          name: 'Others (please specify...)'
+        }
+        data.languageNonBC = place.non_bc_languages[0]
       }
 
       // Store medias if exist
@@ -1068,9 +1277,7 @@ export default {
       // Loop to Related data, and check data
       if (place.related_data.length !== 0) {
         place.related_data.map(related => {
-          if (related.data_type === 'location') {
-            data.relatedData.location = related.value
-          } else if (related.data_type === 'award') {
+          if (related.data_type === 'award') {
             data.relatedData.awardsList.push({
               id: related.id,
               value: related.value,
@@ -1082,14 +1289,10 @@ export default {
               value: related.value,
               isError: null
             })
-          } else if (related.data_type === 'email') {
-            data.relatedData.email = related.value
-          } else if (related.data_type === 'phone') {
-            data.relatedData.phone = related.value
-          } else if (related.data_type === 'organization_access') {
-            data.relatedData.organization_access = related.value
-          } else if (related.data_type === 'copyright') {
-            data.relatedData.copyright = related.value
+          } else if (related.data_type === 'Event Date') {
+            const date = new Date(related.value)
+            data.dateValue = date.toISOString().slice(0, 10)
+            data.timeValue = date.toTimeString().slice(0, 8)
           } else if (related.data_type === 'contacted_only') {
             data.relatedData.contacted_only = related.value.includes('true')
               ? 'accepted'
@@ -1100,6 +1303,10 @@ export default {
               : 'not_accepted'
           } else if (related.data_type === 'is_online') {
             data.relatedData.is_online = related.value.includes('Online')
+              ? 'accepted'
+              : 'not_accepted'
+          } else {
+            data.relatedData[related.data_type] = related.value
           }
         })
       }
@@ -1138,6 +1345,7 @@ export default {
       const place = await $axios.$get(
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
+
       let community = null
       if (place.community) {
         community = await $axios.$get(
@@ -1153,7 +1361,8 @@ export default {
         tname: place.name,
         wname: place.common_name,
         content: place.description,
-        categorySelected: place.category
+        categorySelected:
+          place.taxonomies.length > 0 ? place.taxonomies[0].id : null
       }
       if (community) {
         data.community = community
@@ -1191,19 +1400,30 @@ export default {
     }
   },
   mounted() {
-    // PUT IF LOGGED IN THEN DO THIS
     if (this.isLoggedIn) {
-      if (this.languageUserSelected === null) {
+      if (
+        (this.languageUserSelected === null || this.languageNonBC === null) &&
+        !this.place
+      ) {
         this.languageUserSelected =
           this.userDetail.languages.length !== 0
             ? this.userDetail.languages[0]
             : null
       }
 
+      if (
+        this.userNonBCLanguage.length !== 0 &&
+        (this.place &&
+          this.place.non_bc_languages &&
+          this.place.non_bc_languages.length !== 0)
+      ) {
+        const previousLang = this.languageNonBC
+        this.languageNonBC = { id: previousLang, name: previousLang }
+      }
+
       this.initQuill()
       this.addAward()
       this.addSite()
-      this.setDateTimeNow()
       // Check if user has artist profile, if not, declare the values
       this.setArtistDetail()
       // Setup event details on form
@@ -1226,6 +1446,120 @@ export default {
   methods: {
     isValidEmail,
     isValidURL,
+    isQuillSupportedHTML(html) {
+      let supported = true
+      const supportedTags = [
+        'H1',
+        'H2',
+        'H3',
+        'P',
+        'STRONG',
+        'EM',
+        'U',
+        'OL',
+        'UL',
+        'LI',
+        'BR'
+      ]
+
+      const container = document.createElement('div')
+      container.innerHTML = html
+
+      const tags = container.getElementsByTagName('*')
+      for (let i = 0; i < tags.length; i++) {
+        if (!supportedTags.includes(tags[i].tagName)) {
+          supported = false
+          break
+        }
+      }
+
+      return supported
+    },
+    htmlToText(html) {
+      // remove code brakes and tabs
+      html = html.replace(/\n/g, '')
+      html = html.replace(/\t/g, '')
+
+      // keep html brakes and tabs
+      html = html.replace(/<\/td>/g, '\t')
+      html = html.replace(/<\/table>/g, '\n')
+      html = html.replace(/<\/tr>/g, '\n')
+      html = html.replace(/<\/p>/g, '\n')
+      html = html.replace(/<\/div>/g, '\n')
+      html = html.replace(/<\/h>/g, '\n')
+      html = html.replace(/<br>/g, '\n')
+      html = html.replace(/<br( )*\/>/g, '\n')
+
+      // parse html into text
+      const dom = new DOMParser().parseFromString(
+        '<!doctype html><body>' + html,
+        'text/html'
+      )
+      return dom.body.textContent
+    },
+    isUserPlacenameOwner() {
+      if (this.isLoggedIn) {
+        const isPlacenameFound = this.userDetail.placename_set.find(
+          placename => {
+            return placename.id === parseInt(this.$route.query.id)
+          }
+        )
+
+        return !!isPlacenameFound
+      } else {
+        return false
+      }
+    },
+    isUserPlacenameContributer() {
+      const place = this.place
+      const user = this.userDetail
+      if (
+        place &&
+        place.artists &&
+        place.artists.length !== 0 &&
+        user.placename_set &&
+        user.placename_set.length !== 0
+      ) {
+        const contributerID = place.artists.map(artist => artist.id)
+        const isContributer = user.placename_set.some(placename =>
+          contributerID.includes(placename.id)
+        )
+
+        return isContributer
+      } else {
+        return false
+      }
+    },
+    showArchiveModal() {
+      this.showDeleteModal = !this.showDeleteModal
+    },
+    async handleDelete(e) {
+      e.preventDefault()
+      await this.$axios.$delete(`${getApiUrl(`placename/${this.place.id}`)}`, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+
+      this.$store.dispatch('user/setLoggedInUser')
+
+      this.$root.$emit('refetchArtwork')
+      // Delete all Medias in this Placename
+      this.place.medias.forEach(async media => {
+        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        })
+      })
+
+      this.$store.commit('file/setNewMediaFiles', [])
+
+      this.$router.push({
+        path: `/art`
+      })
+      this.$store.commit('sidebar/setDrawerContent', false)
+    },
     resetData() {
       this.fileSrc = null
       this.fileImg = null
@@ -1243,14 +1577,13 @@ export default {
       this.relatedData.awardsList = []
       this.addAward()
       this.content = ''
+      this.resetQuill()
       this.relatedData.contacted_only = null
       this.relatedData.commercial_only = null
       this.$store.commit('file/setNewMediaFiles', [])
       this.setArtistDetail()
       this.setEventDetails()
 
-      // this.removeQuill()
-      // this.initQuill()
       const contributeContainer = document.querySelector(
         '#contribute-main-container'
       )
@@ -1275,14 +1608,11 @@ export default {
       }
     },
     setEventDetails() {
-      if (this.queryType === 'Event' && this.queryType !== 'existing') {
+      if (this.queryType === 'Event' && this.queryMode !== 'existing') {
         this.dateValue = new Date().toISOString().slice(0, 10)
+        this.timeValue = new Date().toTimeString().slice(0, 8)
         this.relatedData.is_online = false
       }
-    },
-    setDateTimeNow() {
-      const now = new Date()
-      this.timeValue = now.toTimeString().slice(0, 8)
     },
     addSite() {
       this.relatedData.websiteList.push({
@@ -1328,18 +1658,24 @@ export default {
     },
     getRequiredTitle() {
       const requiredText = []
-      requiredText.push('Please draw at least one feature from the map.')
+      if (this.isLoggedIn) {
+        requiredText.push('Please draw at least one feature from the map.')
 
-      if (
-        this.isLoggedIn &&
-        !this.isArtistProfileFound &&
-        this.isArtist &&
-        this.queryProfile
-      ) {
-        requiredText.push(
-          'You need to create your Artist profile before uploading Artwork.'
-        )
+        if (
+          this.isLoggedIn &&
+          !this.isArtistProfileFound &&
+          this.isArtist &&
+          this.queryProfile
+        ) {
+          requiredText.push(
+            'You need to create your Artist profile before uploading Artwork.'
+          )
+        }
+      } else {
+        requiredText.push('Please Login/Register.')
+        requiredText.push('This feature requires you to be logged in.')
       }
+
       return requiredText
     },
     contributeTitle() {
@@ -1373,9 +1709,25 @@ export default {
         const editor = new Quill(container, {
           theme: 'snow'
         })
-        editor.setText(`${this.content}\n`)
+
+        const quillSupported = this.isQuillSupportedHTML(this.content)
+
+        if (quillSupported) {
+          // If the format is supported by quill, we allow
+          // the editor to retain its original formatting.
+          const delta = editor.clipboard.convert(this.content)
+          editor.setContents(delta, 'silent')
+        } else {
+          // We clean the data by wiping out its HTML nature and
+          // replacing it with bare text with escape sequences
+          editor.setText(this.htmlToText(this.content))
+        }
+
         this.quillEditor = editor
       }
+    },
+    resetQuill() {
+      this.quillEditor.setText('')
     },
     removeQuill() {
       // Removes an element from the document
@@ -1426,17 +1778,6 @@ export default {
       }
     },
 
-    validateRelatedData() {
-      // Check if Email is valid
-      // this.isValidEmail = this.isValidEmail(this.relatedData.email)
-      // this.relatedData.websiteList.forEach(web => {
-      //   web.isError = !this.isValidURL(web.value)
-      //   if (web.isError === false) {
-      //     this.error.push(`${web.value} is not a valid website URL`)
-      //   }
-      // })
-    },
-
     async submitContribute(e) {
       let id
       this.errors = []
@@ -1455,47 +1796,56 @@ export default {
         status = 'UN'
       }
       if (this.quillEditor) {
-        this.content = this.quillEditor.getText()
+        // If there's nothing on the editor, make
+        // description blank to force an error
+        if (this.quillEditor.getText().trim() === '') {
+          this.content = ''
+        } else {
+          this.content = this.quillEditor.root.innerHTML
+        }
       } else {
         return
       }
 
-      const data = {
-        name: this.tname,
-        common_name: this.wname,
-        description: this.content,
-        community: community_id,
-        language: this.languageSelected,
-        taxonomies: [this.categorySelected],
-        community_only: this.communityOnly === 'accepted',
-        status
+      let audio = null
+      if (this.audioBlob && this.audioFile) {
+        return
+      } else if (this.audioBlob) {
+        audio = new File([this.audioBlob], `${this.tname}`, {
+          type: 'multipart/form-data'
+        })
+      } else {
+        audio = this.audioFile
+      }
+
+      const formData = new FormData()
+      formData.append('name', this.tname)
+      formData.append('common_name', this.wname)
+      formData.append('description', this.content)
+      formData.append('community', community_id)
+      formData.append('language', this.languageSelected)
+      formData.append('taxonomies', [this.categorySelected])
+      formData.append('community_only', this.communityOnly === 'accepted')
+
+      // Append Audio if necessary
+      if (audio) {
+        formData.append('audio_file', audio)
       }
 
       if (this.drawnFeatures.length) {
-        data.geom = this.drawnFeatures[0].geometry
+        formData.append('geom', JSON.stringify(this.drawnFeatures[0].geometry))
       }
 
-      const headers = {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      }
-      let newPlace = null
       if (this.$route.query.id) {
         id = this.$route.query.id
-
-        // Exclude status from the patch request
-        delete data.status
 
         try {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
-            data,
-            headers
+            formData,
+            this.getAPIConfig()
           )
-          newPlace = modified
           id = modified.id
-          this.isLoading = false
         } catch (e) {
           this.isLoading = false
           this.errors = this.errors.concat(
@@ -1506,15 +1856,16 @@ export default {
           return
         }
       } else {
+        // Append status if creation
+        formData.append('status', status)
+
         try {
           const created = await this.$axios.$post(
             '/api/placename/',
-            data,
-            headers
+            formData,
+            this.getAPIConfig()
           )
           id = created.id
-          newPlace = created
-          this.isLoading = false
         } catch (e) {
           this.isLoading = false
           console.error(Object.entries(e.response.data))
@@ -1526,19 +1877,6 @@ export default {
 
           return
         }
-      }
-      let audio = null
-      if (this.audioBlob && this.audioFile) {
-        return
-      } else if (this.audioBlob) {
-        audio = new File([this.audioBlob], `${this.tname}`, {
-          type: 'multipart/form-data'
-        })
-      } else {
-        audio = this.audioFile
-      }
-      if (audio) {
-        await this.uploadAudioFile(id, audio, newPlace)
       }
 
       this.$eventHub.whenMap(map => {
@@ -1552,8 +1890,27 @@ export default {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
 
+    getAPIConfig() {
+      return {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        onUploadProgress: progressEvent => {
+          const { loaded, total } = progressEvent
+          const percentCompleted = Math.round((loaded * 100) / total)
+          console.log(`${loaded}KB uploaded of ${total}KB`)
+
+          if (this.callProgressModal) {
+            this.callProgressModal(percentCompleted)
+          }
+        }
+      }
+    },
+
     async submitPlacename(e) {
+      console.log(this.getAPIConfig())
       let id
+
       const headers = this.getCookies
       this.errors = []
       if (!this.drawnFeatures.length && !this.place) {
@@ -1562,13 +1919,27 @@ export default {
       }
 
       let community_id = null
-      if (this.community) {
+      if (this.community && this.community.id !== 'others') {
         community_id = this.community.id
       }
 
       let language_id = null
-      if (this.languageUserSelected) {
+      if (
+        this.languageUserSelected &&
+        this.languageUserSelected.id !== 'others'
+      ) {
         language_id = this.languageUserSelected.id
+      }
+
+      let non_bc_language = null
+      if (
+        this.languageUserSelected &&
+        (this.languageUserSelected.id === 'others' && this.languageNonBC)
+      ) {
+        non_bc_language =
+          this.userNonBCLanguage.length !== 0
+            ? [this.languageNonBC.name]
+            : [this.languageNonBC]
       }
 
       let status = 'UN'
@@ -1576,7 +1947,13 @@ export default {
         status = 'UN'
       }
       if (this.quillEditor) {
-        this.content = this.quillEditor.getText()
+        // If there's nothing on the editor, make
+        // description blank to force an error
+        if (this.quillEditor.getText().trim() === '') {
+          this.content = ''
+        } else {
+          this.content = this.quillEditor.root.innerHTML
+        }
       } else {
         return
       }
@@ -1590,8 +1967,10 @@ export default {
             ? 'public_art'
             : this.queryType.toLowerCase(),
         community: community_id,
+        other_community: this.otherCommunity,
         language: language_id,
         community_only: false,
+        non_bc_languages: non_bc_language,
         status
       }
 
@@ -1609,7 +1988,7 @@ export default {
           const modified = await this.$axios.$patch(
             `/api/placename/${id}/`,
             appendedData,
-            headers
+            this.getAPIConfig()
           )
 
           if (modified) {
@@ -1637,7 +2016,7 @@ export default {
           const created = await this.$axios.$post(
             '/api/placename/',
             data,
-            headers
+            this.getAPIConfig()
           )
           id = created.id
 
@@ -1645,6 +2024,11 @@ export default {
           if (created) {
             // Patch placename thumbnail
             this.uploadPlacenameThumbnail(id, headers)
+
+            // Update the User artist's profile if artist creation
+            if (this.queryProfile) {
+              this.patchUserData(id, headers)
+            }
 
             // PATCH DATA AFTER POSTING
             const data1 = this.getPatchData(id)
@@ -1684,6 +2068,7 @@ export default {
       }
     },
     postRelatedData(id) {
+      let relatedData = []
       if (this.queryType === 'Event') {
         this.relatedData['Event Date'] = `${this.dateValue} ${this.timeValue}`
       }
@@ -1702,62 +2087,87 @@ export default {
         }
       )
 
-      const relatedData = filteredRelatedData.map(field => {
-        // if element is array, get values one by one
-        if (field[0] === 'websiteList' || field[0] === 'awardsList') {
-          return field[1]
-            .filter(data => data.value !== null)
-            .map(data => {
-              return {
-                data_type: field[0] === 'websiteList' ? 'website' : 'award',
-                label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
-                value: data.value,
-                is_private: false,
-                placename: id
-              }
-            })
+      // if on edit mode
+      relatedData = filteredRelatedData.map(field => {
+        let value = ''
+        // Set return Values
+        if (field[0] === 'contacted_only') {
+          value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
+        } else if (field[0] === 'commercial_only') {
+          value =
+            field[1] === 'accepted'
+              ? 'Interested in Commercial Inquiry'
+              : 'Not interested in Commercial Inquiry'
+        } else if (field[0] === 'is_online') {
+          value = field[1] === 'accepted' ? 'Online Event' : 'Physical Event'
         } else {
-          let value = ''
-          let is_private = false
-          let label = ''
-          // Set return Values
-          if (field[0] === 'contacted_only') {
-            value = field[1] === 'accepted' ? 'contact_true' : 'contacted_false'
-          } else if (field[0] === 'commercial_only') {
-            value =
-              field[1] === 'accepted'
-                ? 'Interested in Commercial Inquiry'
-                : 'Not interested in Commercial Inquiry'
-          } else if (field[0] === 'is_online') {
-            value = field[1] ? 'Online Event' : 'Physical Event'
-          } else {
-            value = field[1]
-          }
+          value = field[1]
+        }
 
-          // Set Privacy values
-          if (field[0] === 'contacted_only') {
-            is_private = true
-          } else {
-            is_private = false
-          }
+        // Checks if related data contains this field
+        const isFieldFound = this.place
+          ? !!this.place.related_data.find(rel => rel.data_type === field[0])
+          : false
 
-          // Set Label Return Values
-          if (field[0] === 'organization_access') {
-            label = 'Organization Access'
-          } else if (field[0] === 'commercial_only') {
-            label = 'Commercial Inquiry'
-          } else if (field[0] === 'is_online') {
-            label = 'Event Type'
-          } else {
-            label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
-          }
+        // For existing related data, go inside
+        if (this.$route.query.id && isFieldFound) {
+          const related = this.place.related_data.find(
+            data => data.data_type === field[0]
+          )
 
+          const { data_type, label, is_private, placename } = related
           return {
-            data_type: field[0],
+            data_type,
             label,
             value,
             is_private,
-            placename: id
+            placename
+          }
+        }
+        // For  new related data that doesnt exist in database
+        else if (!isFieldFound) {
+          // if element is array, get values one by one
+          if (field[0] === 'websiteList' || field[0] === 'awardsList') {
+            return field[1]
+              .filter(data => data.value !== null)
+              .map(data => {
+                return {
+                  data_type: field[0] === 'websiteList' ? 'website' : 'award',
+                  label: field[0] === 'websiteList' ? 'Website(s)' : 'Award(s)',
+                  value: data.value,
+                  is_private: false,
+                  placename: id
+                }
+              })
+          } else {
+            let is_private = false
+            let label = ''
+
+            // Set Privacy values
+            if (field[0] === 'contacted_only') {
+              is_private = true
+            } else {
+              is_private = false
+            }
+
+            // Set Label Return Values
+            if (field[0] === 'organization_access') {
+              label = 'Organization Access'
+            } else if (field[0] === 'commercial_only') {
+              label = 'Commercial Inquiry'
+            } else if (field[0] === 'is_online') {
+              label = 'Event Type'
+            } else {
+              label = field[0].charAt(0).toUpperCase() + field[0].slice(1)
+            }
+
+            return {
+              data_type: field[0],
+              label,
+              value,
+              is_private,
+              placename: id
+            }
           }
         }
       })
@@ -1847,12 +2257,26 @@ export default {
         return result
       }
     },
+    async patchUserData(id, header) {
+      const data = {
+        artist_profile: id
+      }
+      const result = await this.$axios.$patch(
+        getApiUrl(`user/${this.userDetail.id}/`),
+        data,
+        header
+      )
+      return result
+    },
     redirectToPlacename() {
       if (this.getMediaFiles.length !== 0) {
         this.$root.$emit('refetchArtwork')
       }
 
       location.href = `/art/${encodeFPCC(this.traditionalName)}`
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   },
 
@@ -1943,6 +2367,14 @@ export default {
   margin: 0;
 }
 
+.contribute-title-warning {
+  color: #721c24;
+  font-weight: bold;
+  font-size: 0.85em;
+  padding: 0;
+  margin: 0;
+}
+
 .contribute-form-container {
   min-height: 92vh;
 }
@@ -2006,6 +2438,15 @@ export default {
 #quill {
   height: 300px;
   margin-bottom: 1em;
+  font: normal 16px/25px Proxima Nova !important;
+}
+
+#quill font {
+  font: normal 16px/25px Proxima Nova !important;
+}
+
+#quill p {
+  margin-bottom: 16px;
 }
 
 @media (max-width: 992px) {
@@ -2023,6 +2464,18 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0 1em;
+}
+
+.delete-row-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5em;
+  margin: 6em 0;
+
+  .delete-btn {
+    width: 50%;
+    color: #721c24;
+  }
 }
 
 .form-control::placeholder {

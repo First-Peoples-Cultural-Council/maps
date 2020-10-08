@@ -86,8 +86,8 @@ export default {
   },
   data() {
     return {
-      title: null,
-      text: null,
+      title: '',
+      text: '',
       titlestate: null,
       commonly: null,
       youtubeLink: null,
@@ -102,8 +102,8 @@ export default {
   methods: {
     isValidYoutubeLink,
     resetState() {
-      this.title = null
-      this.text = null
+      this.title = ''
+      this.text = ''
       this.titlestate = null
       this.youtubeLink = null
     },
@@ -154,7 +154,12 @@ export default {
     },
 
     async uploadNote(formData) {
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
+
+      const result = await this.$store.dispatch('file/uploadMedia', dataObj)
       return result
     },
 
@@ -169,6 +174,10 @@ export default {
         url: this.youtubeLink,
         is_artwork: !!this.$route.query.upload_artwork
       }
+    },
+
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }

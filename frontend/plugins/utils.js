@@ -133,15 +133,30 @@ export const getCookie = name => {
       .shift()
 }
 
+export const setCookie = value => {
+  let expires = ''
+  if (value.days) {
+    const date = new Date()
+    date.setTime(date.getTime() + value.days * 24 * 60 * 60 * 1000)
+    expires = '; expires=' + date.toUTCString()
+  }
+  document.cookie =
+    value.name + '=' + (value.value || '') + expires + '; path=/'
+}
+
 export const getMediaUrl = (media_file, isServer) => {
   if (!media_file) {
     return null
-  } else if (media_file.name) {
-    return media_file.name
   } else if (media_file.includes('http://nginx')) {
     return media_file.replace('http://nginx', '')
   } else if (media_file.includes('https://nginx')) {
     return media_file.replace('https://nginx', '')
+  } else if (media_file && media_file.includes('http://')) {
+    return media_file.replace('http://', 'https://')
+  }
+
+  if (media_file.name) {
+    return media_file.name
   }
 
   return media_file

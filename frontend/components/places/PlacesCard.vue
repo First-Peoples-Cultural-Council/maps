@@ -91,6 +91,7 @@ export default {
   padding: 0.5em 0em 0 0.5em;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 
   &:hover {
     border: 1px solid #b57936;
@@ -104,7 +105,6 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  display: table;
 }
 .places-card-header {
   display: table-cell;

@@ -1,19 +1,23 @@
 <template>
   <div>
-    <client-only>
-      <div>
-        <div
-          v-if="!mobileContent"
-          class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
-        >
-          <div>
-            User: <b-badge variant="primary">{{ getUserName() }}</b-badge
-            ><b-badge class="ml-2" variant="primary">Expand To Edit</b-badge>
-          </div>
-          <div @click="$store.commit('sidebar/setMobileContent', true)">
-            <img src="@/assets/images/arrow_up_icon.svg" />
-          </div>
+    <div v-if="isCurrentUser">
+      <!-- <client-only> -->
+      <div
+        v-if="!mobileContent"
+        class="content-collapse d-none content-mobile-title"
+      >
+        <div>
+          User: <b-badge variant="primary">{{ getUserName() }}</b-badge
+          ><b-badge class="ml-2" variant="primary">Expand To Edit</b-badge>
         </div>
+        <div
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
+        >
+          <img src="@/assets/images/arrow_up_icon.svg" />
+        </div>
+      </div>
+      <div>
         <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
           <Logo :logo-alt="2" class="pt-2 pb-2 hide-mobile"></Logo>
           <div
@@ -84,8 +88,22 @@
               class="font-08"
             ></b-form-input>
 
+            <template v-if="isArtistProfileExist">
+              <label
+                class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+                >Artist Profile</label
+              >
+              <multiselect
+                v-model="artist_profile"
+                placeholder="Search or select an Artist Profile"
+                label="name"
+                track-by="id"
+                :options="artistPlacenames"
+              ></multiselect>
+            </template>
+
             <label
-              class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+              class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
               >Languages</label
             >
             <multiselect
@@ -96,6 +114,40 @@
               :options="options"
               :multiple="true"
             ></multiselect>
+
+            <div v-if="isNonBCLanguage" class="website-container mt-3">
+              <div>
+                <label class="contribute-title-one">Non B.C. Language</label>
+              </div>
+
+              <div
+                v-for="(lang, index) in languageNonBC"
+                :key="index"
+                class="site-input-container"
+              >
+                <b-form-input
+                  :id="`language-${lang}`"
+                  v-model="lang.value"
+                  type="text"
+                  placeholder="(ex. Spanish, English, etc.)"
+                ></b-form-input>
+                <span
+                  v-if="
+                    (index !== 0 && languageNonBC.length !== 1) ||
+                      languageNonBC.length > 1
+                  "
+                  class="site-btn"
+                  @click="removeLanguage(index)"
+                  >-</span
+                >
+                <span
+                  v-if="index + 1 === languageNonBC.length"
+                  class="site-btn"
+                  @click="addLanguage()"
+                  >+</span
+                >
+              </div>
+            </div>
 
             <label
               class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
@@ -113,47 +165,50 @@
               class="contribute-title-one mt-3 color-gray font-weight-bold font-09 mb-2"
               >User Description</label
             >
+
+            <section class="pb-2">
+              <div id="quill" ref="quill"></div>
+
+              <label
+                class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+                >Notifications</label
+              >
+              <b-form-select
+                v-model="user.notification_frequency"
+                :options="notification_options"
+              ></b-form-select>
+
+              <b-alert v-if="errors.length" show variant="warning" dismissible>
+                <ul>
+                  <li v-for="err in errors" :key="err">{{ err }}</li>
+                </ul>
+              </b-alert>
+              <b-button
+                class="btn btn-primary mt-4"
+                variant="primary"
+                @click="save"
+                >Save</b-button
+              >
+              <b-button
+                class="btn btn-primary mt-4"
+                variant="danger"
+                @click="handleCancel"
+              >
+                Cancel
+              </b-button>
+            </section>
           </section>
         </div>
       </div>
-    </client-only>
-    <div class="pl-3 pr-3">
-      <div id="quill" ref="quill"></div>
+      <!-- </client-only> -->
     </div>
-
-    <client-only>
-      <section class="pl-3 pr-3 pb-2">
-        <label
-          class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
-          >Notifications</label
-        >
-        <b-form-select
-          v-model="user.notification_frequency"
-          :options="notification_options"
-        ></b-form-select>
-
-        <b-alert v-if="errors.length" show variant="warning" dismissible>
-          <ul>
-            <li v-for="err in errors" :key="err">{{ err }}</li>
-          </ul>
-        </b-alert>
-        <b-button class="btn btn-primary mt-4" variant="primary" @click="save"
-          >Save</b-button
-        >
-        <b-button
-          class="btn btn-primary mt-4"
-          variant="danger"
-          @click="handleCancel"
-        >
-          Cancel
-        </b-button>
-      </section>
-    </client-only>
+    <ErrorScreen v-else></ErrorScreen>
   </div>
 </template>
 
 <script>
 import { getApiUrl, getCookie, getMediaUrl } from '@/plugins/utils.js'
+import ErrorScreen from '@/layouts/error.vue'
 import Logo from '@/components/Logo.vue'
 
 const base64Encode = data =>
@@ -166,7 +221,8 @@ const base64Encode = data =>
 
 export default {
   components: {
-    Logo
+    Logo,
+    ErrorScreen
   },
   data() {
     return {
@@ -177,6 +233,7 @@ export default {
       errors: [],
       user: {},
       language: null,
+      languageNonBC: [],
       value: [],
       options: [],
       content: '',
@@ -201,6 +258,25 @@ export default {
         }
       })
     },
+    isArtistPlacenameExist() {
+      const isPlacenameFound = this.user.placename_set.filter(
+        placename => placename.kind === 'artist'
+      )
+      return isPlacenameFound.length !== 0
+    },
+    artistPlacenames() {
+      return this.user.placename_set
+        .filter(placename => placename.kind === 'artist')
+        .map(place => {
+          return {
+            id: place.id,
+            name: place.name
+          }
+        })
+    },
+    isArtistProfileExist() {
+      return this.artistPlacenames && this.artistPlacenames.length !== 0
+    },
     languages() {
       return this.$store.state.languages.languageSet.map(l => {
         return {
@@ -208,6 +284,12 @@ export default {
           value: l.id
         }
       })
+    },
+    isNonBCLanguage() {
+      return this.value.find(val => val.id === 'others')
+    },
+    isCurrentUser() {
+      return this.user.id === this.$store.state.user.user.id
     }
   },
   watch: {
@@ -250,32 +332,67 @@ export default {
         id: l.id
       }
     })
+    const otherLanguage = { id: 'others', name: 'Others (please specify...)' }
+    // Add Other options in the Languages
+    options.unshift(otherLanguage)
+
+    // Add Others on the selected list if Non B.C Language exists
+    let languageValue = []
+    let languageNonBC = []
+    let artist_profile = {}
+
+    if (user.languages && user.languages.length !== 0) {
+      languageValue = user.languages
+    }
+    if (user.non_bc_languages && user.non_bc_languages.length !== 0) {
+      languageValue.push(otherLanguage)
+      languageNonBC = user.non_bc_languages.map(lang => {
+        return {
+          value: lang
+        }
+      })
+    }
+
+    if (user.artist_profile) {
+      const findProfile = user.placename_set.find(
+        placename => placename.id === user.artist_profile
+      )
+      if (findProfile) {
+        artist_profile = {
+          id: findProfile.id,
+          name: findProfile.name
+        }
+      }
+    }
 
     return {
       user,
       data,
       options,
-      value: user.languages,
+      artist_profile,
+      value: languageValue,
+      languageNonBC,
       community: user.communities[0],
       isServer: !!process.server
     }
   },
 
   mounted() {
-    if (this.user.id !== this.$store.state.user.user.id) {
-      window.open(
-        `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
-      )
-      window.location.reload()
-    }
-
     this.fileSrc = this.getMediaUrl(this.user.image)
-
+    this.addLanguage()
     this.initQuill()
   },
 
   methods: {
     getMediaUrl,
+    addLanguage() {
+      this.languageNonBC.push({
+        value: null
+      })
+    },
+    removeLanguage(index) {
+      this.languageNonBC.splice(index, 1)
+    },
     filePlaceholder() {
       return this.fileSrc && this.user.image
         ? getMediaUrl(this.fileSrc)
@@ -302,7 +419,9 @@ export default {
     },
     getUserName() {
       return (
-        this.user && (this.user.first_name || this.user.username.split('__')[0])
+        this.user &&
+        (`${this.user.first_name} ${this.user.last_name}` ||
+          this.user.username.split('__')[0])
       )
     },
     removeImg() {
@@ -326,13 +445,22 @@ export default {
       } else {
         return
       }
+
       const data = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
         bio: this.user.bio,
-        language_ids: this.value.map(lang => lang.id),
+        language_ids: this.value
+          .filter(lang => lang.id !== 'others')
+          .map(lang => lang.id),
         community_ids: communityId,
-        notification_frequency: this.user.notification_frequency
+        artist_profile: this.artist_profile ? this.artist_profile.id : '',
+        notification_frequency: this.user.notification_frequency,
+        non_bc_languages: this.value.find(lang => lang.id === 'others')
+          ? this.languageNonBC
+              .filter(lang => lang.value !== null)
+              .map(lang => lang.value)
+          : []
       }
       try {
         const result = await this.$axios.$patch(
@@ -343,25 +471,7 @@ export default {
 
         const imgResult = this.uploadUserDP(this.user.id, headers)
 
-        if (result || imgResult) {
-          const findUserArtist = this.oldUser.placename_set.find(
-            placename =>
-              placename.kind === 'artist' &&
-              placename.name ===
-                `${this.oldUser.first_name} ${this.oldUser.last_name}`
-          )
-
-          // Also update the Artist Placename name
-          if (findUserArtist) {
-            const patchData = {
-              name: `${data.first_name} ${data.last_name}`
-            }
-            await this.$axios.$patch(
-              `/api/placename/${findUserArtist.id}/`,
-              patchData,
-              headers
-            )
-          }
+        if (result && imgResult) {
           await this.$store.dispatch('user/setLoggedInUser')
         }
       } catch (e) {
@@ -487,5 +597,35 @@ export default {
     font-size: 0.75em;
     display: none;
   }
+}
+
+.field-row {
+  padding: 0 1em;
+}
+
+.website-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+
+  & > * {
+    margin-right: 0.5em;
+  }
+}
+
+.site-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
 }
 </style>

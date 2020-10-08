@@ -1,177 +1,231 @@
 <template>
-  <div
-    id="map-container"
-    class="map-container"
-    :class="{
-      detailModeContainer: isDetailMode,
-      'arts-container': isArt
-    }"
-    ￼￼
-  >
-    <SideBar v-if="this.$route.name === 'index'" active="Languages">
-      <template v-slot:content>
-        <div v-html="ie"></div>
-        <section class="pl-3 pr-3 mt-3">
-          <Accordion
-            class="no-scroll-accordion"
-            :content="accordionContent"
-          ></Accordion>
-        </section>
-        <section class="badge-section pl-3 pr-3 mt-3"></section>
-        <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
-      </template>
-      <template v-slot:badges>
-        <section class="pl-2 pr-3 mt-3">
-          <Badge
-            content="Languages"
-            :number="languagesCount"
-            class="cursor-pointer"
-            type="language"
-            :mode="getBadgeStatus(mode, 'lang')"
-            @click.native.prevent="handleBadge($event, 'lang')"
-          ></Badge>
-          <Badge
-            content="Communities"
-            :number="communities.length"
-            class="cursor-pointer"
-            type="community"
-            bgcolor="#6c4264"
-            :mode="getBadgeStatus(mode, 'comm')"
-            @click.native.prevent="handleBadge($event, 'comm')"
-          ></Badge>
-        </section>
-      </template>
-      <template v-slot:cards>
-        <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
-          <div
-            v-for="(familyLanguages, family) in languages"
-            :key="'langfamily' + family"
-            class="language-family-container"
-          >
-            <h5 class="language-family mt-0">
-              <span class="language-family-header">Language Family:</span>
-              <span class="language-family-title">{{
-                family === 'undefined' ? 'No Family' : family
-              }}</span>
-            </h5>
+  <div>
+    <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
+    <LoadingModal></LoadingModal>
+
+    <div
+      id="map-container"
+      class="map-container"
+      :class="{
+        detailModeContainer: isDetailMode,
+        'arts-container': isDrawerShown
+      }"
+      ￼￼
+    >
+      <SideBar v-if="this.$route.name === 'index'" active="Languages">
+        <template v-slot:content>
+          <div v-html="ie"></div>
+          <section class="pl-3 pr-3 mt-3">
+            <Accordion
+              class="no-scroll-accordion"
+              :content="accordionContent"
+            ></Accordion>
+          </section>
+          <section class="badge-section pl-3 pr-3 mt-3"></section>
+          <hr class="sidebar-divider" />
+          <Filters class="mb-2"></Filters>
+        </template>
+        <template v-slot:badges>
+          <section class="pl-2 pr-3 mt-3">
+            <Badge
+              content="Languages"
+              :number="languagesCount"
+              class="cursor-pointer"
+              type="language"
+              :mode="getBadgeStatus(mode, 'lang')"
+              @click.native.prevent="handleBadge($event, 'lang')"
+            ></Badge>
+            <Badge
+              content="Communities"
+              :number="communities.length"
+              class="cursor-pointer"
+              type="community"
+              bgcolor="#6c4264"
+              :mode="getBadgeStatus(mode, 'comm')"
+              @click.native.prevent="handleBadge($event, 'comm')"
+            ></Badge>
+          </section>
+        </template>
+        <template v-slot:cards>
+          <section v-if="mode !== 'comm'" class="language-section pl-3 pr-3">
+            <div
+              v-for="(familyLanguages, family) in languages"
+              :key="'langfamily' + family"
+              class="language-family-container"
+            >
+              <h5 class="language-family mt-0">
+                <span class="language-family-header">Language Family:</span>
+                <span class="language-family-title">{{
+                  family === 'undefined' ? 'No Family' : family
+                }}</span>
+              </h5>
+              <b-row>
+                <b-col
+                  v-for="language in familyLanguages"
+                  :key="'language' + language.id"
+                  lg="12"
+                  xl="12"
+                  md="6"
+                  sm="6"
+                >
+                  <LanguageCard
+                    class="mb-2 hover-left-move"
+                    :name="language.name"
+                    :color="
+                      (language.family && language.family.color) ||
+                        language.color
+                    "
+                    @click.native.prevent="
+                      handleCardClick($event, language.name, 'lang')
+                    "
+                  ></LanguageCard>
+                </b-col>
+              </b-row>
+            </div>
+          </section>
+          <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
+            <h5 class="language-family mt-2 ">Communities</h5>
             <b-row>
               <b-col
-                v-for="language in familyLanguages"
-                :key="'language' + language.id"
+                v-for="community in paginatedCommunities"
+                :key="'community ' + community.name"
                 lg="12"
                 xl="12"
                 md="6"
                 sm="6"
               >
-                <LanguageCard
+                <CommunityCard
                   class="mb-2 hover-left-move"
-                  :name="language.name"
-                  :color="
-                    (language.family && language.family.color) || language.color
-                  "
+                  :name="community.name"
+                  :community="community"
                   @click.native.prevent="
-                    handleCardClick($event, language.name, 'lang')
+                    handleCardClick($event, community.name, 'comm')
                   "
-                ></LanguageCard>
+                ></CommunityCard>
               </b-col>
             </b-row>
-          </div>
-        </section>
-        <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
-          <h5 class="language-family mt-2 ">Communities</h5>
-          <b-row>
-            <b-col
-              v-for="community in paginatedCommunities"
-              :key="'community ' + community.name"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
+          </section>
+        </template>
+      </SideBar>
+      <div
+        v-else-if="routesToNotRenderChild()"
+        class="sb-new-alt-one"
+        :class="{
+          'sb-detail': isDetailMode,
+          'mobile-content-open': mobileContent,
+          'hide-scroll-y': isGalleryShown
+        }"
+      >
+        <nuxt-child class="route-child-container" />
+      </div>
+      <div v-else>
+        <nuxt-child />
+      </div>
+
+      <div class="maps-panel">
+        <div class="map-main-container">
+          <LogInOverlay v-if="loggingIn"></LogInOverlay>
+          <div v-if="isDrawMode" class="drawing-mode-container">
+            <b-alert
+              v-if="!isLoggedIn"
+              show
+              variant="danger"
+              class="p-1 pr-2 pl-2 draw-mode-container"
             >
-              <CommunityCard
-                class="mb-2 hover-left-move"
-                :name="community.name"
-                :community="community"
-                @click.native.prevent="
-                  handleCardClick($event, community.name, 'comm')
-                "
-              ></CommunityCard>
-            </b-col>
-          </b-row>
-        </section>
-      </template>
-    </SideBar>
-    <div
-      v-else-if="routesToNotRenderChild()"
-      class="sb-new-alt-one"
-      :class="{
-        'sb-detail': isDetailMode,
-        'mobile-content-open': mobileContent,
-        'hide-scroll-y': isGalleryShown
-      }"
-    >
-      <nuxt-child class="route-child-container" />
-    </div>
-    <div v-else>
-      <nuxt-child />
-    </div>
-
-    <div class="maps-panel">
-      <div class="map-main-container">
-        <LogInOverlay v-if="loggingIn"></LogInOverlay>
-        <div v-if="isDrawMode" class="drawing-mode-container">
-          <b-alert
-            show
-            class="p-1 pr-2 pl-2 draw-mode-container"
-            variant="light"
+              <h4 class="alert-heading">Please Log In</h4>
+              <p>
+                This feature requires you to be
+                <a :href="getLoginUrl()">logged in.</a>
+              </p>
+            </b-alert>
+            <b-alert
+              v-else-if="notAuthenticatedUser"
+              show
+              class="p-1 pr-2 pl-2 draw-mode-container"
+              variant="danger"
+            >
+              <ul>
+                <li>
+                  You can't proceed, you need to select your default Language,
+                  and Community
+                </li>
+                <li>
+                  Please select your community or language by clicking
+                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                    >here</router-link
+                  >
+                </li>
+              </ul>
+            </b-alert>
+            <b-alert
+              v-else-if="!notAuthenticatedUser"
+              show
+              class="p-1 pr-2 pl-2 draw-mode-container"
+              variant="light"
+            >
+              <DrawingTools
+                :draw-mode="$route.query.mode"
+                class="mt-2"
+              ></DrawingTools>
+            </b-alert>
+          </div>
+          <div class="map-loading">
+            Loading Map
+            <b-spinner type="grow" label="Spinning"></b-spinner>
+          </div>
+          <Mapbox
+            :access-token="MAPBOX_ACCESS_TOKEN"
+            :map-options="MAP_OPTIONS"
+            :nav-control="{ show: false }"
+            @map-init="mapInit"
+            @map-load="mapLoaded"
+            @map-touchend="mapClicked"
+            @map-click="mapClicked"
+            @map-zoomend="mapZoomEnd"
+            @map-moveend="mapMoveEnd"
+            @map-sourcedata="mapSourceData"
+          ></Mapbox>
+          <div
+            v-if="$route.path !== '/splashscreen'"
+            class="map-controls-overlay"
           >
-            <DrawingTools
-              :draw-mode="$route.query.mode"
-              class="mt-2"
-            ></DrawingTools>
-          </b-alert>
-        </div>
-        <div class="map-loading">
-          Loading Map
-          <b-spinner type="grow" label="Spinning"></b-spinner>
-        </div>
-        <Mapbox
-          :access-token="MAPBOX_ACCESS_TOKEN"
-          :map-options="MAP_OPTIONS"
-          :nav-control="{ show: false }"
-          @map-init="mapInit"
-          @map-load="mapLoaded"
-          @map-touchend="mapClicked"
-          @map-click="mapClicked"
-          @map-zoomend="mapZoomEnd"
-          @map-moveend="mapMoveEnd"
-          @map-sourcedata="mapSourceData"
-        ></Mapbox>
-        <div class="map-controls-overlay">
-          <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-          <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-          <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
-          <Contribute class="hide-mobile contribute-control mr-2"></Contribute>
-        </div>
-        <ModalNotification></ModalNotification>
-        <div v-if="!isDrawMode" class="map-navigation-container">
-          <SearchBar class="hide-mobile"></SearchBar>
-          <transition name="fade-topbar" mode="out-in">
-            <SearchOverlay
-              v-if="showSearchOverlay"
-              :show="showSearchOverlay"
-            ></SearchOverlay>
+            <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
+            <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
+            <CurrentLocation
+              class="current-location-control hide-mobile mr-2"
+            ></CurrentLocation>
+            <ShareEmbed
+              class="share-embed-control hide-mobile mr-2"
+            ></ShareEmbed>
+            <SaveLocation
+              v-if="isLoggedIn"
+              class="share-embed-control hide-mobile mr-2"
+            ></SaveLocation>
+            <Contribute class="contribute-control mr-2"></Contribute>
+          </div>
+          <ModalNotification></ModalNotification>
+          <div v-if="!isDrawMode" class="map-navigation-container">
+            <SearchBar
+              :key="searchKey"
+              :query="searchQuery"
+              class="hide-mobile"
+            ></SearchBar>
+            <transition name="fade-topbar" mode="out-in">
+              <SearchOverlay
+                v-if="showSearchOverlay"
+                :show="showSearchOverlay"
+              ></SearchOverlay>
 
-            <EventOverlay
-              v-else-if="showEventOverlay"
-              :show="showEventOverlay"
-            ></EventOverlay>
+              <EventOverlay
+                v-else-if="showEventOverlay"
+                :show="showEventOverlay"
+              ></EventOverlay>
 
-            <div v-else class="top-bar-container">
-              <NavigationBar></NavigationBar>
-            </div>
-          </transition>
+              <div v-else class="top-bar-container">
+                <NavigationBar></NavigationBar>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </div>
@@ -191,7 +245,9 @@ import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
+import SaveLocation from '@/components/SaveLocation.vue'
 import ResetMap from '@/components/ResetMap.vue'
+import CurrentLocation from '@/components/CurrentLocation.vue'
 import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
@@ -203,6 +259,8 @@ import ModalNotification from '@/components/ModalNotification.vue'
 import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
+import FullscreenLoading from '@/components/FullscreenLoading.vue'
+import LoadingModal from '@/components/LoadingModal.vue'
 
 import {
   getApiUrl,
@@ -237,14 +295,18 @@ export default {
     LanguageCard,
     CommunityCard,
     ShareEmbed,
+    SaveLocation,
     ResetMap,
+    CurrentLocation,
     Zoom,
     Filters,
     Contribute,
     DrawingTools,
     ModalNotification,
     LogInOverlay,
-    EventOverlay
+    EventOverlay,
+    FullscreenLoading,
+    LoadingModal
   },
   head() {
     return {
@@ -263,8 +325,10 @@ export default {
     ]
     const bounds = [bbox[0], bbox[1]]
     return {
-      showSplashscreen: false,
       maximumLength: 0,
+      searchQuery: '',
+      searchKey: 'search',
+      showFullscreenLoading: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -291,6 +355,21 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    userDetail() {
+      return this.$store.state.user.user
+    },
+    notAuthenticatedUser() {
+      return (
+        this.isLoggedIn &&
+        this.userDetail.languages &&
+        this.userDetail.languages.length === 0 &&
+        this.userDetail.communities &&
+        this.userDetail.communities.length === 0
+      )
+    },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -303,12 +382,11 @@ export default {
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
-    isArt() {
-      return (
-        this.$store.state.sidebar.isArtsMode &&
-        (this.$route.name === 'index-art' ||
-          this.$route.name === 'index-art-art')
-      )
+    isDrawerShown() {
+      return this.$store.state.sidebar.isArtsMode
+    },
+    isUploadArtMode() {
+      return !!this.$route.query.upload_artwork
     },
     drawMode() {
       return this.$store.state.contribute.drawMode
@@ -357,7 +435,6 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, hash }) {
-    // Check if already logged in here
     const user = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
@@ -366,7 +443,7 @@ export default {
       store.commit('user/setPicture', user.user.picture)
       store.commit('user/setLoggedIn', true)
     }
-    return user
+    return { user }
   },
   async fetch({ $axios, store }) {
     // Only fetch search data
@@ -388,7 +465,23 @@ export default {
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
-    store.commit('arts/setTaxonomySearchSet', results[5])
+
+    const taxonomies = [
+      ...results[5],
+      ...Array.from(['image', 'video', 'audio']).map(type => {
+        return {
+          id: type,
+          name: type
+        }
+      })
+    ]
+    store.commit(
+      'arts/setTaxonomySearchSet',
+      taxonomies.map(tax => {
+        tax.isChecked = false
+        return tax
+      })
+    )
 
     const currentLanguages = store.state.languages.languageSet
 
@@ -449,12 +542,25 @@ export default {
     }
     next()
   },
+  created() {
+    this.showFullscreenLoading = true
+  },
   async mounted() {
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
         this.updateData(map)
       })
     })
+
+    setTimeout(() => {
+      if (this.user) {
+        this.showFullscreenLoading = false
+        if (this.$route.query.search) {
+          this.searchQuery = this.$route.query.search
+          this.searchKey += this.searchQuery
+        }
+      }
+    }, 2000)
 
     // Showing the Notification on Media success
     this.$root.$on('fileUploaded', data => {
@@ -468,7 +574,7 @@ export default {
 
       this.$root.$emit('closeUploadModal')
 
-      if (this.$route.name === 'index-art-art') {
+      if (this.isUploadArtMode) {
         this.$root.$emit('fileUploadSuccess')
       } else if (this.$route.name === 'index-place-names-placename') {
         this.$root.$emit('fileUploadedPlaces', data)
@@ -486,14 +592,13 @@ export default {
         variant: 'danger'
       })
       this.$root.$emit('closeUploadModal')
-      if (this.$route.name === 'index-art-art') {
+      if (this.isUploadArtMode) {
         this.$root.$emit('fileUploadSuccess')
       }
     })
 
     // Decides to show the splashscreen, if values exist, then its no longer first time visit
     if (localStorage.getItem('fpcc-splashscreen') === null) {
-      this.showSplashscreen = true
       // Redirect to /languages
       if (this.$route.path === '/') {
         this.$router.push({
@@ -501,12 +606,10 @@ export default {
         })
       }
     } else if (localStorage.getItem('fpcc-splashscreen') === 'false') {
-      this.showSplashscreen = false
     }
 
     // Closes the splashscreen, and add the value to the localStorage, for remembering its not the first visit
     this.$root.$on('closeSplashscreen', () => {
-      this.showSplashscreen = false
       localStorage.setItem('fpcc-splashscreen', false)
     })
 
@@ -602,6 +705,9 @@ export default {
     }
   },
   methods: {
+    getLoginUrl() {
+      return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
     closePopover() {
       this.$root.$emit('closeEventPopover')
     },
@@ -729,6 +835,11 @@ export default {
     mapClicked(map, e) {
       if (this.isDrawMode) {
         return
+      }
+
+      // if drawer is open, close it upon click
+      if (this.isDrawerShown) {
+        this.$store.commit('sidebar/setDrawerContent', false)
       }
 
       const features = map.queryRenderedFeatures(e.point)
@@ -1184,7 +1295,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 @font-face {
   font-family: 'Proxima Nova';
   src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
@@ -1252,8 +1363,14 @@ export default {
   top: 0;
   justify-content: flex-end;
   padding-top: 17.5px;
-  padding-left: 5px;
+  padding-left: 4.5em;
   padding-right: 5px;
+}
+
+/* When drawer is open */
+.arts-container .map-navigation-container {
+  padding: 5px !important;
+  padding-top: 17.5px !important;
 }
 
 .map-controls-overlay {
@@ -1335,7 +1452,7 @@ export default {
   left: 0;
   width: 425px;
   background-color: white;
-  z-index: 1000;
+  z-index: 900;
   height: 100%;
   overflow-y: auto;
 }
@@ -1356,7 +1473,7 @@ export default {
   cursor: pointer;
 }
 
-@media (max-width: 1300px) {
+@media (min-width: 993px) and (max-width: 1300px) {
   .arts-container {
     padding-left: var(--sidebar-width, 700px);
   }
@@ -1382,7 +1499,7 @@ export default {
     left: 0;
     right: 0;
     top: unset;
-    height: 50px;
+    height: 65px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -1459,7 +1576,7 @@ export default {
 
 /* Global CSS */
 .field-kinds {
-  font: Bold 15px/18px Proxima Nova;
+  font: Bold 13px/15px Proxima Nova;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -1474,5 +1591,308 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+  word-break: break-all;
+}
+
+.content-collapse {
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.75em;
+  margin: 0 0.75em;
+}
+
+.content-collapse-btn {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  left: 50%;
+  bottom: 75px;
+  z-index: 9999999999;
+  border: 2.5px solid #b57936;
+  animation: hover 2.5s infinite;
+}
+
+/* Arts Drawer */
+.sidebar-side-panel {
+  position: fixed;
+  top: 0;
+  left: 425px;
+  width: 425px;
+  height: 100vh;
+  overflow-x: hidden;
+  z-index: 999999;
+}
+
+@media (max-width: 992px) {
+  .sidebar-side-panel {
+    display: block !important;
+    position: initial;
+    width: 100%;
+    height: 100vh;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 999999;
+  }
+}
+
+/* Sidebar style when screen width is 1300px and drawer is open */
+@media (min-width: 993px) and (max-width: 1300px) {
+  .arts-container .sidebar-container {
+    width: 350px;
+  }
+  .arts-container .sidebar-side-panel {
+    width: 350px;
+    left: 350px;
+  }
+}
+
+/* Main Arts Drawer */
+
+.panel-collapsable {
+  width: 15px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 425px;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #d7d7de;
+}
+
+.btn-collapse {
+  padding: 1em;
+  margin-top: 1.5em;
+  margin-left: 0.8em;
+  width: 100px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 1em;
+  border-bottom-right-radius: 1em;
+  color: #fff;
+  background-color: #b47a2b;
+}
+
+.btn-collapse img {
+  margin-right: 0.5em;
+}
+
+/* Artwork card */
+.artist-card {
+  cursor: pointer;
+  display: flex;
+  position: relative;
+  border-radius: 0.25em;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+}
+
+.arts-card-container {
+  width: 100%;
+  height: 200px;
+  flex-direction: column;
+  margin: 0 0.25em;
+  overflow: hidden;
+}
+
+/* Bookmark ribbon */
+.arts-card-tag {
+  position: absolute;
+  right: 0;
+  top: 5px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-right: 0;
+  background: #b57936;
+  width: 40%;
+  padding: 2px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: capitalize;
+}
+.arts-card-tag img {
+  width: 17px;
+  height: 15px;
+}
+
+.arts-card-body {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.card-teaser-img {
+  object-fit: fill;
+  width: 100%;
+  height: 100%;
+}
+
+.arts-card-footer {
+  font-family: 'Lato', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.25em;
+  height: auto;
+}
+
+.artist-name a {
+  font-weight: normal;
+  color: #007bff !important;
+
+  &:hover {
+    text-decoration: underline !important;
+  }
+}
+
+/* Landscape Layout */
+.arts-card-landscape {
+  display: flex;
+  width: 100%;
+  height: 150px;
+  padding: 0;
+  border-radius: 0.25em;
+
+  .arts-card-body {
+    flex-basis: 45%;
+    overflow: hidden;
+
+    .card-teaser-img {
+      object-fit: cover;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .card-teaser-null {
+      object-fit: none;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .arts-card-right {
+    flex-basis: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    box-sizing: border-box;
+    padding-left: 0.5em;
+    color: #151515;
+
+    .arts-card-footer {
+      .artist-title {
+        width: 100%;
+        max-height: 60px;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow: hidden;
+        font: Bold 16px/20px Proxima Nova;
+        color: #151515;
+        margin: 0.1em;
+        padding: 0;
+      }
+      .artist-name {
+        font-size: 0.7em;
+        font-weight: 800;
+        color: #707070;
+      }
+    }
+
+    .arts-card-more {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .arts-card-tag {
+        border-radius: 20px;
+        position: initial;
+        padding: 3px 8px;
+        color: #fff;
+        font-size: 0.8em;
+        font-weight: 800;
+        border: 0;
+        width: auto;
+      }
+
+      .fpcc-card-more {
+        width: 55px;
+        background-color: #b57936;
+        display: flex;
+        align-items: center;
+        height: 35px;
+        justify-content: center;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+      }
+    }
+  }
+
+  &:hover {
+    border: 1px solid #b57936;
+
+    .fpcc-card-more {
+      background-color: #3d3d3d !important;
+    }
+  }
+}
+
+.card-selected {
+  border: 1px solid #b57936;
+  transform: translateX(10px);
+
+  .fpcc-card-more {
+    background-color: #3d3d3d !important;
+  }
+}
+
+/* Animation  */
+
+@keyframes hover {
+  0% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(5px);
+  }
+
+  50% {
+    transform: translateY(0);
+  }
+
+  70% {
+    transform: translateY(5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes shadowpulse {
+  0% {
+    transform: scale(0.975);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.975);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
 }
 </style>

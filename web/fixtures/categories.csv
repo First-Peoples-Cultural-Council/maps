@@ -1,7 +1,3 @@
-Abandoned Locality,A previously populated place with no current population.
-Airfield,A land aerodrome with limited services.
-Airport,"Site intended for use by aircraft, including any necessary technical and commercial installations."
-Anchorage,An area of water in which vessels can anchor; usually sheltered water.
 Archipelago,Group or chain of islands.
 Arm,Long narrow extension of a water body.
 Bank (1),Abrupt slope at the edge of a waterbody.
@@ -23,10 +19,8 @@ Bluff (1),A shoreline terrain elevation with an almost perpendicular face.
 Bluff (2),A steep-sided hill or promontory.
 Bluffs (1),A shoreline terrain elevation with an almost perpendicular face. Plural of Bluff (1)
 Bog,"Wet spongy land area, containing abundant organic matter."
-Bridge,"A structure built to span and afford passage across a waterway, railroad, ravine, etc."
 Brook,"Small watercourse, often a tributary to a river, stream, or creek."
 Butte,Conspicuous isolated hill with steep sides and a flat top.
-Cabin,A structure offering shelter; often a landmark on a remote or historic route
 Camp,A place where tents or buildings serve as temporary residences
 Canal (1),"A natural or man-made freshwater channel used for navigation, irrigation, etc."
 Canal (2),"A narrow, saltwater passage between bodies of land."
@@ -37,35 +31,23 @@ Cave,Natural subterranean chamber open to the surface.
 Caves,Natural subterranean chamber open to the surface. Plural of Cave.
 Channel (2),"Alternative course in a flowing water body, or a distributary within a delta."
 Channel (3),Narrow stretch of water connecting two bodies of water.
-Cirque,"Deep, steep-walled, bowl-shaped indentation in a mountain side."
 City,"A populated place with legally defined boundaries, incorporated as a city municipality under the provincial Municipal Act."
 Cliff (1),Steep rock face projecting nearly vertically from a body of water.
 Cliff (2),Steep rock face projecting nearly vertically from the surrounding land.
 Cliffs (1),Steep rock face projecting nearly vertically from a body of water. Plural of Cliff (1).
 Cliffs (2),Steep rock face projecting nearly vertically from the surrounding land. Plural of Cliff (2).
-Col,"Low point on a ridge joining two summits, usually enabling passage between them."
 Community,"An unincorporated populated place, generally with a population of 50 or more, and having a recognized central area that might contain a post office, store and/or community hall, etc, intended for the use of the general public in the region."
 Cone,Cone-shaped hill.
-Conservation Area,"An area with legally defined boundaries, set aside to protect or preserve the natural heritage of the area."
-Coulee (2),"Steep-sided valley or ravine, often with a stream flowing in the bottom."
 Cove (2),"Water area in a small indentation of the shoreline of a sea, lake or river."
 Crag,"Steep, jagged prominence on a mountain or cliff."
 Crags,"Steep, jagged prominence on a mountain or cliff. Plural of Crag."
 Crater (2),Bowl-shaped or funnel-shaped depression at the eruption site on a volcano.
 Creek (1),"Watercourse, usually smaller than a river."
 Creek (3),"Narrow tidal inlet, usually with a watercourse flowing at its head (seldom used in BC.)"
-Dam,"A barrier constructed to hold back water, to raise and control its level and/or to form a reservoir."
 Depression,Low-lying land surrounded by higher land.
-District,A named land division with legally defined boundaries.
-District Municipality (1),"A populated place with legally defined boundaries, incorporated as a district municipality under the provincial Municipal Act."
-Ditch (1),Small watercourse.
 Dome,"Mass of rock or ice with a rounded top, elevated above the surrounding terrain."
 Domes,"Mass of rock or ice with rounded top, elevated above the surrounding terrain. Plural of Dome."
-Dyke (1),Artificial structure to control water flow and flood waters.
-Ecological Reserve,"A designated area established under the Ecological Reserves Act, set aside for the study of representative or unique ecosystems."
-Eddy,"Small whirlpool in a watercourse or in the sea, running contrary to the direction of current or tide."
 Entrance,"Outer end of a channel, harbour, or other water feature; usually allowing access to the waters within."
-Escarpment,"Long laterally continuous, steep slope, often cliff-like."
 Falls,Perpendicular or steep descent of water. Variation of Waterfall.
 First Nation Village,A village or community inhabited primarily by members of the same First Nation.
 Fishing Site,"A section in a watercourse or waterbody where there is good fishing, or was historically used for fishing"
@@ -76,14 +58,7 @@ Flats (3),"A large area of flat, wet ground."
 Forest,Expanse of tree-covered terrain
 Fork (1),Branch of a stream.
 Fork (2),Junction of two streams; a confluence.
-Former Cannery,"A facility formerly used for canning fish, fruit or meat."
 Former First Nation Village,"A place formerly inhabited by First Nations' people, with no current population or that is usually uninhabited."
-Former Locality,"A once-populated place with no current population, or that is usually uninhabited"
-Former Post Office,Post Office now closed or renamed.
-Former Railway Point,"Siding, junction, flag stop or station now closed or renamed."
-Fort,Fortified structure built to protect a strategic site.
-Fumarole,"A vent, usually volcanic, from which gases and vapours are emitted."
-Game Preserve,Tract of land provincially designated to provide habitat for the management and preservation of wildlife.
 Gap (2),Narrow opening through a ridge or mountain chain.
 Glacier,Mass of permanent snow and ice flowing from an area of snow accumulation on higher ground.
 Glaciers,Mass of permanent snow and ice flowing from an area of snow accumulation on higher ground. Plural of Glacier.
@@ -97,11 +72,9 @@ Head (1),"High, prominent land feature extending into a sea or lake."
 Highland,"Area of elevated relief, not as high or rugged as a range of mountains or as level as a plateau."
 Hill,Elevation of terrain rising prominently above the surrounding land.
 Hills,Elevation of terrain rising prominently above the surrounding land. Plural of Hill.
-Historical Route,"Route followed, or in close proximity to a historical trail or colonization road"
 Hotspring / Hot Spring,Site of a natural flow of hot or warm water issuing from the ground.
 Hotsprings / Hot Springs,Site of a natural flow of hot or warm water issuing from the ground. Plural of Hotspring / Hot Spring.
 Ice Cap / Icecap,Large dome-shaped mass of permanent ice and snow.
-Icefall,"Mass of jagged, split ice on a steep glacial slope."
 Icefield,"Irregularly shaped mass of permanent snow and ice, generally forming the accumulation area of two or more glaciers."
 Inlet (3),Elongated body of water extending from a sea or lake.
 Island,Land area surrounded by water or marsh.
@@ -114,45 +87,28 @@ Knoll (2),Small rounded hill.
 Lagoon,"Body of water, separated from a lake, river, or sea by a narrow land barrier, which may completely enclose it or leave a shallow passageway into it."
 Lake,Inland body of standing water.
 Lakes,Inland body of standing water. Plural of Lake.
-Land District,A territorial division with legally defined boundaries for administrative purposes.
-Land Grant,A parcel of land transferred legally to an individual or company; usually from the Crown to the first land owner. Also known as a Crown Grant
 Landing (1),A coastal or shore location where boats may put in to load or unload.
 Ledge (1),"Flat rock area, either projecting from a land mass into the water or rising from the sea floor."
 Ledge (2),Prominent shelf-like platform exposed on the face of a mountain or cliff.
 Ledges,"Flat rock area, either projecting from a land mass into the water or rising from the sea floor. Plural of Ledge (1)."
-Locality,"A named place or area, generally with a scattered population of 50 or less."
 Lookout,Elevation from which the surrounding terrain or seascape can be viewed.
 Lowland,"A general term for low-lying land or an extensive region of low land, especially near the coast and including the extended plains or country lying not far above tide level."
 Marsh,"Area of low-lying land, often flooded and usually characterized by growth of grass and reeds."
 Meadow (1),"Alpine or sub-alpine treeless area, characterized by seasonal grasses and wildflowers"
 Meadow (2),"Low-lying, flat, seasonally wet, grassy area."
-Migratory Bird Sanctuary,"A sanctuary for migratory birds, established under Canada's Migratory Birds Convention Act (1917). Disturbance, hunting, collection of migratory birds and their eggs is prohibited."
-Military College,"An educational institution, owned and operated by the Department of National Defense, which grants academic degrees."
-Mine,Site where extraction and primary processing of ore take place.
-Mining Camp,Seasonal or year-round housing and facilities for people working at nearby mines.
-Mount,"Variation of Mountain: Mass of land prominently elevated above the surrounding terrain, bounded by steep slopes and rising to a summit and/or peaks. [“Mount"" preceding the name usually indicates that the feature is named after a person.]"
+Mount,"Variation of Mountain: Mass of land prominently elevated above the surrounding terrain, bounded by steep slopes and rising to a summit and/or peaks. [думMount"" preceding the name usually indicates that the feature is named after a person.]"
 Mountain,"Mass of land prominently elevated above the surrounding terrain, bounded by steep slopes and rising to a summit and/or peaks."
-Mountain Resort Municipality,"A populated place with legally defined boundaries, incorporated as a mountain resort municipality under the provincial Municipal Act."
 Mountains,"Mass of land prominently elevated above the surrounding terrain, bounded by steep slopes and rising to a summit and/or peaks. Plural of Mountain."
 Mouth,The point where a river or stream flows into another body of water.
-Municipal Park,"An area developed as a park or open space, leased or owned by a municipality."
 Narrows,Constricted section of a water body.
-National Historic Site,A place declared to be of national historic interest or significance by the Minister responsible for the administration of the Historic Sites and Monuments Act of Canada.
-National Park,"A legally defined land area, under federal jurisdiction, for camping, outdoor recreation and preservation of wildlife."
-National Park Reserve,"Lands set aside for the establishment of a National Park, but clear title to which is subject to the resolution of native land claims."
-National Wildlife Area,An area established under the Canada Wildlife Act (1973) to conserve essential habitat for migratory birds and other wildlife. Located on land owned or leased for a long term by the Federal Government.
 Notch,Deep but narrow opening through a ridge or mountain chain.
-Névé,Accumulation of ice resulting from the transformation of snow on higher ground
 Ocean,"Large body of salt water, global in scale."
-Parc national,"(National Park) Legally defined land area, under federal jurisdiction, for camping, outdoor recreation and preservation of wildlife."
 Pass (1),Narrow stretch of water connecting two larger water bodies.
 Pass (2),"Low opening in a mountain range or hills, offering a route from one side to the other."
 Passage,Variation of Pass: Narrow stretch of water connecting two larger water bodies.
-Patch,Elevation of the bed of a body of water; composed of unconsolidated material and posing a hazard to surface navigation.
 Peak (2),"Summit of a mountain or hill, or the mountain or hill itself."
 Peaks,"Summit of a mountain or hill, or the mountain or hill itself. Plural of Peak (2)."
 Peninsula,Elongated projection of land into a body of water.
-Picnic Area,"A designated area with picnic tables, but no camping facilities."
 Pinnacle,"Small pointed peak, or a hill."
 Plain (2),Area of flat or gently rolling terrain.
 Plains,Area of flat or gently rolling terrain. Plural of Plain (2).
@@ -160,36 +116,16 @@ Plateau,"Extensive, elevated region, with either level terrain, or nearly unifor
 Point,Land area jutting into a water feature; also used for a convex change in direction of a shoreline.
 Pond (1),"Inland body of standing water, usually smaller than a lake."
 Ponds (1),"Inland body of standing water, usually smaller than a lake. Plural of Pond (1)"
-Port (1),"Inlet, or part of an inlet, providing shelter to vessels; a bay."
-Port (2),"Natural or man-made shelter for vessels, having the necessary equipment for the taking on and landing of passengers and cargo."
 Portage,Trail around an obstacle in a watercourse or joining two bodies of water.
-Post Office,A Canada Post designation; the post office name may or may not be the same as the name of the place where it is located.
 Prairie,Area of flat or gently rolling grassland; larger than a meadow and often extensive.
-Protected Area,"Legally defined area under provincial jurisdiction, containing archaeological and/or natural sites, with unique or irreplaceable resources."
-Province,"The principle administrative division of Canada, as established by Articles of Conderation or by Constitutional Amendment."
-Provincial Heritage Property,"A site administered under the province's Heritage Conservation Act, which preserves, interprets and presents a live expression of human history at the site, for the enjoyment and education of residents and visitors."
-Provincial Historic Park,Historic park administered by the province.
-Provincial Historic Site,"Property, whether a site of nature or a work of man, that is of interest for its architectural, historical, cultural, environmental, aesthetic, or scientific value."
-Provincial Marine Park,"A park designated and administered by the Province, primarily for water-oriented activities, that may or may not be only accessible by boat."
-Provincial Park,"Legally defined land area, under provincial jurisdiction, for camping, outdoor recreation, and preservation of wildlife."
-Provincial Recreation Area,"Lands which are designated by provincial Order in Council, and developed and maintained to facilitate their use and enjoyment for outdoor recreation."
-Railway Point,"A named railway siding, junction, flag stop or timing point with or without an agent."
-Ranch,"A facility and its estate; most commonly for grazing and rearing horses, cattle and/or sheep."
 Range (2),Group or chain of mountains or hills.
 Ranges,Group or chain of mountains or hills. Plural of Range (2).
 Rapids,"Fast-flowing section of a watercourse, usually with turbulent water or exposed rocks."
 Ravine,"Deep, V-shaped declivity."
 Reach,"Relatively straight section of a river, lake, or inlet."
-Recreation Facility,"Infrastructure associated with recreational or leisure activities, generally designed for day-use."
-Recreational Community,"A populated place with seasonal or year-round services, accommodation and amenities associated primarily with recreational or leisure activities."
 Reef,Rocks rising to or near the surface of a body of water.
 Reefs,Rocks rising to or near the surface of a body of water. Plural of Reef.
 Region,A relatively large area having specific characteristics which give it a certain unity.
-Regional District,A division of the province incorporated as a regional district.
-Regional Park,Park administered by a Regional District.
-Reservoir,"Body of water maintained at a controlled level, the stored water being used mainly for utilitarian purposes."
-Resort,"A seasonal or year-round facility, frequented because of its' purpose or quality, or the nature of the surrounding area."
-Resort Municipality,"A populated place with legally defined boundaries, incorporated as a resort municipality under the provincial Municipal Act."
 Ridge (2),Elongated stretch of elevated ground.
 Riffle,"Fast-flowing section of a watercourse, usually with turbulent water or exposed rocks."
 River,"Watercourse of variable size, which has tributaries and flows into a body of water or a larger watercourse."
@@ -202,7 +138,6 @@ Settlement,"Any permanently occupied, unincorporated area normally identified by
 Shoal,Elevation of the bed of a body of water; composed of unconsolidated material and posing a hazard to surface navigation.
 Shoals,Elevation of the bed of a body of water; composed of unconsolidated material and posing a hazard to surface navigation. Plural of Shoal.
 Shore,Narrow stretch of land bordering a body of water.
-Site,"A named place that has historic, geographic or folkloric significance."
 Slide,Scar and/or material from landslide or debris flow.
 Slough (1),"Backwater area, usually marshy; or a meander channel cut off from the main drainage."
 Slough (2),Shallow water-filled or marshy depression with no external drainage.
@@ -214,15 +149,11 @@ Spires,"Tall, slender, sharp-pointed peak; or a mountain. Plural of Spire."
 Spit,"Long, low, narrow projection of unconsolidated material extending into a body of water."
 Spring,Site of a natural flow of water issuing from the ground.
 Springs,Site of a natural flow of water issuing from the ground. Plural of Spring.
-Spur,Subsidiary ridge extending laterally from a mountain or ridge.
-Steamer Landing,"A scheduled steamer landing, with or without a population"
 Strait,"Passage, usually navigable, connecting two larger bodies of water."
 Straits,"Passage, usually navigable, connecting two larger bodies of water. Plural of Strait."
 Stream,"Watercourse, smaller than a river."
-Subdivision,"A separately-named residential area, with definable limits, within an incorporated municipality."
 Summit,Highest point of a mountain or hill.
 Swamp,"Low-lying land, permanently saturated with water and usually having trees and shrubs."
-Tidal Rapids,Constricted passage with strong tidal current.
 Tower (1),A conspicuous mountain or pinnacle.
 Towers,A conspicuous mountain or pinnacle. Plural of Tower (1) (2760).
 Town,"A populated place with legally defined boundaries, incorporated as a town municipality under the provincial Municipal Act."
@@ -232,11 +163,9 @@ Trench,Large-scale elongated depression between mountain ranges.
 Trough,"Long depression of the seafloor, characteristically flat-bottomed and steep-sided."
 Tunnel,"Underground passageway for a travel route (under a watercourse or arm of the sea, or through an elevation of terrain)."
 Unclassified,"A named or formerly named feature, whose type is unknown or undetermined."
-Urban Community,A separately named area within the limits of an incorporated municipality
 Valley (1),"Long relatively narrow depression, commonly containing a river or other water feature."
 Village (1),"A populated place with legally defined boundaries, incorporated as a village municipality under the provincial Municipal Act."
 Village (2),An unincorporated populated place.
 Volcano,Hills related to volcanic activity.
 Volcanoes,Hills related to volcanic activity. Plural of Volcano (3901).
 Waterfall,Perpendicular or steep descent of water.
-Whirlpool,"A constant, rapid, circular movement of the water."

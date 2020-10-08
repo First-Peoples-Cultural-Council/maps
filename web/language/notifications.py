@@ -186,15 +186,17 @@ def notify(user, since=None):
 
     # all media, shared only with verified members.
     new_medias_private = Media.objects.filter(
-        Q(placename__community__in=communities),
+        Q(placename__community__in=communities) |
+        Q(community__in=communities),
         created__gte=since,
     )
     messages += get_new_media_messages(new_medias_private)
 
     # public media. Show public stuff to anyone who has signed up.
     new_medias_public = Media.objects.filter(
-        Q(placename__language__in=languages) | Q(
-            placename__community__in=communities_awaiting_verification),
+        Q(placename__language__in=languages) |
+        Q(placename__community__in=communities_awaiting_verification) |
+        Q(community__in=communities_awaiting_verification),
         # public items.
         Q(community_only=False) & Q(placename__community_only=False),
         created__gte=since,
@@ -214,12 +216,12 @@ def notify(user, since=None):
             settings.HOST, user.id
         )
         print(html)
-        if user.email in [a[1] for a in settings.ADMINS]:
+        if user.email in [a[1] for a in settings.ADMINS] or user.email in [a[1] for a in settings.FPCC_ADMINS]:
             print("sending to ", user.email)
             send_mail(
                 "Your Updates on the First Peoples' Language Map",
                 html,
-                "info@fpcc.ca",
+                "maps@fpcc.ca",
                 [user.email],
                 html_message=html,
             )
@@ -288,20 +290,20 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
 
     # if the creator is a system admin
-    if creator.email in [a[1] for a in settings.ADMINS]:
+    if creator.email in [a[1] for a in settings.ADMINS] or creator.email in [a[1] for a in settings.FPCC_ADMINS]:
         message = intro + message
 
-    print("sending to ", creator.email)
-    print(message)
+        print("sending to ", creator.email)
+        print(message)
 
-    send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(
-            state),
-        message,
-        "info@fpcc.ca",
-        [creator.email],
-        html_message=message,
-    )
+        send_mail(
+            "Your contribution has been {} on the First Peoples' Language Map".format(
+                state),
+            message,
+            "maps@fpcc.ca",
+            [creator.email],
+            html_message=message,
+        )
     return message
 
 
@@ -362,7 +364,7 @@ def inform_placename_to_be_verified(placename_id):
         if administrators:
             for administrator in administrators:
                 # if the administrator is a system admin
-                if administrator.user.email in [a[1] for a in settings.ADMINS]:
+                if administrator.user.email in [a[1] for a in settings.ADMINS] or administrator.user.email in [a[1] for a in settings.FPCC_ADMINS]:
                     message = intro + message
 
                 print("sending to ", administrator.user.email)
@@ -372,7 +374,7 @@ def inform_placename_to_be_verified(placename_id):
                     "A contribution has been {} on the First Peoples' Language Map".format(
                         state),
                     message,
-                    "info@fpcc.ca",
+                    "maps@fpcc.ca",
                     [administrator.user.email],
                     html_message=message,
                 )
@@ -433,7 +435,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
     message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
 
     # if the creator is a system admin
-    if creator.email in [a[1] for a in settings.ADMINS]:
+    if creator.email in [a[1] for a in settings.ADMINS] or creator.email in [a[1] for a in settings.FPCC_ADMINS]:
         message = intro + message
 
     print("sending to ", creator.email)
@@ -443,7 +445,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         "Your contribution has been {} on the First Peoples' Language Map".format(
             state),
         message,
-        "info@fpcc.ca",
+        "maps@fpcc.ca",
         [creator.email],
         html_message=message,
     )
@@ -519,7 +521,7 @@ def inform_media_to_be_verified(media_id):
         if administrators:
             for administrator in administrators:
                 # if the administrator is a system admin
-                if administrator.user.email in [a[1] for a in settings.ADMINS]:
+                if administrator.user.email in [a[1] for a in settings.ADMINS] or administrator.user.email in [a[1] for a in settings.FPCC_ADMINS]:
                     message = intro + message
 
                 print("sending to ", administrator.user.email)
@@ -529,7 +531,7 @@ def inform_media_to_be_verified(media_id):
                     "A contribution has been {} on the First Peoples' Language Map".format(
                         state),
                     message,
-                    "info@fpcc.ca",
+                    "maps@fpcc.ca",
                     [administrator.user.email],
                     html_message=message,
                 )

@@ -2,12 +2,15 @@
   <div>
     <div
       v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-3 pr-3 d-none content-mobile-title"
+      class="content-collapse d-none content-mobile-title"
     >
       <div>
         <b-badge variant="primary">Expand To See Approvals</b-badge>
       </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
+      <div
+        class="content-collapse-btn"
+        @click="$store.commit('sidebar/setMobileContent', true)"
+      >
         <img src="@/assets/images/arrow_up_icon.svg" />
       </div>
     </div>

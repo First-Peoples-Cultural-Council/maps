@@ -1,229 +1,225 @@
 <template>
-  <div class="w-100 arts-main-wrapper">
-    <div
-      v-if="!mobileContent"
-      class="justify-content-between align-items-center pl-2 pr-2 ml-2 mr-2 d-none content-mobile-title"
-    >
-      <div class="p-1">
-        <img
-          class="artist-img-small"
-          :src="renderArtistImg(artDetails.image)"
-        />
-        {{ artDetails.kind | titleCase }}:
-        <span class="font-weight-bold">{{ artDetails.name }}</span>
-      </div>
-      <div @click="$store.commit('sidebar/setMobileContent', true)">
-        <img src="@/assets/images/arrow_up_icon.svg" />
-      </div>
-    </div>
-
-    <div
-      class="hide-mobile arts-main-container"
-      :class="{
-        'content-mobile': mobileContent,
-        'mobile-content': mobileContent && isArtist,
-        'hide-scroll-y': isGalleryShown
-      }"
-    >
-      <div class="artist-detail-container">
-        <Logo v-if="!mobileContent" class="cursor-pointer" :logo-alt="1"></Logo>
-        <div
-          class="text-center d-none mobile-close"
-          :class="{ 'content-mobile': mobileContent }"
-          @click="$store.commit('sidebar/setMobileContent', false)"
-        >
+  <div class="w-100">
+    <div v-if="artDetails" class="w-100 arts-main-wrapper">
+      <div
+        v-if="!mobileContent"
+        class="content-collapse d-none content-mobile-title"
+      >
+        <div class="p-1">
           <img
-            v-if="!isArtist"
-            class="d-inline-block"
-            src="@/assets/images/arrow_down_icon.svg"
+            class="artist-img-small"
+            :src="renderArtistImg(artDetails.image)"
           />
+          {{ artDetails.kind | titleCase }}:
+          <span class="font-weight-bold">{{ artDetails.name }}</span>
         </div>
-        <!-- START Conditional Render Arts Header -->
-        <ArtsBanner
-          v-if="isArtist"
-          :art-image="artistImg"
-          :tags="taxonomies"
-          :arttype="artDetails.kind"
-          :name="artDetails.name"
-          :server="isServer"
-          :arts-banner="artistBanner"
-          :is-owner="isPlacenameOwner()"
-          :show-owner-modal="showOwnerModal"
-          :edit-placename="handlePlacenameEdit"
-        ></ArtsBanner>
-
-        <ArtsDetailCard
-          v-else
-          :arttype="artDetails.kind"
-          :name="artDetails.name"
-          :server="isServer"
-          :tags="taxonomies"
-          :is-owner="isPlacenameOwner()"
-          :show-owner-modal="showOwnerModal"
-          :edit-placename="handlePlacenameEdit"
-        ></ArtsDetailCard>
-        <!-- END Conditional Render Arts Header  -->
-
-        <!-- Render Arts Detail -->
         <div
-          :class="
-            `artist-content-container ${
-              isCollapse ? 'collapse-content-container' : ''
-            }`
-          "
+          class="content-collapse-btn"
+          @click="$store.commit('sidebar/setMobileContent', true)"
         >
-          <!-- Show the Placename image if Public Art and Event -->
+          <img src="@/assets/images/arrow_up_icon.svg" />
+        </div>
+      </div>
+
+      <div
+        class="hide-mobile arts-main-container"
+        :class="{
+          'content-mobile': mobileContent,
+          'mobile-content': mobileContent && isArtist,
+          'hide-scroll-y': isGalleryShown
+        }"
+      >
+        <div class="artist-detail-container">
+          <Logo
+            v-if="!mobileContent"
+            class="cursor-pointer"
+            :logo-alt="1"
+          ></Logo>
           <div
-            v-if="artDetails.image && (isPublicArt || isEvent)"
-            class="placename-img-container"
+            class="text-center d-none mobile-close"
+            :class="{ 'content-mobile': mobileContent }"
+            @click="$store.commit('sidebar/setMobileContent', false)"
           >
-            <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
+            <img
+              v-if="!isArtist"
+              class="d-inline-block"
+              src="@/assets/images/arrow_down_icon.svg"
+            />
           </div>
+          <!-- START Conditional Render Arts Header -->
+          <ArtsBanner
+            v-if="isArtist"
+            :art-image="artistImg"
+            :tags="taxonomies"
+            :arttype="artDetails.kind"
+            :name="artDetails.name"
+            :server="isServer"
+            :arts-banner="artistBanner"
+            :is-owner="isPlacenameOwner()"
+            :is-contributer="isContributer()"
+            :edit-placename="handlePlacenameEdit"
+          ></ArtsBanner>
 
-          <!-- Show list of Artist involved, if its a Public Art -->
+          <ArtsDetailCard
+            v-else
+            :arttype="artDetails.kind"
+            :name="artDetails.name"
+            :server="isServer"
+            :tags="taxonomies"
+            :is-owner="isPlacenameOwner()"
+            :is-contributer="isContributer()"
+            :edit-placename="handlePlacenameEdit"
+          ></ArtsDetailCard>
+          <!-- END Conditional Render Arts Header  -->
 
+          <!-- Render Arts Detail -->
           <div
-            v-if="artDetails.artists.length !== 0 && isPublicArt"
-            class="artist-content-field"
+            :class="
+              `artist-content-container ${
+                isCollapse || !isArtist ? 'collapse-content-container' : ''
+              }`
+            "
           >
-            <h5 class="field-title">Artist:</h5>
-
-            <a
-              v-for="artist in artDetails.artists"
-              :key="artist.id"
-              href="#"
-              @click="checkArtistProfile(artist.name)"
-              >{{ artist.name }}</a
+            <!-- Show the Placename image if Public Art and Event -->
+            <div
+              v-if="artDetails.image && (isPublicArt || isEvent)"
+              class="placename-img-container"
             >
-          </div>
+              <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
+            </div>
 
-          <section
-            v-if="getAwardList.length !== 0 && isArtist"
-            class="artist-content-field"
-          >
-            <h5 class="field-title">
-              Artist Awards
-            </h5>
-            <ul class="field-content-list">
-              <li v-for="award in getAwardList" :key="award.id">
-                <img src="@/assets/images/arts/award_icon.svg" />
-                {{ award.value }}
-              </li>
-            </ul>
-          </section>
+            <!-- Show list of Artist involved, if its a Public Art -->
 
-          <section v-if="getEventDate" class="artist-content-field">
-            <h5 class="field-title">
-              Event Date
-            </h5>
-            <span class="field-content"> {{ getDateValue() }} </span>
-          </section>
-
-          <section v-if="artDetails.description" class="artist-content-field">
-            <h5 class="field-title">
-              {{
-                artDetails.kind.toLowerCase() !== 'public_art'
-                  ? artDetails.kind
-                  : 'Public Art'
-              }}
-              Description:
-            </h5>
-            <span class="field-content">
-              <span v-html="stringSplit(artDetails.description)"></span>
-              <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
-                collapseDescription ? 'read less' : 'read more'
-              }}</a>
-            </span>
-          </section>
-
-          <!-- Render List of Related Data -->
-          <template v-if="relatedData">
-            <section
-              v-for="data in relatedData"
-              :key="data.id"
+            <div
+              v-if="artDetails.artists.length !== 0 && isPublicArt"
               class="artist-content-field"
             >
-              <h5 class="field-title">{{ data.label }}:</h5>
+              <h5 class="field-title">Artist:</h5>
+
               <a
-                v-if="data.data_type === 'website'"
-                :href="checkUrlValid(data.value)"
-                target="_blank"
+                v-for="artist in artDetails.artists"
+                :key="artist.id"
+                href="#"
+                @click="checkArtistProfile(artist.name)"
+                >{{ artist.name }}</a
               >
-                {{ checkUrlValid(data.value) }}</a
-              >
-              <span v-else class="field-content">{{ data.value }}</span>
-            </section>
-          </template>
+            </div>
 
-          <!-- Render List of Websites -->
-          <section
-            v-for="(web, index) in getWebsiteList"
-            :key="web.id"
-            class="artist-content-field"
-          >
-            <h5 class="field-title">{{ `Website #${index + 1}` }}:</h5>
-            <a :href="checkUrlValid(web.value)" target="_blank">
-              {{ checkUrlValid(web.value) }}</a
+            <section
+              v-if="getAwardList.length !== 0 && isArtist"
+              class="artist-content-field"
             >
-          </section>
-
-          <!-- Render LIst of Social Media -->
-          <section v-if="socialMedia.length !== 0" class="artist-content-field">
-            <span class="field-title">Social Media:</span>
-            <span class="field-content">
-              <ul class="artist-social-icons">
-                <li v-for="soc in socialMedia" :key="soc.id">
-                  <a :href="checkUrlValid(soc.value)" target="_blank">
-                    <img
-                      v-if="soc.value.includes('facebook')"
-                      src="@/assets/images/arts/facebook.svg"
-                    />
-                    <img
-                      v-else-if="soc.value.includes('twitter')"
-                      src="@/assets/images/arts/twitter.svg"
-                    />
-                    <img
-                      v-else-if="soc.value.includes('linkedin')"
-                      src="@/assets/images/arts/linkedin.svg"
-                    />
-                    <img
-                      v-else-if="soc.value.includes('instagram')"
-                      src="@/assets/images/arts/instagram.svg"
-                    />
-                    <img
-                      v-else-if="soc.value.includes('youtube')"
-                      src="@/assets/images/arts/youtube.svg"
-                    />
-                  </a>
+              <h5 class="field-title">
+                Artist Awards
+              </h5>
+              <ul class="field-content-list">
+                <li v-for="award in getAwardList" :key="award.id">
+                  <img src="@/assets/images/arts/award_icon.svg" />
+                  {{ award.value }}
                 </li>
               </ul>
-            </span>
-          </section>
+            </section>
+
+            <section v-if="getEventDate" class="artist-content-field">
+              <h5 class="field-title">
+                Event Date
+              </h5>
+              <span class="field-content"> {{ getDateValue() }} </span>
+            </section>
+
+            <section v-if="artDetails.description" class="artist-content-field">
+              <h5 class="field-title">
+                {{
+                  artDetails.kind.toLowerCase() !== 'public_art'
+                    ? artDetails.kind
+                    : 'Public Art'
+                }}
+                Description:
+              </h5>
+              <span class="field-content">
+                <span v-html="stringSplit(artDetails.description)"></span>
+                <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
+                  collapseDescription ? 'read less' : 'read more'
+                }}</a>
+              </span>
+            </section>
+            <section
+              v-if="!artDetails.description && artDetails.kind === 'artist'"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">
+                Artist Description:
+              </h5>
+              <span class="field-content">
+                <span>
+                  We do not yet have a bio/description for this artist. If you
+                  are this artist and would like to claim this page to create a
+                  profile please contact:
+                  <a href="mailto:maps@fpcc.ca">maps@fpcc.ca</a>
+                </span>
+              </span>
+            </section>
+
+            <!-- Render List of Related Data -->
+            <template v-if="relatedData">
+              <section
+                v-for="data in relatedData"
+                :key="data.id"
+                class="artist-content-field"
+              >
+                <h5 class="field-title">{{ data.label }}:</h5>
+                <a
+                  v-if="data.data_type === 'website'"
+                  :href="checkUrlValid(data.value)"
+                  target="_blank"
+                >
+                  {{ checkUrlValid(data.value) }}</a
+                >
+                <span v-else class="field-content">{{ data.value }}</span>
+              </section>
+            </template>
+
+            <!-- Render List of Websites -->
+            <section
+              v-for="(web, index) in getWebsiteList"
+              :key="web.id"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">{{ `Website #${index + 1}` }}:</h5>
+              <a :href="checkUrlValid(web.value)" target="_blank">
+                {{ checkUrlValid(web.value) }}</a
+              >
+            </section>
+
+            <!-- Render LIst of Social Media -->
+            <section
+              v-if="socialMedia.length !== 0"
+              class="artist-content-field"
+            >
+              <span class="field-title">Social Media:</span>
+              <span class="field-content">
+                <ul class="artist-social-icons">
+                  <li v-for="soc in socialMedia" :key="soc.id">
+                    <a :href="checkUrlValid(soc.value)" target="_blank">
+                      <img :src="getSocMedIcon(soc.value)" />
+                    </a>
+                  </li>
+                </ul>
+              </span>
+            </section>
+          </div>
         </div>
       </div>
+      <ArtsDrawer
+        v-if="isGalleryNotEmpty"
+        :art="artDetails"
+        class="sidebar-side-panel hide-mobile"
+        :class="{
+          'hide-scroll-y': isGalleryShown
+        }"
+      />
     </div>
-    <ArtsDrawer
-      v-if="(mobileContent || isDrawerShown) && isGalleryNotEmpty"
-      :art="artDetails"
-      :show-panel="isDrawerShown"
-      :toggle-panel="toggleArtsDrawer"
-      class="sidebar-side-panel hide-mobile"
-      :class="{
-        'hide-scroll-y': isGalleryShown
-      }"
-    />
-    <div
-      v-if="isGalleryNotEmpty && !isDrawerShown"
-      class="panel-collapsable hide-mobile "
-    >
-      <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
-        <img src="@/assets/images/go_icon_hover.svg" />
-        Expand
-      </div>
-    </div>
-    <b-modal v-model="modalShow" hide-header @ok="handleDelete">{{
-      `Are you sure you want to delete "${artDetails.name}"?`
-    }}</b-modal>
+    <ErrorScreen v-else></ErrorScreen>
   </div>
 </template>
 
@@ -236,18 +232,19 @@ import {
   getApiUrl,
   encodeFPCC,
   makeMarker,
-  getMediaUrl,
-  getCookie
+  getMediaUrl
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
+import ErrorScreen from '@/layouts/error.vue'
 
 export default {
   components: {
     ArtsBanner,
     ArtsDetailCard,
     Logo,
-    ArtsDrawer
+    ArtsDrawer,
+    ErrorScreen
   },
   filters: {
     titleCase(str) {
@@ -259,15 +256,26 @@ export default {
     return {
       collapseDescription: false,
       modalShow: false,
-      blockedTag: ['Person'] // add taxonomy to not show
+      blockedTag: ['Person'], // add taxonomy to not show
+      filterCondition: [
+        'instagram',
+        'fb',
+        'facebook',
+        'youtube',
+        'twitter',
+        'linkedin'
+      ]
     }
   },
   computed: {
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
+    userDetail() {
+      return this.$store.state.user.user
+    },
     isGalleryShown() {
-      return this.$store.state.sidebar.isGalleryShown
+      return this.$store.state.sidebar.showGallery
     },
     isCollapse() {
       return this.$store.state.sidebar.collapseDetail
@@ -297,18 +305,12 @@ export default {
       )
     },
     socialMedia() {
-      const filterCondition = [
-        'instagram',
-        'facebook',
-        'youtube',
-        'twitter',
-        'linkedin'
-      ]
-
       return this.artDetails.related_data.filter(
         filter =>
           filter.data_type === 'website' &&
-          filterCondition.some(condition => filter.value.includes(condition))
+          this.filterCondition.some(condition =>
+            filter.value.toLowerCase().includes(condition)
+          )
       )
     },
     relatedData() {
@@ -330,13 +332,18 @@ export default {
     },
     getAwardList() {
       return this.artDetails.related_data.filter(element => {
-        return element.data_type === 'award'
+        return (
+          element.data_type === 'award' &&
+          (element.value && element.value.length !== 0)
+        )
       })
     },
     getWebsiteList() {
       return this.artDetails.related_data.filter(element => {
         return (
-          !this.socialMedia.includes(element) && element.data_type === 'website'
+          !this.socialMedia.includes(element) &&
+          element.data_type === 'website' &&
+          (element.value && element.value.length !== 0)
         )
       })
     },
@@ -370,19 +377,15 @@ export default {
         }
       })
 
-      if (art.id) {
+      if (art) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
         const isServer = !!process.server
         return {
-          art,
           isServer,
           artDetails
         }
       } else {
-        $router.push({
-          path: `/art`
-        })
       }
     }
   },
@@ -396,25 +399,25 @@ export default {
   mounted() {
     window.addEventListener('resize', this.widthChecker)
     if (
+      this.artDetails &&
       (this.artDetails.medias.length !== 0 ||
         this.artDetails.public_arts.length !== 0) &&
       window.innerWidth > 992
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
     }
-
-    // Invoke this when Media upload is successful
-    this.$root.$on('fileUploadSuccess', () => {
-      this.$root.$emit('refetchArtwork')
-      this.$store.commit('sidebar/setDrawerContent', false)
-
-      setTimeout(() => {
-        this.$store.commit('sidebar/setDrawerContent', true)
-      }, 500)
-    })
   },
   methods: {
     getMediaUrl,
+    getSocMedIcon(link) {
+      const str = link.toLowerCase()
+      const getSoc = this.filterCondition.find(soc => {
+        return str.includes(soc)
+      })
+      const value = getSoc === 'fb' ? 'facebook' : getSoc
+
+      return require(`@/assets/images/arts/${value}.svg`)
+    },
     isPlacenameOwner() {
       if (this.artDetails.creator) {
         if (this.$store.state.user.user.id === this.artDetails.creator.id)
@@ -422,36 +425,22 @@ export default {
       }
       return false
     },
-    async handleDelete(e) {
-      e.preventDefault()
-      await this.$axios.$delete(
-        `${getApiUrl(`placename/${this.artDetails.id}`)}`,
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
+    isContributer() {
+      if (
+        this.userDetail.placename_set &&
+        this.userDetail.placename_set.length !== 0 &&
+        this.artDetails.artists &&
+        this.artDetails.artists.length !== 0
+      ) {
+        const contributerID = this.artDetails.artists.map(artist => artist.id)
+        const isContributer = this.userDetail.placename_set.some(placename =>
+          contributerID.includes(placename.id)
+        )
 
-      await this.$store.dispatch('user/setLoggedInUser')
-
-      this.$root.$emit('refetchArtwork')
-      // Delete all Medias in this Placename
-      this.artDetails.medias.forEach(async media => {
-        await this.$axios.$delete(`${getApiUrl(`media/${media.id}`)}`, {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        })
-      })
-
-      this.$router.push({
-        path: `/art`
-      })
-      this.$store.commit('sidebar/setDrawerContent', false)
-    },
-    showOwnerModal() {
-      this.modalShow = !this.modalShow
+        return isContributer
+      } else {
+        return false
+      }
     },
     handlePlacenameEdit() {
       const kind =
@@ -531,9 +520,6 @@ export default {
     toggleDescription() {
       this.collapseDescription = !this.collapseDescription
     },
-    toggleArtsDrawer() {
-      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
-    },
     stringSplit(string) {
       const stringValue = this.collapseDescription
         ? `${string} `
@@ -553,26 +539,36 @@ export default {
       const pattern = /^((http|https|ftp):\/\/)/
       const newUrl = url.toLowerCase()
 
-      return pattern.test(newUrl) ? url : `http://${newUrl}`
+      return pattern.test(newUrl) ? url : `https://${newUrl}`
     },
     checkArtistProfile(name) {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    getHeaderTitle() {
+      if (this.artDetails) {
+        return (
+          this.artDetails.name +
+          ' Indigenous ' +
+          this.artDetails.kind +
+          " on First Peoples' Language Map"
+        )
+      } else {
+        return 'Art page not found '
+      }
     }
   },
   head() {
     return {
-      title:
-        this.artDetails.name +
-        ' Indigenous ' +
-        this.artDetails.kind +
-        " on First Peoples' Language Map",
+      title: this.getHeaderTitle(),
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.artDetails.description
+          content: this.artDetails
+            ? this.artDetails.description
+            : 'Art page not found.'
         }
       ]
     }
@@ -631,6 +627,10 @@ export default {
   font: normal 16px/25px Proxima Nova;
   flex-direction: column;
   color: #151515;
+}
+
+.field-content font {
+  font: normal 16px/25px Proxima Nova !important;
 }
 
 .field-content a {
@@ -708,72 +708,12 @@ export default {
   background-color: rgba(0, 0, 0, 1);
 }
 
-.panel-collapsable {
-  width: 15px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 425px;
-  background: #f9f9f9 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
-  border: 1px solid #d7d7de;
-}
-
-.btn-collapse {
-  padding: 1em;
-  margin-top: 1.5em;
-  margin-left: 0.8em;
-  width: 100px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top-right-radius: 1em;
-  border-bottom-right-radius: 1em;
-  color: #fff;
-  background-color: #b47a2b;
-}
-
-.btn-collapse img {
-  margin-right: 0.5em;
-}
-
 .artist-img-small {
   width: 40px;
   height: 40px;
 }
 
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
-@media (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
-}
-
 @media (max-width: 992px) {
-  .sidebar-side-panel {
-    display: block !important;
-    position: initial;
-    width: 100%;
-    height: 100vh;
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    z-index: 999999;
-  }
   .arts-main-container {
     background: #f9f9f9 0% 0% no-repeat padding-box;
   }

@@ -43,9 +43,12 @@
           >{{ tag.name }}</span
         >
       </div>
-      <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+      <div
+        v-if="isOwner || isContributer"
+        class="d-inline-block cursor-pointer mt-2"
+      >
         <CardBadge
-          content="Owned"
+          :content="isOwner ? 'Owned' : 'Contributer'"
           type="owner"
           :placeholder="arttype | kind"
         ></CardBadge>
@@ -54,12 +57,6 @@
           type="edit"
           :placeholder="arttype | kind"
           @click.native="editPlacename"
-        ></CardBadge>
-        <CardBadge
-          content="Delete"
-          type="delete"
-          :placeholder="arttype | kind"
-          @click.native="showOwnerModal"
         ></CardBadge>
       </div>
     </div>
@@ -123,11 +120,9 @@ export default {
       type: Boolean,
       default: false
     },
-    showOwnerModal: {
-      type: Function,
-      default: () => {
-        return true
-      }
+    isContributer: {
+      type: Boolean,
+      default: false
     },
     editPlacename: {
       type: Function,
@@ -151,6 +146,7 @@ export default {
       })
     },
     handleReturn() {
+      this.$root.$emit('resetMap')
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$router.push({
         path: '/art'

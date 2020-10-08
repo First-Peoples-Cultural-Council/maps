@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.postgres.fields import ArrayField
 
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
@@ -48,11 +49,16 @@ class User(AbstractUser):
     picture = models.URLField(max_length=255, null=True)
     image = models.ImageField(null=True, blank=True, default=None)
     notification_frequency = models.IntegerField(default=7)
+    artist_profile = models.ForeignKey(
+        "language.Placename", on_delete=models.SET_NULL, default=None, blank=True, null=True
+    )
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
     )
 
     languages = models.ManyToManyField("language.Language")
+    non_bc_languages = ArrayField(models.CharField(
+        max_length=200), blank=True, null=True, default=None)
     bio = models.TextField(null=True, blank=True, default="")
 
     def __str__(self):

@@ -88,9 +88,9 @@ export default {
   },
   data() {
     return {
-      fileName: null,
+      fileName: '',
       file: null,
-      description: null,
+      description: '',
       errorMessage: null,
       successMessage: null,
       commonly: 'not_accepted'
@@ -103,9 +103,9 @@ export default {
   },
   methods: {
     resetToInitialState() {
-      this.fileName = null
+      this.fileName = ''
       this.file = null
-      this.description = null
+      this.description = ''
       this.errorMessage = null
       this.successMessage = null
       this.clearFiles()
@@ -123,19 +123,9 @@ export default {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
       } else {
         const formData = this.getFormData()
+
         try {
-          console.log({
-            name: this.fileName,
-            file_type: this.file.type,
-            description: this.description,
-            media_file: this.file,
-            type: this.type,
-            id: this.id,
-            community_only: this.commonly === 'accepted',
-            is_artwork: !!this.$route.query.upload_artwork
-          })
           result = await this.uploadFile(formData)
-          console.log('RESULT IS', result)
           if (
             result.request.status === 201 &&
             result.request.statusText === 'Created'
@@ -176,8 +166,16 @@ export default {
       }
     },
     async uploadFile(formData) {
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
+
+      const result = await this.$store.dispatch('file/uploadMedia', dataObj)
       return result
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }

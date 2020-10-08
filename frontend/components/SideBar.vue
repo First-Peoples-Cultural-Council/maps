@@ -182,16 +182,6 @@ export default {
 </script>
 
 <style>
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
 .sidebar-container {
   position: absolute;
   top: 0;
@@ -261,17 +251,6 @@ export default {
   border-top-right-radius: 0em;
 }
 
-/* Sidebar style when screen width is 1300px and drawer is open */
-@media (min-width: 993px) and (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
-}
-
 @media (max-width: 992px) {
   .sidebar-desktop {
     display: none;
@@ -335,7 +314,7 @@ export default {
     border: 0;
   }
 
-  .sidebar-side-panel {
+  .sidebar-container .sidebar-side-panel {
     position: fixed;
     top: 0;
     left: 0;
@@ -345,7 +324,8 @@ export default {
     z-index: 999999;
   }
 
-  .sidebar-side-panel .panel-artist {
+  .sidebar-container .panel-close-btn {
+    display: absolute !important;
   }
 }
 

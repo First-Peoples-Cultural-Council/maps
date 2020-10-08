@@ -39,9 +39,12 @@
           >
         </div>
 
-        <div v-if="isOwner" class="d-inline-block cursor-pointer mt-2">
+        <div
+          v-if="isOwner || isContributer"
+          class="d-inline-block cursor-pointer mt-2"
+        >
           <CardBadge
-            content="Owned"
+            :content="isOwner ? 'Owned' : 'Contributer'"
             type="owner"
             :placeholder="arttype | kind"
           ></CardBadge>
@@ -50,12 +53,6 @@
             type="edit"
             :placeholder="arttype"
             @click.native="editPlacename"
-          ></CardBadge>
-          <CardBadge
-            content="Delete"
-            type="delete"
-            :placeholder="arttype"
-            @click.native="showOwnerModal"
           ></CardBadge>
         </div>
 
@@ -128,11 +125,9 @@ export default {
       type: Boolean,
       default: false
     },
-    showOwnerModal: {
-      type: Function,
-      default: () => {
-        return true
-      }
+    isContributer: {
+      type: Boolean,
+      default: false
     },
     editPlacename: {
       type: Function,

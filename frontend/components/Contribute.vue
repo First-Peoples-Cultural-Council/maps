@@ -1,6 +1,12 @@
 <template>
   <div class="contribute-container">
-    <b-button @click="toggleModal">Add to the Map</b-button>
+    <b-button @click="toggleModal">
+      <span>Add to the Map</span>
+      <img
+        src="@/assets/images/plus_white.svg"
+        alt="Contribute"
+        class="navbar-icon"
+    /></b-button>
 
     <b-modal
       id="contribute-modal"
@@ -10,7 +16,7 @@
       hide-header
       title="Contribute"
     >
-      <b-list-group>
+      <b-list-group class="contribute-option-list">
         <!--<b-list-group-item button @click="handleClick($event, 'heritage')">
           <div class="contribute-list-group-title">Edit An Existing Place</div>
           <div>
@@ -76,9 +82,7 @@
             </div>
           </div></b-list-group-item
         >
-      </b-list-group>
-      <b-list-group class="placename-group-container">
-        <b-list-group-item button class="mt-1" @click="validateArtist($event)">
+        <b-list-group-item button @click="validateArtist($event)">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
@@ -196,7 +200,6 @@
 <script>
 import MessageBox from '@/components/MessageBox.vue'
 import UploadModal from '@/components/UploadModal.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -214,8 +217,7 @@ export default {
         const foundUserArtist = this.userDetail.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            placename.name ===
-              `${this.userDetail.first_name} ${this.userDetail.last_name}`
+            placename.id === this.userDetail.artist_profile
         )
         const getAllArtist = this.userDetail.placename_set.filter(
           placename => placename.kind === 'artist'
@@ -225,7 +227,6 @@ export default {
         return false
       }
     },
-
     userDetail() {
       return this.$store.state.user.user
     },
@@ -297,7 +298,7 @@ export default {
       // If has Artist profile, redirect to Profile, then add Media
       else {
         this.$router.push({
-          path: `/art/${encodeFPCC(this.validatedArtist.name)}`,
+          path: `/profile/${this.userDetail.id}`,
           query: {
             upload_artwork: true
           }
@@ -306,7 +307,7 @@ export default {
         this.$store.commit('sidebar/setDrawerContent', false)
 
         // Decide for UploadModal popup time
-        const timeOut = this.$route.name === 'index-art-art' ? 0 : 1500
+        const timeOut = this.$route.name === 'index-profile-id' ? 0 : 1500
         setTimeout(() => {
           this.$root.$emit('openUploadModal', {
             id: this.validatedArtist.id,
@@ -338,6 +339,41 @@ export default {
   font: Bold 15px/18px Proxima Nova;
   color: #ffffff;
   text-transform: uppercase;
+  animation: shadowpulse 5s ease infinite;
+
+  img {
+    display: none;
+    width: 25px;
+    height: 25px;
+  }
+}
+// For Mobile View
+@media screen and (max-width: 993px) {
+  .contribute-container button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 2%;
+    right: 2.75%;
+    width: 50px;
+    height: 55px;
+    border-radius: 100%;
+    z-index: 999;
+    border: 0 !important;
+
+    span {
+      display: none;
+    }
+
+    img {
+      display: block !important;
+    }
+  }
+
+  .contribute-option-list {
+    font: Bold 13px/16px Proxima Nova;
+  }
 }
 
 .point-btn {
@@ -349,13 +385,13 @@ export default {
   color: white !important;
 }
 
+#contribute-modal {
+  z-index: 99999;
+}
+
 #contribute-modal .modal-body {
   padding: 0;
   margin: 0;
-}
-
-.placename-group-container {
-  position: absolute;
-  top: 294px;
+  z-index: 99999;
 }
 </style>

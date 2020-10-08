@@ -232,19 +232,19 @@ export default {
         : this.mediaRecorder.mimeType.split(';')[0]
 
       const formData = getFormData(this.getMediaData(file, file_type))
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
 
       if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit(
           'file/setMediaFiles',
           this.getMediaData(file, file_type)
         )
-        console.log(this.$store.state.file.fileList)
       } else {
         try {
-          const result = await this.$store.dispatch(
-            'file/uploadMedia',
-            formData
-          )
+          const result = await this.$store.dispatch('file/uploadMedia', dataObj)
           if (
             result.request.status === 201 &&
             result.request.statusText === 'Created'
@@ -338,6 +338,9 @@ export default {
         this.mediaRecorder.stop()
         this.audioChunks = []
       }
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }

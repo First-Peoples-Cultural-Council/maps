@@ -96,8 +96,16 @@ class LanguageGeoList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageGeoSerializer
 
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)
+
 
 # Search List APIViews
 class LanguageSearchList(generics.ListAPIView):
     queryset = Language.objects.filter(geom__isnull=False)
     serializer_class = LanguageSearchSerializer
+
+    @method_decorator(never_cache)
+    def list(self, request):
+        return super().list(request)

@@ -109,7 +109,10 @@
             v-lazy="getMediaUrl(mediaData.image)"
             :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
           />
-          <span class="media-copyright">
+          <span
+            v-if="returnMediaType === 'image' || mediaData.image"
+            class="media-copyright"
+          >
             Copyright &copy; {{ returnCopyright(false) }}
           </span>
         </div>
@@ -123,15 +126,17 @@
       </button>
     </div>
 
-    <div v-if="isRelatedMedia" class="gallery-img-pagination">
-      <div
-        v-for="(item, indx) in relatedMedia"
-        :key="item.id"
-        :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
-        @click="selectCurrentIndex(item)"
-      >
-        <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
-        <img v-else v-lazy="getMediaUrl(item.image)" />
+    <div v-if="isRelatedMedia" class="gallery-pagination-container">
+      <div class="gallery-img-pagination">
+        <div
+          v-for="(item, indx) in relatedMedia"
+          :key="`item-${item.name}-${item.id}`"
+          :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
+          @click="selectCurrentIndex(item)"
+        >
+          <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
+          <img v-else v-lazy="getMediaUrl(item.image)" />
+        </div>
       </div>
     </div>
   </div>
@@ -204,9 +209,7 @@ export default {
     },
     mediaIndex() {
       return this.mediaData
-        ? this.relatedMedia.findIndex(
-            media => media.name === this.mediaData.name
-          )
+        ? this.relatedMedia.findIndex(media => media.id === this.mediaData.id)
         : 0
     },
     canNavigatePrevious() {
@@ -419,10 +422,19 @@ export default {
 }
 
 /* Pagination CSS */
-.gallery-img-pagination {
+
+.gallery-pagination-container {
   display: flex;
   width: 80%;
   justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.gallery-img-pagination {
+  display: flex;
+  width: auto;
+  justify-content: flex-start;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -494,15 +506,13 @@ export default {
     background-size: 100% 100%;
   }
 
-  .gallery-img-pagination {
+  .gallery-pagination-container {
+    width: 90%;
     position: fixed;
     bottom: 2%;
-    display: flex;
-    width: 90%;
-    justify-content: center;
-    overflow-x: auto;
-    overflow-y: hidden;
+  }
 
+  .gallery-img-pagination {
     .arts-img-item {
       width: 115px;
       height: 115px;

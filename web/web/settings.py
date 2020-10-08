@@ -30,7 +30,7 @@ HOST = os.environ.get("HOST", 'https://maps.fpcc.ca')
 
 ALLOWED_HOSTS = ["*"]
 
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = "/media/"
 MEDIA_URL = "/media/"
 APPEND_SLASH = True
 
@@ -39,8 +39,16 @@ ADMINS = (
     ("Clark", "clark@countable.ca"),
     ("Aaron", "aaron@countable.ca"),
     ("Daniel", "daniel@fpcc.ca"),
-    )
-SERVER_EMAIL = "info@fpcc.ca"
+    ("Justin", "justin@countable.ca"),
+)
+SERVER_EMAIL = "maps@fpcc.ca"
+
+FPCC_ADMINS = (
+    ("Suzanne", "suzanne@fpcc.ca"),
+    ("Cathi", "cathi@fpcc.ca"),
+    ("Megan", "megan@fpcc.ca"),
+    ("Hannah", "hannah@fpcc.ca"),
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",

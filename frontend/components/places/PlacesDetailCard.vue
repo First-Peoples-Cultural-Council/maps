@@ -27,9 +27,7 @@
             Please use "Report" it if it needs to be corrected or removed
           </b-tooltip>
         </h5>
-        <h5 class="field-name">
-          {{ name }}
-        </h5>
+        <h5 class="field-name">{{ name }}</h5>
       </div>
       <div
         v-if="audioFile"
@@ -186,6 +184,7 @@ export default {
       } else {
         this.$router.go(-1)
       }
+      this.$root.$emit('resetMap')
     },
     handleEdit() {
       this.$router.push({

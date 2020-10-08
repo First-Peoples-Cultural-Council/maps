@@ -12,6 +12,8 @@ services:
       - 8099:80
     environment:
       - CACHE_LIFE=2s
+    volumes:
+      - ./web/media:/media
   frontend:
     command: bash -c "yarn && yarn build && yarn start"
     environment:
@@ -33,6 +35,8 @@ services:
       - COGNITO_USERPOOL_ID=ca-central-1_dW1peVcEx
       - COGNITO_APP_CLIENT_ID=7rj6th7pknck3tih16ihekk1ik
     command: ./prod.sh
+    volumes:
+      - ./web/media:/media
   test:
     command: sleep 1000000
 

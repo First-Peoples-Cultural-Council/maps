@@ -3,7 +3,7 @@
     <SideBar
       v-if="this.$route.name === 'index-art'"
       active="Arts"
-      :show-side-panel="showDrawer"
+      :show-side-panel="isDrawerShown"
     >
       <template v-slot:content>
         <section class="pl-3 pr-3 mt-3">
@@ -16,13 +16,14 @@
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <ArtistFilter class="ml-3 mr-3 mt-3 mb-1 " />
+        <ArtistFilter />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
           <!-- Art Work Badge Filter  -->
           <BadgeFilter
             :is-selected="filterMode === 'artwork'"
             :child-taxonomy="artworkTaxonomy()"
             :color="'#5A8467'"
+            :type="'artwork'"
           >
             <template v-slot:badge>
               <Badge
@@ -36,8 +37,9 @@
               ></Badge>
             </template>
           </BadgeFilter>
+
           <!-- Artist Badge Filter -->
-          <!-- <BadgeFilter
+          <BadgeFilter
             :is-selected="filterMode === 'artist'"
             :child-taxonomy="getChildTaxonomy('Person')"
             :color="'#B45339'"
@@ -53,7 +55,26 @@
                 @click.native.prevent="badgeClick($event, 'artist')"
               ></Badge>
             </template>
-          </BadgeFilter> -->
+          </BadgeFilter>
+
+          <!-- Public Art Badge Filter -->
+          <BadgeFilter
+            :is-selected="filterMode === 'public_art'"
+            :child-taxonomy="getChildTaxonomy('Public Art')"
+            :color="'#848159'"
+          >
+            <template v-slot:badge>
+              <Badge
+                content="Public Art"
+                :number="publicArtsCount"
+                class="cursor-pointer"
+                bgcolor="#848159"
+                type="part"
+                :mode="getBadgeStatus(filterMode, 'public_art')"
+                @click.native.prevent="badgeClick($event, 'public_art')"
+              ></Badge>
+            </template>
+          </BadgeFilter>
 
           <!-- Event Badge Filter -->
           <BadgeFilter
@@ -93,25 +114,6 @@
             </template>
           </BadgeFilter>
 
-          <!-- Public Art Badge Filter -->
-          <!-- <BadgeFilter
-            :is-selected="filterMode === 'public_art'"
-            :child-taxonomy="getChildTaxonomy('Public Art')"
-            :color="'#848159'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Public Art"
-                :number="publicArtsCount"
-                class="cursor-pointer"
-                bgcolor="#848159"
-                type="part"
-                :mode="getBadgeStatus(filterMode, 'public_art')"
-                @click.native.prevent="badgeClick($event, 'public_art')"
-              ></Badge>
-            </template>
-          </BadgeFilter> -->
-
           <!-- Grant Badge Filter -->
           <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
             <template v-slot:badge>
@@ -130,7 +132,7 @@
       </template>
       <template v-slot:cards>
         <section id="card-item-list" class="pl-3 pr-3">
-          <b-row>
+          <b-row v-if="paginatedArts.length !== 0">
             <b-col
               v-for="(art, index) in paginatedArts"
               :key="'arts' + art.id + index"
@@ -143,7 +145,7 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails === art.properties && showDrawer"
+                :is-selected="artDetails === art.properties && isDrawerShown"
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties)"
               ></ArtworkCard>
@@ -161,10 +163,17 @@
               ></ArtsCard>
             </b-col>
           </b-row>
+          <b-row
+            v-else-if="paginatedArts.length === 0 && isSearchMode"
+            class="search-empty-container"
+          >
+            <img src="@/assets/images/search_icon.svg" />
+            Filter result not found. Please try again.
+          </b-row>
         </section>
       </template>
-      <template v-if="showDrawer" v-slot:side-panel>
-        <ArtsDrawer :art="artDetails" :toggle-panel="toggleSidePanel" />
+      <template v-if="isDrawerShown" v-slot:side-panel>
+        <ArtsDrawer :art="artDetails" />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -212,7 +221,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'Zoom in on the map to view Indigenous Artwork in your area. You can also view Organization, Event, Public Art and Grant information.',
+        'Indigenous artistic practices in B.C. are diverse. Artists working across all disciplines are honouring traditions and experimenting with contemporary approaches. The Arts Map provides an online environment for Indigenous artists and arts groups to create profiles and share images, video, sound, and news. Users can explore the map by focusing on specific locations or by defining their search with keywords and filters. This is a community-driven platform dedicated to highlighting the important creative voices of Indigenous artists.',
       artDetails: {},
       maximumLength: 0
     }
@@ -236,7 +245,7 @@ export default {
     isSearchMode() {
       return this.searchQuery.length !== 0
     },
-    showDrawer() {
+    isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
     arts() {
@@ -342,6 +351,10 @@ export default {
                 ? art.properties.public_arts.map(pub => pub.name)
                 : []
 
+              const isTaxonomyFound = art.properties.taxonomies.some(
+                taxonomy => taxonomy.name.toLowerCase() === query
+              )
+
               // if list of string contains the query, return true
               const isPublicArtFound = publicArtList.find(pub =>
                 pub.toLowerCase().includes(query)
@@ -355,7 +368,8 @@ export default {
               return (
                 art.properties.name.toLowerCase().includes(query) ||
                 isPublicArtFound ||
-                isArtistFound
+                isArtistFound ||
+                isTaxonomyFound
               )
             }
           })
@@ -374,16 +388,19 @@ export default {
         if (this.filterMode === 'artwork') {
           return artsArray.filter(art => {
             return (
-              this.artMediaType(art.properties.file_type) ===
-              this.taxonomyFilter[0]
+              // this.artMediaType(art.properties.file_type) ===
+              // this.taxonomyFilter[0]
+              this.taxonomyFilter.find(
+                taxo => taxo === this.artMediaType(art.properties.file_type)
+              )
             )
           })
         } else {
           return artsArray.filter(art => {
-            return art.properties.taxonomies.some(
-              taxonomy =>
-                taxonomy.name ===
-                this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
+            return art.properties.taxonomies.some(taxonomy =>
+              // taxonomy.name ===
+              // this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
+              this.taxonomyFilter.find(taxo => taxonomy.name === taxo)
             )
           })
         }
@@ -450,9 +467,12 @@ export default {
   },
   methods: {
     badgeClick($event, name) {
-      if (this.showDrawer) {
-        this.toggleSidePanel()
+      if (this.isDrawerShown) {
+        this.toggleArtsDrawer()
       }
+
+      this.$root.$emit('setMobileSideBarState')
+
       this.resetFilter()
       this.maximumLength = 0
       this.handleBadge($event, name)
@@ -466,6 +486,11 @@ export default {
       // })
     },
     resetFilter() {
+      const resetTaxonomy = this.taxonomies.map(taxonomy => {
+        taxonomy.isChecked = false
+        return taxonomy
+      })
+      this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
     },
@@ -513,8 +538,8 @@ export default {
       }
     },
     handleCardClick($event, name, type) {
-      if (this.showDrawer) {
-        this.toggleSidePanel()
+      if (this.isDrawerShown) {
+        this.toggleArtsDrawer()
       }
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
@@ -522,12 +547,12 @@ export default {
     },
     selectMedia(currentArt) {
       // If Same Artwork is clicked, close the drawer
-      if (currentArt === this.artDetails && this.showDrawer) {
+      if (currentArt === this.artDetails && this.isDrawerShown) {
         this.artDetails = {}
         this.closeDrawer()
       }
       // If another artwork is selected when there's open, close it to recalibrate data, then open
-      else if (currentArt !== this.artDetails && this.showDrawer) {
+      else if (currentArt !== this.artDetails && this.isDrawerShown) {
         this.artDetails = currentArt
         // Important to open it after closing the drawer
         this.closeDrawer()
@@ -536,15 +561,15 @@ export default {
         }, 100)
       }
       // If no artwork is selected, it opens the drawer
-      else if (currentArt !== this.artDetails || !this.showDrawer) {
+      else if (currentArt !== this.artDetails || !this.isDrawerShown) {
         this.artDetails = currentArt
         this.openDrawer()
       }
       // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
     },
-    toggleSidePanel() {
-      this.$store.commit('sidebar/setDrawerContent', !this.showDrawer)
+    toggleArtsDrawer() {
+      this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     openDrawer() {
       this.$store.commit('sidebar/setDrawerContent', true)
@@ -570,12 +595,12 @@ export default {
       )
     },
     artworkTaxonomy() {
-      return Array.from(['image', 'video', 'audio']).map(type => {
-        return {
-          id: type,
-          name: type
-        }
-      })
+      return this.taxonomies.filter(
+        taxonomy =>
+          taxonomy.name === 'image' ||
+          taxonomy.name === 'audio' ||
+          taxonomy.name === 'video'
+      )
     },
     artMediaType(type) {
       if (type) {
@@ -595,9 +620,22 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .badge-list-container {
   display: flex;
   flex-wrap: wrap;
+}
+
+.search-empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em 1em;
+
+  img {
+    margin-bottom: 1em;
+    width: 50px;
+    height: 50px;
+  }
 }
 </style>

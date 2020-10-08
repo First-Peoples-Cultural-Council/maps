@@ -5,7 +5,7 @@
       :value="searchQuery"
       type="search"
       class="search-input"
-      :placeholder="`Search filter based on ${filterMode}`"
+      :placeholder="filterPlaceholder()"
       autocomplete="off"
       @input="updateQuery"
     >
@@ -40,6 +40,16 @@ export default {
     },
     resetValue() {
       this.$store.commit('arts/setArtSearch', '')
+    },
+    filterPlaceholder() {
+      const mode = this.filterMode
+      if (mode === 'artwork') {
+        return `Filter based of name, medium, and description...`
+      } else {
+        return `Filter based on ${
+          mode === 'public_art' ? 'public art' : mode
+        }'s name...`
+      }
     }
   }
 }
@@ -47,9 +57,17 @@ export default {
 
 <style>
 .filter-container {
+  position: relative;
   display: flex;
   width: 90%;
-  position: relative;
+  margin: 1em 1em 0.25em 1em;
+}
+
+@media (max-width: 993px) {
+  .filter-container {
+    width: 95% !important ;
+    margin: 0 0 0.25em 0 !important;
+  }
 }
 
 .search-input::placeholder {

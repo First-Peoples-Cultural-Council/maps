@@ -1,10 +1,21 @@
 import sys
+import copy
 
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
+from django.contrib.gis.geos import Point, Polygon
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.exceptions import PermissionDenied
+
+from rest_framework import viewsets, generics, mixins, status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from django.contrib.gis.geos import Point
 
 from users.models import User, Administrator
 from language.models import (
@@ -17,18 +28,13 @@ from language.models import (
     Favourite,
     Notification,
     CommunityLanguageStats,
+    PublicArtArtist
 )
 from language.notifications import (
     inform_placename_rejected_or_flagged,
     inform_placename_to_be_verified,
 )
 from language.filters import StringListFilter
-
-from django.views.decorators.cache import never_cache
-from rest_framework import viewsets, generics, mixins, status
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.response import Response
-from rest_framework.decorators import action
 
 from language.views import BaseModelViewSet, BasePlaceNameListAPIView
 
@@ -42,10 +48,8 @@ from language.serializers import (
     ArtworkSerializer,
     ArtworkPlaceNameSerializer
 )
-
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from web.permissions import IsAdminOrReadOnly
+from web.utils import is_user_permitted
 
 
 class PlaceNameFilterSet(FilterSet):
@@ -70,6 +74,17 @@ class PlaceNameViewSet(BaseModelViewSet):
     # Search by name
     search_fields = ['name']
 
+    @method_decorator(login_required)
+    def create(self, request):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                return super().create(request)
+
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to create a PlaceName."
+        })
+
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
 
@@ -82,17 +97,81 @@ class PlaceNameViewSet(BaseModelViewSet):
             obj.status = 'VE'
             obj.save()
 
+    def update(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                placename = PlaceName.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if placename is owned by current user
+                owned_placename = True if placename.creator == request.user else False
+
+                # Check if this placename is a public art and the user is its artist
+                artist_owned_placename = False
+                artist_profile_ids = PlaceName.objects.filter(kind='artist', creator=request.user).values_list('id', flat=True)
+
+                if artist_profile_ids and placename.kind == 'public_art':
+                    try:
+                        owned_public_art = PublicArtArtist.objects.get(artist__in=artist_profile_ids, public_art=placename)
+                    except PublicArtArtist.DoesNotExist:
+                        owned_public_art = None
+
+                    if owned_public_art and owned_public_art.public_art == placename:
+                        artist_owned_placename = True
+
+                if owned_placename or artist_owned_placename:
+                    return super().update(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner or the artist can update this PlaceName."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to update this PlaceName."
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated:
+                placename = PlaceName.objects.get(pk=kwargs.get('pk'))
+                
+                # Check if placename is owned by current user
+                owned_placename = True if placename.creator == request.user else False
+
+                if owned_placename:
+                    return super().destroy(request, *args, **kwargs)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Only the owner can delete this PlaceName."
+                    })
+        
+        return Response({
+            "success": False,
+            "message": "You need to log in in order to delete this PlaceName."
+        })
+
     @action(detail=True, methods=["patch"])
     def verify(self, request, pk):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 try:
                     PlaceName.verify(int(pk))
-                    return Response({"message": "Verified!"})
+                    return Response({
+                        "success": True,
+                        "message": "Verified."
+                    })
                 except PlaceName.DoesNotExist:
-                    return Response({"message": "No PlaceName with the given id was found"})
+                    return Response({
+                        "success": False,
+                        "message": "No PlaceName with the given id was found."
+                    })
 
-        return Response({"message", "Only Administrators can verify contributions"})
+        return Response({
+            "success": False,
+            "message": "Only Administrators can verify contributions."
+        })
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk):
@@ -110,20 +189,35 @@ class PlaceNameViewSet(BaseModelViewSet):
                         except Exception as e:
                             pass
 
-                        return Response({"message": "Rejected!"})
+                        return Response({
+                            "success": True,
+                            "message": "Rejected."
+                        })
                     else:
-                        return Response({"message": "Reason must be provided"})
+                        return Response({
+                            "success": False,
+                            "message": "Reason must be provided."
+                        })
                 except PlaceName.DoesNotExist:
-                    return Response({"message": "No PlaceName with the given id was found"})
+                    return Response({
+                        "success": False,
+                        "message": "No PlaceName with the given id was found."
+                    })
 
-        return Response({"message", "Only Administrators can reject contributions"})
+        return Response({
+            "success": False,
+            "message": "Only Administrators can reject contributions."
+        })
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, pk):
         try:
             placename = PlaceName.objects.get(pk=int(pk))
             if placename.status == PlaceName.VERIFIED:
-                return Response({"message": "PlaceName has already been verified"})
+                return Response({
+                    "success": False,
+                    "message": "PlaceName has already been verified."
+                })
             else:
                 if 'status_reason' in request.data.keys():
                     PlaceName.flag(int(pk), request.data["status_reason"])
@@ -141,11 +235,20 @@ class PlaceNameViewSet(BaseModelViewSet):
                     except Exception as e:
                         pass
 
-                    return Response({"message": "Flagged!"})
+                    return Response({
+                        "success": True,
+                        "message": "Flagged."
+                    })
                 else:
-                    return Response({"message": "Reason must be provided"})
+                    return Response({
+                        "success": False,
+                        "message": "Reason must be provided."
+                    })
         except PlaceName.DoesNotExist:
-            return Response({"message": "No PlaceName with the given id was found"})
+            return Response({
+                "success": False,
+                "message": "No PlaceName with the given id was found."
+            })
 
     @method_decorator(never_cache)
     def detail(self, request):
@@ -153,7 +256,32 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request)
+        placename = PlaceName.objects.get(pk=kwargs.get('pk'))
+        serializer = self.get_serializer(placename)
+        serializer_data = serializer.data
+
+        # CLEAN RELATED DATA - Set private data to confidential if necessary
+        related_data = []
+        for data in serializer_data['related_data']:
+            # If value needs to be set to confidential, set it
+            if data['value'] is not '' and data['is_private']:
+                if request and hasattr(request, "user") and request.user.is_authenticated:
+                    # Only hide the data if the user accessing it is not the owner
+                    if placename.creator and placename.creator.id is not request.user.id:
+                        data['value'] = 'CONFIDENTIAL'
+                else:
+                    data['value'] = 'CONFIDENTIAL'
+
+            if data['value'] is not '':
+                related_data.append(data)
+        
+        serializer_data['related_data'] = related_data
+
+        return Response(serializer_data)
+        # if request and hasattr(request, "user"):
+        #     if request.user.is_authenticated:
+
+        # return super().retrieve(request)
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -256,16 +384,20 @@ class PlaceNameViewSet(BaseModelViewSet):
 # GEO LIST APIVIEWS
 class PlaceNameGeoList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(
-        name__icontains="FirstVoices", geom__isnull=False
+        name__icontains="FirstVoices"
     ).filter(
-        kind__in=['poi', '']
+        kind__in=['poi', ''],
+        geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['language', ]
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):
@@ -331,9 +463,12 @@ class PlaceNameGeoList(generics.ListAPIView):
             )
 
         if "lang" in request.GET:
-            queryset = queryset.filter(
-                geom__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")).geom
+            language_id = request.GET.get("lang")
+            language = Language.objects.get(pk=language_id)
+
+            queryset = self.queryset.filter(
+                Q(geom__intersects=language.geom) |
+                Q(language=language)
             )
 
         serializer = self.serializer_class(queryset, many=True)
@@ -349,11 +484,14 @@ class ArtGeoList(generics.ListAPIView):
         geom__isnull=False
     )
     serializer_class = PlaceNameGeoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['language', ]
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):
@@ -419,9 +557,12 @@ class ArtGeoList(generics.ListAPIView):
             )
 
         if "lang" in request.GET:
-            queryset = queryset.filter(
-                geom__intersects=Language.objects.get(
-                    pk=request.GET.get("lang")).geom
+            language_id = request.GET.get("lang")
+            language = Language.objects.get(pk=language_id)
+
+            queryset = self.queryset.filter(
+                Q(geom__intersects=language.geom) |
+                Q(language=language)
             )
 
         serializer = self.serializer_class(queryset, many=True)
