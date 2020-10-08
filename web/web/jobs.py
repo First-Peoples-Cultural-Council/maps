@@ -8,7 +8,6 @@ from language.notifications import send
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
-from arts.management.commands.load_nodes import sync_arts
 
 
 @register_job(
