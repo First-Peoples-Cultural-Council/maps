@@ -735,7 +735,8 @@ export default {
       return !(
         this.$route.name === 'index-languages' ||
         this.$route.name === 'index-heritages' ||
-        this.$route.name === 'index-art'
+        this.$route.name === 'index-art' ||
+        this.$route.name === 'index-grants'
       )
     },
     handleCardClick($event, name, type) {
@@ -1241,37 +1242,20 @@ export default {
       // enumerate ids of the layers
       const toggleableLayerIds = ['fn-nations', 'fn-arts', 'fn-places']
 
-      // set up the corresponding toggle button for each layer
-      for (let i = 0; i < toggleableLayerIds.length; i++) {
-        const id = toggleableLayerIds[i]
+      toggleableLayerIds.forEach(layer => {
+        const visibility = map.getLayoutProperty(layer, 'visibility')
 
-        const link = document.createElement('a')
-        link.href = '#'
-        link.className = 'active'
-        link.textContent = id
+        console.log('VISIB VALUE', layer, ' ', visibility)
 
-        link.onclick = function(e) {
-          const clickedLayer = this.textContent
-          e.preventDefault()
-          e.stopPropagation()
-
-          const visibility = map.getLayoutProperty(clickedLayer, 'visibility')
-
-          // toggle layer visibility by changing the layout object's visibility property
-          if (visibility === 'visible') {
-            map.setLayoutProperty(clickedLayer, 'visibility', 'none')
-            this.className = ''
-          } else {
-            this.className = 'active'
-            map.setLayoutProperty(clickedLayer, 'visibility', 'visible')
-          }
+        // toggle layer visibility by changing the layout object's visibility property
+        if (visibility === 'visible') {
+          map.setLayoutProperty(layer, 'visibility', 'none')
+          this.className = ''
+        } else {
+          this.className = 'active'
+          map.setLayoutProperty(layer, 'visibility', 'visible')
         }
-
-        const layers = document.getElementById('menu')
-        layers.appendChild(link)
-      }
-
-      toggleableLayerIds.forEach(layer => {})
+      })
     },
 
     filterCommunities(bounds) {
@@ -1940,5 +1924,103 @@ export default {
     transform: scale(0.975);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
+}
+
+/********* ART DETAILS CSS STYLE ************/
+.artist-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0em 1em 0.25em 1em;
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+.artist-content-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 1em 0.5em 0.4em 0.5em;
+  overflow: hidden;
+
+  a {
+    text-decoration: underline;
+  }
+}
+
+.field-title {
+  color: #707070;
+  font: Bold 15px/18px Proxima Nova;
+  text-transform: capitalize;
+}
+
+.field-content {
+  display: flex;
+  font: normal 16px/25px Proxima Nova;
+  flex-direction: column;
+  color: #151515;
+}
+
+.field-content font {
+  font: normal 16px/25px Proxima Nova !important;
+}
+
+.field-content a {
+  text-decoration: underline;
+  color: #c46257;
+}
+
+.field-content h1,
+.field-content h2,
+.field-content h3,
+.field-content h4,
+.field-content h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #151515;
+}
+
+.field-content p,
+.field-content span,
+.field-content pre,
+.field-content label,
+.field-content legend {
+  font: normal 16px/25px Proxima Nova !important;
+  color: #151515 !important;
+  background: none !important;
+  overflow-x: hidden;
+}
+
+.artist-content-field > .field-content-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.field-content-list li {
+  display: flex;
+  align-items: center;
+  & > * {
+    margin-right: 0.4em;
+  }
+}
+
+.artist-social-icons {
+  display: flex;
+  padding: 0;
+  justify-content: flex-start;
+  width: 100%;
+  list-style: none;
+  text-align: center;
+}
+
+.artist-social-icons li {
+  width: 25px;
+  height: 25px;
+  margin: 0.25em 0.5em 0.5em 0;
+}
+
+.artist-social-icons img {
+  width: 25px;
+  height: 25px;
 }
 </style>
