@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "language",
     "firstvoices",
     "arts",
+    "grants",
     "users",
     "web",
 ]

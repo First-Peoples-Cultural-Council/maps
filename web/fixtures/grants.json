@@ -1,0 +1,68 @@
+[
+{
+    "model": "grants.grant",
+    "pk": 1,
+    "fields": {
+        "name": "TEST 15-16",
+        "modified": "2020-10-07T17:24:00.729Z",
+        "created": "2020-10-07T17:24:00.729Z",
+        "year": 2015,
+        "language": "Language A",
+        "recipient": "First Name, Last Name",
+        "community_affiliation": "ABC Community",
+        "title": "",
+        "project_brief": "Victoria",
+        "amount": "25000.00",
+        "address": "123 Street",
+        "city": "Victoria",
+        "province": "BC",
+        "postal_code": "A1A1A1",
+        "category": "Category A",
+        "point": "SRID=4326;POINT (-134.6484374999999 63.70472242943321)"
+    }
+},
+{
+    "model": "grants.grant",
+    "pk": 2,
+    "fields": {
+        "name": "TEST 2017-18",
+        "modified": "2020-10-07T17:29:34.582Z",
+        "created": "2020-10-07T17:29:34.582Z",
+        "year": 2017,
+        "language": "Language B",
+        "recipient": "Test Name",
+        "community_affiliation": "DEF Community",
+        "title": "Test",
+        "project_brief": "Nullam finibus eros tellus, et commodo nunc euismod at. Pellentesque in est eu risus euismod sollicitudin. Cras et urna at lectus sodales commodo.",
+        "amount": "18000.00",
+        "address": "456 Street",
+        "city": "Vernon",
+        "province": "BC",
+        "postal_code": "B2B2B2",
+        "category": "Category B",
+        "point": "SRID=4326;POINT (-134.6484375 62.10388252289784)"
+    }
+},
+{
+    "model": "grants.grant",
+    "pk": 3,
+    "fields": {
+        "name": "TEST 2019-20",
+        "modified": "2020-10-07T17:30:49.270Z",
+        "created": "2020-10-07T17:30:49.270Z",
+        "year": 2019,
+        "language": "Language C",
+        "recipient": "Recipient Name",
+        "community_affiliation": "GHI Community",
+        "title": "",
+        "project_brief": "Nunc vehicula dolor ante, sed dictum velit lacinia a. Nam velit magna, pulvinar eu odio id, euismod fringilla nibh. Nullam vitae eros enim. Aliquam bibendum ligula lectus, lacinia interdum elit congue sit amet. Suspendisse consequat porta nisl id tincidunt. Proin mattis quam quis justo interdum luctus.",
+        "amount": "40000.00",
+        "address": "789 Street",
+        "city": "Chase",
+        "province": "BC",
+        "postal_code": "C3C3C3",
+        "category": "Category C",
+        "point": "SRID=4326;POINT (-126.5625 63.07486569058661)"
+    }
+}
+]
