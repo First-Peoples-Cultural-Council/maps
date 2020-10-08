@@ -1,6 +1,7 @@
 <template>
   <div>
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
+    <LoadingModal></LoadingModal>
 
     <div
       id="map-container"
@@ -259,6 +260,7 @@ import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
+import LoadingModal from '@/components/LoadingModal.vue'
 
 import {
   getApiUrl,
@@ -303,7 +305,8 @@ export default {
     ModalNotification,
     LogInOverlay,
     EventOverlay,
-    FullscreenLoading
+    FullscreenLoading,
+    LoadingModal
   },
   head() {
     return {
@@ -1573,7 +1576,7 @@ export default {
 
 /* Global CSS */
 .field-kinds {
-  font: Bold 15px/18px Proxima Nova;
+  font: Bold 13px/15px Proxima Nova;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -1588,6 +1591,7 @@ export default {
   color: #151515;
   margin: 0.1em;
   padding: 0;
+  word-break: break-all;
 }
 
 .content-collapse {
@@ -1790,8 +1794,8 @@ export default {
         max-height: 60px;
         overflow-wrap: break-word;
         word-wrap: break-word;
+        word-break: break-all;
         overflow: hidden;
-
         font: Bold 16px/20px Proxima Nova;
         color: #151515;
         margin: 0.1em;
