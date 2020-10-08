@@ -105,7 +105,6 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  display: table;
 }
 .places-card-header {
   display: table-cell;
