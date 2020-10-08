@@ -10,6 +10,7 @@
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
+        <button @click="toggleLayer">TOGGLE LAYER</button>
       </template>
       <template v-slot:badges>
         <section class="pl-3 pr-3 pt-3"></section>
@@ -88,6 +89,14 @@ export default {
     }
   },
   async mounted() {
+    this.$eventHub.whenMap(map => {
+      this.$root.$emit('mapLoaded')
+    })
+
+    this.$eventHub.whenMap(map => {
+      this.$root.$emit('updateData')
+    })
+
     // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
     this.$store.commit('sidebar/toggleLoading', true)
     const currentPlaces = this.$store.state.places.places
@@ -127,6 +136,11 @@ export default {
     this.loadMoreData()
   },
   methods: {
+    toggleLayer() {
+      this.$eventHub.whenMap(map => {
+        this.$root.$emit('toggleMapLayers')
+      })
+    },
     handleCardClick(e, name) {
       this.$router.push({
         path: `/grants/${encodeFPCC(name)}`

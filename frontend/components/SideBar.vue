@@ -166,6 +166,9 @@ export default {
   },
   methods: {
     handleNavigation(e, data) {
+      this.$eventHub.whenMap(map => {
+        this.$root.$emit('toggleMapLayers')
+      })
       // Recalibrate Vuex Values
       this.resetState()
 
@@ -174,6 +177,7 @@ export default {
         path
       })
     },
+
     toggleFold(e) {
       this.fold = !this.fold
     },
