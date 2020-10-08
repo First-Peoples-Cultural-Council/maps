@@ -10,50 +10,75 @@
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
-        <button @click="toggleLayer">TOGGLE LAYER</button>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 pt-3"></section>
+        <GrantFilter />
+        <section class="pl-3 pr-3 pt-3">
+          <Badge
+            :content="'Grant Type #1'"
+            :number="10"
+            class="cursor-pointer"
+            type="resource"
+            bgcolor="#6c4264"
+            :mode="getBadgeStatus(mode, 'lang')"
+          ></Badge>
+          <Badge
+            :content="'Grant Type #2'"
+            :number="10"
+            class="cursor-pointer"
+            type="resource"
+            bgcolor="#6c4264"
+            :mode="getBadgeStatus(mode, 'lang')"
+          ></Badge>
+        </section>
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(place, index) in paginatedPlaces"
-              :key="index"
+              v-for="(grant, index) in paginatedGrants"
+              :key="`grants-item-${index}`"
               lg="12"
               xl="12"
               md="6"
               sm="6"
             >
-              <PlacesCard
-                :place="place"
+              <GrantsCard
+                :grant="grant"
                 class="mt-2 hover-left-move"
-                @click.native="handleCardClick($event, place.properties.name)"
-              ></PlacesCard>
+                @click.native="handleCardClick($event, grant.name)"
+              ></GrantsCard>
             </b-col>
           </b-row>
         </section>
       </template>
     </SideBar>
+
+    <div v-else-if="this.$route.name === 'index-grants-grants'">
+      <div>
+        <nuxt-child />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
-import PlacesCard from '@/components/places/PlacesCard.vue'
-// import GrantsCard from '@/components/grants/GrantsCard.vue'
+import GrantsCard from '@/components/grants/GrantsCard.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
+import { encodeFPCC } from '@/plugins/utils.js'
+import Badge from '@/components/Badge.vue'
+import GrantFilter from '@/components/CardFilter.vue'
 
 export default {
   components: {
     SideBar,
-    PlacesCard,
     Filters,
-    Accordion
-    // GrantsCard
+    Accordion,
+    GrantsCard,
+    Badge,
+    GrantFilter
   },
   head() {
     return {
@@ -67,8 +92,9 @@ export default {
   },
   data() {
     return {
-      selected: [],
-      accordionContent: 'Grants description goes here',
+      mode: 'All',
+      accordionContent:
+        'Grants description goes here, Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi fugit unde a cupiditate repellat aut quidem consequatur, quisquam labore, ut temporibus libero.',
       maximumLength: 0
     }
   },
@@ -78,17 +104,23 @@ export default {
     next()
   },
   computed: {
-    places() {
-      return this.$store.state.places.places
-    },
-    paginatedPlaces() {
-      return this.places.slice(0, this.maximumLength)
-    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
+    },
+    grantsData() {
+      return Array(50)
+        .fill('')
+        .map((data, index) => {
+          return {
+            name: `Sample Grants-${index}`
+          }
+        })
+    },
+    paginatedGrants() {
+      return this.grantsData.slice(0, this.maximumLength)
     }
   },
-  async mounted() {
+  mounted() {
     this.$eventHub.whenMap(map => {
       this.$root.$emit('mapLoaded')
     })
@@ -99,41 +131,33 @@ export default {
 
     // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
     this.$store.commit('sidebar/toggleLoading', true)
-    const currentPlaces = this.$store.state.places.places
 
-    if (currentPlaces.length === 0) {
-      const heritage = await this.$axios.$get(
-        getApiUrl(`placename-geo?timestamp=${new Date().getTime()}/`)
-      )
-      if (heritage) {
-        // Set Heritage stores
-        this.$store.commit('places/set', heritage.features)
-        this.$store.commit('places/setStore', heritage.features)
-        this.$store.commit('sidebar/toggleLoading', false)
-      } else {
-        this.$store.commit('sidebar/toggleLoading', true)
-      }
-    }
+    //  Simulate fake fetch API
+    setTimeout(() => {
+      this.$store.commit('sidebar/toggleLoading', true)
+    }, 3000)
 
-    // Trigger addeventlistener only if there's Sidebar, used for Pagination
-    const mobileContainer = document.querySelector('#side-inner-collapse')
-    const desktopContainer = document.querySelector('#sidebar-container')
+    if (this.$route.name === 'index-grants') {
+      // Trigger addeventlistener only if there's Sidebar, used for Pagination
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
 
-    const containerArray = [mobileContainer, desktopContainer]
+      const containerArray = [mobileContainer, desktopContainer]
 
-    containerArray.forEach(elem => {
-      elem.addEventListener('scroll', e => {
-        if (
-          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-          elem.scrollTop !== 0
-        ) {
-          if (this.places.length > this.maximumLength) {
-            this.loadMoreData()
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.places.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
-    })
-    this.loadMoreData()
+      this.loadMoreData()
+    }
   },
   methods: {
     toggleLayer() {

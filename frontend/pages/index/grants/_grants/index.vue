@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div v-if="geo_place" class="w-100">
+    <div class="w-100">
       <div
         v-if="!mobileContent"
         class="content-collapse d-none content-mobile-title"
       >
         <div>
           GRANTS:
-          <span class="font-weight-bold">{{ place.name }}</span>
+          <span class="font-weight-bold">{{ grant.name }}</span>
         </div>
         <div
           class="content-collapse-btn"
@@ -31,79 +31,70 @@
           </div>
           <div>
             <GrantsDetailCard
-              :id="place.id"
-              :name="place.name"
-              :server="isServer"
-              :audio-file="audioFile ? getMediaUrl(audioFile, isServer) : null"
-              :allow-edit="isPlaceOwner()"
-              variant="md"
-              :delete-place="isPlaceOwner()"
-              :status="place.status"
+              :name="grant.name"
+              :arttype="'Grants'"
+              :tags="grant.grantTags"
             ></GrantsDetailCard>
           </div>
 
           <hr class="sidebar-divider" />
-          <Filters class="mb-4"></Filters>
+          <div class="grants-detail-container">
+            <section v-if="grant.description" class="artist-content-field">
+              <h5 class="field-title">
+                Grants Description:
+              </h5>
+              <span class="field-content">
+                <span v-html="stringSplit(grant.description)"></span>
+                <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
+                  collapseDescription ? 'read less' : 'read more'
+                }}</a>
+              </span>
+            </section>
+          </div>
         </div>
       </div>
     </div>
-    <ErrorScreen v-else></ErrorScreen>
   </div>
 </template>
 
 <script>
 import GrantsDetailCard from '@/components/grants/GrantsDetailCard.vue'
-import { zoomToPoint } from '@/mixins/map.js'
-import Filters from '@/components/Filters.vue'
 import Logo from '@/components/Logo.vue'
-import ErrorScreen from '@/layouts/error.vue'
-
-import {
-  getApiUrl,
-  encodeFPCC,
-  getMediaUrl,
-  getGenericFileType,
-  makeMarker
-} from '@/plugins/utils.js'
 
 export default {
   components: {
     GrantsDetailCard,
-    Filters,
-    Logo,
-    ErrorScreen
+    Logo
   },
   data() {
     return {
-      showUploadModal: false,
-      closeOverlayContent: false
+      collapseDescription: false,
+      grant: {
+        name: 'Sample Grants Data',
+        type: 'Grants Type',
+        description:
+          'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, laudantium debitis cumque saepe quae unde consectetur in, pariatur quidem quibusdam vel, quos molestiae ipsam iste iusto perferendis. Beatae, necessitatibus dolorum.',
+        grantTags: ['Grants#1', 'Grants#2', 'Grants#3'],
+        other_fields: [
+          {
+            field_name: 'Grants Description',
+            field_content:
+              'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, ipsa. Inventore vel soluta corrupti aliquid autem nostrum recusandae, officiis sint labore nobis quis rerum quod quae atque laboriosam maiores odio.'
+          },
+          {
+            field_name: 'Grants Value',
+            field_content: '1,000,000.00 Dollars'
+          }
+        ]
+      }
     }
-  },
-  beforeRouteLeave(to, from, next) {
-    this.$root.$emit('stopPlaceAudio')
-    next()
   },
   watchQuery: true,
   computed: {
-    placeLanguage() {
-      return this.$store.state.places.placeLanguage
-    },
-    placeCommunity() {
-      return this.$store.state.places.placeCommunity
-    },
-    place() {
-      return this.$store.state.places.place
+    mobileContent() {
+      return this.$store.state.sidebar.mobileContent
     },
 
-    isStaff() {
-      return this.user.is_staff
-    },
-    isSuperUser() {
-      return this.user.is_superuser
-    },
-    user() {
-      return this.$store.state.user.user
-    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
@@ -111,184 +102,32 @@ export default {
       return this.$store.state.user.isLoggedIn
     }
   },
-  watch: {
-    place(newPlace, oldPlace) {
-      if (newPlace !== oldPlace) {
-        // console.log('new Place', newPlace)
-        this.setupMap(newPlace.geom)
-      }
-    }
-  },
-  async asyncData({ params, $axios, store }) {
-    // TODO: it's better to call /placename_by_name or something (new back-end api)
-    const now = new Date()
-    const places = (await $axios.$get(
-      getApiUrl('placename-geo?timestamp=' + now.getTime())
-    )).features
-    const geo_place = places.find(a => {
-      if (a.properties.name) {
-        return encodeFPCC(a.properties.name) === params.placename
-      }
-    })
 
-    if (geo_place) {
-      await Promise.all([
-        store.dispatch('places/getPlace', {
-          id: geo_place.id
-        }),
-        store.dispatch('places/getPlaceMedias', {
-          id: geo_place.id
-        }),
-        store.dispatch('user/getPlacesToVerify'),
-        store.dispatch('user/getMediaToVerify')
-      ])
-
-      if (store.state.user.isLoggedIn) {
-        await Promise.all([store.dispatch('places/getFavourites')])
-      }
-
-      const isServer = !!process.server
-      return {
-        geo_place,
-        isServer
-      }
-    }
-  },
-  mounted() {
-    this.$root.$on('fileUploadedPlaces', r => {
-      this.$store.dispatch('places/getPlaceMedias', {
-        id: this.place.id
-      })
-      this.$store.dispatch('user/getMediaToVerify')
-    })
-  },
-  created() {
-    if (this.geo_place) {
-      // We don't always catch language routing updates, so also zoom to language on create.
-      this.setupMap(this.geo_place.geometry)
-    }
-  },
+  async asyncData({ params, $axios, store }) {},
+  mounted() {},
+  created() {},
   methods: {
-    isMTV(media, mtv) {
-      return mtv.find(m => m.id === media.id)
+    showExpandBtn() {
+      return this.grant.description.length >= 50
     },
-    isMediaCreator(media, user) {
-      if (media.creator && user) {
-        return user.id === media.creator.id || user.id === media.creator
-      }
+    toggleDescription() {
+      this.collapseDescription = !this.collapseDescription
     },
-    handleCreatorClick(e, creator) {
-      this.$router.push({
-        path: `/profile/${creator.id}`
-      })
-    },
-    encodeFPCC,
-    async handleApproval(e, tv, { verify, reject, type }) {
-      const data = {
-        tv,
-        verify,
-        reject,
-        type
-      }
-      const result = await this.$store.dispatch('user/approve', data)
-      if (result.request && result.request.status === 200) {
-        if (type === 'placename') {
-          this.$store.dispatch('user/getPlacesToVerify')
-          await this.$store.dispatch('places/getPlace', {
-            id: this.place.id
-          })
-        }
-        if (type === 'media') {
-          this.$store.dispatch('user/getMediaToVerify')
-          this.$store.dispatch('places/getPlaceMedias', {
-            id: this.place.id
-          })
-        }
-      } else {
-        console.error(result)
-      }
-    },
-    isPlaceOwner() {
-      if (this.place.creator) {
-        if (this.uid === this.place.creator.id) return true
-      }
-      return false
-    },
-    handleImageClick(e, media) {
-      require('basiclightbox/dist/basicLightbox.min.css')
-      const basicLightbox = require('basiclightbox')
-      basicLightbox
-        .create(`<img src="${getMediaUrl(media.media_file, this.isServer)}">`, {
-          closable: true
-        })
-        .show()
-    },
-    setupMap(geom) {
-      this.$eventHub.whenMap(map => {
-        if (this.$route.hash.length <= 1) {
-          if (geom.type === 'Point') {
-            zoomToPoint({ map, geom, zoom: 13 })
-          }
-          if (geom.type === 'Polygon') {
-            map.fitBounds([geom.coordinates[0][0], geom.coordinates[0][2]], {
-              padding: 30
-            })
-          }
-          if (geom.type === 'LineString') {
-            const coordinates = geom.coordinates
-            const mapboxgl = require('mapbox-gl')
-            const bounds = coordinates.reduce(function(bounds, coord) {
-              return bounds.extend(coord)
-            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
-            map.fitBounds(bounds, {
-              padding: 30
-            })
-          }
-        }
-
-        makeMarker(
-          this.geo_place.geometry,
-          'poi_icon.svg',
-          'place-marker'
-        ).addTo(map)
-      })
-    },
-    getCreatorName() {
-      if (!this.creator.first_name && !this.creator.last_name) {
-        return this.creator.username.split('__')[0]
-      }
-
-      if (this.creator.first_name && !this.creator.last_name) {
-        return this.creator.first_name
-      }
-
-      if (!this.creator.first_name && this.creator.last_name) {
-        return this.creator.last_name
-      }
-
-      if (this.creator.first_name && this.creator.last_name) {
-        return `${this.creator.first_name} ${this.creator.last_name}`
-      }
-    },
-    edit() {
-      this.$router.push('/contribute?id=' + this.place.id)
-    },
-    getMediaUrl,
-    getGenericFileType,
-    getHeaderTitle() {
-      return this.place ? this.place.name : 'Placename page not found'
+    stringSplit(string) {
+      const stringValue = this.collapseDescription
+        ? `${string} `
+        : string.replace(/(.{200})..+/, '$1 ...')
+      return stringValue
     }
   },
   head() {
     return {
-      title: this.getHeaderTitle(),
+      title: 'Grants Title goes here',
       meta: [
         {
           hid: `description`,
           name: 'description',
-          content: this.place
-            ? this.place.description
-            : 'Placename page not found.'
+          content: 'Sample Grants Description'
         }
       ]
     }
