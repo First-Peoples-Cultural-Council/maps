@@ -148,8 +148,16 @@ export default {
     },
 
     async uploadNote(formData) {
-      const result = await this.$store.dispatch('file/uploadMedia', formData)
+      const dataObj = {
+        formData,
+        callProgressModal: this.callProgressModal
+      }
+
+      const result = await this.$store.dispatch('file/uploadMedia', dataObj)
       return result
+    },
+    callProgressModal(value) {
+      this.$root.$emit('initiateLoadingModal', value)
     }
   }
 }

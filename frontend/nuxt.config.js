@@ -85,7 +85,8 @@ module.exports = {
     '~/mixins/mixins.js',
     '~/plugins/global',
     '~/plugins/lazyloading',
-    { src: '~plugins/ga.js', mode: 'client' }
+    { src: '~plugins/ga.js', mode: 'client' },
+    { src: '~plugins/progressbar.js', mode: 'client' }
   ],
   /*
    ** Nuxt.js modules
