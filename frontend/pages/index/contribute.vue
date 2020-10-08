@@ -1908,7 +1908,6 @@ export default {
     },
 
     async submitPlacename(e) {
-      console.log(this.getAPIConfig())
       let id
 
       const headers = this.getCookies
@@ -2211,27 +2210,32 @@ export default {
           if (file.creator || file.status) {
             // if media has been created by a creator, it means its existing, so do nothing
           } else {
-            const data = new FormData()
-            data.append('name', file.name)
-            data.append('description', file.description)
-            data.append('file_type', file.file_type)
-            data.append('community_only', file.community_only)
-            data.append('placename', id)
-            data.append(
+            const formData = new FormData()
+            formData.append('name', file.name)
+            formData.append('description', file.description)
+            formData.append('file_type', file.file_type)
+            formData.append('community_only', file.community_only)
+            formData.append('placename', id)
+            formData.append(
               'is_artwork',
               !!(this.isArtist || this.queryType === 'Public Art')
             )
             if (file.url) {
-              data.append('url', file.url)
+              formData.append('url', file.url)
             }
             if (file.media_file) {
-              data.append('media_file', file.media_file)
+              formData.append('media_file', file.media_file)
+            }
+
+            const dataObj = {
+              formData,
+              callProgressModal: this.callProgressModal
             }
 
             try {
               const result = await this.$store.dispatch(
                 'file/uploadMedia',
-                data
+                dataObj
               )
               return result
             } catch (e) {}
