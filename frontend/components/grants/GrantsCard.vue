@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="community-card"
-    @mouseover.prevent="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="community-card">
     <Card :variant="variant">
       <template v-slot:header>
         <div
@@ -11,7 +7,7 @@
           :style="'background-color:' + color"
           :class="{ 'icon-sm': icon === 'small' }"
         >
-          <img src="@/assets/images/community_icon.svg" alt="community" />
+          <img src="@/assets/images/grant_icon.svg" alt="community" />
         </div>
       </template>
       <template v-slot:body>
@@ -20,7 +16,7 @@
             Grants
           </h5>
           <h5 class="field-names">
-            {{ name }}
+            {{ grant.name }}
           </h5>
         </div>
       </template>
@@ -47,10 +43,6 @@ export default {
         return {}
       }
     },
-    name: {
-      type: String,
-      default: ''
-    },
     color: {
       type: String,
       default: 'RGB(255, 255, 255)'
@@ -73,19 +65,7 @@ export default {
       hover: false
     }
   },
-  methods: {
-    handlePronounce() {
-      console.log('Pronounce')
-    },
-    handleMouseOver() {
-      this.hover = true
-      this.$eventHub.revealArea(this.community.point)
-    },
-    handleMouseLeave() {
-      this.hover = false
-      this.$eventHub.doneReveal()
-    }
-  }
+  methods: {}
 }
 </script>
 

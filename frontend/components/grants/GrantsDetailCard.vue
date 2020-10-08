@@ -4,66 +4,32 @@
       class="arts-detail-icon-container"
       :style="'background-color:' + color"
     >
-      <img src="@/assets/images/grant_icon.svg" alt="Places" />
+      <img
+        v-if="arttype.toLowerCase() === 'grants'"
+        src="@/assets/images/resource_icon.svg"
+        alt="Arts"
+      />
     </div>
 
     <div class="arts-detail-text">
       <div>
         <h5 class="field-kind">
-          {{ type }}
-          <b-badge
-            v-if="status"
-            id="tooltip-target-1"
-            class="place-status-badge d-inline-block ml-1"
-            :variant="getVariant(status)"
-            >{{ status | filterStatus }}</b-badge
-          >
-          <b-tooltip
-            v-if="status === 'UN'"
-            target="tooltip-target-1"
-            triggers="hover"
-          >
-            This content has not been verified by a community member or FPCC.
-            Please use "Report" it if it needs to be corrected or removed
-          </b-tooltip>
+          {{ arttype | kind }}
         </h5>
-        <h5 class="field-name">{{ name }}</h5>
+        <h5 class="field-name">
+          {{ name }}
+        </h5>
       </div>
-      <div
-        v-if="audioFile"
-        class="d-inline-block"
-        @click.prevent.stop="handlePronounce"
-      >
-        <CardBadge
-          content="Pronounce"
-          :class="{ 'md-size-badge': variant === 'md' }"
-        ></CardBadge>
-      </div>
-      <div v-if="allowEdit" class="d-inline-block">
-        <CardBadge
-          content="Edit"
-          type="edit"
-          text="Placename"
-          :class="{ 'md-size-badge': variant === 'md' }"
-          @click.native="handleEdit"
-        ></CardBadge>
-      </div>
-      <div v-if="deletePlace" class="d-inline-block">
-        <CardBadge
-          content="Delete"
-          type="delete"
-          text="Placename"
-          :class="{ 'md-size-badge': variant === 'md' }"
-          @click.native="modalShow = true"
-        ></CardBadge>
+      <div class="artist-tags-container">
+        <span v-for="tag in tags" :key="`grants-tag-${tag}`">{{ tag }}</span>
       </div>
     </div>
 
-    <div class="fpcc-card-more" @click.prevent="handleReturn">
+    <div class="fpcc-card-more-art" @click.prevent="handleReturn">
       <img
-        v-if="!hover"
+        v-if="hover"
         class="ml-1"
-        src="@/assets/images/return_icon_hover.svg"
+        src="@/assets/images/return_icon.svg"
         alt="Go"
       />
       <img
@@ -74,28 +40,17 @@
       />
       <span class="ml-1 font-weight-bold">Return</span>
     </div>
-    <b-modal v-model="modalShow" hide-header @ok="handleDelete"
-      >Are you sure you want to delete this place?</b-modal
-    >
   </div>
 </template>
-
 <script>
-import CardBadge from '@/components/CardBadge.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
-
 export default {
-  components: {
-    CardBadge
-  },
+  components: {},
   filters: {
-    filterStatus(d) {
-      return {
-        UN: 'Unverified',
-        RE: 'Rejected',
-        VE: 'Verified',
-        FL: 'Flagged'
-      }[d]
+    kind(d) {
+      if (d === 'public_art') {
+        return 'Public Art'
+      }
+      return d
     }
   },
   props: {
@@ -107,118 +62,36 @@ export default {
       type: String,
       default: 'RGB(255, 255, 255)'
     },
-    type: {
+    arttype: {
       type: String,
-      default: 'Point Of Interest'
+      default: 'Public Art'
     },
-    server: {
-      type: Boolean,
-      default: false
-    },
-    audioFile: {
-      type: String,
-      default: null
-    },
-    id: {
-      type: Number,
-      default: null
-    },
-    allowEdit: {
-      type: Boolean,
-      default: false
-    },
-    variant: {
-      type: String,
-      default: 'sm'
-    },
-    deletePlace: {
-      type: Boolean,
-      default: false
-    },
-    status: {
-      default: '',
-      type: String
+    tags: {
+      type: Array,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
     return {
-      hover: false,
-      modalShow: false,
-      audio: null
+      hover: false
     }
   },
-  mounted() {
-    this.$root.$on('stopPlaceAudio', () => {
-      this.stopAudio()
-    })
-  },
   methods: {
-    getVariant(status) {
-      return {
-        UN: 'info',
-        RE: 'danger',
-        VE: 'primary',
-        FL: 'warning'
-      }[status]
-    },
-    handlePronounce() {
-      if (this.audio && !this.audio.paused) {
-        this.audio.pause()
-        this.audio = null
-        return
-      }
-
-      this.audio = this.audio || new Audio(this.audioFile)
-
-      if (this.audio.paused) {
-        this.audio.play()
-      } else {
-        this.audio.pause()
-      }
-    },
     handleReturn() {
-      if (this.server) {
-        this.$router.push({
-          path: '/heritages'
-        })
-      } else {
-        this.$router.go(-1)
-      }
       this.$root.$emit('resetMap')
-    },
-    handleEdit() {
+      this.$store.commit('sidebar/setDrawerContent', false)
       this.$router.push({
-        path: '/contribute',
-        query: {
-          mode: 'existing',
-          id: this.id
-        }
+        path: '/grants'
       })
-    },
-    async handleDelete(e) {
-      e.preventDefault()
-      await this.$axios.$delete(`${getApiUrl(`placename/${this.id}`)}`, {
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      })
-      this.modalShow = false
-      this.$router.push({
-        path: `/heritages`
-      })
-    },
-    stopAudio() {
-      if (this.audio) {
-        this.audio.pause()
-      }
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .arts-detail-card {
-  cursor: pointer;
   border-bottom: 3px solid #f9f9f9;
   display: flex;
   justify-content: flex-start;
@@ -234,12 +107,18 @@ export default {
   height: 50px;
   width: 50px;
 }
+
+.arts-detail-text {
+  margin-left: 0.5em;
+  width: 65%;
+}
 .arts-detail-icon-container img {
   display: inline-block;
   width: 100%;
   height: 100%;
 }
-.fpcc-card-more {
+.fpcc-card-more-art {
+  cursor: pointer;
   width: 90px;
   background-color: #b47a2b;
   height: 35px;
@@ -256,12 +135,12 @@ export default {
   top: 25%;
 }
 
-.fpcc-card-more:hover {
+.fpcc-card-more-art:hover {
   color: white;
   background-color: #454545;
 }
 
-.fpcc-card-more img {
+.fpcc-card-more-art img {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -270,38 +149,6 @@ export default {
 .fpcc-card {
   border: 0;
   box-shadow: none;
-}
-
-.md-size-badge {
-  margin-top: 0.25em;
-  font-size: 1em;
-  padding: 0.5em;
-}
-
-.place-status-badge {
-  border-radius: 0.2em;
-  font-size: 1.1em;
-  text-transform: none;
-}
-
-.place-status-badge.badge-info {
-  background-color: #cccccc;
-  color: #707070;
-}
-
-.place-status-badge.badge-danger {
-  background-color: #c46257;
-  color: white;
-}
-
-.place-status-badge.badge-warning {
-  background-color: #e6a000;
-  color: white;
-}
-
-.arts-detail-text {
-  margin-left: 0.5em;
-  width: 65%;
 }
 
 .field-kind {
@@ -319,5 +166,31 @@ export default {
   margin: 0.1em;
   padding: 0;
   letter-spacing: 0.5px;
+  width: 95%;
+}
+
+.artist-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.artist-tags-container span {
+  cursor: pointer;
+  flex: 0 1 auto;
+  background: #ddd4c6;
+  border-radius: 2rem;
+  color: #707070;
+  text-transform: uppercase;
+  font: Bold 12px Proxima Nova;
+  margin: 0.25em 0.5em 0.25em 0;
+  padding: 2px 5px;
+  text-align: center;
+
+  &:hover {
+    color: #fff;
+    background-color: #545b62;
+  }
 }
 </style>
