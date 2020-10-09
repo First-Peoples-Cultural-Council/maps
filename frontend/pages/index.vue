@@ -454,7 +454,8 @@ export default {
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event'))
+      $axios.$get(getApiUrl('arts/event')),
+      $axios.$get(getApiUrl('grants'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -465,6 +466,10 @@ export default {
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
+
+    // Set Grants Geo Set
+    store.commit('grants/setGrantsGeo', results[7].features)
+    store.commit('grants/setGrantsGeoStore', results[7])
 
     const taxonomies = [
       ...results[5],
@@ -540,6 +545,9 @@ export default {
         speed: 3
       })
     }
+
+    this.toggleGrantsLayers(to.name)
+
     next()
   },
   created() {
@@ -554,7 +562,13 @@ export default {
 
     this.$root.$on('toggleMapLayers', () => {
       this.$eventHub.whenMap(map => {
-        this.toggleMapLayers(map)
+        // this.toggleGrantsLayers(map)
+      })
+    })
+
+    this.$root.$on('loadGrantsLayer', () => {
+      this.$eventHub.whenMap(map => {
+        this.loadGrantsLayers(map)
       })
     })
 
@@ -709,6 +723,9 @@ export default {
         path: `/claim?email=${email}&key=${key}`
       })
     }
+
+    // Checks if grants page on initial load
+    // this.toggleGrantsLayers(this.$route.name)
   },
   methods: {
     getLoginUrl() {
@@ -975,6 +992,11 @@ export default {
         data: '/api/placename-geo/'
       })
 
+      map.addSource('grants1', {
+        type: 'geojson',
+        data: '/api/grants/'
+      })
+
       layers.layers(map, this)
       this.zoomToHash(map)
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
@@ -1237,8 +1259,8 @@ export default {
       }
     },
 
-    toggleMapLayers(map) {
-      // enumerate ids of the layers
+    toggleGrantsLayers(name) {
+      // enumerate ids of the layers to hide
       const layerIdToHide = [
         'fn-nations',
         'fn-arts',
@@ -1255,15 +1277,11 @@ export default {
       ]
 
       layerIdToHide.forEach(layer => {
-        const visibility = map.getLayoutProperty(layer, 'visibility')
-
-        console.log('VISIB VALUE', layer, ' ', visibility)
-
         // toggle layer visibility by changing the layout object's visibility property
-        if (this.$route.name === 'index-grants') {
-          map.setLayoutProperty(layer, 'visibility', 'none')
+        if (name === 'index-grants' || name === 'index-grants-grants') {
+          this.map.setLayoutProperty(layer, 'visibility', 'none')
         } else {
-          map.setLayoutProperty(layer, 'visibility', 'visible')
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
         }
       })
     },
