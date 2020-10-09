@@ -33,18 +33,25 @@
             <GrantsDetailCard
               :name="grant.name"
               :arttype="'Grants'"
-              :tags="grant.grantTags"
+              :tags="[]"
             ></GrantsDetailCard>
           </div>
-
-          <hr class="sidebar-divider" />
           <div class="grants-detail-container">
-            <section v-if="grant.description" class="artist-content-field">
+            <section class="artist-content-field">
+              <h5 class="field-title">
+                Amount:
+              </h5>
+              <span class="field-content">
+                <span> {{ grant.amount }}</span>
+              </span>
+            </section>
+
+            <section v-if="grant.project_brief" class="artist-content-field">
               <h5 class="field-title">
                 Grants Description:
               </h5>
               <span class="field-content">
-                <span v-html="stringSplit(grant.description)"></span>
+                <span v-html="stringSplit(grant.project_brief)"></span>
                 <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
                   collapseDescription ? 'read less' : 'read more'
                 }}</a>
@@ -61,6 +68,9 @@
 import GrantsDetailCard from '@/components/grants/GrantsDetailCard.vue'
 import Logo from '@/components/Logo.vue'
 
+import { zoomToPoint } from '@/mixins/map.js'
+import { getApiUrl, encodeFPCC, makeMarker } from '@/plugins/utils.js'
+
 export default {
   components: {
     GrantsDetailCard,
@@ -68,25 +78,7 @@ export default {
   },
   data() {
     return {
-      collapseDescription: false,
-      grant: {
-        name: 'Sample Grants Data',
-        type: 'Grants Type',
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, laudantium debitis cumque saepe quae unde consectetur in, pariatur quidem quibusdam vel, quos molestiae ipsam iste iusto perferendis. Beatae, necessitatibus dolorum.',
-        grantTags: ['Grants#1', 'Grants#2', 'Grants#3'],
-        other_fields: [
-          {
-            field_name: 'Grants Description',
-            field_content:
-              'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, ipsa. Inventore vel soluta corrupti aliquid autem nostrum recusandae, officiis sint labore nobis quis rerum quod quae atque laboriosam maiores odio.'
-          },
-          {
-            field_name: 'Grants Value',
-            field_content: '1,000,000.00 Dollars'
-          }
-        ]
-      }
+      collapseDescription: false
     }
   },
   watchQuery: true,
@@ -100,15 +92,53 @@ export default {
     },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
+    },
+    grants() {
+      return this.$store.state.grants.grantsGeo
     }
   },
 
-  async asyncData({ params, $axios, store }) {},
+  async asyncData({ params, $axios, store }) {
+    const now = new Date()
+
+    const grants = await $axios.$get(getApiUrl(`grants`))
+
+    console.log(params.grants, grants)
+    const grantFind = grants.features.find(a => {
+      if (a.properties.name) {
+        return encodeFPCC(a.properties.name) === params.grants
+      }
+    })
+
+    const grant = await $axios.$get(
+      getApiUrl(`grants/${grantFind.id}?timestamp=` + now.getTime())
+    )
+
+    console.log(grant)
+
+    return {
+      grant
+    }
+  },
   mounted() {},
-  created() {},
+  created() {
+    this.setupMap()
+  },
   methods: {
+    setupMap() {
+      this.$eventHub.whenMap(map => {
+        if (this.$route.hash.length <= 1) {
+          if (this.grant.point)
+            zoomToPoint({ map, geom: this.grant.point, zoom: 11 })
+        }
+        if (this.grant.point) {
+          const icon = 'grant_icon.svg'
+          makeMarker(this.grant.point, icon, 'grant-marker').addTo(map)
+        }
+      })
+    },
     showExpandBtn() {
-      return this.grant.description.length >= 50
+      return this.grant.project_brief.length >= 50
     },
     toggleDescription() {
       this.collapseDescription = !this.collapseDescription

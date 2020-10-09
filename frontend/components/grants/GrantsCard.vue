@@ -16,7 +16,7 @@
             Grants
           </h5>
           <h5 class="field-names">
-            {{ grant.name }}
+            {{ grant.properties.name }}
           </h5>
         </div>
       </template>

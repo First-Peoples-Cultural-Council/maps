@@ -36,7 +36,7 @@
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(grant, index) in paginatedGrants"
+              v-for="(grant, index) in grants"
               :key="`grants-item-${index}`"
               lg="12"
               xl="12"
@@ -46,7 +46,7 @@
               <GrantsCard
                 :grant="grant"
                 class="mt-2 hover-left-move"
-                @click.native="handleCardClick($event, grant.name)"
+                @click.native="handleCardClick($event, grant.properties.name)"
               ></GrantsCard>
             </b-col>
           </b-row>
@@ -116,6 +116,9 @@ export default {
           }
         })
     },
+    grants() {
+      return this.$store.state.grants.grantsGeo
+    },
     paginatedGrants() {
       return this.grantsData.slice(0, this.maximumLength)
     }
@@ -136,6 +139,9 @@ export default {
     setTimeout(() => {
       this.$store.commit('sidebar/toggleLoading', true)
     }, 3000)
+
+    // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
+    this.$store.commit('sidebar/toggleLoading', true)
 
     if (this.$route.name === 'index-grants') {
       // Trigger addeventlistener only if there's Sidebar, used for Pagination
