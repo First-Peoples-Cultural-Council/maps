@@ -322,6 +322,7 @@ export default {
     },
     redirectGrants() {
       this.$router.push('/grants')
+      this.closeNav()
     }
   }
 }
