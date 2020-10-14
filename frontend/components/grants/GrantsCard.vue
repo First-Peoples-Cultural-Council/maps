@@ -1,41 +1,27 @@
 <template>
-  <div class="community-card">
-    <Card :variant="variant">
-      <template v-slot:header>
-        <div
-          class="community-icon-container"
-          :style="'background-color:' + color"
-          :class="{ 'icon-sm': icon === 'small' }"
-        >
-          <img src="@/assets/images/grant_icon.svg" alt="community" />
-        </div>
-      </template>
-      <template v-slot:body>
-        <div>
-          <h5 class="field-kinds">
-            Grants
-          </h5>
-          <h5 class="field-names">
-            {{ grant.properties.name }}
-          </h5>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div v-if="go" class="fpcc-card-more">
-          <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
-          <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
-        </div>
-      </template>
-    </Card>
+  <div class="grants-card">
+    <div>
+      <h5 class="grant-title">
+        {{ grant.properties.name }}
+      </h5>
+      <div class="grant-tag-container">
+        <span class="grant-tag">
+          Organization and Collectives
+        </span>
+        <span class="grant-tag-date"> 2019 </span>
+      </div>
+    </div>
+
+    <div class="grant-card-more">
+      <img v-if="!hover" src="@/assets/images/go_icon_hover.svg" alt="Go" />
+      <img v-else src="@/assets/images/go_icon_hover.svg" alt="Go" />
+    </div>
   </div>
 </template>
 
 <script>
-import Card from '@/components/Card.vue'
 export default {
-  components: {
-    Card
-  },
+  components: {},
   props: {
     grant: {
       type: Object,
@@ -69,36 +55,54 @@ export default {
 }
 </script>
 
-<style>
-.community-card {
-  cursor: pointer;
-}
-.community-icon-container {
-  background-color: black;
-  border-radius: 50%;
-  height: 30px;
-  width: 30px;
-}
-.community-icon-container img {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-}
-.fpcc-card-more {
-  background-color: #b47a2b;
+<style lang="scss">
+.grants-card {
   display: flex;
   align-items: center;
-  height: 35px;
-  justify-content: center;
-  border-top-left-radius: 1em;
-  border-bottom-left-radius: 1em;
-}
-.fpcc-card:hover .fpcc-card-more {
-  background-color: #00333a;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ebe6dc;
+  padding: 0.5em 0em 0.5em 0.5em;
+  border-radius: 0.25em;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
+
+  .grant-title {
+    font: Bold 16px/18px Proxima Nova;
+    color: #707070;
+    margin: 0.1em;
+    padding: 0;
+  }
+
+  &:hover {
+    border: 1px solid #b57936;
+
+    .fpcc-card-more {
+      background-color: #00333a;
+    }
+  }
 }
 
-.community-icon-container.icon-sm {
-  width: 30px;
-  height: 30px;
+.grant-tag-container {
+  display: flex;
+  margin: 1em 0;
+
+  & > span {
+    margin-right: 1em;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    font-weight: 800;
+  }
+
+  .grant-tag {
+    background-color: #7d6799;
+    color: #fff;
+  }
+
+  .grant-tag-date {
+    background-color: #ddd4c6;
+    color: #000;
+  }
 }
 </style>
