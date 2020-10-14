@@ -75,7 +75,7 @@ module.exports = {
    ** Global CSS
    */
   css: [
-    '@/assets/styles/sass/global.sass',
+    '@/assets/styles/sass/index.scss',
     '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
   ],
   /*

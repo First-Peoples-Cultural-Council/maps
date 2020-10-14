@@ -168,6 +168,7 @@ export default {
         path
       })
     },
+
     toggleFold(e) {
       this.fold = !this.fold
     },
