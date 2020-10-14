@@ -12,24 +12,23 @@
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <GrantFilter />
         <section class="pl-3 pr-3 pt-3">
-          <Badge
-            :content="'Grant Type #1'"
-            :number="10"
-            class="cursor-pointer"
-            type="resource"
-            bgcolor="#6c4264"
-            :mode="getBadgeStatus(mode, 'lang')"
-          ></Badge>
-          <Badge
-            :content="'Grant Type #2'"
-            :number="10"
-            class="cursor-pointer"
-            type="resource"
-            bgcolor="#6c4264"
-            :mode="getBadgeStatus(mode, 'lang')"
-          ></Badge>
+          <span class="field-kinds">GRANT CATEGORY</span>
+          <BadgeFilter
+            v-for="badge in grantBadges"
+            :key="`badge-grant-${badge.name}`"
+            class="mt-2 cursor-pointer"
+            :color="badge.color"
+          >
+            <template v-slot:badge>
+              <Badge
+                :content="badge.name"
+                :number="'10'"
+                :bgcolor="badge.color"
+                :mode="getBadgeStatus(mode, badge.mode)"
+              ></Badge>
+            </template>
+          </BadgeFilter>
         </section>
       </template>
       <template v-slot:cards>
@@ -42,10 +41,10 @@
               xl="12"
               md="6"
               sm="6"
+              class="mt-3 hover-left-move"
             >
               <GrantsCard
                 :grant="grant"
-                class="mt-2 hover-left-move"
                 @click.native="handleCardClick($event, grant.properties.name)"
               ></GrantsCard>
             </b-col>
@@ -66,10 +65,10 @@
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
-import Filters from '@/components/Filters.vue'
+import Filters from '@/components/grants/GrantsFilter.vue'
 import { encodeFPCC } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
-import GrantFilter from '@/components/CardFilter.vue'
+import BadgeFilter from '@/components/BadgeFilter.vue'
 
 export default {
   components: {
@@ -78,7 +77,7 @@ export default {
     Accordion,
     GrantsCard,
     Badge,
-    GrantFilter
+    BadgeFilter
   },
   head() {
     return {
@@ -95,7 +94,19 @@ export default {
       mode: 'All',
       accordionContent:
         'Grants description goes here, Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi fugit unde a cupiditate repellat aut quidem consequatur, quisquam labore, ut temporibus libero.',
-      maximumLength: 0
+      maximumLength: 0,
+      grantBadges: [
+        {
+          name: 'Aboriginal Youth in the Arts',
+          color: '#3185CE',
+          mode: 'grants'
+        },
+        {
+          name: 'Arts Administrator Internships',
+          color: '#4FA89D',
+          mode: 'grants'
+        }
+      ]
     }
   },
   beforeRouteLeave(to, from, next) {
