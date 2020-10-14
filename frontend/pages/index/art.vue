@@ -113,21 +113,6 @@
               ></Badge>
             </template>
           </BadgeFilter>
-
-          <!-- Grant Badge Filter -->
-          <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
-            <template v-slot:badge>
-              <Badge
-                content="Grants"
-                :number="grantsCount"
-                class="cursor-pointer"
-                bgcolor="#008CA9"
-                type="org"
-                :mode="getBadgeStatus(filterMode, 'grant')"
-                @click.native.prevent="badgeClick($event, 'grant')"
-              ></Badge>
-            </template>
-          </BadgeFilter> -->
         </section>
       </template>
       <template v-slot:cards>
@@ -193,7 +178,7 @@ import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
-import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtistFilter from '@/components/CardFilter.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {

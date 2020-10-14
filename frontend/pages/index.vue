@@ -454,7 +454,8 @@ export default {
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event'))
+      $axios.$get(getApiUrl('arts/event')),
+      $axios.$get(getApiUrl('grants'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -465,6 +466,10 @@ export default {
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
+
+    // Set Grants Geo Set
+    store.commit('grants/setGrantsGeo', results[7].features)
+    store.commit('grants/setGrantsGeoStore', results[7])
 
     const taxonomies = [
       ...results[5],
@@ -540,6 +545,9 @@ export default {
         speed: 3
       })
     }
+
+    this.toggleGrantsLayers(to.name)
+
     next()
   },
   created() {
@@ -549,6 +557,18 @@ export default {
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
         this.updateData(map)
+      })
+    })
+
+    this.$root.$on('toggleMapLayers', () => {
+      this.$eventHub.whenMap(map => {
+        // this.toggleGrantsLayers(map)
+      })
+    })
+
+    this.$root.$on('loadGrantsLayer', () => {
+      this.$eventHub.whenMap(map => {
+        this.loadGrantsLayers(map)
       })
     })
 
@@ -703,6 +723,9 @@ export default {
         path: `/claim?email=${email}&key=${key}`
       })
     }
+
+    // Checks if grants page on initial load
+    // this.toggleGrantsLayers(this.$route.name)
   },
   methods: {
     getLoginUrl() {
@@ -791,7 +814,6 @@ export default {
         for (let i = 0; i < features.length; i++) {
           const coords = features[i].geometry.coordinates
           const props = features[i].properties
-
           if (!props.cluster) continue
           const id = props.cluster_id
 
@@ -968,6 +990,12 @@ export default {
         type: 'geojson',
         data: '/api/placename-geo/'
       })
+
+      map.addSource('grants1', {
+        type: 'geojson',
+        data: '/api/grants/'
+      })
+
       layers.layers(map, this)
       this.zoomToHash(map)
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
@@ -1176,6 +1204,7 @@ export default {
       ).active
 
       const bounds = map.getBounds()
+
       this.$store.commit(
         'languages/set',
         filterLanguages(
@@ -1187,7 +1216,7 @@ export default {
           sleepingLayer
         )
       )
-      // console.log('This lanuages', this.languages)
+
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
@@ -1229,22 +1258,29 @@ export default {
       }
     },
 
-    toggleMapLayers(map) {
-      // enumerate ids of the layers
-      const toggleableLayerIds = ['fn-nations', 'fn-arts', 'fn-places']
+    toggleGrantsLayers(name) {
+      // enumerate ids of the layers to hide
+      const layerIdToHide = [
+        'fn-nations',
+        'fn-arts',
+        'fn-places',
+        'fn-places-geom-labels',
+        'fn-places-poly',
+        'fn-places-lines',
+        'fn-arts-clusters-text',
+        'fn-arts-clusters',
+        'fn-lang-area-outlines-1',
+        'fn-lang-areas-highlighted',
+        'fn-lang-area-outlines-fade',
+        'fn-lang-areas-fill'
+      ]
 
-      toggleableLayerIds.forEach(layer => {
-        const visibility = map.getLayoutProperty(layer, 'visibility')
-
-        console.log('VISIB VALUE', layer, ' ', visibility)
-
+      layerIdToHide.forEach(layer => {
         // toggle layer visibility by changing the layout object's visibility property
-        if (visibility === 'visible') {
-          map.setLayoutProperty(layer, 'visibility', 'none')
-          this.className = ''
+        if (name === 'index-grants' || name === 'index-grants-grants') {
+          this.map.setLayoutProperty(layer, 'visibility', 'none')
         } else {
-          this.className = 'active'
-          map.setLayoutProperty(layer, 'visibility', 'visible')
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
         }
       })
     },
@@ -1593,425 +1629,5 @@ export default {
     width: 75%;
     font-size: 0.8em;
   }
-}
-
-/* Global CSS */
-.field-kinds {
-  font: Bold 13px/15px Proxima Nova;
-  color: #707070;
-  opacity: 1;
-  text-transform: uppercase;
-  margin: 0.1em;
-  padding: 0;
-}
-
-.field-names {
-  font-family: 'Proxima Nova', sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: #151515;
-  margin: 0.1em;
-  padding: 0;
-  word-break: break-all;
-}
-
-.content-collapse {
-  position: relative;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0.75em;
-  margin: 0 0.75em;
-}
-
-.content-collapse-btn {
-  position: fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #fff;
-  left: 50%;
-  bottom: 75px;
-  z-index: 9999999999;
-  border: 2.5px solid #b57936;
-  animation: hover 2.5s infinite;
-}
-
-/* Arts Drawer */
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
-@media (max-width: 992px) {
-  .sidebar-side-panel {
-    display: block !important;
-    position: initial;
-    width: 100%;
-    height: 100vh;
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    z-index: 999999;
-  }
-}
-
-/* Sidebar style when screen width is 1300px and drawer is open */
-@media (min-width: 993px) and (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
-}
-
-/* Main Arts Drawer */
-
-.panel-collapsable {
-  width: 15px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 425px;
-  background: #f9f9f9 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
-  border: 1px solid #d7d7de;
-}
-
-.btn-collapse {
-  padding: 1em;
-  margin-top: 1.5em;
-  margin-left: 0.8em;
-  width: 100px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top-right-radius: 1em;
-  border-bottom-right-radius: 1em;
-  color: #fff;
-  background-color: #b47a2b;
-}
-
-.btn-collapse img {
-  margin-right: 0.5em;
-}
-
-/* Artwork card */
-.artist-card {
-  cursor: pointer;
-  display: flex;
-  position: relative;
-  border-radius: 0.25em;
-  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
-}
-
-.arts-card-container {
-  width: 100%;
-  height: 200px;
-  flex-direction: column;
-  margin: 0 0.25em;
-  overflow: hidden;
-}
-
-/* Bookmark ribbon */
-.arts-card-tag {
-  position: absolute;
-  right: 0;
-  top: 5px;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  border-right: 0;
-  background: #b57936;
-  width: 40%;
-  padding: 2px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: bold;
-  text-align: center;
-  text-transform: capitalize;
-}
-.arts-card-tag img {
-  width: 17px;
-  height: 15px;
-}
-
-.arts-card-body {
-  width: 100%;
-  height: 150px;
-  overflow: hidden;
-}
-
-.card-teaser-img {
-  object-fit: fill;
-  width: 100%;
-  height: 100%;
-}
-
-.arts-card-footer {
-  font-family: 'Lato', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0.25em;
-  height: auto;
-}
-
-.artist-name a {
-  font-weight: normal;
-  color: #007bff !important;
-
-  &:hover {
-    text-decoration: underline !important;
-  }
-}
-
-/* Landscape Layout */
-.arts-card-landscape {
-  display: flex;
-  width: 100%;
-  height: 150px;
-  padding: 0;
-  border-radius: 0.25em;
-
-  .arts-card-body {
-    flex-basis: 45%;
-    overflow: hidden;
-
-    .card-teaser-img {
-      object-fit: cover;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-    }
-    .card-teaser-null {
-      object-fit: none;
-      background-color: rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  .arts-card-right {
-    flex-basis: 55%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    box-sizing: border-box;
-    padding-left: 0.5em;
-    color: #151515;
-
-    .arts-card-footer {
-      .artist-title {
-        width: 100%;
-        max-height: 60px;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        word-break: break-all;
-        overflow: hidden;
-        font: Bold 16px/20px Proxima Nova;
-        color: #151515;
-        margin: 0.1em;
-        padding: 0;
-      }
-      .artist-name {
-        font-size: 0.7em;
-        font-weight: 800;
-        color: #707070;
-      }
-    }
-
-    .arts-card-more {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .arts-card-tag {
-        border-radius: 20px;
-        position: initial;
-        padding: 3px 8px;
-        color: #fff;
-        font-size: 0.8em;
-        font-weight: 800;
-        border: 0;
-        width: auto;
-      }
-
-      .fpcc-card-more {
-        width: 55px;
-        background-color: #b57936;
-        display: flex;
-        align-items: center;
-        height: 35px;
-        justify-content: center;
-        border-top-left-radius: 1em;
-        border-bottom-left-radius: 1em;
-      }
-    }
-  }
-
-  &:hover {
-    border: 1px solid #b57936;
-
-    .fpcc-card-more {
-      background-color: #3d3d3d !important;
-    }
-  }
-}
-
-.card-selected {
-  border: 1px solid #b57936;
-  transform: translateX(10px);
-
-  .fpcc-card-more {
-    background-color: #3d3d3d !important;
-  }
-}
-
-/* Animation  */
-
-@keyframes hover {
-  0% {
-    transform: translateY(0);
-  }
-
-  25% {
-    transform: translateY(5px);
-  }
-
-  50% {
-    transform: translateY(0);
-  }
-
-  70% {
-    transform: translateY(5px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes shadowpulse {
-  0% {
-    transform: scale(0.975);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-  }
-
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    transform: scale(0.975);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  }
-}
-
-/********* ART DETAILS CSS STYLE ************/
-.artist-content-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 0em 1em 0.25em 1em;
-  font-family: 'Proxima Nova', sans-serif;
-}
-
-.artist-content-field {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  margin: 1em 0.5em 0.4em 0.5em;
-  overflow: hidden;
-
-  a {
-    text-decoration: underline;
-  }
-}
-
-.field-title {
-  color: #707070;
-  font: Bold 15px/18px Proxima Nova;
-  text-transform: capitalize;
-}
-
-.field-content {
-  display: flex;
-  font: normal 16px/25px Proxima Nova;
-  flex-direction: column;
-  color: #151515;
-}
-
-.field-content font {
-  font: normal 16px/25px Proxima Nova !important;
-}
-
-.field-content a {
-  text-decoration: underline;
-  color: #c46257;
-}
-
-.field-content h1,
-.field-content h2,
-.field-content h3,
-.field-content h4,
-.field-content h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #151515;
-}
-
-.field-content p,
-.field-content span,
-.field-content pre,
-.field-content label,
-.field-content legend {
-  font: normal 16px/25px Proxima Nova !important;
-  color: #151515 !important;
-  background: none !important;
-  overflow-x: hidden;
-}
-
-.artist-content-field > .field-content-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.field-content-list li {
-  display: flex;
-  align-items: center;
-  & > * {
-    margin-right: 0.4em;
-  }
-}
-
-.artist-social-icons {
-  display: flex;
-  padding: 0;
-  justify-content: flex-start;
-  width: 100%;
-  list-style: none;
-  text-align: center;
-}
-
-.artist-social-icons li {
-  width: 25px;
-  height: 25px;
-  margin: 0.25em 0.5em 0.5em 0;
-}
-
-.artist-social-icons img {
-  width: 25px;
-  height: 25px;
 }
 </style>
