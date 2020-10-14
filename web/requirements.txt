@@ -11,3 +11,4 @@ cognitojwt==1.1.0
 django-apscheduler==0.3.0
 cryptography==2.8
 django-filter==2.2.0
+pandas==1.1.3
