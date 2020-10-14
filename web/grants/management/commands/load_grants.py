@@ -6,6 +6,8 @@ import csv
 
 from web import dedruplify
 
+from grants.models import Grant
+
 
 class Command(BaseCommand):
     help = "Load grants from old arts database."
@@ -22,8 +24,10 @@ def sync_grants():
         os.environ["ARTSMAP_PW"],
         os.environ["ARTSMAP_DB"],
     )
-    # c.update()
-    c.load_grants()
+    grants = Grant.objects.all()
+    grants.delete()
+
+    c.load_grants_from_arts_db()
 
 
 NEW_CATEGORIES = {
@@ -48,7 +52,7 @@ CATEGORY_ABBREVIATIONS = {
 
 class Client(dedruplify.DeDruplifierClient):
 
-    def load_grants(self):
+    def load_grants_from_arts_db(self):
         grants = self.get_grants()
 
         grant_data = {}
@@ -85,7 +89,7 @@ class Client(dedruplify.DeDruplifierClient):
                 "", # For language
                 f"{grant_data['recipient']}",
                 f"{grant_data['affiliation']}",
-                f"{grant_title}", # For title
+                f"{grant_title }", # For title
                 f"{grant_data['project_brief']}",
                 "", # For Amount
                 f"{grant_data['address']}",
@@ -96,6 +100,29 @@ class Client(dedruplify.DeDruplifierClient):
                 f"{grant_data['category']}",
                 f"{grant_id}"
             ])
+
+            point = None
+            if location and \
+               location.get("latitude", None) and \
+               location.get("latitude", None):
+                point = Point(
+                   float(location.get("longitude")),
+                   float(location.get("latitude"))
+                )
+
+            Grant.objects.create(
+                grant=grant_data['grant'],
+                year=int(grant_data["year"]) if grant_data["year"] else None,
+                recipient=grant_data["recipient"],
+                community_affiliation=grant_data["affiliation"],
+                project_brief=grant_data["project_brief"],
+                address=grant_data["address"],
+                city=grant_data["city"],
+                province=grant_data["province"],
+                postal_code=grant_data["postal_code"].replace(" ", ""),
+                category=grant_data["category"],
+                point=point
+            )
     
     def update_recipient(self, recipient, title, grant_id):
         is_new_grant = grant_id > 1190
