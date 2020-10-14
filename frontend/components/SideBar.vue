@@ -134,12 +134,6 @@ export default {
           name: 'Heritage',
           path: '/heritages',
           pathName: 'index-heritages-heritage'
-        },
-        {
-          id: 3,
-          name: 'Grants',
-          path: '/grants',
-          pathName: 'index-grants-grants'
         }
       ],
       fold: true
