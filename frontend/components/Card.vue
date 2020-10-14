@@ -34,6 +34,11 @@ export default {
   display: table;
   height: 100%;
 }
+
+.fpcc-card:hover {
+  border: 1px solid #b57936;
+}
+
 .fpcc-card-header {
   display: table-cell;
   vertical-align: middle;
@@ -53,9 +58,5 @@ export default {
 
 .fpcc-card-white {
   background-color: White;
-}
-
-.fpcc-card:hover {
-  border: 1px solid #b57936;
 }
 </style>
