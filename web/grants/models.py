@@ -25,7 +25,8 @@ optional = {
 }
 
 
-class Grant(BaseModel):
+class Grant(models.Model):
+    grant = models.CharField(max_length=255, **optional)
     year = models.IntegerField(
         validators=[MinValueValidator(0)],
         **optional)
@@ -51,3 +52,11 @@ class Grant(BaseModel):
     postal_code = models.CharField(max_length=6, **optional)
     category = models.CharField(max_length=255, **optional)
     point = models.PointField(null=True, default=None)
+    modified = models.DateTimeField("date modified", auto_now=True)
+    created = models.DateTimeField("date created", auto_now_add=True)
+
+    def __str__(self):
+        return self.grant
+
+    class Meta:
+        ordering = ['grant']
