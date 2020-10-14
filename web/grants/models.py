@@ -54,3 +54,9 @@ class Grant(models.Model):
     point = models.PointField(null=True, default=None)
     modified = models.DateTimeField("date modified", auto_now=True)
     created = models.DateTimeField("date created", auto_now_add=True)
+
+    def __str__(self):
+        return self.grant
+
+    class Meta:
+        ordering = ['grant']
