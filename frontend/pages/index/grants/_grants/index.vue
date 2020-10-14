@@ -103,7 +103,6 @@ export default {
 
     const grants = await $axios.$get(getApiUrl(`grants`))
 
-    console.log(params.grants, grants)
     const grantFind = grants.features.find(a => {
       if (a.properties.name) {
         return encodeFPCC(a.properties.name) === params.grants
@@ -113,8 +112,6 @@ export default {
     const grant = await $axios.$get(
       getApiUrl(`grants/${grantFind.id}?timestamp=` + now.getTime())
     )
-
-    console.log(grant)
 
     return {
       grant
