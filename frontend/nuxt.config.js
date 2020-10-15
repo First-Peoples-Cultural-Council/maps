@@ -86,7 +86,8 @@ module.exports = {
     '~/plugins/global',
     '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' },
-    { src: '~plugins/progressbar.js', mode: 'client' }
+    { src: '~plugins/progressbar.js', mode: 'client' },
+    { src: '~plugins/histogram.js', mode: 'client' }
   ],
   /*
    ** Nuxt.js modules

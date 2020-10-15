@@ -23,7 +23,7 @@
             <template v-slot:badge>
               <Badge
                 :content="badge.name"
-                :number="'10'"
+                :number="10"
                 :bgcolor="badge.color"
                 :mode="getBadgeStatus(mode, badge.mode)"
               ></Badge>
@@ -132,6 +132,9 @@ export default {
     },
     paginatedGrants() {
       return this.grantsData.slice(0, this.maximumLength)
+    },
+    getGrantsDateFilter() {
+      return this.$store.grants.filterDate
     }
   },
   mounted() {
