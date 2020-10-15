@@ -20,7 +20,7 @@
         <div class="date-container">
           <span>From</span>
           <b-form-input
-            v-model="fromValue"
+            v-model.number="fromValue"
             class="date-input"
             maxlength="4"
           ></b-form-input>
@@ -29,7 +29,7 @@
         <div class="date-container">
           <span>To</span>
           <b-form-input
-            v-model="toValue"
+            v-model.number="toValue"
             class="date-input"
             maxlength="4"
           ></b-form-input>
@@ -97,6 +97,25 @@ export default {
       console.log(value)
       const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
       this.$store.commit('grants/setGrantFilterDate', dateValue)
+    },
+    handleFromUpdate(value) {
+      const minimumDate = this.prettify(this.getMinimumDate)
+      if (value < minimumDate) {
+        this.fromValue = minimumDate
+      } else {
+        this.fromValue = value
+      }
+
+      this.$store.commit('grants/setFromDate', this.fromValue)
+    },
+    handleToUpdate(value) {
+      const maxDate = this.prettify(this.getMinimumDate)
+      if (value > maxDate) {
+        this.toValue = maxDate
+      } else {
+        this.toValue = value
+      }
+      this.$store.commit('grants/setFromDate', this.toValue)
     }
   }
 }
