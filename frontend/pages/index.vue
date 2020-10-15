@@ -280,6 +280,25 @@ const renderArtDetail = props => {
         </div>`
 }
 
+const renderGrantDetail = props => {
+  return `
+    <div class="grant-title"> Grant Title Here </div>
+      <div class="grant-content">
+        <span class="grant-description"> Grants Description goes here Lorem ipsum dolor sit amet consectetur, adipisicing elit!</span>
+        <div class="grant-footer">
+          <div class="footer-item">
+            <span class="footer-item-title"> AFFILIATION </span>
+            <span class="footer-item-content"> Dene and Cree </span>
+          </div>
+          <div class="footer-item">
+            <span class="footer-item-title"> YEAR </span>
+            <span class="footer-item-content"> 2018 </span>
+          </div>
+        </div>
+      </div>
+  `
+}
+
 const markers = {}
 let markersOnScreen = {}
 
@@ -560,18 +579,6 @@ export default {
       })
     })
 
-    this.$root.$on('toggleMapLayers', () => {
-      this.$eventHub.whenMap(map => {
-        // this.toggleGrantsLayers(map)
-      })
-    })
-
-    this.$root.$on('loadGrantsLayer', () => {
-      this.$eventHub.whenMap(map => {
-        this.loadGrantsLayers(map)
-      })
-    })
-
     setTimeout(() => {
       if (this.user) {
         this.showFullscreenLoading = false
@@ -723,9 +730,6 @@ export default {
         path: `/claim?email=${email}&key=${key}`
       })
     }
-
-    // Checks if grants page on initial load
-    // this.toggleGrantsLayers(this.$route.name)
   },
   methods: {
     getLoginUrl() {
@@ -887,6 +891,9 @@ export default {
             })
           }
         }
+
+        // console.log('FEATURE IS', feature.geometry, feature.layer.id)
+
         if (feature.layer.id === 'fn-arts-clusters') {
           // console.log(feature)
           const zoom = map.getZoom()
@@ -901,6 +908,7 @@ export default {
             })
           } else {
             this.showClusterModal(feature, e.lngLat, map)
+            // this.showGrantsModal(feature, e.lngLat, map)
           }
           done = true
         }
@@ -942,6 +950,49 @@ export default {
                     <h4>Art Here:</h4>
 
                     ${html}
+                    <!-- TODO scroll indicator -->
+                    <div class="scroll-indicator">
+                        <i class="fas fa-angle-down float"></i>
+                    </div>
+
+                    </div>`
+              )
+              .addTo(map)
+          }
+        )
+    },
+
+    showGrantsModal(feature, latLng, map) {
+      const clusterId = feature.properties.cluster_id
+      map
+        .getSource('arts1')
+        .getClusterLeaves(
+          clusterId,
+          feature.properties.point_count,
+          0,
+          function(err, aFeatures) {
+            if (err) {
+              console.log('Error', err)
+            }
+
+            // INSERT API HERE
+
+            const grantDetails = aFeatures.reduce(function(ach, feature) {
+              const props = feature.properties
+              return ach + renderGrantDetail(props)
+            }, '')
+
+            const mapboxgl = require('mapbox-gl')
+            new mapboxgl.Popup({
+              className: 'grant-popup-modal'
+            })
+              .setLngLat(latLng)
+              .setHTML(
+                `<div class="grant-popup-container">
+                    <div class="grant-header"> </div> 
+                    
+                    ${grantDetails}
+
                     <!-- TODO scroll indicator -->
                     <div class="scroll-indicator">
                         <i class="fas fa-angle-down float"></i>
@@ -1137,7 +1188,6 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
-        // console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
@@ -1170,6 +1220,9 @@ export default {
       map.draw = draw
 
       this.$eventHub.$emit('map-loaded', map)
+
+      // Checks if grants page on initial load
+      this.toggleGrantsLayers(this.$route.name)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -1261,18 +1314,18 @@ export default {
     toggleGrantsLayers(name) {
       // enumerate ids of the layers to hide
       const layerIdToHide = [
-        'fn-nations',
-        'fn-arts',
-        'fn-places',
-        'fn-places-geom-labels',
-        'fn-places-poly',
-        'fn-places-lines',
         'fn-arts-clusters-text',
         'fn-arts-clusters',
-        'fn-lang-area-outlines-1',
-        'fn-lang-areas-highlighted',
-        'fn-lang-area-outlines-fade',
-        'fn-lang-areas-fill'
+        'fn-arts'
+        // 'fn-nations',
+        // 'fn-places',
+        // 'fn-places-geom-labels',
+        // 'fn-places-poly',
+        // 'fn-places-lines',
+        // 'fn-lang-area-outlines-1',
+        // 'fn-lang-areas-highlighted',
+        // 'fn-lang-area-outlines-fade',
+        // 'fn-lang-areas-fill'
       ]
 
       layerIdToHide.forEach(layer => {
@@ -1482,6 +1535,8 @@ export default {
   overflow: hidden;
 }
 
+// Arts Modal Style
+
 .artPopUp {
   border-radius: 0.5em;
 }
@@ -1492,6 +1547,87 @@ export default {
   padding: 1em;
   overflow-x: hidden;
 }
+
+// Grants Modal Style
+
+.grant-popup-modal {
+  width: 450px !important;
+  max-width: 450px !important;
+  max-height: 400px;
+
+  .mapboxgl-popup-content {
+    padding: 0 !important;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 2.25em;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 3px;
+  }
+}
+
+.grant-popup-container {
+  width: 450px !important;
+  max-width: 450px !important;
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 0.8px solid #9f9f9f;
+  border-radius: 0.5em;
+
+  .grant-header {
+    background-color: #7d6799;
+    padding: 0.25em;
+    height: 25px;
+  }
+
+  .grant-title {
+    border-bottom: 0.8px solid #9f9f9f;
+    padding: 0.75em;
+    text-align: center;
+    font: normal normal bold 18px/23px Proxima Nova;
+    color: #707070;
+  }
+
+  .grant-content {
+    padding: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grant-description {
+    font: normal normal normal 16px/24px Proxima Nova;
+    letter-spacing: 0.35px;
+    color: #454545;
+    margin-bottom: 0.75em;
+  }
+  .grant-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .footer-item {
+      display: flex;
+      flex-direction: column;
+
+      .footer-item-title {
+        font: normal normal normal 15px/16px Proxima Nova;
+        letter-spacing: 0px;
+        color: #707070;
+        margin-bottom: 0.5em;
+      }
+
+      .footer-item-content {
+        font: normal normal normal 14px/16px Proxima Nova;
+        letter-spacing: 0.35px;
+        color: #454545;
+      }
+    }
+  }
+}
+
 .artPopUp .mapboxgl-popup-content {
   padding: 0em 0em 0em 0em;
 }
