@@ -123,6 +123,9 @@ export default {
     },
     paginatedGrants() {
       return this.grants.slice(0, this.maximumLength)
+    },
+    getGrantsDateFilter() {
+      return this.$store.grants.filterDate
     }
   },
   created() {

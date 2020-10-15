@@ -1,6 +1,7 @@
 export const state = () => ({
   grantsGeo: [],
-  grantsGeoSet: []
+  grantsGeoSet: [],
+  filterDate: { fromDate: 0, toDate: 0 }
 })
 
 export const mutations = {
@@ -9,5 +10,10 @@ export const mutations = {
   },
   setGrantsGeoStore(state, grantsGeoSet) {
     state.grantsGeoSet = grantsGeoSet
+  },
+
+  setGrantFilterDate(state, value) {
+    state.filterDate = value
+    console.log('STORE VALUE', value)
   }
 }
