@@ -39,12 +39,13 @@
               :key="`grants-item-${index}`"
               lg="12"
               xl="12"
-              md="6"
-              sm="6"
+              md="12"
+              sm="12"
               class="mt-3 hover-left-move"
             >
               <GrantsCard
                 :grant="grant"
+                :is-selected="currentGrant && currentGrant.id === grant.id"
                 @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
             </b-col>
@@ -121,11 +122,27 @@ export default {
     grants() {
       return this.$store.state.grants.grantsGeo
     },
+    getGrantList() {
+      //  if year filtermode is activated
+      if (this.getGrantsDateFilter) {
+        const { fromDate, toDate } = this.getGrantsDateFilter
+        return this.grants.filter(grant => {
+          return (
+            grant.properties.year <= toDate && grant.properties.year >= fromDate
+          )
+        })
+      } else {
+        return this.grants
+      }
+    },
     paginatedGrants() {
-      return this.grants.slice(0, this.maximumLength)
+      return this.getGrantList.slice(0, this.maximumLength)
     },
     getGrantsDateFilter() {
-      return this.$store.grants.filterDate
+      return this.$store.state.grants.filterDate
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   created() {
@@ -176,7 +193,14 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      this.setupMap(grant)
+      // Unselect the current selected grant item
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$store.commit('grants/setCurrentGrant', grant)
+        this.setupMap(grant)
+      }
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)

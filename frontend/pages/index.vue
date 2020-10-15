@@ -282,17 +282,17 @@ const renderArtDetail = props => {
 
 const renderGrantDetail = props => {
   return `
-    <div class="grant-title"> Grant Title Here </div>
+    <div class="grant-title"> ${props.grant} </div>
       <div class="grant-content">
-        <span class="grant-description"> Grants Description goes here Lorem ipsum dolor sit amet consectetur, adipisicing elit!</span>
+        <span class="grant-description"> ${props.project_brief}</span>
         <div class="grant-footer">
           <div class="footer-item">
             <span class="footer-item-title"> AFFILIATION </span>
-            <span class="footer-item-content"> Dene and Cree </span>
+            <span class="footer-item-content"> ${props.community_affiliation} </span>
           </div>
           <div class="footer-item">
             <span class="footer-item-title"> YEAR </span>
-            <span class="footer-item-content"> 2018 </span>
+            <span class="footer-item-content"> ${props.year} </span>
           </div>
         </div>
       </div>
@@ -451,6 +451,9 @@ export default {
     },
     layers() {
       return this.$store.state.layers.layers
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -940,6 +943,7 @@ export default {
               const props = feature.properties
               return ach + renderArtDetail(props)
             }, '')
+            console.log('ITEM', aFeatures)
             const mapboxgl = require('mapbox-gl')
             new mapboxgl.Popup({
               className: 'artPopUp'
@@ -975,12 +979,12 @@ export default {
               console.log('Error', err)
             }
 
-            // INSERT API HERE
+            // const grantDetails = aFeatures.reduce(function(ach, feature) {
+            //   const props = feature.properties
+            //   return ach + renderGrantDetail(props)
+            // }, '')
 
-            const grantDetails = aFeatures.reduce(function(ach, feature) {
-              const props = feature.properties
-              return ach + renderGrantDetail(props)
-            }, '')
+            const grantDetails = renderGrantDetail(this.currentGrant)
 
             const mapboxgl = require('mapbox-gl')
             new mapboxgl.Popup({
