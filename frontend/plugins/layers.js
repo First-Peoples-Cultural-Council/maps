@@ -397,30 +397,27 @@ export default {
       'fn-nations'
     )
 
-    map.addLayer(
-      {
-        minzoom: 6,
-        id: 'fn-grants',
-        type: 'symbol',
-        source: 'grants1',
-        layout: {
-          visibility: 'visible',
-          'text-optional': true,
-          'symbol-spacing': 50,
-          'icon-image': 'grant_icon',
-          'icon-size': 0.15,
-          'text-field': '{name}',
-          'text-font': ['BC Sans Regular'],
-          'text-size': 12,
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top'
-        },
-        paint: {
-          'icon-opacity': 0.75
-        }
+    map.addLayer({
+      minzoom: 6,
+      id: 'fn-grants',
+      type: 'symbol',
+      source: 'grants1',
+      layout: {
+        visibility: 'visible',
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': 'artist',
+        'icon-size': 0.15,
+        'text-field': '{name}',
+        'text-font': ['BC Sans Regular'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
       },
-      'fn-nations'
-    )
+      paint: {
+        'icon-opacity': 0.75
+      }
+    })
 
     // Loading this from MapBox Studio seems to fix a font rendering issue.
     // [cvo] I've otherwise not been able to determine the root cause (when loading it locally)
