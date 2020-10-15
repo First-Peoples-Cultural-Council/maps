@@ -13,7 +13,12 @@
         <span class="grant-tag">
           {{ grant.properties.category }}
         </span>
-        <span class="grant-tag-date"> 2019 </span>
+        <span
+          class="grant-tag-date"
+          :class="grantCardClass(grant.properties.year)"
+        >
+          {{ grant.properties.year }}
+        </span>
       </div>
     </div>
 
@@ -44,7 +49,20 @@ export default {
       hover: false
     }
   },
+  computed: {
+    getGrantsDateFilter() {
+      return this.$store.state.grants.filterDate
+    }
+  },
   methods: {
+    grantCardClass(year) {
+      const filter = this.getGrantsDateFilter
+      return filter
+        ? year <= filter.toDate && year >= filter.fromDate
+          ? 'year-selected'
+          : ''
+        : ''
+    },
     handleMouseOver() {
       if (this.grant.geometry) {
         this.hover = true
@@ -102,8 +120,19 @@ export default {
   }
 }
 
+.year-selected {
+  color: #fff !important;
+  background-color: #545b62 !important;
+
+  &:hover {
+    background: #ddd4c6 !important;
+    color: #707070 !important;
+  }
+}
+
 .grant-tag-container {
   display: flex;
+  flex-wrap: wrap;
   margin: 1em 0;
 
   & > span {
