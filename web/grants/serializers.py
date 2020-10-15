@@ -8,7 +8,7 @@ class GrantSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = Grant
-        fields = ("id", "grant", "project_brief", "category")
+        fields = ("id", "grant", "project_brief", "category", "community_affiliation", "year")
         geo_field = "point"
 
 
