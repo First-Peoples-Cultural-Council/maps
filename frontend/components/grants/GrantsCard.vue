@@ -1,12 +1,16 @@
 <template>
-  <div class="grants-card">
+  <div
+    class="grants-card"
+    @mouseover.prevent="handleMouseOver"
+    @mouseleave="handleMouseLeave"
+  >
     <div>
       <h5 class="grant-title">
-        {{ grant.properties.name }}
+        {{ grant.properties.grant }}
       </h5>
       <div class="grant-tag-container">
         <span class="grant-tag">
-          Organization and Collectives
+          {{ grant.properties.category }}
         </span>
         <span class="grant-tag-date"> 2019 </span>
       </div>
@@ -28,22 +32,6 @@ export default {
       default: () => {
         return {}
       }
-    },
-    color: {
-      type: String,
-      default: 'RGB(255, 255, 255)'
-    },
-    go: {
-      type: Boolean,
-      default: true
-    },
-    variant: {
-      type: String,
-      default: 'normal'
-    },
-    icon: {
-      default: 'large',
-      type: String
     }
   },
   data() {
@@ -51,7 +39,24 @@ export default {
       hover: false
     }
   },
-  methods: {}
+  methods: {
+    handleMouseOver() {
+      if (this.grant.geometry) {
+        this.hover = true
+        // in some cases, we list places without full geometry, no marker shown.
+        if (!this.grant.geometry) return
+        this.$eventHub.revealArea(this.grant.geometry)
+      }
+    },
+    handleMouseLeave() {
+      if (this.grant.geometry) {
+        this.hover = false
+        // in some cases, we list places without full geometry, no marker shown.
+        if (!this.grant.geometry) return
+        this.$eventHub.doneReveal()
+      }
+    }
+  }
 }
 </script>
 
