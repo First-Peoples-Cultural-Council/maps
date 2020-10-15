@@ -1,6 +1,7 @@
 <template>
   <div
     class="grants-card"
+    :class="{ 'is-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -32,6 +33,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    isSelected: {
+      default: false,
+      type: Boolean
     }
   },
   data() {
@@ -82,9 +87,18 @@ export default {
   &:hover {
     border: 1px solid #b57936;
 
-    .fpcc-card-more {
+    .grant-card-more {
       background-color: #00333a;
     }
+  }
+}
+
+.is-selected {
+  border: 1px solid #b57936;
+  transform: translateX(5px);
+
+  .grant-card-more {
+    background-color: #00333a;
   }
 }
 

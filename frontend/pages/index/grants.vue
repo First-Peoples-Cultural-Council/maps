@@ -45,6 +45,7 @@
             >
               <GrantsCard
                 :grant="grant"
+                :is-selected="currentGrant === grant.id"
                 @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
             </b-col>
@@ -125,7 +126,10 @@ export default {
       return this.grants.slice(0, this.maximumLength)
     },
     getGrantsDateFilter() {
-      return this.$store.grants.filterDate
+      return this.$store.state.grants.filterDate
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   created() {
@@ -176,7 +180,14 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      this.setupMap(grant)
+      // Unselect the current selected grant item
+      if (this.currentGrant === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$store.commit('grants/setCurrentGrant', grant.id)
+        this.setupMap(grant)
+      }
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
