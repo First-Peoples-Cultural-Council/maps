@@ -23,7 +23,7 @@
             <template v-slot:badge>
               <Badge
                 :content="badge.name"
-                :number="'10'"
+                :number="10"
                 :bgcolor="badge.color"
                 :mode="getBadgeStatus(mode, badge.mode)"
               ></Badge>
@@ -35,7 +35,7 @@
         <section class="pl-3 pr-3">
           <b-row>
             <b-col
-              v-for="(grant, index) in grants"
+              v-for="(grant, index) in paginatedGrants"
               :key="`grants-item-${index}`"
               lg="12"
               xl="12"
@@ -45,7 +45,7 @@
             >
               <GrantsCard
                 :grant="grant"
-                @click.native="handleCardClick($event, grant.properties.name)"
+                @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
             </b-col>
           </b-row>
@@ -66,7 +66,8 @@ import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
 import Filters from '@/components/grants/GrantsFilter.vue'
-import { encodeFPCC } from '@/plugins/utils.js'
+import { zoomToPoint } from '@/mixins/map.js'
+import { makeMarker } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 
@@ -110,29 +111,22 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('places/setFilterCategories', [])
-    this.$root.$emit('updatePlacesCategory', [])
+    this.$root.$emit('resetMap')
     next()
   },
   computed: {
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
-    grantsData() {
-      return Array(50)
-        .fill('')
-        .map((data, index) => {
-          return {
-            name: `Sample Grants-${index}`
-          }
-        })
-    },
     grants() {
       return this.$store.state.grants.grantsGeo
     },
     paginatedGrants() {
-      return this.grantsData.slice(0, this.maximumLength)
+      return this.grants.slice(0, this.maximumLength)
     }
+  },
+  created() {
+    this.$root.$emit('resetMap')
   },
   mounted() {
     this.$eventHub.whenMap(map => {
@@ -143,16 +137,12 @@ export default {
       this.$root.$emit('toggleMapLayers')
     })
 
-    // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
     this.$store.commit('sidebar/toggleLoading', true)
 
     //  Simulate fake fetch API
     setTimeout(() => {
-      this.$store.commit('sidebar/toggleLoading', true)
+      this.$store.commit('sidebar/toggleLoading', false)
     }, 3000)
-
-    // Fetches the heritage data, for this case, it renders the page, then rerender if data is collected
-    this.$store.commit('sidebar/toggleLoading', true)
 
     if (this.$route.name === 'index-grants') {
       // Trigger addeventlistener only if there's Sidebar, used for Pagination
@@ -182,10 +172,8 @@ export default {
         this.$root.$emit('toggleMapLayers')
       })
     },
-    handleCardClick(e, name) {
-      this.$router.push({
-        path: `/grants/${encodeFPCC(name)}`
-      })
+    handleCardClick(e, grant) {
+      this.setupMap(grant)
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
@@ -193,6 +181,18 @@ export default {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
       }, 250)
+    },
+    setupMap(grant) {
+      this.$eventHub.whenMap(map => {
+        if (this.$route.hash.length <= 1) {
+          if (grant.geometry)
+            zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+        }
+        if (grant.geometry) {
+          const icon = 'artist_icon.svg'
+          makeMarker(grant.geometry, icon, 'grant-marker').addTo(map)
+        }
+      })
     }
   }
 }
