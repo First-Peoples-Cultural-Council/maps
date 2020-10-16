@@ -1699,6 +1699,10 @@ export default {
       max-height: 400px;
       padding: 3em 1.5em 1.5em 1.5em !important;
     }
+
+    .mapboxgl-popup-tip {
+      display: none !important;
+    }
   }
 
   .grant-popup-modal .mapboxgl-popup-close-button {

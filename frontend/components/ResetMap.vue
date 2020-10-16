@@ -14,6 +14,11 @@ export default {
   methods: {
     resetMap() {
       this.$root.$emit('resetMap')
+
+      // if on grants page, reset current grants
+      if (this.$route.name === 'index-grants') {
+        this.$store.commit('grants/setCurrentGrant', null)
+      }
     }
   }
 }

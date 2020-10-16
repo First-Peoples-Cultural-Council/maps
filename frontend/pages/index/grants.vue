@@ -195,7 +195,6 @@ export default {
     this.$root.$emit('resetMap')
   },
   mounted() {
-    console.log(this.categoryList)
     this.$eventHub.whenMap(map => {
       this.$root.$emit('mapLoaded')
     })
@@ -239,9 +238,14 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      this.$store.commit('grants/setCurrentGrant', grant)
-      this.$root.$emit('showGrantModal')
-      this.setupMap(grant)
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$store.commit('grants/setCurrentGrant', grant)
+        this.$root.$emit('showGrantModal')
+        this.setupMap(grant)
+      }
     },
     handleReturn() {
       this.$router.push({
