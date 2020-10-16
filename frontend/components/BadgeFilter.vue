@@ -58,12 +58,12 @@
             {{ taxonomy.name }}
 
             <img
-              v-if="hasTaxonomyChild(taxonomy.id)"
+              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
               src="@/assets/images/right.svg"
             />
             <!-- Child Popover -->
             <b-popover
-              v-if="hasTaxonomyChild(taxonomy.id)"
+              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
               :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
@@ -200,6 +200,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    filterType: {
+      type: String,
+      default: 'arts'
     }
   },
   data() {
@@ -214,8 +218,14 @@ export default {
     getTaxonomies() {
       return this.$store.state.arts.taxonomyFilter
     },
+    grantCategory() {
+      return this.$store.state.grants.categorySearchSet
+    },
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
+    },
+    selectedList() {
+      return this.filterType === 'arts' ? this.taxonomies : this.grantCategory
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
@@ -265,44 +275,59 @@ export default {
       return this.getTaxonomies.some(tag => tag === value)
     },
     toggleTaxonomyTag(currentTaxonomy) {
-      if (this.type === 'artwork') {
-        setTimeout(() => {
-          const filteredTag = this.childTaxonomy.filter(
-            taxo => taxo.isChecked === true
-          )
+      // if being used in ARTS PAGE
+      if (this.filterType === 'arts') {
+        if (this.type === 'artwork') {
+          setTimeout(() => {
+            const filteredTag = this.childTaxonomy.filter(
+              taxo => taxo.isChecked === true
+            )
 
-          const getTagged = filteredTag.map(taxo => taxo.name)
-          this.$store.commit('arts/setTaxonomyTag', getTagged)
-        }, 100)
-      } else {
-        // if you uncheck a parent taxonomy, also uncheck the child
-        if (currentTaxonomy.isChecked) {
-          this.taxonomies
-            .filter(taxo => taxo.parent === currentTaxonomy.id)
-            .map(taxo => {
-              if (currentTaxonomy.isChecked) {
-                taxo.isChecked = false
-              }
-              return taxo
-            })
+            const getTagged = filteredTag.map(taxo => taxo.name)
+            this.$store.commit('arts/setTaxonomyTag', getTagged)
+          }, 100)
+        } else {
+          // if you uncheck a parent taxonomy, also uncheck the child
+          if (currentTaxonomy.isChecked) {
+            this.taxonomies
+              .filter(taxo => taxo.parent === currentTaxonomy.id)
+              .map(taxo => {
+                if (currentTaxonomy.isChecked) {
+                  taxo.isChecked = false
+                }
+                return taxo
+              })
+          }
+          // if you check a child taxonomy, also check the parent
+          else {
+            const findParent = this.taxonomies.find(
+              taxo => currentTaxonomy.parent === taxo.id
+            )
+
+            if (findParent) findParent.isChecked = true
+          }
+
+          // setTimeout is needed because data is delayed
+          setTimeout(() => {
+            const filteredTag = this.taxonomies.filter(
+              taxo => taxo.isChecked === true
+            )
+
+            const getTagged = filteredTag.map(taxo => taxo.name)
+            this.$store.commit('arts/setTaxonomyTag', getTagged)
+          }, 100)
         }
-        // if you check a child taxonomy, also check the parent
-        else {
-          const findParent = this.taxonomies.find(
-            taxo => currentTaxonomy.parent === taxo.id
-          )
-
-          if (findParent) findParent.isChecked = true
-        }
-
+      }
+      // if being used in GRANTS PAGE
+      else {
         // setTimeout is needed because data is delayed
         setTimeout(() => {
-          const filteredTag = this.taxonomies.filter(
-            taxo => taxo.isChecked === true
+          const filteredTag = this.selectedList.filter(
+            category => category.isChecked === true
           )
 
-          const getTagged = filteredTag.map(taxo => taxo.name)
-          this.$store.commit('arts/setTaxonomyTag', getTagged)
+          const getTagged = filteredTag.map(category => category.name)
+          this.$store.commit('grants/setCategoryTag', getTagged)
         }, 100)
       }
     }
