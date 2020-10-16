@@ -192,14 +192,9 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      // Unselect the current selected grant item
-      if (this.currentGrant && this.currentGrant.id === grant.id) {
-        this.$store.commit('grants/setCurrentGrant', null)
-        this.$root.$emit('resetMap')
-      } else {
-        this.$store.commit('grants/setCurrentGrant', grant)
-        this.setupMap(grant)
-      }
+      this.$store.commit('grants/setCurrentGrant', grant)
+      this.$root.$emit('showGrantModal')
+      this.setupMap(grant)
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
