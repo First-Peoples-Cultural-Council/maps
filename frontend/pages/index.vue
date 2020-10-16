@@ -282,18 +282,23 @@ const renderArtDetail = props => {
 
 const renderGrantDetail = props => {
   return `
-    <div class="grant-title"> ${props.grant} </div>
+    <div class="grant-title"> ${props.properties.grant} </div>
       <div class="grant-content">
-        <span class="grant-description"> ${props.project_brief}</span>
+        <span class="grant-description"> ${props.properties.project_brief}</span>
         <div class="grant-footer">
           <div class="footer-item">
             <span class="footer-item-title"> AFFILIATION </span>
-            <span class="footer-item-content"> ${props.community_affiliation} </span>
+            <span class="footer-item-content"> ${props.properties.community_affiliation} </span>
           </div>
           <div class="footer-item">
             <span class="footer-item-title"> YEAR </span>
-            <span class="footer-item-content"> ${props.year} </span>
+            <span class="footer-item-content"> ${props.properties.year} </span>
           </div>
+        </div>
+        <div class="grant-tag-container">
+          <span class="grant-tag">
+            ${props.properties.category}
+          </span>
         </div>
       </div>
   `
@@ -569,7 +574,6 @@ export default {
     }
 
     this.toggleGrantsLayers(to.name)
-
     next()
   },
   created() {
@@ -968,6 +972,7 @@ export default {
 
     showGrantsModal(feature, latLng, map) {
       const clusterId = feature.properties.cluster_id
+      const grantData = this.currentGrant
       map
         .getSource('arts1')
         .getClusterLeaves(
@@ -979,12 +984,7 @@ export default {
               console.log('Error', err)
             }
 
-            // const grantDetails = aFeatures.reduce(function(ach, feature) {
-            //   const props = feature.properties
-            //   return ach + renderGrantDetail(props)
-            // }, '')
-
-            const grantDetails = renderGrantDetail(this.currentGrant)
+            const grantDetails = renderGrantDetail(grantData)
 
             const mapboxgl = require('mapbox-gl')
             new mapboxgl.Popup({
@@ -1599,6 +1599,8 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    max-height: 250px;
+    overflow-y: auto;
   }
 
   .grant-description {
@@ -1617,7 +1619,7 @@ export default {
       flex-direction: column;
 
       .footer-item-title {
-        font: normal normal normal 15px/16px Proxima Nova;
+        font: normal normal bold 15px/16px Proxima Nova;
         letter-spacing: 0px;
         color: #707070;
         margin-bottom: 0.5em;
@@ -1629,6 +1631,53 @@ export default {
         color: #454545;
       }
     }
+  }
+}
+
+// Mobile mode for Grants Modal
+@media (max-width: 992px) {
+  .grant-popup-modal {
+    transform: translate(0) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    z-index: 999999999;
+    position: fixed !important;
+    top: initial !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    max-height: 400px;
+    height: 400px;
+
+    .mapboxgl-popup-content {
+      height: 400px;
+      max-height: 400px;
+      padding: 3em 1.5em 1.5em 1.5em !important;
+    }
+  }
+
+  .grant-popup-modal .mapboxgl-popup-close-button {
+    margin-top: 0px;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    color: #b47a2b;
+    background: #fff;
+    border: 1px solid #b4b4b4;
+    left: 47.5%;
+    top: -30px;
+  }
+
+  .grant-popup-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 320px;
+    border: 1px solid #dedcda;
+    box-shadow: 0px 3px 6px #00000010;
+  }
+
+  .grant-popup-container .grant-header {
+    display: none !important;
   }
 }
 

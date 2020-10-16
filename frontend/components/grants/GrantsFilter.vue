@@ -23,6 +23,7 @@
             v-model.number="fromValue"
             class="date-input"
             maxlength="4"
+            @blur="handleFromUpdate"
           ></b-form-input>
         </div>
 
@@ -32,6 +33,7 @@
             v-model.number="toValue"
             class="date-input"
             maxlength="4"
+            @blur="handleToUpdate"
           ></b-form-input>
         </div>
       </div>
@@ -98,24 +100,36 @@ export default {
       const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
       this.$store.commit('grants/setGrantFilterDate', dateValue)
     },
-    handleFromUpdate(value) {
+    handleFromUpdate() {
       const minimumDate = this.prettify(this.getMinimumDate)
-      if (value < minimumDate) {
+      const maxDate = this.prettify(this.getMaximumDate)
+      if (this.fromValue < minimumDate) {
         this.fromValue = minimumDate
-      } else {
-        this.fromValue = value
       }
 
-      this.$store.commit('grants/setFromDate', this.fromValue)
-    },
-    handleToUpdate(value) {
-      const maxDate = this.prettify(this.getMinimumDate)
-      if (value > maxDate) {
+      // Set To Date value to Maximum Date if null or lessr than from value
+      if (this.toValue === 0 || this.toValue <= this.fromValue) {
         this.toValue = maxDate
-      } else {
-        this.toValue = value
       }
-      this.$store.commit('grants/setFromDate', this.toValue)
+
+      const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
+      this.$store.commit('grants/setGrantFilterDate', dateValue)
+    },
+    handleToUpdate() {
+      const minimumDate = this.prettify(this.getMinimumDate)
+      const maxDate = this.prettify(this.getMaximumDate)
+
+      if (this.toValue > maxDate) {
+        this.toValue = maxDate
+      }
+
+      // Set To Date value to minimum Date if null or greater than to value
+      if (this.fromValue === 0 || this.fromValue >= this.toValue) {
+        this.fromValue = minimumDate
+      }
+
+      const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
+      this.$store.commit('grants/setGrantFilterDate', dateValue)
     }
   }
 }

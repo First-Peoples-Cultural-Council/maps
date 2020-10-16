@@ -95,7 +95,7 @@ export default {
     return {
       mode: 'All',
       accordionContent:
-        'Grants description goes here, Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi fugit unde a cupiditate repellat aut quidem consequatur, quisquam labore, ut temporibus libero.',
+        "The First Peoples' Council Arts Program delivers funding to emerging Aboriginal and First Nations artists, arts organizations and collectives...expand expancommunities. Grants support projects that contribute to professional and creative development in all artistic disciplines, and to the vitality of traditionally based art practices and related knowledge. There are five distinct categories: Individual Emerging ArtistS; Organizations and Collectives; Sharing Traditional Arts Across the Generations; Arts Administrator Internships; and Aboriginal Youth Engaged in the Arts. Filter by Grant category and Award year and hit Apply. Pan, zoom and click to find each grant recipient. Enjoy.",
       maximumLength: 0,
       grantBadges: [
         {
@@ -159,7 +159,6 @@ export default {
 
     this.$store.commit('sidebar/toggleLoading', true)
 
-    //  Simulate fake fetch API
     setTimeout(() => {
       this.$store.commit('sidebar/toggleLoading', false)
     }, 3000)
@@ -177,7 +176,7 @@ export default {
             elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
             elem.scrollTop !== 0
           ) {
-            if (this.places.length > this.maximumLength) {
+            if (this.getGrantList.length > this.maximumLength) {
               this.loadMoreData()
             }
           }
