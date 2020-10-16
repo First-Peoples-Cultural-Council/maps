@@ -13,10 +13,7 @@
         <span class="grant-tag">
           {{ grant.properties.category }}
         </span>
-        <span
-          class="grant-tag-date"
-          :class="grantCardClass(grant.properties.year)"
-        >
+        <span class="grant-tag-date">
           {{ grant.properties.year }}
         </span>
       </div>
@@ -137,6 +134,7 @@ export default {
 
   & > span {
     margin-right: 1em;
+    margin-bottom: 1em;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: 0.8em;
