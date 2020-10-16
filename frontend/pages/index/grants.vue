@@ -216,7 +216,7 @@ export default {
         }
         if (grant.geometry) {
           const icon = 'grant_icon.png'
-          makeMarker(grant.geometry, icon, 'grant-marker').addTo(map)
+          makeMarker(grant.geometry, icon, this).addTo(map)
         }
       })
     }

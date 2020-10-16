@@ -462,6 +462,9 @@ export default {
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
+    },
+    markers() {
+      return this.$store.state.features.markers
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -852,6 +855,11 @@ export default {
       }
       markersOnScreen = newMarkers
     },
+    removeMarkers() {
+      for (const marker in this.markers) {
+        this.markers[marker].remove()
+      }
+    },
     goToLang() {
       this.$router.push({
         path: `/languages`
@@ -1014,6 +1022,7 @@ export default {
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
+        this.removeMarkers()
         zoomToIdealBox({ map })
       })
 
