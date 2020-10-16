@@ -11,7 +11,7 @@
           <Logo class="cursor-pointer" :logo-alt="1"></Logo>
         </div>
         <div class="sidebar-body">
-          <div class="sidebar-tabs">
+          <div v-if="this.$route.name !== 'index-grants'" class="sidebar-tabs">
             <b-nav tabs fill>
               <b-nav-item
                 v-for="tab in navigationTabs"
