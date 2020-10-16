@@ -16,7 +16,9 @@ const addLangLayers = map => {
       type: 'fill',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'fill-color': [
           'interpolate',
@@ -41,7 +43,9 @@ const addLangLayers = map => {
       type: 'line',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': ['get', 'color'],
         // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
@@ -66,7 +70,9 @@ const addLangLayers = map => {
       id: 'fn-lang-areas-highlighted',
       type: 'line',
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': 'black',
         'line-width': [
@@ -90,7 +96,9 @@ const addLangLayers = map => {
       type: 'line',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': ['get', 'color'],
         'line-blur': 0,
@@ -120,6 +128,7 @@ const addNationsLayers = map => {
     source: 'communities1',
     minzoom: 5,
     layout: {
+      visibility: 'visible',
       'text-optional': true,
       'text-size': 13,
       'icon-image': 'community',
@@ -237,6 +246,9 @@ export default {
       id: 'fn-arts-clusters',
       type: 'circle',
       source: 'arts1',
+      layout: {
+        visibility: 'visible'
+      },
       minzoom: 3,
       filter: ['has', 'point_count'],
       paint: {
@@ -258,6 +270,7 @@ export default {
       minzoom: 3,
       filter: ['has', 'point_count'],
       layout: {
+        visibility: 'visible',
         'text-field': '{point_count_abbreviated}',
         'text-font': ['BC Sans Regular'],
         'text-size': 11,
@@ -275,6 +288,7 @@ export default {
         source: 'places1',
         minzoom: 5,
         layout: {
+          visibility: 'visible',
           'text-optional': true,
           'symbol-spacing': 50,
           'icon-image': 'point_of_interest_icon',
@@ -299,6 +313,7 @@ export default {
         source: 'places1',
         minzoom: 5,
         layout: {
+          visibility: 'visible',
           'line-cap': 'round'
         },
         paint: {
@@ -317,7 +332,9 @@ export default {
         type: 'fill',
         source: 'places1',
         minzoom: 5,
-        layout: {},
+        layout: {
+          visibility: 'visible'
+        },
         paint: {
           'fill-color': '#987',
           'fill-opacity': 0.2
@@ -334,6 +351,7 @@ export default {
         minzoom: 5,
         source: 'places1',
         layout: {
+          visibility: 'visible',
           'text-field': ['to-string', ['get', 'name']],
           'text-size': 14,
           'text-font': ['BC Sans Regular']
@@ -361,6 +379,7 @@ export default {
         source: 'arts1',
         filter: ['!', ['has', 'point_count']],
         layout: {
+          visibility: 'visible',
           'text-optional': true,
           'symbol-spacing': 50,
           'icon-image': '{kind}_icon',
@@ -377,6 +396,28 @@ export default {
       },
       'fn-nations'
     )
+
+    map.addLayer({
+      minzoom: 6,
+      id: 'fn-grants',
+      type: 'symbol',
+      source: 'grants1',
+      layout: {
+        visibility: 'visible',
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': 'artist',
+        'icon-size': 0.15,
+        'text-field': '{name}',
+        'text-font': ['BC Sans Regular'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
+      },
+      paint: {
+        'icon-opacity': 0.75
+      }
+    })
 
     // Loading this from MapBox Studio seems to fix a font rendering issue.
     // [cvo] I've otherwise not been able to determine the root cause (when loading it locally)
@@ -443,6 +484,12 @@ export default {
       map.getCanvas().style.cursor = 'pointer'
     })
     map.on('mouseleave', 'fn-places', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
+    map.on('mouseenter', 'fn-grants', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-grants', e => {
       map.getCanvas().style.cursor = 'default'
     })
 

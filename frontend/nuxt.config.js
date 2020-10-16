@@ -75,7 +75,7 @@ module.exports = {
    ** Global CSS
    */
   css: [
-    '@/assets/styles/sass/global.sass',
+    '@/assets/styles/sass/index.scss',
     '@/node_modules/mapbox-gl/dist/mapbox-gl.css'
   ],
   /*
@@ -86,7 +86,8 @@ module.exports = {
     '~/plugins/global',
     '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' },
-    { src: '~plugins/progressbar.js', mode: 'client' }
+    { src: '~plugins/progressbar.js', mode: 'client' },
+    { src: '~plugins/histogram.js', mode: 'client' }
   ],
   /*
    ** Nuxt.js modules

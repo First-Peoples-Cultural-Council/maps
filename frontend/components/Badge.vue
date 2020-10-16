@@ -6,7 +6,7 @@
       :class="'badge-' + mode"
       @click="handleClick"
     >
-      <span class="badge-icon">
+      <span v-if="type !== ''" class="badge-icon">
         <img :src="getImage" alt="Icon" />
       </span>
       <span class="badge-content">{{ content }}</span>
