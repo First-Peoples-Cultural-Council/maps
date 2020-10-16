@@ -1,6 +1,7 @@
 export const state = () => ({
   feature: null,
-  markers: []
+  markers: [],
+  popups: []
 })
 
 export const mutations = {
@@ -9,5 +10,8 @@ export const mutations = {
   },
   addMarker(state, marker) {
     state.markers.push(marker)
+  },
+  addPopup(state, popup) {
+    state.popups.push(popup)
   }
 }

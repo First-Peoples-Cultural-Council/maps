@@ -280,15 +280,23 @@ const renderArtDetail = props => {
         </div>`
 }
 
-const renderGrantDetail = props => {
+const renderGrantDetails = props => {
   return `
-    <div class="grant-title"> ${props.properties.grant} </div>
+    <div class="grant-title">${props.properties.recipient} - ${
+    props.properties.grant
+  }</div>
       <div class="grant-content">
-        <span class="grant-description"> ${props.properties.project_brief}</span>
+        <span class="grant-description"> ${
+          props.properties.project_brief
+        }</span>
         <div class="grant-footer">
           <div class="footer-item">
             <span class="footer-item-title"> AFFILIATION </span>
-            <span class="footer-item-content"> ${props.properties.community_affiliation} </span>
+            <span class="footer-item-content"> ${
+              props.properties.community_affiliation
+                ? props.properties.community_affiliation
+                : 'No Affiliation'
+            } </span>
           </div>
           <div class="footer-item">
             <span class="footer-item-title"> YEAR </span>
@@ -465,6 +473,9 @@ export default {
     },
     markers() {
       return this.$store.state.features.markers
+    },
+    popups() {
+      return this.$store.state.features.popups
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -580,6 +591,8 @@ export default {
     }
 
     this.toggleLayers(to.name)
+    this.removeMarkers()
+    this.removePopups()
     next()
   },
   created() {
@@ -860,6 +873,12 @@ export default {
         this.markers[marker].remove()
       }
     },
+    removePopups() {
+      for (const popup in this.popups) {
+        console.log(this.popups[popup])
+        this.popups[popup].remove()
+      }
+    },
     goToLang() {
       this.$router.push({
         path: `/languages`
@@ -926,7 +945,6 @@ export default {
             })
           } else {
             this.showClusterModal(feature, e.lngLat, map)
-            // this.showGrantsModal(feature, e.lngLat, map)
           }
           done = true
         }
@@ -981,49 +999,49 @@ export default {
         )
     },
 
-    showGrantsModal(feature, latLng, map) {
-      const clusterId = feature.properties.cluster_id
+    showGrantModal(map) {
+      this.removePopups()
+
       const grantData = this.currentGrant
-      map
-        .getSource('arts1')
-        .getClusterLeaves(
-          clusterId,
-          feature.properties.point_count,
-          0,
-          function(err, aFeatures) {
-            if (err) {
-              console.log('Error', err)
-            }
+      const grantDetails = renderGrantDetails(grantData)
 
-            const grantDetails = renderGrantDetail(grantData)
+      const mapboxgl = require('mapbox-gl')
 
-            const mapboxgl = require('mapbox-gl')
-            new mapboxgl.Popup({
-              className: 'grant-popup-modal'
-            })
-              .setLngLat(latLng)
-              .setHTML(
-                `<div class="grant-popup-container">
-                    <div class="grant-header"> </div> 
-                    
-                    ${grantDetails}
+      const lnglat = new mapboxgl.LngLat(
+        grantData.geometry.coordinates[0],
+        grantData.geometry.coordinates[1]
+      )
 
-                    <!-- TODO scroll indicator -->
-                    <div class="scroll-indicator">
-                        <i class="fas fa-angle-down float"></i>
-                    </div>
+      const popup = new mapboxgl.Popup({
+        className: 'grant-popup-modal'
+      })
+        .setLngLat(lnglat)
+        .setHTML(
+          `<div class="grant-popup-container">
+              <div class="grant-header"> </div>
 
-                    </div>`
-              )
-              .addTo(map)
-          }
+              ${grantDetails}
+
+              <!-- TODO scroll indicator -->
+              <div class="scroll-indicator">
+                  <i class="fas fa-angle-down float"></i>
+              </div>
+
+              </div>`
         )
+        .addTo(map)
+
+      this.$store.commit('features/addPopup', popup)
     },
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
         this.removeMarkers()
         zoomToIdealBox({ map })
+      })
+
+      this.$root.$on('showGrantModal', () => {
+        this.showGrantModal(map)
       })
 
       this.$root.$on('getLocation', () => {
