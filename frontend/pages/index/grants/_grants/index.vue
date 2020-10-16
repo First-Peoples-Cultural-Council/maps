@@ -94,7 +94,7 @@ export default {
       return this.$store.state.user.isLoggedIn
     },
     grants() {
-      return this.$store.state.grants.grantsGeo
+      return this.$store.state.grants.grantsSet
     }
   },
 

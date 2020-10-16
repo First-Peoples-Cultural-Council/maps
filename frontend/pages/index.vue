@@ -448,6 +448,9 @@ export default {
     placesSet() {
       return this.$store.state.places.placesSet
     },
+    grantsGeo() {
+      return this.$store.state.grants.grantsGeo.features
+    },
     isDrawMode() {
       return this.$store.state.contribute.isDrawMode
     },
@@ -495,8 +498,8 @@ export default {
     store.commit('arts/setGeoStore', results[4])
 
     // Set Grants Geo Set
-    store.commit('grants/setGrantsGeo', results[7].features)
-    store.commit('grants/setGrantsGeoStore', results[7])
+    store.commit('grants/setGrants', results[7].features)
+    store.commit('grants/setGrantsGeo', results[7])
 
     const taxonomies = [
       ...results[5],
@@ -1277,6 +1280,7 @@ export default {
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
+      this.$store.commit('grants/setGrants', this.filterGrants(bounds))
       this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
 
       if (this.catToFilter.length === 0) {
@@ -1352,6 +1356,12 @@ export default {
     filterArts(bounds) {
       return this.artsSet.filter(art => {
         const point = art.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    filterGrants(bounds) {
+      return this.grantsGeo.filter(grant => {
+        const point = grant.geometry.coordinates
         return inBounds(bounds, point)
       })
     },
