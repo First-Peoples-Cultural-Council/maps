@@ -120,7 +120,7 @@ export default {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
     grants() {
-      return this.$store.state.grants.grantsGeo
+      return this.$store.state.grants.grantsSet
     },
     getGrantList() {
       //  if year filtermode is activated
