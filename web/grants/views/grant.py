@@ -51,7 +51,6 @@ class GrantViewSet(mixins.ListModelMixin,
     detail_serializer_class = GrantDetailSerializer
     lookup_field = 'id'
 
-    @method_decorator(never_cache)
     def list(self, request):
         return super().list(request)
 
