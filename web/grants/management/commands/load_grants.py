@@ -1,11 +1,15 @@
+import os
+import csv
+import math
+import pgeocode
+import pandas as pd
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+
 from django.core.management.base import BaseCommand
 from django.contrib.gis.geos import Point
 
-import os
-import csv
-
 from web import dedruplify
-
 from grants.models import Grant
 
 
@@ -28,6 +32,7 @@ def sync_grants():
     grants.delete()
 
     c.load_grants_from_arts_db()
+    c.load_grants_from_spreadsheet()
 
 
 NEW_CATEGORIES = {
@@ -50,6 +55,34 @@ CATEGORY_ABBREVIATIONS = {
     "Expanding Capacity in the Indigenous Music Recording Industry Grant": "AECMR",
 }
 
+CATEGORY_NAMES = {
+    "ARTS": "Arts One Time Grant",
+    "AIND": "Individual Artists Grant",
+    "ASHR": "Sharing Traditional Arts Grant",
+    "AORG": "Organizations and Collectives Grant",
+    "AADM": "Arts Administration Internships Grant",
+    "AMIC": "Arts Micro Grants",
+    "ALND": "Community Land Based Arts Grant",
+    "AEMIP": "Emerging Music Industry Professionals Grant",
+    "AECMR": "Expanding Capacity in the Indigenous Music Recording Industry Grant",
+    "ATPMP": "Touring, Promotion/Marketing and Performance Grant",
+    "HMIC": "Indigenous Heritage Micro Grant",
+    "HSOP": "Sense of Place Grant",
+    "LALI": "Aboriginal Languages Initiative",
+    "LBCLI": "BC Language Initiative",
+    "LDIGI": "Digitization Program",
+    "LFV": "FirstVoices Program",
+    "LILG": "Indigenous Languages Grant",
+    "LANG": "Language One Time Grant",
+    "LLN": "Language Nest Program",
+    "LLRPP": "Language Revitalization Planning Program",
+    "LMAP": "Mentor-Apprentice Program",
+    "LPATH": "Pathways to Language Vitality Program",
+    "LRML": "Reclaiming My Language Program",
+    "LTECH": "Language Technology Program",
+    "LYES": "Youth Empowered Speakers Program",
+}
+
 class Client(dedruplify.DeDruplifierClient):
 
     def load_grants_from_arts_db(self):
@@ -57,7 +90,7 @@ class Client(dedruplify.DeDruplifierClient):
 
         grant_data = {}
 
-        writer = csv.writer(open('test.csv', 'w'))
+        writer = csv.writer(open('old-arts-grants.csv', 'w'))
         writer.writerow(["Year", "Grant", "Language", "Recipient", "Community/Affiliation", "Title", "Project Brief", "Amount", "Address", "City", "Province", "Postal Code", "Status", "Category", "Node ID"])
 
         for grant in grants:
@@ -119,11 +152,106 @@ class Client(dedruplify.DeDruplifierClient):
                 address=grant_data["address"],
                 city=grant_data["city"],
                 province=grant_data["province"],
-                postal_code=grant_data["postal_code"].replace(" ", ""),
+                postal_code=grant_data["postal_code"],
                 category=grant_data["category"],
                 point=point
             )
     
+    def load_grants_from_spreadsheet(self):
+        # Convert excel into dataframe
+        grants_dataframe = pd.read_excel("grants.xlsx", sheet_name=0)
+
+        # Replace NaN values with empty string
+        grants_dataframe.fillna('', inplace=True)
+        writer = csv.writer(open('spreadsheet-grants.csv', 'w'))
+        writer.writerow(["Year", "Grant", "Language", "Recipient", "Community/Affiliation", "Title", "Project Brief", "Amount", "Address", "City", "Province", "Postal Code", "Status", "Category", "Node ID"])
+
+        for index, sheet_row in grants_dataframe.iterrows():
+            writer.writerow([
+                f"{sheet_row['Year']}",
+                f"{sheet_row['Grant']}",
+                f"{sheet_row['Language']}",
+                f"{sheet_row['Recipient']}",
+                f"{sheet_row['Community/Affiliation']}",
+                f"{sheet_row['Title']}",
+                f"{sheet_row['Project Brief']}",
+                f"{sheet_row['Amount']}",
+                f"{sheet_row['Address']}",
+                f"{sheet_row['City']}",
+                f"{sheet_row['Province']}",
+                f"{sheet_row['Postal Code']}",
+                "", # For status
+                "",
+                ""
+            ])
+
+            nomi = pgeocode.Nominatim('ca')
+            postal_code = sheet_row["Postal Code"]
+            
+            if type(postal_code) is int:
+                nomi = pgeocode.Nominatim('us')
+            
+            location = nomi.query_postal_code(postal_code)
+
+            # Fallback to GeoPandas if PGeocode has no result
+            if math.isnan(location.get("latitude")) or math.isnan(location.get("longitude")):
+                location = None
+                
+                city = sheet_row["City"]
+                province = sheet_row["Province"]
+
+                location_data = self.locator_geocode(city, province, postal_code)
+
+                location = {
+                    "latitude": location_data.latitude,
+                    "longitude": location_data.longitude,
+                }
+
+            if location is not None and \
+               location.get("latitude", None) and \
+               location.get("latitude", None):
+                
+                point = Point(
+                    float(location.get("longitude")),
+                    float(location.get("latitude"))
+                )
+
+                category_abbreviation = sheet_row['Grant'].split(" ")[0]
+                category = CATEGORY_NAMES.get(category_abbreviation)
+
+                Grant.objects.create(
+                    grant=sheet_row['Grant'],
+                    language=sheet_row['Language'],
+                    year=int(sheet_row["Year"]) if sheet_row["Year"] else None,
+                    recipient=sheet_row["Recipient"],
+                    community_affiliation=sheet_row["Community/Affiliation"],
+                    title=sheet_row["Title"],
+                    project_brief=sheet_row["Project Brief"],
+                    amount=sheet_row["Amount"],
+                    address=sheet_row["Address"],
+                    city=sheet_row["City"],
+                    province=sheet_row["Province"],
+                    postal_code=sheet_row["Postal Code"],
+                    category=category,
+                    point=point
+                )
+            else:
+                print("FAILED RESULT")
+
+    def locator_geocode(self, city, province, postal_code):
+        locator = Nominatim(user_agent="geocoder")
+        try:
+            address = f"{city}, {province}" if province else f"{city}, {postal_code}"
+            location = locator.geocode(address)
+            if not location:
+                return self.locator_geocode(city, province, postal_code)
+            else:
+                return location
+        except GeocoderTimedOut:
+            return self.locator_geocode(city, province, postal_code)
+        except GeocoderUnavailable:
+            return self.locator_geocode(city, province, postal_code)
+
     def update_recipient(self, recipient, title, grant_id):
         is_new_grant = grant_id > 1190
 
