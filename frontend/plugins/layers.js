@@ -152,7 +152,14 @@ const addNationsLayers = map => {
   })
 }
 
-const addGrantsLayers = map => {
+const addGrantsLayers = (map, self) => {
+  let visibility = 'none'
+
+  const routeName = self.$route.name
+  if (routeName === 'index-grants') {
+    visibility = 'visible'
+  }
+
   map.loadImage(grantMarker, (error, image) => {
     if (error) throw error
     map.addImage('grant-marker', image)
@@ -162,7 +169,7 @@ const addGrantsLayers = map => {
       source: 'grants1',
       minzoom: 3,
       layout: {
-        visibility: 'none',
+        visibility,
         'text-optional': true,
         'text-size': 13,
         'icon-image': 'grant-marker',
@@ -290,7 +297,7 @@ export default {
       }
     })
     addNationsLayers(map)
-    addGrantsLayers(map)
+    addGrantsLayers(map, self)
     addLangLayers(map)
     map.addLayer({
       id: 'fn-arts-clusters-text',
