@@ -85,6 +85,11 @@ export default {
       return new Date(2000, 11, 24).valueOf()
     }
   },
+  mounted() {
+    this.fromValue = this.prettify(this.getMinimumDate)
+    this.toValue = this.prettify(this.getMaximumDate)
+    this.setStoreDateValues()
+  },
   methods: {
     changeDateValue(value) {
       this.toValue = value.to_pretty
@@ -96,9 +101,7 @@ export default {
       })
     },
     handleFilterGrants(value) {
-      console.log(value)
-      const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
-      this.$store.commit('grants/setGrantFilterDate', dateValue)
+      this.setStoreDateValues()
     },
     handleFromUpdate() {
       const minimumDate = this.prettify(this.getMinimumDate)
@@ -112,8 +115,7 @@ export default {
         this.toValue = maxDate
       }
 
-      const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
-      this.$store.commit('grants/setGrantFilterDate', dateValue)
+      this.setStoreDateValues()
     },
     handleToUpdate() {
       const minimumDate = this.prettify(this.getMinimumDate)
@@ -128,6 +130,9 @@ export default {
         this.fromValue = minimumDate
       }
 
+      this.setStoreDateValues()
+    },
+    setStoreDateValues() {
       const dateValue = { fromDate: this.fromValue, toDate: this.toValue }
       this.$store.commit('grants/setGrantFilterDate', dateValue)
     }
