@@ -605,22 +605,4 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.badge-list-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.search-empty-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2em 1em;
-
-  img {
-    margin-bottom: 1em;
-    width: 50px;
-    height: 50px;
-  }
-}
-</style>
+<style lang="scss"></style>
