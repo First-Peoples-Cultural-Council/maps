@@ -1,3 +1,5 @@
+import grantMarker from '@/assets/images/grant_icon.png'
+
 const addLangLayers = map => {
   map.addLayer({
     id: 'satelite',
@@ -150,6 +152,32 @@ const addNationsLayers = map => {
   })
 }
 
+const addGrantsLayers = map => {
+  map.loadImage(grantMarker, (error, image) => {
+    if (error) throw error
+    map.addImage('grant-marker', image)
+    map.addLayer({
+      id: 'fn-grants',
+      type: 'symbol',
+      source: 'grants1',
+      minzoom: 3,
+      layout: {
+        visibility: 'none',
+        'text-optional': true,
+        'text-size': 13,
+        'icon-image': 'grant-marker',
+        'text-font': ['BC Sans Regular'],
+        'text-padding': 0,
+        'text-offset': [0, 1.4],
+        'icon-optional': true,
+        'icon-size': 0.5,
+        'text-field': ['get', 'grant'],
+        'icon-padding': 0
+      }
+    })
+  })
+}
+
 const getHTMLMarker = function(map, feature, el) {
   // const layer = map.getLayer('fn-arts-clusters')
   if (!feature.properties.cluster_id) return
@@ -262,6 +290,7 @@ export default {
       }
     })
     addNationsLayers(map)
+    addGrantsLayers(map)
     addLangLayers(map)
     map.addLayer({
       id: 'fn-arts-clusters-text',
@@ -396,28 +425,6 @@ export default {
       },
       'fn-nations'
     )
-
-    map.addLayer({
-      minzoom: 6,
-      id: 'fn-grants',
-      type: 'symbol',
-      source: 'grants1',
-      layout: {
-        visibility: 'visible',
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': 'artist',
-        'icon-size': 0.15,
-        'text-field': '{name}',
-        'text-font': ['BC Sans Regular'],
-        'text-size': 12,
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
-      },
-      paint: {
-        'icon-opacity': 0.75
-      }
-    })
 
     // Loading this from MapBox Studio seems to fix a font rendering issue.
     // [cvo] I've otherwise not been able to determine the root cause (when loading it locally)

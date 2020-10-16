@@ -573,7 +573,7 @@ export default {
       })
     }
 
-    this.toggleGrantsLayers(to.name)
+    this.toggleLayers(to.name)
     next()
   },
   created() {
@@ -1226,7 +1226,7 @@ export default {
       this.$eventHub.$emit('map-loaded', map)
 
       // Checks if grants page on initial load
-      this.toggleGrantsLayers(this.$route.name)
+      this.toggleLayers(this.$route.name)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -1315,31 +1315,42 @@ export default {
       }
     },
 
-    toggleGrantsLayers(name) {
+    toggleLayers(name) {
       // enumerate ids of the layers to hide
-      const layerIdToHide = [
+      const layersToToggle = [
         'fn-arts-clusters-text',
         'fn-arts-clusters',
-        'fn-arts'
-        // 'fn-nations',
-        // 'fn-places',
-        // 'fn-places-geom-labels',
-        // 'fn-places-poly',
-        // 'fn-places-lines',
-        // 'fn-lang-area-outlines-1',
-        // 'fn-lang-areas-highlighted',
-        // 'fn-lang-area-outlines-fade',
-        // 'fn-lang-areas-fill'
+        'fn-arts',
+        'fn-nations',
+        'fn-places'
       ]
+      const grantsLayer = 'fn-grants'
 
-      layerIdToHide.forEach(layer => {
-        // toggle layer visibility by changing the layout object's visibility property
-        if (name === 'index-grants' || name === 'index-grants-grants') {
+      if (name === 'index-grants' || name === 'index-grants-grants') {
+        console.log('ADDING GRANTS LAYER')
+        console.log('ADDING GRANTS LAYER')
+        console.log('ADDING GRANTS LAYER')
+        console.log('ADDING GRANTS LAYER')
+        console.log('ADDING GRANTS LAYER')
+        console.log('ADDING GRANTS LAYER')
+        this.map.setLayoutProperty(grantsLayer, 'visibility', 'visible')
+
+        layersToToggle.forEach(layer => {
           this.map.setLayoutProperty(layer, 'visibility', 'none')
-        } else {
+        })
+      } else {
+        console.log('REMOVING GRANTS LAYER')
+        console.log('REMOVING GRANTS LAYER')
+        console.log('REMOVING GRANTS LAYER')
+        console.log('REMOVING GRANTS LAYER')
+        console.log('REMOVING GRANTS LAYER')
+        console.log('REMOVING GRANTS LAYER')
+        this.map.setLayoutProperty(grantsLayer, 'visibility', 'none')
+
+        layersToToggle.forEach(layer => {
           this.map.setLayoutProperty(layer, 'visibility', 'visible')
-        }
-      })
+        })
+      }
     },
 
     filterCommunities(bounds) {
