@@ -162,7 +162,7 @@ const addGrantsLayers = map => {
       source: 'grants1',
       minzoom: 3,
       layout: {
-        visibility: 'visible',
+        visibility: 'none',
         'text-optional': true,
         'text-size': 13,
         'icon-image': 'grant-marker',
