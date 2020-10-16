@@ -94,7 +94,7 @@ export default {
       return this.$store.state.user.isLoggedIn
     },
     grants() {
-      return this.$store.state.grants.grantsGeo
+      return this.$store.state.grants.grantsSet
     }
   },
 
@@ -130,7 +130,7 @@ export default {
         }
         if (this.grant.point) {
           const icon = 'grant_icon.svg'
-          makeMarker(this.grant.point, icon, 'grant-marker').addTo(map)
+          makeMarker(this.grant.point, icon, this).addTo(map)
         }
       })
     },

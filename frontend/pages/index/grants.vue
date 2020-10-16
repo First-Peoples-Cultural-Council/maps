@@ -2,6 +2,14 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
       <template v-slot:content>
+        <div class="grants-header">
+          <img src="@/assets/images/graph_background_grants.svg" />
+          <span class="title">Grants</span>
+          <div class="fpcc-card-more" @click.prevent="handleReturn">
+            <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
+            <span class="ml-1 font-weight-bold">Return</span>
+          </div>
+        </div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
             class="no-scroll-accordion"
@@ -132,7 +140,7 @@ export default {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
     grants() {
-      return this.$store.state.grants.grantsGeo
+      return this.$store.state.grants.grantsSet
     },
     grantsTypeList() {
       return this.grants.filter(grant => {
@@ -231,14 +239,14 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      // Unselect the current selected grant item
-      if (this.currentGrant && this.currentGrant.id === grant.id) {
-        this.$store.commit('grants/setCurrentGrant', null)
-        this.$root.$emit('resetMap')
-      } else {
-        this.$store.commit('grants/setCurrentGrant', grant)
-        this.setupMap(grant)
-      }
+      this.$store.commit('grants/setCurrentGrant', grant)
+      this.$root.$emit('showGrantModal')
+      this.setupMap(grant)
+    },
+    handleReturn() {
+      this.$router.push({
+        path: '/'
+      })
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
@@ -283,12 +291,55 @@ export default {
             zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
         }
         if (grant.geometry) {
-          const icon = 'artist_icon.svg'
-          makeMarker(grant.geometry, icon, 'grant-marker').addTo(map)
+          const icon = 'grant_icon.png'
+          makeMarker(grant.geometry, icon, this).addTo(map)
         }
       })
     }
   }
 }
 </script>
-<style></style>
+<style lang="scss">
+.grants-header {
+  position: relative;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.grants-header .title {
+  font-family: 'Faustina', serif;
+  font-weight: bold;
+  font-size: 26px;
+  margin-left: -30px;
+  color: #b47a2b;
+}
+
+.fpcc-card-more {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 20%;
+  width: 90px;
+  height: 35px;
+  background-color: #b47a2b;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
+  padding: 1em;
+}
+
+.fpcc-card-more:hover {
+  color: white;
+  background-color: #454545;
+}
+
+.fpcc-card-more img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+}
+</style>

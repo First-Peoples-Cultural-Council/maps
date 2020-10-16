@@ -513,7 +513,7 @@ export default {
         }
         if (this.artDetails.geom) {
           const icon = this.artDetails.kind + '_icon.svg'
-          makeMarker(this.artDetails.geom, icon, 'art-marker').addTo(map)
+          makeMarker(this.artDetails.geom, icon, this).addTo(map)
         }
       })
     },

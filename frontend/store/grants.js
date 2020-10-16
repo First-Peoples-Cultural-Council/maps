@@ -1,6 +1,6 @@
 export const state = () => ({
+  grantsSet: [],
   grantsGeo: [],
-  grantsGeoSet: [],
   filterDate: null,
   currentGrant: null,
   categorySearchSet: [],
@@ -9,11 +9,11 @@ export const state = () => ({
 })
 
 export const mutations = {
+  setGrants(state, grantsSet) {
+    state.grantsSet = grantsSet
+  },
   setGrantsGeo(state, grantsGeo) {
     state.grantsGeo = grantsGeo
-  },
-  setGrantsGeoStore(state, grantsGeoSet) {
-    state.grantsGeoSet = grantsGeoSet
   },
   setGrantFilterDate(state, value) {
     state.filterDate = value
