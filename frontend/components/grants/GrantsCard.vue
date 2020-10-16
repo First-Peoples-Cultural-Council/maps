@@ -7,7 +7,7 @@
   >
     <div>
       <h5 class="grant-title">
-        {{ grant.properties.grant }}
+        {{ grant.properties.recipient }} - {{ grant.properties.grant }}
       </h5>
       <div class="grant-tag-container">
         <span class="grant-tag">
