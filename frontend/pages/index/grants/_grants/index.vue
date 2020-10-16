@@ -130,7 +130,7 @@ export default {
         }
         if (this.grant.point) {
           const icon = 'grant_icon.svg'
-          makeMarker(this.grant.point, icon, 'grant-marker').addTo(map)
+          makeMarker(this.grant.point, icon, this).addTo(map)
         }
       })
     },

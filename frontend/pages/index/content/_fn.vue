@@ -569,7 +569,7 @@ export default {
           zoomToPoint({ map, geom: this.community.point, zoom: 11 })
         }
         const icon = 'community_icon.svg'
-        makeMarker(this.community.point, icon, 'place-marker').addTo(map)
+        makeMarker(this.community.point, icon, this).addTo(map)
       })
     },
     handleCardClick($event, name, type) {
