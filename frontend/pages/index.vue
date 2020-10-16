@@ -1327,24 +1327,12 @@ export default {
       const grantsLayer = 'fn-grants'
 
       if (name === 'index-grants' || name === 'index-grants-grants') {
-        console.log('ADDING GRANTS LAYER')
-        console.log('ADDING GRANTS LAYER')
-        console.log('ADDING GRANTS LAYER')
-        console.log('ADDING GRANTS LAYER')
-        console.log('ADDING GRANTS LAYER')
-        console.log('ADDING GRANTS LAYER')
         this.map.setLayoutProperty(grantsLayer, 'visibility', 'visible')
 
         layersToToggle.forEach(layer => {
           this.map.setLayoutProperty(layer, 'visibility', 'none')
         })
       } else {
-        console.log('REMOVING GRANTS LAYER')
-        console.log('REMOVING GRANTS LAYER')
-        console.log('REMOVING GRANTS LAYER')
-        console.log('REMOVING GRANTS LAYER')
-        console.log('REMOVING GRANTS LAYER')
-        console.log('REMOVING GRANTS LAYER')
         this.map.setLayoutProperty(grantsLayer, 'visibility', 'none')
 
         layersToToggle.forEach(layer => {
