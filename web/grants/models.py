@@ -3,21 +3,6 @@ from django.core.validators import MinValueValidator
 
 from web.models import BaseModel
 
-PROVINCE_CHOICES = (
-    ('AB', 'Alberta'),
-    ('BC', 'British Columbia'),
-    ('MB', 'Manitoba'),
-    ('NB', 'New Brunswick'),
-    ('NL', 'Newfoundland and Labrador'),
-    ('NT', 'Northwest Territories'),
-    ('NS', 'Nova Scotia'),
-    ('NU', 'Nunavut'),
-    ('ON', 'Ontario'),
-    ('PE', 'Prince Edward Island'),
-    ('QC', 'Quebec'),
-    ('SK', 'Saskatchewan'),
-    ('YT', 'Yukon')
-)
 
 optional = {    
     'blank': True,
@@ -45,11 +30,8 @@ class Grant(models.Model):
         **optional)
     address = models.TextField(**optional)
     city = models.CharField(max_length=255, **optional)
-    province = models.CharField(
-        max_length=2,
-        choices=PROVINCE_CHOICES,
-        **optional)
-    postal_code = models.CharField(max_length=6, **optional)
+    province = models.CharField(max_length=255, **optional)
+    postal_code = models.CharField(max_length=255, **optional)
     category = models.CharField(max_length=255, **optional)
     point = models.PointField(null=True, default=None)
     modified = models.DateTimeField("date modified", auto_now=True)
