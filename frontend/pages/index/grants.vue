@@ -5,6 +5,10 @@
         <div class="grants-header">
           <img src="@/assets/images/graph_background_grants.svg" />
           <span class="title">Grants</span>
+          <div class="fpcc-card-more" @click.prevent="handleReturn">
+            <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
+            <span class="ml-1 font-weight-bold">Return</span>
+          </div>
         </div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
@@ -200,6 +204,11 @@ export default {
       this.$root.$emit('showGrantModal')
       this.setupMap(grant)
     },
+    handleReturn() {
+      this.$router.push({
+        path: '/'
+      })
+    },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
@@ -235,5 +244,34 @@ export default {
   font-size: 26px;
   margin-left: -30px;
   color: #b47a2b;
+}
+
+.fpcc-card-more {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 20%;
+  width: 90px;
+  height: 35px;
+  background-color: #b47a2b;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  z-index: 50000;
+  padding: 1em;
+}
+
+.fpcc-card-more:hover {
+  color: white;
+  background-color: #454545;
+}
+
+.fpcc-card-more img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
 }
 </style>
