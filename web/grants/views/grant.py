@@ -68,16 +68,35 @@ class GrantCategoryAPIView(views.APIView):
             return parent_category
 
         parent_categories = list(CATEGORIES.keys())
-        categories_data = []
         categories = Grant.objects.exclude(category__exact=''
             ).exclude(category__isnull=True
             ).order_by('category'
             ).values_list('category', flat=True
             ).distinct()
 
-        # start pk for subcategories after parent categories
-        pk = len(parent_categories) + 1
+        categories_data = [
+            {
+                'id': 1,
+                'name': 'Arts',
+                'order': None,
+                'parent': None
+            },
+            {
+                'id': 2,
+                'name': 'Heritage',
+                'order': None,
+                'parent': None
+            },
+            {
+                'id': 3,
+                'name': 'Language',
+                'order': None,
+                'parent': None
+            }
+        ]
 
+        # start pk for subcategories after parent categories in categories_data
+        pk = len(categories_data) + 1
         for category in categories:
             parent_category = get_parent_category(category)
             data = {
