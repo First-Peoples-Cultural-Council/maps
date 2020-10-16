@@ -193,7 +193,6 @@ export default {
     },
     handleCardClick(e, grant) {
       this.$store.commit('grants/setCurrentGrant', grant)
-      this.$root.$emit('showGrantModal')
       this.setupMap(grant)
     },
     loadMoreData() {
@@ -206,8 +205,12 @@ export default {
     setupMap(grant) {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          if (grant.geometry)
+          if (grant.geometry) {
             zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+            map.once('moveend', () => {
+              this.$root.$emit('showGrantModal')
+            })
+          }
         }
         if (grant.geometry) {
           const icon = 'grant_icon.png'

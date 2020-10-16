@@ -252,7 +252,7 @@ import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, zoomToIdealBox } from '@/mixins/map.js'
+import { inBounds, zoomToIdealBox, zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
@@ -266,7 +266,8 @@ import {
   getApiUrl,
   encodeFPCC,
   filterLanguages,
-  getLanguagesFromDraw
+  getLanguagesFromDraw,
+  makeMarker
 } from '@/plugins/utils.js'
 const renderArtDetail = props => {
   return `<div class='map-popup'>
@@ -927,6 +928,23 @@ export default {
               path: `/place-names/${encodeFPCC(feature.properties.name)}`
             })
           }
+        } else if (feature && feature.properties && feature.properties.grant) {
+          if (feature.layer.id === 'fn-grants') {
+            // Show Popup with Grant details
+            const grant = feature
+            this.$store.commit('grants/setCurrentGrant', grant)
+
+            // Zoom to selected point and highlight icon
+            if (grant.geometry) {
+              zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+              map.once('moveend', () => {
+                this.showGrantModal(map)
+              })
+
+              const icon = 'grant_icon.png'
+              makeMarker(grant.geometry, icon, this).addTo(map)
+            }
+          }
         }
 
         // console.log('FEATURE IS', feature.geometry, feature.layer.id)
@@ -951,8 +969,10 @@ export default {
       })
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          // console.log('Feature', feature)
-          if (feature.layer.id === 'fn-lang-areas-fill') {
+          if (
+            feature.layer.id === 'fn-lang-areas-fill' &&
+            this.$route.name !== 'index-grants'
+          ) {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
@@ -1037,6 +1057,7 @@ export default {
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
         this.removeMarkers()
+        this.removePopups()
         zoomToIdealBox({ map })
       })
 
