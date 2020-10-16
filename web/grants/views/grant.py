@@ -97,6 +97,10 @@ class GrantCategoryAPIView(views.APIView):
 
         # start pk for subcategories after parent categories in categories_data
         pk = len(categories_data) + 1
+
+        # subcategories with null parent values should be at the beginning
+        parent_categories_dict = {None: [], **{p: [] for p in parent_categories}}
+
         for category in categories:
             parent_category = get_parent_category(category)
             data = {
@@ -105,7 +109,23 @@ class GrantCategoryAPIView(views.APIView):
                 'order': CATEGORIES[parent_category].index(category) + 1 if parent_category else None,
                 'parent': parent_categories.index(parent_category) + 1 if parent_category else None
             }
+
+            parent_categories_dict[parent_category].append(data)
+
+            # get list of categories under parent category and sort by order
+            sorted_has_parent_list = sorted(
+                [c for c in parent_categories_dict[parent_category] if c['parent']],
+                key=lambda k: k['order']) 
+
+            # get list of categories under parent category without order
+            null_parent_list = [c for c in parent_categories_dict[parent_category] if not c['parent']]
+
+            # update data for parent with sorted subcategories with order and place categories with null order values at the end
+            parent_categories_dict[parent_category] = sorted_has_parent_list + null_parent_list
             pk += 1
-            categories_data.append(data)
+
+        # add sorted subcategories by order to categories_data
+        for _, subcategories in parent_categories_dict.items():
+            categories_data += subcategories
 
         return Response(categories_data)
