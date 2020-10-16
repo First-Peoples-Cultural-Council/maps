@@ -1320,16 +1320,9 @@ export default {
       const layerIdToHide = [
         'fn-arts-clusters-text',
         'fn-arts-clusters',
-        'fn-arts'
-        // 'fn-nations',
-        // 'fn-places',
-        // 'fn-places-geom-labels',
-        // 'fn-places-poly',
-        // 'fn-places-lines',
-        // 'fn-lang-area-outlines-1',
-        // 'fn-lang-areas-highlighted',
-        // 'fn-lang-area-outlines-fade',
-        // 'fn-lang-areas-fill'
+        'fn-arts',
+        'fn-nations',
+        'fn-places'
       ]
 
       layerIdToHide.forEach(layer => {

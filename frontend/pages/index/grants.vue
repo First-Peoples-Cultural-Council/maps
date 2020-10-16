@@ -215,7 +215,7 @@ export default {
             zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
         }
         if (grant.geometry) {
-          const icon = 'artist_icon.svg'
+          const icon = 'grant_icon.png'
           makeMarker(grant.geometry, icon, 'grant-marker').addTo(map)
         }
       })
