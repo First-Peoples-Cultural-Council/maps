@@ -1,7 +1,7 @@
 <template>
   <div
     class="grants-card"
-    :class="{ 'is-selected': isSelected }"
+    :class="{ 'is-grant-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
   >
@@ -111,7 +111,7 @@ export default {
   }
 }
 
-.is-selected {
+.is-grant-selected {
   border: 1px solid #b57936;
   transform: translateX(5px);
 
