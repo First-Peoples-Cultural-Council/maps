@@ -482,7 +482,8 @@ export default {
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
       $axios.$get(getApiUrl('arts/event')),
-      $axios.$get(getApiUrl('grants'))
+      $axios.$get(getApiUrl('grants')),
+      $axios.$get(getApiUrl('grants/category'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -510,6 +511,15 @@ export default {
     store.commit(
       'arts/setTaxonomySearchSet',
       taxonomies.map(tax => {
+        tax.isChecked = false
+        return tax
+      })
+    )
+
+    // Store Grants Category List
+    store.commit(
+      'grants/setGrantCategorySearchSet',
+      results[8].map(tax => {
         tax.isChecked = false
         return tax
       })
