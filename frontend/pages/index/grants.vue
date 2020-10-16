@@ -2,6 +2,10 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
       <template v-slot:content>
+        <div class="grants-header">
+          <img src="@/assets/images/graph_background_grants.svg" />
+          <span class="title">Grants</span>
+        </div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
             class="no-scroll-accordion"
@@ -218,4 +222,18 @@ export default {
   }
 }
 </script>
-<style></style>
+<style lang="scss">
+.grants-header {
+  position: relative;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.grants-header .title {
+  font-family: 'Faustina', serif;
+  font-weight: bold;
+  font-size: 26px;
+  margin-left: -30px;
+  color: #b47a2b;
+}
+</style>
