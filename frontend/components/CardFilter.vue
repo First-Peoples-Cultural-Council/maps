@@ -2,7 +2,7 @@
   <div class="filter-container">
     <b-form-input
       id="search-artist-input"
-      :value="searchQuery"
+      v-model="searchFilter"
       type="search"
       class="search-input"
       :placeholder="filterPlaceholder()"
@@ -20,9 +20,26 @@
 
 <script>
 export default {
+  props: {
+    mode: {
+      default: '',
+      type: String
+    }
+  },
+  data() {
+    return {
+      searchFilter: ''
+    }
+  },
   computed: {
-    searchQuery() {
+    artQuery() {
       return this.$store.state.arts.artSearch
+    },
+    grantQuery() {
+      return this.$store.state.grants.grantSearch
+    },
+    searchQuery() {
+      return this.mode === 'arts' ? this.artQuery : this.grantQuery
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
@@ -31,24 +48,41 @@ export default {
       return this.$store.state.arts.filter
     }
   },
+  mounted() {
+    this.$root.$on('clearInput', () => {
+      this.searchFilter = ''
+    })
+
+    this.searchFilter = this.mode === 'arts' ? this.artQuery : this.grantQuery
+  },
   methods: {
     updateQuery(value) {
       if (this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
       }
-      this.$store.commit('arts/setArtSearch', value)
+
+      if (this.mode === 'arts') {
+        this.$store.commit('arts/setArtSearch', value)
+      } else {
+        this.$store.commit('grants/setGrantsSearch', value)
+      }
     },
     resetValue() {
       this.$store.commit('arts/setArtSearch', '')
+      this.$store.commit('grants/setGrantsSearch', '')
     },
     filterPlaceholder() {
-      const mode = this.filterMode
-      if (mode === 'artwork') {
-        return `Filter based of name, medium, and description...`
+      if (this.mode === 'arts') {
+        const mode = this.filterMode
+        if (mode === 'artwork') {
+          return `Filter based of name, medium, and description...`
+        } else {
+          return `Filter based on ${
+            mode === 'public_art' ? 'public art' : mode
+          }'s name...`
+        }
       } else {
-        return `Filter based on ${
-          mode === 'public_art' ? 'public art' : mode
-        }'s name...`
+        return 'Filter based on Grants name...'
       }
     }
   }
