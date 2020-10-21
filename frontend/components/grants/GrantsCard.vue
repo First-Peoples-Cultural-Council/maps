@@ -10,13 +10,13 @@
         {{ grant.properties.recipient }} - {{ grant.properties.grant }}
       </h5>
       <div class="grant-tag-container">
-        <span class="grant-tag">
+        <span
+          class="grant-tag"
+          :style="'background-color:' + parentTagObject.color"
+        >
           {{ grant.properties.category }}
         </span>
-        <span
-          class="grant-tag-date"
-          :class="grantCardClass(grant.properties.year)"
-        >
+        <span class="grant-tag-date">
           {{ grant.properties.year }}
         </span>
       </div>
@@ -42,6 +42,12 @@ export default {
     isSelected: {
       default: false,
       type: Boolean
+    },
+    parentTagObject: {
+      default: () => {
+        return {}
+      },
+      type: Object
     }
   },
   data() {
@@ -133,10 +139,11 @@ export default {
 .grant-tag-container {
   display: flex;
   flex-wrap: wrap;
-  margin: 1em 0;
+  margin: 1em 0 0 0;
 
   & > span {
     margin-right: 1em;
+    margin-bottom: 1em;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: 0.8em;

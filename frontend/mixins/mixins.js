@@ -23,6 +23,10 @@ Vue.mixin({
         this.$store.commit('arts/setFilter', data)
       }
 
+      if (this.$route.name === 'index-grants') {
+        this.$store.commit('grants/setGrantFilter', data)
+      }
+
       if (isMobileSideBarOpen) {
         e.stopPropagation()
       }

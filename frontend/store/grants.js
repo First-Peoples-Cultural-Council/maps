@@ -2,7 +2,11 @@ export const state = () => ({
   grantsSet: [],
   grantsGeo: [],
   filterDate: null,
-  currentGrant: null
+  currentGrant: null,
+  categorySearchSet: [],
+  grantFilterMode: 'arts',
+  grantCategoryList: [],
+  grantsSearch: ''
 })
 
 export const mutations = {
@@ -17,5 +21,18 @@ export const mutations = {
   },
   setCurrentGrant(state, grant) {
     state.currentGrant = grant
+  },
+  setGrantCategorySearchSet(state, result) {
+    state.categorySearchSet = result
+  },
+  setGrantFilter(state, value) {
+    state.grantFilterMode = value
+  },
+  setCategoryTag(state, value) {
+    state.grantCategoryList = value
+  },
+  setGrantsSearch(state, query) {
+    console.log('enter', query)
+    state.grantsSearch = query
   }
 }

@@ -500,7 +500,8 @@ export default {
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
       $axios.$get(getApiUrl('arts/event')),
-      $axios.$get(getApiUrl('grants'))
+      $axios.$get(getApiUrl('grants')),
+      $axios.$get(getApiUrl('grants/category'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -528,6 +529,15 @@ export default {
     store.commit(
       'arts/setTaxonomySearchSet',
       taxonomies.map(tax => {
+        tax.isChecked = false
+        return tax
+      })
+    )
+
+    // Store Grants Category List
+    store.commit(
+      'grants/setGrantCategorySearchSet',
+      results[8].map(tax => {
         tax.isChecked = false
         return tax
       })
@@ -1039,6 +1049,10 @@ export default {
         .setHTML(
           `<div class="grant-popup-container">
               <div class="grant-header"> </div>
+              <div class="grants-header">
+                <img src="@/assets/images/graph_background_grants.svg" />
+                <span class="title">Grants</span>
+              </div>
 
               ${grantDetails}
 
@@ -1710,6 +1724,10 @@ export default {
       max-height: 400px;
       padding: 3em 1.5em 1.5em 1.5em !important;
     }
+
+    .mapboxgl-popup-tip {
+      display: none !important;
+    }
   }
 
   .grant-popup-modal .mapboxgl-popup-close-button {
@@ -1735,6 +1753,10 @@ export default {
 
   .grant-popup-container .grant-header {
     display: none !important;
+  }
+
+  .grant-popup-container .grants-header {
+    display: block !important;
   }
 }
 

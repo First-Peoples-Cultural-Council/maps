@@ -2,6 +2,14 @@
   <div>
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
       <template v-slot:content>
+        <div class="grants-header">
+          <img src="@/assets/images/graph_background_grants.svg" />
+          <span class="title">Grants</span>
+          <div class="grant-header-more" @click.prevent="handleReturn">
+            <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
+            <span class="ml-1 font-weight-bold">Return</span>
+          </div>
+        </div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
             class="no-scroll-accordion"
@@ -12,20 +20,27 @@
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <section class="pl-3 pr-3 pt-3">
-          <span class="field-kinds">GRANT CATEGORY</span>
+        <CardFilter :mode="'grants'" />
+        <span class="field-kinds pl-3 pr-3 pt-3">Filter Grants by Year</span>
+        <section class="badge-list-container pl-3 pr-3 pt-3">
           <BadgeFilter
             v-for="badge in grantBadges"
             :key="`badge-grant-${badge.name}`"
             class="mt-2 cursor-pointer"
             :color="badge.color"
+            :child-taxonomy="getChildCategory(badge.name)"
+            :is-selected="filterMode === badge.name.toLowerCase()"
+            :filter-type="'grants'"
           >
             <template v-slot:badge>
               <Badge
                 :content="badge.name"
-                :number="10"
+                :number="getCountValues(badge.name.toLowerCase())"
                 :bgcolor="badge.color"
-                :mode="getBadgeStatus(mode, badge.mode)"
+                :mode="getBadgeStatus(filterMode, badge.name.toLowerCase())"
+                @click.native.prevent="
+                  badgeClick($event, badge.name.toLowerCase())
+                "
               ></Badge>
             </template>
           </BadgeFilter>
@@ -45,6 +60,7 @@
             >
               <GrantsCard
                 :grant="grant"
+                :parent-tag-object="getParentTag(grant)"
                 :is-selected="currentGrant && currentGrant.id === grant.id"
                 @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
@@ -71,6 +87,7 @@ import { zoomToPoint } from '@/mixins/map.js'
 import { makeMarker } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
+import CardFilter from '@/components/CardFilter.vue'
 
 export default {
   components: {
@@ -79,7 +96,8 @@ export default {
     Accordion,
     GrantsCard,
     Badge,
-    BadgeFilter
+    BadgeFilter,
+    CardFilter
   },
   head() {
     return {
@@ -99,14 +117,20 @@ export default {
       maximumLength: 0,
       grantBadges: [
         {
-          name: 'Aboriginal Youth in the Arts',
-          color: '#3185CE',
+          id: 1,
+          name: 'Arts',
+          color: '#0E7586'
+        },
+        {
+          id: 2,
+          name: 'Heritage',
+          color: '#C15930',
           mode: 'grants'
         },
         {
-          name: 'Arts Administrator Internships',
-          color: '#4FA89D',
-          mode: 'grants'
+          id: 3,
+          name: 'Language',
+          color: '#6C4264'
         }
       ]
     }
@@ -116,23 +140,72 @@ export default {
     next()
   },
   computed: {
+    grantsSearchQuery() {
+      return this.$store.state.grants.grantsSearch
+    },
+    isGrantsSearchMode() {
+      return this.grantsSearchQuery.length !== 0
+    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
     grants() {
       return this.$store.state.grants.grantsSet
     },
+    grantsTypeList() {
+      return this.grants.filter(grant => {
+        return (
+          grant.properties.category &&
+          this.getCategoryId(grant.properties.category).parent ===
+            this.getCategoryId(this.filterMode).id
+        )
+      })
+    },
     getGrantList() {
       //  if year filtermode is activated
-      if (this.getGrantsDateFilter) {
+      if (
+        this.getGrantsDateFilter ||
+        this.getCategoryFilterList.length !== 0 ||
+        this.isGrantsSearchMode
+      ) {
+        let finalGrants = []
         const { fromDate, toDate } = this.getGrantsDateFilter
-        return this.grants.filter(grant => {
+        const filteredYear = this.grantsTypeList.filter(grant => {
           return (
             grant.properties.year <= toDate && grant.properties.year >= fromDate
           )
         })
+
+        // Filter by categories
+        if (this.getCategoryFilterList.length !== 0) {
+          finalGrants = filteredYear.filter(grant => {
+            const isCategoryFound = this.getCategoryFilterList.some(
+              tag =>
+                tag.toLowerCase() === grant.properties.category.toLowerCase()
+            )
+            return isCategoryFound
+          })
+        } else {
+          finalGrants = filteredYear
+        }
+
+        // Filter by Search Query
+        if (this.isGrantsSearchMode) {
+          return finalGrants.filter(grant => {
+            return (
+              grant.properties.grant
+                .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase()) ||
+              grant.properties.recipient
+                .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase())
+            )
+          })
+        } else {
+          return finalGrants
+        }
       } else {
-        return this.grants
+        return this.grantsTypeList
       }
     },
     paginatedGrants() {
@@ -141,8 +214,18 @@ export default {
     getGrantsDateFilter() {
       return this.$store.state.grants.filterDate
     },
+    categoryList() {
+      return this.$store.state.grants.categorySearchSet
+    },
     currentGrant() {
       return this.$store.state.grants.currentGrant
+    },
+
+    filterMode() {
+      return this.$store.state.grants.grantFilterMode
+    },
+    getCategoryFilterList() {
+      return this.$store.state.grants.grantCategoryList
     }
   },
   created() {
@@ -192,8 +275,19 @@ export default {
       })
     },
     handleCardClick(e, grant) {
-      this.$store.commit('grants/setCurrentGrant', grant)
-      this.setupMap(grant)
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$store.commit('grants/setCurrentGrant', grant)
+        this.$root.$emit('showGrantModal')
+        this.setupMap(grant)
+      }
+    },
+    handleReturn() {
+      this.$router.push({
+        path: '/'
+      })
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
@@ -201,6 +295,62 @@ export default {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
       }, 250)
+    },
+    getCategoryId(name) {
+      return this.categoryList.find(
+        category => category.name.toLowerCase() === name.toLowerCase()
+      )
+    },
+    getParentTag(grant) {
+      return grant.properties.category
+        ? this.getParentName(
+            this.getCategoryId(grant.properties.category).parent
+          )
+        : ''
+    },
+    getParentName(childCateg) {
+      return this.grantBadges.find(
+        badge =>
+          this.categoryList.find(category => category.id === childCateg)
+            .name === badge.name
+      )
+    },
+    getChildCategory(name) {
+      return this.categoryList
+        .filter(category => category.parent === this.getCategoryId(name).id)
+        .sort((a, b) => {
+          return a.order - b.order
+        })
+    },
+    getCountValues(type) {
+      return (this.getGrantsDateFilter || this.categoryList) &&
+        this.filterMode === type
+        ? this.filterArray(this.getGrantList, type)
+        : this.filterArray(this.grants, type)
+    },
+    filterArray(grantArray, type) {
+      return grantArray.filter(
+        category =>
+          category.properties.category &&
+          this.getCategoryId(category.properties.category).parent ===
+            this.getCategoryId(type).id
+      ).length
+    },
+    badgeClick($event, name) {
+      this.maximumLength = 7
+      this.handleBadge($event, name)
+      this.resetGrantFilter()
+    },
+    resetGrantFilter() {
+      const resetList = this.categoryList.map(category => {
+        category.isChecked = false
+        return category
+      })
+      this.$store.commit('grants/setGrantCategorySearchSet', resetList)
+      this.$store.commit('grants/setCategoryTag', [])
+      // Reset text filter
+      this.$store.commit('grants/setGrantsSearch', '')
+      this.$root.$emit('clearInput')
     },
     setupMap(grant) {
       this.$eventHub.whenMap(map => {
