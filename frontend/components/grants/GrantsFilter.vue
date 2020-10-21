@@ -79,7 +79,7 @@ export default {
   },
   data() {
     return {
-      showCollapse: false,
+      showCollapse: true,
       fromValue: 0,
       toValue: 0
     }
@@ -96,11 +96,10 @@ export default {
     }
   },
   mounted() {
-    console.log(this.maxDate, this.minDate)
     window.addEventListener('resize', this.screenChecker)
 
-    if (window.innerWidth > 1080) {
-      this.showCollapse = true
+    if (window.innerWidth < 1080) {
+      this.showCollapse = false
     }
     this.fromValue = this.prettify(this.getMinimumDate)
     this.toValue = this.prettify(this.getMaximumDate)
