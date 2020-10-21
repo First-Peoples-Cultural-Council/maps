@@ -16,18 +16,10 @@
       class="badge-filters "
     >
       <p id="badge-choose" @click="showFilterOption = !showFilterOption">
-        {{
-          showFilterOption
-            ? 'Click here to Close'
-            : `${
-                getTaxonomies.length !== 0
-                  ? `${getTaxonomies.length} Taxonomy Selected`
-                  : 'choose sub-category'
-              } `
-        }}
+        {{ showFilterOption ? 'Click here to Close' : getFilterText() }}
 
         <span
-          v-if="getTaxonomies.length !== 0"
+          v-if="getSelectedFilterList.length !== 0"
           class="remove-tag-btn cursor-pointer"
           @click="removeTag()"
           >&#x2716;</span
@@ -123,6 +115,7 @@
           </span>
         </div>
       </b-popover>
+      <!-- For Mobile Mode -->
       <b-modal
         id="badge-filter-modal"
         ref="badge-filter-modal"
@@ -145,7 +138,7 @@
             </b-form-checkbox>
 
             <div
-              v-if="hasTaxonomyChild(taxonomy.id)"
+              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
               class="badge-modal-child-container"
             >
               <b-form-checkbox
@@ -218,9 +211,18 @@ export default {
     getTaxonomies() {
       return this.$store.state.arts.taxonomyFilter
     },
+    getCategoryFilterList() {
+      return this.$store.state.grants.grantCategoryList
+    },
+    getSelectedFilterList() {
+      return this.filterType === 'arts'
+        ? this.getTaxonomies
+        : this.getCategoryFilterList
+    },
     grantCategory() {
       return this.$store.state.grants.categorySearchSet
     },
+
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
     },
@@ -232,6 +234,13 @@ export default {
     }
   },
   methods: {
+    getFilterText() {
+      return this.getSelectedFilterList.length !== 0
+        ? `${this.getSelectedFilterList.length} ${
+            this.filterType === 'arts' ? 'Taxonomy' : 'Category'
+          } Selected`
+        : 'choose sub-category'
+    },
     toggleOption() {
       this.showFilterOption = !this.showFilterOption
     },
@@ -264,12 +273,21 @@ export default {
       }, '')
     },
     removeTag() {
-      const resetTaxonomy = this.taxonomies.map(taxonomy => {
-        taxonomy.isChecked = false
-        return taxonomy
-      })
-      this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
-      this.$store.commit('arts/setTaxonomyTag', [])
+      if (this.filterType === 'arts') {
+        const resetTaxonomy = this.taxonomies.map(taxonomy => {
+          taxonomy.isChecked = false
+          return taxonomy
+        })
+        this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
+        this.$store.commit('arts/setTaxonomyTag', [])
+      } else {
+        const resetList = this.selectedList.map(category => {
+          category.isChecked = false
+          return category
+        })
+        this.$store.commit('grants/setGrantCategorySearchSet', resetList)
+        this.$store.commit('grants/setCategoryTag', [])
+      }
     },
     checkIfSelected(value) {
       return this.getTaxonomies.some(tag => tag === value)

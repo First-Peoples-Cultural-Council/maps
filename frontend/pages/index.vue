@@ -1029,6 +1029,10 @@ export default {
         .setHTML(
           `<div class="grant-popup-container">
               <div class="grant-header"> </div>
+              <div class="grants-header">
+                <img src="@/assets/images/graph_background_grants.svg" />
+                <span class="title">Grants</span>
+              </div>
 
               ${grantDetails}
 
@@ -1728,6 +1732,10 @@ export default {
 
   .grant-popup-container .grant-header {
     display: none !important;
+  }
+
+  .grant-popup-container .grants-header {
+    display: block !important;
   }
 }
 

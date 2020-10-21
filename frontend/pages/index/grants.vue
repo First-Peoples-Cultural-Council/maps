@@ -5,7 +5,7 @@
         <div class="grants-header">
           <img src="@/assets/images/graph_background_grants.svg" />
           <span class="title">Grants</span>
-          <div class="fpcc-card-more" @click.prevent="handleReturn">
+          <div class="grant-header-more" @click.prevent="handleReturn">
             <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
             <span class="ml-1 font-weight-bold">Return</span>
           </div>
@@ -20,7 +20,8 @@
         <Filters class="mb-2"></Filters>
       </template>
       <template v-slot:badges>
-        <span class="field-kinds pl-3 pr-3 pt-3">GRANT CATEGORY</span>
+        <CardFilter :mode="'grants'" />
+        <span class="field-kinds pl-3 pr-3 pt-3">Filter Grants by Year</span>
         <section class="badge-list-container pl-3 pr-3 pt-3">
           <BadgeFilter
             v-for="badge in grantBadges"
@@ -59,6 +60,7 @@
             >
               <GrantsCard
                 :grant="grant"
+                :parent-tag-object="getParentTag(grant)"
                 :is-selected="currentGrant && currentGrant.id === grant.id"
                 @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
@@ -85,6 +87,7 @@ import { zoomToPoint } from '@/mixins/map.js'
 import { makeMarker } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
+import CardFilter from '@/components/CardFilter.vue'
 
 export default {
   components: {
@@ -93,7 +96,8 @@ export default {
     Accordion,
     GrantsCard,
     Badge,
-    BadgeFilter
+    BadgeFilter,
+    CardFilter
   },
   head() {
     return {
@@ -115,18 +119,18 @@ export default {
         {
           id: 1,
           name: 'Arts',
-          color: '#3185CE'
+          color: '#0E7586'
         },
         {
           id: 2,
           name: 'Heritage',
-          color: '#4FA89D',
+          color: '#C15930',
           mode: 'grants'
         },
         {
           id: 3,
           name: 'Language',
-          color: '#D42433'
+          color: '#6C4264'
         }
       ]
     }
@@ -136,6 +140,12 @@ export default {
     next()
   },
   computed: {
+    grantsSearchQuery() {
+      return this.$store.state.grants.grantsSearch
+    },
+    isGrantsSearchMode() {
+      return this.grantsSearchQuery.length !== 0
+    },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
@@ -153,20 +163,47 @@ export default {
     },
     getGrantList() {
       //  if year filtermode is activated
-      if (this.getGrantsDateFilter || this.getCategoryFilterList.length !== 0) {
+      if (
+        this.getGrantsDateFilter ||
+        this.getCategoryFilterList.length !== 0 ||
+        this.isGrantsSearchMode
+      ) {
+        let finalGrants = []
         const { fromDate, toDate } = this.getGrantsDateFilter
-        const finalGrants = this.grantsTypeList.filter(grant => {
-          const isCategoryFound = this.getCategoryFilterList.some(
-            tag => tag.toLowerCase() === grant.properties.category.toLowerCase()
+        const filteredYear = this.grantsTypeList.filter(grant => {
+          return (
+            grant.properties.year <= toDate && grant.properties.year >= fromDate
           )
-          return grant.properties.year <= toDate &&
-            grant.properties.year >= fromDate &&
-            this.getCategoryFilterList.length !== 0
-            ? isCategoryFound
-            : true
         })
 
-        return finalGrants
+        // Filter by categories
+        if (this.getCategoryFilterList.length !== 0) {
+          finalGrants = filteredYear.filter(grant => {
+            const isCategoryFound = this.getCategoryFilterList.some(
+              tag =>
+                tag.toLowerCase() === grant.properties.category.toLowerCase()
+            )
+            return isCategoryFound
+          })
+        } else {
+          finalGrants = filteredYear
+        }
+
+        // Filter by Search Query
+        if (this.isGrantsSearchMode) {
+          return finalGrants.filter(grant => {
+            return (
+              grant.properties.grant
+                .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase()) ||
+              grant.properties.recipient
+                .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase())
+            )
+          })
+        } else {
+          return finalGrants
+        }
       } else {
         return this.grantsTypeList
       }
@@ -264,12 +301,27 @@ export default {
         category => category.name.toLowerCase() === name.toLowerCase()
       )
     },
-    getChildCategory(name) {
-      return this.categoryList.filter(
-        category => category.parent === this.getCategoryId(name).id
+    getParentTag(grant) {
+      return grant.properties.category
+        ? this.getParentName(
+            this.getCategoryId(grant.properties.category).parent
+          )
+        : ''
+    },
+    getParentName(childCateg) {
+      return this.grantBadges.find(
+        badge =>
+          this.categoryList.find(category => category.id === childCateg)
+            .name === badge.name
       )
     },
-
+    getChildCategory(name) {
+      return this.categoryList
+        .filter(category => category.parent === this.getCategoryId(name).id)
+        .sort((a, b) => {
+          return a.order - b.order
+        })
+    },
     getCountValues(type) {
       return (this.getGrantsDateFilter || this.categoryList) &&
         this.filterMode === type
@@ -287,6 +339,18 @@ export default {
     badgeClick($event, name) {
       this.maximumLength = 7
       this.handleBadge($event, name)
+      this.resetGrantFilter()
+    },
+    resetGrantFilter() {
+      const resetList = this.categoryList.map(category => {
+        category.isChecked = false
+        return category
+      })
+      this.$store.commit('grants/setGrantCategorySearchSet', resetList)
+      this.$store.commit('grants/setCategoryTag', [])
+      // Reset text filter
+      this.$store.commit('grants/setGrantsSearch', '')
+      this.$root.$emit('clearInput')
     },
     setupMap(grant) {
       this.$eventHub.whenMap(map => {
@@ -303,47 +367,4 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.grants-header {
-  position: relative;
-  margin-left: 15px;
-  margin-top: 10px;
-}
-
-.grants-header .title {
-  font-family: 'Faustina', serif;
-  font-weight: bold;
-  font-size: 26px;
-  margin-left: -30px;
-  color: #b47a2b;
-}
-
-.fpcc-card-more {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  right: 0;
-  top: 20%;
-  width: 90px;
-  height: 35px;
-  background-color: #b47a2b;
-  border-top-left-radius: 1em;
-  border-bottom-left-radius: 1em;
-  color: #fff;
-  z-index: 50000;
-  padding: 1em;
-}
-
-.fpcc-card-more:hover {
-  color: white;
-  background-color: #454545;
-}
-
-.fpcc-card-more img {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-}
-</style>
+<style></style>
