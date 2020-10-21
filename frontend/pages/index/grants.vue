@@ -17,34 +17,41 @@
           ></Accordion>
         </section>
         <hr class="sidebar-divider" />
-        <Filters class="mb-2"></Filters>
+        <GrantFilter :max-date="getMaxDate" :min-date="getMinDate" class="mb-2">
+          <template v-slot:badge-filter>
+            <span class="sidebar-title">FPCC Departments</span>
+            <section class="badge-list-container mt-3">
+              <BadgeFilter
+                v-for="badge in grantBadges"
+                :key="`badge-grant-${badge.name}`"
+                class="mt-2 cursor-pointer"
+                :color="badge.color"
+                :child-taxonomy="badge.id ? getChildCategory(badge.name) : []"
+                :is-selected="filterMode === badge.name.toLowerCase()"
+                :filter-type="'grants'"
+              >
+                <template v-slot:badge>
+                  <Badge
+                    :content="badge.name === 'All' ? 'All Grants' : badge.name"
+                    :number="
+                      badge.name === 'All'
+                        ? getGrantList.length
+                        : getCountValues(badge.name.toLowerCase())
+                    "
+                    :bgcolor="badge.color"
+                    :mode="getBadgeStatus(filterMode, badge.name.toLowerCase())"
+                    @click.native.prevent="
+                      badgeClick($event, badge.name.toLowerCase())
+                    "
+                  ></Badge>
+                </template>
+              </BadgeFilter>
+            </section>
+          </template>
+        </GrantFilter>
       </template>
       <template v-slot:badges>
-        <CardFilter :mode="'grants'" />
-        <span class="field-kinds pl-3 pr-3 pt-3">Filter Grants by Year</span>
-        <section class="badge-list-container pl-3 pr-3 pt-3">
-          <BadgeFilter
-            v-for="badge in grantBadges"
-            :key="`badge-grant-${badge.name}`"
-            class="mt-2 cursor-pointer"
-            :color="badge.color"
-            :child-taxonomy="getChildCategory(badge.name)"
-            :is-selected="filterMode === badge.name.toLowerCase()"
-            :filter-type="'grants'"
-          >
-            <template v-slot:badge>
-              <Badge
-                :content="badge.name"
-                :number="getCountValues(badge.name.toLowerCase())"
-                :bgcolor="badge.color"
-                :mode="getBadgeStatus(filterMode, badge.name.toLowerCase())"
-                @click.native.prevent="
-                  badgeClick($event, badge.name.toLowerCase())
-                "
-              ></Badge>
-            </template>
-          </BadgeFilter>
-        </section>
+        <CardFilter class="mt-3 mb-3" :mode="'grants'" />
       </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
@@ -82,7 +89,7 @@
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
-import Filters from '@/components/grants/GrantsFilter.vue'
+import GrantFilter from '@/components/grants/GrantsFilter.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import { makeMarker } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
@@ -92,7 +99,7 @@ import CardFilter from '@/components/CardFilter.vue'
 export default {
   components: {
     SideBar,
-    Filters,
+    GrantFilter,
     Accordion,
     GrantsCard,
     Badge,
@@ -117,26 +124,31 @@ export default {
       maximumLength: 0,
       grantBadges: [
         {
+          name: 'All',
+          color: '#99281C'
+        },
+        {
           id: 1,
           name: 'Arts',
-          color: '#0E7586'
+          color: '#00333A'
         },
         {
           id: 2,
           name: 'Heritage',
-          color: '#C15930',
+          color: '#9D3D22',
           mode: 'grants'
         },
         {
           id: 3,
           name: 'Language',
-          color: '#6C4264'
+          color: '#B47A2B'
         }
       ]
     }
   },
   beforeRouteLeave(to, from, next) {
     this.$root.$emit('resetMap')
+    this.resetGrantFilter()
     next()
   },
   computed: {
@@ -149,17 +161,48 @@ export default {
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
+
     grants() {
       return this.$store.state.grants.grantsSet
     },
-    grantsTypeList() {
-      return this.grants.filter(grant => {
-        return (
-          grant.properties.category &&
-          this.getCategoryId(grant.properties.category).parent ===
-            this.getCategoryId(this.filterMode).id
-        )
+    getMinDate() {
+      let getMinimum = 0
+      this.grants.forEach(grant => {
+        const grantYear = grant.properties.year
+        getMinimum =
+          getMinimum !== 0
+            ? getMinimum < grant.properties.year
+              ? getMinimum
+              : grantYear
+            : grant.properties.year
       })
+      return getMinimum
+    },
+    getMaxDate() {
+      let getMaximum = 0
+      this.grants.forEach(grant => {
+        const grantYear = grant.properties.year
+        getMaximum =
+          getMaximum !== 0
+            ? getMaximum > grantYear
+              ? getMaximum
+              : grantYear
+            : grantYear
+      })
+      return getMaximum
+    },
+    grantsTypeList() {
+      if (this.filterMode === 'all') {
+        return this.grants
+      } else {
+        return this.grants.filter(grant => {
+          return (
+            grant.properties.category &&
+            this.getCategoryId(grant.properties.category).parent ===
+              this.getCategoryId(this.filterMode).id
+          )
+        })
+      }
     },
     getGrantList() {
       //  if year filtermode is activated
@@ -209,7 +252,10 @@ export default {
       }
     },
     paginatedGrants() {
-      return this.getGrantList.slice(0, this.maximumLength)
+      const sortedbyDesc = [...this.getGrantList].sort(
+        (a, b) => a.properties.year - b.properties.year
+      )
+      return sortedbyDesc.slice(0, this.maximumLength)
     },
     getGrantsDateFilter() {
       return this.$store.state.grants.filterDate
@@ -232,10 +278,6 @@ export default {
     this.$root.$emit('resetMap')
   },
   mounted() {
-    this.$eventHub.whenMap(map => {
-      this.$root.$emit('mapLoaded')
-    })
-
     this.$eventHub.whenMap(map => {
       this.$root.$emit('toggleMapLayers')
     })

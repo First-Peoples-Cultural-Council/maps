@@ -48,15 +48,7 @@
 
 
 /******* GRANTS CARD STYLE *******/
-.grants-card {
-  cursor: pointer;
-}
-.grants-icon-container {
-  background-color: black;
-  border-radius: 50%;
-  height: 30px;
-  width: 30px;
-}
+
 .grants-icon-container img {
   display: inline-block;
   width: 100%;
@@ -74,7 +66,3 @@
   border-bottom-left-radius: 1em;
 }
 
-.grants-icon-container.icon-sm {
-  width: 30px;
-  height: 30px;
-}

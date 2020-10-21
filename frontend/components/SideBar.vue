@@ -59,7 +59,7 @@
             </div>
           </template>
           <template v-slot:tabs>
-            <div v-if="$route.name !== 'index-grants'" class="sidebar-tabs">
+            <div v-show="$route.name !== 'index-grants'" class="sidebar-tabs">
               <b-nav tabs fill>
                 <b-nav-item
                   v-for="tab in navigationTabs"
