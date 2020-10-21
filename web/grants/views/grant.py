@@ -46,7 +46,7 @@ CATEGORIES = {
 class GrantViewSet(mixins.ListModelMixin,
                     mixins.RetrieveModelMixin,
                     BaseGenericViewSet):
-    queryset = Grant.objects.filter(point__isnull=False)
+    queryset = Grant.objects.filter(point__isnull=False).order_by('-year')
     serializer_class = GrantSerializer
     detail_serializer_class = GrantDetailSerializer
     lookup_field = 'id'
