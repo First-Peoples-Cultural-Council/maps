@@ -18,6 +18,15 @@
   word-break: break-all;
 }
 
+.sidebar-title{
+  font: Bold 13px/15px Proxima Nova;
+  color: #707070;
+  opacity: 1;
+  text-transform: uppercase;
+  margin: 1em 0;
+  padding: 0;
+}
+
 .content-collapse {
   position: relative;
   justify-content: space-between;

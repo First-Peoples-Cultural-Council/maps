@@ -4,7 +4,7 @@ export const state = () => ({
   filterDate: null,
   currentGrant: null,
   categorySearchSet: [],
-  grantFilterMode: 'arts',
+  grantFilterMode: 'all',
   grantCategoryList: [],
   grantsSearch: ''
 })
@@ -32,7 +32,6 @@ export const mutations = {
     state.grantCategoryList = value
   },
   setGrantsSearch(state, query) {
-    console.log('enter', query)
     state.grantsSearch = query
   }
 }

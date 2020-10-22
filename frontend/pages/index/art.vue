@@ -462,13 +462,6 @@ export default {
       this.maximumLength = 0
       this.handleBadge($event, name)
       this.loadKindData()
-
-      // // update URL, but no functionality
-      // this.$router.push({
-      //   query: {
-      //     type: name
-      //   }
-      // })
     },
     resetFilter() {
       const resetTaxonomy = this.taxonomies.map(taxonomy => {
@@ -478,6 +471,7 @@ export default {
       this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
+      this.$root.$emit('clearInput')
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)

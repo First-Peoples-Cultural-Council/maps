@@ -11,10 +11,7 @@
     "
   >
     <slot name="badge"></slot>
-    <div
-      v-if="isSelected || (isSelected && getTaxonomies.length !== 0)"
-      class="badge-filters "
-    >
+    <div v-if="isSelected && childTaxonomy.length !== 0" class="badge-filters ">
       <p id="badge-choose" @click="showFilterOption = !showFilterOption">
         {{ showFilterOption ? 'Click here to Close' : getFilterText() }}
 
@@ -237,9 +234,9 @@ export default {
     getFilterText() {
       return this.getSelectedFilterList.length !== 0
         ? `${this.getSelectedFilterList.length} ${
-            this.filterType === 'arts' ? 'Taxonomy' : 'Category'
+            this.filterType === 'arts' ? 'Taxonomy' : 'Program'
           } Selected`
-        : 'choose sub-category'
+        : `choose a ${this.filterType === 'arts' ? 'sub-category' : 'Program'}`
     },
     toggleOption() {
       this.showFilterOption = !this.showFilterOption

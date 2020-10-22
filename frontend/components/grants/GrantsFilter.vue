@@ -14,8 +14,8 @@
         </div>
       </div>
     </div>
-    <b-collapse id="filters" v-model="showCollapse" class="mt-2 pl-2 pr-2">
-      <span class="field-kinds mt-3">AWARD YEAR RANGE</span>
+    <b-collapse id="filters" v-model="showCollapse" class="mt-2">
+      <span class="field-kinds mt-3">FILTER GRANTS BY YEAR</span>
       <div class="date-main-container">
         <div class="date-container">
           <span>From</span>
@@ -24,6 +24,7 @@
             class="date-input"
             maxlength="4"
             @blur="handleFromUpdate"
+            @keypress="isNumber($event)"
           ></b-form-input>
         </div>
 
@@ -34,6 +35,7 @@
             class="date-input"
             maxlength="4"
             @blur="handleToUpdate"
+            @keypress="isNumber($event)"
           ></b-form-input>
         </div>
       </div>
@@ -47,8 +49,11 @@
         handle-color="#B47A2B"
         :hide-from-to="true"
         @change="changeDateValue"
-        @finish="handleFilterGrants"
       />
+
+      <div class="badges-container">
+        <slot name="badge-filter"></slot>
+      </div>
     </b-collapse>
   </div>
 </template>
@@ -62,40 +67,73 @@ export default {
       default: () => {
         return []
       }
+    },
+    maxDate: {
+      type: Number,
+      default: 0
+    },
+    minDate: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
-      showCollapse: false,
+      showCollapse: true,
       fromValue: 0,
       toValue: 0
     }
   },
   computed: {
-    layers() {
-      return this.$store.state.layers.layers
-    },
     getMaximumDate() {
       // return maximum date list
-      return new Date(2020, 11, 24).valueOf()
+      return new Date(this.maxDate, 1, 1).valueOf()
     },
 
     getMinimumDate() {
       // return minimum date from list
-      return new Date(2000, 11, 24).valueOf()
+      return new Date(this.minDate, 1, 1).valueOf()
     }
   },
   mounted() {
+    window.addEventListener('resize', this.screenChecker)
+
+    if (window.innerWidth < 1080) {
+      this.showCollapse = false
+    }
     this.fromValue = this.prettify(this.getMinimumDate)
     this.toValue = this.prettify(this.getMaximumDate)
     this.setStoreDateValues()
   },
+  destroyed() {
+    window.removeEventListener('resize', this.screenChecker)
+  },
   methods: {
+    isNumber(evt) {
+      evt = evt || window.event
+      const charCode = evt.which ? evt.which : evt.keyCode
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode === 46
+      ) {
+        evt.preventDefault()
+      } else {
+        return true
+      }
+    },
+    screenChecker(e) {
+      if (e.srcElement.innerWidth > 1080) {
+        this.showCollapse = true
+      }
+    },
     changeDateValue(value) {
       this.toValue = value.to_pretty
       this.fromValue = value.from_pretty
+      this.setStoreDateValues()
     },
     prettify(ts) {
+      // return only year of the date
       return new Date(ts).toLocaleDateString('en', {
         year: 'numeric'
       })
@@ -106,7 +144,7 @@ export default {
     handleFromUpdate() {
       const minimumDate = this.prettify(this.getMinimumDate)
       const maxDate = this.prettify(this.getMaximumDate)
-      if (this.fromValue < minimumDate) {
+      if (this.fromValue < minimumDate || this.fromValue > maxDate) {
         this.fromValue = minimumDate
       }
 
@@ -121,7 +159,7 @@ export default {
       const minimumDate = this.prettify(this.getMinimumDate)
       const maxDate = this.prettify(this.getMaximumDate)
 
-      if (this.toValue > maxDate) {
+      if (this.toValue > maxDate || this.toValue < minimumDate) {
         this.toValue = maxDate
       }
 
@@ -174,5 +212,9 @@ export default {
     border-radius: 17px;
     text-align: center;
   }
+}
+
+.badges-container {
+  margin: 1em 0;
 }
 </style>

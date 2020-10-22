@@ -1049,11 +1049,7 @@ export default {
         .setHTML(
           `<div class="grant-popup-container">
               <div class="grant-header"> </div>
-              <div class="grants-header">
-                <img src="@/assets/images/graph_background_grants.svg" />
-                <span class="title">Grants</span>
-              </div>
-
+            
               ${grantDetails}
 
               <!-- TODO scroll indicator -->
@@ -1636,9 +1632,9 @@ export default {
 // Grants Modal Style
 
 .grant-popup-modal {
-  width: 450px !important;
-  max-width: 450px !important;
-  max-height: 400px;
+  width: 550px !important;
+  max-width: 550px !important;
+  max-height: 500px;
 
   .mapboxgl-popup-content {
     padding: 0 !important;
@@ -1653,9 +1649,9 @@ export default {
 }
 
 .grant-popup-container {
-  width: 450px !important;
-  max-width: 450px !important;
-  max-height: 450px;
+  width: 550px !important;
+  max-width: 550px !important;
+  max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
   border: 0.8px solid #9f9f9f;
@@ -1676,7 +1672,7 @@ export default {
   }
 
   .grant-content {
-    padding: 1.5em;
+    padding: 1.25em;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
