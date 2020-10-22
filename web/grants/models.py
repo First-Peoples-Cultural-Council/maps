@@ -49,7 +49,6 @@ class Grant(models.Model):
     city = models.CharField(max_length=255, **optional)
     province = models.CharField(max_length=255, **optional)
     postal_code = models.CharField(max_length=255, **optional)
-    category = models.CharField(max_length=255, **optional)
     grant_category = models.ForeignKey(GrantCategory, on_delete=models.SET_NULL, **optional)
     point = models.PointField(null=True, default=None)
     modified = models.DateTimeField("date modified", auto_now=True)
