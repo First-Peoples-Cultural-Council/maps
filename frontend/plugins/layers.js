@@ -163,6 +163,7 @@ const addGrantsLayers = (map, self) => {
   map.loadImage(grantMarker, (error, image) => {
     if (error) throw error
     map.addImage('grant-marker', image)
+
     map.addLayer({
       id: 'fn-grants',
       type: 'symbol',
@@ -182,10 +183,67 @@ const addGrantsLayers = (map, self) => {
         'icon-padding': 0
       }
     })
+
+    map.addLayer({
+      id: 'fn-grants-clusters',
+      type: 'circle',
+      source: 'grants1',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#ffffff',
+        'circle-opacity': 0.8,
+        'circle-stroke-width': 5,
+        'circle-stroke-color': '#7d6799',
+        'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 500, 30]
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-grants-cluster-count',
+      type: 'symbol',
+      source: 'grants1',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 14
+      },
+      paint: {
+        'text-color': 'black'
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-grants-unclustered-points',
+      type: 'circle',
+      source: 'grants1',
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        'icon-image': 'grant-marker',
+        'icon-size': 0.5
+      }
+    })
+
+    map.on('click', 'fn-grants-clusters', function(e) {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['fn-grants-clusters']
+      })
+      const clusterId = features[0].properties.cluster_id
+      map
+        .getSource('grants1')
+        .getClusterExpansionZoom(clusterId, function(err, zoom) {
+          if (err) return
+
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom
+          })
+        })
+    })
   })
 }
 
-const getHTMLMarker = function(map, feature, el) {
+const getArtsMarker = function(map, feature, el) {
   // const layer = map.getLayer('fn-arts-clusters')
   if (!feature.properties.cluster_id) return
   map
@@ -227,7 +285,7 @@ const getHTMLMarker = function(map, feature, el) {
     )
 }
 
-const addHTMLClusters = map => {
+const addArtsClusters = map => {
   const mapboxgl = require('mapbox-gl')
 
   // objects for caching and keeping track of HTML marker objects (for performance)
@@ -249,7 +307,7 @@ const addHTMLClusters = map => {
       let marker = markers[id]
       if (!marker) {
         const el = document.createElement('div')
-        getHTMLMarker(map, features[i], el)
+        getArtsMarker(map, features[i], el)
         marker = markers[id] = new mapboxgl.Marker({
           element: el
         }).setLngLat(coords)
@@ -506,8 +564,15 @@ export default {
     map.on('mouseleave', 'fn-grants', e => {
       map.getCanvas().style.cursor = 'default'
     })
+    map.on('mouseenter', 'fn-grants-clusters', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-grants-clusters', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
 
-    addHTMLClusters(map)
+    addArtsClusters(map)
+    // addGrantsClusters(map)
 
     // Layer feature precedence controls, in correct order for your reference:
     //       'text-optional': true,

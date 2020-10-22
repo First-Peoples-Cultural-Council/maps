@@ -1068,6 +1068,11 @@ export default {
         if (grant) this.showGrantModal(map, grant)
       })
 
+      this.$root.$on('filterGrants', () => {
+        this.clearFeatures()
+        zoomToIdealBox({ map })
+      })
+
       this.$root.$on('getLocation', () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -1092,7 +1097,7 @@ export default {
         type: 'geojson',
         data: this.artsGeoSet,
         cluster: true,
-        // clusterMaxZoom: 14,
+        clusterMaxZoom: 9,
         clusterRadius: 50
       })
       map.addSource('places1', {
@@ -1102,7 +1107,10 @@ export default {
 
       map.addSource('grants1', {
         type: 'geojson',
-        data: '/api/grants/'
+        data: '/api/grants/',
+        cluster: true,
+        clusterMaxZoom: 9,
+        clusterRadius: 40
       })
 
       layers.layers(map, this)
