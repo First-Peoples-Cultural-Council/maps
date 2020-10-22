@@ -1123,6 +1123,16 @@ export default {
         this.updateHash(map)
       })
 
+      map.on('zoom', () => {
+        if (this.$route.name !== 'index-grants') {
+          if (map.getZoom() >= 6) {
+            map.setLayoutProperty('fn-grants', 'visibility', 'visible')
+          } else {
+            map.setLayoutProperty('fn-grants', 'visibility', 'none')
+          }
+        }
+      })
+
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
       MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
