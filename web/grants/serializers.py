@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from .models import Grant
+from .models import Grant, GrantCategory
 
 
 class GrantSerializer(GeoFeatureModelSerializer):
+    category = serializers.CharField(source="grant_category.name", allow_null=True)
 
     class Meta:
         model = Grant
@@ -14,8 +15,16 @@ class GrantSerializer(GeoFeatureModelSerializer):
 
 
 class GrantDetailSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='grant_category.name', allow_null=True)
 
     class Meta:
         model = Grant
-        fields = "__all__"
+        exclude = ("grant_category",)
         geo_field = "point"
+
+
+class GrantCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GrantCategory
+        exclude = ("abbreviation",)

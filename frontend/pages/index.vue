@@ -502,7 +502,7 @@ export default {
       $axios.$get(getApiUrl('taxonomy')),
       $axios.$get(getApiUrl('arts/event')),
       $axios.$get(getApiUrl('grants')),
-      $axios.$get(getApiUrl('grants/category'))
+      $axios.$get(getApiUrl('grant-categories'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
