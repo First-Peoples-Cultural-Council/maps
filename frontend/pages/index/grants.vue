@@ -318,8 +318,7 @@ export default {
         this.$store.commit('grants/setCurrentGrant', null)
         this.$root.$emit('resetMap')
       } else {
-        this.$store.commit('grants/setCurrentGrant', grant)
-        this.$root.$emit('showGrantModal')
+        this.$root.$emit('showGrantModal', grant)
         this.setupMap(grant)
       }
     },
