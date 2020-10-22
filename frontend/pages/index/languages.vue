@@ -10,6 +10,13 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-lang-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('language')"
+          >
+            View Language Grants
+          </button>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
@@ -242,4 +249,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+#btn-lang-grants {
+  background-color: #b47a2b;
+}
+</style>

@@ -30,6 +30,14 @@ Vue.mixin({
       if (isMobileSideBarOpen) {
         e.stopPropagation()
       }
+    },
+    goToGrants(program) {
+      console.log(program)
+      this.$store.commit('grants/setGrantFilter', program)
+
+      this.$router.push({
+        path: '/grants'
+      })
     }
   }
 })

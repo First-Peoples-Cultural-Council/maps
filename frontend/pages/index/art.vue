@@ -11,6 +11,13 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-arts-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('arts')"
+          >
+            View Arts Grants
+          </button>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2 mt-2"></Filters>
@@ -599,4 +606,8 @@ export default {
   }
 }
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+#btn-arts-grants {
+  background-color: #00333a;
+}
+</style>

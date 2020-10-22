@@ -20,6 +20,13 @@
               class="no-scroll-accordion"
               :content="accordionContent"
             ></Accordion>
+            <button
+              id="btn-lang-grants"
+              class="btn-grant-redirect"
+              @click="goToGrants('language')"
+            >
+              View Language Grants
+            </button>
           </section>
           <section class="badge-section pl-3 pr-3 mt-3"></section>
           <hr class="sidebar-divider" />
@@ -1473,6 +1480,12 @@ export default {
 </script>
 
 <style lang="scss">
+#btn-lang-grants {
+  margin-top: 1em;
+  background-color: #b47a2b;
+  color: white;
+}
+
 @font-face {
   font-family: 'Proxima Nova';
   src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
