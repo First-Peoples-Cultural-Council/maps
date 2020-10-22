@@ -29,7 +29,7 @@ export const makeMarker = (geom, icon, context) => {
   el.style = `background-image: url('/${icon}')`
 
   const marker = new mapboxgl.Marker(el).setLngLat(geomToLatLng(geom))
-  context.$store.commit('features/addMarker', marker)
+  context.$store.commit('features/setMarker', marker)
   return marker
 }
 

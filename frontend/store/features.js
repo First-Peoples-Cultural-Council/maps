@@ -1,17 +1,21 @@
 export const state = () => ({
   feature: null,
-  markers: [],
-  popups: []
+  marker: null,
+  popup: null
 })
 
 export const mutations = {
   set(state, feature) {
     state.feature = feature
   },
-  addMarker(state, marker) {
-    state.markers.push(marker)
+  setMarker(state, marker) {
+    if (state.marker) state.marker.remove()
+
+    state.marker = marker
   },
-  addPopup(state, popup) {
-    state.popups.push(popup)
+  setPopup(state, popup) {
+    if (state.popup) state.popup.remove()
+
+    state.popup = popup
   }
 }

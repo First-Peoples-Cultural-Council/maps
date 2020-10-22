@@ -471,12 +471,6 @@ export default {
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
-    },
-    markers() {
-      return this.$store.state.features.markers
-    },
-    popups() {
-      return this.$store.state.features.popups
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -602,8 +596,7 @@ export default {
     }
 
     this.toggleLayers(to.name)
-    this.removeMarkers()
-    this.removePopups()
+    this.clearFeatures()
     next()
   },
   created() {
@@ -879,16 +872,9 @@ export default {
       }
       markersOnScreen = newMarkers
     },
-    removeMarkers() {
-      for (const marker in this.markers) {
-        this.markers[marker].remove()
-      }
-    },
-    removePopups() {
-      for (const popup in this.popups) {
-        console.log(this.popups[popup])
-        this.popups[popup].remove()
-      }
+    clearFeatures() {
+      this.$store.commit('features/setPopup', null)
+      this.$store.commit('features/setMarker', null)
     },
     goToLang() {
       this.$router.push({
@@ -942,13 +928,12 @@ export default {
           if (feature.layer.id === 'fn-grants') {
             // Show Popup with Grant details
             const grant = feature
-            this.$store.commit('grants/setCurrentGrant', grant)
 
             // Zoom to selected point and highlight icon
             if (grant.geometry) {
               zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
               map.once('moveend', () => {
-                this.showGrantModal(map)
+                this.showGrantModal(map, grant)
               })
 
               const icon = 'grant_icon.png'
@@ -1006,7 +991,6 @@ export default {
               const props = feature.properties
               return ach + renderArtDetail(props)
             }, '')
-            console.log('ITEM', aFeatures)
             const mapboxgl = require('mapbox-gl')
             new mapboxgl.Popup({
               className: 'artPopUp'
@@ -1029,11 +1013,10 @@ export default {
         )
     },
 
-    showGrantModal(map) {
-      this.removePopups()
-
-      const grantData = this.currentGrant
+    showGrantModal(map, grant) {
+      const grantData = grant
       const grantDetails = renderGrantDetails(grantData)
+      this.$store.commit('grants/setCurrentGrant', grant)
 
       const mapboxgl = require('mapbox-gl')
 
@@ -1059,20 +1042,23 @@ export default {
 
               </div>`
         )
+        .on('close', () => {
+          this.$store.commit('grants/setCurrentGrant', null)
+          this.$store.commit('features/setMarker', null)
+        })
         .addTo(map)
 
-      this.$store.commit('features/addPopup', popup)
+      this.$store.commit('features/setPopup', popup)
     },
 
     mapLoaded(map) {
       this.$root.$on('resetMap', () => {
-        this.removeMarkers()
-        this.removePopups()
+        this.clearFeatures()
         zoomToIdealBox({ map })
       })
 
-      this.$root.$on('showGrantModal', () => {
-        this.showGrantModal(map)
+      this.$root.$on('showGrantModal', grant => {
+        if (grant) this.showGrantModal(map, grant)
       })
 
       this.$root.$on('getLocation', () => {
