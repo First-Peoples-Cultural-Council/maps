@@ -252,10 +252,7 @@ export default {
       }
     },
     paginatedGrants() {
-      const sortedbyDesc = [...this.getGrantList].sort(
-        (a, b) => a.properties.year - b.properties.year
-      )
-      return sortedbyDesc.slice(0, this.maximumLength)
+      return this.getGrantList.slice(0, this.maximumLength)
     },
     getGrantsDateFilter() {
       return this.$store.state.grants.filterDate
