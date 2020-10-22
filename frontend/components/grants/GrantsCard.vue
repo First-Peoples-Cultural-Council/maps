@@ -144,7 +144,6 @@ export default {
 
   & > span {
     margin-right: 1em;
-    margin-bottom: 1em;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: 0.8em;
