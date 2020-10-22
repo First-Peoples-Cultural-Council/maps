@@ -25,6 +25,7 @@ Vue.mixin({
 
       if (this.$route.name === 'index-grants') {
         this.$store.commit('grants/setGrantFilter', data)
+        this.$root.$emit('resetMap')
       }
 
       if (isMobileSideBarOpen) {
