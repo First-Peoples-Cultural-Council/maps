@@ -10,6 +10,23 @@ optional = {
 }
 
 
+class GrantCategory(models.Model):
+    name = models.TextField()
+    abbreviation = models.CharField(max_length=255)
+    order = models.IntegerField(default=None, **optional)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        related_name='child_categories',
+        **optional)
+
+    def __str__(self):
+        return "{} ({})".format(self.name, self.abbreviation)
+
+    class Meta:
+        verbose_name_plural = "Grant Categories"
+
+
 class Grant(models.Model):
     grant = models.CharField(max_length=255, **optional)
     year = models.IntegerField(
@@ -32,7 +49,7 @@ class Grant(models.Model):
     city = models.CharField(max_length=255, **optional)
     province = models.CharField(max_length=255, **optional)
     postal_code = models.CharField(max_length=255, **optional)
-    category = models.CharField(max_length=255, **optional)
+    grant_category = models.ForeignKey(GrantCategory, on_delete=models.SET_NULL, **optional)
     point = models.PointField(null=True, default=None)
     modified = models.DateTimeField("date modified", auto_now=True)
     created = models.DateTimeField("date created", auto_now_add=True)
