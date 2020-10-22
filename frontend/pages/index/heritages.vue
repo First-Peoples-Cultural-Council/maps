@@ -7,6 +7,13 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-heritage-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('heritage')"
+          >
+            View Heritage Grants
+          </button>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
@@ -151,4 +158,8 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+#btn-heritage-grants {
+  background-color: #9d3d22;
+}
+</style>
