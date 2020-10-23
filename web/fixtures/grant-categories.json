@@ -288,5 +288,15 @@
         "order": 13,
         "parent": 3
     }
+},
+{
+    "model": "grants.grantcategory",
+    "pk": 30,
+    "fields": {
+        "name": "ALLND",
+        "abbreviation": "ALLND",
+        "order": 12,
+        "parent": 1
+    }
 }
 ]
