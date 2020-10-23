@@ -344,7 +344,7 @@ export default {
         ? this.getParentName(
             this.getCategoryId(grant.properties.category).parent
           )
-        : ''
+        : { color: '#9A281B' }
     },
     getParentName(childCateg) {
       return this.grantBadges.find(
