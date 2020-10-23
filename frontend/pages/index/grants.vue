@@ -324,7 +324,7 @@ export default {
     },
     handleReturn() {
       this.$router.push({
-        path: '/'
+        path: '/languages'
       })
     },
     loadMoreData() {
