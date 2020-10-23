@@ -35897,9 +35897,9 @@
         "city": "Prince George",
         "province": "BC",
         "postal_code": "V2L 5R2",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-122.7473 53.9078)",
-        "modified": "2020-10-16T09:02:51.469Z",
+        "modified": "2020-10-23T12:49:52.214Z",
         "created": "2020-10-16T09:02:51.469Z"
     }
 },
@@ -35919,9 +35919,9 @@
         "city": "Alkali Lake",
         "province": "British Columbia",
         "postal_code": "V0L 1B0",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-123.6526 52.0993)",
-        "modified": "2020-10-16T09:02:51.510Z",
+        "modified": "2020-10-23T12:49:52.447Z",
         "created": "2020-10-16T09:02:51.511Z"
     }
 },
@@ -35941,9 +35941,9 @@
         "city": "Mount Currie",
         "province": "British Columbia",
         "postal_code": "V0N 2K0",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-126.0745 51.2944)",
-        "modified": "2020-10-16T09:02:51.546Z",
+        "modified": "2020-10-23T12:49:52.519Z",
         "created": "2020-10-16T09:02:51.546Z"
     }
 },
@@ -35963,9 +35963,9 @@
         "city": "Alexis Creek",
         "province": "BC",
         "postal_code": "V0L 1A0",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-123.6526 52.0993)",
-        "modified": "2020-10-16T09:02:51.585Z",
+        "modified": "2020-10-23T12:49:52.591Z",
         "created": "2020-10-16T09:02:51.585Z"
     }
 },
@@ -35985,9 +35985,9 @@
         "city": "Chase",
         "province": "BC",
         "postal_code": "V0E 1M0",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-119.2034 51.505)",
-        "modified": "2020-10-16T09:02:51.624Z",
+        "modified": "2020-10-23T12:49:52.610Z",
         "created": "2020-10-16T09:02:51.624Z"
     }
 },
@@ -36007,9 +36007,9 @@
         "city": "Port Alberni",
         "province": "British Columbia",
         "postal_code": "V9Y 8X9",
-        "grant_category": null,
+        "grant_category": 30,
         "point": "SRID=4326;POINT (-124.8028 49.2413)",
-        "modified": "2020-10-16T09:02:51.694Z",
+        "modified": "2020-10-23T12:49:52.682Z",
         "created": "2020-10-16T09:02:51.694Z"
     }
 },
