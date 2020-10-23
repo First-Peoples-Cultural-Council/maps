@@ -1080,6 +1080,10 @@ export default {
         zoomToIdealBox({ map })
       })
 
+      this.$root.$on('updateGrantsMarkers', geoJSON => {
+        map.getSource('grants1').setData(geoJSON)
+      })
+
       this.$root.$on('getLocation', () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
