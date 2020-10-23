@@ -1,5 +1,5 @@
 <template>
-  <div class="contribute-container">
+  <div class="contribute-container" :class="{ 'hide-contribute': hideButton }">
     <b-button @click="toggleModal">
       <span>Add to the Map</span>
       <img
@@ -208,7 +208,8 @@ export default {
   },
   data() {
     return {
-      showContributeModal: false
+      showContributeModal: false,
+      hideButton: false
     }
   },
   computed: {
@@ -237,12 +238,25 @@ export default {
       return this.$store.state.user.isLoggedIn
     }
   },
+  destroyed() {
+    window.removeEventListener('resize', this.widthChecker)
+  },
   mounted() {
+    this.checkWindowDimemsion()
+    window.addEventListener('resize', this.checkWindowDimemsion)
+
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
   },
   methods: {
+    checkWindowDimemsion() {
+      if (window.innerWidth <= 992 && this.$route.name === 'index-grants') {
+        this.hideButton = true
+      } else {
+        this.hideButton = false
+      }
+    },
     toggleModal() {
       if (this.$route.name === 'index-art' && this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
@@ -346,6 +360,10 @@ export default {
     width: 25px;
     height: 25px;
   }
+}
+
+.hide-contribute {
+  display: none !important;
 }
 // For Mobile View
 @media screen and (max-width: 993px) {
