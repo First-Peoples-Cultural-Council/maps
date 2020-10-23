@@ -35,7 +35,7 @@
                     :content="badge.name === 'All' ? 'All Grants' : badge.name"
                     :number="
                       badge.name === 'All'
-                        ? getGrantList.length
+                        ? visibleGrantsCount
                         : getCountValues(badge.name.toLowerCase())
                     "
                     :bgcolor="badge.color"
@@ -154,6 +154,9 @@ export default {
   computed: {
     grantsSearchQuery() {
       return this.$store.state.grants.grantsSearch
+    },
+    visibleGrantsCount() {
+      return this.$store.state.grants.visibleGrantsCount
     },
     isGrantsSearchMode() {
       return this.grantsSearchQuery.length !== 0
