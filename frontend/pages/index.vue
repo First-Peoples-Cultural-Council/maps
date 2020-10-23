@@ -1763,7 +1763,7 @@ export default {
     bottom: 0 !important;
     left: 0 !important;
     max-height: 400px;
-    height: 400px;
+    height: 300px;
 
     .mapboxgl-popup-content {
       height: 400px;
@@ -1785,7 +1785,7 @@ export default {
     color: #b47a2b;
     background: #fff;
     border: 1px solid #b4b4b4;
-    left: 47.5%;
+    left: calc(50% - 25px);
     top: -30px;
   }
 
