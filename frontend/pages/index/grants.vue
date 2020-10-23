@@ -144,8 +144,7 @@ export default {
         {
           id: 2,
           name: 'Heritage',
-          color: '#9D3D22',
-          mode: 'grants'
+          color: '#9D3D22'
         },
         {
           id: 3,
