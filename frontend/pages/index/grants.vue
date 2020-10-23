@@ -3,8 +3,8 @@
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
       <template v-slot:content>
         <div class="grants-header">
-          <img src="@/assets/images/graph_background_grants.svg" />
           <span class="title">Grants</span>
+          <img src="@/assets/images/graph_background_grants.svg" />
           <div class="grant-header-more" @click.prevent="handleReturn">
             <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
             <span class="ml-1 font-weight-bold">Return</span>
