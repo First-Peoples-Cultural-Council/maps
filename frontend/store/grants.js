@@ -6,7 +6,8 @@ export const state = () => ({
   categorySearchSet: [],
   grantFilterMode: 'all',
   grantCategoryList: [],
-  grantsSearch: ''
+  grantsSearch: '',
+  visibleGrantsCount: 0
 })
 
 export const mutations = {
@@ -33,5 +34,8 @@ export const mutations = {
   },
   setGrantsSearch(state, query) {
     state.grantsSearch = query
+  },
+  setVisibleGrantsCount(state, count) {
+    state.visibleGrantsCount = count
   }
 }

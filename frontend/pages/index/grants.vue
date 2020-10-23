@@ -3,8 +3,8 @@
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
       <template v-slot:content>
         <div class="grants-header">
-          <img src="@/assets/images/graph_background_grants.svg" />
           <span class="title">Grants</span>
+          <img src="@/assets/images/graph_background_grants.svg" />
           <div class="grant-header-more" @click.prevent="handleReturn">
             <img class="ml-1" src="@/assets/images/return_icon_hover.svg" />
             <span class="ml-1 font-weight-bold">Return</span>
@@ -39,7 +39,7 @@
                     :content="badge.name === 'All' ? 'All Grants' : badge.name"
                     :number="
                       badge.name === 'All'
-                        ? getGrantList.length
+                        ? visibleGrantsCount
                         : getCountValues(badge.name.toLowerCase())
                     "
                     :bgcolor="badge.color"
@@ -163,6 +163,9 @@ export default {
   computed: {
     grantsSearchQuery() {
       return this.$store.state.grants.grantsSearch
+    },
+    visibleGrantsCount() {
+      return this.$store.state.grants.visibleGrantsCount
     },
     isGrantsSearchMode() {
       return this.grantsSearchQuery.length !== 0
@@ -334,7 +337,7 @@ export default {
     },
     handleReturn() {
       this.$router.push({
-        path: '/'
+        path: '/languages'
       })
     },
     loadMoreData() {

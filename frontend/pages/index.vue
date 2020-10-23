@@ -1066,6 +1066,11 @@ export default {
     },
 
     mapLoaded(map) {
+      this.$store.commit(
+        'grants/setVisibleGrantsCount',
+        this.countVisibleGrants(map.getBounds())
+      )
+
       this.$root.$on('resetMap', () => {
         this.clearFeatures()
         zoomToIdealBox({ map })
@@ -1078,6 +1083,10 @@ export default {
       this.$root.$on('filterGrants', () => {
         this.clearFeatures()
         zoomToIdealBox({ map })
+      })
+
+      this.$root.$on('updateGrantsMarkers', geoJSON => {
+        map.getSource('grants1').setData(geoJSON)
       })
 
       this.$root.$on('getLocation', () => {
@@ -1104,7 +1113,6 @@ export default {
         type: 'geojson',
         data: this.artsGeoSet,
         cluster: true,
-        clusterMaxZoom: 9,
         clusterRadius: 50
       })
       map.addSource('places1', {
@@ -1116,7 +1124,7 @@ export default {
         type: 'geojson',
         data: '/api/grants/',
         cluster: true,
-        clusterMaxZoom: 6,
+        clusterMaxZoom: 9,
         clusterRadius: 40
       })
 
@@ -1361,6 +1369,10 @@ export default {
       this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
       this.$store.commit('grants/setGrants', this.filterGrants(bounds))
+      this.$store.commit(
+        'grants/setVisibleGrantsCount',
+        this.countVisibleGrants(bounds)
+      )
       this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
 
       if (this.catToFilter.length === 0) {
@@ -1447,6 +1459,13 @@ export default {
         const point = grant.geometry.coordinates
         return inBounds(bounds, point)
       })
+    },
+    countVisibleGrants(bounds) {
+      const visibleGrants = this.grantsGeo.filter(grant => {
+        const point = grant.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+      return visibleGrants.length
     },
     filterArtworks(bounds) {
       return this.artworkSet.filter(artwork => {

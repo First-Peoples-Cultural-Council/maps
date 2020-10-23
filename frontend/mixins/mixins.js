@@ -1,4 +1,30 @@
 import Vue from 'vue'
+
+const updateGrantsMarker = (context, program) => {
+  const geoJSON = JSON.parse(
+    JSON.stringify(context.$store.state.grants.grantsGeo)
+  )
+  const features = geoJSON.features
+
+  if (program === 'language') {
+    const languageGrants = features.filter(grant => {
+      return grant.properties.category_abbreviation.startsWith('L')
+    })
+    geoJSON.features = languageGrants
+  } else if (program === 'arts') {
+    const artsGrants = features.filter(grant => {
+      return grant.properties.category_abbreviation.startsWith('A')
+    })
+    geoJSON.features = artsGrants
+  } else if (program === 'heritage') {
+    const heritageGrants = features.filter(grant => {
+      return grant.properties.category_abbreviation.startsWith('H')
+    })
+    geoJSON.features = heritageGrants
+  }
+  context.$root.$emit('updateGrantsMarkers', geoJSON)
+}
+
 Vue.mixin({
   methods: {
     getBadgeStatus(mode, data) {
@@ -26,6 +52,8 @@ Vue.mixin({
       if (this.$route.name === 'index-grants') {
         this.$store.commit('grants/setGrantFilter', data)
         this.$root.$emit('resetMap')
+
+        updateGrantsMarker(this, data)
       }
 
       if (isMobileSideBarOpen) {
@@ -33,8 +61,9 @@ Vue.mixin({
       }
     },
     goToGrants(program) {
-      console.log(program)
       this.$store.commit('grants/setGrantFilter', program)
+
+      updateGrantsMarker(this, program)
 
       this.$router.push({
         path: '/grants'
