@@ -195,6 +195,9 @@ const addGrantsLayers = (map, self) => {
         'circle-stroke-width': 5,
         'circle-stroke-color': '#7d6799',
         'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 500, 30]
+      },
+      layout: {
+        visibility
       }
     })
 
@@ -204,6 +207,7 @@ const addGrantsLayers = (map, self) => {
       source: 'grants1',
       filter: ['has', 'point_count'],
       layout: {
+        visibility,
         'text-field': '{point_count_abbreviated}',
         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
         'text-size': 14
@@ -219,6 +223,7 @@ const addGrantsLayers = (map, self) => {
       source: 'grants1',
       filter: ['!', ['has', 'point_count']],
       layout: {
+        visibility,
         'icon-image': 'grant-marker',
         'icon-size': 0.5
       }

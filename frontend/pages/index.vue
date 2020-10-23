@@ -268,7 +268,6 @@ import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
-
 import {
   getApiUrl,
   encodeFPCC,
@@ -276,6 +275,14 @@ import {
   getLanguagesFromDraw,
   makeMarker
 } from '@/plugins/utils.js'
+
+const grantsLayer = [
+  'fn-grants',
+  'fn-grants-clusters',
+  'fn-grants-cluster-count',
+  'fn-grants-unclustered-points'
+]
+
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
@@ -1109,7 +1116,7 @@ export default {
         type: 'geojson',
         data: '/api/grants/',
         cluster: true,
-        clusterMaxZoom: 9,
+        clusterMaxZoom: 6,
         clusterRadius: 40
       })
 
@@ -1122,10 +1129,14 @@ export default {
 
       map.on('zoom', () => {
         if (this.$route.name !== 'index-grants') {
-          if (map.getZoom() >= 6) {
-            map.setLayoutProperty('fn-grants', 'visibility', 'visible')
+          if (map.getZoom() > 6) {
+            grantsLayer.forEach(layer => {
+              this.map.setLayoutProperty(layer, 'visibility', 'visible')
+            })
           } else {
-            map.setLayoutProperty('fn-grants', 'visibility', 'none')
+            grantsLayer.forEach(layer => {
+              this.map.setLayoutProperty(layer, 'visibility', 'none')
+            })
           }
         }
       })
@@ -1397,16 +1408,19 @@ export default {
         'fn-nations',
         'fn-places'
       ]
-      const grantsLayer = 'fn-grants'
 
       if (name === 'index-grants' || name === 'index-grants-grants') {
-        this.map.setLayoutProperty(grantsLayer, 'visibility', 'visible')
+        grantsLayer.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
+        })
 
         layersToToggle.forEach(layer => {
           this.map.setLayoutProperty(layer, 'visibility', 'none')
         })
       } else {
-        this.map.setLayoutProperty(grantsLayer, 'visibility', 'none')
+        grantsLayer.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'none')
+        })
 
         layersToToggle.forEach(layer => {
           this.map.setLayoutProperty(layer, 'visibility', 'visible')
