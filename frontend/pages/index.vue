@@ -1104,7 +1104,6 @@ export default {
         type: 'geojson',
         data: this.artsGeoSet,
         cluster: true,
-        clusterMaxZoom: 9,
         clusterRadius: 50
       })
       map.addSource('places1', {
@@ -1116,7 +1115,7 @@ export default {
         type: 'geojson',
         data: '/api/grants/',
         cluster: true,
-        clusterMaxZoom: 6,
+        clusterMaxZoom: 9,
         clusterRadius: 40
       })
 

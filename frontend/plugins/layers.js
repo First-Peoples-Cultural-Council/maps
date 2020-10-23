@@ -194,7 +194,19 @@ const addGrantsLayers = (map, self) => {
         'circle-opacity': 0.8,
         'circle-stroke-width': 5,
         'circle-stroke-color': '#7d6799',
-        'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 500, 30]
+        'circle-radius': [
+          'step',
+          ['get', 'point_count'],
+          12,
+          10,
+          16,
+          100,
+          20,
+          200,
+          24,
+          500,
+          32
+        ]
       },
       layout: {
         visibility
