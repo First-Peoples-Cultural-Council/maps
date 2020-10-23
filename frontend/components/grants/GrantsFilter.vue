@@ -3,7 +3,7 @@
     <div class="cursor-pointer ml-1" @click="showCollapse = !showCollapse">
       <div>
         <img src="@/assets/images/filter_icon.svg" alt="Filter" />
-        <span class="d-inline-block font-08">Filters and Layers</span>
+        <span class="d-inline-block font-08">Filters</span>
         <div class="float-right" style="line-height: 20px;">
           <img
             v-if="!showCollapse"
@@ -79,7 +79,7 @@ export default {
   },
   data() {
     return {
-      showCollapse: true,
+      showCollapse: false,
       fromValue: 0,
       toValue: 0
     }
@@ -96,11 +96,6 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('resize', this.screenChecker)
-
-    if (window.innerWidth < 1080) {
-      this.showCollapse = false
-    }
     this.fromValue = this.prettify(this.getMinimumDate)
     this.toValue = this.prettify(this.getMaximumDate)
     this.setStoreDateValues()
@@ -122,11 +117,7 @@ export default {
         return true
       }
     },
-    screenChecker(e) {
-      if (e.srcElement.innerWidth > 1080) {
-        this.showCollapse = true
-      }
-    },
+
     changeDateValue(value) {
       this.toValue = value.to_pretty
       this.fromValue = value.from_pretty
@@ -211,6 +202,7 @@ export default {
     background: #ffffff;
     border-radius: 17px;
     text-align: center;
+    font-weight: 800;
   }
 }
 

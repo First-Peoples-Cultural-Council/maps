@@ -46,6 +46,9 @@ export default {
     },
     filterMode() {
       return this.$store.state.arts.filter
+    },
+    isMobileSideBarOpen() {
+      return this.$store.state.responsive.isMobileSideBarOpen
     }
   },
   mounted() {
@@ -57,6 +60,15 @@ export default {
   },
   methods: {
     updateQuery(value) {
+      // Check if slider is closed, open when typing
+      if (!this.isMobileSideBarOpen) {
+        if (value.length !== 0) {
+          this.$root.$emit('openSideBarSlider')
+        }
+      } else if (value.length === 0) {
+        this.$root.$emit('closeSideBarSlider')
+      }
+
       if (this.isDrawerShown) {
         this.$store.commit('sidebar/setDrawerContent', false)
       }

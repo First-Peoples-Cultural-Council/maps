@@ -69,12 +69,27 @@ export default {
     this.$root.$on('setMobileSideBarState', () => {
       if (!this.visible) {
         this.toggleSideBar()
+      } else {
+        this.visible = false
       }
+    })
+
+    this.$root.$on('closeSideBarSlider', () => {
+      this.visible = false
+      this.setMobileSliderState()
+    })
+
+    this.$root.$on('openSideBarSlider', () => {
+      this.visible = true
+      this.setMobileSliderState()
     })
   },
   methods: {
     toggleSideBar() {
       this.visible = !this.visible
+      this.setMobileSliderState()
+    },
+    setMobileSliderState() {
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
     }
   }
@@ -179,6 +194,7 @@ export default {
   z-index: 9999999999;
   border: 2.5px solid #b2bedc;
   animation: hover 2.5s infinite;
+  margin-bottom: 1em;
 }
 
 .collapse-item-container {

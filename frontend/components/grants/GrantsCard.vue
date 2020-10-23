@@ -14,7 +14,11 @@
           class="grant-tag"
           :style="'background-color:' + parentTagObject.color"
         >
-          {{ grant.properties.category }}
+          {{
+            grant.properties.category
+              ? grant.properties.category
+              : 'No Category'
+          }}
         </span>
         <span class="grant-tag-date">
           {{ grant.properties.year }}
@@ -98,7 +102,7 @@ export default {
   width: 100%;
   height: 100%;
   border: 1px solid #ebe6dc;
-  padding: 0.5em 0em 0.5em 0.5em;
+  padding: 12px 0em 12px 12px;
   border-radius: 0.25em;
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
 

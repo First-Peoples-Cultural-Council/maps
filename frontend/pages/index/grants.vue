@@ -17,6 +17,10 @@
           ></Accordion>
         </section>
         <hr class="sidebar-divider" />
+      </template>
+      <template v-slot:badges>
+        <CardFilter class="mt-3 mb-3" :mode="'grants'" />
+        <hr class="sidebar-divider" />
         <GrantFilter :max-date="getMaxDate" :min-date="getMinDate" class="mb-2">
           <template v-slot:badge-filter>
             <span class="sidebar-title">FPCC Departments</span>
@@ -39,6 +43,7 @@
                         : getCountValues(badge.name.toLowerCase())
                     "
                     :bgcolor="badge.color"
+                    :pill-shape="true"
                     :mode="getBadgeStatus(filterMode, badge.name.toLowerCase())"
                     @click.native.prevent="
                       badgeClick($event, badge.name.toLowerCase())
@@ -50,12 +55,9 @@
           </template>
         </GrantFilter>
       </template>
-      <template v-slot:badges>
-        <CardFilter class="mt-3 mb-3" :mode="'grants'" />
-      </template>
       <template v-slot:cards>
         <section class="pl-3 pr-3">
-          <b-row>
+          <b-row v-if="paginatedGrants.length !== 0">
             <b-col
               v-for="(grant, index) in paginatedGrants"
               :key="`grants-item-${index}`"
@@ -72,6 +74,13 @@
                 @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
             </b-col>
+          </b-row>
+          <b-row
+            v-else-if="paginatedGrants.length === 0 && isGrantsSearchMode"
+            class="search-empty-container"
+          >
+            <img src="@/assets/images/search_icon.svg" />
+            Filter result not found. Please try again.
           </b-row>
         </section>
       </template>
@@ -324,6 +333,7 @@ export default {
         this.$root.$emit('showGrantModal', grant)
         this.setupMap(grant)
       }
+      this.$root.$emit('closeSideBarSlider')
     },
     handleReturn() {
       this.$router.push({
@@ -347,7 +357,7 @@ export default {
         ? this.getParentName(
             this.getCategoryId(grant.properties.category).parent
           )
-        : ''
+        : { color: '#9A281B' }
     },
     getParentName(childCateg) {
       return this.grantBadges.find(
