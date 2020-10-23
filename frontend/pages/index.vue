@@ -1778,6 +1778,11 @@ export default {
     box-shadow: 0px 3px 6px #00000010;
   }
 
+  .grant-popup-modal .mapboxgl-popup-content {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
   .grant-popup-container .grant-header {
     display: none !important;
   }
