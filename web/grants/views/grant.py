@@ -12,7 +12,7 @@ from .base import BaseGenericViewSet
 class GrantViewSet(mixins.ListModelMixin,
                     mixins.RetrieveModelMixin,
                     BaseGenericViewSet):
-    queryset = Grant.objects.filter(point__isnull=False, year__isnull=False).order_by('-year', 'grant')
+    queryset = Grant.objects.filter(point__isnull=False, year__isnull=False).order_by('-year', 'recipient', 'grant')
     serializer_class = GrantSerializer
     detail_serializer_class = GrantDetailSerializer
     lookup_field = 'id'
