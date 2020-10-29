@@ -137,7 +137,7 @@ class Client(dedruplify.DeDruplifierClient):
             point = None
             if location and \
                location.get("latitude", None) and \
-               location.get("latitude", None):
+               location.get("longitude", None):
                 point = Point(
                    float(location.get("longitude")),
                    float(location.get("latitude"))
@@ -209,7 +209,7 @@ class Client(dedruplify.DeDruplifierClient):
 
             if location is not None and \
                location.get("latitude", None) and \
-               location.get("latitude", None):
+               location.get("longitude", None):
                 
                 point = Point(
                     float(location.get("longitude")),
