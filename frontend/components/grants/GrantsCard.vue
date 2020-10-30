@@ -10,10 +10,7 @@
         {{ grant.properties.recipient }} - {{ grant.properties.grant }}
       </h5>
       <div class="grant-tag-container">
-        <span
-          class="grant-tag"
-          :style="'background-color:' + parentTagObject.color"
-        >
+        <span class="grant-tag" :style="'background-color:' + grantColor">
           {{
             grant.properties.category
               ? grant.properties.category
@@ -64,6 +61,23 @@ export default {
   computed: {
     getGrantsDateFilter() {
       return this.$store.state.grants.filterDate
+    },
+    grantColor() {
+      if (this.grant && this.grant.properties.category_abbreviation) {
+        if (this.grant.properties.category_abbreviation.startsWith('L')) {
+          return '#b47a2b'
+        } else if (
+          this.grant.properties.category_abbreviation.startsWith('A')
+        ) {
+          return '#2c8190'
+        } else if (
+          this.grant.properties.category_abbreviation.startsWith('H')
+        ) {
+          return '#6d4264'
+        }
+      }
+
+      return '#99281c'
     }
   },
   methods: {
