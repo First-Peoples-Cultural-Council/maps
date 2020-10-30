@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 
+from language.models import Language, Community, PlaceName
 from web.models import BaseModel
 
 
@@ -37,6 +38,19 @@ class Grant(models.Model):
     community_affiliation = models.TextField(
         verbose_name='Community/Affiliation',
         **optional)
+    languages = models.ManyToManyField(
+        Language,
+        related_name='grants',
+        blank=True)
+    recipients = models.ManyToManyField(
+        PlaceName,
+        related_name='grants',
+        blank=True)
+    communities_affiliations = models.ManyToManyField(
+        Community,
+        related_name='grants',
+        verbose_name='Communities/Affiliations',
+        blank=True)
     title = models.TextField(**optional)
     project_brief = models.TextField(**optional)
     amount = models.DecimalField(

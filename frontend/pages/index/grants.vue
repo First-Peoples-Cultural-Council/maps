@@ -100,7 +100,6 @@ import Accordion from '@/components/Accordion.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
 import GrantFilter from '@/components/grants/GrantsFilter.vue'
 import { zoomToPoint } from '@/mixins/map.js'
-import { makeMarker } from '@/plugins/utils.js'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 import CardFilter from '@/components/CardFilter.vue'
@@ -211,9 +210,11 @@ export default {
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
-
     grants() {
       return this.$store.state.grants.grantsSet
+    },
+    grantsGeo() {
+      return this.$store.state.grants.grantsGeo
     },
     getMinDate() {
       let getMinimum = 0
@@ -255,6 +256,8 @@ export default {
       }
     },
     getGrantList() {
+      const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
+
       //  if year filtermode is activated
       if (
         this.getGrantsDateFilter ||
@@ -284,20 +287,30 @@ export default {
 
         // Filter by Search Query
         if (this.isGrantsSearchMode) {
-          return finalGrants.filter(grant => {
+          const grantsSearchResult = finalGrants.filter(grant => {
             return (
               grant.properties.grant
                 .toLowerCase()
                 .includes(this.grantsSearchQuery.toLowerCase()) ||
               grant.properties.recipient
                 .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase()) ||
+              grant.properties.category
+                .toLowerCase()
                 .includes(this.grantsSearchQuery.toLowerCase())
             )
           })
+          geoJSON.features = grantsSearchResult
+          this.$root.$emit('updateGrantsMarkers', geoJSON)
+          return grantsSearchResult
         } else {
+          geoJSON.features = finalGrants
+          this.$root.$emit('updateGrantsMarkers', geoJSON)
           return finalGrants
         }
       } else {
+        geoJSON.features = this.grantsTypeList
+        this.$root.$emit('updateGrantsMarkers', geoJSON)
         return this.grantsTypeList
       }
     },
@@ -368,7 +381,6 @@ export default {
         this.$store.commit('grants/setCurrentGrant', null)
         this.$root.$emit('resetMap')
       } else {
-        this.$root.$emit('showGrantModal', grant)
         this.setupMap(grant)
       }
       this.$root.$emit('closeSideBarSlider')
@@ -447,13 +459,9 @@ export default {
           if (grant.geometry) {
             zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
             map.once('moveend', () => {
-              this.$root.$emit('showGrantModal')
+              this.$root.$emit('showGrantModal', grant)
             })
           }
-        }
-        if (grant.geometry) {
-          const icon = 'grant_icon.png'
-          makeMarker(grant.geometry, icon, this).addTo(map)
         }
       })
     }

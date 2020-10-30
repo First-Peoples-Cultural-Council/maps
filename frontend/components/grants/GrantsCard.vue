@@ -21,7 +21,7 @@
           }}
         </span>
         <span class="grant-tag-date">
-          {{ grant.properties.year }}
+          {{ grant.properties.year ? grant.properties.year : 'No Year' }}
         </span>
       </div>
     </div>
@@ -49,7 +49,9 @@ export default {
     },
     parentTagObject: {
       default: () => {
-        return {}
+        return {
+          color: '#99281C'
+        }
       },
       type: Object
     }

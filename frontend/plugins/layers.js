@@ -152,10 +152,10 @@ const addNationsLayers = map => {
   })
 }
 
-const addGrantsLayers = (map, self) => {
+const addGrantsLayers = (map, context) => {
   let visibility = 'none'
 
-  const routeName = self.$route.name
+  const routeName = context.$route.name
   if (routeName === 'index-grants') {
     visibility = 'visible'
   }
@@ -246,15 +246,35 @@ const addGrantsLayers = (map, self) => {
         layers: ['fn-grants-clusters']
       })
       const clusterId = features[0].properties.cluster_id
+      const pointCount = features[0].properties.point_count
       map
         .getSource('grants1')
         .getClusterExpansionZoom(clusterId, function(err, zoom) {
           if (err) return
 
-          map.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom
-          })
+          if (zoom > 18) {
+            map
+              .getSource('grants1')
+              .getClusterLeaves(clusterId, pointCount, 0, function(
+                err,
+                aFeatures
+              ) {
+                if (err) return
+
+                const grants = aFeatures
+                const coordinates = features[0].geometry.coordinates
+                context.$root.$emit(
+                  'showGrantsClusterModal',
+                  grants,
+                  coordinates
+                )
+              })
+          } else {
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom
+            })
+          }
         })
     })
   })
@@ -351,7 +371,7 @@ const addArtsClusters = map => {
 }
 
 export default {
-  layers: (map, self) => {
+  layers: (map, context) => {
     map.addLayer({
       id: 'fn-arts-clusters',
       type: 'circle',
@@ -372,7 +392,7 @@ export default {
       }
     })
     addNationsLayers(map)
-    addGrantsLayers(map, self)
+    addGrantsLayers(map, context)
     addLangLayers(map)
     map.addLayer({
       id: 'fn-arts-clusters-text',

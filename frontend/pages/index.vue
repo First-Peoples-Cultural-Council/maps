@@ -240,6 +240,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Mapbox from 'mapbox-gl-vue'
 import groupBy from 'lodash/groupBy'
 import * as Cookies from 'js-cookie'
@@ -268,6 +269,8 @@ import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
+import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
+
 import {
   getApiUrl,
   encodeFPCC,
@@ -275,6 +278,8 @@ import {
   getLanguagesFromDraw,
   makeMarker
 } from '@/plugins/utils.js'
+
+const GrantsClusterModalClass = Vue.extend(GrantsClusterModal)
 
 const grantsLayer = [
   'fn-grants',
@@ -645,6 +650,10 @@ export default {
       })
     })
 
+    this.$root.$on('setupGrantPoint', grant => {
+      this.setupMap(grant)
+    })
+
     setTimeout(() => {
       if (this.user) {
         this.showFullscreenLoading = false
@@ -798,6 +807,18 @@ export default {
     }
   },
   methods: {
+    setupMap(grant) {
+      this.$eventHub.whenMap(map => {
+        if (this.$route.hash.length <= 1) {
+          if (grant.geometry) {
+            zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+            map.once('moveend', () => {
+              this.showGrantModal(grant)
+            })
+          }
+        }
+      })
+    },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
@@ -980,7 +1001,7 @@ export default {
             if (grant.geometry) {
               zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
               map.once('moveend', () => {
-                this.showGrantModal(map, grant)
+                this.showGrantModal(grant)
               })
 
               const icon = 'grant_icon.png'
@@ -1004,7 +1025,7 @@ export default {
               curve: 1
             })
           } else {
-            this.showClusterModal(feature, e.lngLat, map)
+            this.showArtsClusterModal(feature, e.lngLat, map)
           }
           done = true
         }
@@ -1022,7 +1043,7 @@ export default {
         })
     },
 
-    showClusterModal(feature, latLng, map) {
+    showArtsClusterModal(feature, latLng, map) {
       const clusterId = feature.properties.cluster_id
       map
         .getSource('arts1')
@@ -1059,8 +1080,31 @@ export default {
           }
         )
     },
+    showGrantsClusterModal(grants, coordinates) {
+      const mapboxgl = require('mapbox-gl')
 
-    showGrantModal(map, grant) {
+      const lnglat = new mapboxgl.LngLat(coordinates[0], coordinates[1])
+
+      const popup = new mapboxgl.Popup({
+        className: 'grant-cluster-modal'
+      })
+        .setLngLat(lnglat)
+        .setHTML(`<div id="grant-cluster-container"></div>`)
+        .addTo(this.map)
+
+      const clusterModal = new GrantsClusterModalClass({
+        propsData: {
+          grants
+        },
+        methods: {
+          showGrantModal: this.showGrantModal
+        }
+      })
+      clusterModal.$mount('#grant-cluster-container')
+      popup._update()
+      this.$store.commit('features/setPopup', popup)
+    },
+    showGrantModal(grant) {
       const grantData = grant
       const color = this.getGrantDepartmentColor(
         grantData.properties.category_abbreviation
@@ -1097,9 +1141,13 @@ export default {
           this.$store.commit('grants/setCurrentGrant', null)
           this.$store.commit('features/setMarker', null)
         })
-        .addTo(map)
+        .addTo(this.map)
 
       this.$store.commit('features/setPopup', popup)
+      if (grant.geometry) {
+        const icon = 'grant_icon.png'
+        makeMarker(grant.geometry, icon, this).addTo(this.map)
+      }
     },
 
     mapLoaded(map) {
@@ -1114,7 +1162,12 @@ export default {
       })
 
       this.$root.$on('showGrantModal', grant => {
-        if (grant) this.showGrantModal(map, grant)
+        if (grant) this.showGrantModal(grant)
+      })
+
+      this.$root.$on('showGrantsClusterModal', (grants, coordinates) => {
+        if (grants && coordinates)
+          this.showGrantsClusterModal(grants, coordinates)
       })
 
       this.$root.$on('filterGrants', () => {
@@ -1161,7 +1214,8 @@ export default {
         type: 'geojson',
         data: '/api/grants/',
         cluster: true,
-        clusterMaxZoom: 9,
+        maxzoom: 20,
+        clusterMaxZoom: 20,
         clusterRadius: 40
       })
 
@@ -1710,6 +1764,23 @@ export default {
 
 .grant-popup-modal {
   width: 550px !important;
+  max-width: 550px !important;
+  max-height: 500px;
+
+  .mapboxgl-popup-content {
+    padding: 0 !important;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 2.25em;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 3px;
+  }
+}
+
+.grant-cluster-modal {
+  width: 400px !important;
   max-width: 550px !important;
   max-height: 500px;
 
