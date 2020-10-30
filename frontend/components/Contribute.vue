@@ -242,6 +242,11 @@ export default {
     window.removeEventListener('resize', this.widthChecker)
   },
   mounted() {
+    this.$root.$on('checkDimension', () => {
+      if (window.innerWidth <= 992) {
+        this.hideButton = true
+      }
+    })
     this.checkWindowDimemsion()
     window.addEventListener('resize', this.checkWindowDimemsion)
 

@@ -62,6 +62,7 @@ Vue.mixin({
     },
     goToGrants(program) {
       this.$store.commit('grants/setGrantFilter', program)
+      this.$root.$emit('checkDimension')
 
       updateGrantsMarker(this, program)
 
