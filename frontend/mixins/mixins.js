@@ -56,7 +56,7 @@ Vue.mixin({
         showGrantsForProgram(this, data)
       }
 
-      if (isMobileSideBarOpen) {
+      if (e && isMobileSideBarOpen) {
         e.stopPropagation()
       }
     },
