@@ -112,12 +112,11 @@ class RecordingSerializer(serializers.ModelSerializer):
 
 class LanguageSerializer(serializers.ModelSerializer):
     family = LanguageFamilySerializer(read_only=True)
-    grants = GrantSerializer(many=True, read_only=True)
 
     class Meta:
         model = Language
         fields = ("name", "id", "color", "bbox",
-                  "sleeping", "family", "other_names", "grants")
+                  "sleeping", "family", "other_names")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -167,11 +166,9 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 
 
 class CommunitySerializer(serializers.ModelSerializer):
-    grants = GrantSerializer(many=True, read_only=True)
-
     class Meta:
         model = Community
-        fields = ("name", "id", "point", "audio", "grants")
+        fields = ("name", "id", "point", "audio")
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
@@ -194,8 +191,6 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
-    grants = GrantSerializer(many=True, read_only=True)
-
     class Meta:
         model = PlaceName
         fields = (
@@ -203,8 +198,7 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "kind",
             "status",
-            "status_reason",
-            "grants"
+            "status_reason"
         )
 
 
@@ -311,6 +305,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
     audio_obj = RecordingSerializer(source="audio", read_only=True)
     public_arts = RelatedPlaceNameSerializer(many=True, read_only=True)
     related_data = RelatedDataSerializer(many=True, required=False)
+    grants = GrantSerializer(many=True, read_only=True)
 
     # Primary Key Related fields -> could be updated by passing a list of ids
     artists = serializers.PrimaryKeyRelatedField(
@@ -422,7 +417,8 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "public_arts",
             "artists",
             "related_data",
-            "created"
+            "created",
+            "grants"
         )
         depth = 1
 
@@ -445,6 +441,8 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
     champion_set = ChampionSerializer(read_only=True, many=True)
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     dialect_set = DialectSerializer(read_only=True, many=True)
+    grants = GrantSerializer(many=True, read_only=True)
+
     # lna_set = LNADetailSerializer(read_only=True, many=True)
     # Atomic Writable APIs
     family_id = serializers.PrimaryKeyRelatedField(
@@ -518,6 +516,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "avg_hrs_wk_languages_in_language_nests",
             "community_adult_language_classes",
             "fv_guid",
+            "grants"
         )
 
 
@@ -531,6 +530,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
         queryset=Recording.objects.all(), allow_null=True, required=False
     )
     audio_obj = RecordingSerializer(source="audio", read_only=True)
+    grants = GrantSerializer(many=True, read_only=True)
 
     # Atomic Writable APIs
     language_ids = serializers.PrimaryKeyRelatedField(
@@ -627,6 +627,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "population_off_reserve",
             "fv_guid",
             "fv_archive_link",
+            "grants"
         )
 
 
