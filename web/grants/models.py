@@ -38,10 +38,17 @@ class Grant(models.Model):
     community_affiliation = models.TextField(
         verbose_name='Community/Affiliation',
         **optional)
-    languages = models.ManyToManyField(Language, blank=True)
-    recipients = models.ManyToManyField(PlaceName, blank=True)
+    languages = models.ManyToManyField(
+        Language,
+        related_name='grants_set',
+        blank=True)
+    recipients = models.ManyToManyField(
+        PlaceName,
+        related_name='grants_set',
+        blank=True)
     communities_affiliations = models.ManyToManyField(
         Community,
+        related_name='grants_set',
         verbose_name='Communities/Affiliations',
         blank=True)
     title = models.TextField(**optional)
