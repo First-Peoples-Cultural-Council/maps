@@ -127,8 +127,47 @@ export default {
   data() {
     return {
       mode: 'All',
-      accordionContent:
-        "The First Peoples' Council Arts Program delivers funding to emerging Aboriginal and First Nations artists, arts organizations and collectives...expand expancommunities. Grants support projects that contribute to professional and creative development in all artistic disciplines, and to the vitality of traditionally based art practices and related knowledge. There are five distinct categories: Individual Emerging ArtistS; Organizations and Collectives; Sharing Traditional Arts Across the Generations; Arts Administrator Internships; and Aboriginal Youth Engaged in the Arts. Filter by Grant category and Award year and hit Apply. Pan, zoom and click to find each grant recipient. Enjoy.",
+      accordionContent: `
+          In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at <a href='https://fpcc.ca/grants/' target="_blank">https://fpcc.ca/grants/</a> To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
+
+          <h5>Arts Program Grants </h5>
+
+          <ul>
+            <li>ARTS - Arts One Time Grant</li>
+            <li>AIND - Individual Artists Grant </li>
+            <li>ASHR - Sharing Traditional Arts Grant </li>
+            <li>AORG - Organizations and Collectives Grant</li>
+            <li>AADM - Arts Administration Internships Grant </li>
+            <li>AMIC - Arts Micro Grants </li>
+            <li>ALND - Community Land Based Arts Grant </li>
+            <li>AEMIP - Emerging Music Industry Professionals Grant </li>
+            <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant </li>
+            <li>ATPMP - Touring, Promotion/Marketing and Performance Grant </li>
+          </ul>
+
+          <h5>Heritage Program Grants</h5>
+          <ul>
+            <li>HMIC - Indigenous Heritage Micro Grant </li>
+            <li>HOHP - Oral Histories Program </li>
+            <li>HSOP - Sense of Place Grant </li>
+          </ul>
+
+          <h5>Language Program Grants</h5>
+          <ul>
+            <li>LALI - Aboriginal Languages Initiative </li>
+            <li>LBCLI - BC Language Initiative </li>
+            <li>LDIGI - Digitization Program </li>
+            <li>LFV - FirstVoices Program </li>
+            <li>LILG - Indigenous Languages Grant </li>
+            <li>LANG - Language One Time Grant </li>
+            <li>LLN - Language Nest Program </li>
+            <li>LLRPP - Language Revitalization Planning Program </li>
+            <li>LMAP - Mentor-Apprentice Program </li>
+            <li>LPATH - Pathways to Language Vitality Program </li>
+            <li>LRML - Reclaiming My Language Program </li>
+            <li>LTECH - Language Technology Program </li>
+            <li>LYES - Youth Empowered Speakers Program </li>
+          </ul>`,
       maximumLength: 0,
       grantBadges: [
         {
@@ -138,12 +177,12 @@ export default {
         {
           id: 1,
           name: 'Arts',
-          color: '#00333A'
+          color: '#2C8190'
         },
         {
           id: 2,
           name: 'Heritage',
-          color: '#9D3D22'
+          color: '#6D4264'
         },
         {
           id: 3,

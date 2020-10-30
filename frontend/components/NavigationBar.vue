@@ -322,6 +322,8 @@ export default {
     },
     redirectGrants() {
       this.$router.push('/grants')
+      this.$root.$emit('checkDimension')
+      this.$store.commit('grants/setGrantFilter', 'all')
       this.handleBadge(null, 'all')
       this.resetMap()
     }

@@ -4,7 +4,7 @@
       <b-card>
         <p class="outer-text d-flex align-items-center justify-content-between">
           <span class="accordion-content">
-            {{ getContextData }}
+            <span v-html="getContextData"> </span>
             <span
               class="accordion-toggle"
               @click="expandContent = !expandContent"
