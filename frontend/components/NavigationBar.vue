@@ -322,7 +322,7 @@ export default {
     },
     redirectGrants() {
       this.$router.push('/grants')
-      this.$store.commit('grants/setGrantFilter', 'all')
+      this.handleBadge(null, 'all')
       this.resetMap()
     }
   }
