@@ -46,15 +46,16 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 250px;
+    justify-content: center;
     img {
-      width: 200px;
-      height: 200px;
+      width: 210px;
+      height: 210px;
       animation: pulse 1s infinite;
     }
 
     span {
       margin-left: 1em;
+      width: fit-content;
     }
   }
 }
