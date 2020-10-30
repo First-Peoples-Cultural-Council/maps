@@ -16,7 +16,7 @@
             class="btn-grant-redirect"
             @click="goToGrants('arts')"
           >
-            View Arts Grants
+            Arts Grants Recipients
           </button>
         </section>
         <hr class="sidebar-divider" />

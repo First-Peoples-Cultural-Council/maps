@@ -15,7 +15,7 @@
             class="btn-grant-redirect"
             @click="goToGrants('language')"
           >
-            View Language Grants
+            Language Grants Recipients
           </button>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>

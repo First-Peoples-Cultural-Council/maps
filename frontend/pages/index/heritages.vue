@@ -12,7 +12,7 @@
             class="btn-grant-redirect"
             @click="goToGrants('heritage')"
           >
-            View Heritage Grants
+            Heritage Grants Recipients
           </button>
         </section>
         <hr class="sidebar-divider" />
