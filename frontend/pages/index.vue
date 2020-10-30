@@ -296,31 +296,40 @@ const renderArtDetail = props => {
 }
 
 const renderGrantDetails = (props, color) => {
+  const recipient = props.properties.recipient
+  const grant = props.properties.grant
+  const projectBrief = props.properties.project_brief
+  const communityOrAffiliation = props.properties.community_affiliation
+  const amount = props.properties.amount
+  const year = props.properties.year
+  const category = props.properties.category
+
   return `
-    <div class="grant-title">${props.properties.recipient} - ${
-    props.properties.grant
-  }</div>
+    <div class="grant-title">${recipient} - ${grant}</div>
       <div class="grant-content">
-        <span class="grant-description"> ${
-          props.properties.project_brief
-        }</span>
+        <span class="grant-description"> ${projectBrief}</span>
         <div class="grant-footer">
           <div class="footer-item">
-            <span class="footer-item-title"> AFFILIATION </span>
-            <span class="footer-item-content"> ${
-              props.properties.community_affiliation
-                ? props.properties.community_affiliation
-                : 'No Affiliation'
-            } </span>
+            <span class="footer-item-title"> COMMUNITY/AFFILIATION </span>
+            <span class="footer-item-content"> ${communityOrAffiliation ||
+              'No Community/Affiliation'} </span>
           </div>
+          ${
+            amount && amount !== '0.00'
+              ? `<div class='footer-item'>
+              <span class='footer-item-title'> AMOUNT </span>
+              <span class='footer-item-content'> $${amount} </span>
+            </div>`
+              : ''
+          }
           <div class="footer-item">
             <span class="footer-item-title"> YEAR </span>
-            <span class="footer-item-content"> ${props.properties.year} </span>
+            <span class="footer-item-content"> ${year} </span>
           </div>
         </div>
         <div class="grant-tag-container">
           <span class="grant-tag" style="background-color: ${color}">
-            ${props.properties.category}
+            ${category}
           </span>
         </div>
       </div>
@@ -1745,6 +1754,7 @@ export default {
     .footer-item {
       display: flex;
       flex-direction: column;
+      max-width: 30%;
 
       .footer-item-title {
         font: normal normal bold 15px/16px Proxima Nova;
