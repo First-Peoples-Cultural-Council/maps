@@ -637,6 +637,10 @@ export default {
       })
     })
 
+    this.$root.$on('setupGrantPoint', grant => {
+      this.setupMap(grant)
+    })
+
     setTimeout(() => {
       if (this.user) {
         this.showFullscreenLoading = false
@@ -790,6 +794,18 @@ export default {
     }
   },
   methods: {
+    setupMap(grant) {
+      this.$eventHub.whenMap(map => {
+        if (this.$route.hash.length <= 1) {
+          if (grant.geometry) {
+            zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+            map.once('moveend', () => {
+              this.showGrantModal(grant)
+            })
+          }
+        }
+      })
+    },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
