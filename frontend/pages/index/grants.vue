@@ -255,6 +255,9 @@ export default {
                 .includes(this.grantsSearchQuery.toLowerCase()) ||
               grant.properties.recipient
                 .toLowerCase()
+                .includes(this.grantsSearchQuery.toLowerCase()) ||
+              grant.properties.category
+                .toLowerCase()
                 .includes(this.grantsSearchQuery.toLowerCase())
             )
           })
