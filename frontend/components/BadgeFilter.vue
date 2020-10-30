@@ -12,7 +12,7 @@
   >
     <slot name="badge"></slot>
     <div v-if="isSelected && childTaxonomy.length !== 0" class="badge-filters ">
-      <p id="badge-choose" @click="showFilterOption = !showFilterOption">
+      <p id="badge-choose" @click="toggleFilterOption">
         {{ showFilterOption ? 'Click here to Close' : getFilterText() }}
 
         <span
@@ -231,6 +231,13 @@ export default {
     }
   },
   methods: {
+    toggleFilterOption() {
+      if (this.$route.name === 'index-grants') {
+        const element = document.getElementById('badge-list-container')
+        element.scrollIntoView(true)
+      }
+      this.showFilterOption = !this.showFilterOption
+    },
     getFilterText() {
       return this.getSelectedFilterList.length !== 0
         ? `${this.getSelectedFilterList.length} ${
