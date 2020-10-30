@@ -207,6 +207,30 @@
                 </ul>
               </span>
             </section>
+
+            <section
+              v-if="grantsList.length !== 0"
+              class="artist-content-field"
+            >
+              <span class="field-title">Grants:</span>
+              <b-row>
+                <b-col
+                  v-for="(grant, index) in grantsList"
+                  :key="`grants-item-${index}`"
+                  lg="12"
+                  xl="12"
+                  md="12"
+                  sm="12"
+                  class="mt-3 mr-3 hover-left-move"
+                >
+                  <GrantsCard
+                    :grant="grant"
+                    :is-selected="currentGrant && currentGrant.id === grant.id"
+                    @click.native="handleCardClick($event, grant)"
+                  ></GrantsCard>
+                </b-col>
+              </b-row>
+            </section>
           </div>
         </div>
       </div>
@@ -237,6 +261,7 @@ import {
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 import ErrorScreen from '@/layouts/error.vue'
+import GrantsCard from '@/components/grants/GrantsCard.vue'
 
 export default {
   components: {
@@ -244,7 +269,8 @@ export default {
     ArtsDetailCard,
     Logo,
     ArtsDrawer,
-    ErrorScreen
+    ErrorScreen,
+    GrantsCard
   },
   filters: {
     titleCase(str) {
@@ -359,6 +385,12 @@ export default {
       return this.artDetails.image
         ? getMediaUrl(this.artDetails.image)
         : require(`@/assets/images/artist_icon.svg`)
+    },
+    grantsList() {
+      return this.artDetails.grants.features
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   watch: {
@@ -397,6 +429,7 @@ export default {
     window.removeEventListener('resize', this.widthChecker)
   },
   mounted() {
+    console.log(this.artDetails)
     window.addEventListener('resize', this.widthChecker)
     if (
       this.artDetails &&
@@ -557,6 +590,15 @@ export default {
       } else {
         return 'Art page not found '
       }
+    },
+    handleCardClick(e, grant) {
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$root.$emit('setupGrantPoint', grant)
+      }
+      this.$root.$emit('closeSideBarSlider')
     }
   },
   head() {
@@ -580,6 +622,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.arts-grants-container {
+  width: 100%;
+}
 .arts-main-container {
   display: flex;
   justify-content: flex-start;
