@@ -25,6 +25,7 @@ from .models import (
     RelatedData
 )
 from users.serializers import PublicUserSerializer, UserSerializer
+from grants.serializers import GrantSerializer
 
 
 # LIGHT SERIALIZERS
@@ -111,11 +112,12 @@ class RecordingSerializer(serializers.ModelSerializer):
 
 class LanguageSerializer(serializers.ModelSerializer):
     family = LanguageFamilySerializer(read_only=True)
+    grants = GrantSerializer(many=True, read_only=True)
 
     class Meta:
         model = Language
         fields = ("name", "id", "color", "bbox",
-                  "sleeping", "family", "other_names")
+                  "sleeping", "family", "other_names", "grants")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -165,9 +167,11 @@ class CommunityLinkSerializer(serializers.ModelSerializer):
 
 
 class CommunitySerializer(serializers.ModelSerializer):
+    grants = GrantSerializer(many=True, read_only=True)
+
     class Meta:
         model = Community
-        fields = ("name", "id", "point", "audio")
+        fields = ("name", "id", "point", "audio", "grants")
 
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
@@ -190,6 +194,8 @@ class RelatedPlaceNameSerializer(serializers.ModelSerializer):
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
+    grants = GrantSerializer(many=True, read_only=True)
+
     class Meta:
         model = PlaceName
         fields = (
@@ -197,7 +203,8 @@ class PlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "kind",
             "status",
-            "status_reason"
+            "status_reason",
+            "grants"
         )
 
 
