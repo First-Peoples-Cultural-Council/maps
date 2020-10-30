@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-const updateGrantsMarker = (context, program) => {
+const showGrantsForProgram = (context, program) => {
   const geoJSON = JSON.parse(
     JSON.stringify(context.$store.state.grants.grantsGeo)
   )
@@ -53,7 +53,7 @@ Vue.mixin({
         this.$store.commit('grants/setGrantFilter', data)
         this.$root.$emit('resetMap')
 
-        updateGrantsMarker(this, data)
+        showGrantsForProgram(this, data)
       }
 
       if (isMobileSideBarOpen) {
@@ -63,7 +63,7 @@ Vue.mixin({
     goToGrants(program) {
       this.$store.commit('grants/setGrantFilter', program)
 
-      updateGrantsMarker(this, program)
+      showGrantsForProgram(this, program)
 
       this.$router.push({
         path: '/grants'
