@@ -24,7 +24,10 @@
         <GrantFilter :max-date="getMaxDate" :min-date="getMinDate" class="mb-2">
           <template v-slot:badge-filter>
             <span class="sidebar-title">FPCC Departments</span>
-            <section class="badge-list-container mt-3">
+            <section
+              id="badge-list-container"
+              class="badge-list-container mt-3"
+            >
               <BadgeFilter
                 v-for="badge in grantBadges"
                 :key="`badge-grant-${badge.name}`"
