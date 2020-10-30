@@ -1225,20 +1225,20 @@ export default {
       map.on('idle', e => {
         this.updateHash(map)
       })
-
-      map.on('zoom', () => {
-        if (this.$route.name !== 'index-grants') {
-          if (map.getZoom() > 6) {
-            grantsLayer.forEach(layer => {
-              this.map.setLayoutProperty(layer, 'visibility', 'visible')
-            })
-          } else {
-            grantsLayer.forEach(layer => {
-              this.map.setLayoutProperty(layer, 'visibility', 'none')
-            })
-          }
-        }
-      })
+      // Hide block for now - wait for feedback
+      // map.on('zoom', () => {
+      //   if (this.$route.name !== 'index-grants') {
+      //     if (map.getZoom() > 6) {
+      //       grantsLayer.forEach(layer => {
+      //         this.map.setLayoutProperty(layer, 'visibility', 'visible')
+      //       })
+      //     } else {
+      //       grantsLayer.forEach(layer => {
+      //         this.map.setLayoutProperty(layer, 'visibility', 'none')
+      //       })
+      //     }
+      //   }
+      // })
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
