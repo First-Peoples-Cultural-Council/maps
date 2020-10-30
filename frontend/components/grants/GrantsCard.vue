@@ -157,11 +157,13 @@ export default {
   .grant-tag {
     background-color: #7d6799;
     color: #fff;
+    margin-bottom: 5px;
   }
 
   .grant-tag-date {
     background-color: #ddd4c6;
     color: #000;
+    margin-bottom: 5px;
   }
 }
 </style>
