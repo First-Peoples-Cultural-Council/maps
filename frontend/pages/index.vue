@@ -1806,6 +1806,7 @@ export default {
     height: 320px;
     border: 1px solid #dedcda;
     box-shadow: 0px 3px 6px #00000010;
+    background: #fff;
   }
 
   .grant-popup-modal .mapboxgl-popup-content {
