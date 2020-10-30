@@ -101,17 +101,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='grant',
             name='communities_affiliations',
-            field=models.ManyToManyField(blank=True, related_name='grants_set', to='language.Community', verbose_name='Communities/Affiliations'),
+            field=models.ManyToManyField(blank=True, related_name='grants', to='language.Community', verbose_name='Communities/Affiliations'),
         ),
         migrations.AddField(
             model_name='grant',
             name='languages',
-            field=models.ManyToManyField(blank=True, related_name='grants_set', to='language.Language'),
+            field=models.ManyToManyField(blank=True, related_name='grants', to='language.Language'),
         ),
         migrations.AddField(
             model_name='grant',
             name='recipients',
-            field=models.ManyToManyField(blank=True, related_name='grants_set', to='language.PlaceName'),
+            field=models.ManyToManyField(blank=True, related_name='grants', to='language.PlaceName'),
         ),
         migrations.RunPython(migrate_fields),
     ]
