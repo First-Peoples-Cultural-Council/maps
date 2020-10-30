@@ -171,9 +171,11 @@ export default {
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
     },
-
     grants() {
       return this.$store.state.grants.grantsSet
+    },
+    grantsGeo() {
+      return this.$store.state.grants.grantsGeo
     },
     getMinDate() {
       let getMinimum = 0
@@ -215,6 +217,8 @@ export default {
       }
     },
     getGrantList() {
+      const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
+
       //  if year filtermode is activated
       if (
         this.getGrantsDateFilter ||
@@ -244,7 +248,7 @@ export default {
 
         // Filter by Search Query
         if (this.isGrantsSearchMode) {
-          return finalGrants.filter(grant => {
+          const grantsSearchResult = finalGrants.filter(grant => {
             return (
               grant.properties.grant
                 .toLowerCase()
@@ -254,10 +258,17 @@ export default {
                 .includes(this.grantsSearchQuery.toLowerCase())
             )
           })
+          geoJSON.features = grantsSearchResult
+          this.$root.$emit('updateGrantsMarkers', geoJSON)
+          return grantsSearchResult
         } else {
+          geoJSON.features = finalGrants
+          this.$root.$emit('updateGrantsMarkers', geoJSON)
           return finalGrants
         }
       } else {
+        geoJSON.features = this.grantsTypeList
+        this.$root.$emit('updateGrantsMarkers', geoJSON)
         return this.grantsTypeList
       }
     },
