@@ -608,6 +608,6 @@ export default {
 </script>
 <style lang="scss">
 #btn-arts-grants {
-  background-color: #00333a;
+  background-color: #2c8190;
 }
 </style>
