@@ -4,6 +4,7 @@
     :class="{ 'is-grant-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
+    @click="handleCardClick($event, grant)"
   >
     <div>
       <h5 class="grant-title">
@@ -76,8 +77,10 @@ export default {
           return '#6d4264'
         }
       }
-
       return '#99281c'
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   methods: {
@@ -104,6 +107,15 @@ export default {
         if (!this.grant.geometry) return
         this.$eventHub.doneReveal()
       }
+    },
+    handleCardClick(e, grant) {
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$root.$emit('showGrantModal', grant)
+      }
+      this.$root.$emit('closeSideBarSlider')
     }
   }
 }

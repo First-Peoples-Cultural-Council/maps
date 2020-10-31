@@ -74,7 +74,6 @@
                 :grant="grant"
                 :parent-tag-object="getParentTag(grant)"
                 :is-selected="currentGrant && currentGrant.id === grant.id"
-                @click.native="handleCardClick($event, grant)"
               ></GrantsCard>
             </b-col>
           </b-row>
@@ -102,7 +101,6 @@ import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
 import GrantFilter from '@/components/grants/GrantsFilter.vue'
-import { zoomToPoint } from '@/mixins/map.js'
 import Badge from '@/components/Badge.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 import CardFilter from '@/components/CardFilter.vue'
@@ -329,7 +327,6 @@ export default {
     currentGrant() {
       return this.$store.state.grants.currentGrant
     },
-
     filterMode() {
       return this.$store.state.grants.grantFilterMode
     },
@@ -378,15 +375,6 @@ export default {
       this.$eventHub.whenMap(map => {
         this.$root.$emit('toggleMapLayers')
       })
-    },
-    handleCardClick(e, grant) {
-      if (this.currentGrant && this.currentGrant.id === grant.id) {
-        this.$store.commit('grants/setCurrentGrant', null)
-        this.$root.$emit('resetMap')
-      } else {
-        this.setupMap(grant)
-      }
-      this.$root.$emit('closeSideBarSlider')
     },
     handleReturn() {
       this.$router.push({
@@ -455,18 +443,6 @@ export default {
       // Reset text filter
       this.$store.commit('grants/setGrantsSearch', '')
       this.$root.$emit('clearInput')
-    },
-    setupMap(grant) {
-      this.$eventHub.whenMap(map => {
-        if (this.$route.hash.length <= 1) {
-          if (grant.geometry) {
-            zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
-            map.once('moveend', () => {
-              this.$root.$emit('showGrantModal', grant)
-            })
-          }
-        }
-      })
     }
   }
 }

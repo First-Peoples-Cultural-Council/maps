@@ -1129,7 +1129,13 @@ export default {
       })
 
       this.$root.$on('showGrantModal', grant => {
-        if (grant) this.showGrantModal(grant)
+        if (grant) {
+          zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+          map.once('moveend', () => {
+            console.log('I AM HERE')
+            this.showGrantModal(grant)
+          })
+        }
       })
 
       this.$root.$on('showGrantsClusterModal', (grants, coordinates) => {
