@@ -305,7 +305,7 @@ const renderGrantDetails = (props, color) => {
   const grant = props.properties.grant
   const projectBrief = props.properties.project_brief
   const communityOrAffiliation = props.properties.community_affiliation
-  const amount = props.properties.amount
+  const amount = Math.round(parseFloat(props.properties.amount))
   const year = props.properties.year
   const category = props.properties.category
 
@@ -320,7 +320,7 @@ const renderGrantDetails = (props, color) => {
               'No Community/Affiliation'} </span>
           </div>
           ${
-            amount && amount !== '0.00'
+            amount && amount !== 0
               ? `<div class='footer-item'>
               <span class='footer-item-title'> AMOUNT </span>
               <span class='footer-item-content'> $${amount} </span>
