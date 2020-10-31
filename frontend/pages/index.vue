@@ -486,7 +486,7 @@ export default {
       return this.$store.state.places.placesSet
     },
     grantsGeo() {
-      return this.$store.state.grants.grantsGeo.features
+      return this.$store.state.grants.grantsGeo
     },
     isDrawMode() {
       return this.$store.state.contribute.isDrawMode
@@ -1153,7 +1153,9 @@ export default {
         zoomToIdealBox({ map })
       })
 
-      this.$root.$on('updateGrantsMarkers', geoJSON => {
+      this.$root.$on('updateGrantsMarkers', features => {
+        const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
+        if (features) geoJSON.features = features
         map.getSource('grants1').setData(geoJSON)
       })
 
@@ -1524,13 +1526,13 @@ export default {
       })
     },
     filterGrants(bounds) {
-      return this.grantsGeo.filter(grant => {
+      return this.grantsGeo.features.filter(grant => {
         const point = grant.geometry.coordinates
         return inBounds(bounds, point)
       })
     },
     countVisibleGrants(bounds) {
-      const visibleGrants = this.grantsGeo.filter(grant => {
+      const visibleGrants = this.grantsGeo.features.filter(grant => {
         const point = grant.geometry.coordinates
         return inBounds(bounds, point)
       })

@@ -257,8 +257,6 @@ export default {
       }
     },
     getGrantList() {
-      const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
-
       //  if year filtermode is activated
       if (
         this.getGrantsDateFilter ||
@@ -301,17 +299,14 @@ export default {
                 .includes(this.grantsSearchQuery.toLowerCase())
             )
           })
-          geoJSON.features = grantsSearchResult
-          this.$root.$emit('updateGrantsMarkers', geoJSON)
+          this.$root.$emit('updateGrantsMarkers', grantsSearchResult)
           return grantsSearchResult
         } else {
-          geoJSON.features = finalGrants
-          this.$root.$emit('updateGrantsMarkers', geoJSON)
+          this.$root.$emit('updateGrantsMarkers', finalGrants)
           return finalGrants
         }
       } else {
-        geoJSON.features = this.grantsTypeList
-        this.$root.$emit('updateGrantsMarkers', geoJSON)
+        this.$root.$emit('updateGrantsMarkers', this.grantsTypeList)
         return this.grantsTypeList
       }
     },
