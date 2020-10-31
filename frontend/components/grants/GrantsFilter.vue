@@ -15,42 +15,44 @@
       </div>
     </div>
     <b-collapse id="filters" v-model="showCollapse" class="mt-2">
-      <span class="field-kinds mt-3">FILTER GRANTS BY YEAR</span>
-      <div class="date-main-container">
-        <div class="date-container">
-          <span>From</span>
-          <b-form-input
-            v-model.number="fromValue"
-            class="date-input"
-            maxlength="4"
-            @blur="handleFromUpdate"
-            @keypress="isNumber($event)"
-          ></b-form-input>
-        </div>
+      <client-only>
+        <span class="field-kinds mt-3">FILTER GRANTS BY YEAR</span>
+        <div class="date-main-container">
+          <div class="date-container">
+            <span>From</span>
+            <b-form-input
+              v-model.number="fromValue"
+              class="date-input"
+              maxlength="4"
+              @blur="handleFromUpdate"
+              @keypress="isNumber($event)"
+            ></b-form-input>
+          </div>
 
-        <div class="date-container">
-          <span>To</span>
-          <b-form-input
-            v-model.number="toValue"
-            class="date-input"
-            maxlength="4"
-            @blur="handleToUpdate"
-            @keypress="isNumber($event)"
-          ></b-form-input>
+          <div class="date-container">
+            <span>To</span>
+            <b-form-input
+              v-model.number="toValue"
+              class="date-input"
+              maxlength="4"
+              @blur="handleToUpdate"
+              @keypress="isNumber($event)"
+            ></b-form-input>
+          </div>
         </div>
-      </div>
-      <HistogramSlider
-        :width="350"
-        :data="dateList"
-        :prettify="prettify"
-        :keyboard="true"
-        :min="getMinimumDate"
-        :max="getMaximumDate"
-        handle-color="#B47A2B"
-        :hide-from-to="true"
-        @change="changeDateValue"
-      />
-
+        <HistogramSlider
+          no-ssr
+          :width="350"
+          :data="dateList"
+          :prettify="prettify"
+          :keyboard="true"
+          :min="getMinimumDate"
+          :max="getMaximumDate"
+          handle-color="#B47A2B"
+          :hide-from-to="true"
+          @change="changeDateValue"
+        />
+      </client-only>
       <div class="badges-container">
         <slot name="badge-filter"></slot>
       </div>
