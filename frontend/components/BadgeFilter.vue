@@ -46,7 +46,7 @@
           >
             <div
               class="badge-option-inner"
-              @click.prevent.stop="toggleTaxonomyTag(taxonomy)"
+              @click="toggleTaxonomyTag(taxonomy)"
             >
               <b-form-checkbox
                 v-model="taxonomy.isChecked"
@@ -89,7 +89,7 @@
                 >
                   <div
                     class="badge-option-inner"
-                    @click.prevent.stop="toggleTaxonomyTag(taxChild)"
+                    @click="toggleTaxonomyTag(taxChild)"
                   >
                     <b-form-checkbox
                       v-model="taxChild.isChecked"
@@ -128,7 +128,7 @@
                       >
                         <div
                           class="badge-option-inner"
-                          @cclick.prevent.stop="toggleTaxonomyTag(taxChild1)"
+                          @click="toggleTaxonomyTag(taxChild1)"
                         >
                           <b-form-checkbox
                             v-model="taxChild1.isChecked"
