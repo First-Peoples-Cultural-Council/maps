@@ -31,4 +31,4 @@ class GrantCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GrantCategory
-        exclude = ("abbreviation",)
+        exclude = ()

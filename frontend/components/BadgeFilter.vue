@@ -31,25 +31,40 @@
         triggers="click "
         :show="showFilterOption"
       >
-        <div class="badge-option-container">
+        <div
+          :class="
+            `badge-option-container ${
+              childTaxonomy.length > 8 ? 'option-split' : 'option-column'
+            }`
+          "
+        >
           <span
             v-for="taxonomy in childTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
             class="badge-option-child"
           >
-            <b-form-checkbox
-              v-model="taxonomy.isChecked"
-              class="d-inline-block ml-2"
-              @change="toggleTaxonomyTag(taxonomy)"
+            <div
+              class="badge-option-inner"
+              @click="toggleTaxonomyTag(taxonomy)"
             >
-            </b-form-checkbox>
-            {{ taxonomy.name }}
+              <b-form-checkbox
+                v-model="taxonomy.isChecked"
+                class="d-inline-block ml-2"
+              >
+              </b-form-checkbox>
+              {{
+                filterType === 'grants'
+                  ? `${taxonomy.abbreviation} - ${taxonomy.name}`
+                  : taxonomy.name
+              }}
 
-            <img
-              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
-              src="@/assets/images/right.svg"
-            />
+              <img
+                v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
+                src="@/assets/images/right.svg"
+              />
+            </div>
+
             <!-- Child Popover -->
             <b-popover
               v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
@@ -64,18 +79,22 @@
                   :id="`badge-child-option-${taxChild.id}`"
                   :key="taxChild.id"
                 >
-                  <b-form-checkbox
-                    v-model="taxChild.isChecked"
-                    class="d-inline-block ml-2"
-                    @change="toggleTaxonomyTag(taxChild)"
+                  <div
+                    class="badge-option-inner"
+                    @click="toggleTaxonomyTag(taxChild)"
                   >
-                  </b-form-checkbox>
-                  {{ taxChild.name }}
+                    <b-form-checkbox
+                      v-model="taxChild.isChecked"
+                      class="d-inline-block ml-2"
+                    >
+                    </b-form-checkbox>
+                    {{ taxChild.name }}
 
-                  <img
-                    v-if="hasTaxonomyChild(taxChild.id)"
-                    src="@/assets/images/right.svg"
-                  />
+                    <img
+                      v-if="hasTaxonomyChild(taxChild.id)"
+                      src="@/assets/images/right.svg"
+                    />
+                  </div>
 
                   <!-- Child Child Popover -->
                   <b-popover
@@ -91,18 +110,22 @@
                         :id="`badge-child-option-${taxChild1.id}`"
                         :key="taxChild1.id"
                       >
-                        <b-form-checkbox
-                          v-model="taxChild1.isChecked"
-                          class="d-inline-block ml-2"
-                          @change="toggleTaxonomyTag(taxChild1)"
+                        <div
+                          class="badge-option-inner"
+                          @click="toggleTaxonomyTag(taxChild1)"
                         >
-                        </b-form-checkbox>
-                        {{ taxChild1.name }}
+                          <b-form-checkbox
+                            v-model="taxChild1.isChecked"
+                            class="d-inline-block ml-2"
+                          >
+                          </b-form-checkbox>
+                          {{ taxChild1.name }}
 
-                        <img
-                          v-if="hasTaxonomyChild(taxChild1.id)"
-                          src="@/assets/images/right.svg"
-                        />
+                          <img
+                            v-if="hasTaxonomyChild(taxChild1.id)"
+                            src="@/assets/images/right.svg"
+                          />
+                        </div>
                       </span>
                     </div>
                   </b-popover>
@@ -131,7 +154,11 @@
               class="d-inline-block ml-2 checkbox-parent"
               @change="toggleTaxonomyTag(taxonomy)"
             >
-              {{ taxonomy.name }}
+              {{
+                filterType === 'grants'
+                  ? `${taxonomy.abbreviation} - ${taxonomy.name}`
+                  : taxonomy.name
+              }}
             </b-form-checkbox>
 
             <div
@@ -232,10 +259,6 @@ export default {
   },
   methods: {
     toggleFilterOption() {
-      if (this.$route.name === 'index-grants' && !this.showFilterOption) {
-        const element = document.getElementById('badge-list-container')
-        element.scrollIntoView(true)
-      }
       this.showFilterOption = !this.showFilterOption
     },
     getFilterText() {
@@ -297,6 +320,7 @@ export default {
       return this.getTaxonomies.some(tag => tag === value)
     },
     toggleTaxonomyTag(currentTaxonomy) {
+      currentTaxonomy.isChecked = !currentTaxonomy.isChecked
       // if being used in ARTS PAGE
       if (this.filterType === 'arts') {
         if (this.type === 'artwork') {
@@ -424,11 +448,25 @@ export default {
   font-weight: 500;
 }
 
+.option-column {
+  flex-direction: column;
+  width: 250px;
+}
+
+.option-split {
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 500px;
+}
+
 .badge-option-container {
   display: flex;
-  flex-direction: column;
+  background: #fff;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 
   span {
+    flex: 0 0 50%;
     position: relative;
     display: flex;
     justify-items: flex-end;
@@ -450,6 +488,12 @@ export default {
       right: 1em;
     }
   }
+}
+
+.badge-option-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 #badge-choose {
@@ -494,7 +538,7 @@ export default {
 }
 
 .popover {
-  width: 80%;
+  border: 0;
 }
 
 .popover-body {
