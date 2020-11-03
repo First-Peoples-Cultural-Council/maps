@@ -73,7 +73,15 @@
               placement="right"
               triggers="click"
             >
-              <div class="badge-option-container">
+              <div
+                :class="
+                  `badge-option-container ${
+                    getChildTaxonomyList(taxonomy.id).length > 8
+                      ? 'option-split'
+                      : 'option-column'
+                  }`
+                "
+              >
                 <span
                   v-for="taxChild in getChildTaxonomyList(taxonomy.id)"
                   :id="`badge-child-option-${taxChild.id}`"
@@ -104,7 +112,15 @@
                     placement="right"
                     triggers="click"
                   >
-                    <div class="badge-option-container">
+                    <div
+                      :class="
+                        `badge-option-container ${
+                          getChildTaxonomyList(taxChild.id).length > 8
+                            ? 'option-split'
+                            : 'option-column'
+                        }`
+                      "
+                    >
                       <span
                         v-for="taxChild1 in getChildTaxonomyList(taxChild.id)"
                         :id="`badge-child-option-${taxChild1.id}`"
