@@ -131,7 +131,7 @@ export default {
       accordionContent: `
           In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at <a href='https://fpcc.ca/grants/' target="_blank">https://fpcc.ca/grants/</a> To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
 
-          <h5>Arts Program Grants </h5>
+          <span>Arts Program Grants </span>
 
           <ul>
             <li>ARTS - Arts One Time Grant</li>
@@ -146,14 +146,14 @@ export default {
             <li>ATPMP - Touring, Promotion/Marketing and Performance Grant </li>
           </ul>
 
-          <h5>Heritage Program Grants</h5>
+          <span>Heritage Program Grants</span>
           <ul>
             <li>HMIC - Indigenous Heritage Micro Grant </li>
             <li>HOHP - Oral Histories Program </li>
             <li>HSOP - Sense of Place Grant </li>
           </ul>
 
-          <h5>Language Program Grants</h5>
+          <span>Language Program Grants</span>
           <ul>
             <li>LALI - Aboriginal Languages Initiative </li>
             <li>LBCLI - BC Language Initiative </li>

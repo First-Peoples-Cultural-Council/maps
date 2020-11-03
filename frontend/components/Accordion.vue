@@ -78,6 +78,11 @@ export default {
   padding: 0;
   color: #151515;
 }
+
+.accordion-content ul {
+  padding-left: 20px;
+}
+
 .accordion-toggle {
   background-color: transparent;
   border: 0;
