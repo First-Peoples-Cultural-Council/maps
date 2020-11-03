@@ -124,7 +124,7 @@
             :number="artists.length"
             class="cursor-pointer"
             bgcolor="#db531f"
-            type="event"
+            type="artist"
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
