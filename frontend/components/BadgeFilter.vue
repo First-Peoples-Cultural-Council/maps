@@ -232,7 +232,7 @@ export default {
   },
   methods: {
     toggleFilterOption() {
-      if (this.$route.name === 'index-grants') {
+      if (this.$route.name === 'index-grants' && !this.showFilterOption) {
         const element = document.getElementById('badge-list-container')
         element.scrollIntoView(true)
       }
