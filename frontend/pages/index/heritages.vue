@@ -160,6 +160,6 @@ export default {
 </script>
 <style>
 #btn-heritage-grants {
-  background-color: #9d3d22;
+  background-color: #6d4264;
 }
 </style>

@@ -226,7 +226,6 @@
                   <GrantsCard
                     :grant="grant"
                     :is-selected="currentGrant && currentGrant.id === grant.id"
-                    @click.native="handleCardClick($event, grant)"
                   ></GrantsCard>
                 </b-col>
               </b-row>
@@ -429,7 +428,6 @@ export default {
     window.removeEventListener('resize', this.widthChecker)
   },
   mounted() {
-    console.log(this.artDetails)
     window.addEventListener('resize', this.widthChecker)
     if (
       this.artDetails &&

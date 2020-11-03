@@ -270,7 +270,6 @@
                 <GrantsCard
                   :grant="grant"
                   :is-selected="currentGrant && currentGrant.id === grant.id"
-                  @click.native="handleGrantCardClick($event, grant)"
                 ></GrantsCard>
               </b-col>
             </b-row>
@@ -630,15 +629,6 @@ export default {
           path: `/art/${encodeFPCC(name)}`
         })
       }
-    },
-    handleGrantCardClick(e, grant) {
-      if (this.currentGrant && this.currentGrant.id === grant.id) {
-        this.$store.commit('grants/setCurrentGrant', null)
-        this.$root.$emit('resetMap')
-      } else {
-        this.$root.$emit('setupGrantPoint', grant)
-      }
-      this.$root.$emit('closeSideBarSlider')
     },
     getHeaderTitle() {
       if (this.community) {

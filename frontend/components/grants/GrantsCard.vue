@@ -4,16 +4,14 @@
     :class="{ 'is-grant-selected': isSelected }"
     @mouseover.prevent="handleMouseOver"
     @mouseleave="handleMouseLeave"
+    @click="handleCardClick($event, grant)"
   >
     <div>
       <h5 class="grant-title">
         {{ grant.properties.recipient }} - {{ grant.properties.grant }}
       </h5>
       <div class="grant-tag-container">
-        <span
-          class="grant-tag"
-          :style="'background-color:' + parentTagObject.color"
-        >
+        <span class="grant-tag" :style="'background-color:' + grantColor">
           {{
             grant.properties.category
               ? grant.properties.category
@@ -64,6 +62,25 @@ export default {
   computed: {
     getGrantsDateFilter() {
       return this.$store.state.grants.filterDate
+    },
+    grantColor() {
+      if (this.grant && this.grant.properties.category_abbreviation) {
+        if (this.grant.properties.category_abbreviation.startsWith('L')) {
+          return '#b47a2b'
+        } else if (
+          this.grant.properties.category_abbreviation.startsWith('A')
+        ) {
+          return '#2c8190'
+        } else if (
+          this.grant.properties.category_abbreviation.startsWith('H')
+        ) {
+          return '#6d4264'
+        }
+      }
+      return '#99281c'
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   methods: {
@@ -90,6 +107,15 @@ export default {
         if (!this.grant.geometry) return
         this.$eventHub.doneReveal()
       }
+    },
+    handleCardClick(e, grant) {
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$root.$emit('showGrantModal', grant)
+      }
+      this.$root.$emit('closeSideBarSlider')
     }
   }
 }
