@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="grants-main-container">
     <SideBar v-if="this.$route.name === 'index-grants'" active="Grants">
-      <template v-slot:content>
+      <template v-slot:badges>
         <div class="grants-header">
           <span class="title">Grants</span>
           <img src="@/assets/images/graph_background_grants.svg" />
@@ -12,13 +12,11 @@
         </div>
         <section class="pl-3 pr-3 mt-3">
           <Accordion
-            class="no-scroll-accordion"
+            class="no-scroll-accordion hide-mobile"
             :content="accordionContent"
           ></Accordion>
         </section>
         <hr class="sidebar-divider" />
-      </template>
-      <template v-slot:badges>
         <CardFilter class="mt-3 mb-3" :mode="'grants'" />
         <hr class="sidebar-divider" />
         <GrantFilter :max-date="getMaxDate" :min-date="getMinDate" class="mb-2">
@@ -78,7 +76,10 @@
             </b-col>
           </b-row>
           <b-row
-            v-else-if="paginatedGrants.length === 0 && isGrantsSearchMode"
+            v-else-if="
+              paginatedGrants.length === 0 &&
+                (isGrantsSearchMode || isCategoryFilterMode)
+            "
             class="search-empty-container"
           >
             <img src="@/assets/images/search_icon.svg" />
@@ -199,6 +200,12 @@ export default {
     next()
   },
   computed: {
+    filterMode() {
+      return this.$store.state.grants.grantFilterMode
+    },
+    getCategoryFilterList() {
+      return this.$store.state.grants.grantCategoryList
+    },
     grantsSearchQuery() {
       return this.$store.state.grants.grantsSearch
     },
@@ -207,6 +214,9 @@ export default {
     },
     isGrantsSearchMode() {
       return this.grantsSearchQuery.length !== 0
+    },
+    isCategoryFilterMode() {
+      return this.getCategoryFilterList.length !== 0
     },
     isMobile() {
       return this.$store.state.responsive.isMobileSideBarOpen
@@ -260,7 +270,7 @@ export default {
       //  if year filtermode is activated
       if (
         this.getGrantsDateFilter ||
-        this.getCategoryFilterList.length !== 0 ||
+        this.isCategoryFilterMode ||
         this.isGrantsSearchMode
       ) {
         let finalGrants = []
@@ -272,7 +282,7 @@ export default {
         })
 
         // Filter by categories
-        if (this.getCategoryFilterList.length !== 0) {
+        if (this.isCategoryFilterMode) {
           finalGrants = filteredYear.filter(grant => {
             const isCategoryFound = this.getCategoryFilterList.some(
               tag =>
@@ -321,12 +331,6 @@ export default {
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
-    },
-    filterMode() {
-      return this.$store.state.grants.grantFilterMode
-    },
-    getCategoryFilterList() {
-      return this.$store.state.grants.grantCategoryList
     }
   },
   created() {

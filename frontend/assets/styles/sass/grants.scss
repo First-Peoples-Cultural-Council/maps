@@ -31,18 +31,23 @@
   border-bottom-left-radius: 1em;
   color: #fff;
   padding: 1em;
+  &:hover {
+    color: white;
+    background-color: #454545;
+  }
+  
+  img {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+  }
+
+  @media (max-width: 992px) {
+    transform: translateX(20px);
+  }
 }
 
-.grant-header-more:hover {
-  color: white;
-  background-color: #454545;
-}
 
-.grant-header-more img {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-}
 
 .grant-popup-container .grants-header {
   display: none !important;
