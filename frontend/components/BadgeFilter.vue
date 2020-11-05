@@ -50,7 +50,7 @@
             >
               <b-form-checkbox
                 v-model="taxonomy.isChecked"
-                class="d-inline-block ml-2"
+                class="ml-2 disabled-element"
               >
               </b-form-checkbox>
               {{
@@ -93,7 +93,7 @@
                   >
                     <b-form-checkbox
                       v-model="taxChild.isChecked"
-                      class="d-inline-block ml-2"
+                      class="ml-2 disabled-element"
                     >
                     </b-form-checkbox>
                     {{ taxChild.name }}
@@ -132,7 +132,7 @@
                         >
                           <b-form-checkbox
                             v-model="taxChild1.isChecked"
-                            class="d-inline-block ml-2"
+                            class="ml-2 disabled-element"
                           >
                           </b-form-checkbox>
                           {{ taxChild1.name }}
@@ -158,6 +158,7 @@
         v-model="showFilterOption"
         size="xl"
         title="Select Taxonomy Filters"
+        @ok="handleFilter"
       >
         <div class="modal-filter-container">
           <div
@@ -349,26 +350,6 @@ export default {
             this.$store.commit('arts/setTaxonomyTag', getTagged)
           }, 100)
         } else {
-          // if you uncheck a parent taxonomy, also uncheck the child
-          if (currentTaxonomy.isChecked) {
-            this.taxonomies
-              .filter(taxo => taxo.parent === currentTaxonomy.id)
-              .map(taxo => {
-                if (currentTaxonomy.isChecked) {
-                  taxo.isChecked = false
-                }
-                return taxo
-              })
-          }
-          // if you check a child taxonomy, also check the parent
-          else {
-            const findParent = this.taxonomies.find(
-              taxo => currentTaxonomy.parent === taxo.id
-            )
-
-            if (findParent) findParent.isChecked = true
-          }
-
           // setTimeout is needed because data is delayed
           setTimeout(() => {
             const filteredTag = this.taxonomies.filter(
@@ -392,6 +373,9 @@ export default {
           this.$store.commit('grants/setCategoryTag', getTagged)
         }, 100)
       }
+    },
+    handleFilter() {
+      this.$root.$emit('openSideBarSlider')
     }
   }
 }
@@ -532,10 +516,6 @@ export default {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 
-.checkbox-parent {
-  font-size: 1.25em;
-}
-
 .badge-modal-child-container {
   display: flex;
   flex-direction: row;
@@ -560,5 +540,9 @@ export default {
 .popover-body {
   padding: 0;
   margin: 0;
+}
+
+.disabled-element {
+  pointer-events: none;
 }
 </style>
