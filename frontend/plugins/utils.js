@@ -22,13 +22,15 @@ export const geomToLatLng = geometry => {
   }
 }
 
-export const makeMarker = (geom, icon, class_name) => {
+export const makeMarker = (geom, icon, context) => {
   const mapboxgl = require('mapbox-gl')
   const el = document.createElement('div')
   el.className = 'marker art-marker'
-  // el.className = class_name ? 'marker' : 'marker ' + class_name
   el.style = `background-image: url('/${icon}')`
-  return new mapboxgl.Marker(el).setLngLat(geomToLatLng(geom))
+
+  const marker = new mapboxgl.Marker(el).setLngLat(geomToLatLng(geom))
+  context.$store.commit('features/setMarker', marker)
+  return marker
 }
 
 export const formatLangBounds = lang => {

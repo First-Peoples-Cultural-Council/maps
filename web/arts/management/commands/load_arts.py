@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.db import transaction
-from arts.models import Art
-from language.models import PlaceName
+from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy, RelatedData
 from django.contrib.gis.geos import Point
 
 import os
@@ -9,6 +9,9 @@ import sys
 import json
 
 import pymysql
+import requests
+import glob
+import shutil
 from web import dedruplify
 
 
@@ -29,86 +32,340 @@ def sync_arts():
     )
     c.update()
     c.load_arts()
+    c.load_taxonomies()
 
 
-TYPE_MAP = {"art": "public_art", "org": "organization", "per": "artist"}
+TYPE_MAP = {
+    "art": "public_art",
+    "org": "organization",
+    "per": "artist",
+    "event": "event",
+    "resource": "resource",
+    "grant": "grant"
+}
+
+NODES_WITH_ARTWORK = ["public_art", "artist"]
 
 
 class Client(dedruplify.DeDruplifierClient):
 
     def load_arts(self):
+        # SETUP FOR SAVING MEDIA
+        # Files url - source from which to download media files
+        files_url = "https://www.fp-artsmap.ca/sites/default/files/"
 
-        arts_geojson = self.nodes_to_geojson()
-        # OLD IMPLEMENTATION FOR SAVING ARTS IN ART MODEL
-        # TEMPORARILY COMMENTING BEFORE COMPLETELY OVERRIDING
+        # Delete art artists
+        art_artists = PublicArtArtist.objects.all()
+        art_artists.delete()
 
-        # Removing every Art object from the database.
-        # We are loading everything from the scratch
-        arts = Art.objects.all()
-        arts.delete()
+        # Set artsmap path - directory for media files downloaded from fp-artsmap.ca
+        artsmap_path = "{}{}{}".format(
+            settings.BASE_DIR, settings.MEDIA_URL, "fp-artsmap")
+
+        # # COMMENT IF MEDIA IS ALREADY DOWNLOADED
+        # # Delete fp-artsmap directory contents if it exists
+        # if os.path.exists(artsmap_path):
+        #     files = glob.glob("{}/*".format(artsmap_path))
+        #     for f in files:
+        #         if os.path.isfile(f):
+        #             os.remove(f)
+        #         elif os.path.isdir(f):
+        #             shutil.rmtree(f)
+
+        # # Create fp-artsmap directory
+        # if not os.path.exists(artsmap_path):
+        #     os.mkdir(artsmap_path)
+        # # END COMMENT
+
+        # SETUP FOR SAVING PLACENAMES
+        node_placenames_geojson = self.nodes_to_geojson()
+
+        node_types = ["public_art", "artist",
+                      "organization", "event", "resource", "grant"]
+
+        # Removing every Node PlaceName object from the database.
+        node_placenames = PlaceName.objects.filter(kind__in=node_types)
+        node_placenames.delete()
+
+        # Remove all related_data
+        existing_related_data = RelatedData.objects.all()
+        existing_related_data.delete()
 
         error_log = []
-        for rec in arts_geojson["features"]:
 
-            # try:
+        print('----------CREATING PLACENAMES FROM NODES----------')
+
+        # Loop through each record in geojson
+        for rec in node_placenames_geojson["features"]:
             with transaction.atomic():
-                # avoid duplicates on remote data source.
+                node_placename = self.create_placename(rec)
+
+                # If the record is a Public Art PlaceName, we should create the Art's Artist (also a placename)
+                # then associate it with the Art PlaceName using the ArtArtist model
+
+                # Conditions are kept relatively light to trap errors (e.g. non-existing Artist)
+                if rec["properties"]["type"] == 'public_art' and rec.get("artists"):
+                    for artist_id in rec.get("artists"):
+                        if artist_id:
+                            # Get the record for the associated artist
+                            artist_list = [placename for placename in node_placenames_geojson["features"]
+                                           if placename["properties"]["node_id"] == artist_id]
+
+                            # Create the PlaceName for the artist - Only get first item (records may duplicate)
+                            artist_placename = self.create_placename(
+                                artist_list[0])
+
+                            # Create relationship (ignore if it already exists)
+                            PublicArtArtist.objects.get_or_create(
+                                public_art=node_placename, artist=artist_placename)
+
+            for data in rec["related_data"]:
+                for value in data.get("value"):
+                    RelatedData.objects.get_or_create(
+                        data_type=data.get("key"),
+                        label=data.get("label"),
+                        is_private=data.get("private"),
+                        value=value,
+                        placename=node_placename
+                    )
+
+            # Add location as related_data
+            if rec["location_id"]:
+                for row in self.query("""
+                SELECT
+                    street,
+                    city,
+                    province,
+                    postal_code,
+                    location_country.name
+                FROM
+                    location
+                    left join location_country on country = code
+                WHERE
+                    lid = %s;
+                """ % rec["location_id"]):
+                    value = ""
+
+                    # Append street to value if it exists
+                    if row.get("street"):
+                        value += row.get("street")
+
+                    # Conditional data based on postal code and city
+                    if row.get("postal_code") and row.get("city"):
+                        value += "\n{} {}".format(row.get("postal_code"),
+                                                  row.get("city"))
+                    elif row.get("postal_code"):
+                        value += "\n{}".format(row.get("postal_code"))
+                    elif row.get("city"):
+                        value += "\n{}".format(row.get("city"))
+
+                    # Append province if it exists
+                    if row.get("province"):
+                        value += "\n{}".format(row.get("province"))
+
+                    # Append Country if it exists
+                    if row.get("name"):
+                        value += "\n{}".format(row.get("name"))
+
+                    # Sanitize location data
+                    if value.startswith("\n"):
+                        value = value.strip()
+                    if value.startswith(", "):
+                        value.replace(", ", "", 1)
+
+                    RelatedData.objects.get_or_create(
+                        data_type="location",
+                        label="Location",
+                        is_private=False,
+                        value=value,
+                        placename=node_placename
+                    )
+
+            for fid in rec["files"]:
+                for index, row in enumerate(self.query("""
+                    SELECT
+                        file_managed.*,
+                        field_shared_image_gallery_title
+                    FROM
+                        file_managed
+                        LEFT JOIN field_data_field_shared_image_gallery ON fid = field_shared_image_gallery_fid
+                    WHERE fid = %s;
+                """ % fid), start=1):
+                    # Extract data from query row
+                    filename = row.get("field_shared_image_gallery_title", '')
+                    uri = row["uri"]
+                    mime_type = row["filemime"]
+                    file_type = row["type"]
+
+                    media_path = None
+                    media_url = None
+
+                    if not filename:
+                        if node_placename.kind in NODES_WITH_ARTWORK:
+                            filename = "{} - {} {}".format(
+                                node_placename.name, 'Artwork', index)
+                        else:
+                            filename = "{} - {}".format(
+                                node_placename.name, index)
+
+                    try:
+                        existing_media = Media.objects.get(
+                            name=filename, placename=node_placename)
+                    except Media.DoesNotExist:
+                        existing_media = None
+
+                    if not existing_media:
+                        print('--Processing File: {}'.format(filename))
+
+                        # If the video is from youtube/vimeo, only store their url
+                        # Else, download the file from fp-artsmap.ca and set the media_file
+                        from_youtube = uri.startswith("youtube://v/")
+                        from_vimeo = uri.startswith("vimeo://v/")
+
+                        if from_youtube or from_vimeo:
+                            if from_youtube:
+                                media_url = uri.replace(
+                                    "youtube://v/", "https://youtube.com/watch?v=")
+                            elif from_vimeo:
+                                media_url = uri.replace(
+                                    "vimeo://v/", "https://vimeo.com/")
+                        else:
+                            # Set up paths
+                            download_url = uri.replace("public://", files_url)
+                            storage_path = "{}/{}".format(
+                                artsmap_path, uri.replace("public://", ""))
+                            media_path = "{}/{}".format("fp-artsmap",
+                                                        uri.replace("public://", ""))
+
+                            # # COMMENT IF MEDIA IS ALREADY DOWNLOADED
+                            # if not os.path.exists(os.path.dirname(storage_path)):
+                            #     print('Creating ' + os.path.dirname(storage_path))
+                            #     os.makedirs(os.path.dirname(storage_path), exist_ok=True)
+
+                            # response = requests.get(download_url, allow_redirects=True)
+                            # open(storage_path, 'wb').write(response.content)
+                            # # END COMMENT
+
+                        # If the media is a display picture, save it in the PlaceName
+                        if fid == rec["properties"]["display_picture"]:
+                            node_placename.image = media_path
+                            node_placename.save()
+                        else:
+                            # Instantiate Media object and fill data
+                            current_media = Media()
+
+                            current_media.name = filename
+                            current_media.mime_type = mime_type
+                            current_media.file_type = file_type
+                            if node_placename.kind in NODES_WITH_ARTWORK:
+                                current_media.is_artwork = True
+                            else:
+                                current_media.is_artwork = False
+                            current_media.status = "VE"
+                            current_media.placename = node_placename
+
+                            if media_path:
+                                current_media.media_file = media_path
+                            elif media_url:
+                                current_media.url = media_url
+
+                            # Save Media
+                            current_media.save()
+
+                        print('--Done\n')
+
+        print("Arts imported!")
+
+    def load_taxonomies(self):
+        print('----------CREATING TAXONOMIES AND RELATION----------')
+        existing_taxonomies = Taxonomy.objects.all()
+        existing_taxonomies.delete()
+
+        taxonomy_data = self.query("SELECT * FROM taxonomy_term_data;")
+
+        for data in taxonomy_data:
+            taxonomy = Taxonomy()
+            taxonomy.name = data["name"]
+            taxonomy.description = data["description"]
+
+            taxonomy.save()
+
+        taxonomy_hierarchies = self.query("""
+            SELECT
+                taxonomy_term_data.name,
+                taxonomy_term_hierarchy.*,
+                parent_taxonomy.name as parent_name
+            FROM
+                taxonomy_term_data
+                JOIN taxonomy_term_hierarchy ON taxonomy_term_data.tid = taxonomy_term_hierarchy.tid
+                LEFT JOIN taxonomy_term_data AS parent_taxonomy ON taxonomy_term_hierarchy.parent = parent_taxonomy.tid;
+
+        """)
+
+        for hierarchy in taxonomy_hierarchies:
+            if hierarchy["parent_name"]:
                 try:
-                    art = Art.objects.get(name=rec["properties"]["name"])
-                except Art.DoesNotExist:
-                    art = Art(name=rec["properties"]["name"])
+                    taxonomy = Taxonomy.objects.get(name=hierarchy["name"])
+                    parent_taxonomy = Taxonomy.objects.get(
+                        name=hierarchy["parent_name"])
 
-                # Geometry map point with latitude and longitude
-                art.point = Point(
-                    float(rec["geometry"]["coordinates"][0]),  # latitude
-                    float(rec["geometry"]["coordinates"][1]),
-                )  # longitude
-                art.art_type = rec["properties"]["type"]
-                art.details = rec["properties"]["details"]
-                art.node_id = rec["properties"]["node_id"]
+                    taxonomy.parent = parent_taxonomy
 
-                art.save()
+                    taxonomy.save()
 
-        # except Exception as e:
-        #     error_log.append(
-        #         "Node Id "
-        #         + str(rec["properties"]["node_id"])
-        #         + ", unexpected error: "
-        #         + str(e)
-        #     )
+                    print('Parent Saved: %s' % hierarchy["name"])
+                except Taxonomy.DoesNotExist:
+                    print('Taxonomy not found: %s' % hierarchy["name"])
+            else:
+                print('Root Hierarchy - No Parent')
 
-        # Removing every Art PlaceName object from the database.
-        # We are loading everything from the scratch
-        # arts = PlaceName.objects.filter(is_art=True)
-        # arts.delete()
+        # Map taxonomies to their node_placenames
+        node_placenames_geojson = self.nodes_to_geojson()
 
-        # error_log = []
-        # for rec in arts_geojson["features"]:
+        for rec in node_placenames_geojson["features"]:
+            try:
+                node_placename = PlaceName.objects.get(
+                    name=rec["properties"]["name"], kind=rec["properties"]["type"])
 
-        #     with transaction.atomic():
-        #         # avoid duplicates on remote data source.
-        #         try:
-        #             art = PlaceName.objects.get(name=rec["properties"]["name"])
-        #         except PlaceName.DoesNotExist:
-        #             art = PlaceName(name=rec["properties"]["name"])
+                for taxonomy in rec["taxonomies"]:
+                    if taxonomy:
+                        try:
+                            current_taxonomy = Taxonomy.objects.get(
+                                name=taxonomy)
 
-        #         # Geometry map point with latitude and longitude
-        #         art.geom = Point(
-        #             float(rec["geometry"]["coordinates"][0]),  # latitude
-        #             float(rec["geometry"]["coordinates"][1]),
-        #         )  # longitude
-        #         art.node_type = rec["properties"]["type"]
-        #         art.ndoe_details = rec["properties"]["details"]
-        #         art.node_id = rec["properties"]["node_id"]
-        #         art.is_art = True
+                            PlaceNameTaxonomy.objects.get_or_create(
+                                placename=node_placename,
+                                taxonomy=current_taxonomy)
 
-        #         art.save()
+                            print('Setting PlaceName Taxonomy for %s' %
+                                  node_placename)
+                        except Taxonomy.DoesNotExist:
+                            print('Taxonomy not found %s' % taxonomy)
 
-        if len(error_log) > 0:
-            for error in error_log:
-                print(error)
-        else:
-            print("Arts imported!")
+            except PlaceName.DoesNotExist:
+                print('PlaceName not found %s' % rec["properties"]["name"])
+
+    def create_placename(self, rec):
+        # avoid duplicates on remote data source.
+        try:
+            node_placename = PlaceName.objects.get(
+                name=rec["properties"]["name"])
+            # print('Updating %s' % rec["properties"]["name"])
+        except PlaceName.DoesNotExist:
+            node_placename = PlaceName(name=rec["properties"]["name"])
+            print('Creating %s' % rec["properties"]["name"])
+
+        # Geometry map point with latitude and longitude
+        node_placename.geom = Point(
+            float(rec["geometry"]["coordinates"][0]),  # latitude
+            float(rec["geometry"]["coordinates"][1]),
+        ) if rec["geometry"] else None
+        node_placename.description = rec["properties"]["details"]
+        node_placename.kind = rec["properties"]["type"]
+
+        node_placename.save()
+
+        return node_placename
 
     def nodes_to_geojson(self):
         db = pymysql.connect(
@@ -121,65 +378,152 @@ class Client(dedruplify.DeDruplifierClient):
         # prepare a cursor object using cursor() method
         cursor = db.cursor()
 
-        sql = """
-        select distinct node.type, node.title, location.latitude, location.longitude, node.nid
-        from node inner join location_instance on node.nid=location_instance.nid
-            inner join location on location.lid=location_instance.lid
-        where node.type = 'art' or node.type = 'per' or node.type = 'org';
-        """
-        # Execute the SQL command
-        cursor.execute(sql)
-        # Fetch all the rows in a list of lists.
-        results = cursor.fetchall()
-
+        nodes = self.query("""
+            SELECT
+                type,
+                title,
+                nid
+            FROM
+                node
+            WHERE
+                type = 'art' OR
+                type = 'per' OR
+                type = 'org' OR
+                type = 'event' OR
+                type = 'resource' OR
+                type = 'grant';
+        """)
         geojson = {"type": "FeatureCollection", "features": []}
 
         _details = {}
-        for node_type in ["art", "per", "org"]:
+        for node_type in ["per", "art", "org", "event", "resource", "grant"]:
             _details[node_type] = json.loads(
                 open("tmp/{}.json".format(node_type)).read()
             )
+        counter = 1
 
-        for row in results:
-            if float(row[2]) and float(row[3]):  # only want spatial data.
-                name = row[1].strip()
-                if float(row[3]) > -110:
-                    print(row[3], "is outside the allowable area for this map, skip.")
-                    # skip any features that are past Alberta,
-                    # there seems to be junk in the arts db.
-                    continue
-                if (
-                    name.lower().endswith("band")
-                    or name.lower().endswith("nation")
-                    or name.lower().endswith("council")
-                    or name.lower().endswith("nations")
-                ):
-                    # bands are duplicated in other layers, skip them.
-                    print(row[1], "is duplicated in another layer, skip.")
-                    continue
+        for node in nodes:
+            location = self.query("""
+                SELECT DISTINCT
+                    latitude,
+                    longitude,
+                    location.lid
+                FROM
+                    location
+                    JOIN location_instance on location.lid = location_instance.lid
+                WHERE
+                    nid=%s
+                ORDER BY
+                    location.lid DESC
+                LIMIT
+                    1;
+            """ % node.get("nid"))
 
-                details = _details[row[0]][str(row[4])]
-                if details.get('field_shared_privacy_value', ["1"])[0] == "0":
-                    print(row[1], "is private.")
-                    continue
-                geojson["features"].append(
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "type": TYPE_MAP[row[0]],
-                            "name": name,
-                            "details": details.get("body_value", [""])[0],
-                            "node_id": row[4],
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [float(row[3]), float(row[2])],
-                        },
-                    }
-                )
+            name = node.get("title", "").strip()
+            node_type = node.get("type")
+            node_id = node.get("nid")
+            coordinates = [float(location[0].get("longitude", "")), float(
+                location[0].get("latitude", ""))] if location else None
+
+            details = _details[node_type][str(node_id)]
+
+            # Attach files to node
+            file_ids = []
+            for k, v in details.items():
+                if k.endswith('_fid'):
+                    file_ids += v
+            file_ids.sort()
+
+            # Attach taxonomy to node
+            taxonomy_list = []
+            for k, v in details.items():
+                if k == 'taxonomy_list':
+                    taxonomy_list += v
+            taxonomy_list.sort()
+
+            related_data = []
+            for k, value in details.items():
+                data_type = None
+                label = None
+                private = False
+
+                # Format Data
+                if k == "field_shared_access_value":
+                    label = 'Access'
+                    data_type = 'access'
+                if k == "field_shared_website_url":
+                    label = 'Website(s)'
+                    data_type = 'website'
+                if k == "field_shared_email_email":
+                    label = "Email"
+                    data_type = 'email'
+                    private = True
+                if k == "field_per_fn_value":
+                    label = "Indigenous/First Nation Association(s)"
+                    data_type = 'fn'
+                if k == "field_shared_awards_value":
+                    data_type = 'award'
+                    label = "Award(s)"
+
+                # If this is a field we customized for adding, include it
+                if data_type and label:
+                    related_data.append({
+                        "key": data_type,
+                        "label": label,
+                        "value": value,
+                        "private": private
+                    })
+
+            user_email = self.query("""
+                SELECT 
+                    mail
+                FROM
+                    users,
+                    node
+                WHERE
+                    users.uid = node.uid
+                AND
+                    node.nid=%s
+                LIMIT
+                    1;
+            """ % node.get("nid"))
+
+            if user_email[0]:
+                related_data.append({
+                    "key": 'user_email',
+                    "label": 'Old Artsmap User Email',
+                    "value": [user_email[0].get('mail', '')],
+                    "private": True
+                })
+
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "type": TYPE_MAP[node_type],
+                    "name": name,
+                    "details": details.get("body_value", [""])[0],
+                    "node_id": node_id,
+                    "display_picture": details.get("field_shared_image_fid", [""])[0]
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": coordinates
+                } if location else None,
+                "files": file_ids,
+                "taxonomies": taxonomy_list,
+                "related_data": related_data,
+                "location_id": details.get("field_shared_location_lid", [""])[0]
+            }
+
+            if node_type == 'art' and details.get('field_art_artist_nid'):
+                feature["artists"] = details.get("field_art_artist_nid", [])
+
+            geojson["features"].append(feature)
+
+        open("tmp/geojson.json", "w").write(
+            json.dumps(geojson, indent=4, sort_keys=True)
+        )
         return geojson
-
-
 
 
 # TODO: move to db query.
@@ -219,14 +563,17 @@ TAX_TERMS = [
         "1",
         "4c796e30-3669-48d2-8eb4-660a80ed5752",
     ),
-    (55, 1, "Cultural Centre", "", 1, None, "b4f62a90-3cd1-46b6-944e-3b54da996b1b"),
+    (55, 1, "Cultural Centre", "", 1, None,
+     "b4f62a90-3cd1-46b6-944e-3b54da996b1b"),
     (56, 1, "Arts Group", "", 0, None, "bafa558f-4afd-42bf-8b11-05076e7f37b5"),
-    (58, 1, "Artists' Collective", "", 1, None, "893a3423-e745-49b6-9eba-030512d72f4e"),
+    (58, 1, "Artists' Collective", "", 1, None,
+     "893a3423-e745-49b6-9eba-030512d72f4e"),
     (59, 1, "Funder", "", 2, "1", "e70805ab-3330-4271-8275-d57261f0d21f"),
     (60, 1, "School", "", 5, "1", "0238377c-88e9-40ae-8072-1fa5e63b60f2"),
     (61, 1, "Venue", "", 4, None, "14f8f62f-b687-4d5f-9900-6481df130d61"),
     (62, 1, "Gallery", "", 3, "1", "09a59051-e22f-4a01-9f8e-20a71521e9ad"),
-    (64, 1, "Other Organization", "", 6, None, "4f02e021-9eaf-426a-b4ed-f787e50ba9d3"),
+    (64, 1, "Other Organization", "", 6, None,
+     "4f02e021-9eaf-426a-b4ed-f787e50ba9d3"),
     (
         69,
         1,
@@ -236,7 +583,8 @@ TAX_TERMS = [
         "1",
         "bbc036b8-b866-4865-ba0b-d186e9df3297",
     ),
-    (70, 1, "Cultural Gathering", "", 4, None, "874820ae-1036-4300-a00d-94119e44cc24"),
+    (70, 1, "Cultural Gathering", "", 4, None,
+     "874820ae-1036-4300-a00d-94119e44cc24"),
     (71, 1, "Festival", "", 5, None, "fa762610-6085-4daa-b079-cb902c6ec51f"),
     (73, 1, "Conference", "", 6, None, "907b9087-973f-4fc2-b9f5-86e7f6840403"),
     (74, 1, "Pow-wow", "", 3, None, "7c9bd15c-289b-4562-9c7c-d8901e093f25"),
@@ -298,17 +646,24 @@ TAX_TERMS = [
     (115, 1, "Weaver", "", 1, None, "101fbba1-5aaf-4e13-9651-298efdbf6367"),
     (116, 1, "Carver", "", 2, None, "c2efc650-2481-4b52-9ac2-b1205ce4a2e3"),
     (117, 1, "Jeweler", "", 3, None, "6e6e6bf6-21a1-4a9d-84e1-6b5207e42be4"),
-    (118, 1, "Graphic Designer", "", 4, None, "e8277a9d-1a81-4f83-852b-10b9bfa0b87e"),
-    (119, 1, "Visual - Other", "", 5, None, "14eb037b-ebe6-4c3a-93c2-d435faf6846f"),
+    (118, 1, "Graphic Designer", "", 4, None,
+     "e8277a9d-1a81-4f83-852b-10b9bfa0b87e"),
+    (119, 1, "Visual - Other", "", 5, None,
+     "14eb037b-ebe6-4c3a-93c2-d435faf6846f"),
     (120, 1, "Director", "", 3, None, "6af232e7-6d97-4897-9c14-77a267377d84"),
     (121, 1, "Musician", "", 5, None, "167a1ea9-a9ff-4450-b311-7d5fb2b560b1"),
-    (122, 1, "Spoken Word Artist", "", 2, None, "8486782e-ed5e-4851-841d-ca2d77bc0f47"),
-    (123, 1, "Children's Author", "", 3, None, "23e55af7-cbef-4b1d-bfe1-6e39856bf218"),
-    (124, 1, "Graphic Novelist", "", 4, None, "d7887c5f-8965-4a4c-9a20-3a3bb61c732c"),
+    (122, 1, "Spoken Word Artist", "", 2, None,
+     "8486782e-ed5e-4851-841d-ca2d77bc0f47"),
+    (123, 1, "Children's Author", "", 3, None,
+     "23e55af7-cbef-4b1d-bfe1-6e39856bf218"),
+    (124, 1, "Graphic Novelist", "", 4, None,
+     "d7887c5f-8965-4a4c-9a20-3a3bb61c732c"),
     (125, 1, "Photographer", "", 0, None, "86b63ecb-cf07-442a-bde5-58e8132f6451"),
-    (126, 1, "Film and Video", "", 1, None, "43e1a633-d5bc-4972-a983-6c99552454a7"),
+    (126, 1, "Film and Video", "", 1, None,
+     "43e1a633-d5bc-4972-a983-6c99552454a7"),
     (127, 1, "Animator", "", 2, None, "e8e16ceb-6886-42d5-ad2b-91ce5a10012a"),
-    (128, 1, "New Media Artist", "", 3, None, "ce5f1f52-59ae-4e57-9c80-f95b8de2e301"),
+    (128, 1, "New Media Artist", "", 3, None,
+     "ce5f1f52-59ae-4e57-9c80-f95b8de2e301"),
     (
         129,
         1,

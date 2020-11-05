@@ -6,7 +6,7 @@
       :class="'badge-' + mode"
       @click="handleClick"
     >
-      <span class="badge-icon">
+      <span v-if="type !== ''" class="badge-icon">
         <img :src="getImage" alt="Icon" />
       </span>
       <span class="badge-content">{{ content }}</span>
@@ -59,6 +59,10 @@ export default {
       default() {
         return []
       }
+    },
+    pillShape: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -126,8 +130,6 @@ export default {
       }
 
       this.showModal = false
-
-      // console.log('Ok!')
     }
   }
 }
@@ -138,8 +140,10 @@ export default {
   line-height: 0;
 }
 .badge {
-  border-radius: 1em;
+  border-radius: 14px;
   margin: 0.25em 0.3em;
+  display: flex;
+  align-items: center;
 }
 .badge-content {
   display: inline-block;
@@ -150,12 +154,16 @@ export default {
   display: inline-block;
   color: #c46257;
   background-color: white;
-  height: 19px;
-  width: 19px;
+  height: 22.5px;
+  width: 22.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   border-radius: 50%;
   font-size: 0.8em;
   line-height: 19px;
+  margin-left: 5px;
 }
 .badge-icon {
   display: inline-block;
@@ -191,10 +199,6 @@ export default {
 @media (max-width: 574px) {
   .badge-icon {
     display: inline-block;
-  }
-
-  .badge-content {
-    display: none;
   }
 }
 </style>

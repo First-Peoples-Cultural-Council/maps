@@ -575,7 +575,6 @@ export default {
       if (type === 'Locations' || type === 'Address') {
         const self = this
         this.$eventHub.whenMap(map => {
-          self.$router.push({ path: '/languages' })
           zoomToPoint({ map, geom, zoom: 11 })
           const el = document.createElement('div')
           el.className = 'marker search-marker'
