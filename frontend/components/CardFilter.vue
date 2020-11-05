@@ -111,8 +111,13 @@ export default {
 
 @media (max-width: 993px) {
   .filter-container {
-    width: 95% !important ;
-    margin: 0 0 0.25em 0 !important;
+    width: 95%;
+    margin: 0 0 0.25em 0;
+  }
+
+  .grants-main-container .filter-container {
+    width: 100%;
+    margin: 0 0 0 0;
   }
 }
 
