@@ -208,6 +208,10 @@ export default {
   .innerHeader {
     width: 90%;
   }
+
+  .grants-main-container .innerHeader {
+    width: 100%;
+  }
 }
 
 #sidebar-outer-collapse .card-body {

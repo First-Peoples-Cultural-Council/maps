@@ -42,7 +42,6 @@
         </div>
         <HistogramSlider
           no-ssr
-          :width="350"
           :data="dateList"
           :prettify="prettify"
           :keyboard="true"
