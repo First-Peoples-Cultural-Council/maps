@@ -156,7 +156,10 @@
             </b-col>
           </b-row>
           <b-row
-            v-else-if="paginatedArts.length === 0 && isSearchMode"
+            v-else-if="
+              paginatedArts.length === 0 &&
+                (isSearchMode || isTaxonomyFilterMode)
+            "
             class="search-empty-container"
           >
             <img src="@/assets/images/search_icon.svg" />
@@ -379,20 +382,14 @@ export default {
         // if filterMode is on Artwork
         if (this.filterMode === 'artwork') {
           return artsArray.filter(art => {
-            return (
-              // this.artMediaType(art.properties.file_type) ===
-              // this.taxonomyFilter[0]
-              this.taxonomyFilter.find(
-                taxo => taxo === this.artMediaType(art.properties.file_type)
-              )
+            return this.taxonomyFilter.find(
+              taxo => taxo === this.artMediaType(art.properties.file_type)
             )
           })
         } else {
           return artsArray.filter(art => {
-            return art.properties.taxonomies.some(taxonomy =>
-              // taxonomy.name ===
-              // this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
-              this.taxonomyFilter.find(taxo => taxonomy.name === taxo)
+            return this.taxonomyFilter.every(taxonomy =>
+              art.properties.taxonomies.find(taxo => taxonomy === taxo.name)
             )
           })
         }
