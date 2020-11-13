@@ -346,7 +346,7 @@ export default {
       mode: 'All',
       map: {},
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->

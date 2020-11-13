@@ -127,7 +127,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
       badgeContent: 'Languages',
       detailOneWidth: 375,
       detailTwoWidth: 500,
