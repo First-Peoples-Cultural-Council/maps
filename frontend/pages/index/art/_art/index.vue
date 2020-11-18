@@ -207,6 +207,29 @@
                 </ul>
               </span>
             </section>
+
+            <section
+              v-if="grantsList.length !== 0"
+              class="artist-content-field"
+            >
+              <span class="field-title">Grants:</span>
+              <b-row>
+                <b-col
+                  v-for="(grant, index) in grantsList"
+                  :key="`grants-item-${index}`"
+                  lg="12"
+                  xl="12"
+                  md="12"
+                  sm="12"
+                  class="mt-3 mr-3 hover-left-move"
+                >
+                  <GrantsCard
+                    :grant="grant"
+                    :is-selected="currentGrant && currentGrant.id === grant.id"
+                  ></GrantsCard>
+                </b-col>
+              </b-row>
+            </section>
           </div>
         </div>
       </div>
@@ -237,6 +260,7 @@ import {
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 import ErrorScreen from '@/layouts/error.vue'
+import GrantsCard from '@/components/grants/GrantsCard.vue'
 
 export default {
   components: {
@@ -244,7 +268,8 @@ export default {
     ArtsDetailCard,
     Logo,
     ArtsDrawer,
-    ErrorScreen
+    ErrorScreen,
+    GrantsCard
   },
   filters: {
     titleCase(str) {
@@ -359,6 +384,12 @@ export default {
       return this.artDetails.image
         ? getMediaUrl(this.artDetails.image)
         : require(`@/assets/images/artist_icon.svg`)
+    },
+    grantsList() {
+      return this.artDetails.grants.features
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   watch: {
@@ -513,7 +544,7 @@ export default {
         }
         if (this.artDetails.geom) {
           const icon = this.artDetails.kind + '_icon.svg'
-          makeMarker(this.artDetails.geom, icon, 'art-marker').addTo(map)
+          makeMarker(this.artDetails.geom, icon, this).addTo(map)
         }
       })
     },
@@ -557,6 +588,15 @@ export default {
       } else {
         return 'Art page not found '
       }
+    },
+    handleCardClick(e, grant) {
+      if (this.currentGrant && this.currentGrant.id === grant.id) {
+        this.$store.commit('grants/setCurrentGrant', null)
+        this.$root.$emit('resetMap')
+      } else {
+        this.$root.$emit('setupGrantPoint', grant)
+      }
+      this.$root.$emit('closeSideBarSlider')
     }
   },
   head() {
@@ -580,6 +620,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.arts-grants-container {
+  width: 100%;
+}
 .arts-main-container {
   display: flex;
   justify-content: flex-start;
@@ -594,103 +637,6 @@ export default {
 .artist-main-container {
   display: flex;
   flex-direction: column;
-}
-
-.artist-content-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 0em 1em 0.25em 1em;
-  font-family: 'Proxima Nova', sans-serif;
-}
-
-.artist-content-field {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  margin: 1em 0 0.4em 0;
-  overflow: hidden;
-
-  a {
-    text-decoration: underline;
-  }
-}
-
-.field-title {
-  color: #707070;
-  font: Bold 15px/18px Proxima Nova;
-  text-transform: capitalize;
-}
-
-.field-content {
-  display: flex;
-  font: normal 16px/25px Proxima Nova;
-  flex-direction: column;
-  color: #151515;
-}
-
-.field-content font {
-  font: normal 16px/25px Proxima Nova !important;
-}
-
-.field-content a {
-  text-decoration: underline;
-  color: #c46257;
-}
-
-.field-content h1,
-.field-content h2,
-.field-content h3,
-.field-content h4,
-.field-content h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #151515;
-}
-
-.field-content p,
-.field-content span,
-.field-content pre,
-.field-content label,
-.field-content legend {
-  font: normal 16px/25px Proxima Nova !important;
-  color: #151515 !important;
-  background: none !important;
-  overflow-x: hidden;
-}
-
-.artist-content-field > .field-content-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.field-content-list li {
-  display: flex;
-  align-items: center;
-  & > * {
-    margin-right: 0.4em;
-  }
-}
-
-.artist-social-icons {
-  display: flex;
-  padding: 0;
-  justify-content: flex-start;
-  width: 100%;
-  list-style: none;
-  text-align: center;
-}
-
-.artist-social-icons li {
-  width: 25px;
-  height: 25px;
-  margin: 0.25em 0.5em 0.5em 0;
-}
-
-.artist-social-icons img {
-  width: 25px;
-  height: 25px;
 }
 
 .placename-img-container {

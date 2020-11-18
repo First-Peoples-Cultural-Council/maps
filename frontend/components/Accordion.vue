@@ -4,7 +4,7 @@
       <b-card>
         <p class="outer-text d-flex align-items-center justify-content-between">
           <span class="accordion-content">
-            {{ getContextData }}
+            <span v-html="getContextData"> </span>
             <span
               class="accordion-toggle"
               @click="expandContent = !expandContent"
@@ -78,6 +78,11 @@ export default {
   padding: 0;
   color: #151515;
 }
+
+.accordion-content ul {
+  padding-left: 20px;
+}
+
 .accordion-toggle {
   background-color: transparent;
   border: 0;
