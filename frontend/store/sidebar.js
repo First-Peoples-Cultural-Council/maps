@@ -4,7 +4,8 @@ export const state = () => ({
   isArtsMode: false,
   showGallery: false,
   collapseDetail: false,
-  showLoading: false
+  showLoading: false,
+  showScrollIndicator: false
 })
 
 export const mutations = {
@@ -28,5 +29,8 @@ export const mutations = {
   },
   toggleLoading(state, value) {
     state.showLoading = value
+  },
+  setScrollIndicatorValue(state, value) {
+    state.showScrollIndicator = value
   }
 }
