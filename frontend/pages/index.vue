@@ -407,7 +407,7 @@ export default {
       mode: 'All',
       map: {},
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations through the top navigation on all pages of this website.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below.',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
@@ -625,6 +625,8 @@ export default {
 
     this.toggleLayers(to.name)
     this.clearFeatures()
+    // make scroll indicator disappear on router change
+    this.$store.commit('sidebar/setScrollIndicatorValue', false)
     next()
   },
   created() {
@@ -768,8 +770,8 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-            elem.scrollTop !== 0
+            elem.scrollTop + elem.clientHeight >=
+            (elem.scrollHeight - 50 && elem.scrollTop !== 0)
           ) {
             if (this.communities.length > this.maximumLength) {
               this.loadMoreData()
@@ -801,6 +803,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     },
     setMobile(screenSizeOnLand) {

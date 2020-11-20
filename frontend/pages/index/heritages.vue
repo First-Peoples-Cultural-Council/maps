@@ -83,7 +83,7 @@ export default {
     return {
       selected: [],
       accordionContent:
-        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.',
+        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, use the search bar at the top of the page or click on any of the tabs below.',
       maximumLength: 0
     }
   },
@@ -131,8 +131,8 @@ export default {
     containerArray.forEach(elem => {
       elem.addEventListener('scroll', e => {
         if (
-          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-          elem.scrollTop !== 0
+          elem.scrollTop + elem.clientHeight >=
+          (elem.scrollHeight - 50 && elem.scrollTop !== 0)
         ) {
           if (this.places.length > this.maximumLength) {
             this.loadMoreData()
@@ -153,6 +153,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     }
   }

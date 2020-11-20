@@ -134,7 +134,7 @@ export default {
   data() {
     return {
       accordionContent:
-        'British Columbia is home to 203 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. You can access indexes of all the languages, First Nations and Community Champions through the top navigation on all pages of this website.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 60% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below.',
       badgeContent: 'Languages',
       detailOneWidth: 375,
       detailTwoWidth: 500,
@@ -195,8 +195,8 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-            elem.scrollTop !== 0
+            elem.scrollTop + elem.clientHeight >=
+            (elem.scrollHeight - 50 && elem.scrollTop !== 0)
           ) {
             if (this.communities.length > this.maximumLength) {
               this.loadMoreData()
@@ -230,6 +230,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 250)
       }, 250)
     }
   },
