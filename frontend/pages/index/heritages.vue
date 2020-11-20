@@ -134,11 +134,6 @@ export default {
           elem.scrollTop + elem.clientHeight >=
           (elem.scrollHeight - 50 && elem.scrollTop !== 0)
         ) {
-          console.log(
-            elem.scrollTop + elem.clientHeight,
-            'vs',
-            elem.scrollHeight
-          )
           if (this.places.length > this.maximumLength) {
             this.loadMoreData()
           }
