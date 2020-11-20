@@ -195,8 +195,8 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
-            elem.scrollTop !== 0
+            elem.scrollTop + elem.clientHeight >=
+            (elem.scrollHeight - 50 && elem.scrollTop !== 0)
           ) {
             if (this.communities.length > this.maximumLength) {
               this.loadMoreData()
@@ -230,6 +230,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 250)
       }, 250)
     }
   },

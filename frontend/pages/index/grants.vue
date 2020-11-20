@@ -342,6 +342,7 @@ export default {
     })
 
     this.$store.commit('sidebar/toggleLoading', true)
+    this.$store.commit('sidebar/setScrollIndicatorValue', false)
 
     setTimeout(() => {
       this.$store.commit('sidebar/toggleLoading', false)
@@ -357,7 +358,7 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
             elem.scrollTop !== 0
           ) {
             if (this.getGrantList.length > this.maximumLength) {
@@ -385,6 +386,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     },
     getCategoryId(name) {
