@@ -407,6 +407,11 @@ export default {
   .modal-dialog {
   }
 
+  .modal-body {
+    max-height: 75vh;
+    overflow: auto;
+  }
+
   .modal-backdrop {
     display: none !important;
   }

@@ -441,8 +441,8 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >=
-            (elem.scrollHeight - 50 && elem.scrollTop !== 0)
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
+            elem.scrollTop !== 0
           ) {
             if (this.selectedArt.length > this.maximumLength) {
               this.loadMoreData()

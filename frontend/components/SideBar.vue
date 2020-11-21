@@ -228,9 +228,10 @@ export default {
     isScrollIndicatorVisible() {
       const selectedContainer = this.getSelectedContainer()
 
-      const isNotShown =
-        selectedContainer.offsetHeight + selectedContainer.scrollTop >=
-        selectedContainer.scrollHeight - 50
+      const isNotShown = selectedContainer
+        ? selectedContainer.offsetHeight + selectedContainer.scrollTop >=
+          selectedContainer.scrollHeight - 50
+        : true
 
       // set store value
       this.$store.commit('sidebar/setScrollIndicatorValue', !isNotShown)
