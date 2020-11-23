@@ -304,6 +304,20 @@ export default {
 }
 
 @media screen and (max-width: 992px) {
+  .sb-new-alt-one:not(:root:root) {
+    height: 110vh !important;
+    overflow-y: auto;
+  }
+
+  .splash-main-container:not(:root:root) {
+    overflow-y: auto !important;
+  }
+
+  .splash-main-container {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    overflow-y: auto;
+  }
   .splash-content-container {
     background-image: url('../../assets/images/splashscreen/green_greetings_mobile.svg') !important;
     width: 100vw !important;
@@ -337,8 +351,8 @@ export default {
 
   .fpcc-splash-img {
     margin-bottom: 1em;
-    width: 150px;
-    height: 150px;
+    width: 125px;
+    height: 125px;
   }
 
   .splash-detail {
@@ -346,11 +360,11 @@ export default {
     height: auto;
 
     .fpcc-title {
-      font-size: 1.5em !important;
+      font-size: 1.2em !important;
       text-align: center;
     }
     .fpcc-description {
-      font-size: 1.2em !important;
+      font-size: 1em !important;
     }
 
     .fpcc-description {
