@@ -76,7 +76,7 @@ export default {
     return {
       selected: [],
       accordionContent:
-        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, you can access the indexes through the top navigation of all pages of this website.',
+        'Indigenous Peoples within B.C. live in exceptionally diverse territories that are intrinsically linked to their cultural heritage, which can include ideas, experiences, worldviews, objects, forms of expression, practices, knowledge, spirituality, kinship ties and places. To learn more about Indigenous cultural heritage places, use the search bar at the top of the page or click on any of the tabs below.',
       maximumLength: 0
     }
   },

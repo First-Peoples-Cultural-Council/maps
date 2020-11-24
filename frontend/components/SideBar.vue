@@ -266,6 +266,14 @@ export default {
     overflow: hidden;
   }
 
+  .sidebar-container:not(:root:root) {
+    bottom: 35px !important;
+  }
+
+  .scroll-indicator-container {
+    width: 100%;
+  }
+
   .sidebar-mobile {
     display: block !important;
   }

@@ -99,12 +99,14 @@ export default {
   },
   methods: {
     handleClick() {
-      if (this.type !== 'poi') return false
-      if (this.mode === 'active') {
-        this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
-        return false
+      if (this.$route.name === 'index-heritages') {
+        if (this.type !== 'poi') return false
+        if (this.mode === 'active') {
+          this.$store.commit('places/setFilteredBadgePlaces', this.badgePlaces)
+          return false
+        }
+        this.showModal = true
       }
-      this.showModal = true
     },
 
     handleOk(e) {
