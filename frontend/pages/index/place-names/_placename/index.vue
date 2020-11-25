@@ -498,11 +498,7 @@ export default {
           }
         }
 
-        makeMarker(
-          this.geo_place.geometry,
-          'poi_icon.svg',
-          'place-marker'
-        ).addTo(map)
+        makeMarker(this.geo_place.geometry, 'poi_icon.svg', this).addTo(map)
       })
     },
     getCreatorName() {

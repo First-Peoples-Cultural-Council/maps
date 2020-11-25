@@ -7,6 +7,13 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-heritage-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('heritage')"
+          >
+            Heritage Grants Recipients
+          </button>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2"></Filters>
@@ -124,7 +131,7 @@ export default {
     containerArray.forEach(elem => {
       elem.addEventListener('scroll', e => {
         if (
-          elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+          elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
           elem.scrollTop !== 0
         ) {
           if (this.places.length > this.maximumLength) {
@@ -146,9 +153,16 @@ export default {
       setTimeout(() => {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     }
   }
 }
 </script>
-<style></style>
+<style>
+#btn-heritage-grants {
+  background-color: #6d4264;
+}
+</style>

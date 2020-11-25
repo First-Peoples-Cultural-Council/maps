@@ -124,7 +124,7 @@
             :number="artists.length"
             class="cursor-pointer"
             bgcolor="#db531f"
-            type="event"
+            type="artist"
             :mode="getBadgeStatus(mode, 'artist')"
             @click.native.prevent="handleBadge($event, 'artist')"
           ></Badge>
@@ -137,6 +137,14 @@
             :mode="getBadgeStatus(mode, 'place')"
             @click.native.prevent="handleBadge($event, 'place')"
           ></Badge>
+          <Badge
+            content="Grants"
+            :number="grantsList.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#B47A2B"
+            :mode="getBadgeStatus(mode, 'grant')"
+            @click.native.prevent="handleBadge($event, 'grant')"
+          ></Badge>
         </div>
         <div class="language">
           <section class="pl-3 pr-3 pt-2">
@@ -145,7 +153,8 @@
                 mode !== 'public_art' &&
                   mode !== 'artist' &&
                   mode !== 'organization' &&
-                  mode !== 'place'
+                  mode !== 'place' &&
+                  mode !== 'grant'
               "
             >
               <b-row>
@@ -173,7 +182,8 @@
                 mode !== 'public_art' &&
                   mode !== 'artist' &&
                   mode !== 'organization' &&
-                  mode !== 'comm'
+                  mode !== 'comm' &&
+                  mode !== 'grant'
               "
             >
               <b-row>
@@ -200,7 +210,8 @@
                 mode !== 'place' &&
                   mode !== 'artist' &&
                   mode !== 'organization' &&
-                  mode !== 'comm'
+                  mode !== 'comm' &&
+                  mode !== 'grant'
               "
             >
               <b-row>
@@ -230,7 +241,8 @@
                 mode !== 'public_art' &&
                   mode !== 'artist' &&
                   mode !== 'place' &&
-                  mode !== 'comm'
+                  mode !== 'comm' &&
+                  mode !== 'grant'
               "
             >
               <b-row>
@@ -260,7 +272,8 @@
                 mode !== 'public_art' &&
                   mode !== 'place' &&
                   mode !== 'organization' &&
-                  mode !== 'comm'
+                  mode !== 'comm' &&
+                  mode !== 'grant'
               "
             >
               <b-row>
@@ -286,6 +299,32 @@
                 </b-col>
               </b-row>
             </div>
+            <div
+              v-if="
+                mode !== 'public_art' &&
+                  mode !== 'place' &&
+                  mode !== 'organization' &&
+                  mode !== 'comm' &&
+                  mode !== 'artist'
+              "
+            >
+              <b-row>
+                <b-col
+                  v-for="(grant, index) in grantsList"
+                  :key="`grants-item-${index}`"
+                  lg="12"
+                  xl="12"
+                  md="12"
+                  sm="12"
+                  class="mt-3 hover-left-move"
+                >
+                  <GrantsCard
+                    :grant="grant"
+                    :is-selected="currentGrant && currentGrant.id === grant.id"
+                  ></GrantsCard>
+                </b-col>
+              </b-row>
+            </div>
           </section>
         </div>
       </div>
@@ -308,6 +347,7 @@ import { getApiUrl, encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import Notification from '@/components/Notification.vue'
 import ErrorScreen from '@/layouts/error.vue'
+import GrantsCard from '@/components/grants/GrantsCard.vue'
 
 export default {
   components: {
@@ -321,7 +361,8 @@ export default {
     Badge,
     Logo,
     Notification,
-    ErrorScreen
+    ErrorScreen,
+    GrantsCard
   },
   data() {
     return {
@@ -370,6 +411,12 @@ export default {
     },
     languageColor() {
       return this.language.color
+    },
+    grantsList() {
+      return this.language.grants.features
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   watch: {

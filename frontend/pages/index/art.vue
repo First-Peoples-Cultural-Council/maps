@@ -11,12 +11,19 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-arts-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('arts')"
+          >
+            Arts Grants Recipients
+          </button>
         </section>
         <hr class="sidebar-divider" />
         <Filters class="mb-2 mt-2"></Filters>
       </template>
       <template v-slot:badges>
-        <ArtistFilter />
+        <ArtistFilter :mode="'arts'" />
         <section :class="`badge-list-container pl-3 pr-3 pt-2`">
           <!-- Art Work Badge Filter  -->
           <BadgeFilter
@@ -113,21 +120,6 @@
               ></Badge>
             </template>
           </BadgeFilter>
-
-          <!-- Grant Badge Filter -->
-          <!-- <BadgeFilter :childTaxonomy="getChildTaxonomy('Grant')" :color="'#008CA9'">
-            <template v-slot:badge>
-              <Badge
-                content="Grants"
-                :number="grantsCount"
-                class="cursor-pointer"
-                bgcolor="#008CA9"
-                type="org"
-                :mode="getBadgeStatus(filterMode, 'grant')"
-                @click.native.prevent="badgeClick($event, 'grant')"
-              ></Badge>
-            </template>
-          </BadgeFilter> -->
         </section>
       </template>
       <template v-slot:cards>
@@ -164,7 +156,10 @@
             </b-col>
           </b-row>
           <b-row
-            v-else-if="paginatedArts.length === 0 && isSearchMode"
+            v-else-if="
+              paginatedArts.length === 0 &&
+                (isSearchMode || isTaxonomyFilterMode)
+            "
             class="search-empty-container"
           >
             <img src="@/assets/images/search_icon.svg" />
@@ -193,7 +188,7 @@ import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
 import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
-import ArtistFilter from '@/components/arts/ArtistFilter.vue'
+import ArtistFilter from '@/components/CardFilter.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
 
 export default {
@@ -387,20 +382,14 @@ export default {
         // if filterMode is on Artwork
         if (this.filterMode === 'artwork') {
           return artsArray.filter(art => {
-            return (
-              // this.artMediaType(art.properties.file_type) ===
-              // this.taxonomyFilter[0]
-              this.taxonomyFilter.find(
-                taxo => taxo === this.artMediaType(art.properties.file_type)
-              )
+            return this.taxonomyFilter.find(
+              taxo => taxo === this.artMediaType(art.properties.file_type)
             )
           })
         } else {
           return artsArray.filter(art => {
-            return art.properties.taxonomies.some(taxonomy =>
-              // taxonomy.name ===
-              // this.taxonomyFilter[this.taxonomyFilter.length - 1] // only gets last taxonomy
-              this.taxonomyFilter.find(taxo => taxonomy.name === taxo)
+            return this.taxonomyFilter.every(taxonomy =>
+              art.properties.taxonomies.find(taxo => taxonomy === taxo.name)
             )
           })
         }
@@ -452,7 +441,7 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
             elem.scrollTop !== 0
           ) {
             if (this.selectedArt.length > this.maximumLength) {
@@ -472,18 +461,12 @@ export default {
       }
 
       this.$root.$emit('setMobileSideBarState')
+      this.$store.commit('sidebar/setScrollIndicatorValue', false)
 
       this.resetFilter()
       this.maximumLength = 0
       this.handleBadge($event, name)
       this.loadKindData()
-
-      // // update URL, but no functionality
-      // this.$router.push({
-      //   query: {
-      //     type: name
-      //   }
-      // })
     },
     resetFilter() {
       const resetTaxonomy = this.taxonomies.map(taxonomy => {
@@ -493,12 +476,16 @@ export default {
       this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
+      this.$root.$emit('clearInput')
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
       setTimeout(() => {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     },
     async loadKindData() {
@@ -621,21 +608,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.badge-list-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.search-empty-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2em 1em;
-
-  img {
-    margin-bottom: 1em;
-    width: 50px;
-    height: 50px;
-  }
+#btn-arts-grants {
+  background-color: #2c8190;
 }
 </style>

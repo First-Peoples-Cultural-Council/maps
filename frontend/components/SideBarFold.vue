@@ -44,6 +44,14 @@
     <div v-if="isDrawerShown" class="sidefold-modal">
       <slot name="side-panel"></slot>
     </div>
+    <div
+      v-if="isScrollDownBtnVisible && visible && isMainPages"
+      class="scroll-indicator-container"
+    >
+      <button class="scroll-down-btn" @click="$root.$emit('triggerScrollDown')">
+        <img src="@/assets/images/arrow_scrolldown_icon.png" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -63,18 +71,49 @@ export default {
     },
     showLoading() {
       return this.$store.state.sidebar.showLoading
+    },
+    isScrollDownBtnVisible() {
+      return this.$store.state.sidebar.showScrollIndicator
     }
   },
   mounted() {
     this.$root.$on('setMobileSideBarState', () => {
       if (!this.visible) {
         this.toggleSideBar()
+      } else {
+        this.visible = false
       }
+    })
+
+    this.$root.$on('closeSideBarSlider', () => {
+      this.visible = false
+      this.setMobileSliderState()
+    })
+
+    this.$root.$on('openSideBarSlider', () => {
+      this.visible = true
+      this.setMobileSliderState()
     })
   },
   methods: {
+    isMainPages() {
+      const pathName = this.$route.name
+      return (
+        pathName === 'index-art' ||
+        pathName === 'index-languages' ||
+        pathName === 'index-heritage' ||
+        pathName === 'index-grants' ||
+        pathName === 'index'
+      )
+    },
     toggleSideBar() {
       this.visible = !this.visible
+      this.setMobileSliderState()
+      setTimeout(() => {
+        this.$root.$emit('triggerScrollVisibilityCheck')
+      }, 250)
+    },
+    setMobileSliderState() {
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
     }
   }
@@ -179,6 +218,7 @@ export default {
   z-index: 9999999999;
   border: 2.5px solid #b2bedc;
   animation: hover 2.5s infinite;
+  margin-bottom: 1em;
 }
 
 .collapse-item-container {
@@ -191,6 +231,10 @@ export default {
 @media screen and (max-width: 600px) {
   .innerHeader {
     width: 90%;
+  }
+
+  .grants-main-container .innerHeader {
+    width: 100%;
   }
 }
 

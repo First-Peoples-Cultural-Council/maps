@@ -50,6 +50,17 @@ export const state = () => ({
       id: 5,
       layerNames: ['satelite'],
       active: false
+    },
+    {
+      name: 'Grants',
+      id: 6,
+      layerNames: [
+        'fn-grants',
+        'fn-grants-clusters',
+        'fn-grants-cluster-count',
+        'fn-grants-unclustered-points'
+      ],
+      active: false
     }
   ]
 })

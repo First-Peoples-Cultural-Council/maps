@@ -10,6 +10,13 @@
             class="no-scroll-accordion"
             :content="accordionContent"
           ></Accordion>
+          <button
+            id="btn-lang-grants"
+            class="btn-grant-redirect"
+            @click="goToGrants('language')"
+          >
+            Language Grants Recipients
+          </button>
         </section>
         <section class="badge-section pl-3 pr-3 mt-3"></section>
         <hr class="sidebar-divider" />
@@ -188,7 +195,7 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
             elem.scrollTop !== 0
           ) {
             if (this.communities.length > this.maximumLength) {
@@ -223,6 +230,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 250)
       }, 250)
     }
   },
@@ -242,4 +252,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+#btn-lang-grants {
+  background-color: #b47a2b;
+}
+</style>

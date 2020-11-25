@@ -11,23 +11,12 @@
     "
   >
     <slot name="badge"></slot>
-    <div
-      v-if="isSelected || (isSelected && getTaxonomies.length !== 0)"
-      class="badge-filters "
-    >
-      <p id="badge-choose" @click="showFilterOption = !showFilterOption">
-        {{
-          showFilterOption
-            ? 'Click here to Close'
-            : `${
-                getTaxonomies.length !== 0
-                  ? `${getTaxonomies.length} Taxonomy Selected`
-                  : 'choose sub-category'
-              } `
-        }}
+    <div v-if="isSelected && childTaxonomy.length !== 0" class="badge-filters ">
+      <p id="badge-choose" @click="toggleFilterOption">
+        {{ showFilterOption ? 'Click here to Close' : getFilterText() }}
 
         <span
-          v-if="getTaxonomies.length !== 0"
+          v-if="getSelectedFilterList.length !== 0"
           class="remove-tag-btn cursor-pointer"
           @click="removeTag()"
           >&#x2716;</span
@@ -42,51 +31,78 @@
         triggers="click "
         :show="showFilterOption"
       >
-        <div class="badge-option-container">
+        <div
+          :class="
+            `badge-option-container ${
+              childTaxonomy.length > 8 ? 'option-split' : 'option-column'
+            }`
+          "
+        >
           <span
             v-for="taxonomy in childTaxonomy"
             :id="`badge-child-option-${taxonomy.id}`"
             :key="taxonomy.id"
             class="badge-option-child"
           >
-            <b-form-checkbox
-              v-model="taxonomy.isChecked"
-              class="d-inline-block ml-2"
-              @change="toggleTaxonomyTag(taxonomy)"
+            <div
+              class="badge-option-inner"
+              @click="toggleTaxonomyTag(taxonomy)"
             >
-            </b-form-checkbox>
-            {{ taxonomy.name }}
+              <b-form-checkbox
+                v-model="taxonomy.isChecked"
+                class="ml-2 disabled-element"
+              >
+              </b-form-checkbox>
+              {{
+                filterType === 'grants'
+                  ? `${taxonomy.abbreviation} - ${taxonomy.name}`
+                  : taxonomy.name
+              }}
 
-            <img
-              v-if="hasTaxonomyChild(taxonomy.id)"
-              src="@/assets/images/right.svg"
-            />
+              <img
+                v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
+                src="@/assets/images/right.svg"
+              />
+            </div>
+
             <!-- Child Popover -->
             <b-popover
-              v-if="hasTaxonomyChild(taxonomy.id)"
+              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
               :id="`child-popover-${taxonomy.name}`"
               :target="`badge-child-option-${taxonomy.id}`"
               placement="right"
               triggers="click"
             >
-              <div class="badge-option-container">
+              <div
+                :class="
+                  `badge-option-container ${
+                    getChildTaxonomyList(taxonomy.id).length > 8
+                      ? 'option-split'
+                      : 'option-column'
+                  }`
+                "
+              >
                 <span
                   v-for="taxChild in getChildTaxonomyList(taxonomy.id)"
                   :id="`badge-child-option-${taxChild.id}`"
                   :key="taxChild.id"
                 >
-                  <b-form-checkbox
-                    v-model="taxChild.isChecked"
-                    class="d-inline-block ml-2"
-                    @change="toggleTaxonomyTag(taxChild)"
+                  <div
+                    class="badge-option-inner"
+                    @click="toggleTaxonomyTag(taxChild)"
                   >
-                  </b-form-checkbox>
-                  {{ taxChild.name }}
+                    <b-form-checkbox
+                      v-model="taxChild.isChecked"
+                      class="ml-2 disabled-element"
+                    >
+                    </b-form-checkbox>
+                    {{ taxChild.name }}
 
-                  <img
-                    v-if="hasTaxonomyChild(taxChild.id)"
-                    src="@/assets/images/right.svg"
-                  />
+                    <img
+                      v-if="hasTaxonomyChild(taxChild.id)"
+                      src="@/assets/images/right.svg"
+                    />
+                  </div>
 
                   <!-- Child Child Popover -->
                   <b-popover
@@ -96,24 +112,36 @@
                     placement="right"
                     triggers="click"
                   >
-                    <div class="badge-option-container">
+                    <div
+                      :class="
+                        `badge-option-container ${
+                          getChildTaxonomyList(taxChild.id).length > 8
+                            ? 'option-split'
+                            : 'option-column'
+                        }`
+                      "
+                    >
                       <span
                         v-for="taxChild1 in getChildTaxonomyList(taxChild.id)"
                         :id="`badge-child-option-${taxChild1.id}`"
                         :key="taxChild1.id"
                       >
-                        <b-form-checkbox
-                          v-model="taxChild1.isChecked"
-                          class="d-inline-block ml-2"
-                          @change="toggleTaxonomyTag(taxChild1)"
+                        <div
+                          class="badge-option-inner"
+                          @click="toggleTaxonomyTag(taxChild1)"
                         >
-                        </b-form-checkbox>
-                        {{ taxChild1.name }}
+                          <b-form-checkbox
+                            v-model="taxChild1.isChecked"
+                            class="ml-2 disabled-element"
+                          >
+                          </b-form-checkbox>
+                          {{ taxChild1.name }}
 
-                        <img
-                          v-if="hasTaxonomyChild(taxChild1.id)"
-                          src="@/assets/images/right.svg"
-                        />
+                          <img
+                            v-if="hasTaxonomyChild(taxChild1.id)"
+                            src="@/assets/images/right.svg"
+                          />
+                        </div>
                       </span>
                     </div>
                   </b-popover>
@@ -123,12 +151,14 @@
           </span>
         </div>
       </b-popover>
+      <!-- For Mobile Mode -->
       <b-modal
         id="badge-filter-modal"
         ref="badge-filter-modal"
         v-model="showFilterOption"
         size="xl"
         title="Select Taxonomy Filters"
+        @ok="handleFilter"
       >
         <div class="modal-filter-container">
           <div
@@ -141,11 +171,15 @@
               class="d-inline-block ml-2 checkbox-parent"
               @change="toggleTaxonomyTag(taxonomy)"
             >
-              {{ taxonomy.name }}
+              {{
+                filterType === 'grants'
+                  ? `${taxonomy.abbreviation} - ${taxonomy.name}`
+                  : taxonomy.name
+              }}
             </b-form-checkbox>
 
             <div
-              v-if="hasTaxonomyChild(taxonomy.id)"
+              v-if="hasTaxonomyChild(taxonomy.id) && filterType === 'arts'"
               class="badge-modal-child-container"
             >
               <b-form-checkbox
@@ -200,6 +234,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    filterType: {
+      type: String,
+      default: 'arts'
     }
   },
   data() {
@@ -214,14 +252,39 @@ export default {
     getTaxonomies() {
       return this.$store.state.arts.taxonomyFilter
     },
+    getCategoryFilterList() {
+      return this.$store.state.grants.grantCategoryList
+    },
+    getSelectedFilterList() {
+      return this.filterType === 'arts'
+        ? this.getTaxonomies
+        : this.getCategoryFilterList
+    },
+    grantCategory() {
+      return this.$store.state.grants.categorySearchSet
+    },
+
     taxonomies() {
       return this.$store.state.arts.taxonomySearchSet
+    },
+    selectedList() {
+      return this.filterType === 'arts' ? this.taxonomies : this.grantCategory
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     }
   },
   methods: {
+    toggleFilterOption() {
+      this.showFilterOption = !this.showFilterOption
+    },
+    getFilterText() {
+      return this.getSelectedFilterList.length !== 0
+        ? `${this.getSelectedFilterList.length} ${
+            this.filterType === 'arts' ? 'Taxonomy' : 'Program'
+          } Selected`
+        : `choose a ${this.filterType === 'arts' ? 'sub-category' : 'Program'}`
+    },
     toggleOption() {
       this.showFilterOption = !this.showFilterOption
     },
@@ -254,57 +317,65 @@ export default {
       }, '')
     },
     removeTag() {
-      const resetTaxonomy = this.taxonomies.map(taxonomy => {
-        taxonomy.isChecked = false
-        return taxonomy
-      })
-      this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
-      this.$store.commit('arts/setTaxonomyTag', [])
+      if (this.filterType === 'arts') {
+        const resetTaxonomy = this.taxonomies.map(taxonomy => {
+          taxonomy.isChecked = false
+          return taxonomy
+        })
+        this.$store.commit('arts/setTaxonomySearchSet', resetTaxonomy)
+        this.$store.commit('arts/setTaxonomyTag', [])
+      } else {
+        const resetList = this.selectedList.map(category => {
+          category.isChecked = false
+          return category
+        })
+        this.$store.commit('grants/setGrantCategorySearchSet', resetList)
+        this.$store.commit('grants/setCategoryTag', [])
+      }
     },
     checkIfSelected(value) {
       return this.getTaxonomies.some(tag => tag === value)
     },
     toggleTaxonomyTag(currentTaxonomy) {
-      if (this.type === 'artwork') {
-        setTimeout(() => {
-          const filteredTag = this.childTaxonomy.filter(
-            taxo => taxo.isChecked === true
-          )
+      currentTaxonomy.isChecked = !currentTaxonomy.isChecked
+      // if being used in ARTS PAGE
+      if (this.filterType === 'arts') {
+        if (this.type === 'artwork') {
+          setTimeout(() => {
+            const filteredTag = this.childTaxonomy.filter(
+              taxo => taxo.isChecked === true
+            )
 
-          const getTagged = filteredTag.map(taxo => taxo.name)
-          this.$store.commit('arts/setTaxonomyTag', getTagged)
-        }, 100)
-      } else {
-        // if you uncheck a parent taxonomy, also uncheck the child
-        if (currentTaxonomy.isChecked) {
-          this.taxonomies
-            .filter(taxo => taxo.parent === currentTaxonomy.id)
-            .map(taxo => {
-              if (currentTaxonomy.isChecked) {
-                taxo.isChecked = false
-              }
-              return taxo
-            })
+            const getTagged = filteredTag.map(taxo => taxo.name)
+            this.$store.commit('arts/setTaxonomyTag', getTagged)
+          }, 100)
+        } else {
+          // setTimeout is needed because data is delayed
+          setTimeout(() => {
+            const filteredTag = this.taxonomies.filter(
+              taxo => taxo.isChecked === true
+            )
+
+            const getTagged = filteredTag.map(taxo => taxo.name)
+            this.$store.commit('arts/setTaxonomyTag', getTagged)
+          }, 100)
         }
-        // if you check a child taxonomy, also check the parent
-        else {
-          const findParent = this.taxonomies.find(
-            taxo => currentTaxonomy.parent === taxo.id
-          )
-
-          if (findParent) findParent.isChecked = true
-        }
-
+      }
+      // if being used in GRANTS PAGE
+      else {
         // setTimeout is needed because data is delayed
         setTimeout(() => {
-          const filteredTag = this.taxonomies.filter(
-            taxo => taxo.isChecked === true
+          const filteredTag = this.selectedList.filter(
+            category => category.isChecked === true
           )
 
-          const getTagged = filteredTag.map(taxo => taxo.name)
-          this.$store.commit('arts/setTaxonomyTag', getTagged)
+          const getTagged = filteredTag.map(category => category.name)
+          this.$store.commit('grants/setCategoryTag', getTagged)
         }, 100)
       }
+    },
+    handleFilter() {
+      this.$root.$emit('openSideBarSlider')
     }
   }
 }
@@ -334,6 +405,11 @@ export default {
   }
 
   .modal-dialog {
+  }
+
+  .modal-body {
+    max-height: 75vh;
+    overflow: auto;
   }
 
   .modal-backdrop {
@@ -377,11 +453,25 @@ export default {
   font-weight: 500;
 }
 
+.option-column {
+  flex-direction: column;
+  width: 250px;
+}
+
+.option-split {
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 500px;
+}
+
 .badge-option-container {
   display: flex;
-  flex-direction: column;
+  background: #fff;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 
   span {
+    flex: 0 0 50%;
     position: relative;
     display: flex;
     justify-items: flex-end;
@@ -405,6 +495,12 @@ export default {
   }
 }
 
+.badge-option-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 #badge-choose {
   font: Bold 15px/18px Lato;
   text-transform: lowercase;
@@ -425,10 +521,6 @@ export default {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 
-.checkbox-parent {
-  font-size: 1.25em;
-}
-
 .badge-modal-child-container {
   display: flex;
   flex-direction: row;
@@ -447,11 +539,15 @@ export default {
 }
 
 .popover {
-  width: 80%;
+  border: 0;
 }
 
 .popover-body {
   padding: 0;
   margin: 0;
+}
+
+.disabled-element {
+  pointer-events: none;
 }
 </style>

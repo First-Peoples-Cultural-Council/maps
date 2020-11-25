@@ -188,57 +188,92 @@
             :places="commDetails.places"
             @click.native.prevent="handleBadge($event, 'place')"
           ></Badge>
-
-          <b-row>
-            <b-col
-              v-for="language in commDetails.languages"
-              :key="'language' + language.id"
-              lg="12"
-              xl="12"
-              md="6"
-              sm="6"
-            >
-              <LanguageCard
-                v-if="mode !== 'place'"
-                class="mt-2 hover-left-move"
-                :name="language.name"
-                :color="language.color"
-                @click.native.prevent="
-                  handleCardClick($event, language.name, 'lang')
-                "
-              ></LanguageCard>
-              <div
-                v-if="
-                  commDetails.places &&
-                    commDetails.places.length > 0 &&
-                    mode !== 'lang'
-                "
+          <Badge
+            content="Grants"
+            :number="grantsList.length"
+            class="cursor-pointer mb-1"
+            bgcolor="#B47A2B"
+            :mode="getBadgeStatus(mode, 'grant')"
+            :places="commDetails.places"
+            @click.native.prevent="handleBadge($event, 'grant')"
+          ></Badge>
+          <div v-if="mode !== 'place' && mode !== 'grant'">
+            <b-row>
+              <b-col
+                v-for="language in commDetails.languages"
+                :key="'language' + language.id"
+                lg="12"
+                xl="12"
+                md="6"
+                sm="6"
               >
-                <template v-for="(place, index) in filteredPlaces">
-                  <PlacesCard
-                    v-if="place.kind === '' || place.kind === 'poi'"
-                    :key="`placescomm${index}`"
-                    class="mt-2 hover-left-move"
-                    :name="place.name"
-                    :place="{ properties: place }"
-                    @click.native.prevent="
-                      handleCardClick($event, place.name, 'place')
-                    "
-                  ></PlacesCard>
-                  <ArtsCard
-                    v-else
-                    :key="`placescomm${index}`"
-                    :name="place.name"
-                    :kind="place.kind"
-                    class="mt-1 hover-left-move"
-                    @click.native.prevent="
-                      handleCardClick($event, place.name, 'placename')
-                    "
-                  ></ArtsCard>
-                </template>
-              </div>
-            </b-col>
-          </b-row>
+                <LanguageCard
+                  class="mt-2 hover-left-move"
+                  :name="language.name"
+                  :color="language.color"
+                  @click.native.prevent="
+                    handleCardClick($event, language.name, 'lang')
+                  "
+                ></LanguageCard>
+              </b-col>
+            </b-row>
+          </div>
+
+          <div
+            v-if="
+              commDetails.places &&
+                commDetails.places.length > 0 &&
+                mode !== 'lang' &&
+                mode !== 'grant'
+            "
+          >
+            <b-row>
+              <b-col
+                v-for="(place, index) in filteredPlaces"
+                :key="`placescomm${index}`"
+                lg="12"
+                xl="12"
+                md="12"
+                sm="12"
+                class="mt-3 hover-left-move"
+              >
+                <PlacesCard
+                  v-if="place.kind === '' || place.kind === 'poi'"
+                  :name="place.name"
+                  :place="{ properties: place }"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'place')
+                  "
+                ></PlacesCard>
+                <ArtsCard
+                  v-else
+                  :name="place.name"
+                  :kind="place.kind"
+                  @click.native.prevent="
+                    handleCardClick($event, place.name, 'placename')
+                  "
+                ></ArtsCard>
+              </b-col>
+            </b-row>
+          </div>
+          <div v-if="mode !== 'lang' && mode !== 'place'">
+            <b-row>
+              <b-col
+                v-for="(grant, index) in grantsList"
+                :key="`grants-item-${index}`"
+                lg="12"
+                xl="12"
+                md="12"
+                sm="12"
+                class="mt-3 hover-left-move"
+              >
+                <GrantsCard
+                  :grant="grant"
+                  :is-selected="currentGrant && currentGrant.id === grant.id"
+                ></GrantsCard>
+              </b-col>
+            </b-row>
+          </div>
         </section>
         <section class="ml-4 mr-4">
           <div v-if="isLoggedIn">
@@ -297,6 +332,7 @@ import UploadTool from '@/components/UploadTool.vue'
 import Media from '@/components/Media.vue'
 import Notification from '@/components/Notification.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
+import GrantsCard from '@/components/grants/GrantsCard.vue'
 
 // Commented out until data is fixed
 // import PieChart from '@/components/PieChart.vue'
@@ -314,7 +350,8 @@ export default {
     Media,
     Notification,
     ArtsCard,
-    ErrorScreen
+    ErrorScreen,
+    GrantsCard
     // Commented out until data is fixed
     // ,PieChart
   },
@@ -441,6 +478,12 @@ export default {
       } else {
         return null
       }
+    },
+    grantsList() {
+      return this.communityDetail.grants.features
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   watch: {
@@ -569,7 +612,7 @@ export default {
           zoomToPoint({ map, geom: this.community.point, zoom: 11 })
         }
         const icon = 'community_icon.svg'
-        makeMarker(this.community.point, icon, 'place-marker').addTo(map)
+        makeMarker(this.community.point, icon, this).addTo(map)
       })
     },
     handleCardClick($event, name, type) {
