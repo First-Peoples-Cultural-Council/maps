@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = ""
 
     def handle(self, *args, **options):
-        migrate_fields()
+        migrate_manytomany_fields()
 
 
 def migrate_manytomany_fields():
