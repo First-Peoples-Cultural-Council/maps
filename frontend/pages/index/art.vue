@@ -441,7 +441,7 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
             elem.scrollTop !== 0
           ) {
             if (this.selectedArt.length > this.maximumLength) {
@@ -461,6 +461,7 @@ export default {
       }
 
       this.$root.$emit('setMobileSideBarState')
+      this.$store.commit('sidebar/setScrollIndicatorValue', false)
 
       this.resetFilter()
       this.maximumLength = 0
@@ -482,6 +483,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 16
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     },
     async loadKindData() {

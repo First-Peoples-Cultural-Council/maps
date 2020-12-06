@@ -44,6 +44,14 @@
     <div v-if="isDrawerShown" class="sidefold-modal">
       <slot name="side-panel"></slot>
     </div>
+    <div
+      v-if="isScrollDownBtnVisible && visible && isMainPages"
+      class="scroll-indicator-container"
+    >
+      <button class="scroll-down-btn" @click="$root.$emit('triggerScrollDown')">
+        <img src="@/assets/images/arrow_scrolldown_icon.png" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -63,6 +71,9 @@ export default {
     },
     showLoading() {
       return this.$store.state.sidebar.showLoading
+    },
+    isScrollDownBtnVisible() {
+      return this.$store.state.sidebar.showScrollIndicator
     }
   },
   mounted() {
@@ -85,9 +96,22 @@ export default {
     })
   },
   methods: {
+    isMainPages() {
+      const pathName = this.$route.name
+      return (
+        pathName === 'index-art' ||
+        pathName === 'index-languages' ||
+        pathName === 'index-heritage' ||
+        pathName === 'index-grants' ||
+        pathName === 'index'
+      )
+    },
     toggleSideBar() {
       this.visible = !this.visible
       this.setMobileSliderState()
+      setTimeout(() => {
+        this.$root.$emit('triggerScrollVisibilityCheck')
+      }, 250)
     },
     setMobileSliderState() {
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
