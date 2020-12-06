@@ -169,6 +169,10 @@
               >
             </li>
             <li>
+              <a class="color-gray" href="#" @click="redirectGrants">Grants</a>
+            </li>
+
+            <li>
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
             <li>
@@ -315,6 +319,13 @@ export default {
     },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+    },
+    redirectGrants() {
+      this.$router.push('/grants')
+      this.$root.$emit('checkDimension')
+      this.$store.commit('grants/setGrantFilter', 'all')
+      this.handleBadge(null, 'all')
+      this.resetMap()
     }
   }
 }

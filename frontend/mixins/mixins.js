@@ -1,4 +1,5 @@
 import Vue from 'vue'
+
 Vue.mixin({
   methods: {
     getBadgeStatus(mode, data) {
@@ -23,9 +24,22 @@ Vue.mixin({
         this.$store.commit('arts/setFilter', data)
       }
 
-      if (isMobileSideBarOpen) {
+      if (this.$route.name === 'index-grants') {
+        this.$store.commit('grants/setGrantFilter', data)
+        this.$root.$emit('resetMap')
+      }
+
+      if (e && isMobileSideBarOpen) {
         e.stopPropagation()
       }
+    },
+    goToGrants(program) {
+      this.$store.commit('grants/setGrantFilter', program)
+      this.$root.$emit('checkDimension')
+
+      this.$router.push({
+        path: '/grants'
+      })
     }
   }
 })

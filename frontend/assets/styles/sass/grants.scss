@@ -1,0 +1,75 @@
+
+.grants-header {
+  position: relative;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.grants-header .title {
+  font-family: 'Faustina', serif;
+  font-weight: bold;
+  font-size: 26px;
+  color: #b47a2b;
+}
+
+.grants-header img {
+  margin-left: -10px;
+}
+
+.grant-header-more {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 20%;
+  width: 90px;
+  height: 35px;
+  background-color: #b47a2b;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  color: #fff;
+  padding: 1em;
+  &:hover {
+    color: white;
+    background-color: #454545;
+  }
+  
+  img {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+  }
+
+  @media (max-width: 992px) {
+    transform: translateX(20px);
+  }
+}
+
+
+
+.grant-popup-container .grants-header {
+  display: none !important;
+}
+
+
+/******* GRANTS CARD STYLE *******/
+
+.grants-icon-container img {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.grant-card-more {
+  background-color: #b47a2b;
+  display: flex;
+  align-items: center;
+  width: 50px;
+  height: 35px;
+  margin-top: 1.5em;
+  justify-content: center;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+}
+

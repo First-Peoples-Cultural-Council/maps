@@ -1,3 +1,5 @@
+import grantMarker from '@/assets/images/grant_icon.png'
+
 const addLangLayers = map => {
   map.addLayer({
     id: 'satelite',
@@ -16,7 +18,9 @@ const addLangLayers = map => {
       type: 'fill',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'fill-color': [
           'interpolate',
@@ -41,7 +45,9 @@ const addLangLayers = map => {
       type: 'line',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': ['get', 'color'],
         // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
@@ -66,7 +72,9 @@ const addLangLayers = map => {
       id: 'fn-lang-areas-highlighted',
       type: 'line',
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': 'black',
         'line-width': [
@@ -90,7 +98,9 @@ const addLangLayers = map => {
       type: 'line',
       filter: ['!', ['get', 'sleeping']],
       source: 'langs1',
-      layout: {},
+      layout: {
+        visibility: 'visible'
+      },
       paint: {
         'line-color': ['get', 'color'],
         'line-blur': 0,
@@ -120,6 +130,7 @@ const addNationsLayers = map => {
     source: 'communities1',
     minzoom: 5,
     layout: {
+      visibility: 'visible',
       'text-optional': true,
       'text-size': 13,
       'icon-image': 'community',
@@ -141,7 +152,135 @@ const addNationsLayers = map => {
   })
 }
 
-const getHTMLMarker = function(map, feature, el) {
+const addGrantsLayers = (map, context) => {
+  let visibility = 'none'
+
+  const routeName = context.$route.name
+  if (routeName === 'index-grants') {
+    visibility = 'visible'
+  }
+
+  map.loadImage(grantMarker, (error, image) => {
+    if (error) throw error
+    map.addImage('grant-marker', image)
+
+    map.addLayer({
+      id: 'fn-grants',
+      type: 'symbol',
+      source: 'grants1',
+      minzoom: 3,
+      layout: {
+        visibility,
+        'text-optional': true,
+        'text-size': 13,
+        'icon-image': 'grant-marker',
+        'text-font': ['BC Sans Regular'],
+        'text-padding': 0,
+        'text-offset': [0, 1.4],
+        'icon-optional': true,
+        'icon-size': 0.5,
+        'text-field': ['get', 'grant'],
+        'icon-padding': 0
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-grants-clusters',
+      type: 'circle',
+      source: 'grants1',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#ffffff',
+        'circle-opacity': 0.8,
+        'circle-stroke-width': 5,
+        'circle-stroke-color': '#7d6799',
+        'circle-radius': [
+          'step',
+          ['get', 'point_count'],
+          12,
+          10,
+          16,
+          100,
+          20,
+          200,
+          24,
+          500,
+          32
+        ]
+      },
+      layout: {
+        visibility
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-grants-cluster-count',
+      type: 'symbol',
+      source: 'grants1',
+      filter: ['has', 'point_count'],
+      layout: {
+        visibility,
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 14
+      },
+      paint: {
+        'text-color': 'black'
+      }
+    })
+
+    map.addLayer({
+      id: 'fn-grants-unclustered-points',
+      type: 'circle',
+      source: 'grants1',
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        visibility,
+        'icon-image': 'grant-marker',
+        'icon-size': 0.5
+      }
+    })
+
+    map.on('click', 'fn-grants-clusters', function(e) {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['fn-grants-clusters']
+      })
+      const clusterId = features[0].properties.cluster_id
+      const pointCount = features[0].properties.point_count
+      map
+        .getSource('grants1')
+        .getClusterExpansionZoom(clusterId, function(err, zoom) {
+          if (err) return
+
+          if (zoom > 18) {
+            map
+              .getSource('grants1')
+              .getClusterLeaves(clusterId, pointCount, 0, function(
+                err,
+                aFeatures
+              ) {
+                if (err) return
+
+                const grants = aFeatures
+                const coordinates = features[0].geometry.coordinates
+                context.$root.$emit(
+                  'showGrantsClusterModal',
+                  grants,
+                  coordinates
+                )
+              })
+          } else {
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom
+            })
+          }
+        })
+    })
+  })
+}
+
+const getArtsMarker = function(map, feature, el) {
   // const layer = map.getLayer('fn-arts-clusters')
   if (!feature.properties.cluster_id) return
   map
@@ -183,7 +322,7 @@ const getHTMLMarker = function(map, feature, el) {
     )
 }
 
-const addHTMLClusters = map => {
+const addArtsClusters = map => {
   const mapboxgl = require('mapbox-gl')
 
   // objects for caching and keeping track of HTML marker objects (for performance)
@@ -205,7 +344,7 @@ const addHTMLClusters = map => {
       let marker = markers[id]
       if (!marker) {
         const el = document.createElement('div')
-        getHTMLMarker(map, features[i], el)
+        getArtsMarker(map, features[i], el)
         marker = markers[id] = new mapboxgl.Marker({
           element: el
         }).setLngLat(coords)
@@ -232,11 +371,14 @@ const addHTMLClusters = map => {
 }
 
 export default {
-  layers: (map, self) => {
+  layers: (map, context) => {
     map.addLayer({
       id: 'fn-arts-clusters',
       type: 'circle',
       source: 'arts1',
+      layout: {
+        visibility: 'visible'
+      },
       minzoom: 3,
       filter: ['has', 'point_count'],
       paint: {
@@ -250,6 +392,7 @@ export default {
       }
     })
     addNationsLayers(map)
+    addGrantsLayers(map, context)
     addLangLayers(map)
     map.addLayer({
       id: 'fn-arts-clusters-text',
@@ -258,6 +401,7 @@ export default {
       minzoom: 3,
       filter: ['has', 'point_count'],
       layout: {
+        visibility: 'visible',
         'text-field': '{point_count_abbreviated}',
         'text-font': ['BC Sans Regular'],
         'text-size': 11,
@@ -275,6 +419,7 @@ export default {
         source: 'places1',
         minzoom: 5,
         layout: {
+          visibility: 'visible',
           'text-optional': true,
           'symbol-spacing': 50,
           'icon-image': 'point_of_interest_icon',
@@ -299,6 +444,7 @@ export default {
         source: 'places1',
         minzoom: 5,
         layout: {
+          visibility: 'visible',
           'line-cap': 'round'
         },
         paint: {
@@ -317,7 +463,9 @@ export default {
         type: 'fill',
         source: 'places1',
         minzoom: 5,
-        layout: {},
+        layout: {
+          visibility: 'visible'
+        },
         paint: {
           'fill-color': '#987',
           'fill-opacity': 0.2
@@ -334,6 +482,7 @@ export default {
         minzoom: 5,
         source: 'places1',
         layout: {
+          visibility: 'visible',
           'text-field': ['to-string', ['get', 'name']],
           'text-size': 14,
           'text-font': ['BC Sans Regular']
@@ -361,6 +510,7 @@ export default {
         source: 'arts1',
         filter: ['!', ['has', 'point_count']],
         layout: {
+          visibility: 'visible',
           'text-optional': true,
           'symbol-spacing': 50,
           'icon-image': '{kind}_icon',
@@ -445,8 +595,21 @@ export default {
     map.on('mouseleave', 'fn-places', e => {
       map.getCanvas().style.cursor = 'default'
     })
+    map.on('mouseenter', 'fn-grants', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-grants', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
+    map.on('mouseenter', 'fn-grants-clusters', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-grants-clusters', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
 
-    addHTMLClusters(map)
+    addArtsClusters(map)
+    // addGrantsClusters(map)
 
     // Layer feature precedence controls, in correct order for your reference:
     //       'text-optional': true,

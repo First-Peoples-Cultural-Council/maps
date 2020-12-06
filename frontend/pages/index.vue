@@ -20,6 +20,13 @@
               class="no-scroll-accordion"
               :content="accordionContent"
             ></Accordion>
+            <button
+              id="btn-lang-grants"
+              class="btn-grant-redirect"
+              @click="goToGrants('language')"
+            >
+              Language Grants Recipients
+            </button>
           </section>
           <section class="badge-section pl-3 pr-3 mt-3"></section>
           <hr class="sidebar-divider" />
@@ -233,6 +240,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Mapbox from 'mapbox-gl-vue'
 import groupBy from 'lodash/groupBy'
 import * as Cookies from 'js-cookie'
@@ -252,7 +260,7 @@ import Contribute from '@/components/Contribute.vue'
 import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
-import { inBounds, zoomToIdealBox } from '@/mixins/map.js'
+import { inBounds, zoomToIdealBox, zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
 import layers from '@/plugins/layers.js'
 import ModalNotification from '@/components/ModalNotification.vue'
@@ -261,13 +269,25 @@ import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
+import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 
 import {
   getApiUrl,
   encodeFPCC,
   filterLanguages,
-  getLanguagesFromDraw
+  getLanguagesFromDraw,
+  makeMarker
 } from '@/plugins/utils.js'
+
+const GrantsClusterModalClass = Vue.extend(GrantsClusterModal)
+
+const grantsLayer = [
+  'fn-grants',
+  'fn-grants-clusters',
+  'fn-grants-cluster-count',
+  'fn-grants-unclustered-points'
+]
+
 const renderArtDetail = props => {
   return `<div class='map-popup'>
             <hr>
@@ -278,6 +298,47 @@ const renderArtDetail = props => {
                 <span class='art-popup-type'>${props.kind}</span>
             </p>
         </div>`
+}
+
+const renderGrantDetails = (props, color) => {
+  const recipient = props.properties.recipient
+  const grant = props.properties.grant
+  const projectBrief = props.properties.project_brief
+  const communityOrAffiliation = props.properties.community_affiliation
+  const amount = Math.round(parseFloat(props.properties.amount))
+  const year = props.properties.year
+  const category = props.properties.category
+
+  return `
+    <div class="grant-title">${recipient} - ${grant}</div>
+      <div class="grant-content">
+        <span class="grant-description"> ${projectBrief}</span>
+        <div class="grant-footer">
+          <div class="footer-item">
+            <span class="footer-item-title"> COMMUNITY/AFFILIATION </span>
+            <span class="footer-item-content"> ${communityOrAffiliation ||
+              'No Community/Affiliation'} </span>
+          </div>
+          ${
+            amount && amount !== 0
+              ? `<div class='footer-item'>
+              <span class='footer-item-title'> AMOUNT </span>
+              <span class='footer-item-content'> $${amount} </span>
+            </div>`
+              : ''
+          }
+          <div class="footer-item">
+            <span class="footer-item-title"> YEAR </span>
+            <span class="footer-item-content"> ${year} </span>
+          </div>
+        </div>
+        <div class="grant-tag-container">
+          <span class="grant-tag" style="background-color: ${color}">
+            ${category}
+          </span>
+        </div>
+      </div>
+  `
 }
 
 const markers = {}
@@ -424,6 +485,9 @@ export default {
     placesSet() {
       return this.$store.state.places.placesSet
     },
+    grantsGeo() {
+      return this.$store.state.grants.grantsGeo
+    },
     isDrawMode() {
       return this.$store.state.contribute.isDrawMode
     },
@@ -432,6 +496,9 @@ export default {
     },
     layers() {
       return this.$store.state.layers.layers
+    },
+    currentGrant() {
+      return this.$store.state.grants.currentGrant
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -454,7 +521,9 @@ export default {
       $axios.$get(getApiUrl('art-search')),
       $axios.$get(getApiUrl('art-geo')),
       $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event'))
+      $axios.$get(getApiUrl('arts/event')),
+      $axios.$get(getApiUrl('grants')),
+      $axios.$get(getApiUrl('grant-categories'))
     ])
 
     store.commit('languages/setSearchStore', results[0])
@@ -465,6 +534,10 @@ export default {
     // Set Art Geo Set - for visible Arts count
     store.commit('arts/setGeo', results[4].features)
     store.commit('arts/setGeoStore', results[4])
+
+    // Set Grants Geo Set
+    store.commit('grants/setGrants', results[7].features)
+    store.commit('grants/setGrantsGeo', results[7])
 
     const taxonomies = [
       ...results[5],
@@ -478,6 +551,15 @@ export default {
     store.commit(
       'arts/setTaxonomySearchSet',
       taxonomies.map(tax => {
+        tax.isChecked = false
+        return tax
+      })
+    )
+
+    // Store Grants Category List
+    store.commit(
+      'grants/setGrantCategorySearchSet',
+      results[8].map(tax => {
         tax.isChecked = false
         return tax
       })
@@ -540,6 +622,11 @@ export default {
         speed: 3
       })
     }
+
+    this.toggleLayers(to.name)
+    this.clearFeatures()
+    // make scroll indicator disappear on router change
+    this.$store.commit('sidebar/setScrollIndicatorValue', false)
     next()
   },
   created() {
@@ -683,7 +770,7 @@ export default {
       containerArray.forEach(elem => {
         elem.addEventListener('scroll', e => {
           if (
-            elem.scrollTop + elem.clientHeight >= elem.scrollHeight &&
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
             elem.scrollTop !== 0
           ) {
             if (this.communities.length > this.maximumLength) {
@@ -716,6 +803,9 @@ export default {
       setTimeout(() => {
         this.maximumLength += 10
         this.$store.commit('sidebar/toggleLoading', false)
+        setTimeout(() => {
+          this.$root.$emit('triggerScrollVisibilityCheck')
+        }, 500)
       }, 250)
     },
     setMobile(screenSizeOnLand) {
@@ -729,7 +819,8 @@ export default {
       return !(
         this.$route.name === 'index-languages' ||
         this.$route.name === 'index-heritages' ||
-        this.$route.name === 'index-art'
+        this.$route.name === 'index-art' ||
+        this.$route.name === 'index-grants'
       )
     },
     handleCardClick($event, name, type) {
@@ -756,7 +847,15 @@ export default {
         this.$route.name === 'index-first-nations'
       )
     },
-
+    getGrantDepartmentColor(categoryAbbreviation) {
+      if (categoryAbbreviation.startsWith('L')) {
+        return '#b47a2b'
+      } else if (categoryAbbreviation.startsWith('A')) {
+        return '#00333a'
+      } else if (categoryAbbreviation.startsWith('H')) {
+        return '#9d3d22'
+      }
+    },
     artsClusterImage(props, coords, map) {
       const html = `<svg class="markerCluster" xmlns="http://www.w3.org/2000/svg" width="54" height="53" viewBox="0 0 54 53"><defs><style>.a{fill:#fff;}.b{fill:#515350;}.c{fill:#b45339;}</style></defs><g transform="translate(-470 -452)"><circle class="a" cx="22.5" cy="22.5" r="22.5" transform="translate(470 460)"/><circle class="b" cx="20.5" cy="20.5" r="20.5" transform="translate(472 462)"/><circle class="a" cx="13.5" cy="13.5" r="13.5" transform="translate(497 452)"/><path class="c" d="M6989.312,282a11.31,11.31,0,1,0,11.309,11.31A11.311,11.311,0,0,0,6989.312,282Zm-8.654,6.817a.362.362,0,0,1,.5-.479,4.74,4.74,0,0,0,5-.428,4.148,4.148,0,0,1,6.021,1.149.468.468,0,0,1-.594.67,4.9,4.9,0,0,0-5.02.219C6984.084,291.716,6981.76,291.029,6980.657,288.817Zm14,4.09c-1.689-.242-4.229-.243-4.229,1.932v.828a.4.4,0,0,1-.4.395h-.636a.394.394,0,0,1-.395-.395v-.828c0-2.126-2.6-2.173-4.409-1.948a.174.174,0,0,1-.077-.337,15.241,15.241,0,0,1,10.233.019A.174.174,0,0,1,6994.661,292.907Zm-.027,2.136h-2.9a.245.245,0,0,1-.188-.4c.56-.668,1.848-1.766,3.279,0A.247.247,0,0,1,6994.633,295.042Zm-7.119,0h-2.929a.24.24,0,0,1-.185-.392c.557-.668,1.856-1.792,3.3,0A.24.24,0,0,1,6987.514,295.042Zm.677,3.261a1.426,1.426,0,1,1,1.426,1.427A1.425,1.425,0,0,1,6988.191,298.3Zm1.875,3.035a.181.181,0,0,1-.032-.359,6.421,6.421,0,0,0,4.893-3.81.181.181,0,0,1,.349.087C6995.026,299.007,6993.994,301.539,6990.066,301.338Zm8.381-10.352c-2.423,1.035-4.361-.6-5.569-2.669a5.777,5.777,0,0,0-2.654-2.289.349.349,0,0,1,.162-.667c1.855.111,3.091.948,4.326,2.955a4.26,4.26,0,0,0,3.611,1.947A.375.375,0,0,1,6998.447,290.986Z" transform="translate(-6478.949 172.052)"/></g><text x="42%" y="65%" text-anchor="middle" fill="white" font-size="0.9em" font-weight="Bold">${props.point_count}</text></svg>`
       const el = document.createElement('div')
@@ -790,7 +889,6 @@ export default {
         for (let i = 0; i < features.length; i++) {
           const coords = features[i].geometry.coordinates
           const props = features[i].properties
-
           if (!props.cluster) continue
           const id = props.cluster_id
 
@@ -814,6 +912,10 @@ export default {
         if (!newMarkers[id]) markersOnScreen[id].remove()
       }
       markersOnScreen = newMarkers
+    },
+    clearFeatures() {
+      this.$store.commit('features/setPopup', null)
+      this.$store.commit('features/setMarker', null)
     },
     goToLang() {
       this.$router.push({
@@ -863,7 +965,26 @@ export default {
               path: `/place-names/${encodeFPCC(feature.properties.name)}`
             })
           }
+        } else if (feature && feature.properties && feature.properties.grant) {
+          if (feature.layer.id === 'fn-grants') {
+            // Show Popup with Grant details
+            const grant = feature
+
+            // Zoom to selected point and highlight icon
+            if (grant.geometry) {
+              zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+              map.once('moveend', () => {
+                this.showGrantModal(grant)
+              })
+
+              const icon = 'grant_icon.png'
+              makeMarker(grant.geometry, icon, this).addTo(map)
+            }
+          }
         }
+
+        // console.log('FEATURE IS', feature.geometry, feature.layer.id)
+
         if (feature.layer.id === 'fn-arts-clusters') {
           // console.log(feature)
           const zoom = map.getZoom()
@@ -877,15 +998,17 @@ export default {
               curve: 1
             })
           } else {
-            this.showClusterModal(feature, e.lngLat, map)
+            this.showArtsClusterModal(feature, e.lngLat, map)
           }
           done = true
         }
       })
       if (!done && !this.isMobile)
         features.forEach(feature => {
-          // console.log('Feature', feature)
-          if (feature.layer.id === 'fn-lang-areas-fill') {
+          if (
+            feature.layer.id === 'fn-lang-areas-fill' &&
+            this.$route.name !== 'index-grants'
+          ) {
             this.$router.push({
               path: `/languages/${encodeFPCC(feature.properties.name)}`
             })
@@ -893,7 +1016,7 @@ export default {
         })
     },
 
-    showClusterModal(feature, latLng, map) {
+    showArtsClusterModal(feature, latLng, map) {
       const clusterId = feature.properties.cluster_id
       map
         .getSource('arts1')
@@ -930,10 +1053,115 @@ export default {
           }
         )
     },
+    showGrantsClusterModal(grants, coordinates) {
+      const mapboxgl = require('mapbox-gl')
+
+      const lnglat = new mapboxgl.LngLat(coordinates[0], coordinates[1])
+
+      const popup = new mapboxgl.Popup({
+        className: 'grant-cluster-modal'
+      })
+        .setLngLat(lnglat)
+        .setHTML(`<div id="grant-cluster-container"></div>`)
+        .addTo(this.map)
+
+      const clusterModal = new GrantsClusterModalClass({
+        propsData: {
+          grants
+        },
+        methods: {
+          showGrantModal: this.showGrantModal
+        }
+      })
+      clusterModal.$mount('#grant-cluster-container')
+      popup._update()
+      this.$store.commit('features/setPopup', popup)
+    },
+    showGrantModal(grant) {
+      const grantData = grant
+      const color = this.getGrantDepartmentColor(
+        grantData.properties.category_abbreviation
+      )
+      const grantDetails = renderGrantDetails(grantData, color)
+      this.$store.commit('grants/setCurrentGrant', grant)
+
+      const mapboxgl = require('mapbox-gl')
+
+      const lnglat = new mapboxgl.LngLat(
+        grantData.geometry.coordinates[0],
+        grantData.geometry.coordinates[1]
+      )
+
+      const popup = new mapboxgl.Popup({
+        className: 'grant-popup-modal'
+      })
+        .setLngLat(lnglat)
+        .setHTML(
+          `<div class="grant-popup-container">
+              <div class="grant-header" style="background-color: ${color}"> </div>
+            
+              ${grantDetails}
+
+              <!-- TODO scroll indicator -->
+              <div class="scroll-indicator">
+                  <i class="fas fa-angle-down float"></i>
+              </div>
+
+              </div>`
+        )
+        .on('close', () => {
+          this.$store.commit('grants/setCurrentGrant', null)
+          this.$store.commit('features/setMarker', null)
+        })
+        .addTo(this.map)
+
+      this.$store.commit('features/setPopup', popup)
+      if (grant.geometry) {
+        const icon = 'grant_icon.png'
+        makeMarker(grant.geometry, icon, this).addTo(this.map)
+      }
+    },
 
     mapLoaded(map) {
+      this.$store.commit(
+        'grants/setVisibleGrantsCount',
+        this.countVisibleGrants(map.getBounds())
+      )
+
       this.$root.$on('resetMap', () => {
+        this.clearFeatures()
         zoomToIdealBox({ map })
+      })
+
+      this.$root.$on('showGrantModal', grant => {
+        if (grant) {
+          zoomToPoint({ map, geom: grant.geometry, zoom: 11 })
+          map.once('moveend', () => {
+            this.showGrantModal(grant)
+          })
+        }
+      })
+
+      this.$root.$on('showGrantsClusterModal', (grants, coordinates) => {
+        if (grants && coordinates)
+          this.showGrantsClusterModal(grants, coordinates)
+      })
+
+      this.$root.$on('showGrantsLayer', () => {
+        grantsLayer.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
+        })
+      })
+
+      this.$root.$on('filterGrants', () => {
+        this.clearFeatures()
+        zoomToIdealBox({ map })
+      })
+
+      this.$root.$on('updateGrantsMarkers', features => {
+        const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
+        if (features) geoJSON.features = features
+        map.getSource('grants1').setData(geoJSON)
       })
 
       this.$root.$on('getLocation', () => {
@@ -960,19 +1188,42 @@ export default {
         type: 'geojson',
         data: this.artsGeoSet,
         cluster: true,
-        // clusterMaxZoom: 14,
         clusterRadius: 50
       })
       map.addSource('places1', {
         type: 'geojson',
         data: '/api/placename-geo/'
       })
+
+      map.addSource('grants1', {
+        type: 'geojson',
+        data: '/api/grants/',
+        cluster: true,
+        maxzoom: 20,
+        clusterMaxZoom: 20,
+        clusterRadius: 40
+      })
+
       layers.layers(map, this)
       this.zoomToHash(map)
       // Idle event not supported/working by mapbox-gl-vue natively, so we're doing it here.
       map.on('idle', e => {
         this.updateHash(map)
       })
+      // Hide block for now - wait for feedback
+      // map.on('zoom', () => {
+      //   if (this.$route.name !== 'index-grants') {
+      //     if (map.getZoom() > 6) {
+      //       grantsLayer.forEach(layer => {
+      //         this.map.setLayoutProperty(layer, 'visibility', 'visible')
+      //       })
+      //     } else {
+      //       grantsLayer.forEach(layer => {
+      //         this.map.setLayoutProperty(layer, 'visibility', 'none')
+      //       })
+      //     }
+      //   }
+      // })
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
@@ -1108,7 +1359,6 @@ export default {
       map.on('draw.create', e => {
         const featuresDrawn = draw.getAll()
         let features = featuresDrawn.features
-        // console.log('Feature', features)
         this.$store.commit('contribute/setDrawnFeatures', features)
 
         if (features.length > 1) {
@@ -1141,6 +1391,9 @@ export default {
       map.draw = draw
 
       this.$eventHub.$emit('map-loaded', map)
+
+      // Checks if grants page on initial load
+      this.toggleLayers(this.$route.name)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -1175,6 +1428,7 @@ export default {
       ).active
 
       const bounds = map.getBounds()
+
       this.$store.commit(
         'languages/set',
         filterLanguages(
@@ -1186,10 +1440,15 @@ export default {
           sleepingLayer
         )
       )
-      // console.log('This lanuages', this.languages)
+
       this.$store.commit('communities/set', this.filterCommunities(bounds))
       this.$store.commit('arts/setGeo', this.filterArtsGeo(bounds))
       this.$store.commit('arts/set', this.filterArts(bounds))
+      this.$store.commit('grants/setGrants', this.filterGrants(bounds))
+      this.$store.commit(
+        'grants/setVisibleGrantsCount',
+        this.countVisibleGrants(bounds)
+      )
       this.$store.commit('arts/setArtworks', this.filterArtworks(bounds))
 
       if (this.catToFilter.length === 0) {
@@ -1228,6 +1487,35 @@ export default {
       }
     },
 
+    toggleLayers(name) {
+      // enumerate ids of the layers to hide
+      const layersToToggle = [
+        'fn-arts-clusters-text',
+        'fn-arts-clusters',
+        'fn-arts',
+        'fn-nations',
+        'fn-places'
+      ]
+
+      if (name === 'index-grants' || name === 'index-grants-grants') {
+        grantsLayer.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
+        })
+
+        layersToToggle.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'none')
+        })
+      } else {
+        grantsLayer.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'none')
+        })
+
+        layersToToggle.forEach(layer => {
+          this.map.setLayoutProperty(layer, 'visibility', 'visible')
+        })
+      }
+    },
+
     filterCommunities(bounds) {
       return this.communitySet.filter(comm => {
         if (comm.point !== null) {
@@ -1241,6 +1529,19 @@ export default {
         const point = art.geometry.coordinates
         return inBounds(bounds, point)
       })
+    },
+    filterGrants(bounds) {
+      return this.grantsGeo.features.filter(grant => {
+        const point = grant.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+    },
+    countVisibleGrants(bounds) {
+      const visibleGrants = this.grantsGeo.features.filter(grant => {
+        const point = grant.geometry.coordinates
+        return inBounds(bounds, point)
+      })
+      return visibleGrants.length
     },
     filterArtworks(bounds) {
       return this.artworkSet.filter(artwork => {
@@ -1296,6 +1597,12 @@ export default {
 </script>
 
 <style lang="scss">
+#btn-lang-grants {
+  margin-top: 1em;
+  background-color: #b47a2b;
+  color: white;
+}
+
 @font-face {
   font-family: 'Proxima Nova';
   src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
@@ -1425,6 +1732,8 @@ export default {
   overflow: hidden;
 }
 
+// Arts Modal Style
+
 .artPopUp {
   border-radius: 0.5em;
 }
@@ -1435,6 +1744,167 @@ export default {
   padding: 1em;
   overflow-x: hidden;
 }
+
+// Grants Modal Style
+
+.grant-popup-modal {
+  width: 550px !important;
+  max-width: 550px !important;
+  max-height: 500px;
+
+  .mapboxgl-popup-content {
+    padding: 0 !important;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 2.25em;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 3px;
+  }
+}
+
+.grant-cluster-modal {
+  width: 400px !important;
+  max-width: 550px !important;
+  max-height: 500px;
+
+  .mapboxgl-popup-content {
+    padding: 0 !important;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 2.25em;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 3px;
+  }
+}
+
+.grant-popup-container {
+  width: 550px !important;
+  max-width: 550px !important;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 0.8px solid #9f9f9f;
+  border-radius: 0.5em;
+
+  .grant-header {
+    background-color: #7d6799;
+    padding: 0.25em;
+    height: 25px;
+  }
+
+  .grant-title {
+    border-bottom: 0.8px solid #9f9f9f;
+    padding: 0.75em;
+    text-align: center;
+    font: normal normal bold 18px/23px Proxima Nova;
+    color: #707070;
+  }
+
+  .grant-content {
+    padding: 1.25em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .grant-description {
+    font: normal normal normal 16px/24px Proxima Nova;
+    letter-spacing: 0.35px;
+    color: #454545;
+    margin-bottom: 0.75em;
+  }
+  .grant-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .footer-item {
+      display: flex;
+      flex-direction: column;
+      max-width: 30%;
+
+      .footer-item-title {
+        font: normal normal bold 15px/16px Proxima Nova;
+        letter-spacing: 0px;
+        color: #707070;
+        margin-bottom: 0.5em;
+      }
+
+      .footer-item-content {
+        font: normal normal normal 14px/16px Proxima Nova;
+        letter-spacing: 0.35px;
+        color: #454545;
+      }
+    }
+  }
+}
+
+// Mobile mode for Grants Modal
+@media (max-width: 992px) {
+  .grant-popup-modal {
+    transform: translate(0) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    z-index: 999999999;
+    position: fixed !important;
+    top: initial !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    max-height: 400px;
+    height: 300px;
+
+    .mapboxgl-popup-content {
+      height: 400px;
+      max-height: 400px;
+      padding: 3em 1.5em 1.5em 1.5em !important;
+    }
+
+    .mapboxgl-popup-tip {
+      display: none !important;
+    }
+  }
+
+  .grant-popup-modal .mapboxgl-popup-close-button {
+    margin-top: 0px;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    color: #b47a2b;
+    background: #fff;
+    border: 1px solid #b4b4b4;
+    left: calc(50% - 25px);
+    top: -30px;
+  }
+
+  .grant-popup-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 320px;
+    border: 1px solid #dedcda;
+    box-shadow: 0px 3px 6px #00000010;
+  }
+
+  .grant-popup-modal .mapboxgl-popup-content {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  .grant-popup-container .grant-header {
+    display: none !important;
+  }
+
+  .grant-popup-container .grants-header {
+    display: block !important;
+  }
+}
+
 .artPopUp .mapboxgl-popup-content {
   padding: 0em 0em 0em 0em;
 }
@@ -1571,328 +2041,6 @@ export default {
   .drawing-mode-container > div {
     width: 75%;
     font-size: 0.8em;
-  }
-}
-
-/* Global CSS */
-.field-kinds {
-  font: Bold 13px/15px Proxima Nova;
-  color: #707070;
-  opacity: 1;
-  text-transform: uppercase;
-  margin: 0.1em;
-  padding: 0;
-}
-
-.field-names {
-  font-family: 'Proxima Nova', sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: #151515;
-  margin: 0.1em;
-  padding: 0;
-  word-break: break-all;
-}
-
-.content-collapse {
-  position: relative;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0.75em;
-  margin: 0 0.75em;
-}
-
-.content-collapse-btn {
-  position: fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #fff;
-  left: 50%;
-  bottom: 75px;
-  z-index: 9999999999;
-  border: 2.5px solid #b57936;
-  animation: hover 2.5s infinite;
-}
-
-/* Arts Drawer */
-.sidebar-side-panel {
-  position: fixed;
-  top: 0;
-  left: 425px;
-  width: 425px;
-  height: 100vh;
-  overflow-x: hidden;
-  z-index: 999999;
-}
-
-@media (max-width: 992px) {
-  .sidebar-side-panel {
-    display: block !important;
-    position: initial;
-    width: 100%;
-    height: 100vh;
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    z-index: 999999;
-  }
-}
-
-/* Sidebar style when screen width is 1300px and drawer is open */
-@media (min-width: 993px) and (max-width: 1300px) {
-  .arts-container .sidebar-container {
-    width: 350px;
-  }
-  .arts-container .sidebar-side-panel {
-    width: 350px;
-    left: 350px;
-  }
-}
-
-/* Main Arts Drawer */
-
-.panel-collapsable {
-  width: 15px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 425px;
-  background: #f9f9f9 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
-  border: 1px solid #d7d7de;
-}
-
-.btn-collapse {
-  padding: 1em;
-  margin-top: 1.5em;
-  margin-left: 0.8em;
-  width: 100px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top-right-radius: 1em;
-  border-bottom-right-radius: 1em;
-  color: #fff;
-  background-color: #b47a2b;
-}
-
-.btn-collapse img {
-  margin-right: 0.5em;
-}
-
-/* Artwork card */
-.artist-card {
-  cursor: pointer;
-  display: flex;
-  position: relative;
-  border-radius: 0.25em;
-  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
-}
-
-.arts-card-container {
-  width: 100%;
-  height: 200px;
-  flex-direction: column;
-  margin: 0 0.25em;
-  overflow: hidden;
-}
-
-/* Bookmark ribbon */
-.arts-card-tag {
-  position: absolute;
-  right: 0;
-  top: 5px;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  border-right: 0;
-  background: #b57936;
-  width: 40%;
-  padding: 2px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: bold;
-  text-align: center;
-  text-transform: capitalize;
-}
-.arts-card-tag img {
-  width: 17px;
-  height: 15px;
-}
-
-.arts-card-body {
-  width: 100%;
-  height: 150px;
-  overflow: hidden;
-}
-
-.card-teaser-img {
-  object-fit: fill;
-  width: 100%;
-  height: 100%;
-}
-
-.arts-card-footer {
-  font-family: 'Lato', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0.25em;
-  height: auto;
-}
-
-.artist-name a {
-  font-weight: normal;
-  color: #007bff !important;
-
-  &:hover {
-    text-decoration: underline !important;
-  }
-}
-
-/* Landscape Layout */
-.arts-card-landscape {
-  display: flex;
-  width: 100%;
-  height: 150px;
-  padding: 0;
-  border-radius: 0.25em;
-
-  .arts-card-body {
-    flex-basis: 45%;
-    overflow: hidden;
-
-    .card-teaser-img {
-      object-fit: cover;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-    }
-    .card-teaser-null {
-      object-fit: none;
-      background-color: rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  .arts-card-right {
-    flex-basis: 55%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    box-sizing: border-box;
-    padding-left: 0.5em;
-    color: #151515;
-
-    .arts-card-footer {
-      .artist-title {
-        width: 100%;
-        max-height: 60px;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        word-break: break-all;
-        overflow: hidden;
-        font: Bold 16px/20px Proxima Nova;
-        color: #151515;
-        margin: 0.1em;
-        padding: 0;
-      }
-      .artist-name {
-        font-size: 0.7em;
-        font-weight: 800;
-        color: #707070;
-      }
-    }
-
-    .arts-card-more {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .arts-card-tag {
-        border-radius: 20px;
-        position: initial;
-        padding: 3px 8px;
-        color: #fff;
-        font-size: 0.8em;
-        font-weight: 800;
-        border: 0;
-        width: auto;
-      }
-
-      .fpcc-card-more {
-        width: 55px;
-        background-color: #b57936;
-        display: flex;
-        align-items: center;
-        height: 35px;
-        justify-content: center;
-        border-top-left-radius: 1em;
-        border-bottom-left-radius: 1em;
-      }
-    }
-  }
-
-  &:hover {
-    border: 1px solid #b57936;
-
-    .fpcc-card-more {
-      background-color: #3d3d3d !important;
-    }
-  }
-}
-
-.card-selected {
-  border: 1px solid #b57936;
-  transform: translateX(10px);
-
-  .fpcc-card-more {
-    background-color: #3d3d3d !important;
-  }
-}
-
-/* Animation  */
-
-@keyframes hover {
-  0% {
-    transform: translateY(0);
-  }
-
-  25% {
-    transform: translateY(5px);
-  }
-
-  50% {
-    transform: translateY(0);
-  }
-
-  70% {
-    transform: translateY(5px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes shadowpulse {
-  0% {
-    transform: scale(0.975);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-  }
-
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    transform: scale(0.975);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
 }
 </style>
