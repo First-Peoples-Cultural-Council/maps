@@ -8,9 +8,6 @@ from grants.management.commands.migrate_manytomany_fields import migrate_manytom
 
 class Migration(migrations.Migration):
 
-    def migrate_data(apps, schema_editor):
-        migrate_manytomany_fields()
-
     dependencies = [
         ('grants', '0002_auto_20201022_1228'),
     ]
@@ -30,6 +27,5 @@ class Migration(migrations.Migration):
             model_name='grant',
             name='recipients',
             field=models.ManyToManyField(blank=True, related_name='grants', to='language.PlaceName'),
-        ),
-        migrations.RunPython(migrate_data),
+        )
     ]
