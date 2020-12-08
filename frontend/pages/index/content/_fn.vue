@@ -9,10 +9,7 @@
           Community:
           <span class="font-weight-bold">{{ commDetails.name }}</span>
         </div>
-        <div
-          class="content-collapse-btn"
-          @click="$store.commit('sidebar/setMobileContent', true)"
-        >
+        <div class="content-collapse-btn" @click="handleCollapseClick(true)">
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
@@ -21,7 +18,7 @@
         <div
           class="text-center d-none mobile-close"
           :class="{ 'content-mobile': mobileContent }"
-          @click="$store.commit('sidebar/setMobileContent', false)"
+          @click="handleCollapseClick(false)"
         >
           <img
             class="d-inline-block"
@@ -204,8 +201,8 @@
                 :key="'language' + language.id"
                 lg="12"
                 xl="12"
-                md="6"
-                sm="6"
+                md="12"
+                sm="12"
               >
                 <LanguageCard
                   class="mt-2 hover-left-move"
@@ -307,6 +304,7 @@
       </div>
     </div>
     <ErrorScreen v-else></ErrorScreen>
+    <ScrollDownIndicator :desktop="'#sb-new-alt-one'"></ScrollDownIndicator>
   </div>
 </template>
 
@@ -333,6 +331,7 @@ import Media from '@/components/Media.vue'
 import Notification from '@/components/Notification.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
+import ScrollDownIndicator from '@/components/ScrollDownIndicator.vue'
 
 // Commented out until data is fixed
 // import PieChart from '@/components/PieChart.vue'
@@ -351,7 +350,8 @@ export default {
     Notification,
     ArtsCard,
     ErrorScreen,
-    GrantsCard
+    GrantsCard,
+    ScrollDownIndicator
     // Commented out until data is fixed
     // ,PieChart
   },
@@ -571,6 +571,7 @@ export default {
         id: this.commDetails.id
       })
     })
+    this.$root.$emit('triggerScrollVisibilityCheck')
   },
   methods: {
     getMediaUrl,
@@ -578,6 +579,10 @@ export default {
       if (media.creator && user) {
         return user.id === media.creator.id || user.id === media.creator
       }
+    },
+    handleCollapseClick(value) {
+      this.$store.commit('sidebar/setMobileContent', value)
+      this.$root.$emit('toggleHideIndicator')
     },
     handleRowClick() {
       this.showCollapse = !this.showCollapse
