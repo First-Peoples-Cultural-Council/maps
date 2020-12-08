@@ -15,14 +15,18 @@
 
     <b-modal v-model="showModal" hide-header @ok="handleOk">
       <h5>Additional Criteria</h5>
-      <b-form-checkbox
-        v-for="option in categories"
-        :key="option.id"
-        v-model="selected"
-        :value="option.id"
-      >
-        {{ option.name }}
-      </b-form-checkbox>
+      <b-row>
+        <b-col
+          v-for="option in categories"
+          :key="option.id"
+          :lg="`${categories.length > 8 ? '4' : '12'}`"
+          :md="`${categories.length > 8 ? '6' : '12'}`"
+        >
+          <b-form-checkbox v-model="selected" :value="option.id">
+            {{ option.name }}
+          </b-form-checkbox>
+        </b-col>
+      </b-row>
     </b-modal>
   </div>
 </template>
@@ -95,10 +99,19 @@ export default {
       const poiTaxonomy = this.$store.state.arts.taxonomySearchSet.find(
         taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
       )
-
-      return this.$store.state.arts.taxonomySearchSet.filter(
-        taxonomy => taxonomy.parent === poiTaxonomy.id
-      )
+      console.log(poiTaxonomy)
+      return this.$store.state.arts.taxonomySearchSet.filter(taxonomy => {
+        // Detect taxonomy name with parenthesis, and remove it
+        const regExp = /\(([^)]+)\)/
+        const matches = regExp.exec(taxonomy.name)
+        if (
+          taxonomy.parent === poiTaxonomy.id &&
+          (matches === null || matches[1] === '1')
+        ) {
+          taxonomy.name = taxonomy.name.replace(/ *\([^)]*\) */g, '')
+          return taxonomy
+        }
+      })
     }
   },
   methods: {
