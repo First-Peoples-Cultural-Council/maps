@@ -116,6 +116,7 @@
       </SideBar>
       <div
         v-else-if="routesToNotRenderChild()"
+        id="sb-new-alt-one"
         class="sb-new-alt-one"
         :class="{
           'sb-detail': isDetailMode,
