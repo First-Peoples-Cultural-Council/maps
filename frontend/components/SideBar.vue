@@ -79,14 +79,10 @@
         </SideBarFold>
       </div>
     </div>
-    <div
-      v-if="isScrollDownBtnVisible && isMainPages"
-      class="scroll-indicator-container hide-mobile"
-    >
-      <button class="scroll-down-btn" @click="handleScrollDown">
-        <img src="@/assets/images/arrow_scrolldown_icon.png" />
-      </button>
-    </div>
+    <ScrollDownIndicator
+      :desktop="'#sidebar-container'"
+      :mobile="'#side-inner-collapse'"
+    ></ScrollDownIndicator>
   </div>
 </template>
 
@@ -94,12 +90,14 @@
 import Logo from '@/components/Logo.vue'
 import SideBarFold from '@/components/SideBarFold.vue'
 import Contact from '@/components/Contact.vue'
+import ScrollDownIndicator from '@/components/ScrollDownIndicator.vue'
 
 export default {
   components: {
     Logo,
     SideBarFold,
-    Contact
+    Contact,
+    ScrollDownIndicator
   },
   filters: {
     lowerCase(value) {
@@ -153,48 +151,10 @@ export default {
     },
     showGallery() {
       return this.$store.state.sidebar.showGallery
-    },
-    isScrollDownBtnVisible() {
-      return this.$store.state.sidebar.showScrollIndicator
     }
   },
-  mounted() {
-    const sideBarContainer = this.$refs.sidebarContainer
-    const mobileContainer = document.querySelector('#side-inner-collapse')
-    const innerToggle = document.querySelector('#innerToggleHead')
-    const containerArray = [mobileContainer, sideBarContainer]
 
-    containerArray.forEach(elem => {
-      elem.addEventListener('scroll', e => {
-        if (this.scrollTop > '25') {
-          innerToggle.classList.add('position-fixed')
-        } else {
-          innerToggle.classList.remove('position-fixed')
-        }
-        this.isScrollIndicatorVisible()
-      })
-    })
-
-    // checks for initial btn visibility
-    this.$root.$on('triggerScrollVisibilityCheck', () => {
-      this.isScrollIndicatorVisible()
-    })
-
-    this.$root.$on('triggerScrollDown', () => {
-      this.handleScrollDown()
-    })
-  },
   methods: {
-    isMainPages() {
-      const pathName = this.$route.name
-      return (
-        pathName === 'index-art' ||
-        pathName === 'index-languages' ||
-        pathName === 'index-heritage' ||
-        pathName === 'index-grants' ||
-        pathName === 'index'
-      )
-    },
     handleNavigation(e, data) {
       // Recalibrate Vuex Values
       this.resetState()
@@ -213,38 +173,6 @@ export default {
       this.$store.commit('arts/setArtSearch', '')
       this.$store.commit('sidebar/setDrawerContent', false)
       this.$root.$emit('resetMap')
-    },
-    handleScrollDown() {
-      const selectedContainer = this.getSelectedContainer()
-      selectedContainer.scrollBy({
-        top: selectedContainer.scrollHeight,
-        left: 0,
-        behavior: 'smooth'
-      })
-
-      // checks again after scrolling down
-      this.isScrollIndicatorVisible()
-    },
-    isScrollIndicatorVisible() {
-      const selectedContainer = this.getSelectedContainer()
-
-      const isNotShown = selectedContainer
-        ? selectedContainer.offsetHeight + selectedContainer.scrollTop >=
-          selectedContainer.scrollHeight - 50
-        : true
-
-      // set store value
-      this.$store.commit('sidebar/setScrollIndicatorValue', !isNotShown)
-    },
-    getSelectedContainer() {
-      const mobileContainer = document.querySelector('#side-inner-collapse')
-      const desktopContainer = document.querySelector('#sidebar-container')
-
-      if (window.innerWidth > 992) {
-        return desktopContainer
-      } else {
-        return mobileContainer
-      }
     }
   }
 }
