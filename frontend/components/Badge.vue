@@ -99,7 +99,6 @@ export default {
       const poiTaxonomy = this.$store.state.arts.taxonomySearchSet.find(
         taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
       )
-      console.log(poiTaxonomy)
       return this.$store.state.arts.taxonomySearchSet.filter(taxonomy => {
         // Detect taxonomy name with parenthesis, and remove it
         const regExp = /\(([^)]+)\)/
@@ -108,6 +107,7 @@ export default {
           taxonomy.parent === poiTaxonomy.id &&
           (matches === null || matches[1] === '1')
         ) {
+          // removed parenthesis and the number from name
           taxonomy.name = taxonomy.name.replace(/ *\([^)]*\) */g, '')
           return taxonomy
         }
