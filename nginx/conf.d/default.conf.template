@@ -8,9 +8,8 @@ map $sent_http_content_type $expires {
 
 server {
 
-    listen 80;
-    server_name locahost
-    charset utf-8;
+    listen 80 default_server;
+    server_name locahost maps.fpcc.ca fplm.countable.ca;
     client_max_body_size 0;
 
     sendfile off;
@@ -80,4 +79,9 @@ server {
         send_timeout                1200;
     }
 
+}
+
+server {
+    server_name www.maps.fpcc.ca;
+    return 301 http://maps.fpcc.ca$request_uri;
 }
