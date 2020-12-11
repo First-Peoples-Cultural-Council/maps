@@ -404,9 +404,6 @@ export default {
     display: none !important;
   }
 
-  .modal-dialog {
-  }
-
   .modal-body {
     max-height: 75vh;
     overflow: auto;
