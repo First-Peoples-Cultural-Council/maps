@@ -10,7 +10,7 @@ services:
             - back-tier
 
     frontend:
-        image: node
+        image: node:13
         volumes:
             - ./frontend:/code
         networks:
