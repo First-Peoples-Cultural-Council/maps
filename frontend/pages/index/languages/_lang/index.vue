@@ -36,7 +36,18 @@
           :link="language.fv_archive_link"
           :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
           :greeting-file="getMediaUrl(greeting_obj.audio_file, isServer)"
-        ></LanguageDetailCard>
+        >
+          <template v-slot:notification>
+            <Notification
+              :id="language.id"
+              :unsubscribe="!!subscribed"
+              :subscription="subscribed"
+              :is-server="isServer"
+              type="language"
+              title="Follow This Language"
+            ></Notification>
+          </template>
+        </LanguageDetailCard>
         <section class="ml-2 mr-2">
           <h5 class="other-lang-names-title text-uppercase mt-4">
             Other Language Names
@@ -66,21 +77,6 @@
           </p>
         </section>
         <section>
-          <b-row>
-            <b-col xs="6">
-              <Notification
-                :id="language.id"
-                :unsubscribe="!!subscribed"
-                :subscription="subscribed"
-                :is-server="isServer"
-                type="language"
-                class="ml-3 mr-3 mt-3"
-                title="Follow This Language"
-              ></Notification>
-            </b-col>
-            <b-col xs="6"></b-col>
-          </b-row>
-
           <LanguageSeeAll
             :content="`Learn more about ${language.name}`"
             class="mt-3"

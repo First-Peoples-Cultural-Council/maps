@@ -30,17 +30,18 @@
           :population="commDetails.population"
           :server="isServer"
           :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
-        ></CommunityDetailCard>
-
-        <Notification
-          :id="community.id"
-          :is-server="isServer"
-          type="community"
-          class="m-2"
-          :unsubscribe="!!subscribed"
-          :subscription="subscribed"
-          title="Follow This Community"
-        ></Notification>
+        >
+          <template v-slot:notification>
+            <Notification
+              :id="community.id"
+              :is-server="isServer"
+              type="community"
+              :unsubscribe="!!subscribed"
+              :subscription="subscribed"
+              title="Follow This Community"
+            ></Notification>
+          </template>
+        </CommunityDetailCard>
 
         <hr class="sidebar-divider mt-0" />
         <Filters class="mb-3"></Filters>
@@ -232,7 +233,7 @@
                 xl="12"
                 md="12"
                 sm="12"
-                class="mt-3 hover-left-move"
+                class="mt-2 hover-left-move"
               >
                 <PlacesCard
                   v-if="place.kind === '' || place.kind === 'poi'"
@@ -262,7 +263,7 @@
                 xl="12"
                 md="12"
                 sm="12"
-                class="mt-3 hover-left-move"
+                class="mt-2 hover-left-move"
               >
                 <GrantsCard
                   :grant="grant"
