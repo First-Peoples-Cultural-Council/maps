@@ -5,19 +5,16 @@
       block
       variant="dark"
       size="sm"
-      class="notify-button"
-      @click="toggleNotificationModal"
-      >{{ title }}
+      class="notification-badge"
+      @click="!unsubscribe ? toggleNotificationModal() : unsub()"
+      ><span class="font-07">{{ !unsubscribe ? title : 'Unsubscribe' }}</span>
+      <img
+        class="card-icon"
+        src="@/assets/images/heart_liked.svg"
+        alt="Learn"
+      />
     </b-button>
-    <b-button
-      v-else
-      class="notify-button"
-      block
-      variant="dark"
-      size="sm"
-      @click="unsub"
-      >Unsubscribe
-    </b-button>
+
     <b-modal v-model="modalShow" hide-header @ok="handleNotification">
       <label for="notify-name" class="font-weight-bold font-08 color-dark-gray"
         >Enter a name for this notification</label
@@ -98,7 +95,6 @@ export default {
           'user/removeNotification',
           data
         )
-        console.log('Unsub Result', result)
         if (result.request && result.request.status === 204) {
           this.$store.dispatch('user/getNotifications', {
             isServer: this.isServer
@@ -147,9 +143,28 @@ export default {
 }
 </script>
 <style>
-.notify-button {
-  border-radius: 0.2em;
-  font-size: 0.8em;
-  padding: 0.2em 0.2em;
+.notification-badge {
+  line-height: 0;
+  background-color: var(--color-gray, #6f6f70);
+  display: inline-block;
+  color: white;
+  border-radius: 1em;
+  padding: 3.5px 7.5px;
+  border: 0;
+  width: auto;
+}
+.notification-badge span {
+  text-transform: uppercase;
+  font-weight: Bold;
+  font-size: 12px;
+}
+.notification-badge span,
+.notification-badge img {
+  display: inline-block;
+  vertical-align: middle;
+}
+.notification-icon {
+  width: 10px;
+  height: 10px;
 }
 </style>
