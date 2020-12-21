@@ -19,6 +19,7 @@
       <div v-if="audioFile" @click.prevent.stop="handlePronounce">
         <CardBadge content="Pronounce"></CardBadge>
       </div>
+      <slot name="notification"></slot>
       <div v-if="population" class="d-inline-block">
         <span class="d-inline-block font-weight-bold font-08">Population</span
         ><span class="ml-1 font-08">{{ population }}</span>
