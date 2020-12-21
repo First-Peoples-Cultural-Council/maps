@@ -304,11 +304,6 @@ export default {
 }
 
 @media screen and (max-width: 992px) {
-  .sb-new-alt-one:not(:root:root) {
-    height: 110vh !important;
-    overflow-y: auto;
-  }
-
   .splash-main-container:not(:root:root) {
     overflow-y: auto !important;
   }

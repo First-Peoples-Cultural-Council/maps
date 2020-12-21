@@ -1085,6 +1085,7 @@ export default {
       )
       const grantDetails = renderGrantDetails(grantData, color)
       this.$store.commit('grants/setCurrentGrant', grant)
+      this.$store.commit('sidebar/setMobileContent', false)
 
       const mapboxgl = require('mapbox-gl')
 
@@ -1498,22 +1499,24 @@ export default {
         'fn-places'
       ]
 
-      if (name === 'index-grants' || name === 'index-grants-grants') {
-        grantsLayer.forEach(layer => {
-          this.map.setLayoutProperty(layer, 'visibility', 'visible')
-        })
+      if (this.map) {
+        if (name === 'index-grants' || name === 'index-grants-grants') {
+          grantsLayer.forEach(layer => {
+            this.map.setLayoutProperty(layer, 'visibility', 'visible')
+          })
 
-        layersToToggle.forEach(layer => {
-          this.map.setLayoutProperty(layer, 'visibility', 'none')
-        })
-      } else {
-        grantsLayer.forEach(layer => {
-          this.map.setLayoutProperty(layer, 'visibility', 'none')
-        })
+          layersToToggle.forEach(layer => {
+            this.map.setLayoutProperty(layer, 'visibility', 'none')
+          })
+        } else {
+          grantsLayer.forEach(layer => {
+            this.map.setLayoutProperty(layer, 'visibility', 'none')
+          })
 
-        layersToToggle.forEach(layer => {
-          this.map.setLayoutProperty(layer, 'visibility', 'visible')
-        })
+          layersToToggle.forEach(layer => {
+            this.map.setLayoutProperty(layer, 'visibility', 'visible')
+          })
+        }
       }
     },
 

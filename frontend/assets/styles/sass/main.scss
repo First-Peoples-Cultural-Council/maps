@@ -44,8 +44,9 @@
   height: 40px;
   border-radius: 50%;
   background: #fff;
-  left: 50%;
+  left: 47.5%;
   bottom: 75px;
+  transform: translate(-50%, -50%);
   z-index: 9999999999;
   border: 2.5px solid #b57936;
   animation: hover 2.5s infinite;
