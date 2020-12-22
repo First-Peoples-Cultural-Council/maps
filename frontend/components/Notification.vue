@@ -145,12 +145,10 @@ export default {
 <style>
 .notification-badge {
   line-height: 0;
-  background-color: var(--color-gray, #6f6f70);
   display: inline-block;
   color: white;
   border-radius: 1em;
   padding: 3.5px 7.5px;
-  border: 0;
   width: auto;
 }
 .notification-badge span {
