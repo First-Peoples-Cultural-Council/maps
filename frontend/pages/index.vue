@@ -1194,7 +1194,7 @@ export default {
         clusterMaxZoom: 20,
         clusterRadius: 40,
         clusterProperties: {
-          // keep separate counts for each magnitude category in a cluster
+          // Keep count of how many of each kind there are in each cluster
           artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
           organization: [
             '+',
