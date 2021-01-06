@@ -152,7 +152,7 @@ const addNationsLayers = map => {
   })
 }
 
-const addArtsLayers = map => {
+const addArtsLayers = (map, context) => {
   map.addLayer(
     {
       id: 'fn-arts',
@@ -224,6 +224,43 @@ const addArtsLayers = map => {
     paint: {
       'text-color': '#000000'
     }
+  })
+
+  map.on('click', 'fn-arts-clusters', function(e) {
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: ['fn-arts-clusters']
+    })
+    const clusterId = features[0].properties.cluster_id
+    const pointCount = features[0].properties.point_count
+    map
+      .getSource('arts1')
+      .getClusterExpansionZoom(clusterId, function(err, zoom) {
+        if (err) return
+
+        if (zoom > 18) {
+          map
+            .getSource('arts1')
+            .getClusterLeaves(clusterId, pointCount, 0, function(
+              err,
+              aFeatures
+            ) {
+              if (err) return
+
+              const placenames = aFeatures
+              const coordinates = features[0].geometry.coordinates
+              context.$root.$emit(
+                'showArtsClusterModal',
+                placenames,
+                coordinates
+              )
+            })
+        } else {
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom
+          })
+        }
+      })
   })
 
   const mapboxgl = require('mapbox-gl')
@@ -557,12 +594,11 @@ const getArtsMarker = function(features) {
 
 export default {
   layers: (map, context) => {
-    addNationsLayers(map)
+    addPlacesLayers(map)
+    addLangLayers(map)
     addNationsLayers(map)
     addGrantsLayers(map, context)
-    addLangLayers(map)
-    addPlacesLayers(map)
-    addArtsLayers(map)
+    addArtsLayers(map, context)
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
