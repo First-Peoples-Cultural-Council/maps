@@ -271,6 +271,7 @@ import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
+import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
 
 import {
   getApiUrl,
@@ -281,6 +282,7 @@ import {
 } from '@/plugins/utils.js'
 
 const GrantsClusterModalClass = Vue.extend(GrantsClusterModal)
+const ArtsClusterModalClass = Vue.extend(ArtsClusterModal)
 
 const grantsLayer = [
   'fn-grants',
@@ -288,18 +290,6 @@ const grantsLayer = [
   'fn-grants-cluster-count',
   'fn-grants-unclustered-points'
 ]
-
-const renderArtDetail = props => {
-  return `<div class='map-popup'>
-            <hr>
-            <p>
-                <a href="/art/${encodeFPCC(props.name)}" class='art-popup'>${
-    props.name
-  }</a> |
-                <span class='art-popup-type'>${props.kind}</span>
-            </p>
-        </div>`
-}
 
 const renderGrantDetails = (props, color) => {
   const recipient = props.properties.recipient
@@ -918,6 +908,11 @@ export default {
       this.$store.commit('features/setPopup', null)
       this.$store.commit('features/setMarker', null)
     },
+    goToPlacename(placename) {
+      this.$router.push({
+        path: `/art/${encodeFPCC(placename.properties.name)}`
+      })
+    },
     goToLang() {
       this.$router.push({
         path: `/languages`
@@ -968,6 +963,8 @@ export default {
           }
         } else if (feature && feature.properties && feature.properties.grant) {
           if (feature.layer.id === 'fn-grants') {
+            done = true
+
             // Show Popup with Grant details
             const grant = feature
 
@@ -987,20 +984,6 @@ export default {
         // console.log('FEATURE IS', feature.geometry, feature.layer.id)
 
         if (feature.layer.id === 'fn-arts-clusters') {
-          // console.log(feature)
-          const zoom = map.getZoom()
-          if (zoom < 13) {
-            const lat = feature.geometry.coordinates[1]
-            const lng = feature.geometry.coordinates[0]
-            map.flyTo({
-              center: [lng, lat],
-              zoom: zoom + 2,
-              speed: 3,
-              curve: 1
-            })
-          } else {
-            this.showArtsClusterModal(feature, e.lngLat, map)
-          }
           done = true
         }
       })
@@ -1016,43 +999,29 @@ export default {
           }
         })
     },
+    showArtsClusterModal(placenames, coordinates) {
+      const mapboxgl = require('mapbox-gl')
 
-    showArtsClusterModal(feature, latLng, map) {
-      const clusterId = feature.properties.cluster_id
-      map
-        .getSource('arts1')
-        .getClusterLeaves(
-          clusterId,
-          feature.properties.point_count,
-          0,
-          function(err, aFeatures) {
-            if (err) {
-              console.log('Error', err)
-            }
-            const html = aFeatures.reduce(function(ach, feature) {
-              const props = feature.properties
-              return ach + renderArtDetail(props)
-            }, '')
-            const mapboxgl = require('mapbox-gl')
-            new mapboxgl.Popup({
-              className: 'artPopUp'
-            })
-              .setLngLat(latLng)
-              .setHTML(
-                `<div class='popup-inner'>
-                    <h4>Art Here:</h4>
+      const lnglat = new mapboxgl.LngLat(coordinates[0], coordinates[1])
 
-                    ${html}
-                    <!-- TODO scroll indicator -->
-                    <div class="scroll-indicator">
-                        <i class="fas fa-angle-down float"></i>
-                    </div>
+      const popup = new mapboxgl.Popup({
+        className: 'cluster-modal'
+      })
+        .setLngLat(lnglat)
+        .setHTML(`<div id="art-cluster-container"></div>`)
+        .addTo(this.map)
 
-                    </div>`
-              )
-              .addTo(map)
-          }
-        )
+      const clusterModal = new ArtsClusterModalClass({
+        propsData: {
+          placenames
+        },
+        methods: {
+          goToPlacename: this.goToPlacename
+        }
+      })
+      clusterModal.$mount('#art-cluster-container')
+      popup._update()
+      this.$store.commit('features/setPopup', popup)
     },
     showGrantsClusterModal(grants, coordinates) {
       const mapboxgl = require('mapbox-gl')
@@ -1060,7 +1029,7 @@ export default {
       const lnglat = new mapboxgl.LngLat(coordinates[0], coordinates[1])
 
       const popup = new mapboxgl.Popup({
-        className: 'grant-cluster-modal'
+        className: 'cluster-modal'
       })
         .setLngLat(lnglat)
         .setHTML(`<div id="grant-cluster-container"></div>`)
@@ -1142,6 +1111,11 @@ export default {
             this.showGrantModal(grant)
           })
         }
+      })
+
+      this.$root.$on('showArtsClusterModal', (placenames, coordinates) => {
+        if (placenames && coordinates)
+          this.showArtsClusterModal(placenames, coordinates)
       })
 
       this.$root.$on('showGrantsClusterModal', (grants, coordinates) => {
@@ -1227,20 +1201,6 @@ export default {
       map.on('idle', e => {
         this.updateHash(map)
       })
-      // Hide block for now - wait for feedback
-      // map.on('zoom', () => {
-      //   if (this.$route.name !== 'index-grants') {
-      //     if (map.getZoom() > 6) {
-      //       grantsLayer.forEach(layer => {
-      //         this.map.setLayoutProperty(layer, 'visibility', 'visible')
-      //       })
-      //     } else {
-      //       grantsLayer.forEach(layer => {
-      //         this.map.setLayoutProperty(layer, 'visibility', 'none')
-      //       })
-      //     }
-      //   }
-      // })
 
       map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
       map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
@@ -1783,7 +1743,7 @@ export default {
   }
 }
 
-.grant-cluster-modal {
+.cluster-modal {
   width: 400px !important;
   max-width: 550px !important;
   max-height: 500px;
