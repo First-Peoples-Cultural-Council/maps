@@ -1190,7 +1190,22 @@ export default {
         type: 'geojson',
         data: this.artsGeoSet,
         cluster: true,
-        clusterRadius: 50
+        maxzoom: 20,
+        clusterMaxZoom: 20,
+        clusterRadius: 40,
+        clusterProperties: {
+          // Keep count of how many of each kind there are in each cluster
+          artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
+          organization: [
+            '+',
+            ['case', ['==', ['get', 'kind'], 'organization'], 1, 0]
+          ],
+          public_art: [
+            '+',
+            ['case', ['==', ['get', 'kind'], 'public_art'], 1, 0]
+          ],
+          event: ['+', ['case', ['==', ['get', 'kind'], 'event'], 1, 0]]
+        }
       })
       map.addSource('places1', {
         type: 'geojson',
