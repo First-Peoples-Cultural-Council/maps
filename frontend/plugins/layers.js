@@ -594,11 +594,11 @@ const getArtsMarker = function(features) {
 
 export default {
   layers: (map, context) => {
-    addPlacesLayers(map)
-    addLangLayers(map)
     addNationsLayers(map)
     addGrantsLayers(map, context)
+    addLangLayers(map)
     addArtsLayers(map, context)
+    addPlacesLayers(map)
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
