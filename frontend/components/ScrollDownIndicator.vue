@@ -93,6 +93,10 @@ export default {
     })
   },
 
+  destroyed() {
+    window.removeEventListener('resize', this.checkWindowDimemsion)
+  },
+
   methods: {
     setScrollIndicatorVisibility() {
       /* Set store value for ScrollDown Indicator Visibility */
