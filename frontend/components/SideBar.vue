@@ -329,6 +329,11 @@ export default {
     z-index: 999999;
   }
 
+  .sidebar-container .arts-right-panel {
+    width: 325px;
+    height: 100vh;
+  }
+
   .sidebar-container .panel-close-btn {
     display: absolute !important;
   }
