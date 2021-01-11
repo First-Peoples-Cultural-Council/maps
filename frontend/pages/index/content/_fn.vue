@@ -305,7 +305,9 @@
       </div>
     </div>
     <ErrorScreen v-else></ErrorScreen>
-    <ScrollDownIndicator :desktop="'#sb-new-alt-one'"></ScrollDownIndicator>
+    <ScrollDownIndicator
+      :desktop-container="'#sb-new-alt-one'"
+    ></ScrollDownIndicator>
   </div>
 </template>
 
@@ -583,7 +585,7 @@ export default {
     },
     handleCollapseClick(value) {
       this.$store.commit('sidebar/setMobileContent', value)
-      this.$root.$emit('toggleHideIndicator')
+      this.$root.$emit('togglehideScrollIndicator')
     },
     handleRowClick() {
       this.showCollapse = !this.showCollapse
