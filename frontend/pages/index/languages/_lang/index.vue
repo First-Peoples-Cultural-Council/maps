@@ -324,7 +324,9 @@
     </div>
 
     <ErrorScreen v-else></ErrorScreen>
-    <ScrollDownIndicator :desktop="'#sb-new-alt-one'"></ScrollDownIndicator>
+    <ScrollDownIndicator
+      :desktop-container="'#sb-new-alt-one'"
+    ></ScrollDownIndicator>
   </div>
 </template>
 

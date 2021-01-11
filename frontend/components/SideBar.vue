@@ -80,8 +80,8 @@
       </div>
     </div>
     <ScrollDownIndicator
-      :desktop="'#sidebar-container'"
-      :mobile="'#side-inner-collapse'"
+      :desktop-container="'#sidebar-container'"
+      :mobile-container="'#side-inner-collapse'"
     ></ScrollDownIndicator>
   </div>
 </template>
