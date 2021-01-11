@@ -19,18 +19,12 @@ export default {
     }
   },
   data() {
-    return {
-      isHideScrollIndicator: false
-    }
+    return {}
   },
 
   computed: {
     showScrollIndicator() {
-      return (
-        this.isScrollDownBtnVisible &&
-        this.isMainPage &&
-        !this.isHideScrollIndicator
-      )
+      return this.isScrollDownBtnVisible && this.isMainPage
     },
     isScrollDownBtnVisible() {
       return this.$store.state.sidebar.showScrollIndicator
@@ -132,17 +126,16 @@ export default {
       /* In mobile mode, 
       check if page is on collapsed mode, 
       to hide scroll indicator */
-
       if (
         window.innerWidth > 992 ||
         this.isMobileContent ||
         this.isMobileSideBarOpen
       ) {
-        this.isHideScrollIndicator = false
-        this.setScrollIndicatorVisibility()
+        this.$store.commit('sidebar/setScrollIndicatorValue', true)
       } else {
-        this.isHideScrollIndicator = true
+        this.$store.commit('sidebar/setScrollIndicatorValue', false)
       }
+      this.setScrollIndicatorVisibility()
     },
     getSelectedContainer() {
       /* Checks dimension, decide which 
