@@ -500,7 +500,7 @@ export default {
     getMediaUrl,
     handleCollapseClick(value) {
       this.$store.commit('sidebar/setMobileContent', value)
-      this.$root.$emit('toggleHideIndicator')
+      this.$root.$emit('togglehideScrollIndicator')
     },
     handleNotificationAdded() {},
     handleMoreDetails() {

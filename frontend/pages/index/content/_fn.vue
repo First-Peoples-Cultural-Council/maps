@@ -583,7 +583,7 @@ export default {
     },
     handleCollapseClick(value) {
       this.$store.commit('sidebar/setMobileContent', value)
-      this.$root.$emit('toggleHideIndicator')
+      this.$root.$emit('togglehideScrollIndicator')
     },
     handleRowClick() {
       this.showCollapse = !this.showCollapse
