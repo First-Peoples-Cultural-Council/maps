@@ -89,7 +89,7 @@ export default {
       this.visible = !this.visible
       this.setMobileSliderState()
 
-      this.$root.$emit('toggleHideIndicator')
+      this.$root.$emit('togglehideScrollIndicator')
     },
     setMobileSliderState() {
       this.$store.commit('responsive/setMobileSideBarState', this.visible)
