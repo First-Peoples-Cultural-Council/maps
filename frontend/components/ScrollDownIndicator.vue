@@ -9,28 +9,22 @@
 <script>
 export default {
   props: {
-    desktop: {
+    desktopContainer: {
       type: String,
       default: null
     },
-    mobile: {
+    mobileContainer: {
       type: String,
       default: null
     }
   },
   data() {
-    return {
-      isHideScrollIndicator: false
-    }
+    return {}
   },
 
   computed: {
     showScrollIndicator() {
-      return (
-        this.isScrollDownBtnVisible &&
-        this.isMainPage &&
-        !this.isHideScrollIndicator
-      )
+      return this.isScrollDownBtnVisible && this.isMainPage
     },
     isScrollDownBtnVisible() {
       return this.$store.state.sidebar.showScrollIndicator
@@ -57,11 +51,10 @@ export default {
 
   mounted() {
     const innerToggleContainer = document.querySelector('#innerToggleHead')
-    const desktopContainer = document.querySelector(this.desktop)
-    const mobileContainer = document.querySelector(this.mobile)
+    const desktopContainer = document.querySelector(this.desktopContainer)
+    const mobileContainer = document.querySelector(this.mobileContainer)
 
     /* Add Scroll eventListener on Desktop container */
-
     if (desktopContainer) {
       desktopContainer.addEventListener('scroll', e => {
         if (innerToggleContainer) {
@@ -71,21 +64,16 @@ export default {
             innerToggleContainer.classList.remove('position-fixed')
           }
         }
-
         this.setScrollIndicatorVisibility()
       })
     }
 
     /* Add Scroll eventListener on Mobile container, if exist */
-
     if (mobileContainer) {
       mobileContainer.addEventListener('scroll', e => {
         this.setScrollIndicatorVisibility()
       })
     }
-
-    /* checks window width if mobile mode or desktop */
-    window.addEventListener('resize', this.checkWindowDimemsion)
 
     this.$root.$on('triggerScrollVisibilityCheck', () => {
       this.setScrollIndicatorVisibility()
@@ -97,6 +85,13 @@ export default {
         this.checkWindowDimemsion()
       }, 250)
     })
+
+    /* checks window width if mobile mode or desktop */
+    window.addEventListener('resize', this.checkWindowDimemsion)
+  },
+
+  destroyed() {
+    window.removeEventListener('resize', this.checkWindowDimemsion)
   },
 
   methods: {
@@ -105,6 +100,12 @@ export default {
       const selectedContainer = document.querySelector(
         this.getSelectedContainer()
       )
+
+      /*
+        Checks if the scroll height is 
+        the same as the parent container height.
+        If yes, then dont show the scroll indicator anymore.
+      */
       const isNotShown = selectedContainer
         ? selectedContainer.offsetHeight + selectedContainer.scrollTop >=
           selectedContainer.scrollHeight - 50
@@ -132,25 +133,26 @@ export default {
       /* In mobile mode, 
       check if page is on collapsed mode, 
       to hide scroll indicator */
-
       if (
         window.innerWidth > 992 ||
         this.isMobileContent ||
         this.isMobileSideBarOpen
       ) {
-        this.isHideScrollIndicator = false
-        this.setScrollIndicatorVisibility()
+        /* Show the scroll indicator by force */
+        this.$store.commit('sidebar/setScrollIndicatorValue', true)
       } else {
-        this.isHideScrollIndicator = true
+        /* Hide the scroll indicator by force */
+        this.$store.commit('sidebar/setScrollIndicatorValue', false)
       }
+      this.setScrollIndicatorVisibility()
     },
     getSelectedContainer() {
       /* Checks dimension, decide which 
       container to use based on window width */
-      if (window.innerWidth > 992 || this.mobile === null) {
-        return this.desktop
+      if (window.innerWidth > 992 || this.mobileContainer === null) {
+        return this.desktopContainer
       } else {
-        return this.mobile
+        return this.mobileContainer
       }
     }
   }
