@@ -1,10 +1,7 @@
 import os
 import csv
 import math
-import pgeocode
 import pandas as pd
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
 from django.core.management.base import BaseCommand
 from django.contrib.gis.geos import Point
@@ -185,72 +182,24 @@ class Client(dedruplify.DeDruplifierClient):
                 ""
             ])
 
-            nomi = pgeocode.Nominatim('ca')
-            postal_code = sheet_row["Postal Code"]
-            
-            if type(postal_code) is int:
-                nomi = pgeocode.Nominatim('us')
-            
-            location = nomi.query_postal_code(postal_code)
+            category_abbreviation = sheet_row['Grant'].split(" ")[0]
+            category = CATEGORY_NAMES.get(category_abbreviation)
 
-            # Fallback to GeoPandas if PGeocode has no result
-            if math.isnan(location.get("latitude")) or math.isnan(location.get("longitude")):
-                location = None
-                
-                city = sheet_row["City"]
-                province = sheet_row["Province"]
-
-                location_data = self.locator_geocode(city, province, postal_code)
-
-                location = {
-                    "latitude": location_data.latitude,
-                    "longitude": location_data.longitude,
-                }
-
-            if location is not None and \
-               location.get("latitude", None) and \
-               location.get("longitude", None):
-                
-                point = Point(
-                    float(location.get("longitude")),
-                    float(location.get("latitude"))
-                )
-
-                category_abbreviation = sheet_row['Grant'].split(" ")[0]
-                category = CATEGORY_NAMES.get(category_abbreviation)
-
-                Grant.objects.create(
-                    grant=sheet_row['Grant'],
-                    language=sheet_row['Language'],
-                    year=int(sheet_row["Year"]) if sheet_row["Year"] else None,
-                    recipient=sheet_row["Recipient"],
-                    community_affiliation=sheet_row["Community/Affiliation"],
-                    title=sheet_row["Title"],
-                    project_brief=sheet_row["Project Brief"],
-                    amount=sheet_row["Amount"],
-                    address=sheet_row["Address"],
-                    city=sheet_row["City"],
-                    province=sheet_row["Province"],
-                    postal_code=sheet_row["Postal Code"],
-                    category=category,
-                    point=point
-                )
-            else:
-                print("FAILED RESULT")
-
-    def locator_geocode(self, city, province, postal_code):
-        locator = Nominatim(user_agent="geocoder")
-        try:
-            address = f"{city}, {province}" if province else f"{city}, {postal_code}"
-            location = locator.geocode(address)
-            if not location:
-                return self.locator_geocode(city, province, postal_code)
-            else:
-                return location
-        except GeocoderTimedOut:
-            return self.locator_geocode(city, province, postal_code)
-        except GeocoderUnavailable:
-            return self.locator_geocode(city, province, postal_code)
+            Grant.objects.create(
+                grant=sheet_row['Grant'],
+                language=sheet_row['Language'],
+                year=int(sheet_row["Year"]) if sheet_row["Year"] else None,
+                recipient=sheet_row["Recipient"],
+                community_affiliation=sheet_row["Community/Affiliation"],
+                title=sheet_row["Title"],
+                project_brief=sheet_row["Project Brief"],
+                amount=sheet_row["Amount"],
+                address=sheet_row["Address"],
+                city=sheet_row["City"],
+                province=sheet_row["Province"],
+                postal_code=sheet_row["Postal Code"],
+                category=category
+            )
 
     def update_recipient(self, recipient, title, grant_id):
         is_new_grant = grant_id > 1190
