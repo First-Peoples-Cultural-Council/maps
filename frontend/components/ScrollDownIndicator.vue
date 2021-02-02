@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="isScrollDownBtnVisible && isMainPages && !hideIndicator"
-    class="scroll-indicator-container"
-  >
+  <div v-if="showScrollIndicator" class="scroll-indicator-container">
     <button class="scroll-down-btn" @click="handleScrollDown">
       <img src="@/assets/images/arrow_scrolldown_icon.png" />
     </button>
@@ -12,26 +9,27 @@
 <script>
 export default {
   props: {
-    desktop: {
+    desktopContainer: {
       type: String,
       default: null
     },
-    mobile: {
+    mobileContainer: {
       type: String,
       default: null
     }
   },
   data() {
-    return {
-      hideIndicator: false
-    }
+    return {}
   },
 
   computed: {
+    showScrollIndicator() {
+      return this.isScrollDownBtnVisible && this.isMainPage
+    },
     isScrollDownBtnVisible() {
       return this.$store.state.sidebar.showScrollIndicator
     },
-    isMainPages() {
+    isMainPage() {
       const pathName = this.$route.name
       return (
         pathName === 'index-art' ||
@@ -43,7 +41,7 @@ export default {
         pathName === 'index-content-fn'
       )
     },
-    mobileContent() {
+    isMobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
     isMobileSideBarOpen() {
@@ -52,55 +50,67 @@ export default {
   },
 
   mounted() {
-    const innerToggle = document.querySelector('#innerToggleHead')
-    const getDesktopContainer = document.querySelector(this.desktop)
-    const getMobileContainer = document.querySelector(this.mobile)
+    const innerToggleContainer = document.querySelector('#innerToggleHead')
+    const desktopContainer = document.querySelector(this.desktopContainer)
+    const mobileContainer = document.querySelector(this.mobileContainer)
 
-    if (getDesktopContainer) {
-      getDesktopContainer.addEventListener('scroll', e => {
-        if (innerToggle) {
+    /* Add Scroll eventListener on Desktop container */
+    if (desktopContainer) {
+      desktopContainer.addEventListener('scroll', e => {
+        if (innerToggleContainer) {
           if (this.scrollTop > '25') {
-            innerToggle.classList.add('position-fixed')
+            innerToggleContainer.classList.add('position-fixed')
           } else {
-            innerToggle.classList.remove('position-fixed')
+            innerToggleContainer.classList.remove('position-fixed')
           }
         }
-
-        this.isScrollIndicatorVisible()
+        this.setScrollIndicatorVisibility()
       })
     }
 
-    if (getMobileContainer) {
-      getMobileContainer.addEventListener('scroll', e => {
-        this.isScrollIndicatorVisible()
+    /* Add Scroll eventListener on Mobile container, if exist */
+    if (mobileContainer) {
+      mobileContainer.addEventListener('scroll', e => {
+        this.setScrollIndicatorVisibility()
       })
     }
-
-    // checks window width if mobile mode or desktop
-    window.addEventListener('resize', this.checkWindowDimemsion)
 
     this.$root.$on('triggerScrollVisibilityCheck', () => {
-      this.isScrollIndicatorVisible()
+      this.setScrollIndicatorVisibility()
     })
 
-    this.$root.$on('toggleHideIndicator', () => {
+    /* Emulate the clicking of scroll down button */
+    this.$root.$on('togglehideScrollIndicator', () => {
       setTimeout(() => {
         this.checkWindowDimemsion()
       }, 250)
     })
+
+    /* checks window width if mobile mode or desktop */
+    window.addEventListener('resize', this.checkWindowDimemsion)
+  },
+
+  destroyed() {
+    window.removeEventListener('resize', this.checkWindowDimemsion)
   },
 
   methods: {
-    isScrollIndicatorVisible() {
+    setScrollIndicatorVisibility() {
+      /* Set store value for ScrollDown Indicator Visibility */
       const selectedContainer = document.querySelector(
         this.getSelectedContainer()
       )
+
+      /*
+        Checks if the scroll height is 
+        the same as the parent container height.
+        If yes, then dont show the scroll indicator anymore.
+      */
       const isNotShown = selectedContainer
         ? selectedContainer.offsetHeight + selectedContainer.scrollTop >=
           selectedContainer.scrollHeight - 50
         : true
 
-      // set store value
       this.$store.commit('sidebar/setScrollIndicatorValue', !isNotShown)
     },
     handleScrollDown() {
@@ -114,26 +124,35 @@ export default {
         behavior: 'smooth'
       })
 
-      // checks again after scrolling down
-      this.isScrollIndicatorVisible()
+      /* checks again after scrolling 
+      down if bottom of container */
+
+      this.setScrollIndicatorVisibility()
     },
     checkWindowDimemsion() {
+      /* In mobile mode, 
+      check if page is on collapsed mode, 
+      to hide scroll indicator */
       if (
         window.innerWidth > 992 ||
-        this.mobileContent ||
+        this.isMobileContent ||
         this.isMobileSideBarOpen
       ) {
-        this.hideIndicator = false
-        this.isScrollIndicatorVisible()
+        /* Show the scroll indicator by force */
+        this.$store.commit('sidebar/setScrollIndicatorValue', true)
       } else {
-        this.hideIndicator = true
+        /* Hide the scroll indicator by force */
+        this.$store.commit('sidebar/setScrollIndicatorValue', false)
       }
+      this.setScrollIndicatorVisibility()
     },
     getSelectedContainer() {
-      if (window.innerWidth > 992 || this.mobile === null) {
-        return this.desktop
+      /* Checks dimension, decide which 
+      container to use based on window width */
+      if (window.innerWidth > 992 || this.mobileContainer === null) {
+        return this.desktopContainer
       } else {
-        return this.mobile
+        return this.mobileContainer
       }
     }
   }

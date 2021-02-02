@@ -44,8 +44,9 @@
   height: 40px;
   border-radius: 50%;
   background: #fff;
-  left: 50%;
+  left: 47.5%;
   bottom: 75px;
+  transform: translate(-50%, -50%);
   z-index: 9999999999;
   border: 2.5px solid #b57936;
   animation: hover 2.5s infinite;
@@ -56,22 +57,28 @@
   position: fixed;
   top: 0;
   left: 425px;
-  width: 425px;
-  height: 100vh;
   overflow-x: hidden;
   z-index: 999999;
+}
+
+.arts-right-panel {
+  width: 425px;
+  height: 100vh;
 }
 
 @media (max-width: 992px) {
   .sidebar-side-panel {
     display: block !important;
     position: initial;
-    width: 100%;
-    height: 100vh;
     left: 0;
     overflow-x: hidden;
     overflow-y: hidden;
     z-index: 999999;
+  }
+
+  .arts-right-panel {
+    width: 100%;
+    height: 100vh;
   }
 }
 
@@ -80,8 +87,12 @@
   .arts-container .sidebar-container {
     width: 350px;
   }
-  .arts-container .sidebar-side-panel {
+  .arts-container .arts-right-panel {
     width: 350px;
+    left: 350px;
+  }
+
+  .sidebar-side-panel {
     left: 350px;
   }
 

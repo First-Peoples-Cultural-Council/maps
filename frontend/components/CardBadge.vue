@@ -1,27 +1,27 @@
 <template>
-  <div :class="`card-badge ${isPronouncation}`">
+  <div class="card-badge" :style="'background-color:' + color">
     <div v-if="type === 'pronounce'">
-      <span class="font-07">{{ content }}</span>
+      <span>{{ content }}</span>
       <img
         class="card-icon"
         src="@/assets/images/pronounce_icon.svg"
         alt="Pronounce"
       />
     </div>
-    <div v-if="type === 'learn'" @click="handleLearn">
-      <span class="font-07">{{ content }}</span>
+    <div v-else-if="type === 'learn'" @click="handleLearn">
+      <span>{{ content }}</span>
       <img class="card-icon" src="@/assets/images/share_icon.svg" alt="Learn" />
     </div>
-    <div v-if="type === 'edit'" id="card-edit">
-      <span class="font-07">{{ content }}</span>
+    <div v-else-if="type === 'edit'" id="card-edit">
+      <span>{{ content }}</span>
       <img class="card-icon" src="@/assets/images/edit_small.svg" alt="Learn" />
       <b-tooltip target="card-edit">{{
         `You are the owner of this ${placeholder}. You can edit the info in this
         ${placeholder}.`
       }}</b-tooltip>
     </div>
-    <div v-if="type === 'delete'" id="card-delete">
-      <span class="font-07">{{ content }}</span>
+    <div v-else-if="type === 'delete'" id="card-delete">
+      <span>{{ content }}</span>
       <img
         class="card-icon"
         src="@/assets/images/delete_small_icon.svg"
@@ -32,8 +32,8 @@
         ${placeholder}.`
       }}</b-tooltip>
     </div>
-    <div v-if="type === 'owner'" id="card-owned">
-      <span class="font-07">{{ content }}</span>
+    <div v-else-if="type === 'owner'" id="card-owned">
+      <span>{{ content }}</span>
       <img
         class="card-icon"
         src="@/assets/images/heart_liked.svg"
@@ -64,11 +64,10 @@ export default {
     placeholder: {
       type: String,
       default: ''
-    }
-  },
-  computed: {
-    isPronouncation() {
-      return this.type === 'pronounce' ? 'pronouce-badge' : ''
+    },
+    color: {
+      type: String,
+      default: '#b47a2b'
     }
   },
   methods: {
@@ -86,21 +85,18 @@ export default {
   display: inline-block;
   color: white;
   border-radius: 1em;
-  padding: 0.2em 0.45em;
+  padding: 3.5px 7.5px;
 }
 .card-badge span {
   text-transform: uppercase;
   font-weight: Bold;
+  font-size: 12px;
 }
 .card-badge span,
 .card-badge img {
   display: inline-block;
   vertical-align: middle;
 }
-.pronouce-badge {
-  background-color: #b47a2b;
-}
-
 .card-icon {
   width: 10px;
   height: 10px;

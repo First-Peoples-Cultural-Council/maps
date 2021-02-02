@@ -36,7 +36,10 @@
         type="learn"
         content="Learn Language"
         :link="link"
+        :color="'#6f6f70'"
       ></CardBadge>
+
+      <slot name="notification"></slot>
     </div>
 
     <div

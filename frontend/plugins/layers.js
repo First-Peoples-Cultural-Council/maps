@@ -152,6 +152,162 @@ const addNationsLayers = map => {
   })
 }
 
+const addArtsLayers = (map, context) => {
+  map.addLayer(
+    {
+      id: 'fn-arts',
+      minzoom: 3,
+      type: 'symbol',
+      source: 'arts1',
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        visibility: 'visible',
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': '{kind}_icon',
+        'icon-size': 0.15,
+        'text-field': '{name}',
+        'text-font': ['BC Sans Regular'],
+        'text-size': 12,
+        'text-offset': [0, 1],
+        'text-anchor': 'top'
+      },
+      paint: {
+        'icon-opacity': 0.9
+      }
+    },
+    'fn-nations'
+  )
+
+  map.addLayer({
+    id: 'fn-arts-clusters',
+    type: 'circle',
+    source: 'arts1',
+    layout: {
+      visibility: 'visible'
+    },
+    minzoom: 3,
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': '#ffffff',
+      'circle-opacity': 0.8,
+      'circle-stroke-width': 5,
+      'circle-stroke-color': '#b45339',
+      'circle-radius': [
+        'step',
+        ['get', 'point_count'],
+        12,
+        10,
+        16,
+        100,
+        20,
+        200,
+        24,
+        500,
+        32
+      ]
+    }
+  })
+
+  map.addLayer({
+    id: 'fn-arts-clusters-text',
+    type: 'symbol',
+    source: 'arts1',
+    minzoom: 3,
+    filter: ['has', 'point_count'],
+    layout: {
+      visibility: 'visible',
+      'text-field': '{point_count_abbreviated}',
+      'text-font': ['BC Sans Regular'],
+      'text-size': 11
+    },
+    paint: {
+      'text-color': '#000000'
+    }
+  })
+
+  map.on('click', 'fn-arts-clusters', function(e) {
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: ['fn-arts-clusters']
+    })
+    const clusterId = features[0].properties.cluster_id
+    const pointCount = features[0].properties.point_count
+    map
+      .getSource('arts1')
+      .getClusterExpansionZoom(clusterId, function(err, zoom) {
+        if (err) return
+
+        if (zoom > 18) {
+          map
+            .getSource('arts1')
+            .getClusterLeaves(clusterId, pointCount, 0, function(
+              err,
+              aFeatures
+            ) {
+              if (err) return
+
+              const placenames = aFeatures
+              const coordinates = features[0].geometry.coordinates
+              context.$root.$emit(
+                'showArtsClusterModal',
+                placenames,
+                coordinates
+              )
+            })
+        } else {
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom
+          })
+        }
+      })
+  })
+
+  const mapboxgl = require('mapbox-gl')
+
+  // objects for caching and keeping track of HTML marker objects (for performance)
+  const markers = {}
+  let markersOnScreen = {}
+
+  function updateMarkers() {
+    const newMarkers = {}
+    const features = map.querySourceFeatures('arts1')
+
+    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+    // and add it to the map if it's not there already
+    for (let i = 0; i < features.length; i++) {
+      const coords = features[i].geometry.coordinates
+      const props = features[i].properties
+      if (!props.cluster) continue
+      const id = props.cluster_id
+
+      let marker = markers[id]
+      if (!marker) {
+        const el = getArtsMarker(props)
+        marker = markers[id] = new mapboxgl.Marker({
+          element: el
+        }).setLngLat(coords)
+      }
+      newMarkers[id] = marker
+
+      if (!markersOnScreen[id]) marker.addTo(map)
+    }
+    // for every marker we've added previously, remove those that are no longer visible
+    for (const id in markersOnScreen) {
+      if (!newMarkers[id]) markersOnScreen[id].remove()
+    }
+    markersOnScreen = newMarkers
+  }
+
+  // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
+  map.on('data', function(e) {
+    if (e.sourceId !== 'arts1') return
+    map.on('move', updateMarkers)
+    map.on('moveend', updateMarkers)
+    updateMarkers()
+  })
+}
+
 const addGrantsLayers = (map, context) => {
   let visibility = 'none'
 
@@ -280,302 +436,169 @@ const addGrantsLayers = (map, context) => {
   })
 }
 
-const getArtsMarker = function(map, feature, el) {
-  // const layer = map.getLayer('fn-arts-clusters')
-  if (!feature.properties.cluster_id) return
-  map
-    .getSource('arts1')
-    .getClusterLeaves(
-      feature.properties.cluster_id,
-      feature.properties.point_count,
-      0,
-      function(err, aFeatures) {
-        if (err) {
-          console.warn('Error', err)
-        }
-        const buckets = {}
-        for (let i = 0; i < aFeatures.length; i++) {
-          buckets[aFeatures[i].properties.kind] = 1
-        }
+const addPlacesLayers = map => {
+  map.addLayer(
+    {
+      id: 'fn-places',
+      type: 'symbol',
+      source: 'places1',
+      minzoom: 5,
+      layout: {
+        visibility: 'visible',
+        'text-optional': true,
+        'symbol-spacing': 50,
+        'icon-image': 'point_of_interest_icon',
+        'icon-size': 0.15,
+        'text-field': '{name}',
+        'text-font': ['BC Sans Regular'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
+      },
+      // [cvo] View permissions on frontend is not secure should be done in the API instead.
+      // filter: ['!=', ['get', 'status'], 'FL']
+      filter: ['!=', '$type', 'Polygon']
+    },
+    'fn-nations'
+  )
 
-        let h = '<div style="position:relative">'
-        let key
-        let arc = -1.5
-        // make an arc of icons on the outside of the parent.
-        for (key in buckets) {
-          const posStyle =
-            'position: absolute; transform: translate(' +
-            (Math.sin(arc) * 13 - 9) +
-            'px, ' +
-            (-Math.cos(arc) * 11 - 9) +
-            'px);'
-          arc += 0.9
-          h +=
-            '<img src="/' +
-            key +
-            '_icon.svg" style="width:15px;height:15px;background:white;border-radius:50%;border:1px solid white;' +
-            posStyle +
-            '">'
-        }
-        el.innerHTML = h + '</div>'
-      }
-    )
-}
+  map.addLayer(
+    {
+      id: 'fn-places-lines',
+      type: 'line',
+      source: 'places1',
+      minzoom: 5,
+      layout: {
+        visibility: 'visible',
+        'line-cap': 'round'
+      },
+      paint: {
+        'line-color': '#987',
+        'line-width': 1,
+        'line-dasharray': [0, 2]
+      },
+      filter: ['==', '$type', 'LineString']
+    },
+    'fn-nations'
+  )
 
-const addArtsClusters = map => {
-  const mapboxgl = require('mapbox-gl')
-
-  // objects for caching and keeping track of HTML marker objects (for performance)
-  const markers = {}
-  let markersOnScreen = {}
-
-  function updateMarkers() {
-    const newMarkers = {}
-    const features = map.querySourceFeatures('arts1')
-
-    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
-    // and add it to the map if it's not there already
-    for (let i = 0; i < features.length; i++) {
-      const coords = features[i].geometry.coordinates
-      const props = features[i].properties
-      if (!props.cluster) continue
-      const id = props.cluster_id
-
-      let marker = markers[id]
-      if (!marker) {
-        const el = document.createElement('div')
-        getArtsMarker(map, features[i], el)
-        marker = markers[id] = new mapboxgl.Marker({
-          element: el
-        }).setLngLat(coords)
-      }
-      newMarkers[id] = marker
-
-      if (!markersOnScreen[id]) marker.addTo(map)
-    }
-    // for every marker we've added previously, remove those that are no longer visible
-    for (const id in markersOnScreen) {
-      if (!newMarkers[id]) markersOnScreen[id].remove()
-    }
-    markersOnScreen = newMarkers
-  }
-
-  // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
-  map.on('data', function(e) {
-    if (e.sourceId !== 'arts1') return
-    updateMarkers()
-  })
-
-  map.on('move', updateMarkers)
-  map.on('moveend', updateMarkers)
-}
-
-export default {
-  layers: (map, context) => {
-    map.addLayer({
-      id: 'fn-arts-clusters',
-      type: 'circle',
-      source: 'arts1',
+  map.addLayer(
+    {
+      id: 'fn-places-poly',
+      type: 'fill',
+      source: 'places1',
+      minzoom: 5,
       layout: {
         visibility: 'visible'
       },
-      minzoom: 3,
-      filter: ['has', 'point_count'],
       paint: {
-        'circle-color': '#000000',
-        // 'circle-radius': ['step', ['get', 'point_count'], 15, 30, 20, 75, 25],
-        'circle-radius': 10,
-        'circle-opacity': 0.6,
-        'circle-stroke-color': '#ffffff',
-        'circle-stroke-width': 2,
-        'circle-stroke-opacity': 0.7
-      }
-    })
-    addNationsLayers(map)
-    addGrantsLayers(map, context)
-    addLangLayers(map)
-    map.addLayer({
-      id: 'fn-arts-clusters-text',
+        'fill-color': '#987',
+        'fill-opacity': 0.2
+      },
+      filter: ['==', '$type', 'Polygon']
+    },
+    'fn-nations'
+  )
+
+  map.addLayer(
+    {
+      id: 'fn-places-geom-labels',
       type: 'symbol',
-      source: 'arts1',
-      minzoom: 3,
-      filter: ['has', 'point_count'],
+      minzoom: 5,
+      source: 'places1',
       layout: {
         visibility: 'visible',
-        'text-field': '{point_count_abbreviated}',
-        'text-font': ['BC Sans Regular'],
-        'text-size': 11,
-        'text-offset': [0, 0.2]
-      },
-      paint: {
-        'text-color': '#ffffff'
-      }
-    })
-
-    map.addLayer(
-      {
-        id: 'fn-places',
-        type: 'symbol',
-        source: 'places1',
-        minzoom: 5,
-        layout: {
-          visibility: 'visible',
-          'text-optional': true,
-          'symbol-spacing': 50,
-          'icon-image': 'point_of_interest_icon',
-          'icon-size': 0.15,
-          'text-field': '{name}',
-          'text-font': ['BC Sans Regular'],
-          'text-size': 12,
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top'
-        },
-        // [cvo] View permissions on frontend is not secure should be done in the API instead.
-        // filter: ['!=', ['get', 'status'], 'FL']
-        filter: ['!=', '$type', 'Polygon']
-      },
-      'fn-nations'
-    )
-
-    map.addLayer(
-      {
-        id: 'fn-places-lines',
-        type: 'line',
-        source: 'places1',
-        minzoom: 5,
-        layout: {
-          visibility: 'visible',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#987',
-          'line-width': 1,
-          'line-dasharray': [0, 2]
-        },
-        filter: ['==', '$type', 'LineString']
-      },
-      'fn-nations'
-    )
-
-    map.addLayer(
-      {
-        id: 'fn-places-poly',
-        type: 'fill',
-        source: 'places1',
-        minzoom: 5,
-        layout: {
-          visibility: 'visible'
-        },
-        paint: {
-          'fill-color': '#987',
-          'fill-opacity': 0.2
-        },
-        filter: ['==', '$type', 'Polygon']
-      },
-      'fn-nations'
-    )
-
-    map.addLayer(
-      {
-        id: 'fn-places-geom-labels',
-        type: 'symbol',
-        minzoom: 5,
-        source: 'places1',
-        layout: {
-          visibility: 'visible',
-          'text-field': ['to-string', ['get', 'name']],
-          'text-size': 14,
-          'text-font': ['BC Sans Regular']
-        },
-        paint: {
-          'text-halo-width': 2,
-          'text-halo-blur': 2,
-          'text-halo-color': '#ba9',
-          'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
-        },
-        filter: [
-          'any',
-          ['==', '$type', 'LineString'],
-          ['==', '$type', 'Polygon']
-        ]
-      },
-      'fn-nations'
-    )
-
-    map.addLayer(
-      {
-        minzoom: 6,
-        id: 'fn-arts',
-        type: 'symbol',
-        source: 'arts1',
-        filter: ['!', ['has', 'point_count']],
-        layout: {
-          visibility: 'visible',
-          'text-optional': true,
-          'symbol-spacing': 50,
-          'icon-image': '{kind}_icon',
-          'icon-size': 0.15,
-          'text-field': '{name}',
-          'text-font': ['BC Sans Regular'],
-          'text-size': 12,
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top'
-        },
-        paint: {
-          'icon-opacity': 0.75
-        }
-      },
-      'fn-nations'
-    )
-
-    // Loading this from MapBox Studio seems to fix a font rendering issue.
-    // [cvo] I've otherwise not been able to determine the root cause (when loading it locally)
-    /*
-    map.addLayer({
-      id: 'fn-lang-labels',
-      type: 'symbol',
-      source: 'langs1',
-      filter: ['get', 'sleeping'],
-      layout: {
         'text-field': ['to-string', ['get', 'name']],
-        'text-size': 16,
+        'text-size': 14,
         'text-font': ['BC Sans Regular']
       },
       paint: {
         'text-halo-width': 2,
         'text-halo-blur': 2,
-        'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25],
-        'text-halo-color': [
-          'let',
-          'rgba',
-          ['to-rgba', ['to-color', ['get', 'color']]],
+        'text-halo-color': '#ba9',
+        'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
+      },
+      filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]
+    },
+    'fn-nations'
+  )
+}
 
-          [
-            'let',
-            'r',
-            ['number', ['*', 1, ['at', 0, ['const', 'rgba']]]],
-            'g',
-            ['number', ['*', 1, ['at', 1, ['const', 'rgba']]]],
-            'b',
-            ['number', ['*', 1, ['at', 2, ['const', 'rgba']]]],
-            'a',
-            ['number', ['at', 3, ['const', 'rgba']]],
+const getArtsMarker = function(features) {
+  // Initialize fixed values
+  const validKeys = ['artist', 'public_art', 'organization', 'event']
+  const pointCount = features.point_count
+  const iconSize = 15
 
-            [
-              'let',
-              'r2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'r']]],
-              'g2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'g']]],
-              'b2',
-              ['+', ['*', 0.7, 255], ['*', 0.3, ['const', 'b']]],
-              ['rgba', ['const', 'r2'], ['const', 'g2'], ['const', 'b2'], 1]
-            ]
-          ]
-        ]
-      }
-    })
-    */
+  // For horizontal offset of icons
+  const divisor = 3 // The lower the value, the closer the icons stick
+  const overlap = iconSize / divisor
+  let baseHorizontalOffset = -1 * (iconSize * 2 - overlap * 1.5)
+
+  // For vertical offset of icons
+  let circleRadius = null
+  let verticalOffsetDecrement = iconSize / 2
+  if (pointCount <= 10) {
+    circleRadius = 10
+  } else if (pointCount <= 100) {
+    circleRadius = 16
+  } else if (pointCount <= 200) {
+    circleRadius = 20
+  } else if (pointCount <= 500) {
+    circleRadius = 24
+    verticalOffsetDecrement = iconSize / 3
+  } else {
+    circleRadius = 32
+    verticalOffsetDecrement = iconSize / 4
+  }
+  const baseVerticalOffset = -1 * (4 + iconSize + (circleRadius - iconSize / 2))
+
+  // Icon creation and styling
+  let keyIndex = 0
+  const el = document.createElement('div')
+  let h = '<div style="position:relative">'
+  for (const key in features) {
+    // Guards to check whether or not this
+    // key is a valid value for the icons
+    if (!validKeys.includes(key)) continue
+    if (features[key] === 0) continue
+
+    // Calculate the offset for this particular key
+    const horizontalOffset = baseHorizontalOffset - keyIndex * overlap
+    const verticalOffset =
+      keyIndex === 0 || keyIndex === 3
+        ? baseVerticalOffset + verticalOffsetDecrement
+        : baseVerticalOffset
+
+    const posStyle =
+      'position: absolute; transform: translate(' +
+      horizontalOffset +
+      'px, ' +
+      verticalOffset +
+      'px);'
+    h +=
+      '<img src="/' +
+      key +
+      '_icon.svg" style="width:15px;height:15px;background:white;border-radius:50%;border:1px solid white;' +
+      posStyle +
+      '">'
+    el.innerHTML = h + '</div>'
+
+    // Update looping values
+    baseHorizontalOffset += iconSize
+    keyIndex += 1
+  }
+
+  return el
+}
+
+export default {
+  layers: (map, context) => {
+    addPlacesLayers(map)
+    addLangLayers(map)
+    addNationsLayers(map)
+    addGrantsLayers(map, context)
+    addArtsLayers(map, context)
 
     map.on('mouseenter', 'fn-nations', e => {
       map.getCanvas().style.cursor = 'pointer'
@@ -607,17 +630,11 @@ export default {
     map.on('mouseleave', 'fn-grants-clusters', e => {
       map.getCanvas().style.cursor = 'default'
     })
-
-    addArtsClusters(map)
-    // addGrantsClusters(map)
-
-    // Layer feature precedence controls, in correct order for your reference:
-    //       'text-optional': true,
-    //       'icon-optional': true,
-    //       'text-ignore-placemnt': true,
-    //       'icon-ignore-placemnt': true,
-    //       'symbol-spacing': 1,
-    //       'text-allow-overlap': true,
-    //       'icon-allow-overlap': true,
+    map.on('mouseenter', 'fn-arts-clusters', e => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'fn-arts-clusters', e => {
+      map.getCanvas().style.cursor = 'default'
+    })
   }
 }

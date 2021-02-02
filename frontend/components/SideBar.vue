@@ -80,8 +80,8 @@
       </div>
     </div>
     <ScrollDownIndicator
-      :desktop="'#sidebar-container'"
-      :mobile="'#side-inner-collapse'"
+      :desktop-container="'#sidebar-container'"
+      :mobile-container="'#side-inner-collapse'"
     ></ScrollDownIndicator>
   </div>
 </template>
@@ -327,6 +327,11 @@ export default {
     height: 100vh;
     overflow-x: hidden;
     z-index: 999999;
+  }
+
+  .sidebar-container .arts-right-panel {
+    width: 325px;
+    height: 100vh;
   }
 
   .sidebar-container .panel-close-btn {
