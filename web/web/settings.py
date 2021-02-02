@@ -35,9 +35,7 @@ MEDIA_URL = "/media/"
 APPEND_SLASH = True
 
 ADMINS = (
-    ("Denis", "denis@countable.ca"),
     ("Clark", "clark@countable.ca"),
-    ("Aaron", "aaron@countable.ca"),
     ("Daniel", "daniel@fpcc.ca"),
     ("Justin", "justin@countable.ca"),
 )

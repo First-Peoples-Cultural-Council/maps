@@ -24,7 +24,7 @@ def check_invalid_values(search_value, model):
     if model == 'community':
         invalid_values = ['cree', 'shuswap', 'dene', 'pacheedaht', 'first nations', 'first nation']
     elif model == 'recipient':
-        invalid_values = ['first nations']
+        invalid_values = ['s', 'first nations']
 
     # invalid if search value invalid or if search value length 1 or less  
     return search_value in invalid_values or len(search_value) <= 1
@@ -63,6 +63,7 @@ def get_values(model):
         all_values = recipients
 
     for grant in Grant.objects.order_by('id'):
+        print("Saving language, community and recipient for {}".format(grant.id))
         search_value = None
 
         if model == 'language':

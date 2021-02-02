@@ -174,7 +174,7 @@ class Migration(migrations.Migration):
             name='grant_category',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='grants.GrantCategory'),
         ),
-        migrations.RunPython(migrate_grant_categories),
+        # migrations.RunPython(migrate_grant_categories),
         migrations.RemoveField(
             model_name='grant',
             name='category',
