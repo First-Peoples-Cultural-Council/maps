@@ -146,19 +146,6 @@ class LNADataSerializer(serializers.ModelSerializer):
             "pop_total_value",
         )
 
-
-class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CommunityLanguageStats
-        fields = (
-            "language",
-            "community",
-            "fluent_speakers",
-            "semi_speakers",
-            "active_learners",
-        )
-
-
 class CommunityLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLink
@@ -170,6 +157,29 @@ class CommunitySerializer(serializers.ModelSerializer):
         model = Community
         fields = ("name", "id", "point", "audio")
 
+class LanguageLNASerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ("name", "id", "other_names")
+
+class CommunityLNASerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Community
+        fields = ("name", "id")
+
+class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
+    community = CommunityLNASerializer(read_only=True)
+    language = LanguageLNASerializer(read_only=True)
+
+    class Meta:
+        model = CommunityLanguageStats
+        fields = (
+            "language",
+            "community",
+            "fluent_speakers",
+            "semi_speakers",
+            "active_learners",
+        )
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
