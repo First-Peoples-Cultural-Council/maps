@@ -102,40 +102,22 @@
               @row-clicked="handleRowClick"
             ></b-table>
             <client-only>
-              <div v-if="showCollapse" class="mb-3 showHide">
+              <div class="mb-3 showHide">
                 <b-button
                   block
                   variant="light"
                   class="font-08"
                   @click="handleRowClick"
-                  >Hide Charts</b-button
+                  >{{ showCollapse ? 'Hide Charts' : 'Show Charts' }}</b-button
                 >
               </div>
-              <div v-else class="mb-3 showHide">
+              <div class="mb-3 mt-3 showHide">
                 <b-button
                   block
                   variant="light"
                   class="font-08"
-                  @click="handleRowClick"
-                  >Show Charts</b-button
-                >
-              </div>
-              <div v-if="showLNAs" class="mb-3 mt-3 showHide">
-                <b-button
-                  block
-                  variant="light"
-                  class="font-08"
-                  @click="handleLNAClick"
-                  >Hide LNAs</b-button
-                >
-              </div>
-              <div v-else class="mb-3 mt-3 showHide">
-                <b-button
-                  block
-                  variant="light"
-                  class="font-08"
-                  @click="handleLNAClick"
-                  >Show LNAs</b-button
+                  @click="toggleLNAPanel"
+                  >{{ showLNAs ? 'Hide LNAs' : 'Show LNAs' }}</b-button
                 >
               </div>
               <div v-if="showCollapse">
@@ -614,27 +596,27 @@ export default {
       this.showCollapse = !this.showCollapse
       this.showLNAs = false
     },
-    handleLNAClick() {
+    toggleLNAPanel() {
       this.showLNAs = !this.showLNAs
       this.showCollapse = false
     },
     extractChartData(lna) {
       // LNA Variabale Declaration
-      const fluentParse = parseFloat(lna.fluent_speakers)
+      const fluentSpeakerParse = parseFloat(lna.fluent_speakers)
       const semiSpeakerParse = parseFloat(lna.semi_speakers)
-      const learnersParse = parseFloat(lna.learners)
+      const learnerSpeakerParse = parseFloat(lna.learners)
 
       // Result Variables
-      const fluent_speakers = fluentParse / 100
+      const fluent_speakers = fluentSpeakerParse / 100
       const semi_speakers = semiSpeakerParse / 100
-      const learners = learnersParse / 100
+      const learners = learnerSpeakerParse / 100
       const others =
         (100 - (fluent_speakers * 100 + semi_speakers * 100 + learners * 100)) /
         100
-      const totalSpeaker = (
-        fluentParse +
+      const totalSpeakerPercentage = (
+        fluentSpeakerParse +
         semiSpeakerParse +
-        learnersParse
+        learnerSpeakerParse
       ).toFixed(1)
 
       return {
@@ -645,7 +627,7 @@ export default {
             label: 'Data One',
             backgroundColor: ['#2ecc71', '#3498db', '#b47a2b', '#efefef'],
             data: [fluent_speakers, semi_speakers, learners, others],
-            learnerData: [totalSpeaker]
+            learnerData: [totalSpeakerPercentage]
           }
         ]
       }
