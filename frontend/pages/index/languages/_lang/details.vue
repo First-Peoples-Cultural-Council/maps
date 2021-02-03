@@ -105,17 +105,29 @@
           ></LanguageSeeAll>
         </div>
         <!--  Commented out until data is fixed -->
-        <!--        <div class="mt-3">-->
-        <!--          <b-table-->
-        <!--            hover-->
-        <!--            :items="lna"-->
-        <!--            responsive-->
-        <!--            small-->
-        <!--            table-class="lna-table"-->
-        <!--            thead-class="lna-table-thead"-->
-        <!--            tbody-class="lna-table-tbody"-->
-        <!--          ></b-table>-->
-        <!--        </div>-->
+        <div class="mt-3">
+          <b-table
+            hover
+            :items="lna"
+            responsive
+            small
+            table-class="lna-table"
+            thead-class="lna-table-thead"
+            tbody-class="lna-table-tbody"
+          ></b-table>
+        </div>
+        <div class="mt-3">
+          <b-table
+            hover
+            :items="lnaData"
+            fiel
+            responsive
+            small
+            table-class="lna-table"
+            thead-class="lna-table-thead"
+            tbody-class="lna-table-tbody"
+          ></b-table>
+        </div>
       </section>
     </div>
   </div>
@@ -180,11 +192,26 @@ export default {
     const languageId = language.id
 
     const result = await Promise.all([
-      $axios.$get(getApiUrl(`language/${languageId}`))
+      $axios.$get(getApiUrl(`language/${languageId}`)),
+      $axios.$get(getApiUrl(`stats?language=${languageId}`))
     ])
 
     return {
-      language: result[0]
+      language: result[0],
+      lnaData: result[1].map(lna => {
+        const {
+          community,
+          fluent_speakers,
+          semi_speakers,
+          active_learners
+        } = lna
+        return {
+          community: community.name,
+          fluent_speakers,
+          semi_speakers,
+          active_learners
+        }
+      })
     }
   },
   beforeRouteEnter(to, from, next) {
