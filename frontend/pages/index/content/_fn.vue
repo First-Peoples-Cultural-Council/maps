@@ -90,80 +90,83 @@
               }}</span>
             </li>
           </ul>
-          <!--        Commented out until data is fixed-->
-          <!--        <div class="mt-3">-->
-          <!--          <b-table-->
-          <!--            hover-->
-          <!--            :items="lna"-->
-          <!--            responsive-->
-          <!--            small-->
-          <!--            table-class="lna-table"-->
-          <!--            thead-class="lna-table-thead"-->
-          <!--            tbody-class="lna-table-tbody"-->
-          <!--            @row-clicked="handleRowClick"-->
-          <!--          ></b-table>-->
-          <!--          <client-only>-->
-          <!--            <div v-if="showCollapse" class="mb-3 showHide">-->
-          <!--              <b-button-->
-          <!--                block-->
-          <!--                variant="light"-->
-          <!--                class="font-08"-->
-          <!--                @click="handleRowClick"-->
-          <!--                >Hide Charts</b-button-->
-          <!--              >-->
-          <!--            </div>-->
-          <!--            <div v-else class="mb-3 showHide">-->
-          <!--              <b-button-->
-          <!--                block-->
-          <!--                variant="light"-->
-          <!--                class="font-08"-->
-          <!--                @click="handleRowClick"-->
-          <!--                >Show Charts</b-button-->
-          <!--              >-->
-          <!--            </div>-->
-          <!--            <div v-if="showLNAs" class="mb-3 mt-3 showHide">-->
-          <!--              <b-button-->
-          <!--                block-->
-          <!--                variant="light"-->
-          <!--                class="font-08"-->
-          <!--                @click="handleLNAClick"-->
-          <!--                >Hide LNAs</b-button-->
-          <!--              >-->
-          <!--            </div>-->
-          <!--            <div v-else class="mb-3 mt-3 showHide">-->
-          <!--              <b-button-->
-          <!--                block-->
-          <!--                variant="light"-->
-          <!--                class="font-08"-->
-          <!--                @click="handleLNAClick"-->
-          <!--                >Show LNAs</b-button-->
-          <!--              >-->
-          <!--            </div>-->
-          <!--            <div v-if="showCollapse">-->
-          <!--              <div v-for="(l, index) in lna" :key="`chartlna${index}`">-->
-          <!--                <PieChart-->
-          <!--                  :chartdata="extractChartData(l)"-->
-          <!--                  :options="options"-->
-          <!--                ></PieChart>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--            <div v-if="showLNAs">-->
-          <!--              <h5 class="mt-4">Language Needs Assessments</h5>-->
-          <!--              <ul-->
-          <!--                v-for="(lnalink, index) in commDetails['lnas']"-->
-          <!--                :key="'lnalink' + index"-->
-          <!--                class="m-0 p-0 list-style-none"-->
-          <!--              >-->
-          <!--                <li class="mt-2 mb-2">-->
-          <!--                  <div>-->
-          <!--                    <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>-->
-          <!--                  </div>-->
-          <!--                  <div>Language: {{ lnalink.lna.language }}</div>-->
-          <!--                </li>-->
-          <!--              </ul>-->
-          <!--            </div>-->
-          <!--          </client-only>-->
-          <!--        </div>-->
+          <div class="mt-3">
+            <b-table
+              hover
+              :items="lnaByCommunity"
+              responsive
+              small
+              table-class="lna-table"
+              thead-class="lna-table-thead"
+              tbody-class="lna-table-tbody"
+              @row-clicked="handleRowClick"
+            ></b-table>
+            <client-only>
+              <div v-if="showCollapse" class="mb-3 showHide">
+                <b-button
+                  block
+                  variant="light"
+                  class="font-08"
+                  @click="handleRowClick"
+                  >Hide Charts</b-button
+                >
+              </div>
+              <div v-else class="mb-3 showHide">
+                <b-button
+                  block
+                  variant="light"
+                  class="font-08"
+                  @click="handleRowClick"
+                  >Show Charts</b-button
+                >
+              </div>
+              <div v-if="showLNAs" class="mb-3 mt-3 showHide">
+                <b-button
+                  block
+                  variant="light"
+                  class="font-08"
+                  @click="handleLNAClick"
+                  >Hide LNAs</b-button
+                >
+              </div>
+              <div v-else class="mb-3 mt-3 showHide">
+                <b-button
+                  block
+                  variant="light"
+                  class="font-08"
+                  @click="handleLNAClick"
+                  >Show LNAs</b-button
+                >
+              </div>
+              <div v-if="showCollapse">
+                <div
+                  v-for="(lna, index) in lnaByCommunity"
+                  :key="`chartlna${index}`"
+                  class="mt-4 mb-4"
+                >
+                  <PieChart
+                    :chartdata="extractChartData(lna)"
+                    :options="options"
+                  ></PieChart>
+                </div>
+              </div>
+              <div v-if="showLNAs">
+                <h5 class="mt-4">Language Needs Assessments</h5>
+                <ul
+                  v-for="(lnalink, index) in commDetails['lnas']"
+                  :key="'lnalink' + index"
+                  class="m-0 p-0 list-style-none"
+                >
+                  <li class="mt-2 mb-2">
+                    <div>
+                      <a :href="lnalink.lna['url']">{{ lnalink.name }}</a>
+                    </div>
+                    <div>Language: {{ lnalink.lna.language }}</div>
+                  </li>
+                </ul>
+              </div>
+            </client-only>
+          </div>
         </section>
         <section class="pl-3 pr-3">
           <Badge
@@ -312,7 +315,6 @@
 </template>
 
 <script>
-import values from 'lodash/values'
 import omit from 'lodash/omit'
 import Logo from '@/components/Logo.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
@@ -335,9 +337,8 @@ import Notification from '@/components/Notification.vue'
 import ArtsCard from '@/components/arts/ArtsCard.vue'
 import GrantsCard from '@/components/grants/GrantsCard.vue'
 import ScrollDownIndicator from '@/components/ScrollDownIndicator.vue'
+import PieChart from '@/components/PieChart.vue'
 
-// Commented out until data is fixed
-// import PieChart from '@/components/PieChart.vue'
 export default {
   components: {
     // DetailSideBar,
@@ -354,9 +355,8 @@ export default {
     ArtsCard,
     ErrorScreen,
     GrantsCard,
-    ScrollDownIndicator
-    // Commented out until data is fixed
-    // ,PieChart
+    ScrollDownIndicator,
+    PieChart
   },
   data() {
     return {
@@ -390,16 +390,20 @@ export default {
               alpha: false
             })
             chartContext.fillStyle = '#4a4a4a'
-            chartContext.font = '100 32px Lato'
+            chartContext.font = '100 22px Lato'
             chartContext.textBaseline = 'middle'
             chartContext.fillText(
-              this.data.datasets[0].learnerData[0] * 100 + '%',
+              this.data.datasets[0].learnerData[0] + '%',
               this.chart.width / 2 - 30,
               this.chart.height / 2 - 5,
               200
             )
             chartContext.fillText(
-              'Learners',
+              `${
+                this.data.name.length > 10
+                  ? `${this.data.name.substring(0, 10)} ...`
+                  : this.data.name
+              }`,
               this.chart.width / 2 - 58,
               this.chart.height / 2 + 25,
               200
@@ -450,28 +454,40 @@ export default {
       const details = filteredCommDetails
       return details
     },
-    lna() {
-      const lnas = values(this.commDetails.lna_by_language)
-      return lnas.map(lna => {
-        let fluent
-        let someSpeakers
-        let learners
-        const pop = this.commDetails.population || lna.pop_total_value
-        // get percentages.
-        if (pop) {
-          fluent = ((100 * lna.fluent_speakers) / pop).toFixed(1) + '%'
-          someSpeakers = ((100 * lna.some_speakers) / pop).toFixed(1) + '%'
-          learners = ((100 * lna.learners) / pop).toFixed(1) + '%'
+    lnaByCommunity() {
+      /**  Remove Duplicate Language LNA data **/
+      const lnaReduced = this.lnaData.reduce((uniqueLna, lnaItem) => {
+        return uniqueLna.length !== 0 &&
+          uniqueLna.some(lna => {
+            return lna.language.id === lnaItem.language.id
+          })
+          ? uniqueLna
+          : [...uniqueLna, lnaItem]
+      }, [])
+
+      /** * Get LNA percentage based on Community Population **/
+      return lnaReduced.map(lna => {
+        let fluentPercentage, semiSpeakersPercentage, activeLearnerPercentage
+        const { fluent_speakers, semi_speakers, active_learners } = lna
+        const communityPopulation = this.commDetails.population
+
+        if (communityPopulation) {
+          fluentPercentage =
+            ((100 * fluent_speakers) / communityPopulation).toFixed(1) + '%'
+          semiSpeakersPercentage =
+            ((100 * semi_speakers) / communityPopulation).toFixed(1) + '%'
+          activeLearnerPercentage =
+            ((100 * active_learners) / communityPopulation).toFixed(1) + '%'
         } else {
-          learners = 0
-          fluent = 0
-          someSpeakers = 0
+          activeLearnerPercentage = 0
+          fluentPercentage = 0
+          semiSpeakersPercentage = 0
         }
         return {
-          language: lna.lna.language,
-          fluent_speakers: fluent,
-          some_speakers: someSpeakers,
-          learners
+          language: lna.language.name,
+          fluent_speakers: fluentPercentage,
+          semi_speakers: semiSpeakersPercentage,
+          learners: activeLearnerPercentage
         }
       })
     },
@@ -509,11 +525,17 @@ export default {
     )
 
     if (community) {
-      const communityDetail = await $axios.$get(
-        getApiUrl(
-          `community/${community.id}?timestamp=${new Date().getTime()}/`
-        )
-      )
+      const result = await Promise.all([
+        $axios.$get(
+          getApiUrl(
+            `community/${community.id}?timestamp=${new Date().getTime()}/`
+          )
+        ),
+        $axios.$get(getApiUrl(`stats?community=${community.id}`))
+      ])
+
+      const communityDetail = result[0]
+      const lnaData = result[1]
 
       let audio_obj = {}
       if (communityDetail.audio_obj) {
@@ -534,6 +556,7 @@ export default {
         audio_obj,
         mode: 'All',
         communityDetail,
+        lnaData,
         isServer,
         community,
         datacollection: {
@@ -589,27 +612,40 @@ export default {
     },
     handleRowClick() {
       this.showCollapse = !this.showCollapse
+      this.showLNAs = false
     },
     handleLNAClick() {
       this.showLNAs = !this.showLNAs
+      this.showCollapse = false
     },
-    extractChartData(l) {
-      const fluent_speakers = parseFloat(l.fluent_speakers) / 100
-      const some_speakers = parseFloat(l.some_speakers) / 100
-      const learners = parseFloat(l.learners) / 100
+    extractChartData(lna) {
+      // LNA Variabale Declaration
+      const fluentParse = parseFloat(lna.fluent_speakers)
+      const semiSpeakerParse = parseFloat(lna.semi_speakers)
+      const learnersParse = parseFloat(lna.learners)
+
+      // Result Variables
+      const fluent_speakers = fluentParse / 100
+      const semi_speakers = semiSpeakerParse / 100
+      const learners = learnersParse / 100
       const others =
-        (100 - (fluent_speakers * 100 + some_speakers * 100 + learners * 100)) /
+        (100 - (fluent_speakers * 100 + semi_speakers * 100 + learners * 100)) /
         100
+      const totalSpeaker = (
+        fluentParse +
+        semiSpeakerParse +
+        learnersParse
+      ).toFixed(1)
 
       return {
-        name: l.language,
-        labels: ['Fluent', 'Some', 'Other'],
+        name: lna.language,
+        labels: ['Fluent', 'Semi Fluent', 'Active Learners', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
-            data: [fluent_speakers, some_speakers, others],
-            learnerData: [learners]
+            backgroundColor: ['#2ecc71', '#3498db', '#b47a2b', '#efefef'],
+            data: [fluent_speakers, semi_speakers, learners, others],
+            learnerData: [totalSpeaker]
           }
         ]
       }
