@@ -49,7 +49,8 @@ export default {
   box-shadow: 0px 3px 6px #00000022;
   border: 1px solid #beb2a5;
   color: #151515;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
 
   & > * {
     margin: 0 0.4em 0 0.2em;

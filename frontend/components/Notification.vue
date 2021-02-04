@@ -154,7 +154,7 @@ export default {
 .notification-badge span {
   text-transform: uppercase;
   font-weight: Bold;
-  font-size: 12px;
+  font-size: 10px;
 }
 .notification-badge span,
 .notification-badge img {

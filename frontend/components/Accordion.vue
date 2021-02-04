@@ -72,7 +72,7 @@ export default {
 }
 
 .accordion-content {
-  font: Regular 16px/20px Proxima Nova;
+  font-size: 16px;
   letter-spacing: 0.8px;
   margin: 0;
   padding: 0;

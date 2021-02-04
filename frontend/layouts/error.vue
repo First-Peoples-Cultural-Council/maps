@@ -120,7 +120,6 @@ export default {
   }
 
   h4 {
-    font-family: 'Lato', sans-serif;
     font-size: 2em;
     font-weight: 800;
   }

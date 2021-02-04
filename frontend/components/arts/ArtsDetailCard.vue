@@ -218,7 +218,8 @@ export default {
 }
 
 .field-kind {
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -227,7 +228,8 @@ export default {
 }
 
 .field-name {
-  font: Bold 16px/20px Proxima Nova;
+  font-weight: 800;
+  font-size: 16px;
   color: #151515;
   margin: 0.1em;
   padding: 0;
