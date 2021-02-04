@@ -1,6 +1,7 @@
 /* Global CSS */
 .field-kinds {
-  font: Bold 13px/15px Proxima Nova;
+  font-size: 13px;
+  font-weight: 800;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -9,7 +10,6 @@
 }
 
 .field-names {
-  font-family: 'Proxima Nova', sans-serif;
   font-size: 17px;
   font-weight: 600;
   color: #151515;
@@ -19,7 +19,8 @@
 }
 
 .sidebar-title{
-  font: Bold 13px/15px Proxima Nova;
+    font-weight: 800;
+    font-size: 13px;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;
@@ -186,7 +187,6 @@
 }
 
 .arts-card-footer {
-  font-family: 'Lato', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -244,7 +244,8 @@
         word-wrap: break-word;
         word-break: break-all;
         overflow: hidden;
-        font: Bold 16px/20px Proxima Nova;
+        font-weight: 800;
+        font-size: 16px;
         color: #151515;
         margin: 0.1em;
         padding: 0;
@@ -350,7 +351,6 @@
   flex-direction: column;
   align-items: flex-start;
   margin: 0em 1em 0.25em 1em;
-  font-family: 'Proxima Nova', sans-serif;
 }
 
 .artist-content-field {
@@ -367,19 +367,20 @@
 
 .field-title {
   color: #707070;
-  font: Bold 15px/18px Proxima Nova;
+  font-size: 15px;
+  font-weight: 800;
   text-transform: capitalize;
 }
 
 .field-content {
   display: flex;
-  font: normal 16px/25px Proxima Nova;
+  font-size: 16px;
   flex-direction: column;
   color: #151515;
 }
 
 .field-content font {
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px !important;
 }
 
 .field-content a {
@@ -402,7 +403,8 @@
 .field-content pre,
 .field-content label,
 .field-content legend {
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px;
+  font-weight: 500;
   color: #151515 !important;
   background: none !important;
   overflow-x: hidden;

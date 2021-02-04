@@ -355,7 +355,8 @@ export default {
   cursor: pointer;
   margin: 0;
   padding: 0.5em 2em;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   color: #ffffff;
   text-transform: uppercase;
   animation: shadowpulse 5s ease infinite;
@@ -395,7 +396,8 @@ export default {
   }
 
   .contribute-option-list {
-    font: Bold 13px/16px Proxima Nova;
+    font-size: 13px;
+    font-weight: 800;
   }
 }
 

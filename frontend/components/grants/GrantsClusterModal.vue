@@ -47,7 +47,7 @@ export default {
     border-bottom: 0.8px solid #9f9f9f;
     padding: 0.75em;
     text-align: center;
-    font: normal normal bold 18px/23px Proxima Nova;
+    font: normal normal bold 18px/23px BCSans;
     color: #707070;
   }
 

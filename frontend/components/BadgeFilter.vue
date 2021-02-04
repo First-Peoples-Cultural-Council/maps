@@ -499,7 +499,8 @@ export default {
 }
 
 #badge-choose {
-  font: Bold 15px/18px Lato;
+  font-size: 15px;
+  font-weight: 800;
   text-transform: lowercase;
   color: #151515;
   overflow: hidden;

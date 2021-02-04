@@ -40,7 +40,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font: Bold 16px/20px Proxima Nova;
+  font-weight: 800;
+  font-size: 16px;
 
   .loading-inner {
     display: flex;

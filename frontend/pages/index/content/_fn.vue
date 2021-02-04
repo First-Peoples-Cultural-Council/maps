@@ -372,7 +372,7 @@ export default {
               alpha: false
             })
             chartContext.fillStyle = '#4a4a4a'
-            chartContext.font = '100 32px Lato'
+            chartContext.font = '100 32px BCSans'
             chartContext.textBaseline = 'middle'
             chartContext.fillText(
               this.data.datasets[0].learnerData[0] * 100 + '%',

@@ -237,7 +237,7 @@ export default {
 }
 
 .artist-more-btn {
-  font: Regular 14px/17px Proxima Nova;
+  font-size: 14px;
   color: #707070;
   margin-bottom: 1em;
 }
@@ -283,7 +283,8 @@ export default {
   border-radius: 2rem;
   color: #707070;
   text-transform: uppercase;
-  font: Bold 12px/15px Proxima Nova;
+  font-weight: 800;
+  font-size: 12px;
   padding: 2px 8px;
   margin: 0.25em;
   text-align: center;

@@ -2442,11 +2442,11 @@ export default {
 #quill {
   height: 300px;
   margin-bottom: 1em;
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px !important;
 }
 
 #quill font {
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px !important;
 }
 
 #quill p {
