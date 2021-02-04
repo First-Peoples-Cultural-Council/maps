@@ -372,20 +372,16 @@ export default {
               alpha: false
             })
             chartContext.fillStyle = '#4a4a4a'
-            chartContext.font = '100 22px Lato'
+            chartContext.font = '100 32px Lato'
             chartContext.textBaseline = 'middle'
             chartContext.fillText(
-              this.data.datasets[0].learnerData[0] + '%',
+              this.data.datasets[0].learnerData[0] * 100 + '%',
               this.chart.width / 2 - 30,
               this.chart.height / 2 - 5,
               200
             )
             chartContext.fillText(
-              `${
-                this.data.name.length > 10
-                  ? `${this.data.name.substring(0, 10)} ...`
-                  : this.data.name
-              }`,
+              'Learners',
               this.chart.width / 2 - 58,
               this.chart.height / 2 + 25,
               200
@@ -613,21 +609,16 @@ export default {
       const others =
         (100 - (fluent_speakers * 100 + semi_speakers * 100 + learners * 100)) /
         100
-      const totalSpeakerPercentage = (
-        fluentSpeakerParse +
-        semiSpeakerParse +
-        learnerSpeakerParse
-      ).toFixed(1)
 
       return {
         name: lna.language,
-        labels: ['Fluent', 'Semi Fluent', 'Active Learners', 'Other'],
+        labels: ['Fluent', 'Semi Fluent', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#b47a2b', '#efefef'],
-            data: [fluent_speakers, semi_speakers, learners, others],
-            learnerData: [totalSpeakerPercentage]
+            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
+            data: [fluent_speakers, semi_speakers, others],
+            learnerData: [learners]
           }
         ]
       }
