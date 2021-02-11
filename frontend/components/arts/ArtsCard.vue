@@ -218,7 +218,8 @@ export default {
   border-radius: 2rem;
   color: #707070;
   text-transform: uppercase;
-  font: Bold 12px Proxima Nova;
+  font-weight: 800;
+  font-size: 12px;
   margin: 0.25em 0.5em 0.25em 0;
   padding: 2px 5px;
   text-align: center;

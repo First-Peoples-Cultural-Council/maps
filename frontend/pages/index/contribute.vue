@@ -970,10 +970,19 @@ export default {
       const poiTaxonomy = this.taxonomies.find(
         taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
       )
-
-      return this.taxonomies.filter(
-        taxonomy => taxonomy.parent === poiTaxonomy.id
-      )
+      return this.taxonomies.filter(taxonomy => {
+        // Detect taxonomy name with parenthesis, and remove it
+        const regExp = /\(([^)]+)\)/
+        const matches = regExp.exec(taxonomy.name)
+        if (
+          taxonomy.parent === poiTaxonomy.id &&
+          (matches === null || matches[1] === '1')
+        ) {
+          // removed parenthesis and the number from name
+          taxonomy.name = taxonomy.name.replace(/ *\([^)]*\) */g, '')
+          return taxonomy
+        }
+      })
     },
     categoryOptions() {
       return this.categories
@@ -2442,11 +2451,11 @@ export default {
 #quill {
   height: 300px;
   margin-bottom: 1em;
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px !important;
 }
 
 #quill font {
-  font: normal 16px/25px Proxima Nova !important;
+  font-size: 16px !important;
 }
 
 #quill p {

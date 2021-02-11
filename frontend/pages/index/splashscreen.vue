@@ -177,7 +177,8 @@ export default {
         }
 
         span {
-          font: Bold 15px/18px Proxima Nova;
+          font-weight: 800;
+          font-size: 15px;
           font-weight: 800;
           font-size: 1.2em;
         }
@@ -262,14 +263,14 @@ export default {
             background: #00343b;
             border-radius: 2em;
             border: 2px solid #b47a2b;
-            font: Regular 16px/20px Proxima Nova;
+            font-size: 16px;
             margin-bottom: 0.5em;
             text-transform: uppercase;
             letter-spacing: 1px;
           }
 
           .splash-description {
-            font: Regular 16px/20px Proxima Nova;
+            font-size: 16px;
             text-align: center;
           }
 
