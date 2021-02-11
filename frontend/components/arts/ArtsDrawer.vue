@@ -323,7 +323,8 @@ export default {
   color: #fff;
   padding: 0.5em;
   text-align: center;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
 }
 
 .panel-artist {
@@ -338,7 +339,8 @@ export default {
   flex-wrap: wrap;
   padding: 0 1em;
   margin-top: 1em;
-  font: Bold 18px/22px Proxima Nova;
+  font-weight: 800;
+  font-size: 18px;
 
   a {
     margin: 0 0.25em;
@@ -360,7 +362,8 @@ export default {
   border-bottom-left-radius: 1em;
   color: #fff;
   z-index: 50000;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   padding: 0 0.25em;
 
   & > * {
@@ -376,14 +379,16 @@ export default {
 }
 
 .item-title {
-  font: Bold 18px/22px Proxima Nova;
+  font-weight: 800;
+  font-size: 18px;
   color: #151515;
   margin: 0;
 }
 
 .item-subtitle {
   width: fit-content;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 18px;
   color: #707070;
   text-transform: capitalize;
   margin: 0;

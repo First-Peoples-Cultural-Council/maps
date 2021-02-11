@@ -135,7 +135,8 @@ export default {
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1);
 
   .grant-title {
-    font: Bold 16px/18px Proxima Nova;
+    font-weight: 800;
+    font-size: 16px;
     color: #707070;
     margin: 0.1em;
     padding: 0;

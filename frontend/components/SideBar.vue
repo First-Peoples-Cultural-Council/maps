@@ -187,7 +187,6 @@ export default {
   width: var(--sidebar-width, 425px);
   overflow-y: scroll;
   padding-bottom: 1em;
-  font-family: 'Proxima Nova', sans-serif;
 }
 
 .sidebar-arts-container {

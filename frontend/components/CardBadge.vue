@@ -85,12 +85,12 @@ export default {
   display: inline-block;
   color: white;
   border-radius: 1em;
-  padding: 3.5px 7.5px;
+  padding: 4.5px 7.5px;
 }
 .card-badge span {
   text-transform: uppercase;
   font-weight: Bold;
-  font-size: 12px;
+  font-size: 10px;
 }
 .card-badge span,
 .card-badge img {

@@ -1583,8 +1583,8 @@ export default {
 }
 
 @font-face {
-  font-family: 'Proxima Nova';
-  src: url('~@/static/fonts/Proxima/ProximaNova-Regular.otf');
+  font-family: 'BCSans';
+  src: url('~@/static/fonts/BCSans/BCSans-Regular.woff');
   font-style: normal;
 }
 
@@ -1695,13 +1695,14 @@ export default {
 }
 
 .language-family-header {
-  font: Regular 15px/18px Proxima Nova;
+  font-size: 15px;
   letter-spacing: 0px;
   color: #151515;
   opacity: 0.5;
 }
 .language-family-title {
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   letter-spacing: 0px;
   color: #151515;
   opacity: 0.7;
@@ -1779,7 +1780,7 @@ export default {
     border-bottom: 0.8px solid #9f9f9f;
     padding: 0.75em;
     text-align: center;
-    font: normal normal bold 18px/23px Proxima Nova;
+    font: normal normal bold 18px/23px BCSans;
     color: #707070;
   }
 
@@ -1793,7 +1794,7 @@ export default {
   }
 
   .grant-description {
-    font: normal normal normal 16px/24px Proxima Nova;
+    font-size: 16px;
     letter-spacing: 0.35px;
     color: #454545;
     margin-bottom: 0.75em;
@@ -1809,14 +1810,14 @@ export default {
       max-width: 30%;
 
       .footer-item-title {
-        font: normal normal bold 15px/16px Proxima Nova;
+        font: normal normal bold 15px/16px BCSans;
         letter-spacing: 0px;
         color: #707070;
         margin-bottom: 0.5em;
       }
 
       .footer-item-content {
-        font: normal normal normal 14px/16px Proxima Nova;
+        font: normal normal normal 14px/16px BCSans;
         letter-spacing: 0.35px;
         color: #454545;
       }

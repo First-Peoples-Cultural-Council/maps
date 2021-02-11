@@ -181,7 +181,7 @@ export default {
 }
 
 .artist-more-btn {
-  font: Regular 14px/17px Proxima Nova;
+  font-size: 14px;
   color: #707070;
   margin-bottom: 1em;
 }
@@ -227,7 +227,8 @@ export default {
   border-radius: 2rem;
   color: #707070;
   text-transform: uppercase;
-  font: Bold 12px/15px Proxima Nova;
+  font-weight: 800;
+  font-size: 12px;
   padding: 2px 8px;
   margin: 0.25em;
   text-align: center;
@@ -265,14 +266,16 @@ export default {
 }
 
 .item-title {
-  font: Bold 18px/22px Proxima Nova;
+  font-weight: 800;
+  font-size: 18px;
   color: #151515;
   margin: 0;
 }
 
 .item-subtitle {
   width: fit-content;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   color: #707070;
   text-transform: capitalize;
   margin: 0;

@@ -118,7 +118,8 @@ export default {
   cursor: pointer;
 }
 .share-embed-container h5 {
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
   color: #151515;
   margin: 0;
   padding: 0.5em 0.75em;

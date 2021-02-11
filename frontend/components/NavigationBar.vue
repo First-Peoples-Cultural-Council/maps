@@ -349,7 +349,8 @@ export default {
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
   color: #151515;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
 
   & > * {
     margin: 0 0.4em 0 0.2em;
@@ -425,7 +426,8 @@ export default {
 .navbar-icon-container {
   line-height: 0;
   color: #151515;
-  font: Bold 15px/18px Proxima Nova;
+  font-weight: 800;
+  font-size: 15px;
 
   .user-icon-container {
     position: relative;

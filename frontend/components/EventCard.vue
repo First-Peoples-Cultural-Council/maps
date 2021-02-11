@@ -225,14 +225,16 @@ export default {
   cursor: pointer;
 
   .event-date {
-    font: Medium 15px/20px Proxima Nova;
+    font-weight: 500;
+    font-size: 15px;
     letter-spacing: 0.75px;
     color: #707070;
     text-transform: uppercase;
   }
 
   .event-date-description {
-    font: Bold 12px Proxima Nova;
+    font-weight: 800;
+    font-size: 12px;
     text-transform: uppercase;
     width: fit-content;
     padding: 0.25em;
@@ -257,7 +259,8 @@ export default {
   }
 
   .event-title {
-    font: Bold 16px/20px Proxima Nova;
+    font-weight: 800;
+    font-size: 16px;
     letter-spacing: 0.8px;
     color: #151515;
     margin: 0.25em 0;
@@ -323,7 +326,8 @@ export default {
   border-radius: 2rem;
   color: #707070;
   text-transform: uppercase;
-  font: Bold 12px Proxima Nova;
+  font-weight: 800;
+  font-size: 12px;
   margin: 0.25em 0.5em 0.25em 0;
   padding: 2px 5px;
   text-align: center;
