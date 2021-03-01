@@ -208,20 +208,6 @@ export default {
     )
 
     this.fetchMedia()
-
-    // check if query URL exist
-    const foundMedia = this.allArtworks.find(media => {
-      return encodeFPCC(media.name) === this.$route.query.artwork
-    })
-
-    if (this.$route.query.upload_artwork) {
-      // do nothing
-    } else if (foundMedia) {
-      this.currentMedia = foundMedia
-      this.toggleGallery()
-    } else if (this.isArtsDetailPage) {
-      this.$router.push(this.$route.path)
-    }
   },
   methods: {
     async fetchMedia() {
@@ -234,6 +220,25 @@ export default {
       if (result) {
         this.listOfMedias = result.sort((a, b) => b.id - a.id)
         this.$store.commit('arts/setMediaCount', result.length)
+        this.getQueryMedia()
+      }
+    },
+
+    getQueryMedia() {
+      // check if query URL exist
+      if (this.$route.query.artwork) {
+        const foundMedia = this.allArtworks.find(media => {
+          return encodeFPCC(media.name) === this.$route.query.artwork
+        })
+
+        if (this.$route.query.upload_artwork) {
+          // do nothing
+        } else if (foundMedia) {
+          this.currentMedia = foundMedia
+          this.toggleGallery()
+        } else if (this.isArtsDetailPage) {
+          this.$router.push(this.$route.path)
+        }
       }
     },
     toggleGallery() {
@@ -248,7 +253,7 @@ export default {
     },
     showMedia(media) {
       this.currentMedia = media
-      if (this.$route.name === 'index-art-art') {
+      if (this.$route.name === 'index-art') {
         // When on arts list page, manually update the URL
         history.pushState(
           {},
