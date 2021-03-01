@@ -2,6 +2,8 @@ export const state = () => ({
   arts: [],
   artsSet: [],
   artSearch: '',
+  currentPlacename: {},
+  mediaCount: 0,
   filter: 'artwork',
   taxonomyFilter: [],
   artsSearchSet: [],
@@ -49,6 +51,12 @@ export const mutations = {
   },
   setNextEvents(state, events) {
     state.eventsSet = events
+  },
+  setCurrentPlacename(state, placename) {
+    state.currentPlacename = placename
+  },
+  setMediaCount(state, count) {
+    state.mediaCount = count
   }
 }
 
