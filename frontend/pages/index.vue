@@ -435,7 +435,14 @@ export default {
       return this.$store.state.sidebar.mobileContent
     },
     isDrawerShown() {
-      return this.$store.state.sidebar.isArtsMode
+      if (this.$route.name === 'index-art') {
+        return (
+          this.$store.state.sidebar.isArtsMode &&
+          this.$store.state.arts.mediaCount.length > 1
+        )
+      } else {
+        return this.$store.state.sidebar.isArtsMode
+      }
     },
     isUploadArtMode() {
       return !!this.$route.query.upload_artwork

@@ -20,7 +20,6 @@ export const mutations = {
   setDrawerContent(state, value) {
     state.isArtsMode = value
   },
-
   setGallery(state, value) {
     state.showGallery = value
   },

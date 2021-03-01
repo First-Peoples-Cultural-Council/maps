@@ -137,7 +137,9 @@
                 v-if="art.properties.kind === 'artwork'"
                 :media="art"
                 :layout="'landscape'"
-                :is-selected="artDetails === art.properties && isDrawerShown"
+                :is-selected="
+                  currentPlacename === art.properties && isDrawerShown
+                "
                 class="mt-3 hover-left-move"
                 @click.native="selectMedia(art.properties)"
               ></ArtworkCard>
@@ -168,7 +170,7 @@
         </section>
       </template>
       <template v-if="isDrawerShown" v-slot:side-panel>
-        <ArtsDrawer :art="artDetails" />
+        <ArtsDrawer />
       </template>
     </SideBar>
     <div v-else-if="this.$route.name === 'index-art-art'">
@@ -217,7 +219,6 @@ export default {
     return {
       accordionContent:
         'Indigenous artistic practices in B.C. are diverse. Artists working across all disciplines are honouring traditions and experimenting with contemporary approaches. The Arts Map provides an online environment for Indigenous artists and arts groups to create profiles and share images, video, sound, and news. Users can explore the map by focusing on specific locations or by defining their search with keywords and filters. This is a community-driven platform dedicated to highlighting the important creative voices of Indigenous artists.',
-      artDetails: {},
       maximumLength: 0
     }
   },
@@ -242,6 +243,9 @@ export default {
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
+    },
+    currentPlacename() {
+      return this.$store.state.arts.currentPlacename
     },
     arts() {
       return this.$store.state.arts.arts
@@ -524,7 +528,7 @@ export default {
         this.$store.commit('arts/setArtworks', artworks) // All data
       }
     },
-    handleCardClick($event, name, type) {
+    handleCardClick(name) {
       if (this.isDrawerShown) {
         this.toggleArtsDrawer()
       }
@@ -534,13 +538,14 @@ export default {
     },
     selectMedia(currentArt) {
       // If Same Artwork is clicked, close the drawer
-      if (currentArt === this.artDetails && this.isDrawerShown) {
-        this.artDetails = {}
+      if (currentArt === this.currentPlacename && this.isDrawerShown) {
+        this.setCurrentPlacename({})
+
         this.closeDrawer()
       }
       // If another artwork is selected when there's open, close it to recalibrate data, then open
-      else if (currentArt !== this.artDetails && this.isDrawerShown) {
-        this.artDetails = currentArt
+      else if (currentArt !== this.currentPlacename && this.isDrawerShown) {
+        this.setCurrentPlacename(currentArt)
         // Important to open it after closing the drawer
         this.closeDrawer()
         setTimeout(() => {
@@ -548,12 +553,15 @@ export default {
         }, 100)
       }
       // If no artwork is selected, it opens the drawer
-      else if (currentArt !== this.artDetails || !this.isDrawerShown) {
-        this.artDetails = currentArt
+      else if (currentArt !== this.currentPlacename || !this.isDrawerShown) {
+        this.setCurrentPlacename(currentArt)
         this.openDrawer()
       }
       // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
+    },
+    setCurrentPlacename(placename) {
+      this.$store.commit('arts/setCurrentPlacename', placename)
     },
     toggleArtsDrawer() {
       this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
