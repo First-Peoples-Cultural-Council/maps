@@ -191,7 +191,7 @@
 
             <b-row class="mt-3 field-row">
               <div>
-                <label for="traditionalName" class="contribute-title-one mb-1">
+                <label for="languageSelector" class="contribute-title-one mb-1">
                   Language</label
                 >
                 <ToolTip
@@ -202,6 +202,7 @@
               </div>
 
               <multiselect
+                id="languageSelector"
                 v-model="languageUserSelected"
                 :options="languageList"
                 label="name"
@@ -242,7 +243,7 @@
 
             <b-row class="mt-3 field-row">
               <div>
-                <label for="traditionalName" class="contribute-title-one mb-1"
+                <label for="communitySelector" class="contribute-title-one mb-1"
                   >Community</label
                 >
                 <ToolTip
@@ -253,6 +254,7 @@
               </div>
 
               <multiselect
+                id="communitySelector"
                 v-model="community"
                 placeholder="Select a community"
                 label="name"
@@ -671,22 +673,24 @@
 
             <b-row class="mt-3">
               <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
+                <label for="languageSelector" class="contribute-title-one mb-1"
                   >Language</label
                 >
                 <b-form-select
+                  id="languageSelector"
                   v-model="languageSelected"
                   :options="languageOptions"
                 ></b-form-select>
               </b-col>
               <b-col xl="6">
-                <label for="traditionalName" class="contribute-title-one mb-1"
+                <label for="categorySelector" class="contribute-title-one mb-1"
                   >Category</label
                 >
                 <ToolTip
                   content="What would this location be classified as? This will help users find it. If you would like more categories added please see the information on the bottom of this page."
                 ></ToolTip>
                 <b-form-select
+                  id="categorySelector"
                   v-model="categorySelected"
                   :options="categoryOptions"
                 ></b-form-select>
@@ -694,10 +698,11 @@
             </b-row>
             <b-row class="mt-3 mb-1">
               <b-col xl="12">
-                <label for="traditionalName" class="contribute-title-one mb-1"
+                <label for="communitySelect" class="contribute-title-one mb-1"
                   >Community</label
                 >
                 <multiselect
+                  id="communitySelect"
                   v-model="community"
                   placeholder="Select a community"
                   label="name"
@@ -1920,6 +1925,7 @@ export default {
 
     async submitPlacename(e) {
       let id
+      this.capitalizeTraditionalName()
 
       const headers = this.getCookies
       this.errors = []
@@ -2292,6 +2298,14 @@ export default {
     },
     callProgressModal(value) {
       this.$root.$emit('initiateLoadingModal', value)
+    },
+
+    capitalizeTraditionalName() {
+      this.traditionalName = this.traditionalName
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
     }
   },
 
