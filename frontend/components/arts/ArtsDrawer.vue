@@ -1,91 +1,93 @@
 <template>
-  <div v-if="allArtworks.length !== 0" class="h-100">
-    <div v-if="mobileContent || isDrawerShown" class="arts-right-panel">
-      <div v-if="isLoading" class="loading-overlay">
-        <transition name="fade">
-          <LoadingSpinner></LoadingSpinner>
-        </transition>
-      </div>
-      <div class="panel-close-btn" @click="toggleArtsDrawer">
-        <img src="@/assets/images/return_icon_hover.svg" />
-        Collapse
-      </div>
+  <div>
+    <div v-if="getDrawerBehavior" class="h-100">
+      <div v-if="mobileContent || isDrawerShown" class="arts-right-panel">
+        <div v-if="isLoading" class="loading-overlay">
+          <transition name="fade">
+            <LoadingSpinner></LoadingSpinner>
+          </transition>
+        </div>
+        <div class="panel-close-btn" @click="toggleArtsDrawer">
+          <img src="@/assets/images/return_icon_hover.svg" />
+          Collapse
+        </div>
 
-      <!-- Render List of Artist -->
-      <template v-if="this.$route.name !== 'index-art-art'">
-        <div v-if="placename" class="panel-artist">
-          <img
-            v-lazy="renderArtistImg(placename.image)"
-            class="artist-img-small"
-          />
-          <div class="panel-details">
-            <span class="item-title">{{ placename.name }}</span>
-            <span class="item-subtitle">{{ placename.kind | kind }}</span>
-            <div
-              class="cursor-pointer pl-2 pr-2 profile-btn"
-              @click="checkArtistProfile(placename.name)"
-            >
-              {{ artistProfile ? 'Visit your Profile' : 'Visit Profile' }}
+        <!-- Render List of Artist -->
+        <template v-if="this.$route.name !== 'index-art-art'">
+          <div v-if="placename" class="panel-artist">
+            <img
+              v-lazy="renderArtistImg(placename.image)"
+              class="artist-img-small"
+            />
+            <div class="panel-details">
+              <span class="item-title">{{ placename.name }}</span>
+              <span class="item-subtitle">{{ placename.kind | kind }}</span>
+              <div
+                class="cursor-pointer pl-2 pr-2 profile-btn"
+                @click="checkArtistProfile(placename.name)"
+              >
+                {{ artistProfile ? 'Visit your Profile' : 'Visit Profile' }}
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="listOfArtists.length !== 0" class="artist-list-container">
-          <span>List of Artist:</span> <br />
-          <a
-            v-for="artist in listOfArtists"
-            :key="artist.id"
-            href="#"
-            @click="checkArtistProfile(artist.name)"
-            >{{ artist.name }}</a
-          >
-        </div>
-      </template>
+          <div v-if="listOfArtists.length !== 0" class="artist-list-container">
+            <span>List of Artist:</span> <br />
+            <a
+              v-for="artist in listOfArtists"
+              :key="artist.id"
+              href="#"
+              @click="checkArtistProfile(artist.name)"
+              >{{ artist.name }}</a
+            >
+          </div>
+        </template>
 
-      <b-row v-if="listOfPublicArt" class="ml-1 mr-1 media-list-container">
-        <b-col
-          v-for="(artwork, index) in listOfPublicArt"
-          :key="artwork.id"
-          lg="12"
-          xl="12"
-          md="6"
-          sm="12"
-          @click="showMedia(artwork, index)"
-        >
-          <MediaCard
-            class="mt-3 hover-left-move"
-            :media="artwork"
-            :geometry="geometry"
-            :type="'public_art'"
+        <b-row v-if="listOfPublicArt" class="ml-1 mr-1 media-list-container">
+          <b-col
+            v-for="(artwork, index) in listOfPublicArt"
+            :key="artwork.id"
+            lg="12"
+            xl="12"
+            md="6"
+            sm="12"
+            @click="showMedia(artwork, index)"
           >
-          </MediaCard>
-        </b-col>
-      </b-row>
+            <MediaCard
+              class="mt-3 hover-left-move"
+              :media="artwork"
+              :geometry="geometry"
+              :type="'public_art'"
+            >
+            </MediaCard>
+          </b-col>
+        </b-row>
 
-      <!-- Render List of Medias -->
-      <b-row class="media-list-container">
-        <b-col
-          v-for="media in listOfMedias"
-          :key="media.id"
-          lg="12"
-          xl="12"
-          md="6"
-          sm="12"
-          @click="showMedia(media)"
-        >
-          <MediaCard
-            class="mt-3 hover-left-move"
-            :media="media"
-            :geometry="geometry"
-            :type="'media'"
+        <!-- Render List of Medias -->
+        <b-row class="media-list-container">
+          <b-col
+            v-for="media in listOfMedias"
+            :key="media.id"
+            lg="12"
+            xl="12"
+            md="6"
+            sm="12"
+            @click="showMedia(media)"
           >
-          </MediaCard>
-        </b-col>
-      </b-row>
-    </div>
-    <div v-else-if="!isDrawerShown" class="panel-collapsable hide-mobile ">
-      <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
-        <img src="@/assets/images/go_icon_hover.svg" />
-        <span>Expand</span>
+            <MediaCard
+              class="mt-3 hover-left-move"
+              :media="media"
+              :geometry="geometry"
+              :type="'media'"
+            >
+            </MediaCard>
+          </b-col>
+        </b-row>
+      </div>
+      <div v-else-if="!isDrawerShown" class="panel-collapsable hide-mobile ">
+        <div class="btn-collapse cursor-pointer" @click="toggleArtsDrawer">
+          <img src="@/assets/images/go_icon_hover.svg" />
+          <span>Expand</span>
+        </div>
       </div>
     </div>
     <!-- Render Gallery with Media Info -->
@@ -124,12 +126,6 @@ export default {
     }
   },
   props: {
-    art: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
     artistProfile: {
       type: Number,
       default: null
@@ -137,13 +133,16 @@ export default {
   },
   data() {
     return {
-      currentMedia: this.art,
+      currentMedia: {},
       listOfMedias: [],
       listOfArtists: [],
       isLoading: false
     }
   },
   computed: {
+    currentArt() {
+      return this.$store.state.arts.currentPlacename
+    },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
@@ -157,10 +156,17 @@ export default {
       return this.$store.state.sidebar.showGallery
     },
     placename() {
-      return this.isArtsDetailPage ? this.art.placename : this.art
+      return this.isArtsDetailPage ? this.currentArt.placename : this.currentArt
+    },
+    getDrawerBehavior() {
+      if (this.isArtsDetailPage) {
+        return this.allArtworks.length > 1
+      } else {
+        return this.allArtworks.length !== 0
+      }
     },
     listOfPublicArt() {
-      return this.art.public_arts || []
+      return this.currentArt.public_arts || []
     },
     listOfImageMedia() {
       return [
@@ -198,19 +204,8 @@ export default {
 
     this.$store.commit(
       'sidebar/setGallery',
-      this.isArtsDetailPage ? !!this.currentMedia : false
+      this.isArtsDetailPage ? !!this.currentArt : false
     )
-
-    // // Fetch artists for this placename if it is a public_art
-    // if (!this.isArtsDetailPage && this.placename.kind === 'public_art') {
-    //   this.$axios
-    //     .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
-    //     .then(result => {
-    //       if (result) {
-    //         this.artists = [...this.artists, ...result]
-    //       }
-    //     })
-    // }
 
     this.fetchMedia()
 
@@ -238,10 +233,15 @@ export default {
 
       if (result) {
         this.listOfMedias = result.sort((a, b) => b.id - a.id)
+        this.$store.commit('arts/setMediaCount', result.length)
       }
     },
     toggleGallery() {
       this.$store.commit('sidebar/setGallery', !this.showGallery)
+
+      if (this.isArtsDetailPage && this.allArtworks.length <= 1) {
+        this.toggleArtsDrawer()
+      }
     },
     toggleArtsDrawer() {
       this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
