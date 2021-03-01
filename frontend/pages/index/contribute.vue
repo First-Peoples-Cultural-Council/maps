@@ -236,7 +236,7 @@
                 id="otherLanguage"
                 v-model="languageNonBC"
                 type="text"
-                placeholder="(ex. Spanish, English, etc.)                                                                                                                                                                                                        , English)"
+                placeholder="(ex. Michif, Mohawk, etc.)                                                                                                                                                                                                        , English)"
               ></b-form-input>
             </b-row>
 
@@ -246,7 +246,9 @@
                   >Community</label
                 >
                 <ToolTip
-                  :content="`What community does this ${queryType} belong to? `"
+                  :content="
+                    `What community does this  ${queryType} belong to? Choices are 204 First Nations of BC or 'other' to enter your community manually.`
+                  "
                 ></ToolTip>
               </div>
 
