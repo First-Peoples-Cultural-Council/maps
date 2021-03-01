@@ -231,8 +231,6 @@ export default {
           return encodeFPCC(media.name) === this.$route.query.artwork
         })
 
-        console.log('result', foundMedia)
-
         if (this.$route.query.upload_artwork) {
           // do nothing
         } else if (foundMedia) {
