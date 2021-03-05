@@ -235,7 +235,6 @@
       </div>
       <ArtsDrawer
         v-if="isGalleryNotEmpty"
-        :art="artDetails"
         class="sidebar-side-panel hide-mobile"
         :class="{
           'hide-scroll-y': isGalleryShown
@@ -293,6 +292,9 @@ export default {
     }
   },
   computed: {
+    artDetails() {
+      return this.$store.state.arts.currentPlacename
+    },
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
@@ -411,12 +413,11 @@ export default {
       if (art) {
         const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
 
+        store.commit('arts/setCurrentPlacename', artDetails)
         const isServer = !!process.server
         return {
-          isServer,
-          artDetails
+          isServer
         }
-      } else {
       }
     }
   },

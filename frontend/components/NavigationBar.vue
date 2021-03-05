@@ -179,7 +179,7 @@
               <a class="color-gray" href="/page/tos">Terms of Use</a>
             </li>
             <li>
-              <a class="color-gray" href="/page/help">Help</a>
+              <a class="color-gray" href="/page/about">About</a>
             </li>
             <li>
               <a class="color-gray" href="/page/contact">Contact Us</a>
