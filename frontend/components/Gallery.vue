@@ -132,7 +132,7 @@
           v-for="(item, indx) in relatedMedia"
           :key="`item-${item.name}-${item.id}`"
           :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
-          @click="selectCurrentIndex(item)"
+          @click="selectNewMedia(item)"
         >
           <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
           <img v-else v-lazy="getMediaUrl(item.image)" />
@@ -253,7 +253,7 @@ export default {
 
       this.isFullscreen = !this.isFullscreen
     },
-    selectCurrentIndex(item) {
+    selectNewMedia(item) {
       this.mediaData = item
       this.updateURL()
     },
