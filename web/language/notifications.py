@@ -1,7 +1,7 @@
 from users.models import User, Administrator
 import datetime
 
-from language.models import PlaceName, Media, Favourite, CommunityMember
+from language.models import PlaceName, Media, Favourite, CommunityMember, Language, Community
 
 from django.db.models import Q
 from django.core.mail import send_mail
@@ -37,19 +37,19 @@ def get_new_media_messages(new_medias):
                 link = "(Orphaned Media)"
             preview = ''
             kind = 'media'
+            file_name = " - " + media.name
             if 'image' in media.file_type:
-                link = ""
                 kind = "image"
-                preview = "<br><img src='{}/static/{}' width=100 style='width:100px;height:auto'/>".format(
+                preview = "<br><img src='{}/media/{}' width=100 style='width:100px;height:auto'/>".format(
                     settings.HOST, media.media_file)
             if media.url:
                 link = media.url
                 kind = "video"
             messages.append(
                 """
-                <li>The location {} has a new media uploaded. {}</li>
+                <li>{} has a new media uploaded. {}{}</li>
             """.format(
-                    link, preview
+                    link, preview, file_name
                 )
             )
 
@@ -62,6 +62,8 @@ def get_new_places_messages(new_places, scope="New Places"):
     if new_places.count():
         messages.append("<h3>{}</h3><ul>".format(scope))
         for place in new_places:
+            placename_type = 'place' if place.kind == '' or place.kind == 'poi' else place.kind.replace(
+                '_', ' ')
             link = _place_link(place)
             if place.creator:
                 creator_name = str(place.creator)
@@ -69,9 +71,9 @@ def get_new_places_messages(new_places, scope="New Places"):
                 creator_name = "Someone"
             messages.append(
                 """
-                <li>{} uploaded a new place: {}.</li>
+                <li>{} uploaded a new {}: {}.</li>
             """.format(
-                    creator_name, link
+                    creator_name, placename_type, link
                 )
             )
         messages.append("</ul>")
@@ -125,42 +127,69 @@ def _place_link(p):
 
 def notify(user, since=None):
     since = since or user.last_notified
+    user_is_admin = user.email in [a[1] for a in settings.ADMINS] or user.email in [
+        a[1] for a in settings.FPCC_ADMINS]
     print("Calculating notifications for", user)
     intro = ["(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)"]
 
-    languages = user.languages.all()
+    languages = []
     communities = []
     communities_awaiting_verification = []
-    for membership in CommunityMember.objects.filter(user=user):
-        if membership.status == CommunityMember.VERIFIED:
-            communities.append(membership.community)
-        else:
-            communities_awaiting_verification.append(membership.community)
-    if languages.count():
+
+    user_name = " ".join([user.first_name, user.last_name])
+
+    intro.append(
+        "<p>Hello, {}!".format(user_name)
+    )
+
+    if user_is_admin:
+        languages = Language.objects.all()
+        communities = Community.objects.all()
+
         intro.append(
-            "<p>You are receiving updates related to the following languages: {}</p>".format(
+            "<p>As an Admin, you will be receiving updates to all Languages and Communities.".format(
                 ",".join([_lang_link(l) for l in languages])
             )
         )
-    if len(communities):
+
         intro.append(
-            "<p>You are receiving updates related to the following communities: {}</p>".format(
-                ",".join([_comm_link(c) for c in communities])
+            "<p>This is a test-only setup. We're not expecting that many updates, so even if the updates are for every single language and community, we won't be overwhelemed.".format(
+                ",".join([_lang_link(l) for l in languages])
             )
         )
-    if len(communities_awaiting_verification):
-        intro.append(
-            "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
-                ",".join([_comm_link(c)
-                          for c in communities_awaiting_verification])
+    else:
+        languages = user.languages.all()
+
+        for membership in CommunityMember.objects.filter(user=user):
+            if membership.status == CommunityMember.VERIFIED:
+                communities.append(membership.community)
+            else:
+                communities_awaiting_verification.append(membership.community)
+
+        if languages.count():
+            intro.append(
+                "<p>You are receiving updates related to the following languages: {}</p>".format(
+                    ",".join([_lang_link(l) for l in languages])
+                )
             )
-        )
+        if len(communities):
+            intro.append(
+                "<p>You are receiving updates related to the following communities: {}</p>".format(
+                    ",".join([_comm_link(c) for c in communities])
+                )
+            )
+        if len(communities_awaiting_verification):
+            intro.append(
+                "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
+                    ",".join([_comm_link(c)
+                              for c in communities_awaiting_verification])
+                )
+            )
+
     messages = []
     # If somethe user is a member of a language, notify them of all the public places in their language of interest.
     for language in languages:
         new_places = PlaceName.objects.filter(
-            # don't double-show items in their community.
-            ~Q(community__in=communities+communities_awaiting_verification),
             language=language,
             community_only=False, created__gte=since)
         messages += get_new_places_messages(
@@ -175,14 +204,15 @@ def notify(user, since=None):
             new_places, "New Places in {}".format(community.name)
         )
 
-    # public placenames.
-    for community in communities_awaiting_verification:
-        new_places = PlaceName.objects.filter(
-            community=community, created__gte=since, community_only=False)
-        messages += get_new_places_messages(
-            new_places, "New Places in {} (public updates only)".format(
-                community.name)
-        )
+    if not user_is_admin:
+        # public placenames.
+        for community in communities_awaiting_verification:
+            new_places = PlaceName.objects.filter(
+                community=community, created__gte=since, community_only=False)
+            messages += get_new_places_messages(
+                new_places, "New Places in {} (public updates only)".format(
+                    community.name)
+            )
 
     # all media, shared only with verified members.
     new_medias_private = Media.objects.filter(
@@ -192,16 +222,17 @@ def notify(user, since=None):
     )
     messages += get_new_media_messages(new_medias_private)
 
-    # public media. Show public stuff to anyone who has signed up.
-    new_medias_public = Media.objects.filter(
-        Q(placename__language__in=languages) |
-        Q(placename__community__in=communities_awaiting_verification) |
-        Q(community__in=communities_awaiting_verification),
-        # public items.
-        Q(community_only=False) & Q(placename__community_only=False),
-        created__gte=since,
-    )
-    messages += get_new_media_messages(new_medias_public)
+    if not user_is_admin:
+        # public media. Show public stuff to anyone who has signed up.
+        new_medias_public = Media.objects.filter(
+            Q(placename__language__in=languages) |
+            Q(placename__community__in=communities_awaiting_verification) |
+            Q(community__in=communities_awaiting_verification),
+            # public items.
+            Q(community_only=False) & Q(placename__community_only=False),
+            created__gte=since,
+        )
+        messages += get_new_media_messages(new_medias_public)
 
     my_favourites = Favourite.objects.filter(
         Q(media__creator=user) | Q(place__creator=user), created__gte=since
@@ -215,16 +246,14 @@ def notify(user, since=None):
         """.format(
             settings.HOST, user.id
         )
-        print(html)
-        if user.email in [a[1] for a in settings.ADMINS] or user.email in [a[1] for a in settings.FPCC_ADMINS]:
-            print("sending to ", user.email)
-            send_mail(
-                "Your Updates on the First Peoples' Language Map",
-                html,
-                "maps@fpcc.ca",
-                [user.email],
-                html_message=html,
-            )
+        print("sending to ", user.email)
+        send_mail(
+            "Your Updates on the First Peoples' Language Map",
+            html,
+            "maps@fpcc.ca",
+            [user.email],
+            html_message=html,
+        )
         return html
     else:
         print("No new information for this person.", intro)
@@ -239,10 +268,13 @@ def send():
         notification_frequency__gt=-1,
     )
     for user in users:
+        user_is_admin = user.email in [a[1] for a in settings.ADMINS] or user.email in [
+            a[1] for a in settings.FPCC_ADMINS]
 
-        notify(user)
-        user.last_notified = now
-        user.save()
+        if user_is_admin:
+            notify(user)
+            user.last_notified = now
+            user.save()
 
 
 def inform_placename_rejected_or_flagged(placename_id, reason, status):
