@@ -438,7 +438,7 @@ export default {
       if (this.$route.name === 'index-art') {
         return (
           this.$store.state.sidebar.isArtsMode &&
-          this.$store.state.arts.mediaCount.length > 1
+          this.$store.state.arts.mediaCount > 1
         )
       } else {
         return this.$store.state.sidebar.isArtsMode
