@@ -296,8 +296,6 @@ export default {
 
 .arts-right-panel {
   display: flex;
-  background: #f9f9f9 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
   border: 1px solid #d7d7de;
   flex-direction: column;
   justify-content: flex-start;
@@ -436,10 +434,15 @@ export default {
     border: 0;
   }
 
+  .sidefold-modal .media-list-container {
+    overflow-y: auto;
+  }
+
   .sidefold-modal .media-list-container .col-md-6 {
     flex: 0 0 100%;
     max-width: 100%;
   }
+
   .arts-main-wrapper .panel-close-btn {
     display: none !important;
   }

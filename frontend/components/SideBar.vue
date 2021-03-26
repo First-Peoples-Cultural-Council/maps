@@ -262,10 +262,6 @@ export default {
     overflow: hidden;
   }
 
-  .sidebar-container:not(:root:root) {
-    bottom: 35px !important;
-  }
-
   .scroll-indicator-container {
     width: 100%;
   }
@@ -322,14 +318,16 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    width: 325px;
+    width: 400px;
     height: 100vh;
     overflow-x: hidden;
     z-index: 999999;
+    background: #f9f9f9 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
   }
 
   .sidebar-container .arts-right-panel {
-    width: 325px;
+    width: 400px;
     height: 100vh;
   }
 
