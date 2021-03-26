@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { getMediaUrl, encodeFPCC } from '@/plugins/utils.js'
+import { getMediaUrl, updateArtHistoryState } from '@/plugins/utils.js'
 export default {
   props: {
     toggleGallery: {
@@ -266,25 +266,15 @@ export default {
       this.updateURL()
     },
     updateURL() {
-      if (this.isArtsDetailPage) {
-        this.$router.push({
-          query: {
-            artwork: encodeFPCC(this.mediaData.name)
-          }
-        })
-      } else {
-        // When on arts list page, manually update the URL
-        history.pushState(
-          {},
-          null,
-          `${this.$route.path}/${encodeFPCC(
-            this.placename
-          )}?artwork=${encodeFPCC(this.mediaData.name)}`
-        )
-      }
+      updateArtHistoryState({
+        isArtsDetailPage: this.isArtsDetailPage,
+        route: this.$route.path,
+        placename: this.placename,
+        mediaName: this.mediaData.name
+      })
     },
     getYoutubeEmbed(url) {
-      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*). */
       const match = url.match(regExp)
       return match && match[7].length === 11 ? match[7] : false
     },
