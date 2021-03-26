@@ -7,6 +7,20 @@ export const getApiUrl = path => {
   return process.server ? `http://nginx/api/${path}` : `/api/${path}`
 }
 
+export const updateArtHistoryState = data => {
+  const getBaseUrl = data.isArtsDetailPage
+    ? ''
+    : `${data.route}/${encodeFPCC(data.placename)}`
+
+  /* Manually update the URL without refreshing/redirecting the page */
+
+  history.pushState(
+    {},
+    null,
+    `${getBaseUrl}?artwork=${encodeFPCC(data.mediaName)}`
+  )
+}
+
 export const formatPoint = point => {
   return {
     lng: point[0],

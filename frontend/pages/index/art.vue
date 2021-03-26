@@ -188,7 +188,11 @@ import ArtworkCard from '@/components/arts/ArtworkCard.vue'
 import BadgeFilter from '@/components/BadgeFilter.vue'
 import Badge from '@/components/Badge.vue'
 import Filters from '@/components/Filters.vue'
-import { encodeFPCC, getApiUrl } from '@/plugins/utils.js'
+import {
+  encodeFPCC,
+  getApiUrl,
+  updateArtHistoryState
+} from '@/plugins/utils.js'
 import Accordion from '@/components/Accordion.vue'
 import ArtistFilter from '@/components/CardFilter.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -540,12 +544,12 @@ export default {
       // If Same Artwork is clicked, close the drawer
       if (currentArt === this.currentPlacename && this.isDrawerShown) {
         this.setCurrentPlacename({})
-
         this.closeDrawer()
       }
       // If another artwork is selected when there's open, close it to recalibrate data, then open
       else if (currentArt !== this.currentPlacename && this.isDrawerShown) {
         this.setCurrentPlacename(currentArt)
+        this.updateURL(currentArt)
         // Important to open it after closing the drawer
         this.closeDrawer()
         setTimeout(() => {
@@ -556,9 +560,18 @@ export default {
       else if (currentArt !== this.currentPlacename || !this.isDrawerShown) {
         this.setCurrentPlacename(currentArt)
         this.openDrawer()
+        this.updateURL(currentArt)
       }
       // Close Event Popover if open
       this.$root.$emit('closeEventPopover')
+    },
+    updateURL(currentArt) {
+      updateArtHistoryState({
+        isArtsDetailPage: false,
+        route: this.$route.path,
+        placename: currentArt.placename.name,
+        mediaName: currentArt.name
+      })
     },
     setCurrentPlacename(placename) {
       this.$store.commit('arts/setCurrentPlacename', placename)

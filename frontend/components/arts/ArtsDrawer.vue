@@ -107,7 +107,12 @@
 
 <script>
 import MediaCard from '@/components/MediaCard.vue'
-import { encodeFPCC, getApiUrl, getMediaUrl } from '@/plugins/utils.js'
+import {
+  encodeFPCC,
+  getApiUrl,
+  getMediaUrl,
+  updateArtHistoryState
+} from '@/plugins/utils.js'
 import Gallery from '@/components/Gallery.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
@@ -202,11 +207,6 @@ export default {
       }, 500)
     })
 
-    this.$store.commit(
-      'sidebar/setGallery',
-      this.isArtsDetailPage ? !!this.currentArt : false
-    )
-
     this.fetchMedia()
   },
   methods: {
@@ -225,12 +225,14 @@ export default {
     },
 
     getQueryMedia() {
-      // check if query URL exist
-      if (this.$route.query.artwork) {
-        const foundMedia = this.allArtworks.find(media => {
-          return encodeFPCC(media.name) === this.$route.query.artwork
-        })
+      const foundMedia = this.allArtworks.find(media => {
+        return encodeFPCC(media.name) === this.$route.query.artwork
+          ? this.$route.query.artwork
+          : this.currentArt.name
+      })
 
+      // check if query URL exist
+      if (this.$route.query.artwork && foundMedia) {
         if (this.$route.query.upload_artwork) {
           // do nothing
         } else if (foundMedia) {
@@ -239,6 +241,13 @@ export default {
         } else if (this.isArtsDetailPage) {
           this.$router.push(this.$route.path)
         }
+      } else {
+        this.currentMedia = foundMedia
+
+        this.$store.commit(
+          'sidebar/setGallery',
+          this.isArtsDetailPage ? !!this.currentArt : false
+        )
       }
     },
     toggleGallery() {
@@ -253,22 +262,13 @@ export default {
     },
     showMedia(media) {
       this.currentMedia = media
-      if (this.$route.name === 'index-art') {
-        // When on arts list page, manually update the URL
-        history.pushState(
-          {},
-          null,
-          `${this.$route.path}/${encodeFPCC(this.artName)}?artwork=${encodeFPCC(
-            media.name
-          )}`
-        )
-      } else {
-        this.$router.push({
-          query: {
-            artwork: encodeFPCC(media.name)
-          }
-        })
-      }
+
+      updateArtHistoryState({
+        isArtsDetailPage: !this.isArtsDetailPage,
+        route: this.$route.path,
+        placename: this.artName,
+        mediaName: media.name
+      })
 
       this.toggleGallery()
       // Close Event Popover if open
