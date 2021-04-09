@@ -370,7 +370,21 @@ export default {
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
 
-    const allArts = await $axios.$get(getApiUrl(`art-search?format=json`))
+    const artistProfiles = user.placename_set.filter(
+      placename => placename.kind === 'artist'
+    )
+
+    const artistQueryArray = []
+
+    artistProfiles.forEach(profile => {
+      artistQueryArray.push(`${profile.id}`)
+    })
+    const artistQuery = artistQueryArray.join(',')
+
+    const allArts = await $axios.$get(
+      getApiUrl(`art-search?artists=${artistQuery}&format=json`)
+    )
+
     let artDetails = null
     if (user.artist_profile) {
       artDetails = await $axios.$get(
