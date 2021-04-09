@@ -20,7 +20,7 @@
             v-if="picture"
             :src="picture"
             alt="Menu"
-            class="navbar-icon user-display-img"
+            class="navbar-icon user-display-img "
           />
         </nav>
       </div>
@@ -29,7 +29,7 @@
         <img src="@/assets/images/user_icon.svg" alt="Menu" />
       </div>
       <div class="menu-container  hide-mobile" @click="openNav">
-        <span>MENU</span>
+        <span class="mr-2">MENU</span>
         <img src="@/assets/images/menu_icon.svg" alt="Menu" />
       </div>
     </div>
@@ -352,10 +352,6 @@ export default {
   font-weight: 800;
   font-size: 15px;
 
-  & > * {
-    margin: 0 0.4em 0 0.2em;
-  }
-
   img {
     width: 18px;
     height: 18px;
@@ -374,7 +370,7 @@ export default {
 
     .user-display-img {
       width: 45px;
-      height: 45px;
+      height: 42px;
       border-radius: 1.5em;
       object-fit: cover;
       margin-left: 1px;
@@ -510,6 +506,10 @@ export default {
   .user-container {
     margin: 0 0.25em;
   }
+
+  .user-display-img {
+    height: 45px !important;
+  }
 }
 
 /* Navigation Icons when Drawer is open */
@@ -564,7 +564,7 @@ export default {
 
   .navbar-icon-container .navbar-icon {
     width: 25px;
-    height: 25px;
+    height: 25px !important;
   }
 
   .mobile-logo {
