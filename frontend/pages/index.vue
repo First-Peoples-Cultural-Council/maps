@@ -513,72 +513,76 @@ export default {
     return { user }
   },
   async fetch({ $axios, store }) {
-    // Only fetch search data
-    const results = await Promise.all([
-      $axios.$get(getApiUrl('language-search')),
-      $axios.$get(getApiUrl('community-search')),
-      $axios.$get(getApiUrl('placename-search')),
-      $axios.$get(getApiUrl('art-search')),
-      $axios.$get(getApiUrl('art-geo')),
-      $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event')),
-      $axios.$get(getApiUrl('grants')),
-      $axios.$get(getApiUrl('grant-categories'))
-    ])
+    if (!store.state.app.isDataLoaded) {
+      // Only fetch search data
+      const results = await Promise.all([
+        $axios.$get(getApiUrl('language-search')),
+        $axios.$get(getApiUrl('community-search')),
+        $axios.$get(getApiUrl('placename-search')),
+        $axios.$get(getApiUrl('art-search')),
+        $axios.$get(getApiUrl('art-geo')),
+        $axios.$get(getApiUrl('taxonomy')),
+        $axios.$get(getApiUrl('arts/event')),
+        $axios.$get(getApiUrl('grants')),
+        $axios.$get(getApiUrl('grant-categories'))
+      ])
 
-    store.commit('languages/setSearchStore', results[0])
-    store.commit('communities/setSearchStore', results[1])
-    store.commit('places/setSearchStore', results[2])
-    store.commit('arts/setSearchStore', results[3])
+      store.commit('languages/setSearchStore', results[0])
+      store.commit('communities/setSearchStore', results[1])
+      store.commit('places/setSearchStore', results[2])
+      store.commit('arts/setSearchStore', results[3])
 
-    // Set Art Geo Set - for visible Arts count
-    store.commit('arts/setGeo', results[4].features)
-    store.commit('arts/setGeoStore', results[4])
+      // Set Art Geo Set - for visible Arts count
+      store.commit('arts/setGeo', results[4].features)
+      store.commit('arts/setGeoStore', results[4])
 
-    // Set Grants Geo Set
-    store.commit('grants/setGrants', results[7].features)
-    store.commit('grants/setGrantsGeo', results[7])
+      // Set Grants Geo Set
+      store.commit('grants/setGrants', results[7].features)
+      store.commit('grants/setGrantsGeo', results[7])
 
-    const taxonomies = [
-      ...results[5],
-      ...Array.from(['image', 'video', 'audio']).map(type => {
-        return {
-          id: type,
-          name: type
-        }
-      })
-    ]
-    store.commit(
-      'arts/setTaxonomySearchSet',
-      taxonomies.map(tax => {
-        tax.isChecked = false
-        return tax
-      })
-    )
+      const taxonomies = [
+        ...results[5],
+        ...Array.from(['image', 'video', 'audio']).map(type => {
+          return {
+            id: type,
+            name: type
+          }
+        })
+      ]
+      store.commit(
+        'arts/setTaxonomySearchSet',
+        taxonomies.map(tax => {
+          tax.isChecked = false
+          return tax
+        })
+      )
 
-    // Store Grants Category List
-    store.commit(
-      'grants/setGrantCategorySearchSet',
-      results[8].map(tax => {
-        tax.isChecked = false
-        return tax
-      })
-    )
+      // Store Grants Category List
+      store.commit(
+        'grants/setGrantCategorySearchSet',
+        results[8].map(tax => {
+          tax.isChecked = false
+          return tax
+        })
+      )
 
-    const currentLanguages = store.state.languages.languageSet
+      const currentLanguages = store.state.languages.languageSet
 
-    if (currentLanguages.length === 0) {
-      // Fetch languages and communites data
-      const languages = await $axios.$get(getApiUrl('language'))
-      const communities = await $axios.$get(getApiUrl('community'))
+      if (currentLanguages.length === 0) {
+        // Fetch languages and communites data
+        const languages = await $axios.$get(getApiUrl('language'))
+        const communities = await $axios.$get(getApiUrl('community'))
 
-      // Set language stores
-      store.commit('languages/set', groupBy(languages, 'family.name')) // All data
-      store.commit('languages/setStore', languages) // Updating data based on map
+        // Set language stores
+        store.commit('languages/set', groupBy(languages, 'family.name')) // All data
+        store.commit('languages/setStore', languages) // Updating data based on map
 
-      // Set community stores
-      store.commit('communities/set', communities) // All data
-      store.commit('communities/setStore', communities) // Updating data based on map
+        // Set community stores
+        store.commit('communities/set', communities) // All data
+        store.commit('communities/setStore', communities) // Updating data based on map
+      }
+
+      store.commit('app/setIsDataLoaded', true)
     }
   },
   beforeRouteUpdate(to, from, next) {
