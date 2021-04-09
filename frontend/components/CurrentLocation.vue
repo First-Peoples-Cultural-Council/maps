@@ -23,7 +23,6 @@ export default {
 .current-location-container {
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 3em;
   cursor: pointer;
 }
 .current-location-control h5 {

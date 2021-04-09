@@ -127,7 +127,7 @@
 
           <h5
             v-if="placenameSet.length > 0"
-            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-2"
+            class="color-gray font-08 text-uppercase font-weight-bold mb-2 mt-2"
           >
             Contributions ({{ placenameSet.length }})
           </h5>
@@ -234,7 +234,6 @@
           </div>
         </section>
         <ArtsDrawer
-          v-if="artDetails"
           :art="artDetails"
           :artist-profile="user.artist_profile"
           class="sidebar-side-panel hide-mobile"
@@ -393,6 +392,8 @@ export default {
         getApiUrl('placename/' + user.artist_profile)
       )
     }
+
+    store.commit('arts/setCurrentPlacename', artDetails)
 
     let isOwner = false
     if (authUser.is_authenticated === true) {

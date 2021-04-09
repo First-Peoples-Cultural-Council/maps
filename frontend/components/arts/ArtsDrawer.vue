@@ -148,6 +148,9 @@ export default {
     currentArt() {
       return this.$store.state.arts.currentPlacename
     },
+    placename() {
+      return this.isArtsDetailPage ? this.currentArt.placename : this.currentArt
+    },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
     },
@@ -159,9 +162,6 @@ export default {
     },
     showGallery() {
       return this.$store.state.sidebar.showGallery
-    },
-    placename() {
-      return this.isArtsDetailPage ? this.currentArt.placename : this.currentArt
     },
     getDrawerBehavior() {
       if (this.isArtsDetailPage) {
