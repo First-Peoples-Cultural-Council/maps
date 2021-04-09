@@ -3,7 +3,7 @@
     <b-form-file
       ref="fileUpload"
       v-model="file"
-      accept="image/*"
+      accept="image/*, video/*"
       class="file-upload-input"
       :placeholder="placeholder"
       drop-placeholder="Drop file here..."
