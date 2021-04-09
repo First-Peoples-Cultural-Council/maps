@@ -12,12 +12,12 @@
     >
       <div>
         <h4 class="mt-4">Save Current Location</h4>
-        <label class="font-08" for="savetitle">Title</label>
+        <label class="font-10" for="savetitle">Title</label>
 
         <b-form-input
           id="savetitle"
           v-model="saveTitle"
-          class="font-08"
+          class="font-10"
           placeholder="Enter Title (required)"
           :state="stateTitle"
           required
@@ -26,15 +26,24 @@
           Title is required
         </b-form-invalid-feedback>
 
-        <label class="mt-3 font-08" for="savedescription">Description</label>
+        <label class="mt-3 font-10" for="savedescription">Description</label>
         <b-form-textarea
           id="savedescription"
           v-model="saveDescription"
           placeholder="Enter description"
           rows="3"
           max-rows="6"
-          class="mt-2 mb-2 font-08"
+          class="mt-2 mb-2 font-10"
         ></b-form-textarea>
+        <p class="mt-2 mb-2 font-08 text-info">
+          <i>
+            NOTE: The Save Location function allows the system to memorize the
+            current view of your map, including the zoom level. This is
+            especially helpful when you want to monitor specific areas in the
+            map only. These shortcuts are accessible in your profile (Click on
+            your username at the upper right corner of the screen).
+          </i>
+        </p>
         <b-button
           size="sm"
           class="d-block mt-2 clipboard"

@@ -396,7 +396,6 @@ export default {
         // zoom: 4
       },
       mode: 'All',
-      map: {},
       accordionContent:
         'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below.',
       ie: `
@@ -497,6 +496,9 @@ export default {
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
+    },
+    map() {
+      return this.$store.state.mapinstance.mapInstance
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -511,72 +513,76 @@ export default {
     return { user }
   },
   async fetch({ $axios, store }) {
-    // Only fetch search data
-    const results = await Promise.all([
-      $axios.$get(getApiUrl('language-search')),
-      $axios.$get(getApiUrl('community-search')),
-      $axios.$get(getApiUrl('placename-search')),
-      $axios.$get(getApiUrl('art-search')),
-      $axios.$get(getApiUrl('art-geo')),
-      $axios.$get(getApiUrl('taxonomy')),
-      $axios.$get(getApiUrl('arts/event')),
-      $axios.$get(getApiUrl('grants')),
-      $axios.$get(getApiUrl('grant-categories'))
-    ])
+    if (!store.state.app.isDataLoaded) {
+      // Only fetch search data
+      const results = await Promise.all([
+        $axios.$get(getApiUrl('language-search')),
+        $axios.$get(getApiUrl('community-search')),
+        $axios.$get(getApiUrl('placename-search')),
+        $axios.$get(getApiUrl('art-search')),
+        $axios.$get(getApiUrl('art-geo')),
+        $axios.$get(getApiUrl('taxonomy')),
+        $axios.$get(getApiUrl('arts/event')),
+        $axios.$get(getApiUrl('grants')),
+        $axios.$get(getApiUrl('grant-categories'))
+      ])
 
-    store.commit('languages/setSearchStore', results[0])
-    store.commit('communities/setSearchStore', results[1])
-    store.commit('places/setSearchStore', results[2])
-    store.commit('arts/setSearchStore', results[3])
+      store.commit('languages/setSearchStore', results[0])
+      store.commit('communities/setSearchStore', results[1])
+      store.commit('places/setSearchStore', results[2])
+      store.commit('arts/setSearchStore', results[3])
 
-    // Set Art Geo Set - for visible Arts count
-    store.commit('arts/setGeo', results[4].features)
-    store.commit('arts/setGeoStore', results[4])
+      // Set Art Geo Set - for visible Arts count
+      store.commit('arts/setGeo', results[4].features)
+      store.commit('arts/setGeoStore', results[4])
 
-    // Set Grants Geo Set
-    store.commit('grants/setGrants', results[7].features)
-    store.commit('grants/setGrantsGeo', results[7])
+      // Set Grants Geo Set
+      store.commit('grants/setGrants', results[7].features)
+      store.commit('grants/setGrantsGeo', results[7])
 
-    const taxonomies = [
-      ...results[5],
-      ...Array.from(['image', 'video', 'audio']).map(type => {
-        return {
-          id: type,
-          name: type
-        }
-      })
-    ]
-    store.commit(
-      'arts/setTaxonomySearchSet',
-      taxonomies.map(tax => {
-        tax.isChecked = false
-        return tax
-      })
-    )
+      const taxonomies = [
+        ...results[5],
+        ...Array.from(['image', 'video', 'audio']).map(type => {
+          return {
+            id: type,
+            name: type
+          }
+        })
+      ]
+      store.commit(
+        'arts/setTaxonomySearchSet',
+        taxonomies.map(tax => {
+          tax.isChecked = false
+          return tax
+        })
+      )
 
-    // Store Grants Category List
-    store.commit(
-      'grants/setGrantCategorySearchSet',
-      results[8].map(tax => {
-        tax.isChecked = false
-        return tax
-      })
-    )
+      // Store Grants Category List
+      store.commit(
+        'grants/setGrantCategorySearchSet',
+        results[8].map(tax => {
+          tax.isChecked = false
+          return tax
+        })
+      )
 
-    const currentLanguages = store.state.languages.languageSet
+      const currentLanguages = store.state.languages.languageSet
 
-    if (currentLanguages.length === 0) {
-      // Fetch languages and communites data
-      const languages = await $axios.$get(getApiUrl('language'))
-      const communities = await $axios.$get(getApiUrl('community'))
+      if (currentLanguages.length === 0) {
+        // Fetch languages and communites data
+        const languages = await $axios.$get(getApiUrl('language'))
+        const communities = await $axios.$get(getApiUrl('community'))
 
-      // Set language stores
-      store.commit('languages/set', groupBy(languages, 'family.name')) // All data
-      store.commit('languages/setStore', languages) // Updating data based on map
+        // Set language stores
+        store.commit('languages/set', groupBy(languages, 'family.name')) // All data
+        store.commit('languages/setStore', languages) // Updating data based on map
 
-      // Set community stores
-      store.commit('communities/set', communities) // All data
-      store.commit('communities/setStore', communities) // Updating data based on map
+        // Set community stores
+        store.commit('communities/set', communities) // All data
+        store.commit('communities/setStore', communities) // Updating data based on map
+      }
+
+      store.commit('app/setIsDataLoaded', true)
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -931,7 +937,6 @@ export default {
       })
     },
     mapInit(map, e) {
-      this.map = map
       this.$store.commit('mapinstance/set', map)
     },
     /**
@@ -1672,7 +1677,7 @@ export default {
   right: 10px;
   display: flex;
   color: #151515;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   align-items: center;
   justify-content: flex-end;
   width: 80%;
@@ -1681,6 +1686,7 @@ export default {
 .map-controls-overlay > * {
   margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
+  border-radius: 3em;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

@@ -24,7 +24,6 @@ export default {
   font-size: 0.9em;
   padding: 0.5em 0.5em;
   font-weight: bold;
-  border-radius: 0.25em;
   cursor: pointer;
   color: white;
   display: table;

@@ -127,7 +127,7 @@
 
           <h5
             v-if="placenameSet.length > 0"
-            class="color-gray font-08 text-uppercase font-weight-bold mb-0 mt-2"
+            class="color-gray font-08 text-uppercase font-weight-bold mb-2 mt-2"
           >
             Contributions ({{ placenameSet.length }})
           </h5>
@@ -234,7 +234,6 @@
           </div>
         </section>
         <ArtsDrawer
-          v-if="artDetails"
           :art="artDetails"
           :artist-profile="user.artist_profile"
           class="sidebar-side-panel hide-mobile"
@@ -370,13 +369,31 @@ export default {
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
 
-    const allArts = await $axios.$get(getApiUrl(`art-search?format=json`))
+    const artistProfiles = user.placename_set.filter(
+      placename => placename.kind === 'artist'
+    )
+
+    const artistQueryArray = []
+    artistProfiles.forEach(profile => {
+      artistQueryArray.push(`${profile.id}`)
+    })
+
+    const artistQuery = artistQueryArray.join(',')
+    const allArts =
+      artistQueryArray.length > 0
+        ? await $axios.$get(
+            getApiUrl(`art-search?artists=${artistQuery}&format=json`)
+          )
+        : []
+
     let artDetails = null
     if (user.artist_profile) {
       artDetails = await $axios.$get(
         getApiUrl('placename/' + user.artist_profile)
       )
     }
+
+    store.commit('arts/setCurrentPlacename', artDetails)
 
     let isOwner = false
     if (authUser.is_authenticated === true) {

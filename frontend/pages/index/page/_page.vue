@@ -1,6 +1,6 @@
 <template>
-  <div class="p-2">
-    <div class="nav-header cursor-pointer" @click.prevent="handleNavLink">
+  <div>
+    <div class="nav-header cursor-pointer p-2" @click.prevent="handleNavLink">
       <img
         src="../../../assets/images/symbol@2x.png"
         alt="Language Map Of British Columbia"
@@ -16,27 +16,29 @@
       </div>
     </div>
     <hr />
-    <div
-      class="fpcc-card-more"
-      @click.prevent="handleReturn"
-      @mouseover.prevent="handleMouseOver"
-      @mouseleave="handleMouseLeave"
-    >
-      <img
-        v-if="!hover"
-        class="ml-1"
-        src="@/assets/images/return_icon_hover.svg"
-        alt="Go"
-      />
-      <img
-        v-else
-        class="ml-1"
-        src="@/assets/images/return_icon_hover.svg"
-        alt="Go"
-      />
-      <span class="ml-1 font-weight-bold">Return</span>
+    <div class="page-content-container">
+      <div
+        class="fpcc-card-more"
+        @click.prevent="handleReturn"
+        @mouseover.prevent="handleMouseOver"
+        @mouseleave="handleMouseLeave"
+      >
+        <img
+          v-if="!hover"
+          class="ml-1"
+          src="@/assets/images/return_icon_hover.svg"
+          alt="Go"
+        />
+        <img
+          v-else
+          class="ml-1"
+          src="@/assets/images/return_icon_hover.svg"
+          alt="Go"
+        />
+        <span class="ml-1 font-weight-bold">Return</span>
+      </div>
+      <div v-html="content"></div>
     </div>
-    <div v-html="content"></div>
   </div>
 </template>
 
@@ -121,6 +123,11 @@ export default {
   border-radius: 0.5em;
   margin-bottom: 1em;
   margin-top: 1em;
+  cursor: pointer;
+}
+
+.page-content-container {
+  padding: 0 1.5em 1em 1.5em;
 }
 
 .fpcc-card-more {

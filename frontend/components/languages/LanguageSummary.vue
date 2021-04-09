@@ -99,7 +99,6 @@ export default {
 .ls h5 {
   hyphens: auto;
   font-size: 0.8em;
-  padding: 0 0.15em 0 0.25em;
   vertical-align: top;
   color: var(--color-gray, #6f6f70);
   font-weight: 500;

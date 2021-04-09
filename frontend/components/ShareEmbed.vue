@@ -114,7 +114,6 @@ export default {
 .share-embed-container {
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 3em;
   cursor: pointer;
 }
 .share-embed-container h5 {
