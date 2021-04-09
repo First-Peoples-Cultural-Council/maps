@@ -151,9 +151,7 @@
                 :taxonomy="art.properties.taxonomies"
                 :geometry="art.geometry"
                 class="mt-3 hover-left-move"
-                @click.native="
-                  handleCardClick($event, art.properties.name, 'art')
-                "
+                @click.native="handleCardClick(art.properties.name)"
               ></ArtsCard>
             </b-col>
           </b-row>
