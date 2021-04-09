@@ -375,15 +375,17 @@ export default {
     )
 
     const artistQueryArray = []
-
     artistProfiles.forEach(profile => {
       artistQueryArray.push(`${profile.id}`)
     })
-    const artistQuery = artistQueryArray.join(',')
 
-    const allArts = await $axios.$get(
-      getApiUrl(`art-search?artists=${artistQuery}&format=json`)
-    )
+    const artistQuery = artistQueryArray.join(',')
+    const allArts =
+      artistQueryArray.length > 0
+        ? await $axios.$get(
+            getApiUrl(`art-search?artists=${artistQuery}&format=json`)
+          )
+        : []
 
     let artDetails = null
     if (user.artist_profile) {
