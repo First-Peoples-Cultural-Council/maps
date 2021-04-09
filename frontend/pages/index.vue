@@ -1672,7 +1672,7 @@ export default {
   right: 10px;
   display: flex;
   color: #151515;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   align-items: center;
   justify-content: flex-end;
   width: 80%;
