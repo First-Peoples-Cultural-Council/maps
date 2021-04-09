@@ -9,11 +9,11 @@ from rest_framework.viewsets import GenericViewSet
 
 from language.models import Taxonomy
 from language.serializers import TaxonomySerializer
-from language.filters import StringListFilter
+from language.filters import ListFilter
 
 
 class TaxonomyFilterSet(FilterSet):
-    names = StringListFilter(field_name='name', lookup_expr='in')
+    names = ListFilter(field_name='name', lookup_expr='in')
 
     class Meta:
         model = Taxonomy

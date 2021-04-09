@@ -1,7 +1,7 @@
 from django_filters import Filter
 
 
-class StringListFilter(Filter):
+class ListFilter(Filter):
     def filter(self, qs, value):
         if value not in (None, ''):
             strings = [v for v in value.split(',')]

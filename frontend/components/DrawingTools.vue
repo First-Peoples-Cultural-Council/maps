@@ -13,7 +13,7 @@
       You may draw new geometry to replace the existing one.
     </div>
     <div v-if="!drawMode" class="font-weight-bold">
-      You are contributing to an existing point.
+      Loading. Please wait.
     </div>
     <div
       v-if="drawMode === 'placename' && drawMode !== 'existing'"
@@ -117,28 +117,33 @@ export default {
   },
   mounted() {
     this.setMode(null, this.drawMode)
+    if (this.drawMode === 'existing') {
+      this.$store.commit('contribute/setDrawnFeatures', [])
+      this.$root.$emit('mode_change_draw', 'point')
+    }
   },
   methods: {
     setMode(e, data) {
       this.$eventHub.whenMap(map => {
-        if (data === 'point' || data === 'placename') {
-          this.$root.$emit('mode_change_draw', 'point')
-        }
+        if (this.drawnFeatureCount === 0) {
+          if (data === 'point' || data === 'placename') {
+            this.$root.$emit('mode_change_draw', 'point')
+          }
 
-        if (data === 'polygon') {
-          this.$root.$emit('mode_change_draw', 'polygon')
-        }
+          if (data === 'polygon') {
+            this.$root.$emit('mode_change_draw', 'polygon')
+          }
 
+          if (data === 'line_string') {
+            this.$root.$emit('mode_change_draw', 'line_string')
+          }
+
+          if (data === 'location') {
+            this.$root.$emit('mode_change_draw', 'location')
+          }
+        }
         if (data === 'trash') {
           this.$root.$emit('mode_change_draw', 'trash')
-        }
-
-        if (data === 'line_string') {
-          this.$root.$emit('mode_change_draw', 'line_string')
-        }
-
-        if (data === 'location') {
-          this.$root.$emit('mode_change_draw', 'location')
         }
       })
     },

@@ -100,4 +100,8 @@ export default {
   background-color: #e6a000;
   color: white;
 }
+
+.favourite-badge:hover {
+  color: white;
+}
 </style>

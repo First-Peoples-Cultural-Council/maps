@@ -2,7 +2,6 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
-
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from rest_framework import viewsets, generics, mixins, status
@@ -37,6 +36,7 @@ class BasePlaceNameListAPIView(generics.ListAPIView):
     @method_decorator(never_cache)
     def list(self, request):
         queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
 
         user_logged_in = False
         if request and hasattr(request, "user"):

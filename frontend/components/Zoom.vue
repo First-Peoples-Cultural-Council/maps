@@ -37,7 +37,6 @@ export default {
   align-items: center;
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 3em;
   cursor: pointer;
   padding: 0 0.5em;
   box-sizing: border-box;

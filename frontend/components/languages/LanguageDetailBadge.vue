@@ -23,6 +23,7 @@ export default {
   color: #6c757d;
   border-radius: 0 !important;
   border: 0;
-  padding: 0.3em;
+  padding: 0.3em 0;
+  margin: 0.25em 0;
 }
 </style>

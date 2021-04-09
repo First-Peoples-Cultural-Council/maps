@@ -34,7 +34,7 @@ from language.notifications import (
     inform_placename_rejected_or_flagged,
     inform_placename_to_be_verified,
 )
-from language.filters import StringListFilter
+from language.filters import ListFilter
 
 from language.views import BaseModelViewSet, BasePlaceNameListAPIView
 
@@ -53,11 +53,19 @@ from web.utils import is_user_permitted
 
 
 class PlaceNameFilterSet(FilterSet):
-    kinds = StringListFilter(field_name='kind', lookup_expr='in')
+    kinds = ListFilter(field_name='kind', lookup_expr='in')
 
     class Meta:
         model = PlaceName
         fields = ('kinds', 'taxonomies', 'creator', 'public_arts')
+
+
+class PlaceNameArtistsFilterSet(FilterSet):
+    artists = ListFilter(field_name='artists', lookup_expr='in')
+
+    class Meta:
+        model = PlaceName
+        fields = ('artists', )
 
 
 class PlaceNameViewSet(BaseModelViewSet):
@@ -586,6 +594,9 @@ class ArtSearchList(BasePlaceNameListAPIView):
         kind__in=['public_art', 'artist', 'organization', 'event']
     )
     serializer_class = PlaceNameSearchSerializer
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PlaceNameArtistsFilterSet
 
 
 # ART TYPES
