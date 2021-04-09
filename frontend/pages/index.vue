@@ -1686,6 +1686,7 @@ export default {
 .map-controls-overlay > * {
   margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
+  border-radius: 3em;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;
