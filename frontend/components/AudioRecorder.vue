@@ -5,7 +5,7 @@
         <b-form-file
           ref="fileUpload"
           v-model="file"
-          accept="image/vorbis, image/mpeg"
+          accept="audio/mp3,audio/*;capture=microphone"
           class="d-none"
           :state="Boolean(file)"
           placeholder="Choose a file or drop it here..."
