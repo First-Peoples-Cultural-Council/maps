@@ -28,7 +28,6 @@ export default {
 .reset-map-container {
   background-color: white;
   border: 1px solid #ddd5cc;
-  border-radius: 3em;
   cursor: pointer;
 }
 .reset-map-control h5 {
