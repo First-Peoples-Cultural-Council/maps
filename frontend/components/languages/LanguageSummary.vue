@@ -1,45 +1,48 @@
 <template>
   <div>
-    <div class="ls">
-      <div>
-        <h5>Population</h5>
-        <div v-if="population == 0">
-          Unknown
-        </div>
-        <div v-else>
-          {{ population }}
-        </div>
-      </div>
-      <div>
-        <h5>Fluent Speakers</h5>
-        <div v-if="speakers == 0">
-          Unknown
-        </div>
-        <div v-else>
-          {{ speakers }}
-        </div>
-      </div>
-    </div>
-    <div class="ls mt-2">
-      <div>
-        <h5>Understanding or speak somewhat</h5>
-        <div v-if="somewhat == 0">
-          Unknown
-        </div>
-        <div v-else>
-          {{ somewhat }}
-        </div>
-      </div>
-      <div>
-        <h5>Learning Speakers</h5>
-        <div v-if="learners == 0">
-          Unknown
-        </div>
-        <div v-else>
-          {{ learners }}
-        </div>
-      </div>
-    </div>
+    <ul class="list-style-none m-0 p-0 mb-4">
+      <li>
+        <span class="font-08 color-gray">Population:</span>
+        <span class="font-08 font-weight-bold color-gray">{{
+          population === 0 ? 'Unknown' : population
+        }}</span>
+      </li>
+
+      <li>
+        <span class="font-08 color-gray">Fluent Speakers:</span>
+        <span class="font-08 font-weight-bold color-gray">{{
+          speakers === 0 ? 'Unknown' : speakers
+        }}</span>
+      </li>
+
+      <li>
+        <span class="font-08 color-gray">Understanding or speak somewhat:</span>
+        <span class="font-08 font-weight-bold color-gray">{{
+          somewhat === 0 ? 'Unknown' : somewhat
+        }}</span>
+      </li>
+
+      <li>
+        <span class="font-08 color-gray">Learning Speakers:</span>
+        <span class="font-08 font-weight-bold color-gray">{{
+          learners == 0 ? 'Unknown' : learners
+        }}</span>
+      </li>
+
+      <li>
+        <span class="font-08 color-gray">Source:</span>
+        <span class="font-08 font-weight-bold color-gray"
+          ><a
+            :href="
+              `https://fpcc.ca/wp-content/uploads/2020/07/FPCC-LanguageReport-180716-WEB.pdf`
+            "
+            target="_blank"
+            >Report on the status of B.C. First Nations Languages 2018</a
+          ></span
+        >
+      </li>
+    </ul>
+
     <!--
     <table class="languageSummary">
       <thead>
