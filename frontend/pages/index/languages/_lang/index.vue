@@ -65,16 +65,6 @@
             :learners="language.learners.toString() || 'NA'"
             class="mt-4"
           ></LanguageSummary>
-          <p class="source-link">
-            Source:
-            <a
-              :href="
-                `https://fpcc.ca/wp-content/uploads/2020/07/FPCC-LanguageReport-180716-WEB.pdf`
-              "
-              target="_blank"
-              >Report on the status of B.C. First Nations Languages 2018</a
-            >
-          </p>
         </section>
         <section>
           <LanguageSeeAll
