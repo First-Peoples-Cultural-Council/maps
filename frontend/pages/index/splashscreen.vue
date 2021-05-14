@@ -93,9 +93,9 @@ export default {
           path: '/art'
         },
         {
-          title: 'Heritages',
+          title: 'Heritage',
           description: 'Learn about the diverse Indigenous heritage of B.C.',
-          path: '/heritages'
+          path: '/heritage'
         }
       ]
     },
