@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
 
 from web.models import BaseModel, CulturalModel
-from web.utils import get_art_link
+from web.utils import get_art_link, get_comm_link
 from users.models import User
 
 class LanguageFamily(BaseModel):
@@ -424,6 +424,36 @@ class Media(BaseModel):
         media.status = Media.FLAGGED
         media.status_reason = status_reason
         media.save()
+    
+    def notify(self):
+        from web.utils import get_admin_email_list
+
+        admin_list = get_admin_email_list()
+
+        if self.placename:
+            page = get_art_link(self.placename)
+        elif self.community:
+            page = get_comm_link(self.community)
+        else:
+            page = ''       
+        
+        formatted_kind = "ARTWORK" if self.is_artwork else "MEDIA"
+
+        message = """
+            <h3>Greetings from First People's Cultural Council!</h3>
+            <p>A new {} was added on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
+            <p>Page: {}</p>
+            <p>Miigwech, and have a good day!</p>
+        """.format(formatted_kind, page)
+
+        send_mail(
+            subject="New People's Map %s" % formatted_kind,
+            message=message,
+            from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
+            recipient_list=admin_list if not settings.DEBUG else [
+                'justin@countable.ca'],
+            html_message=message,
+        )
 
     class Meta:
         ordering = ('-id', )
@@ -601,6 +631,13 @@ def placename_post_save(sender, instance, created, **kwargs):
     if created:
         placename.notify()
 
-# Add Hook to PlaceName Model (Django Signals)
-# For every User model update, trigger user_post_save function
+def media_post_save(sender, instance, created, **kwargs):
+    media = instance
+
+    if created:
+        media.notify()
+
+# Add Django Signals for PlaceName and Media
+# For every PlaceName model update, trigger user_post_save function
 post_save.connect(placename_post_save, sender=PlaceName)
+post_save.connect(media_post_save, sender=Media)
