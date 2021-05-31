@@ -1,11 +1,12 @@
+from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.postgres.fields import ArrayField
 
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
-
-import datetime
 
 
 class UserManager(BaseUserManager):
@@ -66,6 +67,27 @@ class User(AbstractUser):
             return "{} {}".format(self.first_name, self.last_name).strip()
         else:
             return "Someone Anonymous"
+    
+    def notify(self):
+        from web.utils import get_admin_email_list
+
+        admin_list = get_admin_email_list()
+
+        message = """
+            <h3>Greetings from First People's Cultural Council!</h3>
+            <p>A new user has registered on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
+            <p>Email: %s</p>
+            <p>Miigwech, and have a good day!</p>
+        """ % self.email
+
+        send_mail(
+            subject="New First People's Map User",
+            message=message,
+            from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
+            recipient_list=admin_list if not settings.DEBUG else [
+                'justin@countable.ca'],
+            html_message=message,
+        )
 
 
 class Administrator(models.Model):
@@ -81,3 +103,14 @@ class Administrator(models.Model):
         return 'User {}: language "{}", community "{}"'.format(
             self.user.username, self.language.name, self.community.name
         )
+
+
+def user_post_save(sender, instance, created, **kwargs):
+    user = instance
+
+    if created:
+        user.notify()
+
+# Add Hook to User Model (Django Signals)
+# For every User model update, trigger user_post_save function
+post_save.connect(user_post_save, sender=User)
