@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
 
 from web.models import BaseModel, CulturalModel
-from web.utils import get_art_link, get_comm_link
+from web.utils import get_art_link, get_comm_link, get_place_link
 from users.models import User
 
 class LanguageFamily(BaseModel):
@@ -345,7 +345,7 @@ class PlaceName(CulturalModel):# Choices Constants:
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace('_', ' ')
-        page = get_art_link(self)
+        page = get_place_link(self) if self.kind == '' or self.kind == 'poi' else get_art_link(self)
 
         message = """
             <h3>Greetings from First People's Cultural Council!</h3>
