@@ -1,10 +1,12 @@
+from django.conf import settings
 from django.contrib.gis.db import models
+from django.db.models.signals import post_save
+from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
 
-from users.models import User
-
 from web.models import BaseModel, CulturalModel
-
+from web.utils import get_art_link
+from users.models import User
 
 class LanguageFamily(BaseModel):
     color = models.CharField(default="RGB(0.5,0.5,0.5)", max_length=31)
@@ -337,6 +339,30 @@ class PlaceName(CulturalModel):# Choices Constants:
         media.status_reason = status_reason
         media.save()
     
+    def notify(self):
+        from web.utils import get_admin_email_list
+
+        admin_list = get_admin_email_list()
+
+        formatted_kind = self.kind.upper().replace('_', ' ')
+        page = get_art_link(self)
+
+        message = """
+            <h3>Greetings from First People's Cultural Council!</h3>
+            <p>A new {} was added on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
+            <p>Page: {}</p>
+            <p>Miigwech, and have a good day!</p>
+        """.format(formatted_kind, page)
+
+        send_mail(
+            subject="New People's Map %s" % formatted_kind,
+            message=message,
+            from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
+            recipient_list=admin_list if not settings.DEBUG else [
+                'justin@countable.ca'],
+            html_message=message,
+        )
+    
     class Meta:
         verbose_name_plural = "Place Names"
 
@@ -567,3 +593,14 @@ class LNAData(BaseModel):
     
     class Meta:
         verbose_name_plural = "LNA Data"
+
+
+def placename_post_save(sender, instance, created, **kwargs):
+    placename = instance
+
+    if created:
+        placename.notify()
+
+# Add Hook to PlaceName Model (Django Signals)
+# For every User model update, trigger user_post_save function
+post_save.connect(placename_post_save, sender=PlaceName)
