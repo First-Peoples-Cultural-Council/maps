@@ -358,8 +358,7 @@ class PlaceName(CulturalModel):# Choices Constants:
             subject="New People's Map %s" % formatted_kind,
             message=message,
             from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
-            recipient_list=admin_list if not settings.DEBUG else [
-                'justin@countable.ca'],
+            recipient_list=admin_list,
             html_message=message,
         )
     
@@ -450,8 +449,7 @@ class Media(BaseModel):
             subject="New People's Map %s" % formatted_kind,
             message=message,
             from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
-            recipient_list=admin_list if not settings.DEBUG else [
-                'justin@countable.ca'],
+            recipient_list=admin_list,
             html_message=message,
         )
 

@@ -84,8 +84,7 @@ class User(AbstractUser):
             subject="New First People's Map User",
             message=message,
             from_email="First Peoples' Cultural Council <%s>" % settings.SERVER_EMAIL,
-            recipient_list=admin_list if not settings.DEBUG else [
-                'justin@countable.ca'],
+            recipient_list=admin_list,
             html_message=message,
         )
 
