@@ -1,26 +1,14 @@
-from users.models import User, Administrator
 import datetime
-
-from language.models import PlaceName, Media, Favourite, CommunityMember, Language, Community
 
 from django.db.models import Q
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.conf import settings
 
-import re
-
-
-def _format_fpcc(s):
-
-    s = s.strip().lower()
-    s = re.sub(
-        r"\\|\/|>|<|\)|\(|~|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|\"",
-        "",
-        s,
-    )
-    s = re.sub(r"\s+", "-", s)
-    return s
+from web.utils import get_lang_link, get_comm_link, get_place_link
+from language.models import (
+    PlaceName, Media, Favourite, CommunityMember, Language, Community)
+from users.models import User, Administrator
 
 
 def get_new_media_messages(new_medias):
@@ -30,9 +18,9 @@ def get_new_media_messages(new_medias):
             "<h3>New Media in Your Languages and Communities</h3><ul>")
         for media in new_medias:
             if media.placename:
-                link = _place_link(media.placename)
+                link = get_place_link(media.placename)
             elif media.community:
-                link = _comm_link(media.community)
+                link = get_comm_link(media.community)
             else:
                 link = "(Orphaned Media)"
             preview = ''
@@ -64,7 +52,7 @@ def get_new_places_messages(new_places, scope="New Places"):
         for place in new_places:
             placename_type = 'place' if place.kind == '' or place.kind == 'poi' else place.kind.replace(
                 '_', ' ')
-            link = _place_link(place)
+            link = get_place_link(place)
             if place.creator:
                 creator_name = str(place.creator)
             else:
@@ -86,7 +74,7 @@ def get_my_favourites_messages(my_favourites):
         messages.append("<h3>New Favourites</h3><ul>")
         for fav in my_favourites:
             if fav.place:
-                link = _place_link(fav.place)
+                link = get_place_link(fav.place)
                 messages.append(
                     """
                     <li>your place was favourited! {}</li>
@@ -95,7 +83,7 @@ def get_my_favourites_messages(my_favourites):
                     )
                 )
             else:
-                link = _place_link(fav.media.placename)
+                link = get_place_link(fav.media.placename)
                 messages.append(
                     """
                     <li>your contribution was favourited! {}</li>
@@ -105,24 +93,6 @@ def get_my_favourites_messages(my_favourites):
                 )
         messages.append("</ul>")
     return messages
-
-
-def _lang_link(l):
-    return '<a href="{}/languages/{}">{}</a>'.format(
-        settings.HOST, _format_fpcc(l.name), l.name
-    )
-
-
-def _comm_link(c):
-    return '<a href="{}/content/{}">{}</a>'.format(
-        settings.HOST, _format_fpcc(c.name), c.name
-    )
-
-
-def _place_link(p):
-    return '<a href="{}/place-names/{}">{}</a>'.format(
-        settings.HOST, _format_fpcc(p.name), p.name
-    )
 
 
 def notify(user, since=None):
@@ -148,13 +118,13 @@ def notify(user, since=None):
 
         intro.append(
             "<p>As an Admin, you will be receiving updates to all Languages and Communities.".format(
-                ",".join([_lang_link(l) for l in languages])
+                ",".join([get_lang_link(l) for l in languages])
             )
         )
 
         intro.append(
             "<p>This is a test-only setup. We're not expecting that many updates, so even if the updates are for every single language and community, we won't be overwhelemed.".format(
-                ",".join([_lang_link(l) for l in languages])
+                ",".join([get_lang_link(l) for l in languages])
             )
         )
     else:
@@ -169,19 +139,19 @@ def notify(user, since=None):
         if languages.count():
             intro.append(
                 "<p>You are receiving updates related to the following languages: {}</p>".format(
-                    ",".join([_lang_link(l) for l in languages])
+                    ",".join([get_lang_link(l) for l in languages])
                 )
             )
         if len(communities):
             intro.append(
                 "<p>You are receiving updates related to the following communities: {}</p>".format(
-                    ",".join([_comm_link(c) for c in communities])
+                    ",".join([get_comm_link(c) for c in communities])
                 )
             )
         if len(communities_awaiting_verification):
             intro.append(
                 "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
-                    ",".join([_comm_link(c)
+                    ",".join([get_comm_link(c)
                               for c in communities_awaiting_verification])
                 )
             )
@@ -299,17 +269,17 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
             message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
-                _lang_link(placename.language), _comm_link(
+                get_lang_link(placename.language), get_comm_link(
                     placename.community), state
             )
         else:
             message += "<p>Your contribution to {} Language has been {}.</p>".format(
-                _lang_link(placename.language), state
+                get_lang_link(placename.language), state
             )
     else:
         if placename.community and placename.community.name:
             message += "<p>Your contribution to {} Community has been {}.</p>".format(
-                _comm_link(placename.community), state
+                get_comm_link(placename.community), state
             )
         else:
             message += "<p>Your contribution has been {}.</p>".format(state)
@@ -362,7 +332,7 @@ def inform_placename_to_be_verified(placename_id):
     if placename.language and placename.language.name:
         if placename.community and placename.community.name:
             message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
-                _lang_link(placename.language), _comm_link(
+                get_lang_link(placename.language), get_comm_link(
                     placename.community), state
             )
             # Storing the pair language/community of the contribution
@@ -370,12 +340,12 @@ def inform_placename_to_be_verified(placename_id):
             community = placename.community
         else:
             message += "<p>A contribution at {} Language has been {}.</p>".format(
-                _lang_link(placename.language), state
+                get_lang_link(placename.language), state
             )
     else:
         if placename.community and placename.community.name:
             message += "<p>A contribution at {} Community has been {}.</p>".format(
-                _comm_link(placename.community), state
+                get_comm_link(placename.community), state
             )
         else:
             message += "<p>A contribution has been {}.</p>".format(state)
@@ -436,17 +406,17 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
         if media.placename.language and media.placename.language.name:
             if media.placename.community and media.placename.community.name:
                 message += "<p>Your contribution to {} Language and {} Community has been {}.</p>".format(
-                    _lang_link(media.placename.language), _comm_link(
+                    get_lang_link(media.placename.language), get_comm_link(
                         media.placename.community), state
                 )
             else:
                 message += "<p>Your contribution to {} Language has been {}.</p>".format(
-                    _lang_link(media.placename.language), state
+                    get_lang_link(media.placename.language), state
                 )
         else:
             if media.placename.community and media.placename.community.name:
                 message += "<p>Your contribution to {} Community has been {}.</p>".format(
-                    _comm_link(media.placename.community), state
+                    get_comm_link(media.placename.community), state
                 )
             else:
                 message += "<p>Your contribution has been {}.</p>".format(
@@ -454,7 +424,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
     else:
         if media.community and media.community.name:
             message += "<p>Your contribution to {} Community has been {}.</p>".format(
-                _comm_link(media.community), state
+                get_comm_link(media.community), state
             )
         else:
             message += "<p>Your contribution has been {}.</p>".format(state)
@@ -508,7 +478,7 @@ def inform_media_to_be_verified(media_id):
         if media.placename.language and media.placename.language.name:
             if media.placename.community and media.placename.community.name:
                 message += "<p>A contribution at {} Language and {} Community has been {}.</p>".format(
-                    _lang_link(media.placename.language), _comm_link(
+                    get_lang_link(media.placename.language), get_comm_link(
                         media.placename.community), state
                 )
 
@@ -517,13 +487,13 @@ def inform_media_to_be_verified(media_id):
                 community = media.placename.community
             else:
                 message += "<p>A contribution at {} Language has been {}.</p>".format(
-                    _lang_link(media.placename.language), state
+                    get_lang_link(media.placename.language), state
                 )
                 language = media.placename.language
         else:
             if media.placename.community and media.placename.community.name:
                 message += "<p>A contribution at {} Community has been {}.</p>".format(
-                    _comm_link(media.placename.community), state
+                    get_comm_link(media.placename.community), state
                 )
                 community = media.placename.community
             else:
@@ -531,7 +501,7 @@ def inform_media_to_be_verified(media_id):
     else:
         if media.community and media.community.name:
             message += "<p>A contribution at {} Community has been {}.</p>".format(
-                _comm_link(media.community), state
+                get_comm_link(media.community), state
             )
             community = media.community
         else:
