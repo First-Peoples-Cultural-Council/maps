@@ -62,7 +62,7 @@ def is_user_community_admin(request, community):
 
 def get_admin_email_list():
     # Return Test Email if in DEBUG mode [TODO: Make configurable in the future]
-    if not settings.DEBUG:
+    if settings.DEBUG:
         return ['justin@countable.ca']
 
     # FPCC ADMINS that are registered in the site and are also assigned a superuser status
