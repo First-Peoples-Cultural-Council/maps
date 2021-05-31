@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-block">
+  <div class="d-inline-block cursor-pointer">
     <b-badge class="detail-badge">
       <span class="detail-badge-content">{{ content }}</span>
     </b-badge>

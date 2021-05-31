@@ -36,6 +36,8 @@ Vue.mixin({
     goToGrants(program) {
       this.$store.commit('grants/setGrantFilter', program)
       this.$root.$emit('checkDimension')
+      // Close Drawer on every Grants redirection
+      this.$store.commit('sidebar/setDrawerContent', false)
 
       this.$router.push({
         path: '/grants'
