@@ -102,24 +102,29 @@
               @row-clicked="handleRowClick"
             ></b-table>
             <client-only>
-              <div class="mb-3 showHide">
-                <b-button
-                  block
-                  variant="light"
-                  class="font-08"
-                  @click="handleRowClick"
-                  >{{ showCollapse ? 'Hide Charts' : 'Show Charts' }}</b-button
-                >
-              </div>
-              <div class="mb-3 mt-3 showHide">
-                <b-button
-                  block
-                  variant="light"
-                  class="font-08"
-                  @click="toggleLNAPanel"
-                  >{{ showLNAs ? 'Hide LNAs' : 'Show LNAs' }}</b-button
-                >
-              </div>
+              <template v-if="lnaByCommunity.length !== 0">
+                <div class="mb-3 showHide">
+                  <b-button
+                    block
+                    variant="light"
+                    class="font-08"
+                    @click="handleRowClick"
+                    >{{
+                      showCollapse ? 'Hide Charts' : 'Show Charts'
+                    }}</b-button
+                  >
+                </div>
+                <div class="mb-3 mt-3 showHide">
+                  <b-button
+                    block
+                    variant="light"
+                    class="font-08"
+                    @click="toggleLNAPanel"
+                    >{{ showLNAs ? 'Hide LNAs' : 'Show LNAs' }}</b-button
+                  >
+                </div>
+              </template>
+
               <div v-if="showCollapse">
                 <div
                   v-for="(lna, index) in lnaByCommunity"
