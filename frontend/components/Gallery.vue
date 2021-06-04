@@ -18,7 +18,7 @@
         <div class="artist-gallery-detail">
           <img v-lazy="artThumbnail(placenameImg)" class="artist-img-small" />
           <div class="gallery-title">
-            <span class="item-title">{{ mediaData.name }}</span>
+            <span class="item-title">{{ getCurrentMedia.name }}</span>
             <span class="item-subtitle">
               By
               <template v-if="artistCount !== 0">
@@ -39,7 +39,7 @@
           <div
             v-if="
               (artistCount === 0 && this.$route.name !== 'index-art-art') ||
-                !mediaData.media_file
+                !getCurrentMedia.media_file
             "
             class="cursor-pointer pl-2 pr-2 ml-3 profile-btn"
             @click="handleProfileClick"
@@ -56,7 +56,8 @@
         >
           <button
             v-if="
-              mediaData.file_type !== 'audio' && mediaData.file_type !== 'video'
+              getCurrentMedia.file_type !== 'audio' &&
+                getCurrentMedia.file_type !== 'video'
             "
             class="expand-btn"
             @click="toggleFullscreen"
@@ -72,20 +73,24 @@
           <!-- Render Media here depending on type -->
           <img
             v-if="returnMediaType === 'image'"
-            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
+            :class="
+              `media-img example ${isFullscreen ? 'img-fullscreen-mode' : ''}`
+            "
             :src="
-              getMediaUrl(mediaData.media_file) || getMediaUrl(mediaData.image)
+              getMediaUrl(getCurrentMedia.media_file) ||
+                getMediaUrl(getCurrentMedia.image)
             "
           />
           <!-- Render Youtube Video Here -->
           <iframe
             v-else-if="
-              returnMediaType === 'video' && getYoutubeEmbed(mediaData.url)
+              returnMediaType === 'video' &&
+                getYoutubeEmbed(getCurrentMedia.url)
             "
-            class="media-img"
+            class="media-img video"
             :src="
               `https://www.youtube.com/embed/${getYoutubeEmbed(
-                mediaData.url
+                getCurrentMedia.url
               )}/?rel=0`
             "
             frameborder="0"
@@ -98,19 +103,23 @@
             class="media-img audio"
             controls
           >
-            <source :src="mediaData.media_file" type="audio/ogg" />
-            <source :src="mediaData.media_file" type="audio/mpeg" />
-            <source :src="mediaData.media_file" type="audio/wav" />
+            <source :src="getCurrentMedia.media_file" type="audio/ogg" />
+            <source :src="getCurrentMedia.media_file" type="audio/mpeg" />
+            <source :src="getCurrentMedia.media_file" type="audio/wav" />
             Your browser does not support the audio element.
           </audio>
           <!-- Render Public Art Image here -->
           <img
             v-else
-            v-lazy="getMediaUrl(mediaData.image)"
-            :class="`media-img ${isFullscreen ? 'img-fullscreen-mode' : ''}`"
+            v-lazy="getMediaUrl(getCurrentMedia.image)"
+            :class="
+              `media-img public-art ${
+                isFullscreen ? 'img-fullscreen-mode' : ''
+              }`
+            "
           />
           <span
-            v-if="returnMediaType === 'image' || mediaData.image"
+            v-if="returnMediaType === 'image' || getCurrentMedia.image"
             class="media-copyright"
           >
             Copyright &copy; {{ returnCopyright(false) }}
@@ -152,12 +161,6 @@ export default {
         return {}
       }
     },
-    media: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
     artists: {
       type: Array,
       default: () => {
@@ -193,11 +196,13 @@ export default {
   },
   data() {
     return {
-      mediaData: this.media,
       isFullscreen: false
     }
   },
   computed: {
+    getCurrentMedia() {
+      return this.$store.state.arts.currentMedia
+    },
     isArtsDetailPage() {
       return this.$route.name === 'index-art-art'
     },
@@ -208,8 +213,10 @@ export default {
       return this.returnMediaType === 'image' && this.relatedMedia.length > 1
     },
     mediaIndex() {
-      return this.mediaData
-        ? this.relatedMedia.findIndex(media => media.id === this.mediaData.id)
+      return this.getCurrentMedia
+        ? this.relatedMedia.findIndex(
+            media => media.id === this.getCurrentMedia.id
+          )
         : 0
     },
     canNavigatePrevious() {
@@ -219,7 +226,7 @@ export default {
       return this.mediaIndex === this.relatedMedia.length - 1
     },
     returnMediaType() {
-      const type = this.mediaData.file_type
+      const type = this.getCurrentMedia.file_type
 
       if (type) {
         if (type.includes('image')) {
@@ -236,6 +243,7 @@ export default {
       }
     }
   },
+
   methods: {
     getMediaUrl,
     returnCopyright(copyright) {
@@ -254,15 +262,15 @@ export default {
       this.isFullscreen = !this.isFullscreen
     },
     selectNewMedia(item) {
-      this.mediaData = item
+      this.setCurrentMedia(item)
       this.updateURL()
     },
     nextSlide() {
-      this.mediaData = this.relatedMedia[this.mediaIndex + 1]
+      this.setCurrentMedia(this.relatedMedia[this.mediaIndex + 1])
       this.updateURL()
     },
     previousSlide() {
-      this.mediaData = this.relatedMedia[this.mediaIndex - 1]
+      this.setCurrentMedia(this.relatedMedia[this.mediaIndex - 1])
       this.updateURL()
     },
     updateURL() {
@@ -270,24 +278,28 @@ export default {
         isArtsDetailPage: this.isArtsDetailPage,
         route: this.$route.path,
         placename: this.placename,
-        mediaName: this.mediaData.name
+        mediaName: this.getCurrentMedia.name
       })
     },
     getYoutubeEmbed(url) {
-      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*). */
-      const match = url.match(regExp)
-      return match && match[7].length === 11 ? match[7] : false
+      // eslint-disable-next-line no-useless-escape
+      const regExpression = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+      const match = url.match(regExpression)
+      return match && match[2].length === 11 ? match[2] : false
     },
     handleProfileClick() {
-      const getPlaceName = this.mediaData.file_type
+      const getPlaceName = this.getCurrentMedia.file_type
         ? this.placename
-        : this.mediaData.name
+        : this.getCurrentMedia.name
       this.closeGallery()
       this.checkProfile(getPlaceName)
     },
     closeGallery() {
       this.$router.push(this.$route.path)
       this.toggleGallery()
+    },
+    setCurrentMedia(media) {
+      this.$store.commit('arts/setCurrentMedia', media)
     }
   }
 }
