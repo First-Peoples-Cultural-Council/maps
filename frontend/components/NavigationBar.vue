@@ -169,18 +169,23 @@
               >
             </li>
             <li>
+              <a class="color-gray" href="/page/about">About</a>
+            </li>
+            <li>
+              <a class="color-gray" href="/page/how-to-use">How to Use</a>
+            </li>
+            <li>
+              <a class="color-gray" href="/page/tos">Terms of Use</a>
+            </li>
+
+            <li>
               <a class="color-gray" href="#" @click="redirectGrants">Grants</a>
             </li>
 
             <li>
               <a class="color-gray" href="/page/order-maps">Order Maps</a>
             </li>
-            <li>
-              <a class="color-gray" href="/page/tos">Terms of Use</a>
-            </li>
-            <li>
-              <a class="color-gray" href="/page/about">About</a>
-            </li>
+
             <li>
               <a class="color-gray" href="/page/contact">Contact Us</a>
             </li>
