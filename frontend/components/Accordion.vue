@@ -37,7 +37,31 @@ export default {
         ? this.content
         : `${this.content.substring(0, 100)} ...`
     }
-  }
+  },
+  watch: {
+    expandContent(value) {
+      if (value) {
+        // Add Event Listener to drop-down
+        this.$nextTick(() => {
+          const dropdownList = ['grants-list-collapse', 'partner-list-collapse']
+
+          dropdownList.forEach(element => {
+            const grantsContainer = document.getElementById(element)
+            grantsContainer.addEventListener('click', () => {
+              const collapse = document.getElementById(`${element}-content`)
+              const isBlock = collapse.style.display === 'block'
+              collapse.style.display = isBlock ? 'none' : 'block'
+
+              grantsContainer.querySelector(
+                '.collapse-icon'
+              ).innerHTML = isBlock ? '&#9658;' : '&#9660;'
+            })
+          })
+        })
+      }
+    }
+  },
+  mounted() {}
 }
 </script>
 
@@ -94,5 +118,13 @@ export default {
 .accordion-toggle:hover {
   background-color: transparent;
   border: 0;
+}
+
+.collapse-item {
+  cursor: pointer;
+}
+
+.collapse-item-content {
+  display: none;
 }
 </style>
