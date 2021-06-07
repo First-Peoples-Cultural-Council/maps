@@ -131,10 +131,12 @@ export default {
       mode: 'All',
       accordionContent: `
           In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at https://fpcc.ca/grants/ To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
-
-          <span><b>List of Grants</b> </span>
           
-          <ul>
+          <div id="grants-list-collapse" class="collapse-item">
+            <b><span class="collapse-icon">&#9658;</span> List of Grants</b> 
+          </div>
+
+          <ul id="grants-list-collapse-content" class="collapse-item-content">
             <li>ARTS - Arts One Time Grant</li>
             <li>AIND - Individual Artists Grant</li> 
             <li>ASHR - Sharing Traditional Arts Grant</li> 
@@ -145,10 +147,10 @@ export default {
             <li>AEMIP - Emerging Music Industry Professionals Grant</li> 
             <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant</li> 
             <li>ATPMP - Touring, Promotion/Marketing and Performance Grant</li> 
-            <li> Heritage Program Grants</li>
+            <li>Heritage Program Grants</li>
             <li>HMIC - Indigenous Heritage Micro Grant</li> 
-            <li> HOHP - Oral Histories Program</li>
-            <li> HSOP - Sense of Place Grant</li>
+            <li>HOHP - Oral Histories Program</li>
+            <li>HSOP - Sense of Place Grant</li>
             <li>Language Program Grants</li> 
             <li>LALI - Aboriginal Languages Initiative</li> 
             <li>LBCLI - BC Language Initiative</li> 
@@ -159,41 +161,47 @@ export default {
             <li>LLN - Language Nest Program</li> 
             <li>LLRPP - Language Revitalization Planning Program</li> 
             <li>LMAP - Mentor-Apprentice Program</li> 
-            <li> LPATH - Pathways to Language Vitality Program</li>
+            <li>LPATH - Pathways to Language Vitality Program</li>
             <li>LRML - Reclaiming My Language Program</li> 
             <li>LTECH - Language Technology Program</li> 
             <li>LYES - Youth Empowered Speakers Program</li> 
-
           </ul>
-
-          <div><b>Funding Partner Acknowledgements</b> </div> <br/>
-          <span style="margin: 1em 0;">The key funding partners for each department are as follows:</span> <br/>
           
-          <div style="font-weight: 700;">Arts</div>
 
-          <ul>
-            <li>BC Arts Council </li>
-            <li>Creative BC </li>
-            <li> Margaret A. Cargill Philanthropies</li>
-          </ul>
+          <div id="partner-list-collapse" class="collapse-item">
+            <b><span class="collapse-icon">&#9658;</span> Funding Partner Acknowledgements</b> 
+          </div>
+          
+          <div id="partner-list-collapse-content" class="collapse-item-content">
+            <span style="margin: 1em 0;">The key funding partners for each department are as follows:</span> <br/>
+          
+            <div style="font-weight: 700;">Arts</div>
 
-          <div style="font-weight: 700;">Heritage</div>
+            <ul>
+              <li>BC Arts Council </li>
+              <li>Creative BC </li>
+              <li> Margaret A. Cargill Philanthropies</li>
+            </ul>
 
-          <ul>
-            <li>Heritage Branch, Ministry of Forests, Lands, Natural Resource Operations & Rural Development, Province of British Columbia </li>
-            <li>Ministry of Environment & Climate Action Strategy, Province of British Columbia</li>
-            <li>Indigenous Services Canada, Government of Canada </li>
-          </ul>
+            <div style="font-weight: 700;">Heritage</div>
 
-          <div style="font-weight: 700;">Language</div>
+            <ul>
+              <li>Heritage Branch, Ministry of Forests, Lands, Natural Resource Operations & Rural Development, Province of British Columbia </li>
+              <li>Ministry of Environment & Climate Action Strategy, Province of British Columbia</li>
+              <li>Indigenous Services Canada, Government of Canada </li>
+            </ul>
 
-          <ul>
-            <li> Aboriginal Neighbours</li>
-            <li> Canadian Heritage, Government of Canada</li>
-            <li> First Peoples’ Cultural Foundation</li>
-            <li>Ministry of Indigenous Relations and Reconciliation, Province of British Columbia </li>
-            <li>RSF Social Finance</li>
-          </ul>
+            <div style="font-weight: 700;">Language</div>
+
+            <ul>
+              <li> Aboriginal Neighbours</li>
+              <li> Canadian Heritage, Government of Canada</li>
+              <li> First Peoples’ Cultural Foundation</li>
+              <li>Ministry of Indigenous Relations and Reconciliation, Province of British Columbia </li>
+              <li>RSF Social Finance</li>
+            </ul>
+          </div>
+          
 
          `,
       maximumLength: 0,
