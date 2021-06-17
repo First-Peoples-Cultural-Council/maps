@@ -628,7 +628,7 @@ class EventList(BasePlaceNameListAPIView):
     ).filter(
         kind='event',
         geom__isnull=False
-    ).only("id", "name", "kind", "image", "taxonomies", "related_data", "geom")
+    )
     serializer_class = EventArtSerializer
 
 

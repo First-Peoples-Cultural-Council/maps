@@ -3,6 +3,7 @@ export const state = () => ({
   artsSet: [],
   artSearch: '',
   currentPlacename: {},
+  currentMedia: {},
   mediaCount: 0,
   filter: 'artwork',
   taxonomyFilter: [],
@@ -57,6 +58,9 @@ export const mutations = {
   },
   setMediaCount(state, count) {
     state.mediaCount = count
+  },
+  setCurrentMedia(state, media) {
+    state.currentMedia = media
   }
 }
 

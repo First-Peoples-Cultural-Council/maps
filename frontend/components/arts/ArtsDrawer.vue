@@ -93,7 +93,6 @@
     <!-- Render Gallery with Media Info -->
     <Gallery
       v-if="showGallery"
-      :media="currentMedia"
       :artists="listOfArtists"
       :placename="artName"
       :placename-img="artImg"
@@ -138,7 +137,6 @@ export default {
   },
   data() {
     return {
-      currentMedia: {},
       listOfMedias: [],
       listOfArtists: [],
       isLoading: false
@@ -171,7 +169,7 @@ export default {
       }
     },
     listOfPublicArt() {
-      return this.currentArt ? this.currentArt.public_arts : []
+      return this.currentArt.public_arts || []
     },
     listOfImageMedia() {
       return [
@@ -236,13 +234,13 @@ export default {
         if (this.$route.query.upload_artwork) {
           // do nothing
         } else if (foundMedia) {
-          this.currentMedia = foundMedia
+          this.setCurrentMedia(foundMedia)
           this.toggleGallery()
         } else if (this.isArtsDetailPage) {
           this.$router.push(this.$route.path)
         }
       } else {
-        this.currentMedia = foundMedia
+        this.setCurrentMedia(foundMedia)
 
         this.$store.commit(
           'sidebar/setGallery',
@@ -261,7 +259,7 @@ export default {
       this.$store.commit('sidebar/setDrawerContent', !this.isDrawerShown)
     },
     showMedia(media) {
-      this.currentMedia = media
+      this.setCurrentMedia(media)
 
       updateArtHistoryState({
         isArtsDetailPage: !this.isArtsDetailPage,
@@ -284,6 +282,9 @@ export default {
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
+    },
+    setCurrentMedia(media) {
+      this.$store.commit('arts/setCurrentMedia', media)
     }
   }
 }

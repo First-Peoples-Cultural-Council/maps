@@ -130,46 +130,80 @@ export default {
     return {
       mode: 'All',
       accordionContent: `
-          In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at <a href='https://fpcc.ca/grants/' target="_blank">https://fpcc.ca/grants/</a> To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
+          In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at https://fpcc.ca/grants/ To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
+          
+          <div id="grants-list-collapse" class="collapse-item">
+            <b><span class="collapse-icon">&#9658;</span> List of Grants</b> 
+          </div>
 
-          <span>Arts Program Grants </span>
-
-          <ul>
+          <ul id="grants-list-collapse-content" class="collapse-item-content">
             <li>ARTS - Arts One Time Grant</li>
-            <li>AIND - Individual Artists Grant </li>
-            <li>ASHR - Sharing Traditional Arts Grant </li>
-            <li>AORG - Organizations and Collectives Grant</li>
-            <li>AADM - Arts Administration Internships Grant </li>
-            <li>AMIC - Arts Micro Grants </li>
-            <li>ALND - Community Land Based Arts Grant </li>
-            <li>AEMIP - Emerging Music Industry Professionals Grant </li>
-            <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant </li>
-            <li>ATPMP - Touring, Promotion/Marketing and Performance Grant </li>
+            <li>AIND - Individual Artists Grant</li> 
+            <li>ASHR - Sharing Traditional Arts Grant</li> 
+            <li>AORG - Organizations and Collectives Grant</li> 
+            <li>AADM - Arts Administration Internships Grant</li> 
+            <li>AMIC - Arts Micro Grants</li> 
+            <li>ALND - Community Land Based Arts Grant</li> 
+            <li>AEMIP - Emerging Music Industry Professionals Grant</li> 
+            <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant</li> 
+            <li>ATPMP - Touring, Promotion/Marketing and Performance Grant</li> 
+            <li>Heritage Program Grants</li>
+            <li>HMIC - Indigenous Heritage Micro Grant</li> 
+            <li>HOHP - Oral Histories Program</li>
+            <li>HSOP - Sense of Place Grant</li>
+            <li>Language Program Grants</li> 
+            <li>LALI - Aboriginal Languages Initiative</li> 
+            <li>LBCLI - BC Language Initiative</li> 
+            <li>LDIGI - Digitization Program</li> 
+            <li>LFV - FirstVoices Program</li> 
+            <li>LILG - Indigenous Languages Grant</li> 
+            <li>LANG - Language One Time Grant</li> 
+            <li>LLN - Language Nest Program</li> 
+            <li>LLRPP - Language Revitalization Planning Program</li> 
+            <li>LMAP - Mentor-Apprentice Program</li> 
+            <li>LPATH - Pathways to Language Vitality Program</li>
+            <li>LRML - Reclaiming My Language Program</li> 
+            <li>LTECH - Language Technology Program</li> 
+            <li>LYES - Youth Empowered Speakers Program</li> 
           </ul>
+          
 
-          <span>Heritage Program Grants</span>
-          <ul>
-            <li>HMIC - Indigenous Heritage Micro Grant </li>
-            <li>HOHP - Oral Histories Program </li>
-            <li>HSOP - Sense of Place Grant </li>
-          </ul>
+          <div id="partner-list-collapse" class="collapse-item">
+            <b><span class="collapse-icon">&#9658;</span> Funding Partner Acknowledgements</b> 
+          </div>
+          
+          <div id="partner-list-collapse-content" class="collapse-item-content">
+            <span style="margin: 1em 0;">The key funding partners for each department are as follows:</span> <br/>
+          
+            <div style="font-weight: 700;">Arts</div>
 
-          <span>Language Program Grants</span>
-          <ul>
-            <li>LALI - Aboriginal Languages Initiative </li>
-            <li>LBCLI - BC Language Initiative </li>
-            <li>LDIGI - Digitization Program </li>
-            <li>LFV - FirstVoices Program </li>
-            <li>LILG - Indigenous Languages Grant </li>
-            <li>LANG - Language One Time Grant </li>
-            <li>LLN - Language Nest Program </li>
-            <li>LLRPP - Language Revitalization Planning Program </li>
-            <li>LMAP - Mentor-Apprentice Program </li>
-            <li>LPATH - Pathways to Language Vitality Program </li>
-            <li>LRML - Reclaiming My Language Program </li>
-            <li>LTECH - Language Technology Program </li>
-            <li>LYES - Youth Empowered Speakers Program </li>
-          </ul>`,
+            <ul>
+              <li>BC Arts Council </li>
+              <li>Creative BC </li>
+              <li> Margaret A. Cargill Philanthropies</li>
+            </ul>
+
+            <div style="font-weight: 700;">Heritage</div>
+
+            <ul>
+              <li>Heritage Branch, Ministry of Forests, Lands, Natural Resource Operations & Rural Development, Province of British Columbia </li>
+              <li>Ministry of Environment & Climate Action Strategy, Province of British Columbia</li>
+              <li>Indigenous Services Canada, Government of Canada </li>
+            </ul>
+
+            <div style="font-weight: 700;">Language</div>
+
+            <ul>
+              <li> Aboriginal Neighbours</li>
+              <li> Canadian Heritage, Government of Canada</li>
+              <li> First Peoples’ Cultural Foundation</li>
+              <li>Ministry of Indigenous Relations and Reconciliation, Province of British Columbia </li>
+              <li>RSF Social Finance</li>
+            </ul>
+          </div>
+          
+
+         `,
       maximumLength: 0,
       grantBadges: [
         {
