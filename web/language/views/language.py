@@ -1,7 +1,7 @@
 import sys
 
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q, query_utils
 
 from users.models import User, Administrator
 from language.models import (
@@ -57,7 +57,7 @@ class LanguageViewSet(BaseModelViewSet):
         recording = Recording.objects.get(pk=recording_id)
         language.language_audio = recording
         language.save()
-        return Response({"message": "Language audio associated"}, 
+        return Response({"message": "Language audio associated"},
                         status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["patch"])
@@ -72,7 +72,7 @@ class LanguageViewSet(BaseModelViewSet):
         recording = Recording.objects.get(pk=recording_id)
         language.greeting_audio = recording
         language.save()
-        return Response({"message": "Greeting audio associated"}, 
+        return Response({"message": "Greeting audio associated"},
                         status=status.HTTP_200_OK)
 
     def create_membership(self, request):
@@ -93,19 +93,13 @@ class LanguageViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class LanguageGeoList(generics.ListAPIView):
-    queryset = Language.objects.filter(geom__isnull=False)
+    queryset = Language.objects.filter(geom__isnull=False).only(
+        "name", "color", "sleeping", "geom")
     serializer_class = LanguageGeoSerializer
-
-    @method_decorator(never_cache)
-    def list(self, request):
-        return super().list(request)
 
 
 # Search List APIViews
 class LanguageSearchList(generics.ListAPIView):
-    queryset = Language.objects.filter(geom__isnull=False)
+    queryset = Language.objects.filter(geom__isnull=False).only(
+        "name", "other_names", "family")
     serializer_class = LanguageSearchSerializer
-
-    @method_decorator(never_cache)
-    def list(self, request):
-        return super().list(request)
