@@ -1,7 +1,7 @@
 import sys
 import copy
 
-from django.db.models import Q
+from django.db.models import Q, query_utils
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
 from django.views.decorators.cache import never_cache
@@ -109,17 +109,19 @@ class PlaceNameViewSet(BaseModelViewSet):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 placename = PlaceName.objects.get(pk=kwargs.get('pk'))
-                
+
                 # Check if placename is owned by current user
                 owned_placename = True if placename.creator == request.user else False
 
                 # Check if this placename is a public art and the user is its artist
                 artist_owned_placename = False
-                artist_profile_ids = PlaceName.objects.filter(kind='artist', creator=request.user).values_list('id', flat=True)
+                artist_profile_ids = PlaceName.objects.filter(
+                    kind='artist', creator=request.user).values_list('id', flat=True)
 
                 if artist_profile_ids and placename.kind == 'public_art':
                     try:
-                        owned_public_art = PublicArtArtist.objects.get(artist__in=artist_profile_ids, public_art=placename)
+                        owned_public_art = PublicArtArtist.objects.get(
+                            artist__in=artist_profile_ids, public_art=placename)
                     except PublicArtArtist.DoesNotExist:
                         owned_public_art = None
 
@@ -133,7 +135,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                         "success": False,
                         "message": "Only the owner or the artist can update this PlaceName."
                     })
-        
+
         return Response({
             "success": False,
             "message": "You need to log in in order to update this PlaceName."
@@ -143,7 +145,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 placename = PlaceName.objects.get(pk=kwargs.get('pk'))
-                
+
                 # Check if placename is owned by current user
                 owned_placename = True if placename.creator == request.user else False
 
@@ -154,7 +156,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                         "success": False,
                         "message": "Only the owner can delete this PlaceName."
                     })
-        
+
         return Response({
             "success": False,
             "message": "You need to log in in order to delete this PlaceName."
@@ -282,7 +284,7 @@ class PlaceNameViewSet(BaseModelViewSet):
 
             if data['value'] is not '':
                 related_data.append(data)
-        
+
         serializer_data['related_data'] = related_data
 
         return Response(serializer_data)
@@ -396,7 +398,7 @@ class PlaceNameGeoList(generics.ListAPIView):
     ).filter(
         kind__in=['poi', ''],
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "community", "geom")
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]
@@ -490,7 +492,7 @@ class ArtGeoList(generics.ListAPIView):
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource'],
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "community", "geom")
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]
@@ -583,7 +585,7 @@ class PlaceNameSearchList(BasePlaceNameListAPIView):
         Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
         kind__in=['poi', '']
-    )
+    ).only("id", "name", "other_names", "kind", "artists")
     serializer_class = PlaceNameSearchSerializer
 
 
@@ -592,7 +594,7 @@ class ArtSearchList(BasePlaceNameListAPIView):
         Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
         kind__in=['public_art', 'artist', 'organization', 'event']
-    )
+    ).only("id", "name", "other_names", "kind", "artists")
     serializer_class = PlaceNameSearchSerializer
 
     filter_backends = [DjangoFilterBackend]
@@ -606,7 +608,7 @@ class PublicArtList(BasePlaceNameListAPIView):
     ).filter(
         kind='public_art',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "geom")
     serializer_class = ArtPlaceNameSerializer
 
 
@@ -616,7 +618,7 @@ class ArtistList(BasePlaceNameListAPIView):
     ).filter(
         kind='artist',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "geom")
     serializer_class = ArtPlaceNameSerializer
 
 
@@ -626,7 +628,7 @@ class EventList(BasePlaceNameListAPIView):
     ).filter(
         kind='event',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "related_data", "geom")
     serializer_class = EventArtSerializer
 
 
@@ -636,7 +638,7 @@ class OrganizationList(BasePlaceNameListAPIView):
     ).filter(
         kind='organization',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "geom")
     serializer_class = ArtPlaceNameSerializer
 
 
@@ -646,7 +648,7 @@ class ResourceList(BasePlaceNameListAPIView):
     ).filter(
         kind='resource',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "geom")
     serializer_class = ArtPlaceNameSerializer
 
 
@@ -656,7 +658,7 @@ class GrantList(BasePlaceNameListAPIView):
     ).filter(
         kind='grant',
         geom__isnull=False
-    )
+    ).only("id", "name", "kind", "image", "taxonomies", "geom")
     serializer_class = ArtPlaceNameSerializer
 
 
@@ -674,7 +676,13 @@ class ArtworkList(generics.ListAPIView):
 
 class ArtworkPlaceNameList(generics.ListAPIView):
     queryset = PlaceName.objects.exclude(Q(medias__isnull=True) | Q(
-        geom__exact=Point(0.0, 0.0)))
+        geom__exact=Point(0.0, 0.0))).only(
+            "id",
+            "name",
+            "image",
+            "kind",
+            "geom"
+    )
     serializer_class = ArtworkPlaceNameSerializer
 
     @method_decorator(never_cache)
