@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { encodeFPCC, getMediaUrl, getApiUrl } from '@/plugins/utils.js'
+import { encodeFPCC, getMediaUrl } from '@/plugins/utils.js'
 
 export default {
   props: {
