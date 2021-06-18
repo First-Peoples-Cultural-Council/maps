@@ -264,7 +264,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         # 2.2.2) is COMMUNITY ONLY
         # 2.3) everything from where user is Administrator (language/community pair)
 
-        if user_logged_in:
+        if user_logged_in and not request.GET.get('placename'):
 
             # 2.1) user's contribution regardless the status
             queryset_user = queryset.filter(creator__id=request.user.id)
