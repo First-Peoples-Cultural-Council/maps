@@ -60,7 +60,6 @@ export const mutations = {
     state.mediaCount = count
   },
   setCurrentMedia(state, media) {
-    console.log(media.name)
     state.currentMedia = media
   }
 }

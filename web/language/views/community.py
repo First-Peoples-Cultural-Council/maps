@@ -81,16 +81,18 @@ class CommunityViewSet(BaseModelViewSet):
         instance = self.get_object()
         serializer = CommunityDetailSerializer(instance)
         serialized_data = serializer.data
-        
+
         user_logged_in = False
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 user_logged_in = True
-        
+
         if not user_logged_in:
-            serialized_data['places'] = [place for place in serialized_data['places'] if not place['community_only']]
+            serialized_data['places'] = [
+                place for place in serialized_data['places'] if not place['community_only']]
         else:
-            user_communities = CommunityMember.objects.filter(user=request.user.id).values_list('community', flat=True)
+            user_communities = CommunityMember.objects.filter(
+                user=request.user.id).values_list('community', flat=True)
 
             # Update list of places - exclude community_only if necessary
             updated_places = []
@@ -115,19 +117,18 @@ class CommunityViewSet(BaseModelViewSet):
             serialized_data['medias'] = updated_medias
         return Response(serialized_data)
 
-
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             if 'recording_id' not in request.data.keys():
                 return Response(
-                    {"message": "No Recording was sent in the request"}, 
+                    {"message": "No Recording was sent in the request"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             if not pk:
                 return Response(
-                    {"message": "No Community was sent in the request"}, 
+                    {"message": "No Community was sent in the request"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -138,12 +139,12 @@ class CommunityViewSet(BaseModelViewSet):
             community.audio = recording
             community.save()
             return Response(
-                {"message": "Audio associated"}, 
+                {"message": "Audio associated"},
                 status=status.HTTP_200_OK
             )
 
         return Response(
-            {"message": "You are not authorized to perform this action."}, 
+            {"message": "You are not authorized to perform this action."},
             status=status.HTTP_401_UNAUTHORIZED
         )
 
@@ -153,12 +154,12 @@ class CommunityViewSet(BaseModelViewSet):
         if is_user_community_admin(request, instance):
             if 'user_id' not in request.data.keys():
                 return Response(
-                    {"message": "No User was sent in the request"}, 
+                    {"message": "No User was sent in the request"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             if not pk:
                 return Response(
-                    {"message": "No Community was sent in the request"}, 
+                    {"message": "No Community was sent in the request"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -174,7 +175,7 @@ class CommunityViewSet(BaseModelViewSet):
             )
 
         return Response(
-            {"message": "You are not authorized to perform this action."}, 
+            {"message": "You are not authorized to perform this action."},
             status=status.HTTP_401_UNAUTHORIZED
         )
 
@@ -182,15 +183,17 @@ class CommunityViewSet(BaseModelViewSet):
     @action(detail=False)
     def list_member_to_verify(self, request):
         # 'VERIFIED' 'REJECTED' members do not need to the verified
-        members = CommunityMember.objects.exclude(status__exact=CommunityMember.VERIFIED).exclude(status__exact=CommunityMember.REJECTED)        
+        members = CommunityMember.objects.exclude(
+            status__exact=CommunityMember.VERIFIED).exclude(status__exact=CommunityMember.REJECTED)
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 # Getting the communities of the admin
-                admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
-                if admin_communities:                
-                    # Filter members by user's communities 
+                admin_communities = Administrator.objects.filter(
+                    user__id=int(request.user.id)).values('community')
+                if admin_communities:
+                    # Filter members by user's communities
                     members = members.filter(community__in=admin_communities)
-                    serializer = CommunityMemberSerializer(members, many=True)                    
+                    serializer = CommunityMemberSerializer(members, many=True)
                     return Response(serializer.data)
         return Response([])
 
@@ -202,7 +205,8 @@ class CommunityViewSet(BaseModelViewSet):
                 community_id = request.data["community_id"]
 
                 # Check if the current user is an admin for this community
-                admin_communities = list(Administrator.objects.filter(user=request.user.id).values_list('community', flat=True))
+                admin_communities = list(Administrator.objects.filter(
+                    user=request.user.id).values_list('community', flat=True))
 
                 if community_id in admin_communities:
                     if CommunityMember.member_exists(user_id, community_id):
@@ -219,7 +223,6 @@ class CommunityViewSet(BaseModelViewSet):
 
         return Response({"message", "You need to be logged in to verify community members"})
 
-
     @action(detail=False, methods=["post"])
     def reject_member(self, request):
         if request and hasattr(request, "user"):
@@ -233,10 +236,11 @@ class CommunityViewSet(BaseModelViewSet):
                 community_id = int(request.data["community_id"])
 
                 # Check if the current user is an admin for this community
-                admin_communities = list(Administrator.objects.filter(user=request.user.id).values_list('community', flat=True))
+                admin_communities = list(Administrator.objects.filter(
+                    user=request.user.id).values_list('community', flat=True))
 
                 if community_id in admin_communities:
-                    try:            
+                    try:
                         if CommunityMember.member_exists(user_id, community_id):
                             member = CommunityMember.objects.filter(user__id=user_id).filter(
                                 community__id=community_id
@@ -254,8 +258,6 @@ class CommunityViewSet(BaseModelViewSet):
                     return Response({"message", "Only Administrators can reject community members"})
 
         return Response({"message", "You need to be logged in to reject community members"})
-        
-        
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
@@ -279,19 +281,13 @@ class ChampionViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class CommunityGeoList(generics.ListAPIView):
-    queryset = Community.objects.filter(point__isnull=False).order_by("name")
+    queryset = Community.objects.filter(point__isnull=False).only(
+        "name", "other_names", "point").order_by("name")
     serializer_class = CommunityGeoSerializer
-
-    @method_decorator(never_cache)
-    def list(self, request):
-        return super().list(request)
 
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
-    queryset = Community.objects.filter(point__isnull=False).order_by("name")
+    queryset = Community.objects.filter(
+        point__isnull=False).only("name").order_by("name")
     serializer_class = CommunitySearchSerializer
-
-    @method_decorator(never_cache)
-    def list(self, request):
-        return super().list(request)
