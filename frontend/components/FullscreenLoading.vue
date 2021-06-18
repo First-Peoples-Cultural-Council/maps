@@ -2,29 +2,10 @@
   <div class="loading-container">
     <div class="loading-inner">
       <img src="@/assets/images/splashscreen/hero_img.svg" alt="Loading" />
-      <span> Loading, Please Wait {{ dots }} </span>
+      <span> Loading. Please Wait.</span>
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      dots: '.'
-    }
-  },
-  mounted() {
-    setInterval(() => {
-      if (this.dots.length > 8) {
-        this.dots = ''
-      } else {
-        this.dots += ' .'
-      }
-    }, 400)
-  }
-}
-</script>
 
 <style lang="scss">
 .loading-container {

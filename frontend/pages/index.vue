@@ -380,7 +380,7 @@ export default {
       maximumLength: 0,
       searchQuery: '',
       searchKey: 'search',
-      showFullscreenLoading: false,
+      showFullscreenLoading: true,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -633,9 +633,6 @@ export default {
     this.$store.commit('sidebar/setScrollIndicatorValue', false)
     next()
   },
-  created() {
-    this.showFullscreenLoading = true
-  },
   async mounted() {
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
@@ -645,7 +642,6 @@ export default {
 
     setTimeout(() => {
       if (this.user) {
-        this.showFullscreenLoading = false
         if (this.$route.query.search) {
           this.searchQuery = this.$route.query.search
           this.searchKey += this.searchQuery
@@ -1106,6 +1102,8 @@ export default {
     },
 
     mapLoaded(map) {
+      this.showFullscreenLoading = false
+
       this.$store.commit(
         'grants/setVisibleGrantsCount',
         this.countVisibleGrants(map.getBounds())

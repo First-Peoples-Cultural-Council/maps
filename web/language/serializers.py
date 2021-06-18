@@ -713,6 +713,8 @@ class EventArtSerializer(ArtPlaceNameSerializer):
 
 
 class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
+    artists = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = PlaceName
         fields = (
@@ -720,6 +722,7 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "kind",
+            "artists",
             "geom"
         )
 
