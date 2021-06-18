@@ -1,7 +1,7 @@
 import sys
 import copy
 
-from django.db.models import Q, query_utils
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
 from django.views.decorators.cache import never_cache
