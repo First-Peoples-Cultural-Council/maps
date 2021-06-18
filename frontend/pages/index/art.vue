@@ -329,7 +329,7 @@ export default {
             if (art.properties.kind === 'artwork') {
               // find list of Artist if exist
               const artistList = art.properties.placename.artists
-                ? art.properties.placename.artists.map(artist => artist.name)
+                ? art.properties.placename.artists.map(artist => artist)
                 : []
 
               // if list of string contains the query, return true

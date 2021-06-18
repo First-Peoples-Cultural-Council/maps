@@ -239,7 +239,7 @@ export default {
         } else if (this.isArtsDetailPage) {
           this.$router.push(this.$route.path)
         }
-      } else {
+      } else if (foundMedia) {
         this.setCurrentMedia(foundMedia)
 
         this.$store.commit(

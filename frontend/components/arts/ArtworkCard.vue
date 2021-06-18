@@ -33,14 +33,17 @@
       <div class="arts-card-right">
         <div class="arts-card-footer">
           <span class="artist-title"> {{ mediaData.name }} </span>
-          <span v-if="artists.length !== 0" class="artist-name">
+          <span
+            v-if="placename.artists && placename.artists.length !== 0"
+            class="artist-name"
+          >
             By
             <a
-              v-for="artist in artists"
-              :key="artist.name"
-              @click.stop.prevent="handleCardClick(placename.name)"
+              v-for="artist in placename.artists"
+              :key="artist"
+              @click.stop.prevent="handleCardClick(artist)"
             >
-              {{ artist.name }}</a
+              {{ artist }}</a
             >
           </span>
           <span v-else class="artist-name">
@@ -93,8 +96,7 @@ export default {
   },
   data() {
     return {
-      hover: false,
-      artists: []
+      hover: false
     }
   },
   computed: {
@@ -140,17 +142,6 @@ export default {
       } else {
         return 'image'
       }
-    }
-  },
-  mounted() {
-    if (this.placename.kind === 'public_art') {
-      this.$axios
-        .$get(getApiUrl(`placename?public_arts=${this.placename.id}`))
-        .then(result => {
-          if (result) {
-            this.artists = [...this.artists, ...result]
-          }
-        })
     }
   },
   methods: {
