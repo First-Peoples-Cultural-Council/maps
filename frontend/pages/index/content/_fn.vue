@@ -90,7 +90,7 @@
               }}</span>
             </li>
           </ul>
-          <div class="mt-3">
+          <div v-if="hasCommunityPopulation" class="mt-3">
             <b-table
               hover
               :items="lnaByCommunity"
@@ -103,18 +103,18 @@
             ></b-table>
             <client-only>
               <template v-if="lnaByCommunity.length !== 0">
-                <div class="mb-3 showHide">
+                <div class="mb-3 ">
                   <b-button
                     block
                     variant="light"
-                    class="font-08"
+                    class="font-08 "
                     @click="handleRowClick"
                     >{{
                       showCollapse ? 'Hide Charts' : 'Show Charts'
                     }}</b-button
                   >
                 </div>
-                <div class="mb-3 mt-3 showHide">
+                <!-- <div class="mb-3 mt-3 showHide">
                   <b-button
                     block
                     variant="light"
@@ -122,7 +122,7 @@
                     @click="toggleLNAPanel"
                     >{{ showLNAs ? 'Hide LNAs' : 'Show LNAs' }}</b-button
                   >
-                </div>
+                </div> -->
               </template>
 
               <div v-if="showCollapse">
@@ -137,7 +137,7 @@
                   ></PieChart>
                 </div>
               </div>
-              <div v-if="showLNAs">
+              <!-- <div v-if="showLNAs">
                 <h5 class="mt-4">Language Needs Assessments</h5>
                 <ul
                   v-for="(lnalink, index) in commDetails['lnas']"
@@ -151,7 +151,7 @@
                     <div>Language: {{ lnalink.lna.language }}</div>
                   </li>
                 </ul>
-              </div>
+              </div> -->
             </client-only>
           </div>
         </section>
@@ -380,7 +380,7 @@ export default {
             chartContext.font = '100 32px BCSans'
             chartContext.textBaseline = 'middle'
             chartContext.fillText(
-              this.data.datasets[0].learnerData[0] * 100 + '%',
+              (this.data.datasets[0].learnerData[0] * 100).toFixed(2) + '%',
               this.chart.width / 2 - 30,
               this.chart.height / 2 - 5,
               200
@@ -449,30 +449,40 @@ export default {
       }, [])
 
       /** * Get LNA percentage based on Community Population **/
-      return lnaReduced.map(lna => {
-        let fluentPercentage, semiSpeakersPercentage, activeLearnerPercentage
-        const { fluent_speakers, semi_speakers, active_learners } = lna
-        const communityPopulation = this.commDetails.population
+      return lnaReduced
+        .filter(lna => {
+          const { fluent_speakers, semi_speakers, active_learners } = lna
 
-        if (communityPopulation) {
-          fluentPercentage =
-            ((100 * fluent_speakers) / communityPopulation).toFixed(1) + '%'
-          semiSpeakersPercentage =
-            ((100 * semi_speakers) / communityPopulation).toFixed(1) + '%'
-          activeLearnerPercentage =
-            ((100 * active_learners) / communityPopulation).toFixed(1) + '%'
-        } else {
-          activeLearnerPercentage = 0
-          fluentPercentage = 0
-          semiSpeakersPercentage = 0
-        }
-        return {
-          language: lna.language.name,
-          fluent_speakers: fluentPercentage,
-          semi_speakers: semiSpeakersPercentage,
-          learners: activeLearnerPercentage
-        }
-      })
+          return (
+            fluent_speakers !== 0 ||
+            semi_speakers !== 0 ||
+            active_learners !== 0
+          )
+        })
+        .map(lna => {
+          let fluentPercentage, semiSpeakersPercentage, activeLearnerPercentage
+          const { fluent_speakers, semi_speakers, active_learners } = lna
+          const communityPopulation = this.communityPopulation
+
+          if (communityPopulation) {
+            fluentPercentage =
+              ((100 * fluent_speakers) / communityPopulation).toFixed(1) + '%'
+            semiSpeakersPercentage =
+              ((100 * semi_speakers) / communityPopulation).toFixed(1) + '%'
+            activeLearnerPercentage =
+              ((100 * active_learners) / communityPopulation).toFixed(1) + '%'
+          } else {
+            activeLearnerPercentage = 0
+            fluentPercentage = 0
+            semiSpeakersPercentage = 0
+          }
+          return {
+            language: lna.language.name,
+            fluent_speakers: fluentPercentage,
+            semi_speakers: semiSpeakersPercentage,
+            learners: activeLearnerPercentage
+          }
+        })
     },
     otherNames() {
       if (this.commDetails.other_names) {
@@ -486,6 +496,13 @@ export default {
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
+    },
+
+    communityPopulation() {
+      return this.commDetails.population
+    },
+    hasCommunityPopulation() {
+      return this.communityPopulation && this.communityPopulation !== 0
     }
   },
   watch: {
