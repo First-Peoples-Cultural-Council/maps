@@ -41,14 +41,14 @@
             <a
               v-for="artist in placename.artists"
               :key="artist"
-              @click.stop.prevent="handleCardClick(artist)"
+              @click.stop.prevent="handleArtistNameClick(artist)"
             >
               {{ artist }}</a
             >
           </span>
           <span v-else class="artist-name">
             By
-            <a @click.stop.prevent="handleCardClick(placename.name)">
+            <a @click.stop.prevent="handleArtistNameClick(placename.name)">
               {{ placename.name }}
             </a>
           </span>
@@ -144,8 +144,10 @@ export default {
       }
     }
   },
+
   methods: {
-    handleCardClick(name) {
+    handleArtistNameClick(name) {
+      this.$store.commit('sidebar/setDrawerContent', false)
       this.$router.push({
         path: `/art/${encodeFPCC(name)}`
       })
