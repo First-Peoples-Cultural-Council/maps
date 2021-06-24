@@ -46,7 +46,7 @@ export const state = () => ({
       active: true
     },
     {
-      name: 'Satelite',
+      name: 'Satellite',
       id: 5,
       layerNames: ['satelite'],
       active: false
