@@ -380,7 +380,7 @@ export default {
       maximumLength: 0,
       searchQuery: '',
       searchKey: 'search',
-      showFullscreenLoading: true,
+      showFullscreenLoading: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -632,6 +632,9 @@ export default {
     // make scroll indicator disappear on router change
     this.$store.commit('sidebar/setScrollIndicatorValue', false)
     next()
+  },
+  created() {
+    this.showFullscreenLoading = true
   },
   async mounted() {
     this.$root.$on('updateData', () => {
