@@ -168,26 +168,34 @@
                 >Go to Admin Page</a
               >
             </li>
-            <li>
-              <a class="color-gray" href="/page/about">About</a>
+            <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/about">About</nuxt-link>
             </li>
-            <li>
-              <a class="color-gray" href="/page/how-to-use">How to Use</a>
+            <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/how-to-use"
+                >How to Use</nuxt-link
+              >
             </li>
-            <li>
-              <a class="color-gray" href="/page/tos">Terms of Use</a>
+            <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/tos"
+                >Terms of Use</nuxt-link
+              >
             </li>
 
             <li>
               <a class="color-gray" href="#" @click="redirectGrants">Grants</a>
             </li>
 
-            <li>
-              <a class="color-gray" href="/page/order-maps">Order Maps</a>
+            <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/order-maps"
+                >Order Maps</nuxt-link
+              >
             </li>
 
-            <li>
-              <a class="color-gray" href="/page/contact">Contact Us</a>
+            <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/contact"
+                >Contact Us</nuxt-link
+              >
             </li>
             <li class="login-nav cursor-pointer">
               <a v-if="!email" :href="getLoginUrl()" class="d-block">Login</a>

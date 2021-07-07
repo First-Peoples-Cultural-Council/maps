@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="content">
     <div class="nav-header cursor-pointer p-2" @click.prevent="handleNavLink">
       <img
         src="../../../assets/images/symbol@2x.png"
