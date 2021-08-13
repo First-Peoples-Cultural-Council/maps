@@ -137,6 +137,23 @@
               ></b-form-file>
             </div>
 
+            <div>
+              <b-badge
+                v-if="isOrganization"
+                variant="danger"
+                class="p-2 organization-info"
+              >
+                If you are an Indigenous organization (minimum 51% Indigenous
+                <br />
+                owned and led) with roots in or connections to the land known as
+                <br />
+                British Columbia, we invite you to create an organization <br />
+                profile. The First Peoples’ Map of BC showcases British Columbia
+                <br />
+                Indigenous organization, artists and places.
+              </b-badge>
+            </div>
+
             <b-row class="field-row mt-3">
               <div>
                 <label for="traditionalName" class="contribute-title-one"
@@ -965,6 +982,9 @@ export default {
     isArtist() {
       return this.queryType === 'Artist'
     },
+    isOrganization() {
+      return this.queryType === 'Organization'
+    },
     queryProfile() {
       return !!this.$route.query.profile
     },
@@ -1668,7 +1688,7 @@ export default {
         return '(ex. Art Museum Anniversary)'
       } else if (this.queryType === 'Public Art') {
         return '(ex. The Statue of David)'
-      } else if (this.queryType === 'Organization') {
+      } else if (this.isOrganization) {
         return '(ex. Canadian Musuem)'
       }
     },
@@ -2590,5 +2610,13 @@ export default {
   padding: 1em;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
+}
+
+.organization-info {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0.25rem;
+  text-align: left;
+  margin: 1em;
 }
 </style>

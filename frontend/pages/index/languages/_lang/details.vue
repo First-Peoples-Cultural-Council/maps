@@ -116,18 +116,6 @@
             tbody-class="lna-table-tbody"
           ></b-table>
         </div>
-        <div class="mt-3">
-          <b-table
-            hover
-            :items="lnaData"
-            fiel
-            responsive
-            small
-            table-class="lna-table"
-            thead-class="lna-table-thead"
-            tbody-class="lna-table-tbody"
-          ></b-table>
-        </div>
       </section>
     </div>
   </div>
