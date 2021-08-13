@@ -405,7 +405,16 @@ export default {
       this.communityResults = this.fuzzySearch(
         this.communities,
         this.searchQuery,
-        ['name']
+        [
+          {
+            name: 'name',
+            weight: 0.3
+          },
+          {
+            name: 'other_names',
+            weight: 0.7
+          }
+        ]
       )
 
       this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
@@ -462,11 +471,11 @@ export default {
         includeMatches: true,
         includeScore: true,
         shouldSort: true,
-        threshold: 0.3,
+        threshold: 0.2,
         location: 0,
         distance: 70,
         maxPatternLength: 32,
-        minMatchCharLength: 3,
+        minMatchCharLength: 2,
         keys
       }
 
