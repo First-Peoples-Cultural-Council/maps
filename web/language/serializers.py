@@ -681,7 +681,7 @@ class LanguageSearchSerializer(serializers.ModelSerializer):
 class CommunitySearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ("name",)
+        fields = ("name", "other_names")
 
 
 # ARTS SERIALIZERS

@@ -34,6 +34,9 @@ class LanguageLinkInline(admin.TabularInline):
 class CommunityLinkInline(admin.TabularInline):
     model = CommunityLink
 
+class RelatedDataInline(admin.TabularInline):
+    model = RelatedData
+
 
 # ADMINS
 class LanguageAdmin(admin.ModelAdmin):
@@ -99,6 +102,9 @@ class PlaceNameAdmin(admin.ModelAdmin):
         "creator__last_name",
     )
     exclude = ("audio_file",)
+    inlines = [
+        RelatedDataInline,
+    ]
 
 
 class MediaAdmin(admin.ModelAdmin):

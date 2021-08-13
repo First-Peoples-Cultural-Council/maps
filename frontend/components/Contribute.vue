@@ -24,6 +24,50 @@
             an existing place, and edit from there
           </div>
         </b-list-group-item>-->
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Artist')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artist_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Artist
+              </div>
+              This option lets you create an Artist.
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Organization')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/organization_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Organization
+              </div>
+              For more categories please see this list provided by BC
+              Geographical Names and email us at <a href="#">maps@fpcc.ca.</a>
+            </div>
+          </div></b-list-group-item
+        >
+
         <b-list-group-item button @click="handleClick($event, 'point')">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
@@ -40,6 +84,69 @@
               </div>
               This option triggers drawing mode, where you will be able to
               select a specific point to contribute
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Event')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/event_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add an Event
+              </div>
+              This option lets you create an Event.
+            </div>
+          </div></b-list-group-item
+        >
+        <b-list-group-item
+          button
+          @click="handlePlaceClick($event, 'placename', 'Public Art')"
+        >
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/public_art_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Add Public Art
+              </div>
+              This option lets you create a Public Art.
+            </div>
+          </div></b-list-group-item
+        >
+
+        <b-list-group-item button @click="validateArtist($event)">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artwork_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Upload Your Artwork (I'm an Artist)
+              </div>
+              This options lets you upload an Artwork under your Artist profile.
+              If you haven't created an Artist profile, you will be redirected
+              to Artist creation.
             </div>
           </div></b-list-group-item
         >
@@ -79,114 +186,6 @@
               </div>
               This option triggers drawing mode, where you will be able to draw
               a line to contribute
-            </div>
-          </div></b-list-group-item
-        >
-        <b-list-group-item button @click="validateArtist($event)">
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/artwork_icon.svg"
-                alt="Add a line"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Upload Your Artwork (I'm an Artist)
-              </div>
-              This options lets you upload an Artwork under your Artist profile.
-              If you haven't created an Artist profile, you will be redirected
-              to Artist creation.
-            </div>
-          </div></b-list-group-item
-        >
-        <b-list-group-item
-          button
-          @click="handlePlaceClick($event, 'placename', 'Artist')"
-        >
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/artist_icon.svg"
-                alt="Add a line"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Add an Artist
-              </div>
-              This option lets you create an Artist. This Artist will be shown
-              in the Arts Panel.
-            </div>
-          </div></b-list-group-item
-        >
-        <b-list-group-item
-          button
-          @click="handlePlaceClick($event, 'placename', 'Event')"
-        >
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/event_icon.svg"
-                alt="Add a line"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Add an Event
-              </div>
-              This option lets you create an Event. This event will be shown in
-              the Arts Panel.
-            </div>
-          </div></b-list-group-item
-        >
-        <b-list-group-item
-          button
-          @click="handlePlaceClick($event, 'placename', 'Public Art')"
-        >
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/public_art_icon.svg"
-                alt="Add a line"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Add a Public Art
-              </div>
-              This option lets you create a Public Art. This Public Art will be
-              shown in the Arts Panel.
-            </div>
-          </div></b-list-group-item
-        >
-        <b-list-group-item
-          button
-          @click="handlePlaceClick($event, 'placename', 'Organization')"
-        >
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/organization_icon.svg"
-                alt="Add a line"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Add an Organization
-              </div>
-              This option lets you create an Organization. This Organization
-              will be shown in the Arts Panel.
             </div>
           </div></b-list-group-item
         >
