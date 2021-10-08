@@ -193,24 +193,7 @@
             @map-moveend="mapMoveEnd"
             @map-sourcedata="mapSourceData"
           ></Mapbox>
-          <div
-            v-if="$route.path !== '/splashscreen'"
-            class="map-controls-overlay"
-          >
-            <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-            <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-            <CurrentLocation
-              class="current-location-control hide-mobile mr-2"
-            ></CurrentLocation>
-            <ShareEmbed
-              class="share-embed-control hide-mobile mr-2"
-            ></ShareEmbed>
-            <SaveLocation
-              v-if="isLoggedIn"
-              class="share-embed-control hide-mobile mr-2"
-            ></SaveLocation>
-            <Contribute class="contribute-control mr-2"></Contribute>
-          </div>
+          <MapControlFooter />
           <ModalNotification></ModalNotification>
           <div v-if="!isDrawMode" class="map-navigation-container">
             <SearchBar
@@ -253,12 +236,6 @@ import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
 import Accordion from '@/components/Accordion.vue'
 import Badge from '@/components/Badge.vue'
-import ShareEmbed from '@/components/ShareEmbed.vue'
-import SaveLocation from '@/components/SaveLocation.vue'
-import ResetMap from '@/components/ResetMap.vue'
-import CurrentLocation from '@/components/CurrentLocation.vue'
-import Contribute from '@/components/Contribute.vue'
-import Zoom from '@/components/Zoom.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import { inBounds, zoomToIdealBox, zoomToPoint } from '@/mixins/map.js'
@@ -272,6 +249,7 @@ import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
+import MapControlFooter from '@/components/MapControls/MapControlFooter.vue'
 
 import {
   getApiUrl,
@@ -346,19 +324,14 @@ export default {
     Badge,
     LanguageCard,
     CommunityCard,
-    ShareEmbed,
-    SaveLocation,
-    ResetMap,
-    CurrentLocation,
-    Zoom,
     Filters,
-    Contribute,
     DrawingTools,
     ModalNotification,
     LogInOverlay,
     EventOverlay,
     FullscreenLoading,
-    LoadingModal
+    LoadingModal,
+    MapControlFooter
   },
   head() {
     return {
