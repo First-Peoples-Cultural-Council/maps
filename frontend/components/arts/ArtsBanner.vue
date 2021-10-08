@@ -32,10 +32,18 @@
         </div>
         <div class="artist-tags-container">
           <span
-            v-for="tag in tags"
+            v-for="tag in taxonomyList"
             :key="tag.name"
             @click="redirectToHome(tag.name)"
             >{{ tag.name }}</span
+          >
+
+          <span
+            v-if="tags.length > 4"
+            class="tag-show-more"
+            @click="handleShowMoreTags"
+          >
+            Show {{ showMore ? 'Less' : 'More' }}</span
           >
         </div>
 
@@ -139,7 +147,8 @@ export default {
   data() {
     return {
       hover: false,
-      collapseContent: false
+      collapseContent: false,
+      showMore: false
     }
   },
   computed: {
@@ -151,9 +160,15 @@ export default {
     },
     isMobileContent() {
       return this.$store.state.sidebar.mobileContent
+    },
+    taxonomyList() {
+      return this.showMore ? this.tags : this.tags.slice(0, 3)
     }
   },
   methods: {
+    handleShowMoreTags() {
+      this.showMore = !this.showMore
+    },
     redirectToHome(name) {
       this.$store.commit('arts/setFilter', this.arttype)
       this.$store.commit('arts/setTaxonomyTag', [name])
@@ -293,6 +308,16 @@ export default {
 .artist-tags-container span:hover {
   color: #fff;
   background-color: #545b62;
+}
+
+.tag-show-more {
+  text-decoration: underline;
+  background-color: transparent !important;
+}
+
+.tag-show-more:hover {
+  color: #fff;
+  background-color: #545b62 !important;
 }
 
 .arts-artist-content {
