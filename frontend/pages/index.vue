@@ -193,7 +193,7 @@
             @map-moveend="mapMoveEnd"
             @map-sourcedata="mapSourceData"
           ></Mapbox>
-          <MapControl />
+          <MapControlFooter />
           <ModalNotification></ModalNotification>
           <div v-if="!isDrawMode" class="map-navigation-container">
             <SearchBar
