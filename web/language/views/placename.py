@@ -121,9 +121,11 @@ class PlaceNameViewSet(BaseModelViewSet):
 
                 if kind == 'artist' or kind == 'organization':
                     if not language and not non_bc_languages:
+                        required_fields_missing = True
                         errors["Language"] = "This field may not be blank."
 
                     if not community and not other_community:
+                        required_fields_missing = True
                         errors["Community"] = "This field may not be blank."
 
                 if required_fields_missing:
