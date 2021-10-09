@@ -208,7 +208,18 @@
 
             <b-row class="mt-3 field-row">
               <div>
-                <label for="languageSelector" class="contribute-title-one mb-1">
+                <label
+                  v-if="isArtist || isOrganization"
+                  for="languageSelector"
+                  class="contribute-title-one mb-1"
+                >
+                  Language (required)</label
+                >
+                <label
+                  v-else
+                  for="languageSelector"
+                  class="contribute-title-one mb-1"
+                >
                   Language</label
                 >
                 <ToolTip
@@ -260,12 +271,21 @@
 
             <b-row class="mt-3 field-row">
               <div>
-                <label for="communitySelector" class="contribute-title-one mb-1"
+                <label
+                  v-if="isArtist || isOrganization"
+                  for="communitySelector"
+                  class="contribute-title-one mb-1"
+                  >Community (required)</label
+                >
+                <label
+                  v-else
+                  for="communitySelector"
+                  class="contribute-title-one mb-1"
                   >Community</label
                 >
                 <ToolTip
                   :content="
-                    `What community does this  ${queryType} belong to? Choices are 204 First Nations of BC or 'other' to enter your community manually.`
+                    `What community does this ${queryType} belong to? Choices are 204 First Nations of BC or 'other' to enter your community manually.`
                   "
                 ></ToolTip>
               </div>
@@ -637,7 +657,9 @@
             </template>
             <h5 class="contribute-title-one mt-3 mb-1">
               {{
-                isArtist ? 'Bio / Artist Statement' : `${queryType} Description`
+                isArtist
+                  ? 'Bio / Artist Statement (required)'
+                  : `${queryType} Description (required)`
               }}
 
               <ToolTip
@@ -749,7 +771,7 @@
             <!-- Text Editor -->
 
             <h5 class="contribute-title-one mt-3 mb-1">
-              Description
+              Description (required)
 
               <ToolTip
                 content="Tell people more about this location. You can add history, credit/acknowledgement, links, contact information, notes, etc."
@@ -977,7 +999,7 @@ export default {
       return this.$route.query.mode
     },
     queryType() {
-      return this.$route.query.type
+      return this.$route.query.type || 'poi'
     },
     isArtist() {
       return this.queryType === 'Artist'

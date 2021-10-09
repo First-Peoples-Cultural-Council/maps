@@ -86,6 +86,53 @@ class PlaceNameViewSet(BaseModelViewSet):
     def create(self, request):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
+
+                required_fields_missing = False
+                errors = {}
+
+                print(request.data)
+
+                kind = request.data.get('kind')
+                kind_text = kind.replace('_', ' ').capitalize()
+
+                # Required fields
+                name = request.data.get('name')
+                description = request.data.get('description')
+
+                # Conditionally required fields
+                language = request.data.get('language')
+                non_bc_languages = request.data.get('non_bc_languages')
+                community = request.data.get('community')
+                other_community = request.data.get('other_community')
+
+                if not name:
+                    required_fields_missing = True
+                    errors[kind_text + " Name"] = "This field may not be blank."
+
+                if not description:
+                    required_fields_missing = True
+
+                    if kind == 'artist':
+                        kind_text = kind_text + " Bio/Artist Statement"
+                    else:
+                        kind_text = kind_text + " Description"
+
+                    errors[kind_text] = "This field may not be blank."
+
+                if kind == 'artist' or kind == 'organization':
+                    if not language and not non_bc_languages:
+                        required_fields_missing = True
+                        errors["Language"] = "This field may not be blank."
+
+                    if not community and not other_community:
+                        required_fields_missing = True
+                        errors["Community"] = "This field may not be blank."
+
+                if required_fields_missing:
+                    return Response(
+                        errors,
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
                 return super().create(request)
 
         return Response({

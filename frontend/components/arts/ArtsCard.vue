@@ -45,11 +45,18 @@
             </h5>
             <div class="artist-tags-container">
               <span
-                v-for="tag in taxonomies"
+                v-for="tag in taxonomyPaginated"
                 :key="tag.name"
                 :class="taxonomyClass(tag.name)"
                 @click.stop.prevent="filterTaxonomy([tag.name])"
                 >{{ tag.name }}</span
+              >
+              <span
+                v-if="taxonomies.length > 4"
+                class="tag-show-more"
+                @click.stop.prevent="handleShowMoreTags"
+              >
+                Show {{ showMore ? 'Less' : 'More' }}</span
               >
             </div>
           </div>
@@ -109,7 +116,8 @@ export default {
   data() {
     return {
       hover: false,
-      blockedTag: ['Person'] // add taxonomy to not show
+      blockedTag: ['Person'], // add taxonomy to not show
+      showMore: false
     }
   },
   computed: {
@@ -117,6 +125,9 @@ export default {
       return this.taxonomy
         ? this.taxonomy.filter(taxo => !this.blockedTag.includes(taxo.name))
         : []
+    },
+    taxonomyPaginated() {
+      return this.showMore ? this.taxonomies : this.taxonomies.slice(0, 4)
     },
     taxonomyFilter() {
       return this.$store.state.arts.taxonomyFilter
@@ -126,6 +137,9 @@ export default {
     }
   },
   methods: {
+    handleShowMoreTags() {
+      this.showMore = !this.showMore
+    },
     filterTaxonomy(filter) {
       // Scroll back to top when clicking taxonomy in the cards
       const desktopContainer = document.querySelector('#sidebar-container')
@@ -199,6 +213,16 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+}
+
+.tag-show-more {
+  text-decoration: underline;
+  background-color: transparent !important;
+}
+
+.tag-show-more:hover {
+  color: #fff;
+  background-color: #545b62 !important;
 }
 
 .taxonomy-selected {
