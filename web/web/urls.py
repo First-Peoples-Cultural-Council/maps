@@ -26,12 +26,11 @@ from web.sitemaps import *
 from .views import PageViewSet
 
 from django.contrib.sitemaps.views import sitemap
-from django.contrib.sitemaps import GenericSitemap
 
 schema_view = get_swagger_view(title="FPCC API")
 
 sitemaps = {
-    'language' : LanguageSitemap(),
+    'language': LanguageSitemap(),
     'community': CommunitySitemap(),
     'placename': PlaceNameSitemap(),
 }
@@ -60,5 +59,6 @@ urlpatterns = [
     path("api/", include("users.urls"), name="users"),
     url("docs/crash/$", crash),
     url("docs/$", schema_view),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap'),
 ] + router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

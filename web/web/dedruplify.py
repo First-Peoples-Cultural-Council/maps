@@ -8,9 +8,8 @@ from django.contrib.gis.geos import Point
 
 class DeDruplifierClient:
 
-
     def __init__(self, host, user, pw, db, file_site=None):
-        self.db_name=db
+        self.db_name = db
         self.db = pymysql.connect(
             host, user, pw, db, cursorclass=pymysql.cursors.DictCursor
         )
@@ -37,11 +36,13 @@ class DeDruplifierClient:
 
                         FKTable = getattr(LocalTable, v).field.related_model
                         try:
-                            obj = FKTable.objects.get(name=rec[k + "_title"][0])
+                            obj = FKTable.objects.get(
+                                name=rec[k + "_title"][0])
                             print("setting", FKTable, v, "to", obj)
                             setattr(item, v, obj)
                         except FKTable.DoesNotExist:
-                            print(k, "with pk", rec[k + "_title"], "does not exist")
+                            print(k, "with pk",
+                                  rec[k + "_title"], "does not exist")
                         except KeyError:
                             print("WARN:", rec, "has no", k + "_title")
                     elif k.endswith("_lat"):
@@ -90,7 +91,6 @@ class DeDruplifierClient:
         term_mappings = self.query("select * from taxonomy_index;")
         # TODO: make generic.
 
-
     def update(self):
         os.makedirs("tmp/files", exist_ok=True)
 
@@ -127,7 +127,8 @@ class DeDruplifierClient:
             _by_id[node["nid"]] = new_node
         for k, v in _nodes.items():
             print("type:", k, len(v))
-        tables = [r["Tables_in_{}".format(self.db_name)] for r in self.query("show tables;")[:]]
+        tables = [r["Tables_in_{}".format(self.db_name)]
+                  for r in self.query("show tables;")[:]]
 
         _files = {}
         # download files.
@@ -139,7 +140,8 @@ class DeDruplifierClient:
                 output_filename = os.path.join("tmp/files", uri)
                 output_dir = os.path.dirname(output_filename)
                 os.makedirs(output_dir, exist_ok=True)
-                cmd = "wget {}/{} -P {}".format(self.file_site, uri, output_dir)
+                cmd = "wget {}/{} -P {}".format(self.file_site,
+                                                uri, output_dir)
                 print(cmd)
                 if not os.path.exists(output_filename):
                     os.system(cmd)
