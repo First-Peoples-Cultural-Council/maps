@@ -8,6 +8,7 @@ from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link
 from users.models import User
 
+
 class LanguageFamily(BaseModel):
     color = models.CharField(default="RGB(0.5,0.5,0.5)", max_length=31)
 
@@ -235,7 +236,7 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceName(CulturalModel):# Choices Constants:
+class PlaceName(CulturalModel):  # Choices Constants:
     # DIFFERENT TYPES OF PLACENAMES
     PUBLIC_ART = "public_art"
     ORGANIZATION = "organization"
@@ -282,7 +283,8 @@ class PlaceName(CulturalModel):# Choices Constants:
     community = models.ForeignKey(
         Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
-    other_community = models.CharField(max_length=64, default="", blank=True, null=True)
+    other_community = models.CharField(
+        max_length=64, default="", blank=True, null=True)
     taxonomies = models.ManyToManyField(
         'Taxonomy',
         through='PlaceNameTaxonomy',
@@ -338,14 +340,15 @@ class PlaceName(CulturalModel):# Choices Constants:
         media.status = PlaceName.FLAGGED
         media.status_reason = status_reason
         media.save()
-    
+
     def notify(self):
         from web.utils import get_admin_email_list
 
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace('_', ' ')
-        page = get_place_link(self) if self.kind == '' or self.kind == 'poi' else get_art_link(self)
+        page = get_place_link(
+            self) if self.kind == '' or self.kind == 'poi' else get_art_link(self)
 
         message = """
             <h3>Greetings from First People's Cultural Council!</h3>
@@ -361,7 +364,7 @@ class PlaceName(CulturalModel):# Choices Constants:
             recipient_list=admin_list,
             html_message=message,
         )
-    
+
     class Meta:
         verbose_name_plural = "Place Names"
 
@@ -423,7 +426,7 @@ class Media(BaseModel):
         media.status = Media.FLAGGED
         media.status_reason = status_reason
         media.save()
-    
+
     def notify(self):
         from web.utils import get_admin_email_list
 
@@ -434,8 +437,8 @@ class Media(BaseModel):
         elif self.community:
             page = get_comm_link(self.community)
         else:
-            page = ''       
-        
+            page = ''
+
         formatted_kind = "ARTWORK" if self.is_artwork else "MEDIA"
 
         message = """
@@ -464,7 +467,7 @@ class RelatedData(models.Model):
     is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(
         PlaceName, related_name='related_data', on_delete=models.CASCADE)
-    
+
     class Meta:
         verbose_name_plural = "Related Data"
 
@@ -558,7 +561,7 @@ class Taxonomy(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
-    
+
     class Meta:
         verbose_name_plural = "Taxonomies"
 
@@ -571,7 +574,7 @@ class PlaceNameTaxonomy(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.placename, self.taxonomy)
-    
+
     class Meta:
         verbose_name_plural = "Place Name Taxonomies"
 
@@ -585,7 +588,7 @@ class LNA(BaseModel):
     language = models.ForeignKey(
         Language, on_delete=models.SET_NULL, null=True
     )  # field_tm_lna1_lang_target_id
-    
+
     class Meta:
         verbose_name_plural = "LNA"
 
@@ -618,7 +621,7 @@ class LNAData(BaseModel):
     oece_hours = models.FloatField(default=0)
     info = models.TextField(default="")
     school_hours = models.FloatField(default=0)
-    
+
     class Meta:
         verbose_name_plural = "LNA Data"
 
@@ -629,11 +632,13 @@ def placename_post_save(sender, instance, created, **kwargs):
     if created:
         placename.notify()
 
+
 def media_post_save(sender, instance, created, **kwargs):
     media = instance
 
     if created:
         media.notify()
+
 
 # Add Django Signals for PlaceName and Media
 # For every PlaceName model update, trigger user_post_save function
