@@ -54,11 +54,10 @@ urlpatterns = [
         include("rest_framework.urls", namespace="rest_framework"),
         name="auth",
     ),  # for logging in and out as a user.
+    url(r"api-token-auth/", obtain_auth_token),  # for token based api usage.
     path("api/", include("language.urls"), name="language"),
     path("api/", include("grants.urls"), name="grants"),
-    path("api/", include("arts.urls"), name="arts"),
     path("api/", include("users.urls"), name="users"),
-    url(r"api-token-auth/", obtain_auth_token),  # for token based api usage.
     url("docs/crash/$", crash),
     url("docs/$", schema_view),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
