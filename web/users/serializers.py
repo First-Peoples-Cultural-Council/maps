@@ -70,7 +70,6 @@ class UserSerializer(serializers.ModelSerializer):
                 cleaned_placename_set.append(placename)
         representation["placename_set"] = cleaned_placename_set
 
-
         return representation
 
     class Meta:
@@ -105,4 +104,3 @@ class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "first_name", "last_name", "picture")
-
