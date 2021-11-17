@@ -38,7 +38,8 @@ class UserAPITests(APITestCase):
         """
         Ensure we can retrieve a newly created user object.
         """
-        response = self.client.get("/api/user/{}/".format(self.user.id), format="json")
+        response = self.client.get(
+            "/api/user/{}/".format(self.user.id), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], self.user.id)
         self.assertEqual(len(response.data["languages"]), 2)
@@ -73,7 +74,8 @@ class UserAPITests(APITestCase):
             },
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_user_set_community(self):
         """
@@ -88,7 +90,8 @@ class UserAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # check updates are reflected in API.
-        response = self.client.get("/api/user/{}/".format(self.user.id), format="json")
+        response = self.client.get(
+            "/api/user/{}/".format(self.user.id), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], self.user.id)
         self.assertEqual(len(response.data["languages"]), 2)
@@ -103,5 +106,6 @@ class UserAPITests(APITestCase):
             "/api/user/{}/".format(self.user.id), {"bio": "bio"}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = self.client.get("/api/user/{}/".format(self.user.id), format="json")
+        response = self.client.get(
+            "/api/user/{}/".format(self.user.id), format="json")
         self.assertEqual(response.data["bio"], "bio")

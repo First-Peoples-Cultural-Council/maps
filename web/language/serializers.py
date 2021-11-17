@@ -146,6 +146,7 @@ class LNADataSerializer(serializers.ModelSerializer):
             "pop_total_value",
         )
 
+
 class CommunityLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityLink
@@ -157,15 +158,18 @@ class CommunitySerializer(serializers.ModelSerializer):
         model = Community
         fields = ("name", "id", "point", "audio")
 
+
 class LanguageLNASerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
         fields = ("name", "id", "other_names")
 
+
 class CommunityLNASerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = ("name", "id")
+
 
 class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
     community = CommunityLNASerializer(read_only=True)
@@ -180,6 +184,7 @@ class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
             "semi_speakers",
             "active_learners",
         )
+
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
@@ -336,14 +341,14 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         if related_data:
             for data in related_data:
                 RelatedData.objects.create(**data)
-        
+
         if artists:
             for artist in artists:
                 PublicArtArtist.objects.create(
                     public_art=placename,
                     artist=artist
                 )
-        
+
         if taxonomies:
             for taxonomy in taxonomies:
                 PlaceNameTaxonomy.objects.create(
@@ -599,7 +604,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     def build_lna_external_url(self, lna_name):
         permalink = "https://maps.fpcc.ca/lna/"
         try:
-            lna_external_id = lna_name.split('-')[0].strip().replace("LNA","")
+            lna_external_id = lna_name.split('-')[0].strip().replace("LNA", "")
             lna_link = permalink + lna_external_id
         except:
             lna_link = permalink

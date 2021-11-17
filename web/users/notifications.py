@@ -1,7 +1,6 @@
 import os
 import re
 import hashlib
-import uuid
 import copy
 
 from django.conf import settings

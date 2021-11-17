@@ -2,14 +2,13 @@ import os
 import hashlib
 import copy
 
-from rest_framework import viewsets, generics, mixins
+from rest_framework import mixins
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 
-from django.conf import settings
 from django.db import transaction
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
@@ -17,14 +16,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.contrib.auth import login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import User, Administrator
-from .notifications import _format_fpcc
 from .serializers import UserSerializer
 from .cognito import verify_token
 
-from language.models import PlaceName, RelatedData
+from language.models import RelatedData
 
 
 def validate_key(encoded_email, key):
@@ -53,13 +50,13 @@ class UserCustomViewSet(
 class UserViewSet(UserCustomViewSet, GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("first_name")
-    
+
     @method_decorator(never_cache)
     def retrieve(self, request, pk=None):
         if request and hasattr(request, "user"):
             if request.user.is_authenticated and request.user.id == int(pk):
                 return super().retrieve(request)
-        
+
         return Response(
             {'message': 'You are not authorized to view this info.'},
             status=status.HTTP_401_UNAUTHORIZED
@@ -86,7 +83,8 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
-                    picture=result.get('picture', None), # not currently used, default to None
+                    # not currently used, default to None
+                    picture=result.get('picture', None),
                     first_name=result['given_name'],
                     last_name=result['family_name']
                 )
@@ -163,24 +161,27 @@ class ConfirmClaimView(APIView):
 
             if is_valid:
                 user = User.objects.get(id=user_id)
-                
+
                 with transaction.atomic():
                     email_data = RelatedData.objects.exclude(
-                        (Q(value='') | Q(placename__kind__in=['resource', 'grant']))
+                        (Q(value='') | Q(
+                            placename__kind__in=['resource', 'grant']))
                     ).filter(
                         (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email
                     )
                     email_data_copy = copy.deepcopy(email_data)
 
-                    # Exclude data if there is an actual_email. Used to give notif to 
+                    # Exclude data if there is an actual_email. Used to give notif to
                     # the actual email rather than the FPCC admin who seeded the profile
                     for data in email_data:
                         if data.data_type == 'user_email':
-                            actual_email = RelatedData.objects.exclude(value='').filter(placename=data.placename, data_type='email')
+                            actual_email = RelatedData.objects.exclude(value='').filter(
+                                placename=data.placename, data_type='email')
 
                             if actual_email:
-                                email_data_copy = email_data_copy.exclude(id=data.id)
-                    
+                                email_data_copy = email_data_copy.exclude(
+                                    id=data.id)
+
                     email_data = email_data_copy
                     for data in email_data:
                         profile = data.placename
@@ -190,7 +191,7 @@ class ConfirmClaimView(APIView):
                             profile.save()
 
                         print(profile.name)
-                    
+
                     return Response({
                         'success': True,
                         'message': 'You have successfully claimed your profile(s)!'
