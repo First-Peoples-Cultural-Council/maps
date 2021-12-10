@@ -18,11 +18,12 @@ class UserAPITests(APITestCase):
             first_name="Test",
             last_name="user 001",
             email="test@countable.ca",
-            password="password",
         )
+        self.user.set_password("password")
         self.user.languages.add(self.language1)
         self.user.languages.add(self.language2)
         self.user.communities.add(self.community1)
+        self.user.save()
         # self.user.communities.add(self.community2)
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
@@ -31,38 +32,26 @@ class UserAPITests(APITestCase):
         """
         Ensure user Detail API route exists
         """
-        response = self.client.get("/api/user/0/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.client.login(username="testuser001", password="password")
+        response = self.client.get(
+            "/api/user/{}".format(self.user.id), format="json", follow=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_user_detail(self):
         """
         Ensure we can retrieve a newly created user object.
         """
+        self.client.login(username="testuser001", password="password")
         response = self.client.get(
-            "/api/user/{}/".format(self.user.id), format="json")
+            "/api/user/{}/".format(self.user.id), format="json", follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], self.user.id)
         self.assertEqual(len(response.data["languages"]), 2)
         self.assertEqual(len(response.data["communities"]), 1)
 
-    def test_user_list_route_exists(self):
-        """
-        Ensure user list API route exists
-        """
-        response = self.client.get("/api/user/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_user_list(self):
-        """
-        Ensure we can retrieve newly created user objects.
-        """
-        response = self.client.get("/api/user/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-
     def test_user_post_not_allowed(self):
         """
-        Ensure user API POST method API is not allowed
+        Ensure there is no user create API
         """
         response = self.client.post(
             "/api/user/",
@@ -75,7 +64,7 @@ class UserAPITests(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code,
-                         status.HTTP_405_METHOD_NOT_ALLOWED)
+                         status.HTTP_404_NOT_FOUND)
 
     def test_user_set_community(self):
         """
