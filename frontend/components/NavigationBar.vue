@@ -169,11 +169,8 @@
               >
             </li>
             <li @click="closeNav">
-              <a
-                class="color-gray"
-                href="https://fpcc.ca/resource/territory-acknowledegement/"
-                target="_blank"
-                >Territorial Acknowledgement</a
+              <a class="color-gray" href="https://fpcc.ca/" target="_blank"
+                >Visit FPCC</a
               >
             </li>
             <li @click="closeNav">
@@ -181,10 +178,17 @@
             </li>
             <li @click="closeNav">
               <nuxt-link class="color-gray" to="/page/how-to-use"
-                >How to Use</nuxt-link
+                >Resource</nuxt-link
               >
             </li>
-
+            <li @click="closeNav">
+              <a
+                class="color-gray"
+                href="https://fpcc.ca/resource/territory-acknowledegement/"
+                target="_blank"
+                >Territorial Acknowledgement</a
+              >
+            </li>
             <li @click="closeNav">
               <nuxt-link class="color-gray" to="/page/tos"
                 >Terms of Use</nuxt-link
