@@ -61,6 +61,17 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
             {'message': 'You are not authorized to view this info.'},
             status=status.HTTP_401_UNAUTHORIZED
         )
+    
+    @method_decorator(never_cache)
+    def partial_update(self, request, pk=None):
+        if request and hasattr(request, "user"):
+            if request.user.is_authenticated and request.user.id == int(pk):
+                return super().partial_update(request)
+
+        return Response(
+            {'message': 'You are not authorized to update this user.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     @method_decorator(never_cache)
     def detail(self, request):
