@@ -111,17 +111,11 @@ class EmailTests(TestCase):
         user = User.objects.get(email=self.user.email)
         body = notify(user, timezone.now() - timedelta(days=7))
 
-        # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
-
         # Testing if the community create was referenced in the email
         assert body.count(self.community1.name) > 0
 
         # Testing if the placename create was sent in the email
         assert body.count(self.placename1.name) > 0
-
-        # Testing Community memberships not verified yet
-        self.assertEqual(body.count("You are still awaiting membership verification"), 1)
 
         # Testing if the placename was not sent more than once
         self.assertEqual(body.count("Someone uploaded a new place:"), 1)

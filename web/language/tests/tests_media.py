@@ -766,10 +766,11 @@ class MediaAPITests(BaseTestCase):
         Ensure media API DELETE method API works
         """
         test_media = Media.objects.create(name="Test media 001", file_type="image")
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
         response = self.client.delete(
             "/api/media/{}/".format(test_media.id), format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_placename_medias(self):
         """
