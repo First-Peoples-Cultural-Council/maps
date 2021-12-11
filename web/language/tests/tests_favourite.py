@@ -74,6 +74,7 @@ class FavouriteAPITests(BaseTestCase):
             point=self.point,
             zoom=10,
         )
+        self.client.login(username="testuser001", password="password")
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
@@ -103,6 +104,7 @@ class FavouriteAPITests(BaseTestCase):
             point=self.point,
             zoom=10,
         )
+        self.client.login(username="testuser001", password="password")
         response = self.client.get(
             "/api/favourite/{}/".format(test_favourite.id), format="json"
         )
