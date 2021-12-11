@@ -594,7 +594,7 @@ class PlaceNameAPITests(BaseTestCase):
             "/api/placename/",
             {
                 "name": "test place",
-                "kind": "string",
+                "kind": "poi",
                 "other_names": "string",
                 "common_name": "string",
                 "community_only": True,
@@ -605,6 +605,7 @@ class PlaceNameAPITests(BaseTestCase):
             },
             format="json",
         )
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_id = response.json()["id"]
 
