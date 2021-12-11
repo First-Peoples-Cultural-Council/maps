@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('grants', '0002_auto_20201022_1228'),
+        ('language', '0134_auto_20201005_0734'),
     ]
 
     operations = [
