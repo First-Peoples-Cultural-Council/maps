@@ -1,3 +1,4 @@
+from django import test
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -36,7 +37,7 @@ class BaseTestCase(APITestCase):
         )
         self.user2.set_password("password")
         self.user2.save()
-        
+
         self.user3 = User.objects.create(
             username="testuser003",
             first_name="Test",
@@ -46,24 +47,15 @@ class BaseTestCase(APITestCase):
         self.user3.set_password("password")
         self.user3.save()
 
-        self.test_language = Language.objects.create(name="Global Test Language")
-        self.test_community = Community.objects.create(name="Global Test Community")
+        self.test_language = Language.objects.create(
+            name="Global Test Language")
+        self.test_community = Community.objects.create(
+            name="Global Test Community")
         community_admin = Administrator.objects.create(
             user=self.user3,
             language=self.test_language,
             community=self.test_community
         )
-
-
-class CommunityAPITests(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-        self.now = timezone.now()
-
-        self.community1 = Community.objects.create(name="Test Community 01")
-        self.community2 = Community.objects.create(name="Test Community 02")
-        self.language = Language.objects.create(name="Test Language")
-
         self.FAKE_GEOM = """
             {
                 "type": "Point",
@@ -71,7 +63,59 @@ class CommunityAPITests(BaseTestCase):
                     -126.3482666015625,
                     54.74840576223716
                 ]
-            }"""
+            }
+        """
+
+
+class CommunityGeoAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.community1 = Community.objects.create(
+            name="Test Community 01", point=GEOSGeometry(self.FAKE_GEOM))
+        self.community2 = Community.objects.create(name="Test Community 02")
+
+    # ONE TEST TESTS ONLY ONE SCENARIO ######
+
+    def test_community_geo_route_exists(self):
+        """
+        Ensure Community Geo API route exists
+        """
+        response = self.client.get("/api/community-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_search_route_exists(self):
+        """
+        Ensure Community Search API route exists
+        """
+        response = self.client.get("/api/community-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_community_geo(self):
+        """
+        Ensure Community Geo API works
+        """
+        response = self.client.get(
+            "/api/community-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)
+
+
+class CommunityAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.now = timezone.now()
+
+        self.community3 = Community.objects.create(name="Test Community 03")
+        self.community4 = Community.objects.create(name="Test Community 04")
+        self.community5 = Community.objects.create(name="Test Community 05")
+        self.language = Language.objects.create(name="Test Language")
         self.point = GEOSGeometry(self.FAKE_GEOM)
 
         self.recording = Recording.objects.create(
@@ -216,20 +260,18 @@ class CommunityAPITests(BaseTestCase):
         """
         Ensure we can retrieve a newly created community member object.
         """
-        # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        test_community = Community(name="Test community 001")
+        test_community.point = self.point
+        test_community.save()
 
-        # Check we're logged in
-        response = self.client.get("/api/user/auth/")
-        self.assertEqual(response.json()["is_authenticated"], True)
-
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
         response = self.client.post(
-            "/api/community/{}/create_membership/".format(self.community1.id),
+            "/api/community/{}/create_membership/".format(test_community.id),
             {
                 "user_id": self.user.id,
             },
             format="json",
+            follow=True
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -240,7 +282,7 @@ class CommunityAPITests(BaseTestCase):
         admin = Administrator.objects.create(
             user=self.user,
             language=self.language,
-            community=self.community1
+            community=self.community3
         )
 
         user_member01 = User.objects.create(
@@ -275,7 +317,7 @@ class CommunityAPITests(BaseTestCase):
         # VERIFIED CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
         member_same01 = CommunityMember.objects.create(
             user=user_member01,
-            community=self.community1,
+            community=self.community3,
             status=CommunityMember.VERIFIED
         )
         response = self.client.get(
@@ -285,7 +327,7 @@ class CommunityAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
         member_same02 = CommunityMember.create_member(
-            user_member02.id, self.community1.id)
+            user_member02.id, self.community3.id)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -293,7 +335,7 @@ class CommunityAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
         member_same03 = CommunityMember.create_member(
-            user_member03.id, self.community1.id)
+            user_member03.id, self.community3.id)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -315,7 +357,7 @@ class CommunityAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember NOT MATCHING admin's community. It MUST NOT be returned by the route
         member_diff = CommunityMember.create_member(
-            user_member01.id, self.community2.id)
+            user_member01.id, self.community4.id)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -326,7 +368,7 @@ class CommunityAPITests(BaseTestCase):
         admin = Administrator.objects.create(
             user=self.user,
             language=self.language,
-            community=self.community2
+            community=self.community4
         )
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
@@ -340,7 +382,7 @@ class CommunityAPITests(BaseTestCase):
         admin = Administrator.objects.create(
             user=self.user,
             language=self.language,
-            community=self.community1
+            community=self.community3
         )
 
         user_member01 = User.objects.create(
@@ -360,7 +402,7 @@ class CommunityAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
         member_same01 = CommunityMember.create_member(
-            user_member01.id, self.community1.id)
+            user_member01.id, self.community3.id)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -371,7 +413,7 @@ class CommunityAPITests(BaseTestCase):
             "/api/community/verify_member/",
             {
                 "user_id": user_member01.id,
-                "community_id": self.community1.id,
+                "community_id": self.community3.id,
             },
             format="json",
         )
@@ -393,7 +435,7 @@ class CommunityAPITests(BaseTestCase):
         admin = Administrator.objects.create(
             user=self.user,
             language=self.language,
-            community=self.community1
+            community=self.community3
         )
 
         user_member01 = User.objects.create(
@@ -413,7 +455,7 @@ class CommunityAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
         member_same01 = CommunityMember.create_member(
-            user_member01.id, self.community1.id)
+            user_member01.id, self.community3.id)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -424,7 +466,7 @@ class CommunityAPITests(BaseTestCase):
             "/api/community/reject_member/",
             {
                 "user_id": user_member01.id,
-                "community_id": self.community1.id,
+                "community_id": self.community3.id,
             },
             format="json",
         )
@@ -463,49 +505,3 @@ class ChampionAPITests(APITestCase):
         """
         response = self.client.get("/api/champion/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # Geo API for Community
-    def test_community_geo_route_exists(self):
-        """
-        Ensure Community Geo API route exists
-        """
-        response = self.client.get("/api/community-geo/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # Search API for Community
-    def test_community_search_route_exists(self):
-        """
-        Ensure Community Search API route exists
-        """
-        response = self.client.get("/api/community-search/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class CommunityGeoAPITests(BaseTestCase):
-
-    # ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    def test_language_geo(self):
-        """
-        Ensure Community Geo API works
-        """
-        # Only include if it has a geometry
-        test_community1 = Community.objects.create(  # Included (1)
-            name="test community1",
-            point=GEOSGeometry("""{
-                "type": "Point",
-                "coordinates": [0, 0]
-            }""")
-        )
-        test_community2 = Community.objects.create(  # Exclude
-            name="test community2",
-        )
-        response = self.client.get(
-            "/api/community-geo/", format="json"
-        )
-        # By fetching "features" specifically, we're committing
-        # that this API si a GEO Feature API
-        data = response.json().get("features")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)

@@ -53,6 +53,53 @@ class BaseTestCase(APITestCase):
             }"""
 
 
+class CommunityGeoAPITests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
+        poly = GEOSGeometry(self.FAKE_GEOM)
+        # Only include if it has a geometry
+        self.language1 = Language.objects.create(  # Included (1)
+            name="test language1",
+            geom=poly
+        )
+        self.language2 = Language.objects.create(  # Exclude
+            name="test language2",
+        )
+
+    # ONE TEST TESTS ONLY ONE SCENARIO ######
+
+    def test_language_geo_route_exists(self):
+        """
+        Ensure Language Geo API route exists
+        """
+        response = self.client.get("/api/language-geo/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_language_search_route_exists(self):
+        """
+        Ensure Language Search API route exists
+        """
+        response = self.client.get("/api/language-search/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+
+    def test_language_geo(self):
+        """
+        Ensure Language Geo API works
+        """
+        response = self.client.get(
+            "/api/language-geo/", format="json"
+        )
+        # By fetching "features" specifically, we're committing
+        # that this API si a GEO Feature API
+        data = response.json().get("features")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(data), 1)
+
+
 class LanguageAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
@@ -208,47 +255,3 @@ class LanguageAPITests(BaseTestCase):
         response = self.client.get("/api/language/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-
-    # Geo API for Language
-    def test_language_geo_route_exists(self):
-        """
-        Ensure Language Geo API route exists
-        """
-        response = self.client.get("/api/language-geo/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # Search API for Language
-    def test_language_search_route_exists(self):
-        """
-        Ensure Language Search API route exists
-        """
-        response = self.client.get("/api/language-search/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class LanguageGeoAPITests(BaseTestCase):
-
-    # ONE TEST TESTS ONLY ONE SCENARIO ######
-
-    def test_language_geo(self):
-        """
-        Ensure Language Geo API works
-        """
-        poly = GEOSGeometry(self.FAKE_GEOM)
-        # Only include if it has a geometry
-        test_language1 = Language.objects.create(  # Included (1)
-            name="test language1",
-            geom=poly
-        )
-        test_language2 = Language.objects.create(  # Exclude
-            name="test language2",
-        )
-        response = self.client.get(
-            "/api/language-geo/", format="json"
-        )
-        # By fetching "features" specifically, we're committing
-        # that this API si a GEO Feature API
-        data = response.json().get("features")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)
