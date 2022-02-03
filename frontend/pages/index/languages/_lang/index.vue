@@ -44,7 +44,7 @@
               :subscription="subscribed"
               :is-server="isServer"
               type="language"
-              title="Follow This Language"
+              title="Subscribe"
             ></Notification>
           </template>
         </LanguageDetailCard>
