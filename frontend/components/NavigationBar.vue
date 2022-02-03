@@ -178,17 +178,17 @@
             </li>
             <li @click="closeNav">
               <nuxt-link class="color-gray" to="/page/how-to-use"
-                >Resource</nuxt-link
+                >Resources</nuxt-link
               >
             </li>
-            <li @click="closeNav">
+            <!-- <li @click="closeNav">
               <a
                 class="color-gray"
                 href="https://fpcc.ca/resource/territory-acknowledegement/"
                 target="_blank"
                 >Territorial Acknowledgement</a
               >
-            </li>
+            </li> -->
             <li @click="closeNav">
               <nuxt-link class="color-gray" to="/page/tos"
                 >Terms of Use</nuxt-link
