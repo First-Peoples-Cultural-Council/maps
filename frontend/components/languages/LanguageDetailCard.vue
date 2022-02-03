@@ -1,22 +1,25 @@
 <template>
   <div class="language-detail-card">
-    <div
-      class="language-detail-icon-container"
-      :style="'background-color:' + color"
-    >
-      <img src="@/assets/images/language_icon.svg" alt="Language" />
-    </div>
+    <div class="language-icon-container">
+      <div
+        class="language-detail-icon-container"
+        :style="'background-color:' + color"
+      >
+        <img src="@/assets/images/language_icon.svg" alt="Language" />
+      </div>
 
-    <div class="arts-detail-text">
-      <div>
+      <div class="ml-2">
         <h5 class="field-kind">
           Language
         </h5>
         <h5 class="field-name">
           {{ name }}
         </h5>
+        <slot name="notification"></slot>
       </div>
+    </div>
 
+    <div class="arts-detail-text">
       <div
         v-if="audioFile"
         class="d-inline-block"
@@ -34,12 +37,10 @@
       <CardBadge
         v-if="link"
         type="learn"
-        content="Learn Language"
+        content="Learn on FV"
         :link="link"
         :color="'#6f6f70'"
       ></CardBadge>
-
-      <slot name="notification"></slot>
     </div>
 
     <div
@@ -184,6 +185,7 @@ export default {
   cursor: pointer;
   border-bottom: 3px solid #f9f9f9;
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   width: 100%;
   border: 1px solid #ebe6dc;
@@ -191,6 +193,13 @@ export default {
   border-radius: 0.25em;
   position: relative;
 }
+
+.language-icon-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
 .language-detail-icon-container {
   background-color: black;
   border-radius: 50%;
@@ -237,7 +246,6 @@ export default {
 
 .arts-detail-text {
   margin-left: 0.5em;
-  width: 65%;
 }
 
 .field-kind {
