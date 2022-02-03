@@ -84,13 +84,14 @@ export default {
   background-color: var(--color-gray, #6f6f70);
   display: inline-block;
   color: white;
-  border-radius: 1em;
-  padding: 4.5px 7.5px;
+  border-radius: 0.8em;
+  padding: 8.5px 7.5px;
+  margin-bottom: 0.5em;
 }
 .card-badge span {
   text-transform: uppercase;
   font-weight: Bold;
-  font-size: 10px;
+  font-size: 12px;
 }
 .card-badge span,
 .card-badge img {
@@ -98,7 +99,7 @@ export default {
   vertical-align: middle;
 }
 .card-icon {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
 }
 </style>
