@@ -1,28 +1,26 @@
 <template>
   <div class="community-detail-card">
-    <div
-      class="community-detail-icon-container"
-      :style="'background-color:' + color"
-    >
-      <img src="@/assets/images/community_icon.svg" alt="community" />
-    </div>
-
-    <div class="arts-detail-text">
-      <div>
+    <div class="community-container">
+      <div
+        class="community-detail-icon-container"
+        :style="'background-color:' + color"
+      >
+        <img src="@/assets/images/community_icon.svg" alt="community" />
+      </div>
+      <div class="ml-2">
         <h5 class="field-kind">
           community
         </h5>
         <h5 class="field-name">
           {{ name }}
         </h5>
+        <slot name="notification"></slot>
       </div>
+    </div>
+
+    <div class="arts-detail-text">
       <div v-if="audioFile" @click.prevent.stop="handlePronounce">
         <CardBadge content="Pronounce"></CardBadge>
-      </div>
-      <slot name="notification"></slot>
-      <div v-if="population" class="d-inline-block">
-        <span class="d-inline-block font-weight-bold font-08">Population</span
-        ><span class="ml-1 font-08">{{ population }}</span>
       </div>
     </div>
 
@@ -65,10 +63,7 @@ export default {
       type: String,
       default: 'RGB(255, 255, 255)'
     },
-    population: {
-      type: Number,
-      default: null
-    },
+
     server: {
       default: false,
       type: Boolean
@@ -134,6 +129,7 @@ export default {
   cursor: pointer;
   border-bottom: 3px solid #f9f9f9;
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   width: 100%;
   border: 1px solid #ebe6dc;
@@ -141,6 +137,13 @@ export default {
   border-radius: 0.25em;
   position: relative;
 }
+
+.community-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
 .community-detail-icon-container {
   background-color: black;
   border-radius: 50%;
@@ -187,12 +190,11 @@ export default {
 
 .arts-detail-text {
   margin-left: 0.5em;
-  width: 65%;
 }
 
 .field-kind {
   font-weight: 800;
-  font-size: 18px;
+  font-size: 15px;
   color: #707070;
   opacity: 1;
   text-transform: uppercase;

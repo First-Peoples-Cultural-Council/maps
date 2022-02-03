@@ -125,6 +125,9 @@ module.exports = {
         mapboxgl: 'mapbox-gl'
       })
     ],
+    generate: {
+      fallback: true
+    },
 
     postcss: {
       // Add plugin names as key and arguments as value
