@@ -9,8 +9,8 @@
       @click="!unsubscribe ? toggleNotificationModal() : unsub()"
       ><span class="font-07">{{ !unsubscribe ? title : 'Unsubscribe' }}</span>
       <img
-        class="card-icon"
-        src="@/assets/images/heart_liked.svg"
+        class="notification-icon"
+        src="@/assets/images/bell-icon.png"
         alt="Learn"
       />
     </b-button>
@@ -147,14 +147,15 @@ export default {
   line-height: 0;
   display: inline-block;
   color: white;
-  border-radius: 1em;
+  border-radius: 0.2em;
   padding: 3.5px 7.5px;
   width: auto;
+  letter-spacing: 1px;
 }
 .notification-badge span {
   text-transform: uppercase;
   font-weight: Bold;
-  font-size: 10px;
+  font-size: 12px;
 }
 .notification-badge span,
 .notification-badge img {
@@ -162,7 +163,7 @@ export default {
   vertical-align: middle;
 }
 .notification-icon {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
 }
 </style>
