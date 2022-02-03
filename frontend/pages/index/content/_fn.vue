@@ -27,7 +27,6 @@
         </div>
         <CommunityDetailCard
           :name="commDetails.name"
-          :population="commDetails.population"
           :server="isServer"
           :audio-file="getMediaUrl(audio_obj.audio_file, isServer)"
         >
@@ -38,7 +37,7 @@
               type="community"
               :unsubscribe="!!subscribed"
               :subscription="subscribed"
-              title="Follow This Community"
+              title="Subscribe"
             ></Notification>
           </template>
         </CommunityDetailCard>
@@ -59,6 +58,12 @@
             ></LanguageDetailBadge>
           </div>
           <ul class="list-style-none m-0 p-0 mt-2">
+            <li>
+              <span class="font-08 color-gray">Population:</span>
+              <span class="font-08 font-weight-bold color-gray">{{
+                commDetails.population || 'N/A'
+              }}</span>
+            </li>
             <li>
               <span class="font-08 color-gray">Email:</span>
               <span class="font-08 font-weight-bold color-gray">{{
