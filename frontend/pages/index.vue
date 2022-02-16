@@ -1216,8 +1216,18 @@ export default {
       map.addControl(draw, 'bottom-left')
 
       if (this.isEmbed) {
-        const fullscreen = new mapboxgl.FullscreenControl()
-        map.addControl(fullscreen, 'top-right')
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-right')
+        map.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true
+          }),
+          'bottom-right'
+        )
+        map.addControl(new mapboxgl.NavigationControl(), 'top-right')
       }
 
       const locationFetchOptions = {
@@ -1630,6 +1640,8 @@ export default {
 }
 
 .floating-icon {
+  width: 100px;
+  height: 100px;
   position: absolute;
   z-index: 1;
   border: 1px solid #ddd5cc;
@@ -2010,6 +2022,11 @@ export default {
   .content-mobile.mobile-close {
     display: block !important;
     padding: 0.5em;
+  }
+
+  .floating-icon {
+    width: 50px;
+    height: 50px;
   }
 }
 

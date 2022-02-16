@@ -13,7 +13,7 @@ module.exports = {
     COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
     COGNITO_URL: process.env.COGNITO_URL,
     COGNITO_HOST: process.env.COGNITO_HOST,
-    HOST: process.env.HOST,
+    HOST: process.env.HOST
   },
 
   /*

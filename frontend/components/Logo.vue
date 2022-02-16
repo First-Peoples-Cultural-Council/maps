@@ -36,8 +36,8 @@
       <img
         src="@/assets/images/symbol@2x.png"
         alt="Menu"
-        height="auto"
-        width="100"
+        height="100%"
+        width="100%"
       />
     </div>
   </div>
