@@ -1641,7 +1641,7 @@ export default {
 
 .floating-icon {
   width: 100px;
-  height: 100px;
+  height: auto;
   position: absolute;
   z-index: 1;
   border: 1px solid #ddd5cc;
@@ -2026,7 +2026,7 @@ export default {
 
   .floating-icon {
     width: 50px;
-    height: 50px;
+    height: auto;
   }
 }
 

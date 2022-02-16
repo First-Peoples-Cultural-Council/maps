@@ -32,11 +32,11 @@
         class="mobile-logo h-100"
       />
     </div>
-    <div v-else-if="logoAlt === 5" class="h-50">
+    <div v-else-if="logoAlt === 5">
       <img
         src="@/assets/images/symbol@2x.png"
         alt="Menu"
-        height="100%"
+        height="auto"
         width="100%"
       />
     </div>
@@ -96,5 +96,9 @@ export default {
 }
 .style-two-container {
   text-align: center;
+}
+.embed-logo {
+  height: 100%;
+  width: 100%;
 }
 </style>
