@@ -13,6 +13,9 @@
       }"
       ￼￼
     >
+      <div v-if="isEmbed" class="floating-icon">
+        <Logo :logo-alt="5"></Logo>
+      </div>
       <SideBar v-if="this.$route.name === 'index'" active="Languages">
         <template v-slot:content>
           <div v-html="ie"></div>
@@ -233,6 +236,7 @@ import * as Cookies from 'js-cookie'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
+import Logo from '@/components/Logo.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -319,6 +323,7 @@ export default {
   components: {
     SearchOverlay,
     Mapbox,
+    Logo,
     SearchBar,
     NavigationBar,
     SideBar,
@@ -1622,6 +1627,18 @@ export default {
   top: 50%;
   color: #666;
   font-size: 25px;
+}
+
+.floating-icon {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid #ddd5cc;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0.5em 0 0 0.5em;
+  -webkit-box-shadow: 0 0 10px #fff;
+  box-shadow: 0 0 4px #727272;
 }
 
 .drawing-mode-container {

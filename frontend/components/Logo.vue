@@ -32,6 +32,14 @@
         class="mobile-logo h-100"
       />
     </div>
+    <div v-else-if="logoAlt === 5" class="h-50">
+      <img
+        src="@/assets/images/symbol@2x.png"
+        alt="Menu"
+        height="auto"
+        width="100"
+      />
+    </div>
   </div>
 </template>
 
@@ -46,6 +54,11 @@ export default {
   methods: {
     handleLogoClick() {
       this.$store.commit('mapinstance/setForceReset', true)
+      if (this.isEmbed) {
+        window.open(process.env.HOST, '_blank')
+        return
+      }
+
       if (this.$route.name === 'index') {
         this.$root.$emit('resetMap')
         this.$store.commit('mapinstance/setForceReset', false)
