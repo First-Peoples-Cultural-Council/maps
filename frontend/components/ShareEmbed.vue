@@ -28,7 +28,7 @@
         </p>
         <h4 class="mt-4">Embed</h4>
         <p>
-          <code id="iframeShare">{{ iframe }}</code>
+          <code id="iframeShare">{{ getIframeText() }}</code>
         </p>
         <b-button
           size="sm"
@@ -54,8 +54,8 @@ export default {
   data() {
     return {
       origin: '',
-
-      show: false
+      show: false,
+      iframeCode: ''
     }
   },
   computed: {
@@ -78,13 +78,6 @@ export default {
       } else {
         return `${this.origin}${this.$route.fullPath}`
       }
-    },
-    iframe() {
-      if (this.lat && this.lng && this.zoom) {
-        return `<iframe src="${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}"></iframe>`
-      } else {
-        return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
-      }
     }
   },
   mounted() {
@@ -105,6 +98,23 @@ export default {
       // const ClipboardJS = require('clipboard')
       // const clipboard = new ClipboardJS('.clipboard')
       // console.log('Clipboard', clipboard)
+    },
+    getIframeText() {
+      let iframeCode
+      let uri
+      const paramsArray = ['embed=1']
+      const params = paramsArray.join('&')
+
+      if (this.lat && this.lng && this.zoom) {
+        uri = `${this.origin}${this.$route.path}`
+        uri = encodeURI(uri)
+        iframeCode = `<iframe src="${uri}?${params}#${this.lat}/${this.lng}/${this.zoom}" width="600" height="400" allowfullscreen></iframe>`
+      } else {
+        uri = `${this.origin}${this.$route.fullPath}`
+        uri = encodeURI(uri)
+        iframeCode = `<iframe src="${uri}?${params}" width="600" height="400" allowfullscreen></iframe>`
+      }
+      return iframeCode
     }
   }
 }

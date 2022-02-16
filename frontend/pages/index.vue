@@ -618,6 +618,22 @@ export default {
 
     if (this.$route.query.embed && this.$route.query.embed === '1') {
       this.$store.commit('app/setIsEmbed', true)
+
+      if (this.$route.query.sol && this.$route.query.sol === '1') {
+        this.$store.commit('app/setShowOtherLanguages', true)
+      }
+
+      if (this.$route.query.scol && this.$route.query.scol === '1') {
+        this.$store.commit('app/setShowCommunitiesOutsideLanguage', true)
+      }
+
+      if (this.$route.query.sap && this.$route.query.sap === '1') {
+        this.$store.commit('app/setShowArtsPoints', true)
+      }
+
+      if (this.$route.query.lb && this.$route.query.lb === '1') {
+        this.$store.commit('app/setLockBounds', true)
+      }
     }
   },
   async mounted() {

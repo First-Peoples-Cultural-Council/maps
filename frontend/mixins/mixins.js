@@ -4,6 +4,18 @@ Vue.mixin({
   computed: {
     isEmbed() {
       return this.$store.state.app.isEmbed
+    },
+    showOtherLanguages() {
+      return this.$store.state.app.showOtherLanguages
+    },
+    showCommunitiesOutsideLanguage() {
+      return this.$store.state.app.showCommunitiesOutsideLanguage
+    },
+    showArtsPoints() {
+      return this.$store.state.app.showArtsPoints
+    },
+    lockBounds() {
+      return this.$store.state.app.lockBounds
     }
   },
   methods: {
