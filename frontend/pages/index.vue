@@ -187,10 +187,6 @@
             :access-token="MAPBOX_ACCESS_TOKEN"
             :map-options="MAP_OPTIONS"
             :nav-control="{ show: false }"
-            :fullscreen-control="{
-              show: true,
-              position: 'top-right'
-            }"
             @map-init="mapInit"
             @map-load="mapLoaded"
             @map-touchend="mapClicked"
@@ -1088,6 +1084,8 @@ export default {
     },
 
     mapLoaded(map) {
+      const mapboxgl = require('mapbox-gl')
+
       this.showFullscreenLoading = false
 
       this.$store.commit(
@@ -1211,6 +1209,11 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
+
+      if (this.isEmbed) {
+        const fullscreen = new mapboxgl.FullscreenControl()
+        map.addControl(fullscreen, 'top-right')
+      }
 
       const locationFetchOptions = {
         enableHighAccuracy: true,
