@@ -1,6 +1,11 @@
 import Vue from 'vue'
 
 Vue.mixin({
+  computed: {
+    isEmbed() {
+      return this.$store.state.app.isEmbed
+    }
+  },
   methods: {
     getBadgeStatus(mode, data) {
       if (mode === 'All') {

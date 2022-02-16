@@ -8,7 +8,8 @@
       class="map-container"
       :class="{
         detailModeContainer: isDetailMode,
-        'arts-container': isDrawerShown
+        'arts-container': isDrawerShown,
+        'map-container-pl': !isEmbed
       }"
       ￼￼
     >
@@ -115,6 +116,7 @@
         </template>
       </SideBar>
       <div
+        v-show="!isEmbed"
         v-else-if="routesToNotRenderChild()"
         id="sb-new-alt-one"
         class="sb-new-alt-one"
@@ -185,6 +187,10 @@
             :access-token="MAPBOX_ACCESS_TOKEN"
             :map-options="MAP_OPTIONS"
             :nav-control="{ show: false }"
+            :fullscreen-control="{
+              show: true,
+              position: 'top-right'
+            }"
             @map-init="mapInit"
             @map-load="mapLoaded"
             @map-touchend="mapClicked"
@@ -195,7 +201,7 @@
           ></Mapbox>
           <MapControlFooter />
           <ModalNotification></ModalNotification>
-          <div v-if="!isDrawMode" class="map-navigation-container">
+          <div v-if="!isDrawMode && !isEmbed" class="map-navigation-container">
             <SearchBar
               :key="searchKey"
               :query="searchQuery"
@@ -485,7 +491,7 @@ export default {
     }
     return { user }
   },
-  async fetch({ $axios, store }) {
+  async fetch({ $axios, store, route }) {
     if (!store.state.app.isDataLoaded) {
       // Only fetch search data
       const results = await Promise.all([
@@ -608,6 +614,10 @@ export default {
   },
   created() {
     this.showFullscreenLoading = true
+
+    if (this.$route.query.embed && this.$route.query.embed === '1') {
+      this.$store.commit('app/setIsEmbed', true)
+    }
   },
   async mounted() {
     this.$root.$on('updateData', () => {
@@ -1578,6 +1588,9 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.map-container-pl {
   padding-left: var(--sidebar-width, 425px);
 }
 

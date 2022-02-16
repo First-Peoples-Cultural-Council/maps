@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!isEmbed"
     id="sidebar-container"
     ref="sidebarContainer"
     class="sidebar-container"

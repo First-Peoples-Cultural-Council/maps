@@ -186,7 +186,7 @@ export default {
     })
 
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
-    if (this.$route.name === 'index-languages') {
+    if (this.$route.name === 'index-languages' && !this.isEmbed) {
       const mobileContainer = document.querySelector('#side-inner-collapse')
       const desktopContainer = document.querySelector('#sidebar-container')
 

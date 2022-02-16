@@ -1,6 +1,7 @@
 export const state = () => ({
   isMobile: false,
-  isDataLoaded: false
+  isDataLoaded: false,
+  isEmbed: false
 })
 
 export const mutations = {
@@ -9,5 +10,8 @@ export const mutations = {
   },
   setIsDataLoaded(state, isLoaded) {
     state.isDataLoaded = isLoaded
+  },
+  setIsEmbed(state, isEmbed) {
+    state.isEmbed = isEmbed
   }
 }
