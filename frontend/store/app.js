@@ -2,10 +2,11 @@ export const state = () => ({
   isMobile: false,
   isDataLoaded: false,
   isEmbed: false,
-  showOtherLanguages: true,
-  showCommunitiesOutsideLanguage: true,
-  showCommunities: true,
-  showArtsPoints: true,
+  showOtherLanguages: false,
+  showCommunities: false,
+  showCommunitiesOutsideLanguage: false,
+  showArtsPoints: false,
+  showHeritagePoints: false,
   lockBounds: false
 })
 
@@ -30,6 +31,9 @@ export const mutations = {
   },
   setShowArtsPoints(state, showArtsPoints) {
     state.showArtsPoints = showArtsPoints
+  },
+  setShowHeritagePoints(state, showHeritagePoints) {
+    state.showHeritagePoints = showHeritagePoints
   },
   setLockBounds(state, lockBounds) {
     state.lockBounds = lockBounds
