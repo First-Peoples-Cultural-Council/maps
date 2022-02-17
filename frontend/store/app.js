@@ -4,6 +4,7 @@ export const state = () => ({
   isEmbed: false,
   showOtherLanguages: true,
   showCommunitiesOutsideLanguage: true,
+  showCommunities: true,
   showArtsPoints: true,
   lockBounds: false
 })
@@ -20,6 +21,9 @@ export const mutations = {
   },
   setShowOtherLanguages(state, showOtherLanguages) {
     state.showOtherLanguages = showOtherLanguages
+  },
+  setShowCommunities(state, showCommunities) {
+    state.showCommunities = showCommunities
   },
   setShowCommunitiesOutsideLanguage(state, showCommunitiesOutsideLanguage) {
     state.showCommunitiesOutsideLanguage = showCommunitiesOutsideLanguage

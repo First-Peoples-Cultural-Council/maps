@@ -623,8 +623,12 @@ export default {
         this.$store.commit('app/setShowOtherLanguages', true)
       }
 
-      if (this.$route.query.scol && this.$route.query.scol === '1') {
-        this.$store.commit('app/setShowCommunitiesOutsideLanguage', true)
+      if (this.$route.query.sc && this.$route.query.sc === '1') {
+        this.$store.commit('app/setShowCommunities', true)
+
+        if (this.$route.query.scol && this.$route.query.scol === '1') {
+          this.$store.commit('app/setShowCommunitiesOutsideLanguage', true)
+        }
       }
 
       if (this.$route.query.sap && this.$route.query.sap === '1') {
@@ -764,7 +768,7 @@ export default {
       })
     }
 
-    if (this.$route.name === 'index') {
+    if (this.$route.name === 'index' && !this.isEmbed) {
       const mobileContainer = document.querySelector('#side-inner-collapse')
       const desktopContainer = document.querySelector('#sidebar-container')
 
