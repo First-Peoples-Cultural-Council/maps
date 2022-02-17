@@ -285,6 +285,15 @@ class CommunityGeoList(generics.ListAPIView):
         "name", "other_names", "point").order_by("name")
     serializer_class = CommunityGeoSerializer
 
+    def get_queryset(self):
+        language_query = self.request.GET.get('language')
+
+        if language_query:
+            language = Language.objects.get(name=language_query)
+            return Community.objects.filter(languages=language.id)
+        else:
+            return super().get_queryset()
+
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
