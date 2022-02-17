@@ -1,7 +1,7 @@
 <template>
   <div>
     <EmbedOptionToggle
-      v-if="route === 'index-languages-lang'"
+      v-if="routeName === 'index-languages-lang'"
       text="Show Other Languages"
       prop="sol"
       :default-value="true"
@@ -10,7 +10,7 @@
     <EmbedOptionToggle text="Show Communities" prop="sc" :default-value="true">
     </EmbedOptionToggle>
     <EmbedOptionToggle
-      v-if="route === 'index-languages-lang' && sc"
+      v-if="routeName === 'index-languages-lang' && sc"
       text="Show Communities Outside Language"
       prop="scol"
       :default-value="true"
@@ -19,6 +19,12 @@
     <EmbedOptionToggle
       text="Show Arts Map Points"
       prop="sap"
+      :default-value="true"
+    >
+    </EmbedOptionToggle>
+    <EmbedOptionToggle
+      text="Show Heritage Points"
+      prop="shp"
       :default-value="true"
     >
     </EmbedOptionToggle>
@@ -42,11 +48,6 @@ export default {
     sc: {
       type: Boolean,
       default: null
-    }
-  },
-  computed: {
-    route() {
-      return this.$route.name
     }
   }
 }

@@ -635,6 +635,10 @@ export default {
         this.$store.commit('app/setShowArtsPoints', true)
       }
 
+      if (this.$route.query.shp && this.$route.query.shp === '1') {
+        this.$store.commit('app/setShowHeritagePoints', true)
+      }
+
       if (this.$route.query.lb && this.$route.query.lb === '1') {
         this.$store.commit('app/setLockBounds', true)
       }
@@ -1171,39 +1175,78 @@ export default {
         }
       })
 
+      const languageQuery = this.$route.params.lang
+        ? this.$route.params.lang
+        : ''
+
+      // Process which Languages should be shown
+      let languageGeoEndpoint = '/api/language-geo/'
+      if (
+        this.isEmbed &&
+        this.routeName === 'index-languages-lang' &&
+        !this.showOtherLanguages &&
+        languageQuery
+      ) {
+        languageGeoEndpoint += `?name=${languageQuery}`
+      }
       map.addSource('langs1', {
         type: 'geojson',
-        data: '/api/language-geo/'
+        data: languageGeoEndpoint
       })
-      map.addSource('communities1', {
-        type: 'geojson',
-        data: '/api/community-geo/'
-      })
-      map.addSource('arts1', {
-        type: 'geojson',
-        data: this.artsGeoSet,
-        cluster: true,
-        maxzoom: 20,
-        clusterMaxZoom: 20,
-        clusterRadius: 40,
-        clusterProperties: {
-          // Keep count of how many of each kind there are in each cluster
-          artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
-          organization: [
-            '+',
-            ['case', ['==', ['get', 'kind'], 'organization'], 1, 0]
-          ],
-          public_art: [
-            '+',
-            ['case', ['==', ['get', 'kind'], 'public_art'], 1, 0]
-          ],
-          event: ['+', ['case', ['==', ['get', 'kind'], 'event'], 1, 0]]
-        }
-      })
-      map.addSource('places1', {
-        type: 'geojson',
-        data: '/api/placename-geo/'
-      })
+
+      // Process which Communities should be shown
+      let communityGeoEndpoint = ''
+      if (!this.isEmbed) {
+        communityGeoEndpoint = '/api/community-geo/'
+      } else if (
+        this.showCommunities &&
+        this.routeName === 'index-languages-lang' &&
+        !this.showCommunitiesOutsideLanguage &&
+        languageQuery
+      ) {
+        communityGeoEndpoint = `/api/community-geo/?language=${languageQuery}`
+      } else if (this.showCommunities) {
+        communityGeoEndpoint = '/api/community-geo/'
+      }
+      if (communityGeoEndpoint) {
+        map.addSource('communities1', {
+          type: 'geojson',
+          data: communityGeoEndpoint
+        })
+      }
+
+      if (!this.isEmbed || (this.isEmbed && this.showArtsPoints)) {
+        map.addSource('arts1', {
+          type: 'geojson',
+          data: this.artsGeoSet,
+          cluster: true,
+          maxzoom: 20,
+          clusterMaxZoom: 20,
+          clusterRadius: 40,
+          clusterProperties: {
+            // Keep count of how many of each kind there are in each cluster
+            artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
+            organization: [
+              '+',
+              ['case', ['==', ['get', 'kind'], 'organization'], 1, 0]
+            ],
+            public_art: [
+              '+',
+              ['case', ['==', ['get', 'kind'], 'public_art'], 1, 0]
+            ],
+            event: ['+', ['case', ['==', ['get', 'kind'], 'event'], 1, 0]]
+          }
+        })
+      }
+      if (!this.isEmbed || (this.isEmbed && this.showHeritagePoints)) {
+        console.log('show heritage points')
+        map.addSource('places1', {
+          type: 'geojson',
+          data: '/api/placename-geo/'
+        })
+      } else {
+        console.log('dont show heritage points')
+      }
 
       map.addSource('grants1', {
         type: 'geojson',
