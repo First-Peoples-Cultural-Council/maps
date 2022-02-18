@@ -2,6 +2,7 @@ import sys
 
 from django.shortcuts import render
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
 from language.models import (
@@ -93,6 +94,9 @@ class LanguageViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class LanguageGeoList(generics.ListAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name']
+
     queryset = Language.objects.filter(geom__isnull=False).only(
         "name", "color", "sleeping", "geom")
     serializer_class = LanguageGeoSerializer

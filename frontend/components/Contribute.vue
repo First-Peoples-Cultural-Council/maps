@@ -1,5 +1,9 @@
 <template>
-  <div class="contribute-container" :class="{ 'hide-contribute': hideButton }">
+  <div
+    v-if="!isEmbed"
+    class="contribute-container"
+    :class="{ 'hide-contribute': hideButton }"
+  >
     <b-button @click="toggleModal">
       <span>Add to the Map</span>
       <img

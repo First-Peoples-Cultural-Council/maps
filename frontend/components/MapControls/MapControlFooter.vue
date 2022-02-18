@@ -1,14 +1,15 @@
 <template>
-  <div v-if="$route.path !== '/splashscreen'" class="map-controls-overlay">
-    <Zoom class="zoom-control hide-mobile mr-2"></Zoom>
-    <ResetMap class="reset-map-control hide-mobile mr-2"></ResetMap>
-    <CurrentLocation
-      class="current-location-control hide-mobile mr-2"
-    ></CurrentLocation>
-    <ShareEmbed class="share-embed-control hide-mobile mr-2"></ShareEmbed>
+  <div
+    v-if="$route.path !== '/splashscreen' && !isEmbed"
+    class="map-controls-overlay"
+  >
+    <Zoom class="zoom-control mr-2 hide-mobile"></Zoom>
+    <ResetMap class="reset-map-control mr-2 hide-mobile"></ResetMap>
+    <CurrentLocation class="current-location-control mr-2"></CurrentLocation>
+    <ShareEmbed class="share-embed-control mr-2 hide-mobile"></ShareEmbed>
     <SaveLocation
       v-if="isLoggedIn"
-      class="share-embed-control hide-mobile mr-2"
+      class="share-embed-control mr-2"
     ></SaveLocation>
     <Contribute class="contribute-control mr-2"></Contribute>
   </div>
