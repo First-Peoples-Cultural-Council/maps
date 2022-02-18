@@ -9,24 +9,22 @@ export const state = () => ({
   lat: '',
   lng: '',
   zoom: '',
-  forceReset: false
+  forceReset: false,
+  embedOptions: ['embed=1']
 })
 
 export const mutations = {
   set(state, mapInstance) {
     state.mapInstance = mapInstance
   },
-
   setDraw(state, draw) {
     state.draw = draw
   },
-
   setView(state, { lat, lng, zoom }) {
     state.lat = lat
     state.lng = lng
     state.zoom = zoom
   },
-
   setMapState(state, { lat, lng, zoom }) {
     if (state.mapState.now !== null) {
       state.mapState.previous = assign({}, state.mapState.now)
@@ -43,8 +41,10 @@ export const mutations = {
       }
     }
   },
-
   setForceReset(state, resetState) {
     state.forceReset = resetState
+  },
+  setEmbedOptions(state, embedOptions) {
+    state.embedOptions = embedOptions
   }
 }
