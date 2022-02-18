@@ -1175,9 +1175,13 @@ export default {
         }
       })
 
-      const languageQuery = this.$route.params.lang
-        ? this.$route.params.lang
-        : ''
+      let languageQuery = ''
+      if (this.isEmbed && this.$route.params.lang) {
+        const language = this.languageSet.find(
+          lang => encodeFPCC(lang.name) === this.$route.params.lang
+        )
+        languageQuery = language.name
+      }
 
       // Process which Languages should be shown
       let languageGeoEndpoint = '/api/language-geo/'
@@ -1239,13 +1243,10 @@ export default {
         })
       }
       if (!this.isEmbed || (this.isEmbed && this.showHeritagePoints)) {
-        console.log('show heritage points')
         map.addSource('places1', {
           type: 'geojson',
           data: '/api/placename-geo/'
         })
-      } else {
-        console.log('dont show heritage points')
       }
 
       map.addSource('grants1', {
@@ -1456,14 +1457,24 @@ export default {
           const split = hash.split('/')
           const lat = split[0].substr(1)
           const lng = split[1]
-          const zoom = split[2]
+          let zoom = split[2]
 
+          if (this.isEmbed) {
+            zoom = parseFloat(zoom)
+            zoom = zoom * 0.85
+          }
           map.flyTo({
             center: [lng, lat],
             zoom,
             speed: 3,
             curve: 1
           })
+          if (this.isEmbed && this.lockBounds) {
+            map.once('moveend', () => {
+              const bounds = map.getBounds()
+              map.setMaxBounds(bounds)
+            })
+          }
         } catch (e) {}
       }
     },

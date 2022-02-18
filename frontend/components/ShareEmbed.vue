@@ -56,11 +56,11 @@ export default {
     return {
       origin: '',
       show: false,
-      iframeCode: '',
       sol: null,
       sc: null,
       scol: null,
       sap: null,
+      shp: null,
       lb: null
     }
   },
@@ -77,11 +77,28 @@ export default {
     zoom() {
       return this.$store.state.mapinstance.zoom
     },
+    embedOptions() {
+      return this.$store.state.mapinstance.embedOptions
+    },
     url() {
       if (this.lat && this.lng && this.zoom) {
         return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}`
       } else {
         return `${this.origin}${this.$route.fullPath}`
+      }
+    },
+    iframeCode() {
+      let uri
+      const params = this.embedOptions
+
+      if (this.lat && this.lng && this.zoom) {
+        uri = `${this.origin}${this.$route.path}`
+        uri = encodeURI(uri)
+        return `<iframe src="${uri}?${params}#${this.lat}/${this.lng}/${this.zoom}" width="600" height="400" allowfullscreen></iframe>`
+      } else {
+        uri = `${this.origin}${this.$route.fullPath}`
+        uri = encodeURI(uri)
+        return `<iframe src="${uri}?${params}" width="600" height="400" allowfullscreen></iframe>`
       }
     }
   },
@@ -99,9 +116,9 @@ export default {
       if (prop === 'sc' && value === false) this.scol = false
 
       this[prop] = value
-      this.setIframeText()
+      this.setEmbedOptions()
     })
-    this.setIframeText()
+    this.setEmbedOptions()
   },
   methods: {
     toggleModal() {
@@ -111,27 +128,17 @@ export default {
     copyText(text) {
       navigator.clipboard.writeText(text)
     },
-    setIframeText() {
-      let uri
-
+    setEmbedOptions() {
       // Build querystring
       const paramsArray = ['embed=1']
       if (this.sol) paramsArray.push('sol=1')
       if (this.sc) paramsArray.push('sc=1')
       if (this.scol) paramsArray.push('scol=1')
       if (this.sap) paramsArray.push('sap=1')
+      if (this.shp) paramsArray.push('shp=1')
       if (this.lb) paramsArray.push('lb=1')
       const params = paramsArray.join('&')
-
-      if (this.lat && this.lng && this.zoom) {
-        uri = `${this.origin}${this.$route.path}`
-        uri = encodeURI(uri)
-        this.iframeCode = `<iframe src="${uri}?${params}#${this.lat}/${this.lng}/${this.zoom}" width="600" height="400" allowfullscreen></iframe>`
-      } else {
-        uri = `${this.origin}${this.$route.fullPath}`
-        uri = encodeURI(uri)
-        this.iframeCode = `<iframe src="${uri}?${params}" width="600" height="400" allowfullscreen></iframe>`
-      }
+      this.$store.commit('mapinstance/setEmbedOptions', params)
     }
   }
 }
