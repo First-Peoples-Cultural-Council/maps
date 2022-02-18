@@ -8,10 +8,14 @@
       class="map-container"
       :class="{
         detailModeContainer: isDetailMode,
-        'arts-container': isDrawerShown
+        'arts-container': isDrawerShown,
+        'map-container-pl': !isEmbed
       }"
       ￼￼
     >
+      <div v-if="isEmbed" class="floating-icon">
+        <Logo :logo-alt="5"></Logo>
+      </div>
       <SideBar v-if="this.$route.name === 'index'" active="Languages">
         <template v-slot:content>
           <div v-html="ie"></div>
@@ -115,6 +119,7 @@
         </template>
       </SideBar>
       <div
+        v-show="!isEmbed"
         v-else-if="routesToNotRenderChild()"
         id="sb-new-alt-one"
         class="sb-new-alt-one"
@@ -195,7 +200,7 @@
           ></Mapbox>
           <MapControlFooter />
           <ModalNotification></ModalNotification>
-          <div v-if="!isDrawMode" class="map-navigation-container">
+          <div v-if="!isDrawMode && !isEmbed" class="map-navigation-container">
             <SearchBar
               :key="searchKey"
               :query="searchQuery"
@@ -231,6 +236,7 @@ import * as Cookies from 'js-cookie'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
+import Logo from '@/components/Logo.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -317,6 +323,7 @@ export default {
   components: {
     SearchOverlay,
     Mapbox,
+    Logo,
     SearchBar,
     NavigationBar,
     SideBar,
@@ -485,7 +492,7 @@ export default {
     }
     return { user }
   },
-  async fetch({ $axios, store }) {
+  async fetch({ $axios, store, route }) {
     if (!store.state.app.isDataLoaded) {
       // Only fetch search data
       const results = await Promise.all([
@@ -608,6 +615,34 @@ export default {
   },
   created() {
     this.showFullscreenLoading = true
+
+    if (this.$route.query.embed && this.$route.query.embed === '1') {
+      this.$store.commit('app/setIsEmbed', true)
+
+      if (this.$route.query.sol && this.$route.query.sol === '1') {
+        this.$store.commit('app/setShowOtherLanguages', true)
+      }
+
+      if (this.$route.query.sc && this.$route.query.sc === '1') {
+        this.$store.commit('app/setShowCommunities', true)
+
+        if (this.$route.query.scol && this.$route.query.scol === '1') {
+          this.$store.commit('app/setShowCommunitiesOutsideLanguage', true)
+        }
+      }
+
+      if (this.$route.query.sap && this.$route.query.sap === '1') {
+        this.$store.commit('app/setShowArtsPoints', true)
+      }
+
+      if (this.$route.query.shp && this.$route.query.shp === '1') {
+        this.$store.commit('app/setShowHeritagePoints', true)
+      }
+
+      if (this.$route.query.lb && this.$route.query.lb === '1') {
+        this.$store.commit('app/setLockBounds', true)
+      }
+    }
   },
   async mounted() {
     this.$root.$on('updateData', () => {
@@ -737,7 +772,7 @@ export default {
       })
     }
 
-    if (this.$route.name === 'index') {
+    if (this.$route.name === 'index' && !this.isEmbed) {
       const mobileContainer = document.querySelector('#side-inner-collapse')
       const desktopContainer = document.querySelector('#sidebar-container')
 
@@ -1078,6 +1113,8 @@ export default {
     },
 
     mapLoaded(map) {
+      const mapboxgl = require('mapbox-gl')
+
       this.showFullscreenLoading = false
 
       this.$store.commit(
@@ -1138,39 +1175,78 @@ export default {
         }
       })
 
+      const languageQuery = this.$route.params.lang
+        ? this.$route.params.lang
+        : ''
+
+      // Process which Languages should be shown
+      let languageGeoEndpoint = '/api/language-geo/'
+      if (
+        this.isEmbed &&
+        this.routeName === 'index-languages-lang' &&
+        !this.showOtherLanguages &&
+        languageQuery
+      ) {
+        languageGeoEndpoint += `?name=${languageQuery}`
+      }
       map.addSource('langs1', {
         type: 'geojson',
-        data: '/api/language-geo/'
+        data: languageGeoEndpoint
       })
-      map.addSource('communities1', {
-        type: 'geojson',
-        data: '/api/community-geo/'
-      })
-      map.addSource('arts1', {
-        type: 'geojson',
-        data: this.artsGeoSet,
-        cluster: true,
-        maxzoom: 20,
-        clusterMaxZoom: 20,
-        clusterRadius: 40,
-        clusterProperties: {
-          // Keep count of how many of each kind there are in each cluster
-          artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
-          organization: [
-            '+',
-            ['case', ['==', ['get', 'kind'], 'organization'], 1, 0]
-          ],
-          public_art: [
-            '+',
-            ['case', ['==', ['get', 'kind'], 'public_art'], 1, 0]
-          ],
-          event: ['+', ['case', ['==', ['get', 'kind'], 'event'], 1, 0]]
-        }
-      })
-      map.addSource('places1', {
-        type: 'geojson',
-        data: '/api/placename-geo/'
-      })
+
+      // Process which Communities should be shown
+      let communityGeoEndpoint = ''
+      if (!this.isEmbed) {
+        communityGeoEndpoint = '/api/community-geo/'
+      } else if (
+        this.showCommunities &&
+        this.routeName === 'index-languages-lang' &&
+        !this.showCommunitiesOutsideLanguage &&
+        languageQuery
+      ) {
+        communityGeoEndpoint = `/api/community-geo/?language=${languageQuery}`
+      } else if (this.showCommunities) {
+        communityGeoEndpoint = '/api/community-geo/'
+      }
+      if (communityGeoEndpoint) {
+        map.addSource('communities1', {
+          type: 'geojson',
+          data: communityGeoEndpoint
+        })
+      }
+
+      if (!this.isEmbed || (this.isEmbed && this.showArtsPoints)) {
+        map.addSource('arts1', {
+          type: 'geojson',
+          data: this.artsGeoSet,
+          cluster: true,
+          maxzoom: 20,
+          clusterMaxZoom: 20,
+          clusterRadius: 40,
+          clusterProperties: {
+            // Keep count of how many of each kind there are in each cluster
+            artist: ['+', ['case', ['==', ['get', 'kind'], 'artist'], 1, 0]],
+            organization: [
+              '+',
+              ['case', ['==', ['get', 'kind'], 'organization'], 1, 0]
+            ],
+            public_art: [
+              '+',
+              ['case', ['==', ['get', 'kind'], 'public_art'], 1, 0]
+            ],
+            event: ['+', ['case', ['==', ['get', 'kind'], 'event'], 1, 0]]
+          }
+        })
+      }
+      if (!this.isEmbed || (this.isEmbed && this.showHeritagePoints)) {
+        console.log('show heritage points')
+        map.addSource('places1', {
+          type: 'geojson',
+          data: '/api/placename-geo/'
+        })
+      } else {
+        console.log('dont show heritage points')
+      }
 
       map.addSource('grants1', {
         type: 'geojson',
@@ -1201,6 +1277,21 @@ export default {
         }
       })
       map.addControl(draw, 'bottom-left')
+
+      if (this.isEmbed) {
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-right')
+        map.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true
+          }),
+          'bottom-right'
+        )
+        map.addControl(new mapboxgl.NavigationControl(), 'top-right')
+      }
 
       const locationFetchOptions = {
         enableHighAccuracy: true,
@@ -1578,6 +1669,9 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.map-container-pl {
   padding-left: var(--sidebar-width, 425px);
 }
 
@@ -1606,6 +1700,20 @@ export default {
   top: 50%;
   color: #666;
   font-size: 25px;
+}
+
+.floating-icon {
+  width: 100px;
+  height: auto;
+  position: absolute;
+  z-index: 1;
+  border: 1px solid #ddd5cc;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0.5em 0 0 0.5em;
+  -webkit-box-shadow: 0 0 10px #fff;
+  box-shadow: 0 0 4px #727272;
 }
 
 .drawing-mode-container {
@@ -1977,6 +2085,11 @@ export default {
   .content-mobile.mobile-close {
     display: block !important;
     padding: 0.5em;
+  }
+
+  .floating-icon {
+    width: 50px;
+    height: auto;
   }
 }
 

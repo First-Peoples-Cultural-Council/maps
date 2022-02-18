@@ -382,8 +382,8 @@ export default {
       this.$store.commit('sidebar/toggleLoading', false)
     }, 3000)
 
-    if (this.$route.name === 'index-grants') {
-      // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    // Trigger addeventlistener only if there's Sidebar, used for Pagination
+    if (this.$route.name === 'index-grants' && !this.isEmbed) {
       const mobileContainer = document.querySelector('#side-inner-collapse')
       const desktopContainer = document.querySelector('#sidebar-container')
 

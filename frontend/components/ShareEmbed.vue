@@ -12,39 +12,40 @@
     >
       <div class="share-embed-modal-contents">
         <h4>Share</h4>
-        <p>
-          <code id="urlShare" data-clipboard-text="This will be copied">{{
-            url
-          }}</code>
+        <div>
+          <pre>{{ url }}</pre>
           <b-button
-            id="urlshare-button"
             size="sm"
             class="d-block mt-2 clipboard"
-            data-clipboard-target="#urlShare"
             variant="primary"
-            @click="copyToClip($event, 'url')"
+            @click="copyText(url)"
             >Click To Copy</b-button
           >
-        </p>
+        </div>
         <h4 class="mt-4">Embed</h4>
-        <p>
-          <code id="iframeShare">{{ iframe }}</code>
-        </p>
-        <b-button
-          size="sm"
-          class="d-block mt-2 clipboard"
-          variant="primary"
-          data-clipboard-target="#iframeShare"
-          @click="copyToClip($event, 'iframe')"
-          >Click To Copy</b-button
-        >
+        <div>
+          <pre>{{ iframeCode }}</pre>
+          <EmbedOptions :sc="sc" />
+          <b-button
+            size="sm"
+            class="d-block mt-2 clipboard"
+            variant="primary"
+            @click="copyText(iframeCode)"
+            >Click To Copy</b-button
+          >
+        </div>
       </div>
     </b-modal>
   </div>
 </template>
 
 <script>
+import EmbedOptions from '@/components/EmbedOptions.vue'
+
 export default {
+  components: {
+    EmbedOptions
+  },
   props: {
     hideButton: {
       default: false,
@@ -54,8 +55,13 @@ export default {
   data() {
     return {
       origin: '',
-
-      show: false
+      show: false,
+      iframeCode: '',
+      sol: null,
+      sc: null,
+      scol: null,
+      sap: null,
+      lb: null
     }
   },
   computed: {
@@ -73,17 +79,9 @@ export default {
     },
     url() {
       if (this.lat && this.lng && this.zoom) {
-        // console.log(this.$route)
         return `${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}`
       } else {
         return `${this.origin}${this.$route.fullPath}`
-      }
-    },
-    iframe() {
-      if (this.lat && this.lng && this.zoom) {
-        return `<iframe src="${this.origin}${this.$route.path}#${this.lat}/${this.lng}/${this.zoom}"></iframe>`
-      } else {
-        return `<iframe src="${this.origin}${this.$route.fullPath}"></iframe>`
       }
     }
   },
@@ -95,16 +93,45 @@ export default {
     this.$root.$on('closeShareEmbed', d => {
       this.show = false
     })
+    this.$root.$on('toggleEmbedOption', (prop, value) => {
+      // If Show Communities is disabled, disable
+      // Show Communities Outside Language too
+      if (prop === 'sc' && value === false) this.scol = false
+
+      this[prop] = value
+      this.setIframeText()
+    })
+    this.setIframeText()
   },
   methods: {
     toggleModal() {
       this.show = !this.show
       this.$store.commit('sidebar/setDrawerContent', false)
     },
-    copyToClip(e, data) {
-      // const ClipboardJS = require('clipboard')
-      // const clipboard = new ClipboardJS('.clipboard')
-      // console.log('Clipboard', clipboard)
+    copyText(text) {
+      navigator.clipboard.writeText(text)
+    },
+    setIframeText() {
+      let uri
+
+      // Build querystring
+      const paramsArray = ['embed=1']
+      if (this.sol) paramsArray.push('sol=1')
+      if (this.sc) paramsArray.push('sc=1')
+      if (this.scol) paramsArray.push('scol=1')
+      if (this.sap) paramsArray.push('sap=1')
+      if (this.lb) paramsArray.push('lb=1')
+      const params = paramsArray.join('&')
+
+      if (this.lat && this.lng && this.zoom) {
+        uri = `${this.origin}${this.$route.path}`
+        uri = encodeURI(uri)
+        this.iframeCode = `<iframe src="${uri}?${params}#${this.lat}/${this.lng}/${this.zoom}" width="600" height="400" allowfullscreen></iframe>`
+      } else {
+        uri = `${this.origin}${this.$route.fullPath}`
+        uri = encodeURI(uri)
+        this.iframeCode = `<iframe src="${uri}?${params}" width="600" height="400" allowfullscreen></iframe>`
+      }
     }
   }
 }
@@ -123,5 +150,11 @@ export default {
   margin: 0;
   padding: 0.5em 0.75em;
   text-transform: uppercase;
+}
+pre {
+  font-size: 12px;
+  padding: 4px;
+  color: #e83e8c;
+  border-radius: 5px;
 }
 </style>

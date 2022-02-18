@@ -12,113 +12,101 @@ const addLangLayers = map => {
       visibility: 'none'
     }
   })
-  map.addLayer(
-    {
-      id: 'fn-lang-areas-fill',
-      type: 'fill',
-      filter: ['!', ['get', 'sleeping']],
-      source: 'langs1',
-      layout: {
-        visibility: 'visible'
-      },
-      paint: {
-        'fill-color': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          0,
-          ['get', 'color'],
-          7.54,
-          'hsla(0, 0%, 0%, 0)',
-          22,
-          ['get', 'color']
-        ],
-        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.15, 9, 0.1]
-      }
+  map.addLayer({
+    id: 'fn-lang-areas-fill',
+    type: 'fill',
+    filter: ['!', ['get', 'sleeping']],
+    source: 'langs1',
+    layout: {
+      visibility: 'visible'
     },
-    'fn-nations'
-  )
+    paint: {
+      'fill-color': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0,
+        ['get', 'color'],
+        7.54,
+        'hsla(0, 0%, 0%, 0)',
+        22,
+        ['get', 'color']
+      ],
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.15, 9, 0.1]
+    }
+  })
 
-  map.addLayer(
-    {
-      id: 'fn-lang-area-outlines-fade',
-      type: 'line',
-      filter: ['!', ['get', 'sleeping']],
-      source: 'langs1',
-      layout: {
-        visibility: 'visible'
-      },
-      paint: {
-        'line-color': ['get', 'color'],
-        // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
-        'line-width': [
-          'interpolate',
-          ['cubic-bezier', 1, 1, 1, 1],
-          ['zoom'],
-          0,
-          3,
-          12,
-          24
-        ],
-        'line-opacity': 0.12,
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
-      }
+  map.addLayer({
+    id: 'fn-lang-area-outlines-fade',
+    type: 'line',
+    filter: ['!', ['get', 'sleeping']],
+    source: 'langs1',
+    layout: {
+      visibility: 'visible'
     },
-    'fn-nations'
-  )
+    paint: {
+      'line-color': ['get', 'color'],
+      // 'line-blur': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 6],
+      'line-width': [
+        'interpolate',
+        ['cubic-bezier', 1, 1, 1, 1],
+        ['zoom'],
+        0,
+        3,
+        12,
+        24
+      ],
+      'line-opacity': 0.12,
+      'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 12]
+    }
+  })
 
-  map.addLayer(
-    {
-      id: 'fn-lang-areas-highlighted',
-      type: 'line',
-      source: 'langs1',
-      layout: {
-        visibility: 'visible'
-      },
-      paint: {
-        'line-color': 'black',
-        'line-width': [
-          'interpolate',
-          ['cubic-bezier', 1, 1, 1, 1],
-          ['zoom'],
-          0,
-          2,
-          12,
-          20
-        ],
-        'line-opacity': 0.35,
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
-      }
+  map.addLayer({
+    id: 'fn-lang-areas-highlighted',
+    type: 'line',
+    source: 'langs1',
+    layout: {
+      visibility: 'visible'
     },
-    'fn-nations'
-  )
-  map.addLayer(
-    {
-      id: 'fn-lang-area-outlines-1',
-      type: 'line',
-      filter: ['!', ['get', 'sleeping']],
-      source: 'langs1',
-      layout: {
-        visibility: 'visible'
-      },
-      paint: {
-        'line-color': ['get', 'color'],
-        'line-blur': 0,
-        'line-width': [
-          'interpolate',
-          ['cubic-bezier', 1, 1, 1, 1],
-          ['zoom'],
-          0,
-          1,
-          12,
-          2
-        ],
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
-        'line-opacity': 0.75
-      }
+    paint: {
+      'line-color': 'black',
+      'line-width': [
+        'interpolate',
+        ['cubic-bezier', 1, 1, 1, 1],
+        ['zoom'],
+        0,
+        2,
+        12,
+        20
+      ],
+      'line-opacity': 0.35,
+      'line-offset': ['interpolate', ['linear'], ['zoom'], 0, -1, 12, -10]
+    }
+  })
+  map.addLayer({
+    id: 'fn-lang-area-outlines-1',
+    type: 'line',
+    filter: ['!', ['get', 'sleeping']],
+    source: 'langs1',
+    layout: {
+      visibility: 'visible'
     },
-    'fn-nations'
-  )
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-blur': 0,
+      'line-width': [
+        'interpolate',
+        ['cubic-bezier', 1, 1, 1, 1],
+        ['zoom'],
+        0,
+        1,
+        12,
+        2
+      ],
+      'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
+      'line-opacity': 0.75
+    }
+  })
 
   map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
 }
@@ -153,31 +141,28 @@ const addNationsLayers = map => {
 }
 
 const addArtsLayers = (map, context) => {
-  map.addLayer(
-    {
-      id: 'fn-arts',
-      minzoom: 3,
-      type: 'symbol',
-      source: 'arts1',
-      filter: ['!', ['has', 'point_count']],
-      layout: {
-        visibility: 'visible',
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': '{kind}_icon',
-        'icon-size': 0.15,
-        'text-field': '{name}',
-        'text-font': ['BC Sans Regular'],
-        'text-size': 12,
-        'text-offset': [0, 1],
-        'text-anchor': 'top'
-      },
-      paint: {
-        'icon-opacity': 0.9
-      }
+  map.addLayer({
+    id: 'fn-arts',
+    minzoom: 3,
+    type: 'symbol',
+    source: 'arts1',
+    filter: ['!', ['has', 'point_count']],
+    layout: {
+      visibility: 'visible',
+      'text-optional': true,
+      'symbol-spacing': 50,
+      'icon-image': '{kind}_icon',
+      'icon-size': 0.15,
+      'text-field': '{name}',
+      'text-font': ['BC Sans Regular'],
+      'text-size': 12,
+      'text-offset': [0, 1],
+      'text-anchor': 'top'
     },
-    'fn-nations'
-  )
+    paint: {
+      'icon-opacity': 0.9
+    }
+  })
 
   map.addLayer({
     id: 'fn-arts-clusters',
@@ -437,91 +422,79 @@ const addGrantsLayers = (map, context) => {
 }
 
 const addPlacesLayers = map => {
-  map.addLayer(
-    {
-      id: 'fn-places',
-      type: 'symbol',
-      source: 'places1',
-      minzoom: 5,
-      layout: {
-        visibility: 'visible',
-        'text-optional': true,
-        'symbol-spacing': 50,
-        'icon-image': 'point_of_interest_icon',
-        'icon-size': 0.15,
-        'text-field': '{name}',
-        'text-font': ['BC Sans Regular'],
-        'text-size': 12,
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
-      },
-      // [cvo] View permissions on frontend is not secure should be done in the API instead.
-      // filter: ['!=', ['get', 'status'], 'FL']
-      filter: ['!=', '$type', 'Polygon']
+  map.addLayer({
+    id: 'fn-places',
+    type: 'symbol',
+    source: 'places1',
+    minzoom: 5,
+    layout: {
+      visibility: 'visible',
+      'text-optional': true,
+      'symbol-spacing': 50,
+      'icon-image': 'point_of_interest_icon',
+      'icon-size': 0.15,
+      'text-field': '{name}',
+      'text-font': ['BC Sans Regular'],
+      'text-size': 12,
+      'text-offset': [0, 0.6],
+      'text-anchor': 'top'
     },
-    'fn-nations'
-  )
+    // [cvo] View permissions on frontend is not secure should be done in the API instead.
+    // filter: ['!=', ['get', 'status'], 'FL']
+    filter: ['!=', '$type', 'Polygon']
+  })
 
-  map.addLayer(
-    {
-      id: 'fn-places-lines',
-      type: 'line',
-      source: 'places1',
-      minzoom: 5,
-      layout: {
-        visibility: 'visible',
-        'line-cap': 'round'
-      },
-      paint: {
-        'line-color': '#987',
-        'line-width': 1,
-        'line-dasharray': [0, 2]
-      },
-      filter: ['==', '$type', 'LineString']
+  map.addLayer({
+    id: 'fn-places-lines',
+    type: 'line',
+    source: 'places1',
+    minzoom: 5,
+    layout: {
+      visibility: 'visible',
+      'line-cap': 'round'
     },
-    'fn-nations'
-  )
+    paint: {
+      'line-color': '#987',
+      'line-width': 1,
+      'line-dasharray': [0, 2]
+    },
+    filter: ['==', '$type', 'LineString']
+  })
 
-  map.addLayer(
-    {
-      id: 'fn-places-poly',
-      type: 'fill',
-      source: 'places1',
-      minzoom: 5,
-      layout: {
-        visibility: 'visible'
-      },
-      paint: {
-        'fill-color': '#987',
-        'fill-opacity': 0.2
-      },
-      filter: ['==', '$type', 'Polygon']
+  map.addLayer({
+    id: 'fn-places-poly',
+    type: 'fill',
+    source: 'places1',
+    minzoom: 5,
+    layout: {
+      visibility: 'visible'
     },
-    'fn-nations'
-  )
+    paint: {
+      'fill-color': '#987',
+      'fill-opacity': 0.2
+    },
+    filter: ['==', '$type', 'Polygon']
+  })
 
-  map.addLayer(
-    {
-      id: 'fn-places-geom-labels',
-      type: 'symbol',
-      minzoom: 5,
-      source: 'places1',
-      layout: {
-        visibility: 'visible',
-        'text-field': ['to-string', ['get', 'name']],
-        'text-size': 14,
-        'text-font': ['BC Sans Regular']
-      },
-      paint: {
-        'text-halo-width': 2,
-        'text-halo-blur': 2,
-        'text-halo-color': '#ba9',
-        'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
-      },
-      filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]
+  map.addLayer({
+    id: 'fn-places-geom-labels',
+    type: 'symbol',
+    minzoom: 5,
+    source: 'places1',
+    layout: {
+      visibility: 'visible',
+      'text-field': ['to-string', ['get', 'name']],
+      'text-size': 14,
+      'text-font': ['BC Sans Regular']
     },
-    'fn-nations'
-  )
+    paint: {
+      'text-halo-width': 2,
+      'text-halo-blur': 2,
+      'text-halo-color': '#ba9',
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 14, 0.25]
+    },
+    filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]
+  })
 }
 
 const getArtsMarker = function(features) {
