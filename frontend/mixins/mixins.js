@@ -1,6 +1,32 @@
 import Vue from 'vue'
 
 Vue.mixin({
+  computed: {
+    routeName() {
+      return this.$route.name
+    },
+    isEmbed() {
+      return this.$store.state.app.isEmbed
+    },
+    showOtherLanguages() {
+      return this.$store.state.app.showOtherLanguages
+    },
+    showCommunities() {
+      return this.$store.state.app.showCommunities
+    },
+    showCommunitiesOutsideLanguage() {
+      return this.$store.state.app.showCommunitiesOutsideLanguage
+    },
+    showArtsPoints() {
+      return this.$store.state.app.showArtsPoints
+    },
+    showHeritagePoints() {
+      return this.$store.state.app.showHeritagePoints
+    },
+    lockBounds() {
+      return this.$store.state.app.lockBounds
+    }
+  },
   methods: {
     getBadgeStatus(mode, data) {
       if (mode === 'All') {

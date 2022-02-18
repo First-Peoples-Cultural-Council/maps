@@ -123,24 +123,26 @@ export default {
     }
 
     // Trigger addeventlistener only if there's Sidebar, used for Pagination
-    const mobileContainer = document.querySelector('#side-inner-collapse')
-    const desktopContainer = document.querySelector('#sidebar-container')
+    if (this.$route.name === 'index-heritages' && !this.isEmbed) {
+      const mobileContainer = document.querySelector('#side-inner-collapse')
+      const desktopContainer = document.querySelector('#sidebar-container')
 
-    const containerArray = [mobileContainer, desktopContainer]
+      const containerArray = [mobileContainer, desktopContainer]
 
-    containerArray.forEach(elem => {
-      elem.addEventListener('scroll', e => {
-        if (
-          elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
-          elem.scrollTop !== 0
-        ) {
-          if (this.places.length > this.maximumLength) {
-            this.loadMoreData()
+      containerArray.forEach(elem => {
+        elem.addEventListener('scroll', e => {
+          if (
+            elem.scrollTop + elem.clientHeight >= elem.scrollHeight - 50 &&
+            elem.scrollTop !== 0
+          ) {
+            if (this.places.length > this.maximumLength) {
+              this.loadMoreData()
+            }
           }
-        }
+        })
       })
-    })
-    this.loadMoreData()
+      this.loadMoreData()
+    }
   },
   methods: {
     handleCardClick(e, name) {
