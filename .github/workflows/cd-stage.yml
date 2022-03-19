@@ -1,0 +1,15 @@
+name: FPLM Deploy Stage
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request: {}
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Stage
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
