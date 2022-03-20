@@ -264,8 +264,17 @@ If you want this field to be editable in the admin, this will happen by default.
 
 ## Deployment
 
-The `master` branch is deployed by Jenkins to production, `maps.fpcc.ca` by default.
-The `develop` branch is deployed by Jenkins to staging, `maps-dev.fpcc.ca` by default.
+The `master` branch is deployed by GitHub Actions to production, `maps.fpcc.ca` by default.
+Only the `https://github.com/First-Peoples-Cultural-Council/maps` has GH Action Secrets for this deployment set up.
+PROD_ENVS=
+KNOWN_HOSTS=
+PROD_DEPLOY_KEY=
+
+The `develop` branch is deployed by GitHub Actions to staging, `fplm.countable.ca` by default.
+Only the countable-web fork has secrets set to deploy here.
+KNOWN_HOSTS=
+BOOL=
+
 
 ## Bootstrapping data (Not necessary to run again)
 
