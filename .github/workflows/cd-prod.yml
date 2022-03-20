@@ -1,0 +1,39 @@
+name: FPLM Deploy Stage
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PROD_DEPLOY_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Envs
+        run: |
+            echo $PROD_ENVS >> local.env
+        shell: bash
+        env:
+          PROD_ENVS : ${{secrets.PROD_ENVS}}
+
+      - name: Deploy Stage
+        shell: bash
+        run: rsync -avz ./ jenkins@ec2-35-183-34-28.ca-central-1.compute.amazonaws.com:/home/jenkins/workspace/map/fplm-prod/
+
+      - name: Run Stage
+        uses: appleboy/ssh-action@master
+        with:
+          host: "ec2-35-183-34-28.ca-central-1.compute.amazonaws.com"
+          username: jenkins
+          key: ${{ secrets.PROD_DEPLOY_KEY }}
+          script: |
+            cd /home/jenkins/workspace/map/fplm-prod/
+            ./prod.sh

@@ -1,4 +1,3 @@
-nginx/conf.d/default.conf
 web/media/*
 *.sql
 *.pem
