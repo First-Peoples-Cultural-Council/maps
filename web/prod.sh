@@ -7,5 +7,5 @@ umask 0000
 
 python3 manage.py migrate
 python3 manage.py collectstatic --noinput
-gunicorn web.wsgi:application -k gevent -t 300 -b :8000 --reload --max-requests 1000
+gunicorn web.wsgi:application -k gevent --worker-connections=1000 --workers=3 -t 300 -b :8000 --reload --max-requests 1000
 
