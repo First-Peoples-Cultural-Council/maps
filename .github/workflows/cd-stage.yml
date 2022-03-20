@@ -19,3 +19,11 @@ jobs:
       - name: Deploy Stage
         shell: bash
         run: rsync -avz ./ jenkins@bool.countable.ca:/home/jenkins/workspace/fplm-stage/
+      - name: Run Stage
+        uses: appleboy/ssh-action@master
+        with:
+          host: "bool.countable.ca"
+          username: jenkins
+          key: ${{ secrets.BOOL }}
+          script: |
+            ./stage.sh
