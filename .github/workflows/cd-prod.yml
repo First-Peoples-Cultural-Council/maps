@@ -1,4 +1,4 @@
-name: FPLM Deploy Stage
+name: FPLM Deploy Prod
 
 on:
   push:
@@ -24,11 +24,11 @@ jobs:
         env:
           PROD_ENVS : ${{secrets.PROD_ENVS}}
 
-      - name: Deploy Stage
+      - name: Deploy Prod
         shell: bash
         run: rsync -avz ./ jenkins@ec2-35-183-34-28.ca-central-1.compute.amazonaws.com:/home/jenkins/workspace/map/fplm-prod/
 
-      - name: Run Stage
+      - name: Run Prod
         uses: appleboy/ssh-action@master
         with:
           host: "ec2-35-183-34-28.ca-central-1.compute.amazonaws.com"
