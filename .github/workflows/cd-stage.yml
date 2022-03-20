@@ -26,4 +26,5 @@ jobs:
           username: jenkins
           key: ${{ secrets.BOOL }}
           script: |
+            cd /home/jenkins/workspace/fplm-stage/
             ./stage.sh
