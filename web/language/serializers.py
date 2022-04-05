@@ -402,6 +402,12 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             artists_representation.append(serializer.data)
         representation['artists'] = artists_representation
 
+        community = representation.get('community')
+        if community:
+            community_details = Community.objects.get(pk=community)
+            serializer = CommunitySerializer(community_details)
+            representation['community'] = serializer.data
+
         return representation
 
     class Meta:

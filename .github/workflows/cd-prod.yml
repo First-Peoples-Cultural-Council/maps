@@ -18,8 +18,7 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Envs
-        run: |
-            echo $PROD_ENVS >> local.env
+        run: 'echo "$PROD_ENVS" >> local.env'
         shell: bash
         env:
           PROD_ENVS : ${{secrets.PROD_ENVS}}
