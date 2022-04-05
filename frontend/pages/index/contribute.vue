@@ -819,6 +819,7 @@
                   show
                   variant="warning"
                   dismissible
+                  class="error-list"
                 >
                   <ul>
                     <li v-for="err in errors" :key="err">{{ err }}</li>
@@ -1976,6 +1977,12 @@ export default {
         return
       }
 
+      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
+        this.isLoading = false
+        this.errors.push('Thumbnail: Please upload an image.')
+        return
+      }
+
       let community_id = null
       if (this.community && this.community.id !== 'others') {
         community_id = this.community.id
@@ -2419,6 +2426,9 @@ export default {
 </script>
 
 <style lang="scss">
+.error-list ul {
+  margin-bottom: 0;
+}
 .contribute-header {
   background-color: #f4f0eb;
 }
