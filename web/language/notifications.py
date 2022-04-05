@@ -5,9 +5,9 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.conf import settings
 
-from web.utils import get_lang_link, get_comm_link, get_place_link
+from web.utils import get_lang_link, get_comm_link, get_place_link, format_fpcc
 from language.models import (
-    PlaceName, Media, Favourite, CommunityMember, Language, Community)
+    PlaceName, Media, Favourite, CommunityMember, Language, Community, PublicArtArtist)
 from users.models import User, Administrator
 
 
@@ -229,12 +229,63 @@ def notify(user, since=None):
         print("No new information for this person.", intro)
 
 
+def notify_no_media(user):
+    user_name = " ".join([user.first_name, user.last_name])
+    artist_profiles = user.placename_set.filter(
+        kind="artist")
+    artist_profiles_ids = artist_profiles.values_list('id', flat=True)
+
+    # Don't send any notifications if the user does not
+    # have an artist profile attached to his account
+    if not artist_profiles:
+        return
+
+    # Don't send any notifications if the user already posted something
+    posted_media = Media.objects.filter(placename_id__in=artist_profiles_ids)
+    posted_public_arts = PublicArtArtist.objects.filter(
+        artist__in=artist_profiles_ids)
+    if posted_public_arts or posted_media:
+        return
+
+    artist_profiles_with_media = list(posted_media.values_list(
+        'placename_id', flat=True)) + list(posted_public_arts.values_list('artist_id', flat=True))
+    profiles_html = ""
+
+    # List profiles without media/public art for convenience
+    for profile in artist_profiles:
+        if profile.id not in artist_profiles_with_media:
+            profiles_html += f'<li><a href="{settings.HOST}/art/{format_fpcc(profile.name)}/" target="_blank">{profile.name}</a></li>'
+
+    subject = f"No Artwork or Public Art in your First People's Language Map Profile"
+    html = f"""
+    <p>Hello, <b>{user_name}!</b></p>
+    <p>
+        We have noticed that you haven't posted an artwork or a public art in your Profile(s) at 
+        <a href="{settings.HOST}/art/" target="_blank">First People's Language Map Profile</a>. 
+        Please take this opportunity to showcase your skills by sharing your lovely art with us. 
+        We would really appreciate it if you do.
+    </p>
+    <p>
+        <div>Profiles with no Artwork or Public Art</div>
+        <ul>{profiles_html}</ul>
+    </p>
+    <p>Thank you so much!<br><b>FPCC Team</b></p>
+    """
+    send_mail(
+        subject,
+        html,
+        "maps@fpcc.ca",
+        [user.email],
+        html_message=html,
+    )
+
+
 def send():
     now = timezone.now()
     # find everyone who needs an update.
     users = User.objects.filter(
         # TODO: allow arbitrary notification frequency from account setting instead of hardcoding 7 here?
-        last_notified__lte=now - datetime.timedelta(days=7),
+        last_notified__lte=now - datetime.timedelta(days=30),
         notification_frequency__gt=-1,
     )
     for user in users:
@@ -245,6 +296,8 @@ def send():
             notify(user)
             user.last_notified = now
             user.save()
+        else:
+            notify_no_media(user)
 
 
 def inform_placename_rejected_or_flagged(placename_id, reason, status):

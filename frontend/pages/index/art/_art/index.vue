@@ -160,6 +160,20 @@
               </span>
             </section>
 
+            <section
+              v-if="artDetails.community && artDetails.kind === 'artist'"
+              class="artist-content-field"
+            >
+              <h5 class="field-title">
+                Artist Community:
+              </h5>
+              <span class="field-content">
+                <span>
+                  {{ artDetails.community.name }}
+                </span>
+              </span>
+            </section>
+
             <!-- Render List of Related Data -->
             <template v-if="relatedData">
               <section
