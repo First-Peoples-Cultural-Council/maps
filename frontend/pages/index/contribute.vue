@@ -1266,7 +1266,7 @@ export default {
         )
         community = {
           name: community.name,
-          id: place.community
+          id: community.id
         }
       }
 
