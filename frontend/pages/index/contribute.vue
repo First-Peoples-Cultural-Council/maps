@@ -1262,7 +1262,7 @@ export default {
       let community = null
       if (place.community) {
         community = await $axios.$get(
-          getApiUrl(`community/${place.community}/?` + now.getTime())
+          getApiUrl(`community/${place.community.id}/?` + now.getTime())
         )
         community = {
           name: community.name,
@@ -1408,7 +1408,7 @@ export default {
       let community = null
       if (place.community) {
         community = await $axios.$get(
-          getApiUrl(`community/${place.community}/?` + now.getTime())
+          getApiUrl(`community/${place.community.id}/?` + now.getTime())
         )
         community = {
           name: community.name,

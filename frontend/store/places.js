@@ -86,7 +86,7 @@ export const actions = {
       await dispatch(
         'places/getPlaceCommunity',
         {
-          id: result.community
+          id: result.community.id
         },
         {
           root: true
