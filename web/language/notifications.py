@@ -294,8 +294,6 @@ def send():
 
         if user_is_admin:
             notify(user)
-        else:
-            notify_no_media(user)
         user.last_notified = now
         user.save()
 
