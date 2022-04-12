@@ -294,10 +294,10 @@ def send():
 
         if user_is_admin:
             notify(user)
-            user.last_notified = now
-            user.save()
         else:
             notify_no_media(user)
+        user.last_notified = now
+        user.save()
 
 
 def inform_placename_rejected_or_flagged(placename_id, reason, status):
