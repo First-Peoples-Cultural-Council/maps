@@ -280,6 +280,55 @@ def notify_no_media(user):
     )
 
 
+def send_apology_letter(user):
+    user_name = " ".join([user.first_name, user.last_name])
+    artist_profiles = user.placename_set.filter(
+        kind="artist")
+    artist_profiles_ids = artist_profiles.values_list('id', flat=True)
+
+    # Don't send any notifications if the user does not
+    # have an artist profile attached to his account
+    if not artist_profiles:
+        return print('User is not an Artist.')
+
+    # Don't send any notifications if the user already posted something
+    posted_media = Media.objects.filter(placename_id__in=artist_profiles_ids)
+    posted_public_arts = PublicArtArtist.objects.filter(
+        artist__in=artist_profiles_ids)
+    if posted_public_arts or posted_media:
+        return print('User has already posted their artwork.')
+
+    subject = f"Apologies for Repeated Emails"
+    html = f"""
+    <p>Hello, <b>{user_name}!</b></p>
+    <p>
+        We sent you an email last week regarding your artist profile. Due to a programming error, the message was resent multiple times. We apologize for this error!
+    </p>
+    <p>
+        If you would like to update your profile, we are happy to help. We also understand that the original email implied that this was only relevant for visual art. All artists are welcome to upload information related to their work. For example, musicians can link to youtube videos or upload performance photos, and arts administrators can upload a profile photo or photos of places that might be relevant to their work. If you originally signed up on the older version of the arts map, you will need to create a new login for <a href="https://maps.fpcc.ca/" target="_blank">maps.fpcc.ca<a> and we are happy to assist with that.
+    </p>
+    <p>
+        Thank you for using the First Peoples' Language Map of BC, and again, we are sorry for the inconvenience these emails have caused. Please contact us at <a href="mailto:maps@fpcc.ca">maps@fpcc.ca</a> for any assistance.
+    </p>
+    <p>Thank you so much!<br><b>FPCC Team</b></p>
+    """
+    send_mail(
+        subject,
+        html,
+        "maps@fpcc.ca",
+        [user.email],
+        html_message=html,
+    )
+    send_mail(
+        subject,
+        html,
+        "maps@fpcc.ca",
+        ["justin@countable.ca"],
+        html_message=html,
+    )
+    print('EMAIL SENT')
+
+
 def send():
     now = timezone.now()
     # find everyone who needs an update.
