@@ -20,9 +20,9 @@ def send_apology_letters(email=None):
     now = timezone.now()
     users = User.objects.filter(
         # TODO: allow arbitrary notification frequency from account setting instead of hardcoding 30 here?
-        last_notified__lte=now - datetime.timedelta(days=30),
         notification_frequency__gt=-1,
     )
+    print('TRIGGERED send_apology_letters')
 
     if email:
         user = users.filter(email=email).first()
