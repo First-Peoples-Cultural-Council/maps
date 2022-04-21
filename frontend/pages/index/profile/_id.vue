@@ -373,18 +373,22 @@ export default {
       placename => placename.kind === 'artist'
     )
 
-    const artistQueryArray = []
-    artistProfiles.forEach(profile => {
-      artistQueryArray.push(`${profile.id}`)
-    })
+    let allArts = []
 
-    const artistQuery = artistQueryArray.join(',')
-    const allArts =
-      artistQueryArray.length > 0
-        ? await $axios.$get(
-            getApiUrl(`art-search?artists=${artistQuery}&format=json`)
-          )
-        : []
+    if (artistProfiles && artistProfiles.length !== 0) {
+      const artistQueryArray = []
+      artistProfiles.forEach(profile => {
+        artistQueryArray.push(`${profile.id}`)
+      })
+
+      const artistQuery = artistQueryArray.join(',')
+      allArts =
+        artistQueryArray.length > 0
+          ? await $axios.$get(
+              getApiUrl(`art-search?artists=${artistQuery}&format=json`)
+            )
+          : []
+    }
 
     let artDetails = null
     if (user.artist_profile) {
@@ -410,10 +414,12 @@ export default {
     return { user, isOwner, allArts, artDetails }
   },
   mounted() {
+    console.log(this.artDetails)
+    const arts = this.artDetails
     if (
-      this.artDetails &&
-      (this.artDetails.medias.length !== 0 ||
-        this.artDetails.public_arts.length !== 0)
+      arts &&
+      ((arts.medias && arts.medias.length !== 0) ||
+        (arts.public_arts && arts.public_arts.length !== 0))
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
     }
