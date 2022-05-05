@@ -27,7 +27,7 @@ class BasePlaceNameListAPIView(generics.ListAPIView):
     """
     Abstract list API view that allows multiple serializers.
 
-    Rules for User Login Status
+    Rules based on User Login Status
     1)     If NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
     2)     If USER IS LOGGED IN, show:
     2.1)   User's contribution regardless the status
