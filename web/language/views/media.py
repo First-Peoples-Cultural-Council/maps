@@ -1,41 +1,17 @@
-import sys
-
-from django.shortcuts import render
 from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend
-
-from users.models import User, Administrator
-from language.models import (
-    Language,
-    PlaceName,
-    Community,
-    CommunityMember,
-    Champion,
-    Media,
-    Favourite,
-    Notification,
-    CommunityLanguageStats,
-)
-from language.notifications import (
-    inform_media_rejected_or_flagged,
-    inform_media_to_be_verified,
-)
-
 from django.views.decorators.cache import never_cache
-from rest_framework import viewsets, generics, mixins, status
+from django.utils.decorators import method_decorator
+from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 
-from language.views import BaseModelViewSet
-
-from language.serializers import (
-    MediaSerializer,
-)
-
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from web.permissions import IsAdminOrReadOnly
+from users.models import Administrator
+from language.models import CommunityMember, Media
+from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
+from language.serializers import MediaSerializer
+from web.constants import *
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
@@ -57,13 +33,13 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filterset_fields = ['placename', 'community']
 
     def create(self, request):
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 return super().create(request)
 
         return Response({
-            "success": False,
-            "message": "You need to log in in order to create a Media record."
+            'success': False,
+            'message': 'You need to log in in order to create a Media record.'
         })
 
     def perform_create(self, serializer):
@@ -77,10 +53,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             obj.save()
 
     def update(self, request, *args, **kwargs):
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 media = Media.objects.get(pk=kwargs.get('pk'))
-                
+
                 # Check if media is owned by current user
                 owned_media = True if media.creator == request.user else False
 
@@ -88,20 +64,20 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     return super().update(request, *args, **kwargs)
                 else:
                     return Response({
-                        "success": False,
-                        "message": "Only the owner can update this Media record."
+                        'success': False,
+                        'message': 'Only the owner can update this Media record.'
                     })
-        
+
         return Response({
-            "success": False,
-            "message": "You need to log in in order to update this Media record."
+            'success': False,
+            'message': 'You need to log in in order to update this Media record.'
         })
 
     def destroy(self, request, *args, **kwargs):
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 media = Media.objects.get(pk=kwargs.get('pk'))
-                
+
                 # Check if media is owned by current user
                 owned_media = True if media.creator == request.user else False
 
@@ -109,13 +85,13 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     return super().destroy(request, *args, **kwargs)
                 else:
                     return Response({
-                        "success": False,
-                        "message": "Only the owner can delete this Media record."
+                        'success': False,
+                        'message': 'Only the owner can delete this Media record.'
                     })
-        
+
         return Response({
-            "success": False,
-            "message": "You need to log in in order to delete this Media record."
+            'success': False,
+            'message': 'You need to log in in order to delete this Media record.'
         })
 
     @method_decorator(never_cache)
@@ -123,9 +99,9 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     def list_to_verify(self, request):
         # 'VERIFIED' Media do not need to the verified
         queryset = self.get_queryset().exclude(
-            status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)
+            status__exact=VERIFIED).exclude(status__exact=REJECTED)
 
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 admin_languages = Administrator.objects.filter(
                     user__id=int(request.user.id)).values('language')
@@ -149,74 +125,74 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     return Response(serializer.data)
         return Response([])
 
-    @action(detail=True, methods=["patch"])
+    @action(detail=True, methods=['patch'])
     def verify(self, request, pk):
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 try:
                     Media.verify(int(pk))
                     return Response({
-                        "success": True,
-                        "message": "Verified."
+                        'success': True,
+                        'message': 'Verified.'
                     })
                 except Media.DoesNotExist:
                     return Response({
-                        "success": False,
-                        "message": "No Media with the given id was found."
+                        'success': False,
+                        'message': 'No Media with the given id was found.'
                     })
 
         return Response({
-            "success": False,
-            "message": "Only Administrators can verify contributions."
+            'success': False,
+            'message': 'Only Administrators can verify contributions.'
         })
 
-    @action(detail=True, methods=["patch"])
+    @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 try:
                     if 'status_reason' in request.data.keys():
-                        Media.reject(int(pk), request.data["status_reason"])
+                        Media.reject(int(pk), request.data['status_reason'])
 
                         # Notifying the creator
                         try:
                             inform_media_rejected_or_flagged(
-                                int(pk), request.data["status_reason"], Media.REJECTED)
+                                int(pk), request.data['status_reason'], REJECTED)
                         except Exception as e:
                             pass
 
                         return Response({
-                            "success": True,
-                            "message": "Rejected."
+                            'success': True,
+                            'message': 'Rejected.'
                         })
                     else:
                         return Response({
-                            "success": False,
-                            "message": "Reason must be provided."
+                            'success': False,
+                            'message': 'Reason must be provided.'
                         })
                 except Media.DoesNotExist:
                     return Response({
-                        "success": False,
-                        "message": "No Media with the given id was found."
+                        'success': False,
+                        'message': 'No Media with the given id was found.'
                     })
 
         return Response({
-            "success": False,
-            "message": "Only Administrators can reject contributions."
+            'success': False,
+            'message': 'Only Administrators can reject contributions.'
         })
 
-    @action(detail=True, methods=["patch"])
+    @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
         try:
             media = Media.objects.get(pk=int(pk))
-            if media.status == Media.VERIFIED:
+            if media.status == VERIFIED:
                 return Response({
-                    "success": False,
-                    "message": "Media has already been verified."
+                    'success': False,
+                    'message': 'Media has already been verified.'
                 })
             else:
                 if 'status_reason' in request.data.keys():
-                    Media.flag(int(pk), request.data["status_reason"])
+                    Media.flag(int(pk), request.data['status_reason'])
 
                     # Notifying Administrators
                     try:
@@ -227,23 +203,23 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     # Notifying the creator
                     try:
                         inform_media_rejected_or_flagged(
-                            int(pk), request.data["status_reason"], Media.FLAGGED)
+                            int(pk), request.data['status_reason'], FLAGGED)
                     except Exception as e:
                         pass
 
                     return Response({
-                        "success": True,
-                        "message": "Flagged."
+                        'success': True,
+                        'message': 'Flagged.'
                     })
                 else:
                     return Response({
-                        "success": False,
-                        "message": "Reason must be provided."
+                        'success': False,
+                        'message': 'Reason must be provided.'
                     })
         except Media.DoesNotExist:
             return Response({
-                "success": False,
-                "message": "No Media with the given id was found."
+                'success': False,
+                'message': 'No Media with the given id was found.'
             })
 
     # Users can contribute this data, so never cache it.
@@ -273,25 +249,27 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             user_communities = CommunityMember.objects.filter(
                 user__id=int(request.user.id)
             ).filter(
-                status__exact=CommunityMember.VERIFIED
+                status__exact=VERIFIED
             ).values('community')
 
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=Media.VERIFIED)
-                | Q(community_only=False, status__exact=Media.UNVERIFIED)
+                Q(community_only=False, status__exact=VERIFIED)
+                | Q(community_only=False, status__exact=UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=Media.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=Media.UNVERIFIED)
+                | Q(community_only__isnull=True, status__exact=VERIFIED)
+                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
                 | Q(placename__community__in=user_communities)
             )
 
             # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(user__id=int(request.user.id)).values('community')
+            admin_languages = Administrator.objects.filter(
+                user__id=int(request.user.id)).values('language')
+            admin_communities = Administrator.objects.filter(
+                user__id=int(request.user.id)).values('community')
 
             if admin_languages and admin_communities:
                 # Filter Medias by admin's languages
@@ -319,8 +297,8 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             queryset = queryset.exclude(
                 community_only=True
             ).filter(
-                Q(status__exact=Media.VERIFIED)
-                | Q(status__exact=Media.UNVERIFIED)
+                Q(status__exact=VERIFIED)
+                | Q(status__exact=UNVERIFIED)
                 | Q(status__isnull=True)
             )
 

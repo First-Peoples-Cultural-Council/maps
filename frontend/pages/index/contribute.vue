@@ -1000,7 +1000,7 @@ export default {
       return this.$route.query.mode
     },
     queryType() {
-      return this.$route.query.type || 'poi'
+      return this.$route.query.type || 'POI'
     },
     isArtist() {
       return this.queryType === 'Artist'
@@ -1968,6 +1968,7 @@ export default {
 
     async submitPlacename(e) {
       let id
+      let prefix = 'art'
       this.capitalizeTraditionalName()
 
       const headers = this.getCookies
@@ -2065,7 +2066,9 @@ export default {
 
             // If finish, redirect to Placename
             if (mediaResult || thumbnailResult) {
-              this.redirectToPlacename()
+              if (data.kind === 'poi' || data.kind === '')
+                prefix = 'place-names'
+              this.redirectToPlacename(prefix)
             }
           }
         } catch (e) {
@@ -2110,7 +2113,9 @@ export default {
 
               // If finish, redirect to Placename
               if (modified) {
-                this.redirectToPlacename()
+                if (data.kind === 'poi' || data.kind === '')
+                  prefix = 'place-names'
+                this.redirectToPlacename(prefix)
               }
             } catch (e) {
               this.isLoading = false
@@ -2338,12 +2343,12 @@ export default {
       )
       return result
     },
-    redirectToPlacename() {
+    redirectToPlacename(prefix) {
       if (this.getMediaFiles.length !== 0) {
         this.$root.$emit('refetchArtwork')
       }
 
-      location.href = `/art/${encodeFPCC(this.traditionalName)}`
+      location.href = `/${prefix}/${encodeFPCC(this.traditionalName)}`
     },
     callProgressModal(value) {
       this.$root.$emit('initiateLoadingModal', value)

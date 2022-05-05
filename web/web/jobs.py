@@ -1,5 +1,3 @@
-import random
-import time
 import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler

@@ -222,6 +222,18 @@ export const actions = {
     return result
   },
 
+  async verifyMember({ commit, dispatch }, data) {
+    const headers = {
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    }
+    const url = `${getApiUrl('community/verify_member/')}`
+    const result = await this.$axios.post(url, data, headers)
+    await dispatch('user/getMembersToVerify', {}, { root: true })
+    return result
+  },
+
   async rejectContent({ commit, dispatch }, data) {
     const headers = {
       headers: {
@@ -279,8 +291,11 @@ export const actions = {
         { root: true }
       )
     } else if (data.type === 'media') {
+      let command = 'places/getPlaceMedias'
+      if (data.belongs === 'community') command = 'places/getCommunityMedias'
+
       await dispatch(
-        'places/getPlaceMedias',
+        command,
         {
           id: data.belongid
         },
