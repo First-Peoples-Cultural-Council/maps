@@ -1,6 +1,6 @@
 from django.conf.urls import url
-
 from rest_framework import routers
+
 from .views import (
     PlaceNameGeoList,
     ArtGeoList,
@@ -17,10 +17,7 @@ from .views import (
     ResourceList,
     GrantList,
     ArtworkList,
-    ArtworkPlaceNameList
-)
-
-from .views import (
+    ArtworkPlaceNameList,
     LanguageViewSet,
     CommunityViewSet,
     PlaceNameViewSet,
