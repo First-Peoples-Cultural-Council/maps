@@ -49,7 +49,6 @@
 
 <script>
 import Reject from '@/components/RejectModal.vue'
-import { getApiUrl, getCookie } from '@/plugins/utils.js'
 
 export default {
   components: {
@@ -93,26 +92,11 @@ export default {
         return `${user.first_name} ${user.last_name}`
       }
     },
-    async submitUserVerification(toVerify, { verify, reject }) {
-      const url = {
-        verify: getApiUrl('community/verify_member/'),
-        reject: getApiUrl('community/reject_member/')
-      }
-      const result = await this.$axios.$post(
-        url[verify || reject],
-        {
-          user_id: toVerify.user.id,
-          community_id: toVerify.community.id
-        },
-        {
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        }
-      )
-      if (result) {
-        await this.$store.dispatch('user/getMembersToVerify')
-      }
+    async submitUserVerification(toVerify) {
+      await this.$store.dispatch('user/verifyMember', {
+        user_id: toVerify.user.id,
+        community_id: toVerify.community.id
+      })
     },
     handleMouseOver() {
       this.hover = true
