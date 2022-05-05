@@ -1000,7 +1000,7 @@ export default {
       return this.$route.query.mode
     },
     queryType() {
-      return this.$route.query.type || 'poi'
+      return this.$route.query.type || 'POI'
     },
     isArtist() {
       return this.queryType === 'Artist'
