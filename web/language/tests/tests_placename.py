@@ -1,4 +1,3 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
@@ -11,10 +10,7 @@ from language.models import (
     PlaceName,
     Community,
     CommunityMember,
-    Champion,
     Media,
-    Favourite,
-    Notification,
     Recording,
     RelatedData,
     PublicArtArtist,
@@ -361,14 +357,14 @@ class PlaceNameAPITests(BaseTestCase):
         member_same01 = CommunityMember.objects.create(
             user=self.user,
             community=self.community,
-            status=CommunityMember.UNVERIFIED
+            status=UNVERIFIED
         )
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
         # After the community member is VERIFIED
-        member_same01.status = CommunityMember.VERIFIED
+        member_same01.status = VERIFIED
         member_same01.save()
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

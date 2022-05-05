@@ -11,6 +11,7 @@ from users.models import Administrator
 from language.models import CommunityMember, Media
 from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
 from language.serializers import MediaSerializer
+from web.constants import *
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
@@ -98,7 +99,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     def list_to_verify(self, request):
         # 'VERIFIED' Media do not need to the verified
         queryset = self.get_queryset().exclude(
-            status__exact=Media.VERIFIED).exclude(status__exact=Media.REJECTED)
+            status__exact=VERIFIED).exclude(status__exact=REJECTED)
 
         if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
@@ -156,7 +157,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                         # Notifying the creator
                         try:
                             inform_media_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], Media.REJECTED)
+                                int(pk), request.data['status_reason'], REJECTED)
                         except Exception as e:
                             pass
 
@@ -184,7 +185,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     def flag(self, request, pk):
         try:
             media = Media.objects.get(pk=int(pk))
-            if media.status == Media.VERIFIED:
+            if media.status == VERIFIED:
                 return Response({
                     'success': False,
                     'message': 'Media has already been verified.'
@@ -202,7 +203,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     # Notifying the creator
                     try:
                         inform_media_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], Media.FLAGGED)
+                            int(pk), request.data['status_reason'], FLAGGED)
                     except Exception as e:
                         pass
 
@@ -248,17 +249,17 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             user_communities = CommunityMember.objects.filter(
                 user__id=int(request.user.id)
             ).filter(
-                status__exact=CommunityMember.VERIFIED
+                status__exact=VERIFIED
             ).values('community')
 
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=Media.VERIFIED)
-                | Q(community_only=False, status__exact=Media.UNVERIFIED)
+                Q(community_only=False, status__exact=VERIFIED)
+                | Q(community_only=False, status__exact=UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=Media.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=Media.UNVERIFIED)
+                | Q(community_only__isnull=True, status__exact=VERIFIED)
+                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
                 | Q(placename__community__in=user_communities)
@@ -296,8 +297,8 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             queryset = queryset.exclude(
                 community_only=True
             ).filter(
-                Q(status__exact=Media.VERIFIED)
-                | Q(status__exact=Media.UNVERIFIED)
+                Q(status__exact=VERIFIED)
+                | Q(status__exact=UNVERIFIED)
                 | Q(status__isnull=True)
             )
 

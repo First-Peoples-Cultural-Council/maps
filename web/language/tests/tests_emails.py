@@ -72,20 +72,20 @@ class EmailTests(TestCase):
             file_type="string",
             placename=self.placename1,
             creator=self.user,
-            status=Media.VERIFIED,
+            status=VERIFIED,
         )
 
     def test_notify(self):
         communitymember1 = CommunityMember.objects.create(
             user=self.user,
             community=self.community1,
-            status=CommunityMember.VERIFIED
+            status=VERIFIED
         )
 
         communitymember2 = CommunityMember.objects.create(
             user=self.user,
             community=self.community2,
-            status=CommunityMember.UNVERIFIED
+            status=UNVERIFIED
         )
 
         # Another user made a Favourite out of the created placename
@@ -206,7 +206,7 @@ class EmailTests(TestCase):
 
     def test_inform_media_rejected_or_flagged(self):
         reason = "wrong media"
-        body = inform_media_rejected_or_flagged(self.media1.id, reason, Media.REJECTED)
+        body = inform_media_rejected_or_flagged(self.media1.id, reason, REJECTED)
 
         # Testing if the language create was referenced in the email
         assert body.count(self.language1.name) > 0
@@ -221,7 +221,7 @@ class EmailTests(TestCase):
         assert body.count("rejected") > 0
         assert body.count("flagged") == 0
 
-        body = inform_media_rejected_or_flagged(self.media1.id, reason, Media.FLAGGED)
+        body = inform_media_rejected_or_flagged(self.media1.id, reason, FLAGGED)
 
         # Testing if the language create was referenced in the email
         assert body.count(self.language1.name) > 0
@@ -244,7 +244,7 @@ class EmailTests(TestCase):
             community=self.community1,
         )
 
-        self.media1.status = Media.UNVERIFIED
+        self.media1.status = UNVERIFIED
         self.media1.status_reason = "wrong media"
         self.media1.save()
 
@@ -263,7 +263,7 @@ class EmailTests(TestCase):
         assert body.count("created") > 0
         assert body.count("flagged") == 0
 
-        self.media1.status = Media.FLAGGED
+        self.media1.status = FLAGGED
         self.media1.status_reason = "wrong media"
         self.media1.save()
 

@@ -56,7 +56,7 @@ class BasePlaceNameListAPIView(generics.ListAPIView):
             user_communities = CommunityMember.objects.filter(
                 user__id=int(request.user.id)
             ).filter(
-                status__exact=CommunityMember.VERIFIED
+                status__exact=VERIFIED
             ).values('community')
 
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL

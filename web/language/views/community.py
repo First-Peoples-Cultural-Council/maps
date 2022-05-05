@@ -26,6 +26,7 @@ from language.serializers import (
 )
 from web.permissions import IsAdminOrReadOnly
 from web.utils import is_user_community_admin
+from web.constants import *
 
 
 class CommunityViewSet(BaseModelViewSet):
@@ -174,7 +175,7 @@ class CommunityViewSet(BaseModelViewSet):
     def list_member_to_verify(self, request):
         # 'VERIFIED' or 'REJECTED' members do not need to the verified
         members = CommunityMember.objects.exclude(
-            status__exact=CommunityMember.VERIFIED).exclude(status__exact=CommunityMember.REJECTED)
+            status__exact=VERIFIED).exclude(status__exact=REJECTED)
         if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 # Getting the communities of the admin

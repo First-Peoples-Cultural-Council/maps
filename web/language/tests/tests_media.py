@@ -63,7 +63,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -74,7 +74,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.UNVERIFIED
+            status=UNVERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -85,7 +85,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.REJECTED
+            status=REJECTED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -96,7 +96,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.FLAGGED
+            status=FLAGGED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -127,7 +127,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -139,7 +139,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.UNVERIFIED
+            status=UNVERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -151,7 +151,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.REJECTED
+            status=REJECTED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -163,7 +163,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.FLAGGED
+            status=FLAGGED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -175,7 +175,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user2,
             file_type="string",
             placename=placename1,
-            status=Media.REJECTED
+            status=REJECTED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -187,7 +187,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user2,
             file_type="string",
             placename=placename1,
-            status=Media.FLAGGED
+            status=FLAGGED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -218,7 +218,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename1,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -228,14 +228,14 @@ class MediaAPITests(BaseTestCase):
         member_same01 = CommunityMember.objects.create(
             user=self.user,
             community=self.community1,
-            status=CommunityMember.UNVERIFIED
+            status=UNVERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
         # After the community member is VERIFIED
-        member_same01.status = CommunityMember.VERIFIED
+        member_same01.status = VERIFIED
         member_same01.save()
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -247,7 +247,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename1,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -259,7 +259,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename1,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -271,7 +271,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename1,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -283,7 +283,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             community=self.community2,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -303,7 +303,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename2,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -335,7 +335,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename1,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -368,7 +368,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             placename=placename02,
             community_only=True,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -400,7 +400,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             community=self.community1,
             community_only=True,
-            status=Media.REJECTED
+            status=REJECTED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -420,7 +420,7 @@ class MediaAPITests(BaseTestCase):
             file_type="string",
             community=self.community1,
             community_only=True,
-            status=Media.FLAGGED
+            status=FLAGGED
         )
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -451,7 +451,7 @@ class MediaAPITests(BaseTestCase):
                 "name": "Test media 002",
                 "file_type": "image",
                 "url": "https://google.com",
-                "status": Media.UNVERIFIED,
+                "status": UNVERIFIED,
                 "community": self.community1.id,
                 "community_only": True,
             },
@@ -464,7 +464,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.name, "Test media 002")
         self.assertEqual(media.file_type, "image")
         self.assertEqual(media.url, "https://google.com")
-        self.assertEqual(media.status, Media.UNVERIFIED)
+        self.assertEqual(media.status, UNVERIFIED)
         self.assertEqual(media.community.id, self.community1.id)
 
     def test_media_post_with_placename(self):
@@ -494,7 +494,7 @@ class MediaAPITests(BaseTestCase):
                 "name": "Test media 001",
                 "file_type": "image",
                 "url": "https://google.com",
-                "status": Media.UNVERIFIED,
+                "status": UNVERIFIED,
                 "placename": placename.id,
                 "community_only": True,
             },
@@ -507,7 +507,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.name, "Test media 001")
         self.assertEqual(media.file_type, "image")
         self.assertEqual(media.url, "https://google.com")
-        self.assertEqual(media.status, Media.UNVERIFIED)
+        self.assertEqual(media.status, UNVERIFIED)
         self.assertEqual(media.placename.id, placename.id)
 
     def test_repeated_names_for_media(self):
@@ -559,7 +559,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -570,7 +570,7 @@ class MediaAPITests(BaseTestCase):
             name="test media02",
             file_type="string",
             placename=placename1,
-            status=Media.UNVERIFIED,
+            status=UNVERIFIED,
             status_reason="string"
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
@@ -583,7 +583,7 @@ class MediaAPITests(BaseTestCase):
             name="test media03",
             file_type="string",
             placename=placename1,
-            status=Media.FLAGGED,
+            status=FLAGGED,
             status_reason="string"
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
@@ -595,7 +595,7 @@ class MediaAPITests(BaseTestCase):
             name="test media04",
             file_type="string",
             placename=placename2,
-            status=Media.UNVERIFIED,
+            status=UNVERIFIED,
             status_reason="string"
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
@@ -610,7 +610,7 @@ class MediaAPITests(BaseTestCase):
             name="test media02",
             file_type="string",
             community=self.community1,
-            status=Media.UNVERIFIED,
+            status=UNVERIFIED,
             status_reason="string"
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
@@ -625,7 +625,7 @@ class MediaAPITests(BaseTestCase):
             name="test media02",
             file_type="string",
             community=self.community2,
-            status=Media.UNVERIFIED,
+            status=UNVERIFIED,
             status_reason="string"
         )
         response = self.client.get("/api/media/list_to_verify/", format="json")
@@ -651,7 +651,7 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=Media.FLAGGED
+            status=FLAGGED
         )
 
         created_id = test_media.id
@@ -665,7 +665,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         media = Media.objects.get(pk=created_id)
-        self.assertEqual(media.status, Media.VERIFIED)
+        self.assertEqual(media.status, VERIFIED)
 
     def test_reject_media(self):
 
@@ -687,7 +687,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.UNVERIFIED
+            status=UNVERIFIED
         )
 
         created_id = test_media.id
@@ -701,7 +701,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         media = Media.objects.get(pk=created_id)
-        self.assertEqual(media.status, Media.REJECTED)
+        self.assertEqual(media.status, REJECTED)
 
     def test_flag_unverified_media(self):
 
@@ -716,7 +716,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.UNVERIFIED
+            status=UNVERIFIED
         )
 
         created_id = test_media.id
@@ -730,7 +730,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         media = Media.objects.get(pk=created_id)
-        self.assertEqual(media.status, Media.FLAGGED)
+        self.assertEqual(media.status, FLAGGED)
         self.assertEqual(media.status_reason, "test reason status")
 
     def test_flag_verified_media(self):
@@ -746,7 +746,7 @@ class MediaAPITests(BaseTestCase):
             creator=self.user,
             file_type="string",
             placename=placename1,
-            status=Media.VERIFIED
+            status=VERIFIED
         )
 
         created_id = test_media.id
@@ -760,7 +760,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         media = Media.objects.get(pk=created_id)
-        self.assertEqual(media.status, Media.VERIFIED)
+        self.assertEqual(media.status, VERIFIED)
 
     def test_media_delete(self):
         """

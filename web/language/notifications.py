@@ -16,6 +16,7 @@ from language.models import (
 )
 from users.models import User, Administrator
 from web.utils import get_lang_link, get_comm_link, get_place_link, format_fpcc
+from web.constants import *
 
 
 def get_new_media_messages(new_medias):
@@ -137,7 +138,7 @@ def notify(user, since=None):
         languages = user.languages.all()
 
         for membership in CommunityMember.objects.filter(user=user):
-            if membership.status == CommunityMember.VERIFIED:
+            if membership.status == VERIFIED:
                 communities.append(membership.community)
             else:
                 communities_awaiting_verification.append(membership.community)
@@ -493,7 +494,7 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
 
     # Defining the label for the status
     state = ''
-    if status == Media.REJECTED:
+    if status == REJECTED:
         state = 'rejected'
     else:
         state = 'flagged'
@@ -558,7 +559,7 @@ def inform_media_to_be_verified(media_id):
 
     # Defining the label for the status
     state = ''
-    if media.status == Media.UNVERIFIED:
+    if media.status == UNVERIFIED:
         state = 'created'
     else:
         state = 'flagged'

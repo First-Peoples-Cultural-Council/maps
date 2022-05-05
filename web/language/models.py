@@ -167,7 +167,7 @@ class CommunityMember(models.Model):
         member = CommunityMember()
         member.user = User.objects.get(pk=user_id)
         member.community = Community.objects.get(pk=community_id)
-        member.status = CommunityMember.UNVERIFIED
+        member.status = UNVERIFIED
         member.save()
 
         return member
@@ -183,12 +183,12 @@ class CommunityMember(models.Model):
 
     def verify_member(id):
         member = CommunityMember.objects.get(pk=int(id))
-        member.status = CommunityMember.VERIFIED
+        member.status = VERIFIED
         member.save()
 
     def reject_member(id):
         member = CommunityMember.objects.get(pk=int(id))
-        member.status = CommunityMember.REJECTED
+        member.status = REJECTED
         member.save()
 
     class Meta:
@@ -342,19 +342,19 @@ class Media(BaseModel):
 
     def verify(id):
         media = Media.objects.get(pk=id)
-        media.status = Media.VERIFIED
+        media.status = VERIFIED
         media.status_reason = ""
         media.save()
 
     def reject(id, status_reason):
         media = Media.objects.get(pk=id)
-        media.status = Media.REJECTED
+        media.status = REJECTED
         media.status_reason = status_reason
         media.save()
 
     def flag(id, status_reason):
         media = Media.objects.get(pk=id)
-        media.status = Media.FLAGGED
+        media.status = FLAGGED
         media.status_reason = status_reason
         media.save()
 
