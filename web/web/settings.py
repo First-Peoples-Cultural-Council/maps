@@ -65,8 +65,6 @@ INSTALLED_APPS = [
     "rest_framework_gis",
     "django_apscheduler",
     "language",
-    "firstvoices",
-    "arts",
     "grants",
     "users",
     "web",
