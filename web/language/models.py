@@ -264,19 +264,19 @@ class PlaceName(CulturalModel):
 
     def verify(id):
         media = PlaceName.objects.get(pk=id)
-        media.status = PlaceName.VERIFIED
+        media.status = VERIFIED
         media.status_reason = ""
         media.save()
 
     def reject(id, status_reason):
         media = PlaceName.objects.get(pk=id)
-        media.status = PlaceName.REJECTED
+        media.status = REJECTED
         media.status_reason = status_reason
         media.save()
 
     def flag(id, status_reason):
         media = PlaceName.objects.get(pk=id)
-        media.status = PlaceName.FLAGGED
+        media.status = FLAGGED
         media.status_reason = status_reason
         media.save()
 

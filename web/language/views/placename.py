@@ -31,6 +31,7 @@ from language.serializers import (
     ArtworkSerializer,
     ArtworkPlaceNameSerializer
 )
+from web.constants import *
 
 
 class PlaceNameFilterSet(FilterSet):
@@ -220,7 +221,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                         # Notifying the creator
                         try:
                             inform_placename_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], PlaceName.REJECTED)
+                                int(pk), request.data['status_reason'], REJECTED)
                         except Exception as e:
                             pass
 
@@ -248,7 +249,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     def flag(self, request, pk):
         try:
             placename = PlaceName.objects.get(pk=int(pk))
-            if placename.status == PlaceName.VERIFIED:
+            if placename.status == VERIFIED:
                 return Response({
                     'success': False,
                     'message': 'PlaceName has already been verified.'
@@ -266,7 +267,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                     # Notifying the creator
                     try:
                         inform_placename_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], PlaceName.FLAGGED)
+                            int(pk), request.data['status_reason'], FLAGGED)
                     except Exception as e:
                         pass
 
@@ -319,7 +320,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     def list_to_verify(self, request):
         # 'VERIFIED' PlaceNames do not need to the verified
         queryset = self.get_queryset().exclude(
-            status__exact=PlaceName.VERIFIED).exclude(status__exact=PlaceName.REJECTED)
+            status__exact=VERIFIED).exclude(status__exact=REJECTED)
 
         if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
@@ -375,11 +376,11 @@ class PlaceNameViewSet(BaseModelViewSet):
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
+                Q(community_only=False, status__exact=VERIFIED)
+                | Q(community_only=False, status__exact=UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
+                | Q(community_only__isnull=True, status__exact=VERIFIED)
+                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
@@ -405,8 +406,8 @@ class PlaceNameViewSet(BaseModelViewSet):
 
         else:  # no user is logged in
             queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
+                Q(status__exact=VERIFIED)
+                | Q(status__exact=UNVERIFIED)
                 | Q(status__isnull=True)
             )
 
@@ -462,11 +463,11 @@ class PlaceNameGeoList(generics.ListAPIView):
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
+                Q(community_only=False, status__exact=VERIFIED)
+                | Q(community_only=False, status__exact=UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
+                | Q(community_only__isnull=True, status__exact=VERIFIED)
+                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
@@ -492,8 +493,8 @@ class PlaceNameGeoList(generics.ListAPIView):
 
         else:  # no user is logged in
             queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
+                Q(status__exact=VERIFIED)
+                | Q(status__exact=UNVERIFIED)
                 | Q(status__isnull=True)
             )
 
@@ -558,11 +559,11 @@ class ArtGeoList(generics.ListAPIView):
             # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
             # 2.2.2) is COMMUNITY ONLY
             queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=PlaceName.VERIFIED)
-                | Q(community_only=False, status__exact=PlaceName.UNVERIFIED)
+                Q(community_only=False, status__exact=VERIFIED)
+                | Q(community_only=False, status__exact=UNVERIFIED)
                 | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=PlaceName.VERIFIED)
-                | Q(community_only__isnull=True, status__exact=PlaceName.UNVERIFIED)
+                | Q(community_only__isnull=True, status__exact=VERIFIED)
+                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
                 | Q(community_only__isnull=True, status__isnull=True)
                 | Q(community__in=user_communities)
             )
@@ -588,8 +589,8 @@ class ArtGeoList(generics.ListAPIView):
 
         else:  # no user is logged in
             queryset = queryset.filter(
-                Q(status__exact=PlaceName.VERIFIED)
-                | Q(status__exact=PlaceName.UNVERIFIED)
+                Q(status__exact=VERIFIED)
+                | Q(status__exact=UNVERIFIED)
                 | Q(status__isnull=True)
             )
 

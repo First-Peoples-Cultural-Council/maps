@@ -1,10 +1,7 @@
 from django.test import TestCase
-from django.core import mail
 from django.utils import timezone
 
-import os
 from datetime import timedelta
-import re
 
 from language.notifications import (
     notify,
@@ -22,6 +19,7 @@ from language.models import (
     CommunityMember,
     Favourite,
 )
+from web.constants import *
 
 
 class EmailTests(TestCase):
@@ -59,14 +57,14 @@ class EmailTests(TestCase):
             community=self.community1,
             language=self.language1,
             creator=self.user,
-            status=PlaceName.VERIFIED,
+            status=VERIFIED,
         )
 
         self.placename2 = PlaceName.objects.create(
             name="test place02",
             community=self.community1,
             language=self.language1,
-            status=PlaceName.VERIFIED,
+            status=VERIFIED,
         )
 
         self.media1 = Media.objects.create(
@@ -131,7 +129,7 @@ class EmailTests(TestCase):
 
     def test_inform_placename_rejected_or_flagged(self):
         reason = "wrong place"
-        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, PlaceName.REJECTED)
+        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, REJECTED)
 
         # Testing if the language create was referenced in the email
         assert body.count(self.language1.name) > 0
@@ -146,7 +144,7 @@ class EmailTests(TestCase):
         assert body.count("rejected") > 0
         assert body.count("flagged") == 0
 
-        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, PlaceName.FLAGGED)
+        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, FLAGGED)
 
         # Testing if the language create was referenced in the email
         assert body.count(self.language1.name) > 0
@@ -168,7 +166,7 @@ class EmailTests(TestCase):
             community=self.community1,
         )
 
-        self.placename1.status = PlaceName.UNVERIFIED
+        self.placename1.status = UNVERIFIED
         self.placename1.status_reason = "wrong media"
         self.placename1.save()
 
@@ -187,7 +185,7 @@ class EmailTests(TestCase):
         assert body.count("created") > 0
         assert body.count("flagged") == 0
 
-        self.placename1.status = PlaceName.FLAGGED
+        self.placename1.status = FLAGGED
         self.placename1.status_reason = "wrong media"
         self.placename1.save()
 

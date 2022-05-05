@@ -363,7 +363,7 @@ def inform_placename_rejected_or_flagged(placename_id, reason, status):
 
     # Defining the label for the status
     state = ''
-    if status == PlaceName.REJECTED:
+    if status == REJECTED:
         state = 'rejected'
     else:
         state = 'flagged'
@@ -419,7 +419,7 @@ def inform_placename_to_be_verified(placename_id):
 
     # Defining the label for the status
     state = ''
-    if placename.status == PlaceName.UNVERIFIED:
+    if placename.status == UNVERIFIED:
         state = 'created'
     else:
         state = 'flagged'

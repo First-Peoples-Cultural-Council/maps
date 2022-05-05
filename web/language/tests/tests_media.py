@@ -11,6 +11,7 @@ from language.models import (
     CommunityMember,
     Media,
 )
+from web.constants import *
 
 
 class BaseTestCase(APITestCase):
@@ -54,7 +55,7 @@ class MediaAPITests(BaseTestCase):
             name="test place01",
             community=self.community1,
             language=self.language1,
-            status=PlaceName.VERIFIED
+            status=VERIFIED
         )
 
         # VERIFIED Media
@@ -208,7 +209,7 @@ class MediaAPITests(BaseTestCase):
             name="test place01",
             community=self.community1,
             language=self.language1,
-            status=PlaceName.VERIFIED
+            status=VERIFIED
         )
 
         # VERIFIED COMMUNITY_ONLY Media
@@ -293,7 +294,7 @@ class MediaAPITests(BaseTestCase):
             name="test place02",
             community=self.community2,
             language=self.language1,
-            status=PlaceName.VERIFIED
+            status=VERIFIED
         )
 
         # VERIFIED Media from another placename from another community
@@ -325,7 +326,7 @@ class MediaAPITests(BaseTestCase):
             community=self.community1,
             language=self.language1,
             community_only=True,
-            status=PlaceName.VERIFIED
+            status=VERIFIED
         )
 
         # VERIFIED COMMUNITY_ONLY Media
@@ -358,7 +359,7 @@ class MediaAPITests(BaseTestCase):
             community=self.community2,
             language=self.language1,
             community_only=True,
-            status=PlaceName.UNVERIFIED
+            status=UNVERIFIED
         )
 
         # VERIFIED COMMUNITY_ONLY Media
