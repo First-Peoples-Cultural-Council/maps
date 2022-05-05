@@ -9,13 +9,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import Administrator
 from language.models import CommunityMember, Media
-from language.notifications import (
-    inform_media_rejected_or_flagged,
-    inform_media_to_be_verified,
-)
-from language.serializers import (
-    MediaSerializer,
-)
+from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
+from language.serializers import MediaSerializer
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...

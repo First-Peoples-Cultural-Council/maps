@@ -6,10 +6,7 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User
-from language.models import (
-    Language,
-    Recording,
-)
+from language.models import Language, Recording
 from language.views import BaseModelViewSet
 from language.serializers import (
     LanguageGeoSerializer,
