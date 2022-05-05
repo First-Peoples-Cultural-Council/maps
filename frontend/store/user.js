@@ -291,8 +291,11 @@ export const actions = {
         { root: true }
       )
     } else if (data.type === 'media') {
+      let command = 'places/getPlaceMedias'
+      if (data.belongs === 'community') command = 'places/getCommunityMedias'
+
       await dispatch(
-        'places/getPlaceMedias',
+        command,
         {
           id: data.belongid
         },

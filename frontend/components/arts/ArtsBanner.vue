@@ -54,7 +54,7 @@
           <CardBadge
             :content="isOwner ? 'Owned' : 'Contributer'"
             type="owner"
-            :placeholder="arttype | kind"
+            :placeholder="arttype"
           ></CardBadge>
           <CardBadge
             content="Edit"
