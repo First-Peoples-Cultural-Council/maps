@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 
 from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link
+from web.constants import *
 from users.models import User
 
 
@@ -17,37 +18,17 @@ class LanguageFamily(BaseModel):
 
 
 class Recording(models.Model):
-
-    def __str__(self):
-        return str(self.audio_file)
-
     audio_file = models.FileField(null=True, blank=True)
     speaker = models.CharField(max_length=255, null=True)
     recorder = models.CharField(max_length=255, null=True)
     created = models.DateTimeField("date created", auto_now_add=True)
     date_recorded = models.DateField("date recorded", null=True)
 
+    def __str__(self):
+        return str(self.audio_file)
+
 
 class Language(CulturalModel):
-    """
-    family
-
-    aliases (comma separated)
-    total_schools
-
-    avg_hrs_wk_languages_in_school
-
-    ece_programs
-    avg_hrs_wk_languages_in_ece
-    language_nests
-    avg_hrs_wk_languages_in_language_nests
-    community_adult_language_classes
-    language_audio (should include speaker, recorder, date recorded fields)
-    greeting_audio (should include speaker, recorder, date recorded fields)
-    fv_guid
-    fv_url
-    """
-
     family = models.ForeignKey(
         LanguageFamily, null=True, on_delete=models.SET_NULL, blank=True
     )
@@ -112,26 +93,15 @@ class Community(CulturalModel):
     notes = models.TextField(default="", blank=True)
     point = models.PointField(null=True, default=None)
     regions = models.CharField(max_length=255, default="", blank=True)
-    # field_tm_fn_grp_code_value from the old db.
     nation_id = models.IntegerField(null=True, blank=True)
     english_name = models.CharField(max_length=255, default="", blank=True)
     internet_speed = models.CharField(max_length=255, default="", blank=True)
-    # TODO: just add off + on reserve populations. Deprecated.
-    population = models.IntegerField(default=0)
-
+    population = models.IntegerField(default=0)  # Deprecated.
     population_on_reserve = models.IntegerField(default=0)
     population_off_reserve = models.IntegerField(default=0)
-
     fv_guid = models.CharField(max_length=40, blank=True, default="")
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     languages = models.ManyToManyField(Language)
-
-    # One community can have more than one admin (i.e.: a couple)
-    # It is linked to LanguageMember and not to User because a
-    # Language Admin is not any User. It is a special one.
-    # @Denis, I suspect this should be represented as an attribute of the membership object, not another m2m [cvo]
-    # language_admins = models.ManyToManyField(LanguageMember)
-
     email = models.EmailField(
         max_length=255, default=None, null=True, blank=True)
     website = models.URLField(
@@ -139,9 +109,7 @@ class Community(CulturalModel):
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
-
-    # deprecated. TODO: change to recording.
-    audio_file = models.FileField(null=True, blank=True)
+    audio_file = models.FileField(null=True, blank=True)  # Deprecated
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -163,7 +131,6 @@ class CommunityLanguageStats(models.Model):
     """
     Latest, manually cleaned, aggregated LNA information for a given langugage in a particular community.
     """
-
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     fluent_speakers = models.IntegerField(default=0)
@@ -172,32 +139,24 @@ class CommunityLanguageStats(models.Model):
 
 
 class CommunityMember(models.Model):
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
+    ]
+
+    # ROLE
+    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"),
+                    (ROLE_MEMBER, "Community Member"))
+
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, default=None, null=True
     )
     community = models.ForeignKey(
         Community, on_delete=models.CASCADE, null=True, default=None
     )
-
-    # Choices Constants:
-    UNVERIFIED = "UN"
-    VERIFIED = "VE"
-    REJECTED = "RE"
-    # Choices:
-    # first element: constant Python identifier
-    # second element: human-readable version
-    STATUS_CHOICES = [
-        (UNVERIFIED, "Unverified"),
-        (VERIFIED, "Verified"),
-        (REJECTED, "Rejected"),
-    ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
-
-    ROLE_ADMIN = "RA"
-    ROLE_MEMBER = "RM"
-    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"),
-                    (ROLE_MEMBER, "Community Member"))
     role = models.CharField(
         max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
 
@@ -236,16 +195,8 @@ class CommunityMember(models.Model):
         verbose_name_plural = "Community Members"
 
 
-class PlaceName(CulturalModel):  # Choices Constants:
-    # DIFFERENT TYPES OF PLACENAMES
-    PUBLIC_ART = "public_art"
-    ORGANIZATION = "organization"
-    ARTIST = "artist"
-    EVENT = "event"
-    RESOURCE = "resource"
-    GRANT = "grant"
-    POI = "poi"
-
+class PlaceName(CulturalModel):
+    # CHOICES
     KIND_CHOICES = [
         (PUBLIC_ART, "Public Art"),
         (ORGANIZATION, "Organization"),
@@ -255,24 +206,27 @@ class PlaceName(CulturalModel):  # Choices Constants:
         (GRANT, "Grant"),
         (POI, "Point of Interest"),
     ]
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (FLAGGED, "Flagged"),
+        (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
+    ]
 
     geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
-
-    # 3 deprecated. Use Recording.
-    audio_file = models.FileField(null=True, blank=True)
-    audio_name = models.CharField(max_length=64, null=True, blank=True)
-    audio_description = models.TextField(null=True, blank=True, default="")
-    # 3 deprecated. Use Recording.
+    audio_file = models.FileField(null=True, blank=True)  # Deprecated
+    audio_name = models.CharField(
+        max_length=64, null=True, blank=True)  # Deprecated
+    audio_description = models.TextField(
+        null=True, blank=True, default="")  # Deprecated
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
-    )
-
+    )  # Deprecated
     kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="")
-
     creator = models.ForeignKey(
         "users.User", null=True, blank=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
@@ -303,21 +257,6 @@ class PlaceName(CulturalModel):  # Choices Constants:
         through_fields=('public_art', 'artist'),
         related_name='artists+'
     )
-
-    # Choices Constants:
-    FLAGGED = "FL"
-    UNVERIFIED = "UN"
-    VERIFIED = "VE"
-    REJECTED = "RE"
-    # Choices:
-    # first element: constant Python identifier
-    # second element: human-readable version
-    STATUS_CHOICES = [
-        (UNVERIFIED, "Unverified"),
-        (FLAGGED, "Flagged"),
-        (VERIFIED, "Verified"),
-        (REJECTED, "Rejected"),
-    ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
@@ -370,6 +309,13 @@ class PlaceName(CulturalModel):  # Choices Constants:
 
 
 class Media(BaseModel):
+    STATUS_CHOICES = [
+        (UNVERIFIED, "Unverified"),
+        (FLAGGED, "Flagged"),
+        (VERIFIED, "Verified"),
+        (REJECTED, "Rejected"),
+    ]
+
     name = models.CharField(max_length=255, default="")
     description = models.TextField(default="", blank=True)
     file_type = models.CharField(max_length=16, default=None, null=True)
@@ -389,21 +335,6 @@ class Media(BaseModel):
     mime_type = models.CharField(
         max_length=100, default=None, null=True, blank=True)
     is_artwork = models.BooleanField(default=False)
-
-    # Choices Constants:
-    FLAGGED = "FL"
-    UNVERIFIED = "UN"
-    VERIFIED = "VE"
-    REJECTED = "RE"
-    # Choices:
-    # first element: constant Python identifier
-    # second element: human-readable version
-    STATUS_CHOICES = [
-        (UNVERIFIED, "Unverified"),
-        (FLAGGED, "Flagged"),
-        (VERIFIED, "Verified"),
-        (REJECTED, "Rejected"),
-    ]
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
     )
@@ -551,13 +482,15 @@ class Taxonomy(models.Model):
         default=None,
         null=True,
         blank=True,
-        help_text='Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list')
+        help_text='Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list'
+    )
     parent = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='child_taxonomies')
+        related_name='child_taxonomies'
+    )
 
     def __str__(self):
         return "{}".format(self.name)
@@ -597,25 +530,15 @@ class LNAData(BaseModel):
     """
     Deprecated
     """
-
-    lna = models.ForeignKey(
-        LNA, on_delete=models.SET_NULL, null=True
-    )  # field_tm_lna2_lna_target_id
+    lna = models.ForeignKey(LNA, on_delete=models.SET_NULL, null=True)
     community = models.ForeignKey(
         Community, on_delete=models.SET_NULL, null=True)
-    fluent_speakers = models.IntegerField(
-        default=0
-    )  # field_tm_lna2_on_fluent_sum_value
-    # field_tm_lna2_on_some_sum_value
+    fluent_speakers = models.IntegerField(default=0)
     some_speakers = models.IntegerField(default=0)
-    learners = models.IntegerField(default=0)  # field_tm_lna2_on_lrn_sum_value
-    # field_tm_lna2_pop_off_res_value
+    learners = models.IntegerField(default=0)
     pop_off_res = models.IntegerField(default=0)
-    # field_tm_lna2_pop_on_res_value
     pop_on_res = models.IntegerField(default=0)
-    pop_total_value = models.IntegerField(
-        default=0)  # field_tm_lna2_pop_total_value
-
+    pop_total_value = models.IntegerField(default=0)
     num_schools = models.IntegerField(default=0)
     nest_hours = models.FloatField(default=0)
     oece_hours = models.FloatField(default=0)
