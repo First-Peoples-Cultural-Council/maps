@@ -696,7 +696,6 @@ class CommunitySearchSerializer(serializers.ModelSerializer):
 
 
 # ARTS SERIALIZERS
-# Base serializer
 class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
     taxonomies = TaxonomyLightSerializer(many=True, read_only=True)
 
@@ -756,7 +755,6 @@ class ArtworkSerializer(serializers.ModelSerializer):
         representation = super().to_representation(value)
 
         updated_representation = {}
-        # Add a kind field
         updated_representation["id"] = representation["id"]
         updated_representation["geometry"] = representation["placename"]["geom"]
         updated_representation["type"] = "Feature"
