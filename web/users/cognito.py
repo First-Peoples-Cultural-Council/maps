@@ -14,7 +14,7 @@ def verify_token(token):
         token,
         region,
         userpool_id,
-        app_client_id=app_client_id,  # Optional
+        app_client_id=app_client_id,
         testmode=True,  # Disable token expiration check for testing purposes
     )
 
