@@ -1,3 +1,8 @@
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import User, Administrator
@@ -9,14 +14,7 @@ from language.models import (
     CommunityLanguageStats,
     Recording,
 )
-
-from django.views.decorators.cache import never_cache
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-
 from language.views import BaseModelViewSet
-
 from language.serializers import (
     CommunitySerializer,
     CommunityDetailSerializer,
@@ -26,8 +24,6 @@ from language.serializers import (
     CommunityLanguageStatsSerializer,
     CommunitySearchSerializer
 )
-
-from django.utils.decorators import method_decorator
 from web.permissions import IsAdminOrReadOnly
 from web.utils import is_user_community_admin
 
