@@ -10,7 +10,6 @@ from rest_framework.decorators import action
 from rest_framework import status
 
 from django.db import transaction
-from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator

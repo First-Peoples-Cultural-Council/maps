@@ -14,6 +14,7 @@ from language.models import (
     Champion,
     Recording,
 )
+from web.constants import *
 
 
 class BaseTestCase(APITestCase):
@@ -318,7 +319,7 @@ class CommunityAPITests(BaseTestCase):
         member_same01 = CommunityMember.objects.create(
             user=user_member01,
             community=self.community3,
-            status=CommunityMember.VERIFIED
+            status=VERIFIED
         )
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
@@ -420,7 +421,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         member = CommunityMember.objects.get(pk=member_same01.id)
-        self.assertEqual(member.status, CommunityMember.VERIFIED)
+        self.assertEqual(member.status, VERIFIED)
 
         # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
         response = self.client.get(
@@ -473,7 +474,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         member = CommunityMember.objects.get(pk=member_same01.id)
-        self.assertEqual(member.status, CommunityMember.REJECTED)
+        self.assertEqual(member.status, REJECTED)
 
         # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
         response = self.client.get(

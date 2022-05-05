@@ -36,7 +36,6 @@ APPEND_SLASH = True
 
 ADMINS = (
     ("Clark", "clark@countable.ca"),
-    ("Daniel", "daniel@fpcc.ca"),
     ("Justin", "justin@countable.ca"),
 )
 SERVER_EMAIL = "maps@fpcc.ca"
@@ -45,7 +44,6 @@ FPCC_ADMINS = (
     ("Suzanne", "suzanne@fpcc.ca"),
     ("Cathi", "cathi@fpcc.ca"),
     ("Megan", "megan@fpcc.ca"),
-    ("Hannah", "hannah@fpcc.ca"),
 )
 
 INSTALLED_APPS = [
@@ -65,8 +63,6 @@ INSTALLED_APPS = [
     "rest_framework_gis",
     "django_apscheduler",
     "language",
-    "firstvoices",
-    "arts",
     "grants",
     "users",
     "web",
