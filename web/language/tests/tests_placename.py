@@ -202,7 +202,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["name"], "Test placename 001")
         self.assertEqual(response.data["audio"], self.recording.id)
-        self.assertEqual(response.data["community"], self.community.id)
+        self.assertEqual(response.data["community"].get("id"), self.community.id)
         self.assertEqual(response.data["language"], self.language1.id)
         # self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
         self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
