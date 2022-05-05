@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 
 from language.models import Language, Community, PlaceName
-from web.models import BaseModel
 
 
 optional = {    

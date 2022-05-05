@@ -1,5 +1,4 @@
 from rest_framework import routers
-from django.conf.urls import url
 
 from grants.views.grant import GrantViewSet, GrantCategoryViewSet
 
