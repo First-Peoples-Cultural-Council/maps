@@ -56,7 +56,7 @@
             :server="isServer"
             :arts-banner="artistBanner"
             :is-owner="isPlacenameOwner()"
-            :is-contributer="isContributer()"
+            :is-contributor="isContributor()"
             :edit-placename="handlePlacenameEdit"
           ></ArtsBanner>
 
@@ -67,7 +67,7 @@
             :server="isServer"
             :tags="taxonomies"
             :is-owner="isPlacenameOwner()"
-            :is-contributer="isContributer()"
+            :is-contributor="isContributor()"
             :edit-placename="handlePlacenameEdit"
           ></ArtsDetailCard>
           <!-- END Conditional Render Arts Header  -->
@@ -471,19 +471,19 @@ export default {
       }
       return false
     },
-    isContributer() {
+    isContributor() {
       if (
         this.userDetail.placename_set &&
         this.userDetail.placename_set.length !== 0 &&
         this.artDetails.artists &&
         this.artDetails.artists.length !== 0
       ) {
-        const contributerID = this.artDetails.artists.map(artist => artist.id)
-        const isContributer = this.userDetail.placename_set.some(placename =>
-          contributerID.includes(placename.id)
+        const contributorID = this.artDetails.artists.map(artist => artist.id)
+        const isContributor = this.userDetail.placename_set.some(placename =>
+          contributorID.includes(placename.id)
         )
 
-        return isContributer
+        return isContributor
       } else {
         return false
       }

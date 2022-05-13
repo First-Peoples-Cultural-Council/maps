@@ -4,7 +4,7 @@
       v-if="
         ($route.query.id &&
           (!place ||
-            (!isUserPlacenameOwner() && !isUserPlacenameContributer()))) ||
+            (!isUserPlacenameOwner() && !isUserPlacenameContributor()))) ||
           !isURLQueryValid
       "
     ></ErrorScreen>
@@ -1569,7 +1569,7 @@ export default {
         return false
       }
     },
-    isUserPlacenameContributer() {
+    isUserPlacenameContributor() {
       const place = this.place
       const user = this.userDetail
       if (
@@ -1579,12 +1579,12 @@ export default {
         user.placename_set &&
         user.placename_set.length !== 0
       ) {
-        const contributerID = place.artists.map(artist => artist.id)
-        const isContributer = user.placename_set.some(placename =>
-          contributerID.includes(placename.id)
+        const contributorID = place.artists.map(artist => artist.id)
+        const isContributor = user.placename_set.some(placename =>
+          contributorID.includes(placename.id)
         )
 
-        return isContributer
+        return isContributor
       } else {
         return false
       }
