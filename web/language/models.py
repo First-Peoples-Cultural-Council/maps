@@ -226,7 +226,7 @@ class PlaceName(CulturalModel):
     kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
-    description = models.TextField(default="")
+    description = models.TextField(default="", null=True, blank=True)
     creator = models.ForeignKey(
         "users.User", null=True, blank=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
@@ -394,7 +394,7 @@ class Media(BaseModel):
 class RelatedData(models.Model):
     data_type = models.CharField(max_length=100, unique=False)
     label = models.CharField(max_length=100, unique=False, default='')
-    value = models.CharField(max_length=255, default='')
+    value = models.CharField(max_length=255, default='', null=True, blank=True)
     is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(
         PlaceName, related_name='related_data', on_delete=models.CASCADE)
