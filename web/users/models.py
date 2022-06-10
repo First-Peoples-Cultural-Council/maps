@@ -64,6 +64,9 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True, default="")
 
     def __str__(self):
+        return self.get_full_name()
+
+    def get_full_name(self):
         if self.first_name:
             return "{} {}".format(self.first_name, self.last_name).strip()
         else:
