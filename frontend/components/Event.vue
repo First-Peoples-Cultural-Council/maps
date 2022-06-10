@@ -1,7 +1,9 @@
 <template>
-  <div id="event-icon-container" class="hide-mobile">
-    <span>EVENTS</span>
-    <img src="@/assets/images/event_icons.svg" alt="Menu" class="menu-icon" />
+  <div id="event-icon-container" class="nav-item-container hide-mobile">
+    <nav>
+      <span>EVENTS</span>
+      <img src="@/assets/images/event_icons.svg" alt="Menu" class="menu-icon" />
+    </nav>
     <b-popover
       custom-class="event-popover"
       target="event-icon-container"
@@ -51,10 +53,6 @@ export default {
   color: #151515;
   font-weight: 800;
   font-size: 15px;
-
-  & > * {
-    margin: 0 0.4em 0 0.2em;
-  }
 
   .menu-icon {
     width: 18px;
