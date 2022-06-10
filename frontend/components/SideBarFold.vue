@@ -185,7 +185,6 @@ export default {
 }
 
 .innerToggle-btn {
-  margin: auto auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,7 +195,12 @@ export default {
   z-index: 9999999999;
   border: 2.5px solid #b2bedc;
   animation: hover 2.5s infinite;
-  margin-bottom: 1em;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  top: -60px;
 }
 
 .collapse-item-container {
