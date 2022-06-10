@@ -204,7 +204,7 @@ class CommunityViewSet(BaseModelViewSet):
                         member = CommunityMember.objects.filter(user__id=user_id).filter(
                             community__id=community_id
                         )
-                        CommunityMember.verify_member(member[0].id)
+                        CommunityMember.verify_member(member[0].id, request.user)
 
                         return Response({'message': 'Verified!'})
                     else:
@@ -236,7 +236,7 @@ class CommunityViewSet(BaseModelViewSet):
                             member = CommunityMember.objects.filter(user__id=user_id).filter(
                                 community__id=community_id
                             )
-                            CommunityMember.reject_member(member[0].id)
+                            CommunityMember.reject_member(member[0].id, request.user)
 
                             return Response({'message': 'Rejected!'})
                         else:
