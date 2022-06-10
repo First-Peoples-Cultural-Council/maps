@@ -11,7 +11,7 @@
       v-if="isLoggedIn"
       class="share-embed-control mr-2"
     ></SaveLocation>
-    <Contribute class="contribute-control mr-2"></Contribute>
+    <AddToTheMap class="contribute-control mr-2"></AddToTheMap>
   </div>
 </template>
 
@@ -21,7 +21,7 @@ import ResetMap from '@/components/ResetMap.vue'
 import CurrentLocation from '@/components/CurrentLocation.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import SaveLocation from '@/components/SaveLocation.vue'
-import Contribute from '@/components/Contribute.vue'
+import AddToTheMap from '@/components/AddToTheMap.vue'
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
     CurrentLocation,
     ShareEmbed,
     SaveLocation,
-    Contribute
+    AddToTheMap
   },
 
   computed: {

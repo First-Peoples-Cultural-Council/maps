@@ -132,7 +132,7 @@ class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
 
 
 class CommunityMemberAdmin(admin.ModelAdmin):
-    list_display = ("user", "community")
+    list_display = ("user", "community", "verified_by")
 
 admin.site.register(Champion)
 admin.site.register(Dialect, DialectAdmin)

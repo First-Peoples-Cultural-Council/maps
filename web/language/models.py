@@ -159,6 +159,7 @@ class CommunityMember(models.Model):
         max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
     role = models.CharField(
         max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    verified_by = models.CharField(max_length=255, default="", null=True, blank=True)
 
     class Meta:
         unique_together = ("user", "community")
@@ -181,14 +182,16 @@ class CommunityMember(models.Model):
         else:
             return False
 
-    def verify_member(id):
+    def verify_member(id, admin):
         member = CommunityMember.objects.get(pk=int(id))
         member.status = VERIFIED
+        member.verified_by = admin.get_full_name()
         member.save()
 
-    def reject_member(id):
+    def reject_member(id, admin):
         member = CommunityMember.objects.get(pk=int(id))
         member.status = REJECTED
+        member.verified_by = admin.get_full_name()
         member.save()
 
     class Meta:

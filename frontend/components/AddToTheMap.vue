@@ -8,7 +8,7 @@
       <span>Add to the Map</span>
       <img
         src="@/assets/images/plus_white.svg"
-        alt="Contribute"
+        alt="AddToTheMap"
         class="navbar-icon"
     /></b-button>
 
@@ -18,7 +18,7 @@
       v-model="showContributeModal"
       hide-footer
       hide-header
-      title="Contribute"
+      title="AddToTheMap"
     >
       <b-list-group class="contribute-option-list">
         <!--<b-list-group-item button @click="handleClick($event, 'heritage')">

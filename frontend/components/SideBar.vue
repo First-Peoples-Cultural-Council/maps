@@ -260,7 +260,7 @@ export default {
     margin: 0;
     z-index: 50;
     max-height: 80%;
-    overflow: hidden;
+    overflow-y: unset;
   }
 
   .scroll-indicator-container {

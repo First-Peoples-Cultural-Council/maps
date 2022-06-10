@@ -80,7 +80,7 @@ export default {
     })
 
     /* Emulate the clicking of scroll down button */
-    this.$root.$on('togglehideScrollIndicator', () => {
+    this.$root.$on('toggleScrollIndicatorVisibility', () => {
       setTimeout(() => {
         this.checkWindowDimemsion()
       }, 250)
