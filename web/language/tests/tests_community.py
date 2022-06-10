@@ -343,14 +343,14 @@ class CommunityAPITests(BaseTestCase):
         assert len(response.data) == 2
 
         # AFTER REJECTED CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
-        CommunityMember.reject_member(member_same02.id)
+        CommunityMember.reject_member(member_same02.id, user_member01)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert len(response.data) == 1
 
         # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
-        CommunityMember.verify_member(member_same03.id)
+        CommunityMember.verify_member(member_same03.id, user_member01)
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
