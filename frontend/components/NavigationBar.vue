@@ -66,7 +66,7 @@
       >
         <img
           src="@/assets/images/plus_bigger_icon.svg"
-          alt="Contribute"
+          alt="AddToTheMap"
           class="navbar-icon"
         />
       </div> -->
