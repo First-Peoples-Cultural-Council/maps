@@ -100,6 +100,7 @@ class UserSerializer(serializers.ModelSerializer):
             "artist_profile",
             "languages",
             "non_bc_languages",
+            "other_community",
             "placename_set",
             "administrator_set",
             "community_ids",
@@ -107,6 +108,7 @@ class UserSerializer(serializers.ModelSerializer):
             "notification_frequency",
             "picture",
             "image",
+            "is_profile_complete"
         )
 
 

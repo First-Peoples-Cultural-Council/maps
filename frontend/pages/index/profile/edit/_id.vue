@@ -161,6 +161,19 @@
               :options="communities"
             ></multiselect>
 
+            <div v-if="isNonBCCommunity" class="website-container mt-3">
+              <div>
+                <label class="contribute-title-one">Non B.C. Community</label>
+              </div>
+
+              <div class="site-input-container">
+                <b-form-input
+                  v-model="communityNonBC"
+                  type="text"
+                ></b-form-input>
+              </div>
+            </div>
+
             <label
               class="contribute-title-one mt-3 color-gray font-weight-bold font-09 mb-2"
               >User Description</label
@@ -251,12 +264,15 @@ export default {
       return this.$store.state.languages.languageSet
     },
     communities() {
-      return this.$store.state.communities.communitySet.map(c => {
+      const communitySet = this.$store.state.communities.communitySet.map(c => {
         return {
           name: c.name,
           id: c.id
         }
       })
+      const nonBC = { id: 'nonBC', name: 'Non-BC Community (please specify)' }
+      communitySet.unshift(nonBC)
+      return communitySet
     },
     isArtistPlacenameExist() {
       const isPlacenameFound = this.user.placename_set.filter(
@@ -287,6 +303,9 @@ export default {
     },
     isNonBCLanguage() {
       return this.value.find(val => val.id === 'others')
+    },
+    isNonBCCommunity() {
+      return this.community && this.community.id === 'nonBC'
     },
     isCurrentUser() {
       return this.user.id === this.$store.state.user.user.id
@@ -332,7 +351,7 @@ export default {
         id: l.id
       }
     })
-    const otherLanguage = { id: 'others', name: 'Others (please specify...)' }
+    const otherLanguage = { id: 'others', name: 'Others (please specify)' }
     // Add Other options in the Languages
     options.unshift(otherLanguage)
 
@@ -372,7 +391,10 @@ export default {
       artist_profile,
       value: languageValue,
       languageNonBC,
-      community: user.communities[0],
+      community: user.other_community
+        ? { id: 'nonBC', name: 'Non-BC Community (please specify)' }
+        : user.communities[0],
+      communityNonBC: user.other_community ? user.other_community : '',
       isServer: !!process.server
     }
   },
@@ -453,7 +475,8 @@ export default {
         language_ids: this.value
           .filter(lang => lang.id !== 'others')
           .map(lang => lang.id),
-        community_ids: communityId,
+        community_ids: this.isNonBCCommunity ? [] : communityId,
+        other_community: this.isNonBCCommunity ? this.communityNonBC : null,
         artist_profile: this.artist_profile ? this.artist_profile.id : '',
         notification_frequency: this.user.notification_frequency,
         non_bc_languages: this.value.find(lang => lang.id === 'others')

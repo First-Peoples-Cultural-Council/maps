@@ -124,6 +124,16 @@
               "
             ></LanguageDetailBadge>
           </div>
+          <div v-else-if="user.other_community" class="mt-3">
+            <h5 class="color-gray font-08 text-uppercase font-weight-bold mb-0">
+              Communities
+            </h5>
+            <LanguageDetailBadge
+              :key="`badge${user.other_community}`"
+              :content="user.other_community"
+              class="mr-2 cursor-pointer"
+            ></LanguageDetailBadge>
+          </div>
 
           <h5
             v-if="placenameSet.length > 0"
