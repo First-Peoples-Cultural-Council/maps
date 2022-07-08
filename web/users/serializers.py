@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import User, Administrator
 
-from language.models import Language, Community, PlaceName
+from language.models import Language, Community, CommunityMember, PlaceName
 
 
 class CommunityUserSerializer(serializers.ModelSerializer):
@@ -69,6 +69,16 @@ class UserSerializer(serializers.ModelSerializer):
                placename.get("geom") and placename.get("geom") not in invalid_geoms:
                 cleaned_placename_set.append(placename)
         representation["placename_set"] = cleaned_placename_set
+
+        # Add community membership
+        for community in representation["communities"]:
+            community_membership = CommunityMember.objects.filter(
+                community_id=community.get("id"), user_id=representation["id"]).first()
+            if community_membership:
+                community["community_membership"] = {
+                    "verified_by": community_membership.verified_by,
+                    "date_verified": community_membership.date_verified
+                }
 
         return representation
 

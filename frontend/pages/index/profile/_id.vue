@@ -117,7 +117,7 @@
             <LanguageDetailBadge
               v-for="comm in user.communities"
               :key="`badge${comm.id}`"
-              :content="comm.name"
+              :content="getCommunityDetails(comm)"
               class="mr-2 cursor-pointer"
               @click.native="
                 $router.push({ path: '/content/' + encodeFPCC(comm.name) })
@@ -414,7 +414,6 @@ export default {
     return { user, isOwner, allArts, artDetails }
   },
   mounted() {
-    console.log(this.artDetails)
     const arts = this.artDetails
     if (
       arts &&
@@ -451,6 +450,22 @@ export default {
         (`${this.user.first_name} ${this.user.last_name}` ||
           this.user.username.split('__')[0])
       )
+    },
+    getCommunityDetails(community) {
+      let details = community.name
+      if (
+        community.community_membership &&
+        community.community_membership.verified_by
+      ) {
+        details += ` - verified by ${community.community_membership.verified_by}`
+      }
+      if (
+        community.community_membership &&
+        community.community_membership.date_verified
+      ) {
+        details += ` on ${community.community_membership.date_verified}`
+      }
+      return details
     },
     getUserImg() {
       return this.user.image
