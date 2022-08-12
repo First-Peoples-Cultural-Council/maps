@@ -20,7 +20,10 @@
         <h5 class="field-kinds">
           Point Of Interest
         </h5>
-        <h5 class="field-names">
+        <h5
+          v-if="place.properties && place.properties.name"
+          class="field-names"
+        >
           {{ place.properties.name }}
         </h5>
       </div>

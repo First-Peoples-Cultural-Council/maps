@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
@@ -160,6 +161,7 @@ class CommunityMember(models.Model):
     role = models.CharField(
         max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
     verified_by = models.CharField(max_length=255, default="", null=True, blank=True)
+    date_verified = models.DateField(null=True, blank=True)
 
     class Meta:
         unique_together = ("user", "community")
@@ -186,12 +188,14 @@ class CommunityMember(models.Model):
         member = CommunityMember.objects.get(pk=int(id))
         member.status = VERIFIED
         member.verified_by = admin.get_full_name()
+        member.date_verified = timezone.now()
         member.save()
 
     def reject_member(id, admin):
         member = CommunityMember.objects.get(pk=int(id))
         member.status = REJECTED
         member.verified_by = admin.get_full_name()
+        member.date_verified = timezone.now()
         member.save()
 
     class Meta:

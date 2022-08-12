@@ -152,7 +152,7 @@
               </p>
             </b-alert>
             <b-alert
-              v-else-if="notAuthenticatedUser"
+              v-else-if="!isProfileComplete"
               show
               class="p-1 pr-2 pl-2 draw-mode-container"
               variant="danger"
@@ -171,7 +171,7 @@
               </ul>
             </b-alert>
             <b-alert
-              v-else-if="!notAuthenticatedUser"
+              v-else-if="isProfileComplete"
               show
               class="p-1 pr-2 pl-2 draw-mode-container"
               variant="light"
@@ -392,14 +392,8 @@ export default {
     userDetail() {
       return this.$store.state.user.user
     },
-    notAuthenticatedUser() {
-      return (
-        this.isLoggedIn &&
-        this.userDetail.languages &&
-        this.userDetail.languages.length === 0 &&
-        this.userDetail.communities &&
-        this.userDetail.communities.length === 0
-      )
+    isProfileComplete() {
+      return this.userDetail.is_profile_complete
     },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen

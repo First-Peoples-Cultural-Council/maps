@@ -57,11 +57,11 @@
               (drawnFeatures.length === 0 && !place) ||
                 isLoading ||
                 !isLoggedIn ||
-                notAuthenticatedUser
+                !isProfileComplete
             "
             class="required-overlay"
           >
-            <b-alert v-if="notAuthenticatedUser" show variant="danger">
+            <b-alert v-if="!isProfileComplete" show variant="danger">
               <ul>
                 <li>
                   You can't proceed, you need to select your default Language,
@@ -1068,14 +1068,8 @@ export default {
     userDetail() {
       return this.$store.state.user.user
     },
-    notAuthenticatedUser() {
-      return (
-        this.isLoggedIn &&
-        this.userDetail.languages &&
-        this.userDetail.languages.length === 0 &&
-        this.userDetail.communities &&
-        this.userDetail.communities.length === 0
-      )
+    isProfileComplete() {
+      return this.userDetail.is_profile_complete
     },
     userGivenName() {
       return `${this.userDetail.first_name} ${this.userDetail.last_name}`

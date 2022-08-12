@@ -156,7 +156,6 @@ export default {
 }
 
 .user-icon-container {
-  background-color: black;
   border-radius: 50%;
   height: 30px;
   width: 30px;
