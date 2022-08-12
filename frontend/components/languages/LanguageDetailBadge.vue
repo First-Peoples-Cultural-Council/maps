@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-block cursor-pointer">
+  <div v-if="content" class="d-inline-block cursor-pointer">
     <b-badge class="detail-badge">
       <span class="p-1 detail-badge-content">{{ content }}</span>
     </b-badge>
