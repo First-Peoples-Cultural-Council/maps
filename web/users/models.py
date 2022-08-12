@@ -70,7 +70,7 @@ class User(AbstractUser):
     
     @property
     def is_profile_complete(self):
-        has_language = self.languages.count() > 0 or len(self.non_bc_languages) > 0
+        has_language = self.languages.count() > 0 or len(self.non_bc_languages or []) > 0
         has_community = self.communities.count() > 0 or self.other_community
         return bool(has_language and has_community)
 
