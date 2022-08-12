@@ -80,6 +80,8 @@ export const actions = {
     commit('setPlace', result)
     if (result.audio_file) {
       commit('setAudioFile', result.audio_file)
+    } else {
+      commit('setAudioFile', null)
     }
 
     if (result.community) {

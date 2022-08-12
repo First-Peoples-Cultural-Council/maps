@@ -1,0 +1,47 @@
+NEW_CATEGORIES = {
+    "Individual Emerging Artist": "Individual Artists Grant",
+    "Sharing Traditional Arts": "Sharing Traditional Arts Grant",
+    "Organizations and Collectives": "Organizations and Collectives Grant",
+    "Arts Administrator Internships": "Arts Administration Internships Grant",
+    "Aboriginal Youth Engaged in the Arts": "Aboriginal Youth Engaged in the Arts Grant",
+    "Music Industry Professionals": "Emerging Music Industry Professionals Grant",
+    "Music Recording Industry": "Expanding Capacity in the Indigenous Music Recording Industry Grant",
+}
+
+CATEGORY_ABBREVIATIONS = {
+    "Individual Artists Grant": "AIND",
+    "Sharing Traditional Arts Grant": "ASHR",
+    "Organizations and Collectives Grant": "AORG",
+    "Arts Administration Internships Grant": "AADM",
+    "Aboriginal Youth Engaged in the Arts Grant": "AAYEA",
+    "Emerging Music Industry Professionals Grant": "AEMIP",
+    "Expanding Capacity in the Indigenous Music Recording Industry Grant": "AECMR",
+}
+
+CATEGORY_NAMES = {
+    "ARTS": "Arts One Time Grant",
+    "AIND": "Individual Artists Grant",
+    "ASHR": "Sharing Traditional Arts Grant",
+    "AORG": "Organizations and Collectives Grant",
+    "AADM": "Arts Administration Internships Grant",
+    "AMIC": "Arts Micro Grants",
+    "ALND": "Community Land Based Arts Grant",
+    "AEMIP": "Emerging Music Industry Professionals Grant",
+    "AECMR": "Expanding Capacity in the Indigenous Music Recording Industry Grant",
+    "ATPMP": "Touring, Promotion/Marketing and Performance Grant",
+    "HMIC": "Indigenous Heritage Micro Grant",
+    "HSOP": "Sense of Place Grant",
+    "LALI": "Aboriginal Languages Initiative",
+    "LBCLI": "BC Language Initiative",
+    "LDIGI": "Digitization Program",
+    "LFV": "FirstVoices Program",
+    "LILG": "Indigenous Languages Grant",
+    "LANG": "Language One Time Grant",
+    "LLN": "Language Nest Program",
+    "LLRPP": "Language Revitalization Planning Program",
+    "LMAP": "Mentor-Apprentice Program",
+    "LPATH": "Pathways to Language Vitality Program",
+    "LRML": "Reclaiming My Language Program",
+    "LTECH": "Language Technology Program",
+    "LYES": "Youth Empowered Speakers Program",
+}
