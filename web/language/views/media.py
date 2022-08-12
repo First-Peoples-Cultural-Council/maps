@@ -8,10 +8,11 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import Administrator
-from language.models import CommunityMember, Media
+from language.models import CommunityMember, Media, PlaceName
 from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
 from language.serializers import MediaSerializer
 from web.constants import *
+from .base import get_queryset_for_user
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
@@ -225,82 +226,6 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request):
-        queryset = self.get_queryset()
-        queryset = self.filter_queryset(queryset)
-
-        user_logged_in = False
-        if request.user.is_authenticated:
-            user_logged_in = True
-
-        # 1) if NO USER is logged in, only shows VERIFIED, UNVERIFIED or no status content
-        # 2) if USER IS LOGGED IN, shows:
-        # 2.1) user's contribution regardless the status
-        # 2.2) community_only content from user's communities. Rules:
-        # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-        # 2.2.2) is COMMUNITY ONLY
-        # 2.3) everything from where user is Administrator (language/community pair)
-
-        if user_logged_in and not request.GET.get('placename'):
-
-            # 2.1) user's contribution regardless the status
-            queryset_user = queryset.filter(creator__id=request.user.id)
-
-            # 2.2) community_only content from user's communities
-            user_communities = CommunityMember.objects.filter(
-                user__id=int(request.user.id)
-            ).filter(
-                status__exact=VERIFIED
-            ).values('community')
-
-            # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
-            # 2.2.2) is COMMUNITY ONLY
-            queryset_community = queryset.filter(
-                Q(community_only=False, status__exact=VERIFIED)
-                | Q(community_only=False, status__exact=UNVERIFIED)
-                | Q(community_only=False, status__isnull=True)
-                | Q(community_only__isnull=True, status__exact=VERIFIED)
-                | Q(community_only__isnull=True, status__exact=UNVERIFIED)
-                | Q(community_only__isnull=True, status__isnull=True)
-                | Q(community__in=user_communities)
-                | Q(placename__community__in=user_communities)
-            )
-
-            # 2.3) everything from where user is Administrator (language/community pair)
-            admin_languages = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('language')
-            admin_communities = Administrator.objects.filter(
-                user__id=int(request.user.id)).values('community')
-
-            if admin_languages and admin_communities:
-                # Filter Medias by admin's languages
-                qry_adm_community = queryset.filter(
-                    community__languages__in=admin_languages, community__in=admin_communities
-                )
-                qry_adm_places = queryset.filter(
-                    placename__language__in=admin_languages, placename__community__in=admin_communities
-                )
-                if qry_adm_community and qry_adm_places:
-                    queryset = queryset_user.union(queryset_community).union(
-                        qry_adm_community).union(qry_adm_places)
-                elif qry_adm_community:
-                    queryset = queryset_user.union(
-                        queryset_community).union(qry_adm_community)
-                elif qry_adm_places:
-                    queryset = queryset_user.union(
-                        qry_adm_community).union(qry_adm_places)
-                else:
-                    queryset = queryset_user.union(qry_adm_community)
-            else:  # user is not Administrator of anything
-                queryset = queryset_user.union(queryset_community)
-
-        else:  # no user is logged in
-            queryset = queryset.exclude(
-                community_only=True
-            ).filter(
-                Q(status__exact=VERIFIED)
-                | Q(status__exact=UNVERIFIED)
-                | Q(status__isnull=True)
-            )
-
+        queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
