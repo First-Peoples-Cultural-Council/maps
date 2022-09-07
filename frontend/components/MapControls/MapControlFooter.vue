@@ -11,6 +11,7 @@
       v-if="isLoggedIn"
       class="share-embed-control mr-2"
     ></SaveLocation>
+    <Overlap class="mr-2" />
     <Contribute class="contribute-control mr-2"></Contribute>
   </div>
 </template>
@@ -22,6 +23,7 @@ import CurrentLocation from '@/components/CurrentLocation.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import SaveLocation from '@/components/SaveLocation.vue'
 import Contribute from '@/components/Contribute.vue'
+import Overlap from '@/components/Overlap.vue'
 
 export default {
   components: {
@@ -30,7 +32,8 @@ export default {
     CurrentLocation,
     ShareEmbed,
     SaveLocation,
-    Contribute
+    Contribute,
+    Overlap
   },
 
   computed: {
