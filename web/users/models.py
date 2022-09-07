@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
@@ -56,6 +57,8 @@ class User(AbstractUser):
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
     )
+    other_community = models.CharField(
+        max_length=64, default="", blank=True, null=True)
 
     languages = models.ManyToManyField("language.Language")
     non_bc_languages = ArrayField(models.CharField(
@@ -63,6 +66,15 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True, default="")
 
     def __str__(self):
+        return self.get_full_name()
+    
+    @property
+    def is_profile_complete(self):
+        has_language = self.languages.count() > 0 or len(self.non_bc_languages or []) > 0
+        has_community = self.communities.count() > 0 or self.other_community
+        return bool(has_language and has_community)
+
+    def get_full_name(self):
         if self.first_name:
             return "{} {}".format(self.first_name, self.last_name).strip()
         else:

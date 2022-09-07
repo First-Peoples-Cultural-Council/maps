@@ -1,11 +1,10 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F
-from django_filters import FilterSet
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-
-from rest_framework import viewsets, generics, mixins
+from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import FilterSet
 
 from language.models import Taxonomy
 from language.serializers import TaxonomySerializer

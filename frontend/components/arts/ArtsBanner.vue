@@ -48,13 +48,13 @@
         </div>
 
         <div
-          v-if="isOwner || isContributer"
+          v-if="isOwner || isContributor"
           class="d-inline-block cursor-pointer mt-2"
         >
           <CardBadge
-            :content="isOwner ? 'Owned' : 'Contributer'"
+            :content="isOwner ? 'Owned' : 'Contributor'"
             type="owner"
-            :placeholder="arttype | kind"
+            :placeholder="arttype"
           ></CardBadge>
           <CardBadge
             content="Edit"
@@ -133,7 +133,7 @@ export default {
       type: Boolean,
       default: false
     },
-    isContributer: {
+    isContributor: {
       type: Boolean,
       default: false
     },

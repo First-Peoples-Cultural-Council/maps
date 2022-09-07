@@ -4,7 +4,7 @@
       v-if="
         ($route.query.id &&
           (!place ||
-            (!isUserPlacenameOwner() && !isUserPlacenameContributer()))) ||
+            (!isUserPlacenameOwner() && !isUserPlacenameContributor()))) ||
           !isURLQueryValid
       "
     ></ErrorScreen>
@@ -57,11 +57,11 @@
               (drawnFeatures.length === 0 && !place) ||
                 isLoading ||
                 !isLoggedIn ||
-                notAuthenticatedUser
+                !isProfileComplete
             "
             class="required-overlay"
           >
-            <b-alert v-if="notAuthenticatedUser" show variant="danger">
+            <b-alert v-if="!isProfileComplete" show variant="danger">
               <ul>
                 <li>
                   You can't proceed, you need to select your default Language,
@@ -1000,7 +1000,7 @@ export default {
       return this.$route.query.mode
     },
     queryType() {
-      return this.$route.query.type || 'poi'
+      return this.$route.query.type || 'POI'
     },
     isArtist() {
       return this.queryType === 'Artist'
@@ -1068,14 +1068,8 @@ export default {
     userDetail() {
       return this.$store.state.user.user
     },
-    notAuthenticatedUser() {
-      return (
-        this.isLoggedIn &&
-        this.userDetail.languages &&
-        this.userDetail.languages.length === 0 &&
-        this.userDetail.communities &&
-        this.userDetail.communities.length === 0
-      )
+    isProfileComplete() {
+      return this.userDetail.is_profile_complete
     },
     userGivenName() {
       return `${this.userDetail.first_name} ${this.userDetail.last_name}`
@@ -1569,7 +1563,7 @@ export default {
         return false
       }
     },
-    isUserPlacenameContributer() {
+    isUserPlacenameContributor() {
       const place = this.place
       const user = this.userDetail
       if (
@@ -1579,12 +1573,12 @@ export default {
         user.placename_set &&
         user.placename_set.length !== 0
       ) {
-        const contributerID = place.artists.map(artist => artist.id)
-        const isContributer = user.placename_set.some(placename =>
-          contributerID.includes(placename.id)
+        const contributorID = place.artists.map(artist => artist.id)
+        const isContributor = user.placename_set.some(placename =>
+          contributorID.includes(placename.id)
         )
 
-        return isContributer
+        return isContributor
       } else {
         return false
       }
@@ -1968,6 +1962,7 @@ export default {
 
     async submitPlacename(e) {
       let id
+      let prefix = 'art'
       this.capitalizeTraditionalName()
 
       const headers = this.getCookies
@@ -2065,7 +2060,9 @@ export default {
 
             // If finish, redirect to Placename
             if (mediaResult || thumbnailResult) {
-              this.redirectToPlacename()
+              if (data.kind === 'poi' || data.kind === '')
+                prefix = 'place-names'
+              this.redirectToPlacename(prefix)
             }
           }
         } catch (e) {
@@ -2110,7 +2107,9 @@ export default {
 
               // If finish, redirect to Placename
               if (modified) {
-                this.redirectToPlacename()
+                if (data.kind === 'poi' || data.kind === '')
+                  prefix = 'place-names'
+                this.redirectToPlacename(prefix)
               }
             } catch (e) {
               this.isLoading = false
@@ -2338,12 +2337,12 @@ export default {
       )
       return result
     },
-    redirectToPlacename() {
+    redirectToPlacename(prefix) {
       if (this.getMediaFiles.length !== 0) {
         this.$root.$emit('refetchArtwork')
       }
 
-      location.href = `/art/${encodeFPCC(this.traditionalName)}`
+      location.href = `/${prefix}/${encodeFPCC(this.traditionalName)}`
     },
     callProgressModal(value) {
       this.$root.$emit('initiateLoadingModal', value)

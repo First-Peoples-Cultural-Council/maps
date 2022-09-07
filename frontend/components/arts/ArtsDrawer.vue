@@ -169,7 +169,9 @@ export default {
       }
     },
     listOfPublicArt() {
-      return this.currentArt.public_arts || []
+      return this.currentArt && this.currentArt.public_arts
+        ? this.currentArt.public_arts
+        : []
     },
     listOfImageMedia() {
       return [

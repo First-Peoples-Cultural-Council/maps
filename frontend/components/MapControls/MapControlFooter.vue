@@ -12,7 +12,7 @@
       class="share-embed-control mr-2"
     ></SaveLocation>
     <Overlap class="mr-2" />
-    <Contribute class="contribute-control mr-2"></Contribute>
+    <AddToTheMap class="contribute-control mr-2"></AddToTheMap>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ import ResetMap from '@/components/ResetMap.vue'
 import CurrentLocation from '@/components/CurrentLocation.vue'
 import ShareEmbed from '@/components/ShareEmbed.vue'
 import SaveLocation from '@/components/SaveLocation.vue'
-import Contribute from '@/components/Contribute.vue'
+import AddToTheMap from '@/components/AddToTheMap.vue'
 import Overlap from '@/components/Overlap.vue'
 
 export default {
@@ -32,7 +32,7 @@ export default {
     CurrentLocation,
     ShareEmbed,
     SaveLocation,
-    Contribute,
+    AddToTheMap,
     Overlap
   },
 

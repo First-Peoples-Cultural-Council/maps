@@ -117,3 +117,6 @@ frontend/.nuxt
 
 # backups
 *dump*
+
+test_data/
+import_files/

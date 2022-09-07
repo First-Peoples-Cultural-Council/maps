@@ -4,33 +4,37 @@
       <Event />
       <div
         v-if="isLoggedIn"
-        class="user-container menu-container cursor-pointer hide-mobile"
+        class="nav-item-container cursor-pointer hide-mobile"
         @click="profile"
       >
+        <div v-if="showNotificationBadge" class="notify-badge"></div>
         <nav class="user-icon-container">
-          <div v-if="showNotificationBadge" class="notify-badge"></div>
           <span>{{ user.email }}</span>
-          <img
-            v-if="!picture"
-            src="@/assets/images/user_icon.svg"
-            alt="Menu"
-            class="user-icon"
-          />
           <img
             v-if="picture"
             :src="picture"
             alt="Menu"
             class="navbar-icon user-display-img "
           />
+          <img
+            v-else
+            src="@/assets/images/user_icon.svg"
+            alt="Menu"
+            class="user-icon"
+          />
         </nav>
       </div>
-      <div v-else class="menu-container hide-mobile" @click="redirectLogin">
-        <span>LOGIN</span>
-        <img src="@/assets/images/user_icon.svg" alt="Menu" />
+      <div v-else class="nav-item-container hide-mobile" @click="redirectLogin">
+        <nav>
+          <span>LOGIN</span>
+          <img src="@/assets/images/user_icon.svg" alt="Menu" />
+        </nav>
       </div>
-      <div class="menu-container  hide-mobile" @click="openNav">
-        <span class="mr-2">MENU</span>
-        <img src="@/assets/images/menu_icon.svg" alt="Menu" />
+      <div class="nav-item-container hide-mobile" @click="openNav">
+        <nav>
+          <span>MENU</span>
+          <img src="@/assets/images/menu_icon.svg" alt="Menu" />
+        </nav>
       </div>
     </div>
 
@@ -66,7 +70,7 @@
       >
         <img
           src="@/assets/images/plus_bigger_icon.svg"
-          alt="Contribute"
+          alt="AddToTheMap"
           class="navbar-icon"
         />
       </div> -->
@@ -361,7 +365,7 @@ export default {
   display: flex;
 }
 
-.menu-container {
+.nav-item-container {
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -376,6 +380,19 @@ export default {
   color: #151515;
   font-weight: 800;
   font-size: 15px;
+  height: 47px;
+  position: relative;
+
+  nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.4em;
+
+    & > *:first-child {
+      margin-right: 0.4em;
+    }
+  }
 
   img {
     width: 18px;
@@ -388,10 +405,6 @@ export default {
     align-items: center;
     height: 45px;
     letter-spacing: 1px;
-
-    & > * {
-      margin: 0 0.4em 0 0.2em;
-    }
 
     .user-display-img {
       width: 45px;
@@ -418,11 +431,6 @@ export default {
   height: 10px;
   background-color: rgba(173, 20, 20, 0.753);
   border-radius: 50%;
-}
-
-.user-container {
-  padding: 0.6em;
-  height: 47px;
 }
 
 .navigation {
@@ -520,16 +528,13 @@ export default {
 }
 
 @media (max-width: 1350px) {
-  .menu-container {
+  .nav-item-container {
     width: 45px;
     height: 45px;
     margin: 0 0.25em;
   }
-  .menu-container span {
+  .nav-item-container span {
     display: none;
-  }
-  .user-container {
-    margin: 0 0.25em;
   }
 
   .user-display-img {
@@ -538,19 +543,16 @@ export default {
 }
 
 /* Navigation Icons when Drawer is open */
-.arts-container .menu-container {
+.arts-container .nav-item-container {
   width: 45px;
   height: 45px;
 }
-.arts-container .menu-container span {
+.arts-container .nav-item-container span {
   display: none;
 }
 
-.arts-container .menu-container img {
+.arts-container .nav-item-container img {
   margin: 0;
-}
-.arts-container .user-container {
-  margin: 0 0.25em;
 }
 
 @media (max-width: 993px) {
