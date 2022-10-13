@@ -56,7 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
                                self).to_representation(instance)
 
         cleaned_placename_set = []
-        valid_kinds = ['', 'poi', 'public_art', 'artist', 'organization']
+        valid_kinds = ['', 'poi', 'public_art', 'artist', 'organization', 'event']
         invalid_geoms = [{
             "type": "Point",
             "coordinates": [
