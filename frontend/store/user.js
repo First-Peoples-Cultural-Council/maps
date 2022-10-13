@@ -99,7 +99,9 @@ export const actions = {
     return result
   },
 
-  async getNotifications({ commit }, data) {
+  async getNotifications({ commit, state }, data) {
+    if (!state.isLoggedIn) return null
+
     let result = null
     if (data.isServer) {
       result = await this.$axios.get(
