@@ -164,7 +164,7 @@
                 </li>
                 <li>
                   Please select your community or language by clicking
-                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                  <router-link :to="`/profile/edit/${user.id}`"
                     >here</router-link
                   >
                 </li>
@@ -386,11 +386,8 @@ export default {
     }
   },
   computed: {
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isProfileComplete() {
-      return this.userDetail.is_profile_complete
+      return this.user.is_profile_complete
     },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen

@@ -309,9 +309,6 @@ export default {
     artDetails() {
       return this.$store.state.arts.currentPlacename
     },
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isGalleryShown() {
       return this.$store.state.sidebar.showGallery
     },
@@ -470,13 +467,13 @@ export default {
     },
     isContributor() {
       if (
-        this.userDetail.placename_set &&
-        this.userDetail.placename_set.length !== 0 &&
+        this.user.placename_set &&
+        this.user.placename_set.length !== 0 &&
         this.artDetails.artists &&
         this.artDetails.artists.length !== 0
       ) {
         const contributorID = this.artDetails.artists.map(artist => artist.id)
-        const isContributor = this.userDetail.placename_set.some(placename =>
+        const isContributor = this.user.placename_set.some(placename =>
           contributorID.includes(placename.id)
         )
 
