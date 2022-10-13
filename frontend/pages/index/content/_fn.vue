@@ -419,9 +419,6 @@ export default {
     isLoggedIn() {
       return this.$store.state.user.isLoggedIn
     },
-    user() {
-      return this.$store.state.user.user
-    },
     communities() {
       return this.$store.state.communities.communitySet
     },

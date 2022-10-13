@@ -2,6 +2,9 @@ import Vue from 'vue'
 
 Vue.mixin({
   computed: {
+    user() {
+      return this.$store.state.user.user
+    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null

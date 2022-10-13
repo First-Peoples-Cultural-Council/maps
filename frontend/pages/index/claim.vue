@@ -47,9 +47,6 @@ export default {
     },
     email() {
       return this.$store.state.user.user && this.$store.state.user.user.email
-    },
-    user() {
-      return this.$store.state.user.user
     }
   },
   mounted() {

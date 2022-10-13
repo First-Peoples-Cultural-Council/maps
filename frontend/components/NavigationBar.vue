@@ -266,9 +266,6 @@ export default {
       picture: state =>
         state.user.user.image ? state.user.user.image : state.user.picture
     }),
-    user() {
-      return this.$store.state.user.user
-    },
     isUserAdmin() {
       return (
         this.isLoggedIn &&

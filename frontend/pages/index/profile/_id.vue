@@ -368,7 +368,7 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, dispatch }) {
-    const user = await $axios.$get(
+    const currentUser = await $axios.$get(
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
 
@@ -376,7 +376,7 @@ export default {
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
 
-    const artistProfiles = user.placename_set.filter(
+    const artistProfiles = currentUser.placename_set.filter(
       placename => placename.kind === 'artist'
     )
 
@@ -398,9 +398,9 @@ export default {
     }
 
     let artDetails = null
-    if (user.artist_profile) {
+    if (currentUser.artist_profile) {
       artDetails = await $axios.$get(
-        getApiUrl('placename/' + user.artist_profile)
+        getApiUrl('placename/' + currentUser.artist_profile)
       )
     }
 
@@ -418,7 +418,7 @@ export default {
       await store.dispatch('places/getFavourites')
     }
 
-    return { user, isOwner, allArts, artDetails }
+    return { currentUser, isOwner, allArts, artDetails }
   },
   mounted() {
     const arts = this.artDetails

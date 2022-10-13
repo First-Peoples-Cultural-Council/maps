@@ -340,9 +340,6 @@ export default {
         this.$store.state.user.user.administrator_set.length > 0
       )
     },
-    user() {
-      return this.$store.state.user.user
-    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
