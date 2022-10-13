@@ -5,6 +5,9 @@ Vue.mixin({
     user() {
       return this.$store.state.user.user
     },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     isSuperUser() {
       if (!this.$store.state.user.user) {
         return null

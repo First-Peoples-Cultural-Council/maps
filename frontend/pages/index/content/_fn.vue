@@ -419,9 +419,6 @@ export default {
         return a.kind.localeCompare(b.kind)
       })
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     communities() {
       return this.$store.state.communities.communitySet
     },

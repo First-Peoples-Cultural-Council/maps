@@ -236,9 +236,6 @@ export default {
     },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
-    },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
     }
   },
   destroyed() {

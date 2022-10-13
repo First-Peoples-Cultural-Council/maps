@@ -285,9 +285,6 @@ export default {
     LocationItem
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     isLangAdmin() {
       return this.$store.state.user.user.administrator_set.length > 0
     },

@@ -39,9 +39,6 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     userid() {
       return this.$store.state.user.user.id
     },

@@ -309,9 +309,6 @@ export default {
     artDetails() {
       return this.$store.state.arts.currentPlacename
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     userDetail() {
       return this.$store.state.user.user
     },

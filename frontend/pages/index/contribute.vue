@@ -1065,9 +1065,6 @@ export default {
           })
         : []
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     files() {
       return this.$store.state.contribute.files
     },

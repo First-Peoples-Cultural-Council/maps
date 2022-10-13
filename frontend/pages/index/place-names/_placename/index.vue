@@ -343,9 +343,6 @@ export default {
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     uid() {
       const user = this.$store.state.user.user
       return user && user.id

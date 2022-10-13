@@ -90,9 +90,6 @@ export default {
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     grants() {
       return this.$store.state.grants.grantsSet
     }

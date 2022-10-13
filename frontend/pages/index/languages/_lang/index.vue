@@ -365,9 +365,6 @@ export default {
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     subscribed() {
       return this.notifications.find(n => n.language === this.language.id)
     },
