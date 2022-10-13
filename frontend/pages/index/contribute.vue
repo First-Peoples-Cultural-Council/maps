@@ -39,7 +39,7 @@
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
-      <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+      <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
         <div
           class="text-center d-none mobile-close"
           :class="{ 'content-mobile': mobileContent }"
@@ -130,7 +130,7 @@
               <b-form-file
                 ref="fileUpload"
                 v-model="fileImg"
-                class="file-upload-input mt-2 "
+                class="file-upload-input mt-2"
                 :placeholder="filePlaceholder()"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
@@ -322,7 +322,14 @@
               <div>
                 <label
                   for="taxonomy-container"
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
                 >
                 <ToolTip
@@ -353,7 +360,14 @@
               <div>
                 <label
                   for="contributing-artist"
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >Contributing Artist</label
                 >
                 <ToolTip
@@ -375,7 +389,14 @@
             <b-row v-if="queryType === 'Event'" class="field-row">
               <div>
                 <label
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >Public Art</label
                 >
                 <ToolTip
@@ -1111,7 +1132,10 @@ export default {
             name: lang.name
           }
         })
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => {
+          if (!a.name || !b.name) return 0
+          return a.name.localeCompare(b.name)
+        })
       languageSet.unshift({
         id: 'others',
         name: 'Others (please specify...)'
@@ -1459,9 +1483,9 @@ export default {
 
       if (
         this.userNonBCLanguage.length !== 0 &&
-        (this.place &&
-          this.place.non_bc_languages &&
-          this.place.non_bc_languages.length !== 0)
+        this.place &&
+        this.place.non_bc_languages &&
+        this.place.non_bc_languages.length !== 0
       ) {
         const previousLang = this.languageNonBC
         this.languageNonBC = { id: previousLang, name: previousLang }
@@ -1987,7 +2011,8 @@ export default {
       let non_bc_language = null
       if (
         this.languageUserSelected &&
-        (this.languageUserSelected.id === 'others' && this.languageNonBC)
+        this.languageUserSelected.id === 'others' &&
+        this.languageNonBC
       ) {
         non_bc_language =
           this.userNonBCLanguage.length !== 0

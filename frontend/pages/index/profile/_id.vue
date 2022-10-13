@@ -329,7 +329,10 @@ export default {
         ...this.user.placename_set,
         ...this.getContributedPublicArt
       ]
-      return placenameSet.sort((a, b) => a.kind.localeCompare(b.kind))
+      return placenameSet.sort((a, b) => {
+        if (!a.kind || !b.kind) return 0
+        return a.kind.localeCompare(b.kind)
+      })
     },
     listOfLanguages() {
       const { languages, non_bc_languages } = this.user

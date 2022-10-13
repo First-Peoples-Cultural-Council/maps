@@ -95,7 +95,7 @@
             </div>
           </section>
           <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
-            <h5 class="language-family mt-2 ">Communities</h5>
+            <h5 class="language-family mt-2">Communities</h5>
             <b-row>
               <b-col
                 v-for="community in paginatedCommunities"
@@ -357,6 +357,7 @@ export default {
     ]
     const bounds = [bbox[0], bbox[1]]
     return {
+      auth: null,
       maximumLength: 0,
       searchQuery: '',
       searchKey: 'search',
@@ -475,18 +476,16 @@ export default {
       return this.$store.state.mapinstance.mapInstance
     }
   },
-  async asyncData({ params, $axios, store, hash }) {
-    const user = await $axios.$get(
+  async fetch({ $axios, store, route }) {
+    const auth = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
-    if (user.is_authenticated) {
-      store.commit('user/setUser', user.user)
-      store.commit('user/setPicture', user.user.picture)
+    if (auth.is_authenticated) {
+      store.commit('user/setUser', auth.user)
+      store.commit('user/setPicture', auth.user.picture)
       store.commit('user/setLoggedIn', true)
     }
-    return { user }
-  },
-  async fetch({ $axios, store, route }) {
+
     if (!store.state.app.isDataLoaded) {
       // Only fetch search data
       const results = await Promise.all([
