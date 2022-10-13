@@ -1097,13 +1097,6 @@ export default {
         return {}
       }
     },
-    isSuperUser() {
-      if (!this.$store.state.user.user) {
-        return null
-      }
-      return this.$store.state.user.user.is_superuser
-    },
-
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
     },

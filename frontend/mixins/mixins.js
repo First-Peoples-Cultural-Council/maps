@@ -2,6 +2,12 @@ import Vue from 'vue'
 
 Vue.mixin({
   computed: {
+    isSuperUser() {
+      if (!this.$store.state.user.user) {
+        return null
+      }
+      return this.$store.state.user.user.is_superuser
+    },
     routeName() {
       return this.$route.name
     },

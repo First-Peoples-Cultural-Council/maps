@@ -340,9 +340,6 @@ export default {
         this.$store.state.user.user.administrator_set.length > 0
       )
     },
-    isSuperUser() {
-      return this.user.is_superuser
-    },
     user() {
       return this.$store.state.user.user
     },

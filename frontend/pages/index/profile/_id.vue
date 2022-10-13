@@ -300,9 +300,6 @@ export default {
     isStaff() {
       return (this.$store.state.user.user || {}).is_staff
     },
-    isSuperUser() {
-      return this.$store.state.user.user.is_superuser
-    },
     favourites() {
       return this.$store.state.places.favourites
     },
