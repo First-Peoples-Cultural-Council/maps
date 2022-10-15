@@ -1824,7 +1824,6 @@ export default {
     },
     submitType(e) {
       this.isLoading = true
-      this.errors = []
       if (this.queryMode === 'placename' || this.queryType) {
         this.submitPlacename(e)
       } else {
@@ -1961,29 +1960,6 @@ export default {
       }
     },
 
-    handleValidateForm() {
-      if (this.isArtist && !this.languageUserSelected) {
-        this.errors.push('Language: Please select a Language from the list.')
-      }
-
-      if (this.isArtist && !this.community) {
-        this.errors.push('Community: Please select a Community from the list.')
-      }
-
-      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
-        this.errors.push('Thumbnail: Please upload an image.')
-      }
-
-      if (this.isArtist && !this.languageUserSelected) {
-        this.errors.push('Language: Please select a Language from the list.')
-      }
-
-      if (this.errors.length !== 0) {
-        this.isLoading = false
-        return false
-      }
-    },
-
     async submitPlacename(e) {
       let id
       let prefix = 'art'
@@ -1996,7 +1972,23 @@ export default {
         return
       }
 
-      this.handleValidateForm()
+      if (this.isArtist && !this.community) {
+        this.errors.push('Community: Please select a Community from the list.')
+        this.isLoading = false
+        return
+      }
+
+      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
+        this.errors.push('Thumbnail: Please upload an image.')
+        this.isLoading = false
+        return
+      }
+
+      if (this.isArtist && !this.languageUserSelected) {
+        this.errors.push('Language: Please select a Language from the list.')
+        this.isLoading = false
+        return
+      }
 
       let community_id = null
       if (this.community && this.community.id !== 'others') {
