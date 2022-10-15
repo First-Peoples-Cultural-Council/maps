@@ -1979,9 +1979,21 @@ export default {
         return
       }
 
-      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
+      if (this.isArtist && !this.community) {
+        this.errors.push('Community: Please select a Community from the list.')
         this.isLoading = false
+        return
+      }
+
+      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
         this.errors.push('Thumbnail: Please upload an image.')
+        this.isLoading = false
+        return
+      }
+
+      if (this.isArtist && !this.languageUserSelected) {
+        this.errors.push('Language: Please select a Language from the list.')
+        this.isLoading = false
         return
       }
 
