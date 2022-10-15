@@ -377,7 +377,7 @@ export default {
       },
       mode: 'All',
       accordionContent:
-        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below. Please note that language boundaries overlap because of interactions between speakers of neighbouring languages. Overlapping language boundaries do not necessarily reflect territory overlap. ',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
@@ -1083,7 +1083,7 @@ export default {
         .setHTML(
           `<div class="grant-popup-container">
               <div class="grant-header" style="background-color: ${color}"> </div>
-            
+
               ${grantDetails}
 
               <!-- TODO scroll indicator -->
