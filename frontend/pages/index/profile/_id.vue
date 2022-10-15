@@ -285,9 +285,6 @@ export default {
     LocationItem
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     isLangAdmin() {
       return this.$store.state.user.user.administrator_set.length > 0
     },
@@ -299,9 +296,6 @@ export default {
     },
     isStaff() {
       return (this.$store.state.user.user || {}).is_staff
-    },
-    isSuperUser() {
-      return this.$store.state.user.user.is_superuser
     },
     favourites() {
       return this.$store.state.places.favourites
@@ -332,7 +326,10 @@ export default {
         ...this.user.placename_set,
         ...this.getContributedPublicArt
       ]
-      return placenameSet.sort((a, b) => a.kind.localeCompare(b.kind))
+      return placenameSet.sort((a, b) => {
+        if (!a.kind || !b.kind) return 0
+        return a.kind.localeCompare(b.kind)
+      })
     },
     listOfLanguages() {
       const { languages, non_bc_languages } = this.user
@@ -371,7 +368,7 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, dispatch }) {
-    const user = await $axios.$get(
+    const currentUser = await $axios.$get(
       getApiUrl(`user/${params.id}/?timestamp=${new Date().getTime()}`)
     )
 
@@ -379,7 +376,7 @@ export default {
       getApiUrl(`user/auth?timestamp=${new Date().getTime()}/`)
     )
 
-    const artistProfiles = user.placename_set.filter(
+    const artistProfiles = currentUser.placename_set.filter(
       placename => placename.kind === 'artist'
     )
 
@@ -401,9 +398,9 @@ export default {
     }
 
     let artDetails = null
-    if (user.artist_profile) {
+    if (currentUser.artist_profile) {
       artDetails = await $axios.$get(
-        getApiUrl('placename/' + user.artist_profile)
+        getApiUrl('placename/' + currentUser.artist_profile)
       )
     }
 
@@ -421,7 +418,7 @@ export default {
       await store.dispatch('places/getFavourites')
     }
 
-    return { user, isOwner, allArts, artDetails }
+    return { currentUser, isOwner, allArts, artDetails }
   },
   mounted() {
     const arts = this.artDetails

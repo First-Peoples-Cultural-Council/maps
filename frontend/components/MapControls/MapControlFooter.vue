@@ -34,12 +34,6 @@ export default {
     SaveLocation,
     AddToTheMap,
     Overlap
-  },
-
-  computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    }
   }
 }
 </script>

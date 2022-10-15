@@ -39,7 +39,7 @@
           <img src="@/assets/images/arrow_up_icon.svg" />
         </div>
       </div>
-      <div class="hide-mobile " :class="{ 'content-mobile': mobileContent }">
+      <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
         <div
           class="text-center d-none mobile-close"
           :class="{ 'content-mobile': mobileContent }"
@@ -69,7 +69,7 @@
                 </li>
                 <li>
                   Please select your community or language by clicking
-                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                  <router-link :to="`/profile/edit/${user.id}`"
                     >here</router-link
                   >
                 </li>
@@ -130,7 +130,7 @@
               <b-form-file
                 ref="fileUpload"
                 v-model="fileImg"
-                class="file-upload-input mt-2 "
+                class="file-upload-input mt-2"
                 :placeholder="filePlaceholder()"
                 drop-placeholder="Drop file here..."
                 accept="image/*"
@@ -322,7 +322,14 @@
               <div>
                 <label
                   for="taxonomy-container"
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >{{ isArtist ? 'Artistic Discipline' : 'Taxonomies' }}</label
                 >
                 <ToolTip
@@ -353,7 +360,14 @@
               <div>
                 <label
                   for="contributing-artist"
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >Contributing Artist</label
                 >
                 <ToolTip
@@ -375,7 +389,14 @@
             <b-row v-if="queryType === 'Event'" class="field-row">
               <div>
                 <label
-                  class="contribute-title-one mb-1 color-gray font-weight-bold mt-4 font-09"
+                  class="
+                    contribute-title-one
+                    mb-1
+                    color-gray
+                    font-weight-bold
+                    mt-4
+                    font-09
+                  "
                   >Public Art</label
                 >
                 <ToolTip
@@ -1044,9 +1065,6 @@ export default {
           })
         : []
     },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     files() {
       return this.$store.state.contribute.files
     },
@@ -1065,18 +1083,15 @@ export default {
       }
       return this.$store.state.user.user.is_staff
     },
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isProfileComplete() {
-      return this.userDetail.is_profile_complete
+      return this.user.is_profile_complete
     },
     userGivenName() {
-      return `${this.userDetail.first_name} ${this.userDetail.last_name}`
+      return `${this.user.first_name} ${this.user.last_name}`
     },
     userNonBCLanguage() {
-      return this.userDetail.non_bc_languages
-        ? this.userDetail.non_bc_languages.map(lang => {
+      return this.user.non_bc_languages
+        ? this.user.non_bc_languages.map(lang => {
             return {
               id: lang,
               name: lang
@@ -1086,24 +1101,17 @@ export default {
     },
     isArtistProfileFound() {
       if (this.isLoggedIn) {
-        const isArtistProfileFound = this.userDetail.placename_set.find(
+        const isArtistProfileFound = this.user.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            this.userDetail.artist_profile &&
-            placename.id === this.userDetail.artist_profile
+            this.user.artist_profile &&
+            placename.id === this.user.artist_profile
         )
         return isArtistProfileFound
       } else {
         return {}
       }
     },
-    isSuperUser() {
-      if (!this.$store.state.user.user) {
-        return null
-      }
-      return this.$store.state.user.user.is_superuser
-    },
-
     drawnFeatures() {
       return this.$store.state.contribute.drawnFeatures
     },
@@ -1118,7 +1126,10 @@ export default {
             name: lang.name
           }
         })
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => {
+          if (!a.name || !b.name) return 0
+          return a.name.localeCompare(b.name)
+        })
       languageSet.unshift({
         id: 'others',
         name: 'Others (please specify...)'
@@ -1459,16 +1470,14 @@ export default {
         !this.place
       ) {
         this.languageUserSelected =
-          this.userDetail.languages.length !== 0
-            ? this.userDetail.languages[0]
-            : null
+          this.user.languages.length !== 0 ? this.user.languages[0] : null
       }
 
       if (
         this.userNonBCLanguage.length !== 0 &&
-        (this.place &&
-          this.place.non_bc_languages &&
-          this.place.non_bc_languages.length !== 0)
+        this.place &&
+        this.place.non_bc_languages &&
+        this.place.non_bc_languages.length !== 0
       ) {
         const previousLang = this.languageNonBC
         this.languageNonBC = { id: previousLang, name: previousLang }
@@ -1552,11 +1561,9 @@ export default {
     },
     isUserPlacenameOwner() {
       if (this.isLoggedIn) {
-        const isPlacenameFound = this.userDetail.placename_set.find(
-          placename => {
-            return placename.id === parseInt(this.$route.query.id)
-          }
-        )
+        const isPlacenameFound = this.user.placename_set.find(placename => {
+          return placename.id === parseInt(this.$route.query.id)
+        })
 
         return !!isPlacenameFound
       } else {
@@ -1565,7 +1572,7 @@ export default {
     },
     isUserPlacenameContributor() {
       const place = this.place
-      const user = this.userDetail
+      const user = this.user
       if (
         place &&
         place.artists &&
@@ -1646,13 +1653,13 @@ export default {
     },
     setArtistDetail() {
       if (
-        this.userDetail &&
+        this.user &&
         this.queryMode !== 'existing' &&
         !this.isArtistProfileFound &&
         this.isArtist
       ) {
         this.traditionalName = this.userGivenName
-        this.relatedData.email = this.userDetail.email
+        this.relatedData.email = this.user.email
       }
 
       if (this.isArtist && this.queryMode !== 'existing') {
@@ -1994,7 +2001,8 @@ export default {
       let non_bc_language = null
       if (
         this.languageUserSelected &&
-        (this.languageUserSelected.id === 'others' && this.languageNonBC)
+        this.languageUserSelected.id === 'others' &&
+        this.languageNonBC
       ) {
         non_bc_language =
           this.userNonBCLanguage.length !== 0
@@ -2331,7 +2339,7 @@ export default {
         artist_profile: id
       }
       const result = await this.$axios.$patch(
-        getApiUrl(`user/${this.userDetail.id}/`),
+        getApiUrl(`user/${this.user.id}/`),
         data,
         header
       )

@@ -164,7 +164,7 @@
                 </li>
                 <li>
                   Please select your community or language by clicking
-                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                  <router-link :to="`/profile/edit/${user.id}`"
                     >here</router-link
                   >
                 </li>
@@ -386,14 +386,8 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isProfileComplete() {
-      return this.userDetail.is_profile_complete
+      return this.user.is_profile_complete
     },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen
@@ -476,15 +470,15 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, hash }) {
-    const user = await $axios.$get(
+    const auth = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
-    if (user.is_authenticated) {
-      store.commit('user/setUser', user.user)
-      store.commit('user/setPicture', user.user.picture)
+    if (auth.is_authenticated) {
+      store.commit('user/setUser', auth.user)
+      store.commit('user/setPicture', auth.user.picture)
       store.commit('user/setLoggedIn', true)
     }
-    return { user }
+    return { auth }
   },
   async fetch({ $axios, store, route }) {
     if (!store.state.app.isDataLoaded) {

@@ -340,17 +340,8 @@ export default {
         this.$store.state.user.user.administrator_set.length > 0
       )
     },
-    isSuperUser() {
-      return this.user.is_superuser
-    },
-    user() {
-      return this.$store.state.user.user
-    },
     mapinstance() {
       return this.$store.state.mapinstance.mapInstance
-    },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
     },
     uid() {
       const user = this.$store.state.user.user
