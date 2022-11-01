@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="hide-mobile" :class="{ 'content-mobile': mobileContent }">
-        <Logo :logo-alt="1" class="cursor-pointer "></Logo>
+        <Logo :logo-alt="1" class="cursor-pointer"></Logo>
         <div
           class="text-center d-none mobile-close"
           :class="{ 'content-mobile': mobileContent }"
@@ -108,11 +108,11 @@
             ></b-table>
             <client-only>
               <template v-if="lnaByCommunity.length !== 0">
-                <div class="mb-3 ">
+                <div class="mb-3">
                   <b-button
                     block
                     variant="light"
-                    class="font-08 "
+                    class="font-08"
                     @click="handleRowClick"
                     >{{
                       showCollapse ? 'Hide Charts' : 'Show Charts'
@@ -414,13 +414,10 @@ export default {
     filteredPlaces() {
       const placesList = this.$store.state.places.filteredBadgePlaces
 
-      return placesList.sort((a, b) => a.kind.localeCompare(b.kind))
-    },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
-    user() {
-      return this.$store.state.user.user
+      return placesList.sort((a, b) => {
+        if (!a.kind || !b.kind) return 0
+        return a.kind.localeCompare(b.kind)
+      })
     },
     communities() {
       return this.$store.state.communities.communitySet

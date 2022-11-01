@@ -19,11 +19,6 @@ export default {
       message: ''
     }
   },
-  computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    }
-  },
   mounted() {
     this.$root.$on('toggleMessageBox', message => {
       this.toggleModal()

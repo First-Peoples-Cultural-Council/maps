@@ -86,8 +86,8 @@ export default {
     },
     finalListOfEvents() {
       return [
-        ...this.sortedEventDates(this.upcomingEventList, 'desc'),
-        ...this.sortedEventDates(this.finishedEventList, 'asc')
+        ...this.sortedEventDates(this.upcomingEventList, 'asc'),
+        ...this.sortedEventDates(this.finishedEventList, 'desc')
       ]
     }
   },
@@ -184,7 +184,7 @@ export default {
     findEventDateInRD(relatedData) {
       return relatedData.find(data => data.data_type === 'Event Date')
     },
-    sortedEventDates(eventList, mood) {
+    sortedEventDates(eventList, mode) {
       return eventList.sort((a, b) => {
         const dateA = new Date(
           this.findEventDateInRD(a.properties.related_data).value
@@ -194,9 +194,9 @@ export default {
           this.findEventDateInRD(b.properties.related_data).value
         )
 
-        if (mood === 'desc') {
+        if (mode === 'desc') {
           return dateA - dateB
-        } else if (mood === 'asc') {
+        } else if (mode === 'asc') {
           return dateB - dateA
         }
       })

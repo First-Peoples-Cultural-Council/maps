@@ -217,13 +217,13 @@ export default {
   },
   computed: {
     validatedArtist() {
-      if (this.userDetail.placename_set) {
-        const foundUserArtist = this.userDetail.placename_set.find(
+      if (this.user.placename_set) {
+        const foundUserArtist = this.user.placename_set.find(
           placename =>
             placename.kind === 'artist' &&
-            placename.id === this.userDetail.artist_profile
+            placename.id === this.user.artist_profile
         )
-        const getAllArtist = this.userDetail.placename_set.filter(
+        const getAllArtist = this.user.placename_set.filter(
           placename => placename.kind === 'artist'
         )
         return getAllArtist.length ? foundUserArtist || false : false
@@ -231,14 +231,8 @@ export default {
         return false
       }
     },
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isDrawerShown() {
       return this.$store.state.sidebar.isArtsMode
-    },
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
     }
   },
   destroyed() {
@@ -320,7 +314,7 @@ export default {
       // If has Artist profile, redirect to Profile, then add Media
       else {
         this.$router.push({
-          path: `/profile/${this.userDetail.id}`,
+          path: `/profile/${this.user.id}`,
           query: {
             upload_artwork: true
           }

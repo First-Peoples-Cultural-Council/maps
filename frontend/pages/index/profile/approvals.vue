@@ -146,9 +146,6 @@ export default {
     mediaToVerify() {
       return this.$store.state.user.mediaToVerify
     },
-    user() {
-      return this.$store.state.user.user
-    },
     nothingToVerify() {
       return (
         this.placesToVerify.length === 0 &&

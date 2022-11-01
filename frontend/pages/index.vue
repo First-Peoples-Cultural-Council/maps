@@ -164,7 +164,7 @@
                 </li>
                 <li>
                   Please select your community or language by clicking
-                  <router-link :to="`/profile/edit/${userDetail.id}`"
+                  <router-link :to="`/profile/edit/${user.id}`"
                     >here</router-link
                   >
                 </li>
@@ -377,7 +377,7 @@ export default {
       },
       mode: 'All',
       accordionContent:
-        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below.',
+        'British Columbia is home to 204 First Nations communities and an amazing diversity of Indigenous languages; approximately 50% of the First Peoples’ languages of Canada are spoken in B.C. To access information on all the First Nations languages and communities in B.C., use the search bar at the top of the page or click on any of the tabs below. Please note that language boundaries overlap because of interactions between speakers of neighbouring languages. Overlapping language boundaries do not necessarily reflect territory overlap. ',
       ie: `
         <!--[if lt IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
         <!--[if IE 7]> <div id="ie style="color: red; padding: 0.5rem 2rem;">Please upgrade your browser to IE11 or higher, Firefox or Chrome</div> <![endif]-->
@@ -386,14 +386,8 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
-    userDetail() {
-      return this.$store.state.user.user
-    },
     isProfileComplete() {
-      return this.userDetail.is_profile_complete
+      return this.user.is_profile_complete
     },
     isMobileCollapse() {
       return this.$store.state.responsive.isMobileSideBarOpen
@@ -476,15 +470,15 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, hash }) {
-    const user = await $axios.$get(
+    const auth = await $axios.$get(
       `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
     )
-    if (user.is_authenticated) {
-      store.commit('user/setUser', user.user)
-      store.commit('user/setPicture', user.user.picture)
+    if (auth.is_authenticated) {
+      store.commit('user/setUser', auth.user)
+      store.commit('user/setPicture', auth.user.picture)
       store.commit('user/setLoggedIn', true)
     }
-    return { user }
+    return { auth }
   },
   async fetch({ $axios, store, route }) {
     if (!store.state.app.isDataLoaded) {
@@ -1083,7 +1077,7 @@ export default {
         .setHTML(
           `<div class="grant-popup-container">
               <div class="grant-header" style="background-color: ${color}"> </div>
-            
+
               ${grantDetails}
 
               <!-- TODO scroll indicator -->

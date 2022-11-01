@@ -32,9 +32,7 @@
           </div>
 
           <h4 class="profile-title pt-3 pb-3 color-gray">
-            <h4 class="text-uppercase contribute-title mr-2">
-              Edit Profile
-            </h4>
+            <h4 class="text-uppercase contribute-title mr-2">Edit Profile</h4>
           </h4>
 
           <section class="pl-3 pr-3">
@@ -66,31 +64,50 @@
 
             <label
               for="firstname"
-              class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
+              class="
+                contribute-title-one
+                mt-3
+                mb-1
+                color-gray
+                font-weight-bold font-09
+              "
               >First Name</label
             >
             <b-form-input
               id="firstname"
-              v-model="user.first_name"
+              v-model="currentUser.first_name"
               type="text"
               class="font-08"
             ></b-form-input>
 
             <label
               for="lastname"
-              class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
+              class="
+                contribute-title-one
+                mt-3
+                mb-1
+                color-gray
+                font-weight-bold font-09
+              "
               >Last Name</label
             >
             <b-form-input
               id="lastname"
-              v-model="user.last_name"
+              v-model="currentUser.last_name"
               type="text"
               class="font-08"
             ></b-form-input>
 
             <template v-if="isArtistProfileExist">
               <label
-                class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+                class="
+                  color-gray
+                  font-weight-bold
+                  contribute-title-one
+                  mb-1
+                  mt-4
+                  font-09
+                "
                 >Artist Profile</label
               >
               <multiselect
@@ -103,7 +120,13 @@
             </template>
 
             <label
-              class="contribute-title-one mt-3 mb-1 color-gray font-weight-bold font-09"
+              class="
+                contribute-title-one
+                mt-3
+                mb-1
+                color-gray
+                font-weight-bold font-09
+              "
               >Languages</label
             >
             <multiselect
@@ -150,7 +173,14 @@
             </div>
 
             <label
-              class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+              class="
+                color-gray
+                font-weight-bold
+                contribute-title-one
+                mb-1
+                mt-4
+                font-09
+              "
               >Community</label
             >
             <multiselect
@@ -175,7 +205,13 @@
             </div>
 
             <label
-              class="contribute-title-one mt-3 color-gray font-weight-bold font-09 mb-2"
+              class="
+                contribute-title-one
+                mt-3
+                color-gray
+                font-weight-bold font-09
+                mb-2
+              "
               >User Description</label
             >
 
@@ -183,11 +219,18 @@
               <div id="quill" ref="quill"></div>
 
               <label
-                class="color-gray font-weight-bold contribute-title-one mb-1 mt-4 font-09"
+                class="
+                  color-gray
+                  font-weight-bold
+                  contribute-title-one
+                  mb-1
+                  mt-4
+                  font-09
+                "
                 >Notifications</label
               >
               <b-form-select
-                v-model="user.notification_frequency"
+                v-model="currentUser.notification_frequency"
                 :options="notification_options"
               ></b-form-select>
 
@@ -244,7 +287,7 @@ export default {
       oldUser: {},
       quillEditor: null,
       errors: [],
-      user: {},
+      currentUser: {},
       language: null,
       languageNonBC: [],
       value: [],
@@ -275,13 +318,13 @@ export default {
       return communitySet
     },
     isArtistPlacenameExist() {
-      const isPlacenameFound = this.user.placename_set.filter(
+      const isPlacenameFound = this.currentUser.placename_set.filter(
         placename => placename.kind === 'artist'
       )
       return isPlacenameFound.length !== 0
     },
     artistPlacenames() {
-      return this.user.placename_set
+      return this.currentUser.placename_set
         .filter(placename => placename.kind === 'artist')
         .map(place => {
           return {
@@ -308,7 +351,7 @@ export default {
       return this.community && this.community.id === 'nonBC'
     },
     isCurrentUser() {
-      return this.user.id === this.$store.state.user.user.id
+      return this.currentUser.id === this.$store.state.user.user.id
     }
   },
   watch: {
@@ -340,7 +383,7 @@ export default {
   async asyncData({ params, $axios, store }) {
     const now = new Date()
     const data = {}
-    const user = await $axios.$get(
+    const currentUser = await $axios.$get(
       getApiUrl(`user/${params.id}/?${now.getTime()}`)
     )
 
@@ -360,21 +403,24 @@ export default {
     let languageNonBC = []
     let artist_profile = {}
 
-    if (user.languages && user.languages.length !== 0) {
-      languageValue = user.languages
+    if (currentUser.languages && currentUser.languages.length !== 0) {
+      languageValue = currentUser.languages
     }
-    if (user.non_bc_languages && user.non_bc_languages.length !== 0) {
+    if (
+      currentUser.non_bc_languages &&
+      currentUser.non_bc_languages.length !== 0
+    ) {
       languageValue.push(otherLanguage)
-      languageNonBC = user.non_bc_languages.map(lang => {
+      languageNonBC = currentUser.non_bc_languages.map(lang => {
         return {
           value: lang
         }
       })
     }
 
-    if (user.artist_profile) {
-      const findProfile = user.placename_set.find(
-        placename => placename.id === user.artist_profile
+    if (currentUser.artist_profile) {
+      const findProfile = currentUser.placename_set.find(
+        placename => placename.id === currentUser.artist_profile
       )
       if (findProfile) {
         artist_profile = {
@@ -385,22 +431,24 @@ export default {
     }
 
     return {
-      user,
+      currentUser,
       data,
       options,
       artist_profile,
       value: languageValue,
       languageNonBC,
-      community: user.other_community
+      community: currentUser.other_community
         ? { id: 'nonBC', name: 'Non-BC Community (please specify)' }
-        : user.communities[0],
-      communityNonBC: user.other_community ? user.other_community : '',
+        : currentUser.communities[0],
+      communityNonBC: currentUser.other_community
+        ? currentUser.other_community
+        : '',
       isServer: !!process.server
     }
   },
 
   mounted() {
-    this.fileSrc = this.getMediaUrl(this.user.image)
+    this.fileSrc = this.getMediaUrl(this.currentUser.image)
     this.addLanguage()
     this.initQuill()
   },
@@ -416,7 +464,7 @@ export default {
       this.languageNonBC.splice(index, 1)
     },
     filePlaceholder() {
-      return this.fileSrc && this.user.image
+      return this.fileSrc && this.currentUser.image
         ? getMediaUrl(this.fileSrc)
         : 'choose your display image'
     },
@@ -427,13 +475,13 @@ export default {
       const editor = new Quill(container, {
         theme: 'snow'
       })
-      editor.setText(`${this.user.bio}\n`)
+      editor.setText(`${this.currentUser.bio}\n`)
       this.quillEditor = editor
     },
     handleCancel() {
       if (this.isServer) {
         this.$router.push({
-          path: `/profile/${this.user.id}`
+          path: `/profile/${this.currentUser.id}`
         })
       } else {
         this.$router.go(-1)
@@ -441,9 +489,9 @@ export default {
     },
     getUserName() {
       return (
-        this.user &&
-        (`${this.user.first_name} ${this.user.last_name}` ||
-          this.user.username.split('__')[0])
+        this.currentUser &&
+        (`${this.currentUser.first_name} ${this.currentUser.last_name}` ||
+          this.currentUser.username.split('__')[0])
       )
     },
     removeImg() {
@@ -454,7 +502,7 @@ export default {
       return require(`@/assets/images/artist_icon.svg`)
     },
     async save() {
-      this.oldUser = this.user
+      this.oldUser = this.currentUser
       const headers = {
         headers: {
           'X-CSRFToken': getCookie('csrftoken')
@@ -463,22 +511,22 @@ export default {
       const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
-        this.user.bio = this.quillEditor.getText()
+        this.currentUser.bio = this.quillEditor.getText()
       } else {
         return
       }
 
       const data = {
-        first_name: this.user.first_name,
-        last_name: this.user.last_name,
-        bio: this.user.bio,
+        first_name: this.currentUser.first_name,
+        last_name: this.currentUser.last_name,
+        bio: this.currentUser.bio,
         language_ids: this.value
           .filter(lang => lang.id !== 'others')
           .map(lang => lang.id),
         community_ids: this.isNonBCCommunity ? [] : communityId,
         other_community: this.isNonBCCommunity ? this.communityNonBC : null,
         artist_profile: this.artist_profile ? this.artist_profile.id : '',
-        notification_frequency: this.user.notification_frequency,
+        notification_frequency: this.currentUser.notification_frequency,
         non_bc_languages: this.value.find(lang => lang.id === 'others')
           ? this.languageNonBC
               .filter(lang => lang.value !== null)
@@ -487,12 +535,12 @@ export default {
       }
       try {
         const result = await this.$axios.$patch(
-          getApiUrl(`user/${this.user.id}/`),
+          getApiUrl(`user/${this.currentUser.id}/`),
           data,
           headers
         )
 
-        const imgResult = this.uploadUserDP(this.user.id, headers)
+        const imgResult = this.uploadUserDP(this.currentUser.id, headers)
 
         if (result && imgResult) {
           await this.$store.dispatch('user/setLoggedInUser')
@@ -507,11 +555,11 @@ export default {
         return
       }
       this.$router.push({
-        path: '/profile/' + this.user.id
+        path: '/profile/' + this.currentUser.id
       })
     },
     async uploadUserDP(id, headers) {
-      if (this.fileSrc !== this.getMediaUrl(this.user.image)) {
+      if (this.fileSrc !== this.getMediaUrl(this.currentUser.image)) {
         const formDatas = new FormData()
         formDatas.append('image', this.fileImg === null ? '' : this.fileImg)
 

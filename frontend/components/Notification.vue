@@ -70,11 +70,6 @@ export default {
       notifyState: null
     }
   },
-  computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    }
-  },
   methods: {
     toggleNotificationModal() {
       if (this.isLoggedIn) {
