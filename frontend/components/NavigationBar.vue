@@ -250,9 +250,6 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     userid() {
       return this.$store.state.user.user.id
     },
@@ -266,9 +263,6 @@ export default {
       picture: state =>
         state.user.user.image ? state.user.user.image : state.user.picture
     }),
-    user() {
-      return this.$store.state.user.user
-    },
     isUserAdmin() {
       return (
         this.isLoggedIn &&

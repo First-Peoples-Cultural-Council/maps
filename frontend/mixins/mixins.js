@@ -2,6 +2,18 @@ import Vue from 'vue'
 
 Vue.mixin({
   computed: {
+    user() {
+      return this.$store.state.user.user
+    },
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
+    isSuperUser() {
+      if (!this.$store.state.user.user) {
+        return null
+      }
+      return this.$store.state.user.user.is_superuser
+    },
     routeName() {
       return this.$route.name
     },

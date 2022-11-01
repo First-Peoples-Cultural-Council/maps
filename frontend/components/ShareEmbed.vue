@@ -65,9 +65,6 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     lat() {
       return this.$store.state.mapinstance.lat
     },

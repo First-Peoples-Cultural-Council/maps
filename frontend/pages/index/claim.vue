@@ -39,17 +39,11 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.user.isLoggedIn
-    },
     userid() {
       return this.$store.state.user.user.id
     },
     email() {
       return this.$store.state.user.user && this.$store.state.user.user.email
-    },
-    user() {
-      return this.$store.state.user.user
     }
   },
   mounted() {

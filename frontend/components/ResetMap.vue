@@ -1,5 +1,5 @@
 <template>
-  <div class="reset-map-container " @click="resetMap">
+  <div class="reset-map-container" @click="resetMap">
     <h5>Reset Map</h5>
   </div>
 </template>
