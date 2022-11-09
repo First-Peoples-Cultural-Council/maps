@@ -48,7 +48,7 @@ class EmailTests(TestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular_user@countable.ca",
+            email="regular@countable.ca",
         )
 
         self.placename = PlaceName.objects.create(
