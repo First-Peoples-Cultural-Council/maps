@@ -19,44 +19,49 @@ from web.constants import *
 
 class BaseTestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create(
-            username="testuser001",
-            first_name="Test",
-            last_name="user 001",
-            email="test@countable.ca",
+        # Create an Admin Type User
+        self.admin_user = User.objects.create(
+            username="admin_user",
+            first_name="Admin",
+            last_name="User",
+            email="admin@countable.ca",
             is_staff=True,
             is_superuser=True,
         )
-        self.user.set_password("password")
-        self.user.save()
+        self.admin_user.set_password("password")
+        self.admin_user.save()
 
-        self.user2 = User.objects.create(
-            username="testuser002",
-            first_name="Test",
-            last_name="user 002",
-            email="test2@countable.ca"
+        # Create a Regular User with no Privileges
+        self.regular_user = User.objects.create(
+            username="regular_user",
+            first_name="Regular",
+            last_name="User",
+            email="regular@countable.ca"
         )
-        self.user2.set_password("password")
-        self.user2.save()
+        self.regular_user.set_password("password")
+        self.regular_user.save()
 
-        self.user3 = User.objects.create(
-            username="testuser003",
-            first_name="Test",
-            last_name="user 003",
-            email="test2@countable.ca",
-        )
-        self.user3.set_password("password")
-        self.user3.save()
-
+        # Initial Values for Language and Community
         self.test_language = Language.objects.create(
             name="Global Test Language")
         self.test_community = Community.objects.create(
             name="Global Test Community")
-        community_admin = Administrator.objects.create(
-            user=self.user3,
+
+        # Create a Community Admin for Testing Permissions
+        self.community_admin = User.objects.create(
+            username="community_admin_user",
+            first_name="Community Admin",
+            last_name="User",
+            email="community_admin@countable.ca",
+        )
+        self.community_admin.set_password("password")
+        self.community_admin.save()
+        Administrator.objects.create(
+            user=self.community_admin,
             language=self.test_language,
             community=self.test_community
         )
+
         self.FAKE_GEOM = """
             {
                 "type": "Point",
@@ -163,7 +168,7 @@ class CommunityAPITests(BaseTestCase):
         """
         # Must be logged in
         self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -200,7 +205,7 @@ class CommunityAPITests(BaseTestCase):
         """
         # Must be logged in
         self.assertTrue(self.client.login(
-            username="testuser002", password="password"))
+            username="regular_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -226,7 +231,7 @@ class CommunityAPITests(BaseTestCase):
         """
         # Must be logged in
         self.assertTrue(self.client.login(
-            username="testuser003", password="password"))
+            username="community_admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -265,11 +270,11 @@ class CommunityAPITests(BaseTestCase):
         test_community.point = self.point
         test_community.save()
 
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
         response = self.client.post(
             "/api/community/{}/create_membership/".format(test_community.id),
             {
-                "user_id": self.user.id,
+                "user_id": self.admin_user.id,
             },
             format="json",
             follow=True
@@ -281,7 +286,7 @@ class CommunityAPITests(BaseTestCase):
         Ensure CommunityMember list API brings newly created data which needs to be verified
         """
         admin = Administrator.objects.create(
-            user=self.user,
+            user=self.admin_user,
             language=self.language,
             community=self.community3
         )
@@ -309,7 +314,7 @@ class CommunityAPITests(BaseTestCase):
 
         # Must be logged in to verify a CommunityMember.
         self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -367,7 +372,7 @@ class CommunityAPITests(BaseTestCase):
         # ADDING ANOTHER ADMIN, previously UNVERIFIED CommunityMember now MATCHES admin's community.
         # It MUST be returned by the route
         admin = Administrator.objects.create(
-            user=self.user,
+            user=self.admin_user,
             language=self.language,
             community=self.community4
         )
@@ -381,7 +386,7 @@ class CommunityAPITests(BaseTestCase):
                 Ensure that CommunityMember can be VERIFIED
                 """
         admin = Administrator.objects.create(
-            user=self.user,
+            user=self.admin_user,
             language=self.language,
             community=self.community3
         )
@@ -395,7 +400,7 @@ class CommunityAPITests(BaseTestCase):
 
         # Must be logged in to verify a CommunityMember.
         self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -434,7 +439,7 @@ class CommunityAPITests(BaseTestCase):
         Ensure that CommunityMember can be REJECTED
         """
         admin = Administrator.objects.create(
-            user=self.user,
+            user=self.admin_user,
             language=self.language,
             community=self.community3
         )
@@ -448,7 +453,7 @@ class CommunityAPITests(BaseTestCase):
 
         # Must be logged in to verify a CommunityMember.
         self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
