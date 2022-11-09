@@ -100,7 +100,6 @@ class CommunityGeoAPITests(BaseTestCase):
         response = self.client.get("/api/community-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
     def test_community_geo(self):
         """
         Ensure Community Geo API works
@@ -283,7 +282,8 @@ class CommunityAPITests(BaseTestCase):
         test_community.point = self.point
         test_community.save()
 
-        self.assertTrue(self.client.login(username="admin_user", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
         response = self.client.post(
             "/api/community/{}/create_membership/".format(test_community.id),
             {
