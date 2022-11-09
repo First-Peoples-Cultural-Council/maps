@@ -1,21 +1,14 @@
-from django.test import TestCase
-
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from users.models import User, Administrator
+from users.models import User
 
 from language.models import (
-    Language,
     PlaceName,
-    Community,
-    CommunityMember,
-    Champion,
     Media,
-    Favourite,
-    Notification,
+    Favourite
 )
 
 
