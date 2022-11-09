@@ -139,12 +139,6 @@ class CommunityAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.now = timezone.now()
-
-        self.community3 = Community.objects.create(name="Test Community 03")
-        self.community4 = Community.objects.create(name="Test Community 04")
-        self.language = Language.objects.create(name="Test Language")
-        self.point = GEOSGeometry(self.point)
-
         self.recording = Recording.objects.create(
             speaker="Test recording",
             recorder="Test recording",
@@ -360,17 +354,22 @@ class CommunityAPITests(BaseTestCase):
         """
         Ensure that CommunityMember can be REJECTED
         """
-        admin = Administrator.objects.create(
+        Administrator.objects.create(
             user=self.admin_user,
-            language=self.language,
-            community=self.community3
+            language=self.test_language,
+            community=self.test_community
         )
 
-        user_member01 = User.objects.create(
-            username="testmember001",
+        user = User.objects.create(
+            username="test_user",
             first_name="Test",
-            last_name="member 001",
-            email="testmember001@countable.ca",
+            last_name="User",
+            email="test_user@countable.ca",
+        )
+
+        member_to_reject = CommunityMember.create_member(
+            user.id,
+            self.test_community.id
         )
 
         # Must be logged in to verify a CommunityMember.
@@ -381,55 +380,28 @@ class CommunityAPITests(BaseTestCase):
         response = self.client.get("/api/user/auth/")
         self.assertEqual(response.json()["is_authenticated"], True)
 
-        # UNVERIFIED CommunityMember MATCHING admin's community. It MUST be returned by the route
-        member_same01 = CommunityMember.create_member(
-            user_member01.id, self.community3.id)
+        # member_to_reject is not yet rejected so return 1 result
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-        # VERIFYING CommunityMember
+        # Reject member_to_reject
         response = self.client.post(
             "/api/community/reject_member/",
             {
-                "user_id": user_member01.id,
-                "community_id": self.community3.id,
+                "user_id": user.id,
+                "community_id": self.test_community.id,
             },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        member = CommunityMember.objects.get(pk=member_same01.id)
+        member = CommunityMember.objects.get(pk=member_to_reject.id)
         self.assertEqual(member.status, REJECTED)
 
-        # AFTER VERIFYING CommunityMember MATCHING admin's community. It MUST NOT be returned by the route
+        # member_to_reject is now rejected so return 0 results
         response = self.client.get(
             "/api/community/list_member_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
-
-    # def test_create_self_member(self):
-    #     response = self.client.get("/api/community/create_self_membership")
-
-
-class ChampionAPITests(APITestCase):
-
-    # ONE TEST TESTS ONLY ONE SCENARIO
-
-    def test_champion_detail(self):
-        """
-        Ensure we can retrieve a newly created champion object.
-        """
-        test_champion = Champion.objects.create(name="Test champion 001")
-        response = self.client.get(
-            "/api/champion/{}/".format(test_champion.id), format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_champion_list_route_exists(self):
-        """
-        Ensure champion list API route exists
-        """
-        response = self.client.get("/api/champion/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
