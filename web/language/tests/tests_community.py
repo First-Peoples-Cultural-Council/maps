@@ -62,7 +62,7 @@ class BaseTestCase(APITestCase):
             community=self.test_community
         )
 
-        self.FAKE_GEOM = """
+        FAKE_GEOM = """
             {
                 "type": "Point",
                 "coordinates": [
@@ -71,6 +71,7 @@ class BaseTestCase(APITestCase):
                 ]
             }
         """
+        self.point = GEOSGeometry(FAKE_GEOM)
 
 
 class CommunityGeoAPITests(BaseTestCase):
@@ -79,7 +80,7 @@ class CommunityGeoAPITests(BaseTestCase):
 
         self.valid_community = Community.objects.create(
             name="Valid Community",
-            point=GEOSGeometry(self.FAKE_GEOM)
+            point=self.point
         )
         self.invalid_community = Community.objects.create(
             name="Invalid Community"
@@ -143,7 +144,7 @@ class CommunityAPITests(BaseTestCase):
         self.community4 = Community.objects.create(name="Test Community 04")
         self.community5 = Community.objects.create(name="Test Community 05")
         self.language = Language.objects.create(name="Test Language")
-        self.point = GEOSGeometry(self.FAKE_GEOM)
+        self.point = GEOSGeometry(self.point)
 
         self.recording = Recording.objects.create(
             speaker="Test recording",
