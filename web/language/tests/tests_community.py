@@ -1,18 +1,15 @@
-from django import test
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
 
 from users.models import User, Administrator
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import GEOSGeometry
 
 from language.models import (
     Language,
     Community,
     CommunityMember,
-    Champion,
-    Recording,
+    Recording
 )
 from web.constants import *
 
