@@ -77,11 +77,13 @@ class CommunityGeoAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
 
-        self.community1 = Community.objects.create(
-            name="Test Community 01", point=GEOSGeometry(self.FAKE_GEOM))
-        self.community2 = Community.objects.create(name="Test Community 02")
-
-    # ONE TEST TESTS ONLY ONE SCENARIO ######
+        self.valid_community = Community.objects.create(
+            name="Valid Community",
+            point=GEOSGeometry(self.FAKE_GEOM)
+        )
+        self.invalid_community = Community.objects.create(
+            name="Invalid Community"
+        )
 
     def test_community_geo_route_exists(self):
         """
@@ -110,6 +112,8 @@ class CommunityGeoAPITests(BaseTestCase):
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Only count 1 because the 2nd community in setUp() is invalid
         self.assertEqual(len(data), 1)
 
 
