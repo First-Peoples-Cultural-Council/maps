@@ -107,14 +107,31 @@ class CommunityGeoAPITests(BaseTestCase):
         response = self.client.get(
             "/api/community-geo/", format="json"
         )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         # Only count 1 because the 2nd community in setUp() is invalid
         self.assertEqual(len(data), 1)
+
+    def test_community_search(self):
+        """
+        Ensure Community Search API works
+        """
+        response = self.client.get(
+            "/api/community-search/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.json()
+
+        # By fetching the first record, we're committing
+        # that the valid_community was added to the search list
+        valid_community = data[0]
+        self.assertEqual(valid_community.get('name'), "Valid Community")
 
 
 class CommunityAPITests(BaseTestCase):
@@ -134,8 +151,6 @@ class CommunityAPITests(BaseTestCase):
             created=self.now,
             date_recorded=self.now,
         )
-
-    # ONE TEST TESTS ONLY ONE SCENARIO
 
     def test_community_detail(self):
         """
