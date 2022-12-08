@@ -1,16 +1,14 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from language.models import PlaceName
 
-import csv
-import re
 
 class Command(BaseCommand):
-    help = 'Loads categories from the csv in '
+    help = 'Loads placenames from the csv in '
 
     def handle(self, *args, **options):
         get_placenames()
 
-# Fetch all placenames and print as CSV
+
 def get_placenames():
     placenames = PlaceName.objects.all()
 
@@ -21,6 +19,4 @@ def get_placenames():
         else:
             placename.kind = placename.kind.replace('_', ' ').title()
 
-
         print("\"{}\",\"{}\"".format(placename.name, placename.kind))
-
