@@ -31,10 +31,10 @@ class BaseTestCase(APITestCase):
             username="testuser002",
             first_name="Test2",
             last_name="user 002",
-            email="test2@countable.ca",
-            is_staff=True,
-            is_superuser=True,
+            email="test2@countable.ca"
         )
+        self.user2.set_password("password")
+        self.user2.save()
 
 
 class MediaAPITests(BaseTestCase):
@@ -439,7 +439,7 @@ class MediaAPITests(BaseTestCase):
         Ensure media API POST method API works
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser002", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -472,7 +472,7 @@ class MediaAPITests(BaseTestCase):
         Ensure media API POST method API works
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser002", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
