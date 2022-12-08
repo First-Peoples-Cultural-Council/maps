@@ -14,7 +14,6 @@ from users.models import Administrator
 from language.models import (
     Language,
     PlaceName,
-    CommunityMember,
     Media,
     PublicArtArtist
 )
@@ -126,8 +125,11 @@ class PlaceNameViewSet(BaseModelViewSet):
         admin_languages = list(Administrator.objects.filter(
             user__id=int(self.request.user.id)).values_list('language', flat=True))
 
-        if (obj.community and obj.community.id in admin_communities) or \
-                (obj.language and obj.language.id in admin_languages):
+        if (
+            (obj.community and obj.community.id in admin_communities) or
+            (obj.language and obj.language.id in admin_languages) or
+            (self.request.user.is_staff or self.request.user.is_superuser)
+        ):
             obj.status = 'VE'
             obj.save()
 

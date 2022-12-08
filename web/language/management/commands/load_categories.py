@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
+import csv
+
+from django.core.management.base import BaseCommand
 from language.models import Taxonomy
 
-import csv
-import re
 
 class Command(BaseCommand):
     help = 'Loads categories from the csv in '
@@ -11,14 +11,15 @@ class Command(BaseCommand):
         try:
             # Fetch parent POI taxonomy which we will use
             # as a parent to the newly added taxonomies
-            parent_poi_taxonomy = Taxonomy.objects.get(name='Point of Interest')
+            parent_poi_taxonomy = Taxonomy.objects.get(
+                name='Point of Interest')
         except Taxonomy.DoesNotExist:
             # Create parent taxonomy if it doesn't exist yet
             parent_poi_taxonomy = Taxonomy.objects.create(
                 name='Point of Interest',
                 description='Point of Interest'
             )
-        
+
         # Open the csv and copy it into the database row by row
         with open('./fixtures/categories.csv', 'r') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
@@ -26,7 +27,7 @@ class Command(BaseCommand):
             for row in csv_reader:
                 try:
                     taxonomy = Taxonomy.objects.get(name__iexact=row[0])
-                    
+
                     print('Updating {}'.format(row[0]))
                     # If child taxonomy already exists, just update the details
                     taxonomy.description = row[1]
@@ -45,4 +46,3 @@ class Command(BaseCommand):
                 line_count += 1
 
         print('Successfully added categories.')
-

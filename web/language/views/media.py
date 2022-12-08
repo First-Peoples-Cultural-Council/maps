@@ -49,7 +49,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         admin_communities = list(Administrator.objects.filter(
             user__id=int(self.request.user.id)).values_list('community', flat=True))
 
-        if (obj.community and obj.community.id in admin_communities):
+        if (
+            obj.community and obj.community.id in admin_communities or
+            self.request.user.is_staff or
+            self.request.user.is_superuser
+        ):
             obj.status = 'VE'
             obj.save()
 
