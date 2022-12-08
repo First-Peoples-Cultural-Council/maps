@@ -1,10 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
-from language.models import PlaceName
-from django.contrib.gis.geos import Point
-
-import os
-import sys
 import json
+
+from django.core.management.base import BaseCommand
+from django.contrib.gis.geos import Point
+from language.models import PlaceName
 
 
 class Command(BaseCommand):
@@ -13,8 +11,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for rec in json.loads(open('./fixtures/pois.json').read())['markers']['marker']:
-            n=PlaceName(
-                point=Point(float(rec['_loc_x']),float(rec['_loc_y'])),
+            n = PlaceName(
+                point=Point(float(rec['_loc_x']), float(rec['_loc_y'])),
                 name=rec['_name'],
                 kind='poi'
             )

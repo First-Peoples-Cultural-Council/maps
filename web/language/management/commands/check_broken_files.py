@@ -1,9 +1,7 @@
-import requests
 import os
 import re
 
-from django.db.models import Q
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from language.models import PlaceName, Community, Media
