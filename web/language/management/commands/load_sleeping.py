@@ -1,11 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
+import json
+
+from django.core.management.base import BaseCommand
 from django.db import transaction
 from language.models import Language
-from django.contrib.gis.geos import MultiPolygon, Polygon, fromstr, GEOSGeometry
-
-import os
-import sys
-import json
+from django.contrib.gis.geos import Polygon, fromstr, GEOSGeometry
 
 
 class Command(BaseCommand):

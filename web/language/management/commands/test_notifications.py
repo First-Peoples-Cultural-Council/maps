@@ -1,12 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
+from datetime import timedelta
+
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 from language.notifications import notify
 from users.models import User
 
-import os
-from datetime import timedelta
-import sys
-import json
 
 
 class Command(BaseCommand):

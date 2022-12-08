@@ -1,5 +1,6 @@
-import pymysql
-from django.core.management.base import BaseCommand, CommandError
+import os
+
+from django.core.management.base import BaseCommand
 from language.models import (
     Language,
     LanguageFamily,
@@ -13,9 +14,6 @@ from language.models import (
     LNAData,
 )
 
-import os
-import sys
-import json
 from django.core.files import File
 from web import dedruplify
 
@@ -42,7 +40,8 @@ class Client(dedruplify.DeDruplifierClient):
             for i, v in enumerate(rec.get("field_tm_lr_link_title", [])):
                 title = rec["field_tm_lr_link_title"][i]
                 url = rec["field_tm_lr_link_url"][i]
-                LanguageLink.objects.get_or_create(language=obj, title=title, url=url)
+                LanguageLink.objects.get_or_create(
+                    language=obj, title=title, url=url)
 
                 if "field_tm_region_tid" in rec:
                     # regions are saved in Drupal's taxonomy terms, dig them out.
@@ -61,7 +60,8 @@ class Client(dedruplify.DeDruplifierClient):
         self.load_champs()
 
         self.map_drupal_items(
-            "tm_language_dialect", Dialect, {"field_language_target_id": "language"}
+            "tm_language_dialect", Dialect, {
+                "field_language_target_id": "language"}
         )
 
         self.map_drupal_items(
@@ -123,7 +123,8 @@ class Client(dedruplify.DeDruplifierClient):
             obj.nest_hours = rec.get("field_tm_lna2_lnest_hours_value", [0])[0]
             obj.oece_hours = rec.get("field_tm_lna2_oece_hours_value", [0])[0]
             obj.info = rec.get("field_tm_lna2_pop_add_info_value", [0])[0]
-            obj.school_hours = rec.get("field_tm_lna2_school_hrs_value", [0])[0]
+            obj.school_hours = rec.get(
+                "field_tm_lna2_school_hrs_value", [0])[0]
             obj.save()
 
     def load_communities(self):
@@ -160,7 +161,8 @@ class Client(dedruplify.DeDruplifierClient):
                 print("***", rec["field_tm_fn_grp_links_title"][i])
                 title = rec["field_tm_fn_grp_links_title"][i]
                 url = rec["field_tm_fn_grp_links_url"][i]
-                CommunityLink.objects.get_or_create(community=obj, title=title, url=url)
+                CommunityLink.objects.get_or_create(
+                    community=obj, title=title, url=url)
 
             # regions are saved in Drupal's taxonomy terms, dig them out.
             regions = []
@@ -198,7 +200,8 @@ class Client(dedruplify.DeDruplifierClient):
                 )
                 print("saving from source ", src)
                 f = open(src, "rb")
-                obj.audio_file.save(rec["field_tm_pn_audio_fid_filename"][0], File(f))
+                obj.audio_file.save(
+                    rec["field_tm_pn_audio_fid_filename"][0], File(f))
                 obj.save()
 
     def load_lnadata(self):
@@ -238,7 +241,7 @@ class Command(BaseCommand):
             os.environ["FPLM_USER"],
             os.environ["FPLM_PW"],
             os.environ["FPLM_DB"],
-            #"https://maps.fpcc.ca/sites/default/files/",
+            # "https://maps.fpcc.ca/sites/default/files/",
         )
         c.update()
         c.load_communities()
@@ -248,9 +251,12 @@ class Command(BaseCommand):
 
 # TODO: move to db query.
 TAX_TERMS = (
-    (1, 1, "South Coast", "", "full_html", 0, "1490fc86-f82b-4083-a927-deb7a110a3ea"),
-    (2, 1, "Central Coast", "", "full_html", 0, "0c55c6f0-984d-4e39-8cc0-96988f603449"),
-    (3, 1, "North Coast", "", "full_html", 0, "3a00835b-5f66-41d3-8c27-cec2d28fe49b"),
+    (1, 1, "South Coast", "", "full_html", 0,
+     "1490fc86-f82b-4083-a927-deb7a110a3ea"),
+    (2, 1, "Central Coast", "", "full_html", 0,
+     "0c55c6f0-984d-4e39-8cc0-96988f603449"),
+    (3, 1, "North Coast", "", "full_html", 0,
+     "3a00835b-5f66-41d3-8c27-cec2d28fe49b"),
     (
         4,
         1,
@@ -269,7 +275,8 @@ TAX_TERMS = (
         0,
         "3ab09683-1d0e-4949-8644-7efc74ee157f",
     ),
-    (6, 1, "Fraser Valley", "", "full_html", 0, "a931767a-2092-4205-a941-c7735e6dc557"),
+    (6, 1, "Fraser Valley", "", "full_html", 0,
+     "a931767a-2092-4205-a941-c7735e6dc557"),
     (7, 1, "Interior", "", "full_html", 0, "d434ce1d-e531-4ff6-9a4e-c1b4949a1bde"),
     (
         8,

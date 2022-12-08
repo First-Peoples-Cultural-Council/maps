@@ -1,17 +1,16 @@
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.db import transaction
-from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy, RelatedData
-from django.contrib.gis.geos import Point
-
 import os
-import sys
 import json
-
 import pymysql
 import requests
 import glob
 import shutil
+
+from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.db import transaction
+from django.contrib.gis.geos import Point
+from language.models import PlaceName, Media, PublicArtArtist, Taxonomy, PlaceNameTaxonomy, RelatedData
+
 from web import dedruplify
 
 

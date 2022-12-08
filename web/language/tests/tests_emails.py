@@ -27,93 +27,97 @@ class EmailTests(TestCase):
         self.from_email = 'maps@fpcc.ca'
         self.to = 'justin@countable.ca'
 
-        self.user = User.objects.create(
-            username="testuser001",
-            first_name="Test",
-            last_name="user 001",
+        self.test_language = Language.objects.create(
+            name="Global Test Language")
+        self.test_community = Community.objects.create(
+            name="Global Test Community")
+
+        self.admin_user = User.objects.create(
+            username="admin_user",
+            first_name="Admin",
+            last_name="User",
             email=self.to,
             is_staff=True,
             is_superuser=True,
         )
-        self.user.set_password("password")
-        self.user.save()
+        self.admin_user.set_password("password")
+        self.admin_user.languages.add(self.test_language)
+        self.admin_user.save()
 
-        self.user2 = User.objects.create(
-            username="testuser002",
-            first_name="Test2",
-            last_name="user 002",
-            email="test@countable.ca",
+        self.regular_user = User.objects.create(
+            username="regular_user",
+            first_name="Regular",
+            last_name="User",
+            email="regular@countable.ca",
         )
 
-        self.language1 = Language.objects.create(name="Test language 001")
-        self.user.languages.add(self.language1)
-        self.user.save()
-
-        self.community1 = Community.objects.create(name="Test community 001")
-        self.community2 = Community.objects.create(name="Test community 002")
-
-        self.placename1 = PlaceName.objects.create(
-            name="test place01",
-            community=self.community1,
-            language=self.language1,
-            creator=self.user,
+        self.placename = PlaceName.objects.create(
+            name="Test Placename",
+            community=self.test_community,
+            language=self.test_language,
+            creator=self.admin_user,
             status=VERIFIED,
         )
 
-        self.placename2 = PlaceName.objects.create(
-            name="test place02",
-            community=self.community1,
-            language=self.language1,
-            status=VERIFIED,
-        )
-
-        self.media1 = Media.objects.create(
-            name="test media01",
+        self.media = Media.objects.create(
+            name="Test Media",
             file_type="string",
-            placename=self.placename1,
-            creator=self.user,
+            placename=self.placename,
+            creator=self.admin_user,
             status=VERIFIED,
         )
 
     def test_notify(self):
-        communitymember1 = CommunityMember.objects.create(
-            user=self.user,
-            community=self.community1,
+        # Make Admin User a member of the test community
+        CommunityMember.objects.create(
+            user=self.admin_user,
+            community=self.test_community,
             status=VERIFIED
         )
 
-        communitymember2 = CommunityMember.objects.create(
-            user=self.user,
-            community=self.community2,
+        # Make Admin User a member of the new community
+        new_community = Community.objects.create(
+            name="New Community")
+        CommunityMember.objects.create(
+            user=self.admin_user,
+            community=new_community,
             status=UNVERIFIED
         )
 
-        # Another user made a Favourite out of the created placename
-        test_favourite_place = Favourite.objects.create(
-            name="test favourite",
-            user=self.user2,
-            place=self.placename1,
+        # Favourite Placename created by Admin User to notify him
+        Favourite.objects.create(
+            name="Favorite Placename",
+            user=self.regular_user,
+            place=self.placename,
             favourite_type="favourite",
-            description="description",
+            description="I like this Placename",
         )
 
-        # Another user made a Favourite out of the created media
-        test_favourite_media = Favourite.objects.create(
-            name="test favourite",
-            user=self.user2,
-            media=self.media1,
+        # Favourite Media uploaded by Admin User to notify him
+        Favourite.objects.create(
+            name="Favorite Media",
+            user=self.regular_user,
+            media=self.media,
             favourite_type="favourite",
-            description="description",
+            description="I like this Media",
         )
 
-        user = User.objects.get(email=self.user.email)
+        # Create Placename under Admin User's language to notify him
+        PlaceName.objects.create(
+            name="New Placename",
+            community=self.test_community,
+            language=self.test_language,
+            status=VERIFIED,
+        )
+
+        user = User.objects.get(email=self.admin_user.email)
         body = notify(user, timezone.now() - timedelta(days=7))
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the placename create was sent in the email
-        assert body.count(self.placename1.name) > 0
+        assert body.count(self.placename.name) > 0
 
         # Testing if the placename was not sent more than once
         self.assertEqual(body.count("Someone uploaded a new place:"), 1)
@@ -129,108 +133,111 @@ class EmailTests(TestCase):
 
     def test_inform_placename_rejected_or_flagged(self):
         reason = "wrong place"
-        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, REJECTED)
+        body = inform_placename_rejected_or_flagged(
+            self.placename.id, reason, REJECTED)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the placename create was sent in the email
-        assert body.count(self.placename1.name) > 0
+        assert body.count(self.placename.name) > 0
 
         assert body.count(reason) > 0
         assert body.count("rejected") > 0
         assert body.count("flagged") == 0
 
-        body = inform_placename_rejected_or_flagged(self.placename1.id, reason, FLAGGED)
+        body = inform_placename_rejected_or_flagged(
+            self.placename.id, reason, FLAGGED)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the placename create was sent in the email
-        assert body.count(self.placename1.name) > 0
+        assert body.count(self.placename.name) > 0
 
         assert body.count(reason) > 0
         assert body.count("flagged") > 0
         assert body.count("rejected") == 0
 
     def test_inform_placename_to_be_verified(self):
-        admin = Administrator.objects.create(
-            user=self.user,
-            language=self.language1,
-            community=self.community1,
+        Administrator.objects.create(
+            user=self.admin_user,
+            language=self.test_language,
+            community=self.test_community,
         )
 
-        self.placename1.status = UNVERIFIED
-        self.placename1.status_reason = "wrong media"
-        self.placename1.save()
+        self.placename.status = UNVERIFIED
+        self.placename.status_reason = "wrong media"
+        self.placename.save()
 
-        body = inform_placename_to_be_verified(self.placename1.id)
+        body = inform_placename_to_be_verified(self.placename.id)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the placename create was sent in the email
-        assert body.count(self.placename1.name) > 0
+        assert body.count(self.placename.name) > 0
 
-        assert body.count(self.placename1.status_reason) > 0
+        assert body.count(self.placename.status_reason) > 0
         assert body.count("created") > 0
         assert body.count("flagged") == 0
 
-        self.placename1.status = FLAGGED
-        self.placename1.status_reason = "wrong media"
-        self.placename1.save()
+        self.placename.status = FLAGGED
+        self.placename.status_reason = "wrong media"
+        self.placename.save()
 
-        body = inform_placename_to_be_verified(self.placename1.id)
+        body = inform_placename_to_be_verified(self.placename.id)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the placename create was sent in the email
-        assert body.count(self.placename1.name) > 0
+        assert body.count(self.placename.name) > 0
 
-        assert body.count(self.placename1.status_reason) > 0
+        assert body.count(self.placename.status_reason) > 0
         assert body.count("created") == 0
         assert body.count("flagged") > 0
 
     def test_inform_media_rejected_or_flagged(self):
         reason = "wrong media"
-        body = inform_media_rejected_or_flagged(self.media1.id, reason, REJECTED)
+        body = inform_media_rejected_or_flagged(
+            self.media.id, reason, REJECTED)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the media create was sent in the email
-        assert body.count(self.media1.name) > 0
+        assert body.count(self.media.name) > 0
 
         assert body.count(reason) > 0
         assert body.count("rejected") > 0
         assert body.count("flagged") == 0
 
-        body = inform_media_rejected_or_flagged(self.media1.id, reason, FLAGGED)
+        body = inform_media_rejected_or_flagged(self.media.id, reason, FLAGGED)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the media create was sent in the email
-        assert body.count(self.media1.name) > 0
+        assert body.count(self.media.name) > 0
 
         assert body.count(reason) > 0
         assert body.count("flagged") > 0
@@ -238,46 +245,46 @@ class EmailTests(TestCase):
 
     def test_inform_media_to_be_verified(self):
 
-        admin = Administrator.objects.create(
-            user=self.user,
-            language=self.language1,
-            community=self.community1,
+        Administrator.objects.create(
+            user=self.admin_user,
+            language=self.test_language,
+            community=self.test_community,
         )
 
-        self.media1.status = UNVERIFIED
-        self.media1.status_reason = "wrong media"
-        self.media1.save()
+        self.media.status = UNVERIFIED
+        self.media.status_reason = "wrong media"
+        self.media.save()
 
-        body = inform_media_to_be_verified(self.media1.id)
+        body = inform_media_to_be_verified(self.media.id)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the media create was sent in the email
-        assert body.count(self.media1.name) > 0
+        assert body.count(self.media.name) > 0
 
-        assert body.count(self.media1.status_reason) > 0
+        assert body.count(self.media.status_reason) > 0
         assert body.count("created") > 0
         assert body.count("flagged") == 0
 
-        self.media1.status = FLAGGED
-        self.media1.status_reason = "wrong media"
-        self.media1.save()
+        self.media.status = FLAGGED
+        self.media.status_reason = "wrong media"
+        self.media.save()
 
-        body = inform_media_to_be_verified(self.media1.id)
+        body = inform_media_to_be_verified(self.media.id)
 
         # Testing if the language create was referenced in the email
-        assert body.count(self.language1.name) > 0
+        assert body.count(self.test_language.name) > 0
 
         # Testing if the community create was referenced in the email
-        assert body.count(self.community1.name) > 0
+        assert body.count(self.test_community.name) > 0
 
         # Testing if the media create was sent in the email
-        assert body.count(self.media1.name) > 0
+        assert body.count(self.media.name) > 0
 
-        assert body.count(self.media1.status_reason) > 0
+        assert body.count(self.media.status_reason) > 0
         assert body.count("flagged") > 0
         assert body.count("created") == 0
