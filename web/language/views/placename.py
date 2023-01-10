@@ -357,7 +357,7 @@ class PlaceNameGeoList(generics.ListAPIView):
     ).filter(
         kind__in=['poi', ''],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]
@@ -387,7 +387,7 @@ class ArtGeoList(generics.ListAPIView):
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource'],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]

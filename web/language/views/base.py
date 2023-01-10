@@ -72,19 +72,22 @@ def get_queryset_for_user(view, request):
 
         # 2.2.1) is NOT COMMUNITY ONLY (False or NULL) but status is VERIFIED, UNVERIFIED or NULL
         # 2.2.2) is COMMUNITY ONLY
-        filter_query = (
-            Q(community_only=False, status__exact=VERIFIED)
-            | Q(community_only=False, status__exact=UNVERIFIED)
-            | Q(community_only=False, status__isnull=True)
-            | Q(community_only__isnull=True, status__exact=VERIFIED)
-            | Q(community_only__isnull=True, status__exact=UNVERIFIED)
-            | Q(community_only__isnull=True, status__isnull=True)
-            | Q(community__in=user_communities)
-        )
-
-        if filter_media:
-            filter_query.add(
-                Q(placename__community__in=user_communities), Q.OR)
+        if filter_placenames:
+            filter_query = (
+                Q(creator=request.user) |
+                Q(status=None) |
+                Q(status__in=[VERIFIED, UNVERIFIED]) |
+                Q(status__in=[FLAGGED, REJECTED],
+                  communities__in=user_communities)
+            )
+        else:
+            filter_query = (
+                Q(creator=request.user) |
+                Q(status=None) |
+                Q(status__in=[VERIFIED, UNVERIFIED]) |
+                Q(status__in=[FLAGGED, REJECTED],
+                  placename__communities__in=user_communities)
+            )
 
         queryset_community = queryset.filter(filter_query)
 
@@ -104,10 +107,10 @@ def get_queryset_for_user(view, request):
             queryset = queryset_user.union(queryset_community)
 
     else:  # no user is logged in
-        queryset = queryset.filter(
-            Q(status__exact=VERIFIED)
-            | Q(status__exact=UNVERIFIED)
-            | Q(status__isnull=True)
+        queryset = queryset.exclude(
+            Q(community_only=True) |
+            Q(status=FLAGGED) |
+            Q(status=REJECTED)
         )
 
     return queryset
@@ -117,7 +120,7 @@ def _filter_placename_queryset_for_admin(
         queryset, queryset_user, queryset_community, admin_languages, admin_communities):
     # Filter PlaceNames by admin's languages
     queryset_admin = queryset.filter(
-        language__in=admin_languages, community__in=admin_communities
+        language__in=admin_languages, communities__in=admin_communities
     )
     if queryset_admin:
         queryset = queryset_user.union(
@@ -134,7 +137,7 @@ def _filter_media_queryset_for_admin(
         community__languages__in=admin_languages, community__in=admin_communities
     )
     qry_adm_places = queryset.filter(
-        placename__language__in=admin_languages, placename__community__in=admin_communities
+        placename__language__in=admin_languages, placename__communities__in=admin_communities
     )
     if qry_adm_community and qry_adm_places:
         queryset = queryset_user.union(queryset_community).union(

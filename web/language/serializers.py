@@ -65,7 +65,7 @@ class PlaceNameLightSerializer(serializers.ModelSerializer):
             "id",
             "kind",
             "other_names",
-            "community",
+            "communities",
             "community_only",
             "creator",
             "taxonomies"
@@ -307,8 +307,8 @@ class RelatedDataSerializer(serializers.ModelSerializer):
 class PlaceNameDetailSerializer(serializers.ModelSerializer):
     medias = MediaLightSerializer(many=True, read_only=True)
     creator = PublicUserSerializer(read_only=True)
-    community = serializers.PrimaryKeyRelatedField(
-        queryset=Community.objects.all(), allow_null=True, required=False
+    communities = serializers.PrimaryKeyRelatedField(
+        queryset=Community.objects.all(), allow_null=True, required=False, many=True
     )
     language = serializers.PrimaryKeyRelatedField(
         queryset=Language.objects.all(), allow_null=True, required=False
@@ -402,11 +402,14 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             artists_representation.append(serializer.data)
         representation['artists'] = artists_representation
 
-        community = representation.get('community')
-        if community:
-            community_details = Community.objects.get(pk=community)
-            serializer = CommunitySerializer(community_details)
-            representation['community'] = serializer.data
+        communities_representation = []
+        communities = representation.get('communities')
+        if communities:
+            for community in communities:
+                community_details = Community.objects.get(pk=community)
+                serializer = CommunitySerializer(community_details)
+                communities_representation.append(serializer.data)
+        representation['communities'] = communities_representation
 
         return representation
 
@@ -428,7 +431,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "status",
             "status_reason",
             "medias",
-            "community",
+            "communities",
             "other_community",
             "language",
             "non_bc_languages",
@@ -670,7 +673,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "kind", "community")
+        fields = ("id", "name", "kind", "communities")
         geo_field = "geom"
 
 
