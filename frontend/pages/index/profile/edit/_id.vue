@@ -184,11 +184,12 @@
               >Community</label
             >
             <multiselect
-              v-model="community"
+              v-model="selectedCommunities"
               placeholder="Search or select a community"
               label="name"
               track-by="id"
               :options="communities"
+              :multiple="true"
             ></multiselect>
 
             <div v-if="isNonBCCommunity" class="website-container mt-3">
@@ -288,6 +289,7 @@ export default {
       quillEditor: null,
       errors: [],
       currentUser: {},
+      selectedCommunities: [],
       language: null,
       languageNonBC: [],
       value: [],
@@ -508,7 +510,6 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
-      const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
         this.currentUser.bio = this.quillEditor.getText()
@@ -516,6 +517,9 @@ export default {
         return
       }
 
+      const selectedCommunities = this.selectedCommunities.map(
+        community => community.id
+      )
       const data = {
         first_name: this.currentUser.first_name,
         last_name: this.currentUser.last_name,
@@ -523,7 +527,7 @@ export default {
         language_ids: this.value
           .filter(lang => lang.id !== 'others')
           .map(lang => lang.id),
-        community_ids: this.isNonBCCommunity ? [] : communityId,
+        community_ids: this.isNonBCCommunity ? [] : selectedCommunities,
         other_community: this.isNonBCCommunity ? this.communityNonBC : null,
         artist_profile: this.artist_profile ? this.artist_profile.id : '',
         notification_frequency: this.currentUser.notification_frequency,
