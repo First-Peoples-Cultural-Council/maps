@@ -334,7 +334,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 if admin_languages and admin_communities:
                     # Filter Medias by admin's languages
                     queryset_places = queryset.filter(
-                        language__in=admin_languages, community__in=admin_communities
+                        language__in=admin_languages, communities__in=admin_communities
                     )
 
                     serializer = self.serializer_class(
