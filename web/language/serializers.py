@@ -26,6 +26,7 @@ from .models import (
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 from grants.serializers import GrantSerializer
+from web.constants import VERIFIED 
 
 
 # LIGHT SERIALIZERS
