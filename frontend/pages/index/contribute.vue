@@ -694,6 +694,12 @@
 
             <MediaGallery :media-list="getMediaFiles" :type="queryType">
             </MediaGallery>
+
+            <label
+              v-if="isMediaRequired"
+              class="d-inline-block contribute-title-one"
+              >*Adding at least one Media is required</label
+            >
           </section>
 
           <!-- Other Contributions -->
@@ -1025,6 +1031,9 @@ export default {
     },
     isArtist() {
       return this.queryType === 'Artist'
+    },
+    isMediaRequired() {
+      return this.isArtist && this.getMediaFiles.length === 0
     },
     isOrganization() {
       return this.queryType === 'Organization'
@@ -1993,6 +2002,14 @@ export default {
 
       if (this.isArtist && !this.languageUserSelected) {
         this.errors.push('Language: Please select a Language from the list.')
+        this.isLoading = false
+        return
+      }
+
+      if (this.isMediaRequired) {
+        this.errors.push(
+          'Media File: Please add least one media for this artist profile.'
+        )
         this.isLoading = false
         return
       }
