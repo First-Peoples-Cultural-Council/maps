@@ -13,7 +13,7 @@
       <img class="add-btn" src="@/assets/images/plus_icon.svg" alt="Zoom In" />
       {{
         type === 'Artist' || type === 'Public Art'
-          ? 'Upload an Artwork'
+          ? 'Add Media (Photo, Audio, Video)'
           : 'Upload a Media/File'
       }}
       <UploadModal

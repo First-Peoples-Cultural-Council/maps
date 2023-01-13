@@ -104,7 +104,8 @@ const addLangLayers = map => {
         2
       ],
       'line-offset': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
-      'line-opacity': 0.75
+      'line-opacity': 0.75,
+      'line-dasharray': [2, 1]
     }
   })
 
