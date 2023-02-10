@@ -334,6 +334,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         related_data = validated_data.pop('related_data', [])
         artists = validated_data.pop('artists', [])
         taxonomies = validated_data.pop('taxonomies', [])
+        communities = validated_data.pop('communities', [])
 
         # Save the PlaceName without a related_data
         placename = PlaceName.objects.create(**validated_data)
@@ -356,6 +357,9 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
                     placename=placename,
                     taxonomy=taxonomy
                 )
+        
+        if communities:
+            placename.communities.set(communities)
 
         return placename
 

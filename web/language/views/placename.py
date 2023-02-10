@@ -126,7 +126,7 @@ class PlaceNameViewSet(BaseModelViewSet):
             user__id=int(self.request.user.id)).values_list('language', flat=True))
 
         if (
-            (obj.community and obj.community.id in admin_communities) or
+            (obj.communities and obj.communities.filter(id__in=admin_communities).exists()) or
             (obj.language and obj.language.id in admin_languages) or
             (self.request.user.is_staff or self.request.user.is_superuser)
         ):
