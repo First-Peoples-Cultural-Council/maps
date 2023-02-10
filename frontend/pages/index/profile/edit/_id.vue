@@ -274,7 +274,7 @@ import { getApiUrl, getCookie, getMediaUrl } from '@/plugins/utils.js'
 import ErrorScreen from '@/layouts/error.vue'
 import Logo from '@/components/Logo.vue'
 
-const nonBcCommunity = {
+const nonBCCommunity = {
   id: 'nonBC',
   name: 'Non-BC Community (please specify)'
 }
@@ -326,7 +326,7 @@ export default {
           id: c.id
         }
       })
-      const nonBC = nonBcCommunity
+      const nonBC = nonBCCommunity
       communitySet.unshift(nonBC)
       return communitySet
     },
@@ -447,7 +447,7 @@ export default {
     }
 
     const selectedCommunities = currentUser.communities
-    if (currentUser.other_community) selectedCommunities.push(nonBcCommunity)
+    if (currentUser.other_community) selectedCommunities.push(nonBCCommunity)
 
     return {
       currentUser,
@@ -533,11 +533,23 @@ export default {
       }
 
       if (this.selectedCommunities.length === 0) {
-        return this.errors.push('Please select a community')
+        return this.errors.push('Community: Please select a Community')
+      }
+
+      if (this.value.length === 0) {
+        return this.errors.push('Language: Please select a Language')
+      }
+
+      const languageNonBC = this.languageNonBC.filter(
+        lang => lang.value !== null && lang.value !== ''
+      )
+
+      if (this.isNonBCLanguage && languageNonBC.length === 0) {
+        return this.errors.push('Language: Please enter a Non B.C. Language')
       }
 
       if (this.isNonBCCommunity && !this.communityNonBC) {
-        return this.errors.push('Please enter a Non-BC community')
+        return this.errors.push('Community: Please enter a Non B.C. Community')
       }
 
       const selectedCommunities = this.selectedCommunities.filter(community => {
@@ -555,9 +567,7 @@ export default {
         artist_profile: this.artist_profile ? this.artist_profile.id : '',
         notification_frequency: this.currentUser.notification_frequency,
         non_bc_languages: this.value.find(lang => lang.id === 'others')
-          ? this.languageNonBC
-              .filter(lang => lang.value !== null)
-              .map(lang => lang.value)
+          ? languageNonBC.map(lang => lang.value)
           : []
       }
       try {
@@ -579,7 +589,6 @@ export default {
             return e[0] + ': ' + e[1]
           })
         )
-        return
       }
       this.$router.push({
         path: '/profile/' + this.currentUser.id
