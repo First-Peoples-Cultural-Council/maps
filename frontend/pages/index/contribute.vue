@@ -292,27 +292,33 @@
 
               <multiselect
                 id="communitySelector"
-                v-model="community"
+                v-model="selectedCommunities"
                 placeholder="Select a community"
                 label="name"
                 track-by="id"
                 :options="communities"
+                :multiple="true"
               ></multiselect>
             </b-row>
 
             <b-row
-              v-if="community && community.id === 'others'"
+              v-if="
+                selectedCommunities &&
+                  selectedCommunities.find(
+                    community => community.id === 'others'
+                  )
+              "
               class="mt-3 field-row"
             >
               <div>
-                <label for="otherCommunity" class="contribute-title-one mb-1">
-                  Other Community</label
+                <label for="communityNonBC" class="contribute-title-one mb-1">
+                  Non B.C. Community</label
                 >
               </div>
 
               <b-form-input
-                id="otherCommunity"
-                v-model="otherCommunity"
+                id="communityNonBC"
+                v-model="communityNonBC"
                 type="text"
                 placeholder="(ex. Capitals, Alberta, etc.)                                                                                                                                                                                                        , English)"
               ></b-form-input>
@@ -712,7 +718,7 @@
             ></ToolTip>
             <b-form-input
               id="traditionalName"
-              v-model="tname"
+              v-model="traditionalName"
               type="text"
             ></b-form-input>
 
@@ -733,7 +739,7 @@
             ></ToolTip>
             <b-form-input
               id="westernName"
-              v-model="wname"
+              v-model="alternateName"
               type="text"
             ></b-form-input>
 
@@ -908,6 +914,16 @@ const base64Encode = data =>
     reader.onerror = error => reject(error)
   })
 
+const nonBCCommunity = {
+  id: 'others',
+  name: 'Non-BC Community (please specify)'
+}
+
+const nonBCLanguage = {
+  id: 'others',
+  name: 'Non-BC Language (please specify)'
+}
+
 export default {
   components: {
     AudioRecorder,
@@ -969,11 +985,10 @@ export default {
       languageUserSelected: null,
       languageNonBCUser: null,
       languageNonBC: null,
-      otherCommunity: null,
+      selectedCommunities: [],
+      communityNonBC: null,
       communitySelected: null,
       categorySelected: null,
-      tname: '',
-      wname: '',
       errors: [],
       languageOptions: [],
       languageSelectedName: null,
@@ -1139,10 +1154,7 @@ export default {
           if (!a.name || !b.name) return 0
           return a.name.localeCompare(b.name)
         })
-      languageSet.unshift({
-        id: 'others',
-        name: 'Others (please specify...)'
-      })
+      languageSet.unshift(nonBCLanguage)
       return languageSet
     },
     languagesInFeature() {
@@ -1160,10 +1172,7 @@ export default {
           }
         }
       )
-      communityList.unshift({
-        id: 'others',
-        name: 'Others (please specify...)'
-      })
+      communityList.unshift(nonBCCommunity)
 
       return communityList
     },
@@ -1209,6 +1218,15 @@ export default {
           }
         })
         .every(result => result === true)
+    },
+    isNonBCLanguage() {
+      return this.value.find(val => val.id === 'others')
+    },
+    isNonBCCommunity() {
+      return (
+        this.selectedCommunities &&
+        this.selectedCommunities.find(community => community.id === 'others')
+      )
     }
   },
   watch: {
@@ -1273,22 +1291,9 @@ export default {
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
 
-      let community = null
-      if (place.community) {
-        community = await $axios.$get(
-          getApiUrl(`community/${place.community.id}/?` + now.getTime())
-        )
-        community = {
-          name: community.name,
-          id: community.id
-        }
-      }
-
+      const selectedCommunities = place.communities
       if (place.other_community && place.other_community !== '') {
-        community = {
-          id: 'others',
-          name: 'Others (please specify...)'
-        }
+        selectedCommunities.push(nonBCCommunity)
       }
 
       data = {
@@ -1296,14 +1301,15 @@ export default {
         traditionalName: place.name,
         alternateName: place.other_names,
         content: place.description,
-        otherCommunity: place.other_community,
+        communityNonBC: place.other_community,
         categorySelected:
           place.taxonomies.length > 0 ? place.taxonomies[0].id : null,
         fileSrc: getMediaUrl(place.image),
         fileImg: null
       }
-      if (community) {
-        data.community = community
+
+      if (selectedCommunities) {
+        data.selectedCommunities = selectedCommunities
       }
       if (place.community_only) {
         data.communityOnly = 'accepted'
@@ -1322,10 +1328,7 @@ export default {
       }
 
       if (place.non_bc_languages && place.non_bc_languages.length !== 0) {
-        data.languageUserSelected = {
-          id: 'others',
-          name: 'Others (please specify...)'
-        }
+        data.languageUserSelected = nonBCLanguage
         data.languageNonBC = place.non_bc_languages[0]
       }
 
@@ -1419,26 +1422,23 @@ export default {
         getApiUrl(`placename/${query.id}/?` + now.getTime())
       )
 
-      let community = null
-      if (place.community) {
-        community = await $axios.$get(
-          getApiUrl(`community/${place.community.id}/?` + now.getTime())
-        )
-        community = {
-          name: community.name,
-          id: place.community
-        }
+      const selectedCommunities = place.communities
+      if (place.other_community && place.other_community !== '') {
+        selectedCommunities.push(nonBCCommunity)
       }
       data = {
         place,
-        tname: place.name,
-        wname: place.common_name,
+        traditionalName: place.name,
+        alternateName: place.common_name,
         content: place.description,
+        communityNonBC: place.other_community,
         categorySelected:
-          place.taxonomies.length > 0 ? place.taxonomies[0].id : null
+          place.taxonomies.length > 0 ? place.taxonomies[0].id : null,
+        fileSrc: getMediaUrl(place.image),
+        fileImg: null
       }
-      if (community) {
-        data.community = community
+      if (selectedCommunities) {
+        data.selectedCommunities = selectedCommunities
       }
       if (place.community_only) {
         data.communityOnly = 'accepted'
@@ -1449,13 +1449,16 @@ export default {
             getApiUrl(`language/${place.language}`)
           )
           if (language) {
-            data.languageSelected = language.id
-            data.languageOptions = [{ value: language.id, text: language.name }]
-            data.languageSelectedName = language.name
+            data.languageUserSelected = { id: language.id, name: language.name }
           }
         } catch (e) {
           console.error(e)
         }
+      }
+
+      if (place.non_bc_languages && place.non_bc_languages.length !== 0) {
+        data.languageUserSelected = nonBCLanguage
+        data.languageNonBC = place.non_bc_languages[0]
       }
     }
 
@@ -1855,9 +1858,16 @@ export default {
         return
       }
 
-      let community_id = null
-      if (this.community) {
-        community_id = this.community.id
+      if (this.languageUserSelected.id === 'others' && !this.languageNonBC) {
+        this.errors.push('Language: Please specify Non-BC Language.')
+        this.isLoading = false
+        return
+      }
+
+      if (this.isNonBCCommunity && !this.communityNonBC) {
+        this.errors.push('Community: Please specify Non-BC Community.')
+        this.isLoading = false
+        return
       }
 
       let status = 'UN'
@@ -1880,7 +1890,7 @@ export default {
       if (this.audioBlob && this.audioFile) {
         return
       } else if (this.audioBlob) {
-        audio = new File([this.audioBlob], `${this.tname}`, {
+        audio = new File([this.audioBlob], `${this.traditionalName}`, {
           type: 'multipart/form-data'
         })
       } else {
@@ -1888,10 +1898,15 @@ export default {
       }
 
       const formData = new FormData()
-      formData.append('name', this.tname)
-      formData.append('common_name', this.wname)
+      formData.append('name', this.traditionalName)
+      formData.append('common_name', this.alternateName)
       formData.append('description', this.content)
-      formData.append('community', community_id)
+      formData.append(
+        'communities',
+        this.selectedCommunities
+          .filter(community => community.id !== 'others')
+          .map(community => community.id)
+      )
       formData.append('language', this.languageSelected)
       formData.append('taxonomies', [this.categorySelected])
       formData.append('community_only', this.communityOnly === 'accepted')
@@ -1951,7 +1966,7 @@ export default {
       this.$eventHub.whenMap(map => {
         map.getSource('places1').setData('/api/placename-geo/')
         this.$router.push({
-          path: '/place-names/' + encodeFPCC(this.tname)
+          path: '/place-names/' + encodeFPCC(this.traditionalName)
         })
       })
     },
@@ -1967,7 +1982,6 @@ export default {
         onUploadProgress: progressEvent => {
           const { loaded, total } = progressEvent
           const percentCompleted = Math.round((loaded * 100) / total)
-          console.log(`${loaded}KB uploaded of ${total}KB`)
 
           if (this.callProgressModal) {
             this.callProgressModal(percentCompleted)
@@ -1988,7 +2002,11 @@ export default {
         return
       }
 
-      if (this.isArtist && !this.community) {
+      if (
+        this.isArtist &&
+        this.selectedCommunities &&
+        this.selectedCommunities.length === 0
+      ) {
         this.errors.push('Community: Please select a Community from the list.')
         this.isLoading = false
         return
@@ -2006,6 +2024,12 @@ export default {
         return
       }
 
+      if (this.languageUserSelected.id === 'others' && !this.languageNonBC) {
+        this.errors.push('Language: Please specify Non-BC Language.')
+        this.isLoading = false
+        return
+      }
+
       if (this.isMediaRequired) {
         this.errors.push(
           'Media File: Please add least one media for this artist profile.'
@@ -2014,9 +2038,10 @@ export default {
         return
       }
 
-      let community_id = null
-      if (this.community && this.community.id !== 'others') {
-        community_id = this.community.id
+      if (this.isNonBCCommunity && !this.communityNonBC) {
+        this.errors.push('Community: Please specify Non-BC Community.')
+        this.isLoading = false
+        return
       }
 
       let language_id = null
@@ -2063,8 +2088,10 @@ export default {
           this.queryType === 'Public Art'
             ? 'public_art'
             : this.queryType.toLowerCase(),
-        community: community_id,
-        other_community: this.otherCommunity,
+        communities: this.selectedCommunities
+          .filter(community => community.id !== 'others')
+          .map(community => community.id),
+        other_community: this.isNonBCCommunity ? this.communityNonBC : '',
         language: language_id,
         community_only: false,
         non_bc_languages: non_bc_language,
@@ -2429,7 +2456,7 @@ export default {
       const lat = vm.$route.query.lat
       const lng = vm.$route.query.lng
       if (vm.$route.query.cname) {
-        vm.wname = vm.$route.query.cname
+        vm.alternateName = vm.$route.query.cname
       }
       if (lat && lng) {
         vm.$eventHub.whenMap(map => {

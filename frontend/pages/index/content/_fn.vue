@@ -269,7 +269,7 @@
           </div>
         </section>
         <section class="ml-4 mr-4">
-          <div v-if="isLoggedIn">
+          <div>
             <hr />
             <UploadTool
               :id="community.id"
@@ -604,7 +604,7 @@ export default {
   methods: {
     getMediaUrl,
     isMediaCreator(media, user) {
-      if (media.creator && user) {
+      if (media.creator && user && user.id) {
         return user.id === media.creator.id || user.id === media.creator
       }
     },

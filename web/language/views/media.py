@@ -117,7 +117,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     # Filter Medias by admin's languages
                     queryset_places = queryset.filter(
                         Q(placename__language__in=admin_languages) | Q(
-                            placename__community__in=admin_communities)
+                            placename__communities__in=admin_communities)
                     )
                     queryset_communities = queryset.filter(
                         Q(community__languages__in=admin_languages) | Q(

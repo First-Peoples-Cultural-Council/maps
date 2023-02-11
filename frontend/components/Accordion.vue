@@ -47,15 +47,17 @@ export default {
 
           dropdownList.forEach(element => {
             const grantsContainer = document.getElementById(element)
-            grantsContainer.addEventListener('click', () => {
-              const collapse = document.getElementById(`${element}-content`)
-              const isBlock = collapse.style.display === 'block'
-              collapse.style.display = isBlock ? 'none' : 'block'
+            if (grantsContainer) {
+              grantsContainer.addEventListener('click', () => {
+                const collapse = document.getElementById(`${element}-content`)
+                const isBlock = collapse.style.display === 'block'
+                collapse.style.display = isBlock ? 'none' : 'block'
 
-              grantsContainer.querySelector(
-                '.collapse-icon'
-              ).innerHTML = isBlock ? '&#9658;' : '&#9660;'
-            })
+                grantsContainer.querySelector(
+                  '.collapse-icon'
+                ).innerHTML = isBlock ? '&#9658;' : '&#9660;'
+              })
+            }
           })
         })
       }

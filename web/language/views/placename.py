@@ -126,7 +126,7 @@ class PlaceNameViewSet(BaseModelViewSet):
             user__id=int(self.request.user.id)).values_list('language', flat=True))
 
         if (
-            (obj.community and obj.community.id in admin_communities) or
+            (obj.communities and obj.communities.filter(id__in=admin_communities).exists()) or
             (obj.language and obj.language.id in admin_languages) or
             (self.request.user.is_staff or self.request.user.is_superuser)
         ):
@@ -334,7 +334,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 if admin_languages and admin_communities:
                     # Filter Medias by admin's languages
                     queryset_places = queryset.filter(
-                        language__in=admin_languages, community__in=admin_communities
+                        language__in=admin_languages, communities__in=admin_communities
                     )
 
                     serializer = self.serializer_class(
@@ -357,7 +357,7 @@ class PlaceNameGeoList(generics.ListAPIView):
     ).filter(
         kind__in=['poi', ''],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]
@@ -387,7 +387,7 @@ class ArtGeoList(generics.ListAPIView):
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource'],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]

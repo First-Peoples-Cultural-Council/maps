@@ -1,6 +1,6 @@
 <template>
   <div class="w-100">
-    <div v-if="artDetails" class="w-100 arts-main-wrapper">
+    <div v-if="placename" class="w-100 arts-main-wrapper">
       <div
         v-if="!mobileContent"
         class="content-collapse d-none content-mobile-title"
@@ -8,10 +8,10 @@
         <div class="p-1">
           <img
             class="artist-img-small"
-            :src="renderArtistImg(artDetails.image)"
+            :src="renderArtistImg(placename.image)"
           />
-          {{ artDetails.kind | titleCase }}:
-          <span class="font-weight-bold">{{ artDetails.name }}</span>
+          {{ placename.kind | titleCase }}:
+          <span class="font-weight-bold">{{ placename.name }}</span>
         </div>
         <div
           class="content-collapse-btn"
@@ -51,8 +51,8 @@
             v-if="isArtist"
             :art-image="artistImg"
             :tags="taxonomies"
-            :arttype="artDetails.kind"
-            :name="artDetails.name"
+            :arttype="placename.kind"
+            :name="placename.name"
             :server="isServer"
             :arts-banner="artistBanner"
             :is-owner="isPlacenameOwner()"
@@ -62,8 +62,8 @@
 
           <ArtsDetailCard
             v-else
-            :arttype="artDetails.kind"
-            :name="artDetails.name"
+            :arttype="placename.kind"
+            :name="placename.name"
             :server="isServer"
             :tags="taxonomies"
             :is-owner="isPlacenameOwner()"
@@ -82,22 +82,22 @@
           >
             <!-- Show the Placename image if Public Art and Event -->
             <div
-              v-if="artDetails.image && (isPublicArt || isEvent)"
+              v-if="placename.image && (isPublicArt || isEvent)"
               class="placename-img-container"
             >
-              <img class="placename-img" :src="getMediaUrl(artDetails.image)" />
+              <img class="placename-img" :src="getMediaUrl(placename.image)" />
             </div>
 
             <!-- Show list of Artist involved, if its a Public Art -->
 
             <div
-              v-if="artDetails.artists.length !== 0 && isPublicArt"
+              v-if="placename.artists.length !== 0 && isPublicArt"
               class="artist-content-field"
             >
               <h5 class="field-title">Artist:</h5>
 
               <a
-                v-for="artist in artDetails.artists"
+                v-for="artist in placename.artists"
                 :key="artist.id"
                 href="#"
                 @click="checkArtistProfile(artist.name)"
@@ -127,24 +127,24 @@
               <span class="field-content"> {{ getDateValue() }} </span>
             </section>
 
-            <section v-if="artDetails.description" class="artist-content-field">
+            <section v-if="placename.description" class="artist-content-field">
               <h5 class="field-title">
                 {{
-                  artDetails.kind.toLowerCase() !== 'public_art'
-                    ? artDetails.kind
+                  placename.kind.toLowerCase() !== 'public_art'
+                    ? placename.kind
                     : 'Public Art'
                 }}
                 Description:
               </h5>
               <span class="field-content">
-                <span v-html="stringSplit(artDetails.description)"></span>
+                <span v-html="stringSplit(placename.description)"></span>
                 <a v-if="showExpandBtn()" href="#" @click="toggleDescription">{{
                   collapseDescription ? 'read less' : 'read more'
                 }}</a>
               </span>
             </section>
             <section
-              v-if="!artDetails.description && artDetails.kind === 'artist'"
+              v-if="!placename.description && placename.kind === 'artist'"
               class="artist-content-field"
             >
               <h5 class="field-title">
@@ -161,15 +161,20 @@
             </section>
 
             <section
-              v-if="artDetails.community && artDetails.kind === 'artist'"
+              v-if="
+                (placename.kind === 'artist' &&
+                  (placename.communities &&
+                    placename.communities.length > 0)) ||
+                  placename.other_community
+              "
               class="artist-content-field"
             >
               <h5 class="field-title">
-                Artist Community:
+                Artist Communities:
               </h5>
               <span class="field-content">
                 <span>
-                  {{ artDetails.community.name }}
+                  {{ communityNames.join(', ') }}
                 </span>
               </span>
             </section>
@@ -306,8 +311,16 @@ export default {
     }
   },
   computed: {
-    artDetails() {
+    placename() {
       return this.$store.state.arts.currentPlacename
+    },
+    communityNames() {
+      const communityNames = this.placename.communities.map(place => place.name)
+
+      if (this.placename.other_community)
+        communityNames.push(this.placename.other_community)
+
+      return communityNames
     },
     isGalleryShown() {
       return this.$store.state.sidebar.showGallery
@@ -325,22 +338,22 @@ export default {
       return this.$store.state.mapinstance.mapinstance
     },
     isArtist() {
-      return this.artDetails.kind.toLowerCase() === 'artist'
+      return this.placename.kind.toLowerCase() === 'artist'
     },
     isPublicArt() {
-      return this.artDetails.kind.toLowerCase() === 'public_art'
+      return this.placename.kind.toLowerCase() === 'public_art'
     },
     isEvent() {
-      return this.artDetails.kind.toLowerCase() === 'event'
+      return this.placename.kind.toLowerCase() === 'event'
     },
     isGalleryNotEmpty() {
       return (
-        this.artDetails.medias.filter(media => media.file_type !== 'default')
-          .length !== 0 || this.artDetails.public_arts.length !== 0
+        this.placename.medias.filter(media => media.file_type !== 'default')
+          .length !== 0 || this.placename.public_arts.length !== 0
       )
     },
     socialMedia() {
-      return this.artDetails.related_data.filter(
+      return this.placename.related_data.filter(
         filter =>
           filter.data_type === 'website' &&
           this.filterCondition.some(condition =>
@@ -349,7 +362,7 @@ export default {
       )
     },
     relatedData() {
-      return this.artDetails.related_data.filter(element => {
+      return this.placename.related_data.filter(element => {
         return (
           !this.socialMedia.includes(element) &&
           (!element.is_private &&
@@ -361,12 +374,12 @@ export default {
       })
     },
     getEventDate() {
-      return this.artDetails.related_data.find(element => {
+      return this.placename.related_data.find(element => {
         return element.data_type === 'Event Date'
       })
     },
     getAwardList() {
-      return this.artDetails.related_data.filter(element => {
+      return this.placename.related_data.filter(element => {
         return (
           element.data_type === 'award' &&
           (element.value && element.value.length !== 0)
@@ -374,7 +387,7 @@ export default {
       })
     },
     getWebsiteList() {
-      return this.artDetails.related_data.filter(element => {
+      return this.placename.related_data.filter(element => {
         return (
           !this.socialMedia.includes(element) &&
           element.data_type === 'website' &&
@@ -383,7 +396,7 @@ export default {
       })
     },
     taxonomies() {
-      return this.artDetails.taxonomies.filter(
+      return this.placename.taxonomies.filter(
         taxo => !this.blockedTag.includes(taxo.name)
       )
     },
@@ -391,12 +404,12 @@ export default {
       return require(`@/assets/images/default_banner.png`)
     },
     artistImg() {
-      return this.artDetails.image
-        ? getMediaUrl(this.artDetails.image)
+      return this.placename.image
+        ? getMediaUrl(this.placename.image)
         : require(`@/assets/images/artist_icon.svg`)
     },
     grantsList() {
-      return this.artDetails.grants.features
+      return this.placename.grants.features
     },
     currentGrant() {
       return this.$store.state.grants.currentGrant
@@ -419,9 +432,9 @@ export default {
       })
 
       if (art) {
-        const artDetails = await $axios.$get(getApiUrl('placename/' + art.id))
+        const placename = await $axios.$get(getApiUrl('placename/' + art.id))
 
-        store.commit('arts/setCurrentPlacename', artDetails)
+        store.commit('arts/setCurrentPlacename', placename)
         const isServer = !!process.server
         return {
           isServer
@@ -439,9 +452,9 @@ export default {
   mounted() {
     window.addEventListener('resize', this.widthChecker)
     if (
-      this.artDetails &&
-      (this.artDetails.medias.length !== 0 ||
-        this.artDetails.public_arts.length !== 0) &&
+      this.placename &&
+      (this.placename.medias.length !== 0 ||
+        this.placename.public_arts.length !== 0) &&
       window.innerWidth > 992
     ) {
       this.$store.commit('sidebar/setDrawerContent', true)
@@ -459,8 +472,8 @@ export default {
       return require(`@/assets/images/arts/${value}.svg`)
     },
     isPlacenameOwner() {
-      if (this.artDetails.creator) {
-        if (this.$store.state.user.user.id === this.artDetails.creator.id)
+      if (this.placename.creator) {
+        if (this.$store.state.user.user.id === this.placename.creator.id)
           return true
       }
       return false
@@ -469,10 +482,10 @@ export default {
       if (
         this.user.placename_set &&
         this.user.placename_set.length !== 0 &&
-        this.artDetails.artists &&
-        this.artDetails.artists.length !== 0
+        this.placename.artists &&
+        this.placename.artists.length !== 0
       ) {
-        const contributorID = this.artDetails.artists.map(artist => artist.id)
+        const contributorID = this.placename.artists.map(artist => artist.id)
         const isContributor = this.user.placename_set.some(placename =>
           contributorID.includes(placename.id)
         )
@@ -484,13 +497,13 @@ export default {
     },
     handlePlacenameEdit() {
       const kind =
-        this.artDetails.kind.charAt(0).toUpperCase() +
-        this.artDetails.kind.slice(1)
+        this.placename.kind.charAt(0).toUpperCase() +
+        this.placename.kind.slice(1)
       this.$router.push({
         path: '/contribute',
         query: {
           mode: 'existing',
-          id: this.artDetails.id,
+          id: this.placename.id,
           type: kind === 'Public_art' ? 'Public Art' : kind
         }
       })
@@ -548,12 +561,12 @@ export default {
     setupMap() {
       this.$eventHub.whenMap(map => {
         if (this.$route.hash.length <= 1) {
-          if (this.artDetails.geom)
-            zoomToPoint({ map, geom: this.artDetails.geom, zoom: 11 })
+          if (this.placename.geom)
+            zoomToPoint({ map, geom: this.placename.geom, zoom: 11 })
         }
-        if (this.artDetails.geom) {
-          const icon = this.artDetails.kind + '_icon.svg'
-          makeMarker(this.artDetails.geom, icon, this).addTo(map)
+        if (this.placename.geom) {
+          const icon = this.placename.kind + '_icon.svg'
+          makeMarker(this.placename.geom, icon, this).addTo(map)
         }
       })
     },
@@ -567,12 +580,12 @@ export default {
       return stringValue
     },
     showExpandBtn() {
-      return this.artDetails.description.length >= 50
+      return this.placename.description.length >= 50
     },
     renderArtistImg(img) {
       return (
         getMediaUrl(img) ||
-        require(`@/assets/images/${this.artDetails.kind}_icon.svg`)
+        require(`@/assets/images/${this.placename.kind}_icon.svg`)
       )
     },
     checkUrlValid(url) {
@@ -587,11 +600,11 @@ export default {
       })
     },
     getHeaderTitle() {
-      if (this.artDetails) {
+      if (this.placename) {
         return (
-          this.artDetails.name +
+          this.placename.name +
           ' Indigenous ' +
-          this.artDetails.kind +
+          this.placename.kind +
           " on First Peoples' Language Map"
         )
       } else {
@@ -615,8 +628,8 @@ export default {
         {
           hid: `description`,
           name: 'description',
-          content: this.artDetails
-            ? this.artDetails.description
+          content: this.placename
+            ? this.placename.description
             : 'Art page not found.'
         }
       ]
