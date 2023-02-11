@@ -78,7 +78,7 @@ export default {
         if (eventDate < Date.now()) {
           const resultDate = eventDate - Date.now()
           const differenceInDays = Math.ceil(resultDate / (1000 * 60 * 60 * 24))
-          if (differenceInDays <= 7) {
+          if (Math.abs(differenceInDays) <= 7) {
             return true
           }
         }
