@@ -14,7 +14,7 @@ from language.models import (
     Community,
     PublicArtArtist
 )
-from users.models import User, Administrator
+from users.models import User
 from web.utils import get_lang_link, get_comm_link, get_place_link, format_fpcc
 from web.constants import *
 
@@ -33,15 +33,12 @@ def get_new_media_messages(new_medias):
             else:
                 link = '(Orphaned Media)'
             preview = ''
-            kind = 'media'
             file_name = ' - ' + media.name
             if 'image' in media.file_type:
-                kind = 'image'
                 preview = "<br><img src='{}/media/{}' width=100 style='width:100px;height:auto'/>".format(
                     settings.HOST, media.media_file)
             if media.url:
                 link = media.url
-                kind = 'video'
             messages.append(
                 """
                 <li>{} has a new media uploaded: {}{}</li>
@@ -270,9 +267,9 @@ def notify_no_media(user):
     html = f"""
     <p>Hello, <b>{user_name}!</b></p>
     <p>
-        We have noticed that you haven't posted an artwork or a public art in your Profile(s) at 
-        <a href='{settings.HOST}/art/' target='_blank'>First People's Language Map Profile</a>. 
-        Please take this opportunity to showcase your skills by sharing your lovely art with us. 
+        We have noticed that you haven't posted an artwork or a public art in your Profile(s) at
+        <a href='{settings.HOST}/art/' target='_blank'>First People's Language Map Profile</a>.
+        Please take this opportunity to showcase your skills by sharing your lovely art with us.
         We would really appreciate it if you do.
     </p>
     <p>
@@ -306,269 +303,3 @@ def send_notifications():
             notify(user)
         user.last_notified = now
         user.save()
-
-
-def inform_placename_rejected_or_flagged(placename_id, reason, status):
-
-    # Getting the PlaceName
-    placename = PlaceName.objects.get(pk=placename_id)
-
-    # Getting user
-    creator = placename.creator
-
-    intro = '<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>'
-
-    # Defining the label for the status
-    state = ''
-    if status == REJECTED:
-        state = 'rejected'
-    else:
-        state = 'flagged'
-
-    # Building the message
-    message = ''
-    if placename.language and placename.language.name:
-        if placename.community and placename.community.name:
-            message += '<p>Your contribution to {} Language and {} Community has been {}.</p>'.format(
-                get_lang_link(placename.language), get_comm_link(
-                    placename.community), state
-            )
-        else:
-            message += '<p>Your contribution to {} Language has been {}.</p>'.format(
-                get_lang_link(placename.language), state
-            )
-    else:
-        if placename.community and placename.community.name:
-            message += '<p>Your contribution to {} Community has been {}.</p>'.format(
-                get_comm_link(placename.community), state
-            )
-        else:
-            message += '<p>Your contribution has been {}.</p>'.format(state)
-
-    if placename.name:
-        message += '<p>Contribution: {}</p>'.format(placename.name)
-
-    message += '<p>Reason: {}</p>'.format(reason)
-
-    message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
-
-    # if the creator is a system admin
-    if creator.email in [a[1] for a in settings.ADMINS] or creator.email in [a[1] for a in settings.FPCC_ADMINS]:
-        message = intro + message
-
-        send_mail(
-            "Your contribution has been {} on the First Peoples' Language Map".format(
-                state),
-            message,
-            'maps@fpcc.ca',
-            [creator.email],
-            html_message=message,
-        )
-    return message
-
-
-def inform_placename_to_be_verified(placename_id):
-
-    # Getting the PlaceName
-    placename = PlaceName.objects.get(pk=placename_id)
-
-    intro = '<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>'
-
-    # Defining the label for the status
-    state = ''
-    if placename.status == UNVERIFIED:
-        state = 'created'
-    else:
-        state = 'flagged'
-
-    # To store the pair language/community to search for an Administrator later
-    language = None
-    community = None
-
-    # Building the message
-    message = ''
-    if placename.language and placename.language.name:
-        if placename.community and placename.community.name:
-            message += '<p>A contribution at {} Language and {} Community has been {}.</p>'.format(
-                get_lang_link(placename.language), get_comm_link(
-                    placename.community), state
-            )
-            # Storing the pair language/community of the contribution
-            language = placename.language
-            community = placename.community
-        else:
-            message += '<p>A contribution at {} Language has been {}.</p>'.format(
-                get_lang_link(placename.language), state
-            )
-    else:
-        if placename.community and placename.community.name:
-            message += '<p>A contribution at {} Community has been {}.</p>'.format(
-                get_comm_link(placename.community), state
-            )
-        else:
-            message += '<p>A contribution has been {}.</p>'.format(state)
-
-    if placename.name:
-        message += '<p>Contribution: {}</p>'.format(placename.name)
-
-    message += '<p>Reason: {}</p>'.format(placename.status_reason)
-
-    # If we could get a language and community form the contribution
-    if language and community:
-
-        # Checking if there is a Administrator for the pair language/community
-        administrators = Administrator.objects.filter(
-            language=language, community=community)
-
-        # If there are Administrators for the pair language/community
-        if administrators:
-            for administrator in administrators:
-                # if the administrator is a system admin
-                if administrator.user.email in [a[1] for a in settings.ADMINS] or administrator.user.email in [a[1] for a in settings.FPCC_ADMINS]:
-                    message = intro + message
-
-                send_mail(
-                    "A contribution has been {} on the First Peoples' Language Map".format(
-                        state),
-                    message,
-                    'maps@fpcc.ca',
-                    [administrator.user.email],
-                    html_message=message,
-                )
-                return message
-
-
-def inform_media_rejected_or_flagged(media_id, reason, status):
-
-    # Getting the Media
-    media = Media.objects.get(pk=media_id)
-
-    # Getting user
-    creator = media.creator
-
-    intro = '<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>'
-
-    # Defining the label for the status
-    state = ''
-    if status == REJECTED:
-        state = 'rejected'
-    else:
-        state = 'flagged'
-
-    # Building the message
-    message = ''
-    if media.placename and media.placename.kind in ['', 'poi']:
-        message += '<p>Your contribution to {} been {}.</p>'.format(
-            get_place_link(media.placename), state
-        )
-    else:
-        if media.community and media.community.name:
-            message += '<p>Your contribution to {} Community has been {}.</p>'.format(
-                get_comm_link(media.community), state
-            )
-        else:
-            message += '<p>Your contribution has been {}.</p>'.format(state)
-
-    if media.name:
-        message += '<p>Contribution: {}</p>'.format(media.name)
-
-    message += '<p>Reason: {}</p>'.format(reason)
-
-    message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
-
-    # if the creator is a system admin
-    if creator.email in [a[1] for a in settings.ADMINS] or creator.email in [a[1] for a in settings.FPCC_ADMINS]:
-        message = intro + message
-
-    send_mail(
-        "Your contribution has been {} on the First Peoples' Language Map".format(
-            state),
-        message,
-        'maps@fpcc.ca',
-        [creator.email],
-        html_message=message,
-    )
-    return message
-
-
-def inform_media_to_be_verified(media_id):
-
-    # Getting the Media
-    media = Media.objects.get(pk=media_id)
-
-    intro = '<p>(We are in test mode, sending more data than you should actually receive, please let us know of any bugs!)</p>'
-
-    # Defining the label for the status
-    state = ''
-    if media.status == UNVERIFIED:
-        state = 'created'
-    else:
-        state = 'flagged'
-
-    # To store the pair language/community to search for an Administrator later
-    language = None
-    community = None
-
-    # Building the message
-    message = ''
-    if media.placename:
-        if media.placename.language and media.placename.language.name:
-            if media.placename.community and media.placename.community.name:
-                message += '<p>A contribution at {} Language and {} Community has been {}.</p>'.format(
-                    get_lang_link(media.placename.language), get_comm_link(
-                        media.placename.community), state
-                )
-
-                # Storing the pair language/community of the contribution
-                language = media.placename.language
-                community = media.placename.community
-            else:
-                message += '<p>A contribution at {} Language has been {}.</p>'.format(
-                    get_lang_link(media.placename.language), state
-                )
-                language = media.placename.language
-        else:
-            if media.placename.community and media.placename.community.name:
-                message += '<p>A contribution at {} Community has been {}.</p>'.format(
-                    get_comm_link(media.placename.community), state
-                )
-                community = media.placename.community
-            else:
-                message += '<p>A contribution has been {}.</p>'.format(state)
-    else:
-        if media.community and media.community.name:
-            message += '<p>A contribution at {} Community has been {}.</p>'.format(
-                get_comm_link(media.community), state
-            )
-            community = media.community
-        else:
-            message += '<p>A contribution has been {}.</p>'.format(state)
-
-    if media.name:
-        message += '<p>Contribution: {}</p>'.format(media.name)
-
-    message += '<p>Reason: {}</p>'.format(media.status_reason)
-
-    # If we could get a language and community form the contribution
-    if language and community:
-
-        # Checking if there is a Administrator for the pair language/community
-        administrators = Administrator.objects.filter(
-            language=language, community=community)
-
-        # If there are Administrators for the pair language/community
-        if administrators:
-            for administrator in administrators:
-                # if the administrator is a system admin
-                if administrator.user.email in [a[1] for a in settings.ADMINS] or administrator.user.email in [a[1] for a in settings.FPCC_ADMINS]:
-                    message = intro + message
-
-                send_mail(
-                    "A contribution has been {} on the First Peoples' Language Map".format(
-                        state),
-                    message,
-                    'maps@fpcc.ca',
-                    [administrator.user.email],
-                    html_message=message,
-                )
-                return message

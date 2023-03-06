@@ -17,7 +17,6 @@ from language.models import (
     Media,
     PublicArtArtist
 )
-from language.notifications import inform_placename_rejected_or_flagged, inform_placename_to_be_verified
 from language.filters import ListFilter
 from language.views import BaseModelViewSet, BasePlaceNameListAPIView, get_queryset_for_user
 from language.serializers import (
@@ -192,101 +191,90 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def verify(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    PlaceName.verify(int(pk))
-                    return Response({
-                        'success': True,
-                        'message': 'Verified.'
-                    })
-                except PlaceName.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No PlaceName with the given id was found.'
-                    })
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.kind not in ['', 'poi']:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid action.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Place has already been verified.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            instance.verify()
+            return Response({
+                'success': True,
+                'message': 'Verified.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can verify contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    if 'status_reason' in request.data.keys():
-                        PlaceName.reject(
-                            int(pk), request.data['status_reason'])
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.kind not in ['', 'poi']:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid action.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                        # Notifying the creator
-                        try:
-                            inform_placename_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], REJECTED)
-                        except Exception as e:
-                            pass
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Place has already been verified.'
+                })
 
-                        return Response({
-                            'success': True,
-                            'message': 'Rejected.'
-                        })
-                    else:
-                        return Response({
-                            'success': False,
-                            'message': 'Reason must be provided.'
-                        })
-                except PlaceName.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No PlaceName with the given id was found.'
-                    })
+            if 'status_reason' not in request.data.keys():
+                return Response({
+                    'success': False,
+                    'message': 'Reason must be provided.'
+                })
+
+            instance.reject(request.data['status_reason'])
+            return Response({
+                'success': True,
+                'message': 'Rejected.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can reject contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            if placename.status == VERIFIED:
-                return Response({
-                    'success': False,
-                    'message': 'PlaceName has already been verified.'
-                })
-            else:
-                if 'status_reason' in request.data.keys():
-                    PlaceName.flag(int(pk), request.data['status_reason'])
-
-                    # Notifying Administrators
-                    try:
-                        inform_placename_to_be_verified(int(pk))
-                    except Exception as e:
-                        pass
-
-                    # Notifying the creator
-                    try:
-                        inform_placename_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], FLAGGED)
-                    except Exception as e:
-                        pass
-
-                    return Response({
-                        'success': True,
-                        'message': 'Flagged.'
-                    })
-                else:
-                    return Response({
-                        'success': False,
-                        'message': 'Reason must be provided.'
-                    })
-        except PlaceName.DoesNotExist:
+        instance = self.get_object()
+        if instance.kind not in ['', 'poi']:
             return Response({
                 'success': False,
-                'message': 'No PlaceName with the given id was found.'
+                'message': 'Invalid action.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if instance.status == VERIFIED:
+            return Response({
+                'success': False,
+                'message': 'Place has already been verified.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'status_reason' not in request.data.keys():
+            return Response({
+                'success': False,
+                'message': 'Reason must be provided.'
             })
+
+        instance.flag(request.data['status_reason'])
+        return Response({
+            'success': True,
+            'message': 'Flagged.'
+        })
 
     @method_decorator(never_cache)
     def detail(self, request):
