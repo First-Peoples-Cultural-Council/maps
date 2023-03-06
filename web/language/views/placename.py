@@ -309,7 +309,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     @action(detail=False)
     def list_to_verify(self, request):
         # 'VERIFIED' PlaceNames do not need to the verified
-        queryset = self.get_queryset().exclude(
+        queryset = self.get_queryset().filter(kind__in=['', 'poi']).exclude(
             status__exact=VERIFIED).exclude(status__exact=REJECTED)
 
         if request and hasattr(request, 'user'):
@@ -319,10 +319,10 @@ class PlaceNameViewSet(BaseModelViewSet):
                 admin_communities = Administrator.objects.filter(
                     user__id=int(request.user.id)).values('community')
 
-                if admin_languages and admin_communities:
-                    # Filter Medias by admin's languages
+                if admin_languages or admin_communities:
                     queryset_places = queryset.filter(
-                        language__in=admin_languages, communities__in=admin_communities
+                        Q(language__in=admin_languages) |
+                        Q(communities__in=admin_communities)
                     )
 
                     serializer = self.serializer_class(
