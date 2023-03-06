@@ -347,23 +347,50 @@ class Media(BaseModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
-    def verify(id):
-        media = Media.objects.get(pk=id)
-        media.status = VERIFIED
-        media.status_reason = ""
-        media.save()
+    def notify_creator_about_status_change(self):
+        # UNVERIFIED means newly created
+        if self.status == UNVERIFIED:
+            return
 
-    def reject(id, status_reason):
-        media = Media.objects.get(pk=id)
-        media.status = REJECTED
-        media.status_reason = status_reason
-        media.save()
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(STATUS_DISPLAY[self.status])
+        message = "<p>Contribution: {name} has been {status}</p>".format(name=self.name, status=STATUS_DISPLAY[self.status])
 
-    def flag(id, status_reason):
-        media = Media.objects.get(pk=id)
-        media.status = FLAGGED
-        media.status_reason = status_reason
-        media.save()
+        if self.placename and self.placename.name and self.placename.kind in ['', 'poi']:
+            message += '<p>Point of Interest: {}</p>'.format(get_place_link(self.placename))
+
+        if self.community and self.community.name:
+            message += '<p>Community: {}</p>'.format(get_comm_link(self.community))
+
+        if self.status in [REJECTED, FLAGGED]:
+            message += '<p>Reason: {}</p>'.format(self.status_reason)
+            message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
+
+        send_mail(
+            subject,
+            message,
+            'maps@fpcc.ca',
+            [self.creator.email],
+            html_message=message,
+        )
+        return message
+
+    def verify(self):
+        self.status = VERIFIED
+        self.status_reason = ""
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def reject(self, status_reason):
+        self.status = REJECTED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def flag(self, status_reason):
+        self.status = FLAGGED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
 
     def notify(self):
         from web.utils import get_admin_email_list

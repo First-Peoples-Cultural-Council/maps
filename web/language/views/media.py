@@ -132,19 +132,19 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=['patch'])
     def verify(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    Media.verify(int(pk))
-                    return Response({
-                        'success': True,
-                        'message': 'Verified.'
-                    })
-                except Media.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No Media with the given id was found.'
-                    })
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Media has already been verified.'
+                })
+
+            instance.verify()
+            return Response({
+                'success': True,
+                'message': 'Verified.'
+            })
 
         return Response({
             'success': False,
@@ -153,33 +153,25 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    if 'status_reason' in request.data.keys():
-                        Media.reject(int(pk), request.data['status_reason'])
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Media has already been verified.'
+                })
 
-                        # Notifying the creator
-                        try:
-                            inform_media_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], REJECTED)
-                        except Exception as e:
-                            pass
+            if 'status_reason' not in request.data.keys():
+                return Response({
+                    'success': False,
+                    'message': 'Reason must be provided.'
+                })
 
-                        return Response({
-                            'success': True,
-                            'message': 'Rejected.'
-                        })
-                    else:
-                        return Response({
-                            'success': False,
-                            'message': 'Reason must be provided.'
-                        })
-                except Media.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No Media with the given id was found.'
-                    })
+            instance.reject(request.data['status_reason'])
+            return Response({
+                'success': True,
+                'message': 'Rejected.'
+            })
 
         return Response({
             'success': False,
@@ -188,44 +180,24 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            if media.status == VERIFIED:
-                return Response({
-                    'success': False,
-                    'message': 'Media has already been verified.'
-                })
-            else:
-                if 'status_reason' in request.data.keys():
-                    Media.flag(int(pk), request.data['status_reason'])
-
-                    # Notifying Administrators
-                    try:
-                        inform_media_to_be_verified(int(pk))
-                    except Exception as e:
-                        pass
-
-                    # Notifying the creator
-                    try:
-                        inform_media_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], FLAGGED)
-                    except Exception as e:
-                        pass
-
-                    return Response({
-                        'success': True,
-                        'message': 'Flagged.'
-                    })
-                else:
-                    return Response({
-                        'success': False,
-                        'message': 'Reason must be provided.'
-                    })
-        except Media.DoesNotExist:
+        instance = self.get_object()
+        if instance.status == VERIFIED:
             return Response({
                 'success': False,
-                'message': 'No Media with the given id was found.'
+                'message': 'Media has already been verified.'
             })
+
+        if 'status_reason' not in request.data.keys():
+            return Response({
+                'success': False,
+                'message': 'Reason must be provided.'
+            })
+
+        instance.flag(request.data['status_reason'])
+        return Response({
+            'success': True,
+            'message': 'Flagged.'
+        })
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
