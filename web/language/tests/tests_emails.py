@@ -20,6 +20,7 @@ from language.models import (
     Favourite,
 )
 from web.constants import *
+from web.utils import get_place_link, get_comm_link
 
 
 class EmailTests(TestCase):
@@ -53,16 +54,24 @@ class EmailTests(TestCase):
 
         self.placename = PlaceName.objects.create(
             name="Test Placename",
-            community=self.test_community,
             language=self.test_language,
             creator=self.admin_user,
             status=VERIFIED,
         )
+        self.placename.communities.set([self.test_community])
 
         self.media = Media.objects.create(
             name="Test Media",
             file_type="string",
             placename=self.placename,
+            creator=self.admin_user,
+            status=VERIFIED,
+        )
+
+        self.media_with_community = Media.objects.create(
+            name="Test Media With Community",
+            file_type="string",
+            community=self.test_community,
             creator=self.admin_user,
             status=VERIFIED,
         )
@@ -212,32 +221,60 @@ class EmailTests(TestCase):
 
     def test_inform_media_rejected_or_flagged(self):
         reason = "wrong media"
+
+        # REJECT - Test Media attached to Placename
         body = inform_media_rejected_or_flagged(
             self.media.id, reason, REJECTED)
 
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
         # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
+
+        # Testing if the placename's URL was sent in the email
+        assert body.count(get_place_link(self.media.placename)) > 0
 
         assert body.count(reason) > 0
         assert body.count("rejected") > 0
         assert body.count("flagged") == 0
 
-        body = inform_media_rejected_or_flagged(self.media.id, reason, FLAGGED)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
+        # REJECT - Test Media attached to community
+        body = inform_media_rejected_or_flagged(
+            self.media_with_community.id, reason, REJECTED)
 
         # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
+
+        # Testing if the community's URL was sent in the email
+        assert body.count(get_comm_link(
+            self.media_with_community.community)) > 0
+
+        assert body.count(reason) > 0
+        assert body.count("rejected") > 0
+        assert body.count("flagged") == 0
+
+        # FLAG - Test Media attached to Placename
+        body = inform_media_rejected_or_flagged(
+            self.media.id, reason, FLAGGED)
+
+        # Testing if the media create was sent in the email
+        assert body.count(self.media.name) > 0
+
+        # Testing if the placename's URL was sent in the email
+        assert body.count(get_place_link(self.media.placename)) > 0
+
+        assert body.count(reason) > 0
+        assert body.count("flagged") > 0
+        assert body.count("rejected") == 0
+
+        # FLAG - Test Media attached to community
+        body = inform_media_rejected_or_flagged(
+            self.media_with_community.id, reason, FLAGGED)
+
+        # Testing if the media create was sent in the email
+        assert body.count(self.media.name) > 0
+
+        # Testing if the community's URL was sent in the email
+        assert body.count(get_comm_link(
+            self.media_with_community.community)) > 0
 
         assert body.count(reason) > 0
         assert body.count("flagged") > 0
