@@ -44,7 +44,7 @@ def get_new_media_messages(new_medias):
                 kind = 'video'
             messages.append(
                 """
-                <li>{} has a new media uploaded. {}{}</li>
+                <li>{} has a new media uploaded: {}{}</li>
                 """.format(
                     link, preview, file_name
                 )
@@ -85,7 +85,7 @@ def get_my_favourites_messages(my_favourites):
                 link = get_place_link(fav.place)
                 messages.append(
                     """
-                        <li>your place was favourited! {}</li>
+                        <li>Your place was favourited: {}</li>
                     """.format(
                         link
                     )
@@ -94,7 +94,7 @@ def get_my_favourites_messages(my_favourites):
                 link = get_place_link(fav.media.placename)
                 messages.append(
                     """
-                        <li>your contribution was favourited! {}</li>
+                        <li>Your contribution was favourited: {}</li>
                     """.format(
                         link
                     )
@@ -176,7 +176,7 @@ def notify(user, since=None):
     # all placenames, shared with verified members.
     for community in communities:
         new_places = PlaceName.objects.filter(
-            community=community, created__gte=since)
+            communities=community, created__gte=since)
         messages += get_new_places_messages(
             new_places, 'New Places in {}'.format(community.name)
         )
@@ -185,7 +185,7 @@ def notify(user, since=None):
         # public placenames.
         for community in communities_awaiting_verification:
             new_places = PlaceName.objects.filter(
-                community=community, created__gte=since, community_only=False)
+                communities=community, created__gte=since, community_only=False)
             messages += get_new_places_messages(
                 new_places, 'New Places in {} (public updates only)'.format(
                     community.name)
@@ -193,7 +193,7 @@ def notify(user, since=None):
 
     # all media, shared only with verified members.
     new_medias_private = Media.objects.filter(
-        Q(placename__community__in=communities) |
+        Q(placename__communities__in=communities) |
         Q(community__in=communities),
         created__gte=since,
     )
