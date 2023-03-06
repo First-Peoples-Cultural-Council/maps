@@ -501,25 +501,10 @@ def inform_media_rejected_or_flagged(media_id, reason, status):
 
     # Building the message
     message = ''
-    if media.placename:
-        if media.placename.language and media.placename.language.name:
-            if media.placename.community and media.placename.community.name:
-                message += '<p>Your contribution to {} Language and {} Community has been {}.</p>'.format(
-                    get_lang_link(media.placename.language), get_comm_link(
-                        media.placename.community), state
-                )
-            else:
-                message += '<p>Your contribution to {} Language has been {}.</p>'.format(
-                    get_lang_link(media.placename.language), state
-                )
-        else:
-            if media.placename.community and media.placename.community.name:
-                message += '<p>Your contribution to {} Community has been {}.</p>'.format(
-                    get_comm_link(media.placename.community), state
-                )
-            else:
-                message += '<p>Your contribution has been {}.</p>'.format(
-                    state)
+    if media.placename and media.placename.kind in ['', 'poi']:
+        message += '<p>Your contribution to {} been {}.</p>'.format(
+            get_place_link(media.placename), state
+        )
     else:
         if media.community and media.community.name:
             message += '<p>Your contribution to {} Community has been {}.</p>'.format(
