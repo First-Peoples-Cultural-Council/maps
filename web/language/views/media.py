@@ -1,15 +1,14 @@
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import Administrator
-from language.models import CommunityMember, Media, PlaceName
-from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
+from language.models import Media
 from language.serializers import MediaSerializer
 from web.constants import *
 from .base import get_queryset_for_user
@@ -138,7 +137,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 return Response({
                     'success': False,
                     'message': 'Media has already been verified.'
-                })
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             instance.verify()
             return Response({
@@ -149,7 +148,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'Only Administrators can verify contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
@@ -159,7 +158,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                 return Response({
                     'success': False,
                     'message': 'Media has already been verified.'
-                })
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             if 'status_reason' not in request.data.keys():
                 return Response({
@@ -176,7 +175,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'Only Administrators can reject contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
@@ -185,7 +184,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             return Response({
                 'success': False,
                 'message': 'Media has already been verified.'
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         if 'status_reason' not in request.data.keys():
             return Response({
