@@ -236,6 +236,10 @@ def notify(user, since=None):
 
 
 def notify_no_media(user):
+    """
+    Notify Users that their Artist Profiles do not have any Media/Artwork associated to it
+    """
+
     user_name = ' '.join([user.first_name, user.last_name])
     artist_profiles = user.placename_set.filter(
         kind='artist')
