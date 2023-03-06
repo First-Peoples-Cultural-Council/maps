@@ -573,14 +573,14 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
-        # UNVERIFIED Placename NOT MATCHING user's language. It MUST NOT be returned by the route
+        # UNVERIFIED Placename NOT MATCHING user's language and community. It MUST NOT be returned by the route
         test_placename04 = PlaceName.objects.create(
             name="test place04",
             language=self.language2,
             status=UNVERIFIED,
             status_reason="string"
         )
-        test_placename04.communities.set([self.community])
+
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
