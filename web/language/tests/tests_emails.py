@@ -236,7 +236,7 @@ class EmailTests(TestCase):
         assert body.count(get_comm_link(self.media_with_community.community)) > 0
         assert body.count(STATUS_DISPLAY[VERIFIED]) > 0
 
-    def test_verify_reject_notification(self):
+    def test_reject_media_notification(self):
         # Media attached to Placename
         self.media.status = REJECTED
         self.media.status_reason = "Bad Media"
@@ -255,6 +255,27 @@ class EmailTests(TestCase):
         assert body.count(self.media.name) > 0
         assert body.count(get_comm_link(self.media_with_community.community)) > 0
         assert body.count(STATUS_DISPLAY[REJECTED]) > 0
+        assert body.count(self.media_with_community.status_reason) > 0
+
+    def test_flag_media_notification(self):
+        # Media attached to Placename
+        self.media.status = FLAGGED
+        self.media.status_reason = "Sensitive Content"
+        body = self.media.notify_creator_about_status_change()
+
+        assert body.count(self.media.name) > 0
+        assert body.count(get_place_link(self.media.placename)) > 0
+        assert body.count(STATUS_DISPLAY[FLAGGED]) > 0
+        assert body.count(self.media.status_reason) > 0
+
+        # Media attached to Community
+        self.media_with_community.status = FLAGGED
+        self.media_with_community.status_reason = "Sensitive Content"
+        body = self.media_with_community.notify_creator_about_status_change()
+
+        assert body.count(self.media.name) > 0
+        assert body.count(get_comm_link(self.media_with_community.community)) > 0
+        assert body.count(STATUS_DISPLAY[FLAGGED]) > 0
         assert body.count(self.media_with_community.status_reason) > 0
 
     # def test_inform_media_rejected_or_flagged(self):
