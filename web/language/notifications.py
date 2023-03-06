@@ -334,7 +334,7 @@ def send_apology_letter(user):
     )
 
 
-def send():
+def send_notifications():
     now = timezone.now()
     # find everyone who needs an update.
     users = User.objects.filter(
