@@ -272,6 +272,7 @@
           <div>
             <hr />
             <UploadTool
+              v-if="isLoggedIn"
               :id="community.id"
               class="m-1 mb-3"
               type="community"
@@ -405,6 +406,9 @@ export default {
   },
 
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
