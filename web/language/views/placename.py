@@ -114,7 +114,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to create a PlaceName.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
@@ -160,13 +160,13 @@ class PlaceNameViewSet(BaseModelViewSet):
                 else:
                     return Response({
                         'success': False,
-                        'message': 'Only the owner or the artist can update this PlaceName.'
+                        'message': 'Only the owner or the artist can update this Place.'
                     })
 
         return Response({
             'success': False,
-            'message': 'You need to log in in order to update this PlaceName.'
-        })
+            'message': 'You need to log in in order to update this Place.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def destroy(self, request, *args, **kwargs):
         if request and hasattr(request, 'user'):
@@ -181,13 +181,13 @@ class PlaceNameViewSet(BaseModelViewSet):
                 else:
                     return Response({
                         'success': False,
-                        'message': 'Only the owner can delete this PlaceName.'
+                        'message': 'Only the owner can delete this Place.'
                     })
 
         return Response({
             'success': False,
-            'message': 'You need to log in in order to delete this PlaceName.'
-        })
+            'message': 'You need to log in in order to delete this Place.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=True, methods=['patch'])
     def verify(self, request, pk):

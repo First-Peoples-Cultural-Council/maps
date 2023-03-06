@@ -40,7 +40,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to create a Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
@@ -75,7 +75,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to update this Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def destroy(self, request, *args, **kwargs):
         if request and hasattr(request, 'user'):
@@ -96,7 +96,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to delete this Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     @method_decorator(never_cache)
     @action(detail=False)
