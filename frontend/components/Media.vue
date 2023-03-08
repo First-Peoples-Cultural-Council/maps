@@ -169,7 +169,7 @@
         <DeleteMedia v-if="isOwner" :id="media.id" :media="media"></DeleteMedia>
 
         <FlagModal
-          v-if="flag"
+          v-if="media.status !== 'FL' && media.status !== 'VE'"
           :id="media.id"
           title="Report"
           :media="media"
