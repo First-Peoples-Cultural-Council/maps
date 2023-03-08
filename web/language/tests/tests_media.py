@@ -16,25 +16,26 @@ from web.constants import *
 
 class BaseTestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create(
-            username="testuser001",
-            first_name="Test",
-            last_name="user 001",
-            email="test@countable.ca",
+        self.admin_user = User.objects.create(
+            username="admin_user",
+            first_name="Admin",
+            last_name="User",
+            email="admin@countable.ca",
             is_staff=True,
             is_superuser=True,
         )
-        self.user.set_password("password")
-        self.user.save()
+        self.admin_user.set_password("password")
+        self.admin_user.save()
 
-        self.user2 = User.objects.create(
-            username="testuser002",
-            first_name="Test2",
-            last_name="user 002",
-            email="test2@countable.ca"
+        # Create a Regular User with no Privileges
+        self.regular_user = User.objects.create(
+            username="regular_user",
+            first_name="Regular",
+            last_name="User",
+            email="regular@countable.ca"
         )
-        self.user2.set_password("password")
-        self.user2.save()
+        self.regular_user.set_password("password")
+        self.regular_user.save()
 
 
 class MediaAPITests(BaseTestCase):
@@ -53,10 +54,10 @@ class MediaAPITests(BaseTestCase):
         # VERIFIED Placename
         placename1 = PlaceName.objects.create(
             name="test place01",
-            community=self.community1,
             language=self.language1,
             status=VERIFIED
         )
+        placename1.communities.set([self.community1])
 
         # VERIFIED Media
         media01 = Media.objects.create(
@@ -107,7 +108,8 @@ class MediaAPITests(BaseTestCase):
         Ensure media list API brings newly created data of a CREATOR (who creates a media)
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
 
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -116,15 +118,15 @@ class MediaAPITests(BaseTestCase):
         # VERIFIED Placename
         placename1 = PlaceName.objects.create(
             name="test place01",
-            creator=self.user,
-            community=self.community1,
+            creator=self.admin_user,
             language=self.language1,
         )
+        placename1.communities.set([self.community1])
 
         # VERIFIED Media
         media01 = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=VERIFIED
@@ -136,7 +138,7 @@ class MediaAPITests(BaseTestCase):
         # UNVERIFIED Media
         media02 = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=UNVERIFIED
@@ -148,7 +150,7 @@ class MediaAPITests(BaseTestCase):
         # REJECTED Media
         media03 = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=REJECTED
@@ -160,7 +162,7 @@ class MediaAPITests(BaseTestCase):
         # FLAGGED Media
         media04 = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=FLAGGED
@@ -172,7 +174,7 @@ class MediaAPITests(BaseTestCase):
         # REJECTED Media from another user
         media05 = Media.objects.create(
             name="test media01",
-            creator=self.user2,
+            creator=self.regular_user,
             file_type="string",
             placename=placename1,
             status=REJECTED
@@ -184,7 +186,7 @@ class MediaAPITests(BaseTestCase):
         # FLAGGED Media from another user
         media06 = Media.objects.create(
             name="test media01",
-            creator=self.user2,
+            creator=self.regular_user,
             file_type="string",
             placename=placename1,
             status=FLAGGED
@@ -198,7 +200,8 @@ class MediaAPITests(BaseTestCase):
         Ensure media list API brings newly created data for a COMMUNITY MEMBER
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
 
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -207,10 +210,10 @@ class MediaAPITests(BaseTestCase):
         # VERIFIED Placename
         placename1 = PlaceName.objects.create(
             name="test place01",
-            community=self.community1,
             language=self.language1,
             status=VERIFIED
         )
+        placename1.communities.set([self.community1])
 
         # VERIFIED COMMUNITY_ONLY Media
         media01 = Media.objects.create(
@@ -226,7 +229,7 @@ class MediaAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING users's community
         member_same01 = CommunityMember.objects.create(
-            user=self.user,
+            user=self.admin_user,
             community=self.community1,
             status=UNVERIFIED
         )
@@ -292,10 +295,10 @@ class MediaAPITests(BaseTestCase):
         # VERIFIED Placename from another community
         placename2 = PlaceName.objects.create(
             name="test place02",
-            community=self.community2,
             language=self.language1,
             status=VERIFIED
         )
+        placename2.communities.set([self.community2])
 
         # VERIFIED Media from another placename from another community
         media06 = Media.objects.create(
@@ -314,8 +317,10 @@ class MediaAPITests(BaseTestCase):
         Ensure media list API brings newly created data from an ADMINISTRATOR
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="regular_user", password="password"))
 
+        # No media yet
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
@@ -323,50 +328,54 @@ class MediaAPITests(BaseTestCase):
         # VERIFIED COMMUNITY_ONLY Placename
         placename1 = PlaceName.objects.create(
             name="test place01",
-            community=self.community1,
             language=self.language1,
             community_only=True,
             status=VERIFIED
         )
+        placename1.communities.set([self.community1])
 
         # VERIFIED COMMUNITY_ONLY Media
-        media01 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
             community_only=True,
             status=VERIFIED
         )
+
+        # 1 Media is added, but it's not in the user's community
+        # Since media01 has community_only=True, don't return it
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
         # Administrator of the pair language/community
-        admin = Administrator.objects.create(
-            user=self.user,
+        Administrator.objects.create(
+            user=self.regular_user,
             community=self.community1,
             language=self.language1,
         )
 
-        # After the user became an Administrator
-        response = self.client.get("/api/placename/", format="json")
+        # After the user became an Administrator for media01's community,
+        # media01 will now appear in the media list
+        response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
         # UNVERIFIED COMMUNITY_ONLY Placename
-        placename02 = PlaceName.objects.create(
+        placename2 = PlaceName.objects.create(
             name="test place02",
-            community=self.community2,
             language=self.language1,
             community_only=True,
             status=UNVERIFIED
         )
+        placename2.communities.set([self.community2])
 
         # VERIFIED COMMUNITY_ONLY Media
-        media02 = Media.objects.create(
-            name="test media01",
+        Media.objects.create(
+            name="test media02",
             file_type="string",
-            placename=placename02,
+            placename=placename2,
             community_only=True,
             status=VERIFIED
         )
@@ -375,71 +384,19 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # After changing the placename to the Administrator community
-        placename02.community = self.community1
-        placename02.save()
+        placename2.communities.set([self.community1])
 
         response = self.client.get("/api/media/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
-
-        # Creating a new community with the admin language
-        community3 = Community.objects.create(name="Test Community 3")
-        community3.languages.add(self.language1)
-        community3.save()
-
-        # Administrator of this new  pair language/community
-        admin = Administrator.objects.create(
-            user=self.user,
-            community=community3,
-            language=self.language1,
-        )
-
-        # REJECTED COMMUNITY_ONLY Media
-        media03 = Media.objects.create(
-            name="test media01",
-            file_type="string",
-            community=self.community1,
-            community_only=True,
-            status=REJECTED
-        )
-        response = self.client.get("/api/media/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-
-        # After changing the media to the Administrator community
-        media03.community = community3
-        media03.save()
-
-        response = self.client.get("/api/media/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
-
-        # FLAGGED COMMUNITY_ONLY Media
-        media04 = Media.objects.create(
-            name="test media01",
-            file_type="string",
-            community=self.community1,
-            community_only=True,
-            status=FLAGGED
-        )
-        response = self.client.get("/api/media/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
-
-        # After changing the media to the Administrator community
-        media04.community = community3
-        media04.save()
-
-        response = self.client.get("/api/media/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 4)
 
     def test_media_post_with_community(self):
         """
         Ensure media API POST method API works
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser002", password="password"))
+        self.assertTrue(self.client.login(
+            username="regular_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -472,7 +429,8 @@ class MediaAPITests(BaseTestCase):
         Ensure media API POST method API works
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(username="testuser002", password="password"))
+        self.assertTrue(self.client.login(
+            username="regular_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -484,9 +442,9 @@ class MediaAPITests(BaseTestCase):
         placename.common_name = "string"
         placename.community_only = True
         placename.description = "string"
-        placename.community = self.community1
         placename.language = self.language1
         placename.save()
+        placename.communities.set([self.community1])
 
         response = self.client.post(
             "/api/media/",
@@ -528,13 +486,14 @@ class MediaAPITests(BaseTestCase):
         Ensure media list API brings newly created data which needs to be verified
         """
         admin = Administrator.objects.create(
-            user=self.user,
+            user=self.admin_user,
             language=self.language1,
             community=self.community1
         )
 
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -543,16 +502,16 @@ class MediaAPITests(BaseTestCase):
         # PlaceName in the same language as the user (language admin)
         placename1 = PlaceName.objects.create(
             name="test place01",
-            language=self.language1,
-            community=self.community1,
+            language=self.language1
         )
+        placename1.communities.set([self.community1])
 
         # PlaceName out of the same language and community as the user (language admin)
         placename2 = PlaceName.objects.create(
             name="test place02",
-            language=self.language2,
-            community=self.community2,
+            language=self.language2
         )
+        placename2.communities.set([self.community2])
 
         # VERIFIED Media MATCHING admin's language. It MUST NOT be returned by the route
         media_same01 = Media.objects.create(
@@ -632,10 +591,43 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 4)
 
+    def test_verify_media_unauthorized(self):
+        # Check we're not logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], False)
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name="test place01",
+            language=self.language1,
+        )
+
+        test_media = Media.objects.create(
+            name="test media01",
+            file_type="string",
+            placename=placename1,
+            status=FLAGGED,
+            creator=self.regular_user
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/verify/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, FLAGGED)
+
     def test_verify_media(self):
 
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -651,7 +643,8 @@ class MediaAPITests(BaseTestCase):
             name="test media01",
             file_type="string",
             placename=placename1,
-            status=FLAGGED
+            status=FLAGGED,
+            creator=self.regular_user
         )
 
         created_id = test_media.id
@@ -667,10 +660,43 @@ class MediaAPITests(BaseTestCase):
         media = Media.objects.get(pk=created_id)
         self.assertEqual(media.status, VERIFIED)
 
+    def test_reject_media_unauthorized(self):
+        # Check we're not logged in
+        response = self.client.get("/api/user/auth/")
+        self.assertEqual(response.json()["is_authenticated"], False)
+
+        # PlaceName in the same language as the user (language admin)
+        placename1 = PlaceName.objects.create(
+            name="test place01",
+            language=self.language1,
+        )
+
+        test_media = Media.objects.create(
+            name="test media01",
+            file_type="string",
+            placename=placename1,
+            status=FLAGGED,
+            creator=self.regular_user
+        )
+
+        created_id = test_media.id
+
+        # now update it.
+        response = self.client.patch(
+            "/api/media/{}/reject/".format(created_id),
+            {"status_reason": "test reason status"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        media = Media.objects.get(pk=created_id)
+        self.assertEqual(media.status, FLAGGED)
+
     def test_reject_media(self):
 
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -684,7 +710,7 @@ class MediaAPITests(BaseTestCase):
 
         test_media = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=UNVERIFIED
@@ -713,7 +739,7 @@ class MediaAPITests(BaseTestCase):
 
         test_media = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=UNVERIFIED
@@ -743,7 +769,7 @@ class MediaAPITests(BaseTestCase):
 
         test_media = Media.objects.create(
             name="test media01",
-            creator=self.user,
+            creator=self.admin_user,
             file_type="string",
             placename=placename1,
             status=VERIFIED
@@ -757,7 +783,11 @@ class MediaAPITests(BaseTestCase):
             {"status_reason": "test reason status"},
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(data.get('message'),
+                         'Media has already been verified.')
 
         media = Media.objects.get(pk=created_id)
         self.assertEqual(media.status, VERIFIED)
@@ -766,8 +796,10 @@ class MediaAPITests(BaseTestCase):
         """
         Ensure media API DELETE method API works
         """
-        test_media = Media.objects.create(name="Test media 001", file_type="image")
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        test_media = Media.objects.create(
+            name="Test media 001", file_type="image")
+        self.assertTrue(self.client.login(
+            username="admin_user", password="password"))
         response = self.client.delete(
             "/api/media/{}/".format(test_media.id), format="json"
         )
@@ -777,7 +809,8 @@ class MediaAPITests(BaseTestCase):
         """
         Ensure media is ordered in reverse chronological order.
         """
-        test_placename_with_media = PlaceName.objects.create(name="Test PlaceName with Media")
+        test_placename_with_media = PlaceName.objects.create(
+            name="Test PlaceName with Media")
         test_media01 = Media.objects.create(
             name="Test media 01",
             file_type="image",
@@ -814,7 +847,8 @@ class MediaAPITests(BaseTestCase):
         """
         Ensure media is ordered in reverse chronological order.
         """
-        test_placename_with_media = PlaceName.objects.create(name="Test PlaceName with Media")
+        test_placename_with_media = PlaceName.objects.create(
+            name="Test PlaceName with Media")
         test_media01 = Media.objects.create(
             name="Test media 01",
             file_type="image",
@@ -852,4 +886,5 @@ class MediaAPITests(BaseTestCase):
         self.assertTrue(data1[0].get("id") > data1[3].get("id"))
 
         # Check if media is ordered properly in the PlaceName detail API
-        self.assertTrue(data2.get("medias")[0].get("id") > data2.get("medias")[3].get("id"))
+        self.assertTrue(data2.get("medias")[0].get(
+            "id") > data2.get("medias")[3].get("id"))

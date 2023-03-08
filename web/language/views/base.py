@@ -80,6 +80,10 @@ def get_queryset_for_user(view, request):
                 Q(status__in=[FLAGGED, REJECTED],
                   communities__in=user_communities)
             )
+            exclude_query = (
+                Q(community_only=True) &
+                ~Q(communities__in=user_communities)
+            )
         else:
             filter_query = (
                 Q(creator=request.user) |
@@ -88,8 +92,15 @@ def get_queryset_for_user(view, request):
                 Q(status__in=[FLAGGED, REJECTED],
                   placename__communities__in=user_communities)
             )
+            exclude_query = (
+                Q(community_only=True) &
+                ~Q(community__in=user_communities) &
+                ~Q(placename__communities__in=user_communities)
+            )
 
-        queryset_community = queryset.filter(filter_query)
+        queryset_community = queryset.filter(filter_query).exclude(
+            exclude_query
+        )
 
         # 2.3) everything from where user is Administrator (language/community pair)
         admin_languages = Administrator.objects.filter(

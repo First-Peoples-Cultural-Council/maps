@@ -2,7 +2,7 @@ import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
-from language.notifications import send
+from language.notifications import send_notifications
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
@@ -23,7 +23,7 @@ scheduler.add_jobstore(DjangoJobStore(), "default")
     replace_existing=True,
 )
 def notifier_job():
-    send()
+    send_notifications()
 
 
 register_events(scheduler)

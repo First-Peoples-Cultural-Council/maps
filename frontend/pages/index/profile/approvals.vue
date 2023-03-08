@@ -44,11 +44,6 @@
               :key="`ptv${ptv.id}`"
               :place="{ properties: { name: ptv.name } }"
               class="mb-2"
-              @click.native="
-                $router.push({
-                  path: `/place-names/${encodeFPCC(ptv.name)}`
-                })
-              "
             >
               <template v-slot:verify>
                 <b-button
