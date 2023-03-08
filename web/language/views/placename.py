@@ -79,7 +79,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 # Conditionally required fields
                 language = request.data.get('language')
                 non_bc_languages = request.data.get('non_bc_languages')
-                community = request.data.get('community')
+                communities = request.data.get('communities')
                 other_community = request.data.get('other_community')
 
                 if not name:
@@ -100,7 +100,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                     if not language and not non_bc_languages:
                         required_fields_missing = True
                         errors['Language'] = 'This field may not be blank.'
-                    if not community and not other_community:
+                    if not communities and not other_community:
                         required_fields_missing = True
                         errors['Community'] = 'This field may not be blank.'
 
