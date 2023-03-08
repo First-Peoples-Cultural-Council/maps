@@ -184,11 +184,12 @@
               >Community</label
             >
             <multiselect
-              v-model="community"
+              v-model="selectedCommunities"
               placeholder="Search or select a community"
               label="name"
               track-by="id"
               :options="communities"
+              :multiple="true"
             ></multiselect>
 
             <div v-if="isNonBCCommunity" class="website-container mt-3">
@@ -234,7 +235,13 @@
                 :options="notification_options"
               ></b-form-select>
 
-              <b-alert v-if="errors.length" show variant="warning" dismissible>
+              <b-alert
+                v-if="errors.length"
+                class="mt-2"
+                show
+                variant="warning"
+                dismissible
+              >
                 <ul>
                   <li v-for="err in errors" :key="err">{{ err }}</li>
                 </ul>
@@ -267,6 +274,11 @@ import { getApiUrl, getCookie, getMediaUrl } from '@/plugins/utils.js'
 import ErrorScreen from '@/layouts/error.vue'
 import Logo from '@/components/Logo.vue'
 
+const nonBCCommunity = {
+  id: 'nonBC',
+  name: 'Non-BC Community (please specify)'
+}
+
 const base64Encode = data =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -288,6 +300,7 @@ export default {
       quillEditor: null,
       errors: [],
       currentUser: {},
+      selectedCommunities: [],
       language: null,
       languageNonBC: [],
       value: [],
@@ -313,7 +326,7 @@ export default {
           id: c.id
         }
       })
-      const nonBC = { id: 'nonBC', name: 'Non-BC Community (please specify)' }
+      const nonBC = nonBCCommunity
       communitySet.unshift(nonBC)
       return communitySet
     },
@@ -348,7 +361,10 @@ export default {
       return this.value.find(val => val.id === 'others')
     },
     isNonBCCommunity() {
-      return this.community && this.community.id === 'nonBC'
+      return (
+        this.selectedCommunities &&
+        this.selectedCommunities.find(community => community.id === 'nonBC')
+      )
     },
     isCurrentUser() {
       return this.currentUser.id === this.$store.state.user.user.id
@@ -430,6 +446,9 @@ export default {
       }
     }
 
+    const selectedCommunities = currentUser.communities
+    if (currentUser.other_community) selectedCommunities.push(nonBCCommunity)
+
     return {
       currentUser,
       data,
@@ -437,9 +456,7 @@ export default {
       artist_profile,
       value: languageValue,
       languageNonBC,
-      community: currentUser.other_community
-        ? { id: 'nonBC', name: 'Non-BC Community (please specify)' }
-        : currentUser.communities[0],
+      selectedCommunities,
       communityNonBC: currentUser.other_community
         ? currentUser.other_community
         : '',
@@ -508,7 +525,6 @@ export default {
           'X-CSRFToken': getCookie('csrftoken')
         }
       }
-      const communityId = this.community ? [this.community.id] : []
       this.errors = []
       if (this.quillEditor) {
         this.currentUser.bio = this.quillEditor.getText()
@@ -516,6 +532,29 @@ export default {
         return
       }
 
+      if (this.selectedCommunities.length === 0) {
+        return this.errors.push('Community: Please select a Community')
+      }
+
+      if (this.value.length === 0) {
+        return this.errors.push('Language: Please select a Language')
+      }
+
+      const languageNonBC = this.languageNonBC.filter(
+        lang => lang.value !== null && lang.value !== ''
+      )
+
+      if (this.isNonBCLanguage && languageNonBC.length === 0) {
+        return this.errors.push('Language: Please enter a Non B.C. Language')
+      }
+
+      if (this.isNonBCCommunity && !this.communityNonBC) {
+        return this.errors.push('Community: Please enter a Non B.C. Community')
+      }
+
+      const selectedCommunities = this.selectedCommunities.filter(community => {
+        return community.id !== 'nonBC'
+      })
       const data = {
         first_name: this.currentUser.first_name,
         last_name: this.currentUser.last_name,
@@ -523,14 +562,12 @@ export default {
         language_ids: this.value
           .filter(lang => lang.id !== 'others')
           .map(lang => lang.id),
-        community_ids: this.isNonBCCommunity ? [] : communityId,
+        community_ids: selectedCommunities.map(community => community.id),
         other_community: this.isNonBCCommunity ? this.communityNonBC : null,
         artist_profile: this.artist_profile ? this.artist_profile.id : '',
         notification_frequency: this.currentUser.notification_frequency,
         non_bc_languages: this.value.find(lang => lang.id === 'others')
-          ? this.languageNonBC
-              .filter(lang => lang.value !== null)
-              .map(lang => lang.value)
+          ? languageNonBC.map(lang => lang.value)
           : []
       }
       try {
@@ -552,7 +589,6 @@ export default {
             return e[0] + ': ' + e[1]
           })
         )
-        return
       }
       this.$router.push({
         path: '/profile/' + this.currentUser.id
@@ -698,5 +734,9 @@ export default {
   padding: 1em;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
+}
+
+.alert ul:last-child {
+  margin: 0 !important;
 }
 </style>

@@ -1,15 +1,14 @@
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from users.models import Administrator
-from language.models import CommunityMember, Media, PlaceName
-from language.notifications import inform_media_rejected_or_flagged, inform_media_to_be_verified
+from language.models import Media
 from language.serializers import MediaSerializer
 from web.constants import *
 from .base import get_queryset_for_user
@@ -41,7 +40,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to create a Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
@@ -76,7 +75,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to update this Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def destroy(self, request, *args, **kwargs):
         if request and hasattr(request, 'user'):
@@ -97,7 +96,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to delete this Media record.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -117,7 +116,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
                     # Filter Medias by admin's languages
                     queryset_places = queryset.filter(
                         Q(placename__language__in=admin_languages) | Q(
-                            placename__community__in=admin_communities)
+                            placename__communities__in=admin_communities)
                     )
                     queryset_communities = queryset.filter(
                         Q(community__languages__in=admin_languages) | Q(
@@ -132,100 +131,72 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=['patch'])
     def verify(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    Media.verify(int(pk))
-                    return Response({
-                        'success': True,
-                        'message': 'Verified.'
-                    })
-                except Media.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No Media with the given id was found.'
-                    })
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Media has already been verified.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            instance.verify()
+            return Response({
+                'success': True,
+                'message': 'Verified.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can verify contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    if 'status_reason' in request.data.keys():
-                        Media.reject(int(pk), request.data['status_reason'])
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Media has already been verified.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                        # Notifying the creator
-                        try:
-                            inform_media_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], REJECTED)
-                        except Exception as e:
-                            pass
+            if 'status_reason' not in request.data.keys():
+                return Response({
+                    'success': False,
+                    'message': 'Reason must be provided.'
+                })
 
-                        return Response({
-                            'success': True,
-                            'message': 'Rejected.'
-                        })
-                    else:
-                        return Response({
-                            'success': False,
-                            'message': 'Reason must be provided.'
-                        })
-                except Media.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No Media with the given id was found.'
-                    })
+            instance.reject(request.data['status_reason'])
+            return Response({
+                'success': True,
+                'message': 'Rejected.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can reject contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
-        try:
-            media = Media.objects.get(pk=int(pk))
-            if media.status == VERIFIED:
-                return Response({
-                    'success': False,
-                    'message': 'Media has already been verified.'
-                })
-            else:
-                if 'status_reason' in request.data.keys():
-                    Media.flag(int(pk), request.data['status_reason'])
-
-                    # Notifying Administrators
-                    try:
-                        inform_media_to_be_verified(int(pk))
-                    except Exception as e:
-                        pass
-
-                    # Notifying the creator
-                    try:
-                        inform_media_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], FLAGGED)
-                    except Exception as e:
-                        pass
-
-                    return Response({
-                        'success': True,
-                        'message': 'Flagged.'
-                    })
-                else:
-                    return Response({
-                        'success': False,
-                        'message': 'Reason must be provided.'
-                    })
-        except Media.DoesNotExist:
+        instance = self.get_object()
+        if instance.status == VERIFIED:
             return Response({
                 'success': False,
-                'message': 'No Media with the given id was found.'
+                'message': 'Media has already been verified.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'status_reason' not in request.data.keys():
+            return Response({
+                'success': False,
+                'message': 'Reason must be provided.'
             })
+
+        instance.flag(request.data['status_reason'])
+        return Response({
+            'success': True,
+            'message': 'Flagged.'
+        })
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
