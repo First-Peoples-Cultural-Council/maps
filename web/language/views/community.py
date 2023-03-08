@@ -81,6 +81,12 @@ class CommunityViewSet(BaseModelViewSet):
         if not user_logged_in:
             serialized_data['places'] = [
                 place for place in serialized_data['places'] if not place['community_only']]
+            # Update list of medias - exclude community_only if necessary
+            updated_medias = []
+            for media in serialized_data['medias']:
+                if not media['community_only'] and media['status'] == VERIFIED:
+                    updated_medias.append(media)
+            serialized_data['medias'] = updated_medias
         else:
             user_communities = CommunityMember.objects.filter(
                 user=request.user.id).values_list('community', flat=True)
@@ -99,11 +105,11 @@ class CommunityViewSet(BaseModelViewSet):
             # Update list of medias - exclude community_only if necessary
             updated_medias = []
             for media in serialized_data['medias']:
-                if media['community_only'] and instance.id in user_communities:
-                    # Append if the user is a member of this community
+                if media['creator'] == request.user.id:
                     updated_medias.append(media)
-                elif not media['community_only']:
-                    # Append if available to the public
+                elif media['community_only'] and instance.id in user_communities:
+                    updated_medias.append(media)
+                elif not media['community_only'] and media['status'] in [VERIFIED, UNVERIFIED]:
                     updated_medias.append(media)
             serialized_data['medias'] = updated_medias
         return Response(serialized_data)

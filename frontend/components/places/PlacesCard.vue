@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="action-container">
+    <div class="action-container mb-2">
       <slot name="verify"></slot>
       <slot name="reject"></slot>
     </div>

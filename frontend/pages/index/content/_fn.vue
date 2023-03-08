@@ -269,9 +269,10 @@
           </div>
         </section>
         <section class="ml-4 mr-4">
-          <div v-if="isLoggedIn">
+          <div>
             <hr />
             <UploadTool
+              v-if="isLoggedIn"
               :id="community.id"
               class="m-1 mb-3"
               type="community"
@@ -405,6 +406,9 @@ export default {
   },
 
   computed: {
+    isLoggedIn() {
+      return this.$store.state.user.isLoggedIn
+    },
     mobileContent() {
       return this.$store.state.sidebar.mobileContent
     },
@@ -604,7 +608,7 @@ export default {
   methods: {
     getMediaUrl,
     isMediaCreator(media, user) {
-      if (media.creator && user) {
+      if (media.creator && user && user.id) {
         return user.id === media.creator.id || user.id === media.creator
       }
     },

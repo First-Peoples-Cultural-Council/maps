@@ -17,7 +17,6 @@ from language.models import (
     Media,
     PublicArtArtist
 )
-from language.notifications import inform_placename_rejected_or_flagged, inform_placename_to_be_verified
 from language.filters import ListFilter
 from language.views import BaseModelViewSet, BasePlaceNameListAPIView, get_queryset_for_user
 from language.serializers import (
@@ -80,7 +79,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                 # Conditionally required fields
                 language = request.data.get('language')
                 non_bc_languages = request.data.get('non_bc_languages')
-                community = request.data.get('community')
+                communities = request.data.get('communities')
                 other_community = request.data.get('other_community')
 
                 if not name:
@@ -101,7 +100,7 @@ class PlaceNameViewSet(BaseModelViewSet):
                     if not language and not non_bc_languages:
                         required_fields_missing = True
                         errors['Language'] = 'This field may not be blank.'
-                    if not community and not other_community:
+                    if not communities and not other_community:
                         required_fields_missing = True
                         errors['Community'] = 'This field may not be blank.'
 
@@ -115,7 +114,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         return Response({
             'success': False,
             'message': 'You need to log in in order to create a PlaceName.'
-        })
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def perform_create(self, serializer):
         obj = serializer.save(creator=self.request.user)
@@ -126,7 +125,7 @@ class PlaceNameViewSet(BaseModelViewSet):
             user__id=int(self.request.user.id)).values_list('language', flat=True))
 
         if (
-            (obj.community and obj.community.id in admin_communities) or
+            (obj.communities and obj.communities.filter(id__in=admin_communities).exists()) or
             (obj.language and obj.language.id in admin_languages) or
             (self.request.user.is_staff or self.request.user.is_superuser)
         ):
@@ -161,13 +160,13 @@ class PlaceNameViewSet(BaseModelViewSet):
                 else:
                     return Response({
                         'success': False,
-                        'message': 'Only the owner or the artist can update this PlaceName.'
+                        'message': 'Only the owner or the artist can update this Place.'
                     })
 
         return Response({
             'success': False,
-            'message': 'You need to log in in order to update this PlaceName.'
-        })
+            'message': 'You need to log in in order to update this Place.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     def destroy(self, request, *args, **kwargs):
         if request and hasattr(request, 'user'):
@@ -182,111 +181,100 @@ class PlaceNameViewSet(BaseModelViewSet):
                 else:
                     return Response({
                         'success': False,
-                        'message': 'Only the owner can delete this PlaceName.'
+                        'message': 'Only the owner can delete this Place.'
                     })
 
         return Response({
             'success': False,
-            'message': 'You need to log in in order to delete this PlaceName.'
-        })
+            'message': 'You need to log in in order to delete this Place.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=True, methods=['patch'])
     def verify(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    PlaceName.verify(int(pk))
-                    return Response({
-                        'success': True,
-                        'message': 'Verified.'
-                    })
-                except PlaceName.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No PlaceName with the given id was found.'
-                    })
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.kind not in ['', 'poi']:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid action.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Place has already been verified.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            instance.verify()
+            return Response({
+                'success': True,
+                'message': 'Verified.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can verify contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def reject(self, request, pk):
-        if request and hasattr(request, 'user'):
-            if request.user.is_authenticated:
-                try:
-                    if 'status_reason' in request.data.keys():
-                        PlaceName.reject(
-                            int(pk), request.data['status_reason'])
+        instance = self.get_object()
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            if instance.kind not in ['', 'poi']:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid action.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                        # Notifying the creator
-                        try:
-                            inform_placename_rejected_or_flagged(
-                                int(pk), request.data['status_reason'], REJECTED)
-                        except Exception as e:
-                            pass
+            if instance.status == VERIFIED:
+                return Response({
+                    'success': False,
+                    'message': 'Place has already been verified.'
+                })
 
-                        return Response({
-                            'success': True,
-                            'message': 'Rejected.'
-                        })
-                    else:
-                        return Response({
-                            'success': False,
-                            'message': 'Reason must be provided.'
-                        })
-                except PlaceName.DoesNotExist:
-                    return Response({
-                        'success': False,
-                        'message': 'No PlaceName with the given id was found.'
-                    })
+            if 'status_reason' not in request.data.keys():
+                return Response({
+                    'success': False,
+                    'message': 'Reason must be provided.'
+                })
+
+            instance.reject(request.data['status_reason'])
+            return Response({
+                'success': True,
+                'message': 'Rejected.'
+            })
 
         return Response({
             'success': False,
             'message': 'Only Administrators can reject contributions.'
-        })
+        }, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['patch'])
     def flag(self, request, pk):
-        try:
-            placename = PlaceName.objects.get(pk=int(pk))
-            if placename.status == VERIFIED:
-                return Response({
-                    'success': False,
-                    'message': 'PlaceName has already been verified.'
-                })
-            else:
-                if 'status_reason' in request.data.keys():
-                    PlaceName.flag(int(pk), request.data['status_reason'])
-
-                    # Notifying Administrators
-                    try:
-                        inform_placename_to_be_verified(int(pk))
-                    except Exception as e:
-                        pass
-
-                    # Notifying the creator
-                    try:
-                        inform_placename_rejected_or_flagged(
-                            int(pk), request.data['status_reason'], FLAGGED)
-                    except Exception as e:
-                        pass
-
-                    return Response({
-                        'success': True,
-                        'message': 'Flagged.'
-                    })
-                else:
-                    return Response({
-                        'success': False,
-                        'message': 'Reason must be provided.'
-                    })
-        except PlaceName.DoesNotExist:
+        instance = self.get_object()
+        if instance.kind not in ['', 'poi']:
             return Response({
                 'success': False,
-                'message': 'No PlaceName with the given id was found.'
+                'message': 'Invalid action.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if instance.status == VERIFIED:
+            return Response({
+                'success': False,
+                'message': 'Place has already been verified.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'status_reason' not in request.data.keys():
+            return Response({
+                'success': False,
+                'message': 'Reason must be provided.'
             })
+
+        instance.flag(request.data['status_reason'])
+        return Response({
+            'success': True,
+            'message': 'Flagged.'
+        })
 
     @method_decorator(never_cache)
     def detail(self, request):
@@ -321,7 +309,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     @action(detail=False)
     def list_to_verify(self, request):
         # 'VERIFIED' PlaceNames do not need to the verified
-        queryset = self.get_queryset().exclude(
+        queryset = self.get_queryset().filter(kind__in=['', 'poi']).exclude(
             status__exact=VERIFIED).exclude(status__exact=REJECTED)
 
         if request and hasattr(request, 'user'):
@@ -331,10 +319,10 @@ class PlaceNameViewSet(BaseModelViewSet):
                 admin_communities = Administrator.objects.filter(
                     user__id=int(request.user.id)).values('community')
 
-                if admin_languages and admin_communities:
-                    # Filter Medias by admin's languages
+                if admin_languages or admin_communities:
                     queryset_places = queryset.filter(
-                        language__in=admin_languages, community__in=admin_communities
+                        Q(language__in=admin_languages) |
+                        Q(communities__in=admin_communities)
                     )
 
                     serializer = self.serializer_class(
@@ -357,7 +345,7 @@ class PlaceNameGeoList(generics.ListAPIView):
     ).filter(
         kind__in=['poi', ''],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]
@@ -387,7 +375,7 @@ class ArtGeoList(generics.ListAPIView):
         kind__in=['public_art', 'artist', 'organization',
                   'event', 'resource'],
         geom__isnull=False
-    ).only('id', 'name', 'kind', 'community', 'geom')
+    ).only('id', 'name', 'kind', 'communities', 'geom')
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['language', ]

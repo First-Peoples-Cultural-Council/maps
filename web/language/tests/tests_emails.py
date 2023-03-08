@@ -3,14 +3,8 @@ from django.utils import timezone
 
 from datetime import timedelta
 
-from language.notifications import (
-    notify,
-    inform_placename_rejected_or_flagged,
-    inform_placename_to_be_verified,
-    inform_media_rejected_or_flagged,
-    inform_media_to_be_verified,
-)
-from users.models import User, Administrator
+from language.notifications import notify
+from users.models import User
 from language.models import (
     Language,
     Community,
@@ -20,6 +14,7 @@ from language.models import (
     Favourite,
 )
 from web.constants import *
+from web.utils import get_place_link, get_comm_link
 
 
 class EmailTests(TestCase):
@@ -53,16 +48,24 @@ class EmailTests(TestCase):
 
         self.placename = PlaceName.objects.create(
             name="Test Placename",
-            community=self.test_community,
             language=self.test_language,
             creator=self.admin_user,
             status=VERIFIED,
         )
+        self.placename.communities.set([self.test_community])
 
         self.media = Media.objects.create(
             name="Test Media",
             file_type="string",
             placename=self.placename,
+            creator=self.admin_user,
+            status=VERIFIED,
+        )
+
+        self.media_with_community = Media.objects.create(
+            name="Test Media With Community",
+            file_type="string",
+            community=self.test_community,
             creator=self.admin_user,
             status=VERIFIED,
         )
@@ -103,12 +106,12 @@ class EmailTests(TestCase):
         )
 
         # Create Placename under Admin User's language to notify him
-        PlaceName.objects.create(
+        new_placename = PlaceName.objects.create(
             name="New Placename",
-            community=self.test_community,
             language=self.test_language,
             status=VERIFIED,
         )
+        new_placename.communities.set([self.test_community])
 
         user = User.objects.get(email=self.admin_user.email)
         body = notify(user, timezone.now() - timedelta(days=7))
@@ -122,169 +125,101 @@ class EmailTests(TestCase):
         # Testing if the placename was not sent more than once
         self.assertEqual(body.count("Someone uploaded a new place:"), 1)
 
-        # Testing if the media was not sent more than once
-        self.assertEqual(body.count("has a new media uploaded"), 1)
+        # Testing if all 2 media are in the notification
+        self.assertEqual(body.count("has a new media uploaded"), 2)
 
         # Testing if the placename favourite was sent in the email
-        self.assertEqual(body.count("your place was favourited!"), 1)
+        self.assertEqual(body.count("Your place was favourited:"), 1)
 
         # Testing if the media favourite was sent in the email
-        self.assertEqual(body.count("your contribution was favourited!"), 1)
+        self.assertEqual(body.count("Your contribution was favourited:"), 1)
 
-    def test_inform_placename_rejected_or_flagged(self):
-        reason = "wrong place"
-        body = inform_placename_rejected_or_flagged(
-            self.placename.id, reason, REJECTED)
+    def test_verify_placename_notification(self):
+        # Media attached to Placename
+        self.placename.status = VERIFIED
+        body = self.placename.notify_creator_about_status_change()
 
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the placename create was sent in the email
         assert body.count(self.placename.name) > 0
+        assert body.count(get_place_link(self.placename)) > 0
+        assert body.count(STATUS_DISPLAY[VERIFIED]) > 0
 
-        assert body.count(reason) > 0
-        assert body.count("rejected") > 0
-        assert body.count("flagged") == 0
+    def test_reject_placename_notification(self):
+        # Media attached to Placename
+        self.placename.status = REJECTED
+        self.placename.status_reason = "Bad Media"
+        body = self.placename.notify_creator_about_status_change()
 
-        body = inform_placename_rejected_or_flagged(
-            self.placename.id, reason, FLAGGED)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the placename create was sent in the email
         assert body.count(self.placename.name) > 0
-
-        assert body.count(reason) > 0
-        assert body.count("flagged") > 0
-        assert body.count("rejected") == 0
-
-    def test_inform_placename_to_be_verified(self):
-        Administrator.objects.create(
-            user=self.admin_user,
-            language=self.test_language,
-            community=self.test_community,
-        )
-
-        self.placename.status = UNVERIFIED
-        self.placename.status_reason = "wrong media"
-        self.placename.save()
-
-        body = inform_placename_to_be_verified(self.placename.id)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the placename create was sent in the email
-        assert body.count(self.placename.name) > 0
-
+        assert body.count(get_place_link(self.placename)) > 0
+        assert body.count(STATUS_DISPLAY[REJECTED]) > 0
         assert body.count(self.placename.status_reason) > 0
-        assert body.count("created") > 0
-        assert body.count("flagged") == 0
 
+    def test_flag_placename_notification(self):
+        # Media attached to Placename
         self.placename.status = FLAGGED
-        self.placename.status_reason = "wrong media"
-        self.placename.save()
+        self.placename.status_reason = "Sensitive Content"
+        body = self.placename.notify_creator_about_status_change()
 
-        body = inform_placename_to_be_verified(self.placename.id)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the placename create was sent in the email
         assert body.count(self.placename.name) > 0
-
+        assert body.count(get_place_link(self.placename)) > 0
+        assert body.count(STATUS_DISPLAY[FLAGGED]) > 0
         assert body.count(self.placename.status_reason) > 0
-        assert body.count("created") == 0
-        assert body.count("flagged") > 0
 
-    def test_inform_media_rejected_or_flagged(self):
-        reason = "wrong media"
-        body = inform_media_rejected_or_flagged(
-            self.media.id, reason, REJECTED)
+    def test_verify_media_notification(self):
+        # Media attached to Placename
+        self.media.status = VERIFIED
+        body = self.media.notify_creator_about_status_change()
 
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
+        assert body.count(get_place_link(self.media.placename)) > 0
+        assert body.count(STATUS_DISPLAY[VERIFIED]) > 0
 
-        assert body.count(reason) > 0
-        assert body.count("rejected") > 0
-        assert body.count("flagged") == 0
+        # Media attached to Community
+        self.media_with_community.status = VERIFIED
+        body = self.media_with_community.notify_creator_about_status_change()
 
-        body = inform_media_rejected_or_flagged(self.media.id, reason, FLAGGED)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
+        assert body.count(get_comm_link(self.media_with_community.community)) > 0
+        assert body.count(STATUS_DISPLAY[VERIFIED]) > 0
 
-        assert body.count(reason) > 0
-        assert body.count("flagged") > 0
-        assert body.count("rejected") == 0
+    def test_reject_media_notification(self):
+        # Media attached to Placename
+        self.media.status = REJECTED
+        self.media.status_reason = "Bad Media"
+        body = self.media.notify_creator_about_status_change()
 
-    def test_inform_media_to_be_verified(self):
-
-        Administrator.objects.create(
-            user=self.admin_user,
-            language=self.test_language,
-            community=self.test_community,
-        )
-
-        self.media.status = UNVERIFIED
-        self.media.status_reason = "wrong media"
-        self.media.save()
-
-        body = inform_media_to_be_verified(self.media.id)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
-
+        assert body.count(get_place_link(self.media.placename)) > 0
+        assert body.count(STATUS_DISPLAY[REJECTED]) > 0
         assert body.count(self.media.status_reason) > 0
-        assert body.count("created") > 0
-        assert body.count("flagged") == 0
 
+        # Media attached to Community
+        self.media_with_community.status = REJECTED
+        self.media_with_community.status_reason = "Bad Media"
+        body = self.media_with_community.notify_creator_about_status_change()
+
+        assert body.count(self.media.name) > 0
+        assert body.count(get_comm_link(self.media_with_community.community)) > 0
+        assert body.count(STATUS_DISPLAY[REJECTED]) > 0
+        assert body.count(self.media_with_community.status_reason) > 0
+
+    def test_flag_media_notification(self):
+        # Media attached to Placename
         self.media.status = FLAGGED
-        self.media.status_reason = "wrong media"
-        self.media.save()
+        self.media.status_reason = "Sensitive Content"
+        body = self.media.notify_creator_about_status_change()
 
-        body = inform_media_to_be_verified(self.media.id)
-
-        # Testing if the language create was referenced in the email
-        assert body.count(self.test_language.name) > 0
-
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
-        # Testing if the media create was sent in the email
         assert body.count(self.media.name) > 0
-
+        assert body.count(get_place_link(self.media.placename)) > 0
+        assert body.count(STATUS_DISPLAY[FLAGGED]) > 0
         assert body.count(self.media.status_reason) > 0
-        assert body.count("flagged") > 0
-        assert body.count("created") == 0
+
+        # Media attached to Community
+        self.media_with_community.status = FLAGGED
+        self.media_with_community.status_reason = "Sensitive Content"
+        body = self.media_with_community.notify_creator_about_status_change()
+
+        assert body.count(self.media.name) > 0
+        assert body.count(get_comm_link(self.media_with_community.community)) > 0
+        assert body.count(STATUS_DISPLAY[FLAGGED]) > 0
+        assert body.count(self.media_with_community.status_reason) > 0

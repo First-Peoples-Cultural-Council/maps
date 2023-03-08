@@ -259,11 +259,14 @@ export const actions = {
 
     if (data.type === 'media') {
       await dispatch('user/getMediaToVerify', {}, { root: true })
-      await dispatch(
-        'places/getPlaceMedias',
-        { id: data.media.placename },
-        { root: true }
-      )
+
+      if (data.media.placename) {
+        await dispatch(
+          'places/getPlaceMedias',
+          { id: data.media.placename },
+          { root: true }
+        )
+      }
     }
 
     return result

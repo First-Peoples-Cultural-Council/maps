@@ -230,7 +230,7 @@ class PlaceName(CulturalModel):
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )  # Deprecated
-    kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
+    kind = models.CharField(max_length=20, default=POI, choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="", null=True, blank=True)
@@ -241,8 +241,8 @@ class PlaceName(CulturalModel):
     )
     non_bc_languages = ArrayField(models.CharField(
         max_length=200), blank=True, null=True,  default=None)
-    community = models.ForeignKey(
-        Community, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
+    communities = models.ManyToManyField(
+        Community, default=None, related_name="places"
     )
     other_community = models.CharField(
         max_length=64, default="", blank=True, null=True)
@@ -269,23 +269,51 @@ class PlaceName(CulturalModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
-    def verify(id):
-        media = PlaceName.objects.get(pk=id)
-        media.status = VERIFIED
-        media.status_reason = ""
-        media.save()
+    def notify_creator_about_status_change(self):
+        # UNVERIFIED means newly created
+        if self.status == UNVERIFIED:
+            return None
 
-    def reject(id, status_reason):
-        media = PlaceName.objects.get(pk=id)
-        media.status = REJECTED
-        media.status_reason = status_reason
-        media.save()
+        # Only POIs should have notifications
+        if self.kind not in ['', 'poi']:
+            return None
 
-    def flag(id, status_reason):
-        media = PlaceName.objects.get(pk=id)
-        media.status = FLAGGED
-        media.status_reason = status_reason
-        media.save()
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(STATUS_DISPLAY[self.status])
+        message = "<p>Contribution: {name} has been {status}</p>".format(name=self.name, status=STATUS_DISPLAY[self.status])
+
+        if self.name:
+            message += '<p>Point of Interest: {}</p>'.format(get_place_link(self))
+
+        if self.status in [REJECTED, FLAGGED]:
+            message += '<p>Reason: {}</p>'.format(self.status_reason)
+            message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
+
+        send_mail(
+            subject,
+            message,
+            'maps@fpcc.ca',
+            [self.creator.email],
+            html_message=message,
+        )
+        return message
+
+    def verify(self):
+        self.status = VERIFIED
+        self.status_reason = ""
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def reject(self, status_reason):
+        self.status = REJECTED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def flag(self, status_reason):
+        self.status = FLAGGED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
 
     def notify(self):
         from web.utils import get_admin_email_list
@@ -347,23 +375,50 @@ class Media(BaseModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
-    def verify(id):
-        media = Media.objects.get(pk=id)
-        media.status = VERIFIED
-        media.status_reason = ""
-        media.save()
+    def notify_creator_about_status_change(self):
+        # UNVERIFIED means newly created
+        if self.status == UNVERIFIED:
+            return None
 
-    def reject(id, status_reason):
-        media = Media.objects.get(pk=id)
-        media.status = REJECTED
-        media.status_reason = status_reason
-        media.save()
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(STATUS_DISPLAY[self.status])
+        message = "<p>Contribution: {name} has been {status}</p>".format(name=self.name, status=STATUS_DISPLAY[self.status])
 
-    def flag(id, status_reason):
-        media = Media.objects.get(pk=id)
-        media.status = FLAGGED
-        media.status_reason = status_reason
-        media.save()
+        if self.placename and self.placename.name and self.placename.kind in ['', 'poi']:
+            message += '<p>Point of Interest: {}</p>'.format(get_place_link(self.placename))
+
+        if self.community and self.community.name:
+            message += '<p>Community: {}</p>'.format(get_comm_link(self.community))
+
+        if self.status in [REJECTED, FLAGGED]:
+            message += '<p>Reason: {}</p>'.format(self.status_reason)
+            message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
+
+        send_mail(
+            subject,
+            message,
+            'maps@fpcc.ca',
+            [self.creator.email],
+            html_message=message,
+        )
+        return message
+
+    def verify(self):
+        self.status = VERIFIED
+        self.status_reason = ""
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def reject(self, status_reason):
+        self.status = REJECTED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
+
+    def flag(self, status_reason):
+        self.status = FLAGGED
+        self.status_reason = status_reason
+        self.save()
+        self.notify_creator_about_status_change()
 
     def notify(self):
         from web.utils import get_admin_email_list
