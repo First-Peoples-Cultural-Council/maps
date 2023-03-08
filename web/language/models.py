@@ -301,16 +301,19 @@ class PlaceName(CulturalModel):
         self.status = VERIFIED
         self.status_reason = ""
         self.save()
+        self.notify_creator_about_status_change()
 
     def reject(self, status_reason):
         self.status = REJECTED
         self.status_reason = status_reason
         self.save()
+        self.notify_creator_about_status_change()
 
     def flag(self, status_reason):
         self.status = FLAGGED
         self.status_reason = status_reason
         self.save()
+        self.notify_creator_about_status_change()
 
     def notify(self):
         from web.utils import get_admin_email_list
