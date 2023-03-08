@@ -230,7 +230,7 @@ class PlaceName(CulturalModel):
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )  # Deprecated
-    kind = models.CharField(max_length=20, default="", choices=KIND_CHOICES)
+    kind = models.CharField(max_length=20, default=POI, choices=KIND_CHOICES)
     common_name = models.CharField(max_length=64, blank=True)
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="", null=True, blank=True)
