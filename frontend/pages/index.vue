@@ -2,7 +2,7 @@
   <div>
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
-    <InformationModal></InformationModal>
+    <InformationModal v-if="showInformationModal"></InformationModal>
 
     <div
       id="map-container"
@@ -363,6 +363,7 @@ export default {
       searchQuery: '',
       searchKey: 'search',
       showFullscreenLoading: false,
+      showInformationModal: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -469,6 +470,11 @@ export default {
     },
     map() {
       return this.$store.state.mapinstance.mapInstance
+    }
+  },
+  watch: {
+    $route(to, from) {
+      this.handleInformationModalVisibility()
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -651,6 +657,11 @@ export default {
     }, 2000)
 
     // Showing the Notification on Media success
+    this.$root.$on('hideInformationModal', () => {
+      this.showInformationModal = false
+    })
+
+    // Showing the Notification on Media success
     this.$root.$on('fileUploaded', data => {
       // this.modalShow = false
       this.$root.$emit('notification', {
@@ -807,6 +818,14 @@ export default {
           this.$root.$emit('triggerScrollVisibilityCheck')
         }, 500)
       }, 250)
+    },
+    handleInformationModalVisibility() {
+      if (
+        Cookies.get('fpmap_info_modal_understood') !== 'true' &&
+        this.$route.path !== '/splashscreen'
+      ) {
+        this.showInformationModal = true
+      }
     },
     setMobile(screenSizeOnLand) {
       if (screenSizeOnLand <= 992 && this.isMobile === false) {
@@ -1103,6 +1122,8 @@ export default {
 
     mapLoaded(map) {
       const mapboxgl = require('mapbox-gl')
+
+      this.handleInformationModalVisibility()
 
       this.showFullscreenLoading = false
 

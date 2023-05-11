@@ -39,13 +39,28 @@
         </p>
       </div>
       <div class="information-modal-footer">
-        <button class="information-modal-btn">
+        <button class="information-modal-btn" @click="handleClick">
           I UNDERSTAND, TAKE ME TO THE MAP
         </button>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+import * as Cookies from 'js-cookie'
+
+export default {
+  methods: {
+    handleClick(e) {
+      Cookies.set('fpmap_info_modal_understood', true, {
+        expires: new Date().getTime() + 30 * 24 * 60 * 60 * 1000
+      })
+      this.$root.$emit('hideInformationModal')
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 .modal-container {
@@ -99,13 +114,22 @@
     }
 
     .information-modal-body {
+      overflow: auto;
+      margin-bottom: 16px;
+
       p {
         margin: 16px 24px;
+      }
+
+      p:last-child {
+        margin-bottom: 0;
       }
     }
 
     .information-modal-footer {
-      text-align: right;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
       padding: 16px 24px;
       padding-top: 0;
 
@@ -115,7 +139,6 @@
         border: 0px solid #ddd5cc;
         border-radius: 3em;
         cursor: pointer;
-        margin: 0;
         padding: 0.5em 2em;
         font-weight: 800;
         font-size: 15px;
@@ -128,6 +151,19 @@
           width: 25px;
           height: 25px;
         }
+      }
+    }
+  }
+
+  @media screen and (max-width: 516px) {
+    .information-modal {
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .information-modal-footer {
+      .information-modal-btn {
+        margin: auto;
       }
     }
   }
