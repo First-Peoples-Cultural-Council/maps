@@ -2,6 +2,7 @@
   <div>
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
+    <InformationModal v-if="showInformationModal"></InformationModal>
 
     <div
       id="map-container"
@@ -11,7 +12,6 @@
         'arts-container': isDrawerShown,
         'map-container-pl': !isEmbed
       }"
-      ￼￼
     >
       <div v-if="isEmbed" class="floating-icon">
         <Logo :logo-alt="5"></Logo>
@@ -252,6 +252,7 @@ import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
+import InformationModal from '@/components/InformationModal.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
@@ -337,6 +338,7 @@ export default {
     LogInOverlay,
     EventOverlay,
     FullscreenLoading,
+    InformationModal,
     LoadingModal,
     MapControlFooter
   },
@@ -361,6 +363,7 @@ export default {
       searchQuery: '',
       searchKey: 'search',
       showFullscreenLoading: false,
+      showInformationModal: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -467,6 +470,11 @@ export default {
     },
     map() {
       return this.$store.state.mapinstance.mapInstance
+    }
+  },
+  watch: {
+    $route(to, from) {
+      this.handleInformationModalVisibility()
     }
   },
   async asyncData({ params, $axios, store, hash }) {
@@ -649,6 +657,11 @@ export default {
     }, 2000)
 
     // Showing the Notification on Media success
+    this.$root.$on('hideInformationModal', () => {
+      this.showInformationModal = false
+    })
+
+    // Showing the Notification on Media success
     this.$root.$on('fileUploaded', data => {
       // this.modalShow = false
       this.$root.$emit('notification', {
@@ -691,7 +704,6 @@ export default {
           path: '/splashscreen'
         })
       }
-    } else if (localStorage.getItem('fpcc-splashscreen') === 'false') {
     }
 
     // Closes the splashscreen, and add the value to the localStorage, for remembering its not the first visit
@@ -806,6 +818,14 @@ export default {
           this.$root.$emit('triggerScrollVisibilityCheck')
         }, 500)
       }, 250)
+    },
+    handleInformationModalVisibility() {
+      if (
+        Cookies.get('fpmap_info_modal_understood') !== 'true' &&
+        this.$route.path !== '/splashscreen'
+      ) {
+        this.showInformationModal = true
+      }
     },
     setMobile(screenSizeOnLand) {
       if (screenSizeOnLand <= 992 && this.isMobile === false) {
@@ -1102,6 +1122,8 @@ export default {
 
     mapLoaded(map) {
       const mapboxgl = require('mapbox-gl')
+
+      this.handleInformationModalVisibility()
 
       this.showFullscreenLoading = false
 
