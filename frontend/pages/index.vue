@@ -2,6 +2,7 @@
   <div>
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
+    <InformationModal></InformationModal>
 
     <div
       id="map-container"
@@ -11,7 +12,6 @@
         'arts-container': isDrawerShown,
         'map-container-pl': !isEmbed
       }"
-      ￼￼
     >
       <div v-if="isEmbed" class="floating-icon">
         <Logo :logo-alt="5"></Logo>
@@ -252,6 +252,7 @@ import SearchOverlay from '@/components/SearchOverlay.vue'
 import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
+import InformationModal from '@/components/InformationModal.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
@@ -337,6 +338,7 @@ export default {
     LogInOverlay,
     EventOverlay,
     FullscreenLoading,
+    InformationModal,
     LoadingModal,
     MapControlFooter
   },
@@ -691,7 +693,6 @@ export default {
           path: '/splashscreen'
         })
       }
-    } else if (localStorage.getItem('fpcc-splashscreen') === 'false') {
     }
 
     // Closes the splashscreen, and add the value to the localStorage, for remembering its not the first visit
