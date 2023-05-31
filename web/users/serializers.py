@@ -57,16 +57,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         cleaned_placename_set = []
         valid_kinds = ['', 'poi', 'public_art', 'artist', 'organization', 'event']
-        invalid_geoms = [{
-            "type": "Point",
-            "coordinates": [
-                0.0,
-                0.0
-            ]
-        }]
         for placename in representation["placename_set"]:
-            if placename.get("kind") in valid_kinds and \
-               placename.get("geom") and placename.get("geom") not in invalid_geoms:
+            if placename.get("kind") in valid_kinds:
                 cleaned_placename_set.append(placename)
         representation["placename_set"] = cleaned_placename_set
 
