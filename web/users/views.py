@@ -16,11 +16,12 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.contrib.auth import login, logout
 
-from .models import User, Administrator
-from .serializers import UserSerializer
-from .cognito import verify_token
+from users.models import User, Administrator
+from users.serializers import UserSerializer
+from users.cognito import verify_token
 
 from language.models import RelatedData
+from language.serializers import PlaceNameLightSerializer
 
 
 def validate_key(encoded_email, key):
@@ -156,6 +157,56 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
 
 class ConfirmClaimView(APIView):
+    def get(self, request):
+        data = request.GET
+
+        if 'email' in data and 'key' in data:
+            email = data.get('email')
+            encoded_email = data.get('email').encode('utf-8')
+            key = data.get('key')
+
+            is_valid = validate_key(encoded_email, key)
+
+            if is_valid:
+                email_data = RelatedData.objects.exclude(
+                    (Q(value='') | Q(
+                        placename__kind__in=['resource', 'grant']))
+                ).filter(
+                    (Q(data_type='email') | Q(data_type='user_email')), placename__creator__isnull=True, value=email
+                )
+                email_data_copy = copy.deepcopy(email_data)
+
+                # Exclude data if there is an actual_email. Used to give notif to
+                # the actual email rather than the FPCC admin who seeded the profile
+                for data in email_data:
+                    if data.data_type == 'user_email':
+                        actual_email = RelatedData.objects.exclude(value='').filter(
+                            placename=data.placename, data_type='email')
+
+                        if actual_email:
+                            email_data_copy = email_data_copy.exclude(
+                                id=data.id)
+
+                email_data = email_data_copy
+
+                if email_data.count() == 0:
+                    return Response({
+                        'message': 'No profiles to claim'
+                    }, status=status.HTTP_404_NOT_FOUND)
+
+                places = []
+                for data in email_data:
+                    serializer = PlaceNameLightSerializer(data.placename)
+                    places.append(serializer.data)
+
+                return Response({
+                    'places': places
+                })
+
+        return Response({
+            'message': 'Invalid claim request.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
     @method_decorator(never_cache, login_required)
     def post(self, request):
         data = request.data
@@ -168,7 +219,6 @@ class ConfirmClaimView(APIView):
             key = data.get('key')
 
             is_valid = validate_key(encoded_email, key)
-
             if is_valid:
                 user = User.objects.get(id=user_id)
 
@@ -193,6 +243,12 @@ class ConfirmClaimView(APIView):
                                     id=data.id)
 
                     email_data = email_data_copy
+
+                    if email_data.count() == 0:
+                        return Response({
+                            'message': 'No profiles to claim'
+                        }, status=status.HTTP_404_NOT_FOUND)
+
                     for data in email_data:
                         profile = data.placename
 
@@ -200,17 +256,13 @@ class ConfirmClaimView(APIView):
                             profile.creator = user
                             profile.save()
 
-                        print(profile.name)
-
                     return Response({
-                        'success': True,
                         'message': 'You have successfully claimed your profile(s)!'
                     })
-        else:
-            return Response({
-                'success': False,
-                'message': 'Invalid claim request.'
-            })
+
+        return Response({
+            'message': 'Invalid claim request.'
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ValidateInviteView(APIView):
