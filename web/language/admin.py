@@ -91,7 +91,7 @@ class RelatedDataAdmin(admin.ModelAdmin):
 
 
 class PlaceNameAdmin(admin.ModelAdmin):
-    list_display = ("name", "kind", "creator")
+    list_display = ("name", "kind", "claim_url", "creator")
     list_filter = ("kind",)
     search_fields = ("kind",)
     readonly_fields = ("created",)

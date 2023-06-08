@@ -140,7 +140,6 @@
             v-if="isLoggedIn"
             class="color-gray d-none user-mobile text-center"
             :to="`/profile/${userid}`"
-            @click.native="resetMap"
           >
             <div class="text-center d-inline-block">
               <img
@@ -160,12 +159,9 @@
 
           <ul class="nav-links p-0 m-0 list-style-none">
             <li v-if="isLoggedIn">
-              <nuxt-link
-                class="color-gray"
-                :to="`/profile/${userid}`"
-                @click.native="resetMap"
-                >{{ user.email }}</nuxt-link
-              >
+              <nuxt-link class="color-gray" :to="`/profile/${userid}`">{{
+                user.email
+              }}</nuxt-link>
             </li>
             <li v-if="isUserAdmin">
               <a class="color-gray" href="/admin" target="_blank"
@@ -291,7 +287,6 @@ export default {
       this.$root.$emit('toggleEventOverlay', true)
     },
     profile() {
-      this.$root.$emit('resetMap')
       this.$router.push({ path: '/profile/' + this.$store.state.user.user.id })
     },
     async logout() {
@@ -348,7 +343,6 @@ export default {
       this.$root.$emit('checkDimension')
       this.$store.commit('grants/setGrantFilter', 'all')
       this.handleBadge(null, 'all')
-      this.resetMap()
     }
   }
 }
