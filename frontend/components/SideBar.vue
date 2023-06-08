@@ -173,7 +173,6 @@ export default {
       this.$store.commit('arts/setTaxonomyTag', [])
       this.$store.commit('arts/setArtSearch', '')
       this.$store.commit('sidebar/setDrawerContent', false)
-      this.$root.$emit('resetMap')
     }
   }
 }

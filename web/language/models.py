@@ -1,6 +1,10 @@
+import os
+import hashlib
+
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
@@ -160,7 +164,8 @@ class CommunityMember(models.Model):
         max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
     role = models.CharField(
         max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
-    verified_by = models.CharField(max_length=255, default="", null=True, blank=True)
+    verified_by = models.CharField(
+        max_length=255, default="", null=True, blank=True)
     date_verified = models.DateField(null=True, blank=True)
 
     class Meta:
@@ -269,6 +274,25 @@ class PlaceName(CulturalModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
+    @property
+    def claim_url(self):
+        # If placename is already owned by someone, return empty data
+        if self.creator:
+            return None
+
+        # Look for email first
+        email = self.related_data.filter(Q(data_type='email')).first()
+
+        # If placename has no email, look for user email
+        if not email:
+            email = self.related_data.filter(Q(data_type='user_email')).first()
+
+        # If both are not available, return no email
+        if not email:
+            return 'No email'
+
+        return _get_claim_url(email.value)
+
     def notify_creator_about_status_change(self):
         # UNVERIFIED means newly created
         if self.status == UNVERIFIED:
@@ -278,11 +302,14 @@ class PlaceName(CulturalModel):
         if self.kind not in ['', 'poi']:
             return None
 
-        subject = "Your contribution has been {} on the First Peoples' Language Map".format(STATUS_DISPLAY[self.status])
-        message = "<p>Contribution: {name} has been {status}</p>".format(name=self.name, status=STATUS_DISPLAY[self.status])
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(
+            STATUS_DISPLAY[self.status])
+        message = "<p>Contribution: {name} has been {status}</p>".format(
+            name=self.name, status=STATUS_DISPLAY[self.status])
 
         if self.name:
-            message += '<p>Point of Interest: {}</p>'.format(get_place_link(self))
+            message += '<p>Point of Interest: {}</p>'.format(
+                get_place_link(self))
 
         if self.status in [REJECTED, FLAGGED]:
             message += '<p>Reason: {}</p>'.format(self.status_reason)
@@ -380,14 +407,18 @@ class Media(BaseModel):
         if self.status == UNVERIFIED:
             return None
 
-        subject = "Your contribution has been {} on the First Peoples' Language Map".format(STATUS_DISPLAY[self.status])
-        message = "<p>Contribution: {name} has been {status}</p>".format(name=self.name, status=STATUS_DISPLAY[self.status])
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(
+            STATUS_DISPLAY[self.status])
+        message = "<p>Contribution: {name} has been {status}</p>".format(
+            name=self.name, status=STATUS_DISPLAY[self.status])
 
         if self.placename and self.placename.name and self.placename.kind in ['', 'poi']:
-            message += '<p>Point of Interest: {}</p>'.format(get_place_link(self.placename))
+            message += '<p>Point of Interest: {}</p>'.format(
+                get_place_link(self.placename))
 
         if self.community and self.community.name:
-            message += '<p>Community: {}</p>'.format(get_comm_link(self.community))
+            message += '<p>Community: {}</p>'.format(
+                get_comm_link(self.community))
 
         if self.status in [REJECTED, FLAGGED]:
             message += '<p>Reason: {}</p>'.format(self.status_reason)
@@ -609,6 +640,14 @@ class LNAData(BaseModel):
 
     class Meta:
         verbose_name_plural = "LNA Data"
+
+
+def _get_claim_url(email):
+    salt = os.environ['INVITE_SALT'].encode('utf-8')
+    encoded_email = email.encode('utf-8')
+    key = hashlib.sha256(salt + encoded_email).hexdigest()
+    host = settings.HOST
+    return f'{host}/claim?email={email}&key={key}'
 
 
 def placename_post_save(sender, instance, created, **kwargs):
