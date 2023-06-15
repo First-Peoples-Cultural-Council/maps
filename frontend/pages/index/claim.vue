@@ -124,6 +124,12 @@ export default {
 
     // Return Places to be claimed by the user based on matching data
     this.getPlaces(email, key)
+
+    // Clear Cookies whether or not the request succeeded or failed
+    // to make sure that the user has to repeat the process
+    Cookies.remove('inviteEmail')
+    Cookies.remove('inviteKey')
+    Cookies.remove('inviteMode')
   },
   methods: {
     getPlaceKind(place) {
@@ -175,12 +181,6 @@ export default {
       } else {
         this.message = this.invalidMessage
       }
-
-      // Clear Cookies whether or not the request succeeded or failed
-      // to make sure that the user has to repeat the process
-      Cookies.remove('inviteEmail')
-      Cookies.remove('inviteKey')
-      Cookies.remove('inviteMode')
     },
     async getPlaces(email, key) {
       const claimConfirmUrl = `${getApiUrl(
