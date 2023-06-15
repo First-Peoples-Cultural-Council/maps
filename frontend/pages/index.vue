@@ -3,6 +3,7 @@
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
     <InformationModal v-if="showInformationModal"></InformationModal>
+    <DisclaimerModal v-if="showDisclaimerModal"></DisclaimerModal>
 
     <div
       id="map-container"
@@ -253,6 +254,7 @@ import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import InformationModal from '@/components/InformationModal.vue'
+import DisclaimerModal from '@/components/DisclaimerModal.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
@@ -339,6 +341,7 @@ export default {
     EventOverlay,
     FullscreenLoading,
     InformationModal,
+    DisclaimerModal,
     LoadingModal,
     MapControlFooter
   },
@@ -364,6 +367,7 @@ export default {
       searchKey: 'search',
       showFullscreenLoading: false,
       showInformationModal: false,
+      showDisclaimerModal: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -659,6 +663,10 @@ export default {
     // Showing the Notification on Media success
     this.$root.$on('hideInformationModal', () => {
       this.showInformationModal = false
+    })
+
+    this.$root.$on('toggleDisclaimerModal', () => {
+      this.showDisclaimerModal = !this.showDisclaimerModal
     })
 
     // Showing the Notification on Media success
