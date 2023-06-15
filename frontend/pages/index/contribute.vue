@@ -844,6 +844,46 @@
 
           <hr />
 
+          <span class="field-row mt-6">
+            To be able to Submit, I agree to the following:
+          </span>
+
+          <b-row class="field-row mt-1">
+            <b-form-checkbox
+              id="is-member"
+              v-model="isMember"
+              class="d-inline-block ml-2"
+              name="is-member"
+            >
+              I am a member of the community about which I am contributing
+              information and/or this information pertains only to me.
+            </b-form-checkbox>
+          </b-row>
+
+          <b-row class="field-row mt-3">
+            <b-form-checkbox
+              id="is-appropriate"
+              v-model="isAppropriate"
+              class="d-inline-block ml-2"
+              name="is-appropriate"
+            >
+              It is culturally appropriate to share this information.
+            </b-form-checkbox>
+          </b-row>
+
+          <b-row class="field-row mt-3 mb-5">
+            <b-form-checkbox
+              id="is-authority"
+              v-model="isGivenAuthority"
+              class="d-inline-block ml-2 text"
+              name="is-authority"
+            >
+              I have the authority and/or permission from my community (e.g.
+              from consultation with Elders, Knowledge Keepers, cultural
+              leaders, etc.) to share this information.
+            </b-form-checkbox>
+          </b-row>
+
           <section class="pl-3 pr-3">
             <b-row class="mt-3">
               <b-col xl="12">
@@ -858,9 +898,13 @@
                     <li v-for="err in errors" :key="err">{{ err }}</li>
                   </ul>
                 </b-alert>
-                <b-button block variant="danger" @click="submitType">{{
-                  $route.query.id ? 'Update' : 'Save'
-                }}</b-button>
+                <b-button
+                  block
+                  variant="danger"
+                  :disabled="!isValidToSubmit"
+                  @click="submitType"
+                  >{{ $route.query.id ? 'Update' : 'Save' }}</b-button
+                >
               </b-col>
             </b-row>
           </section>
@@ -996,7 +1040,10 @@ export default {
       communityOnly: false,
       community:
         this.$store.state.user.user.communities &&
-        this.$store.state.user.user.communities[0]
+        this.$store.state.user.user.communities[0],
+      isMember: false,
+      isAppropriate: false,
+      isGivenAuthority: false
     }
   },
 
@@ -1227,6 +1274,9 @@ export default {
         this.selectedCommunities &&
         this.selectedCommunities.find(community => community.id === 'others')
       )
+    },
+    isValidToSubmit() {
+      return this.isMember && this.isAppropriate && this.isGivenAuthority
     }
   },
   watch: {

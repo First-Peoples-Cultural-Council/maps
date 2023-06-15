@@ -201,6 +201,7 @@
 </template>
 
 <script>
+import * as Cookies from 'js-cookie'
 import MessageBox from '@/components/MessageBox.vue'
 import UploadModal from '@/components/UploadModal.vue'
 
@@ -250,6 +251,10 @@ export default {
     this.$root.$on('openContributeModal', d => {
       this.showModal()
     })
+
+    this.$root.$on('toggleContributeModal', d => {
+      this.showContributeModal = !this.showContributeModal
+    })
   },
   methods: {
     checkWindowDimemsion() {
@@ -259,12 +264,17 @@ export default {
         this.hideButton = false
       }
     },
+
     toggleModal() {
-      if (this.$route.name === 'index-art' && this.isDrawerShown) {
-        this.$store.commit('sidebar/setDrawerContent', false)
+      if (Cookies.get('fpmap_info_disclaimer_understood') !== 'true') {
+        this.$root.$emit('toggleDisclaimerModal')
+      } else {
+        if (this.$route.name === 'index-art' && this.isDrawerShown) {
+          this.$store.commit('sidebar/setDrawerContent', false)
+        }
+        this.$root.$emit('closeEventPopover')
+        this.showContributeModal = !this.showContributeModal
       }
-      this.$root.$emit('closeEventPopover')
-      this.showContributeModal = !this.showContributeModal
     },
     handleClick(e, data) {
       this.hideModal()
@@ -332,7 +342,6 @@ export default {
         }, timeOut)
       }
     },
-    getCurrentArtist() {},
     showModal() {
       this.$refs['c-modal'].show()
     },
