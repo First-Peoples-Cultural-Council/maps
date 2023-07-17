@@ -83,25 +83,6 @@
             </template>
           </BadgeFilter>
 
-          <!-- Event Badge Filter -->
-          <BadgeFilter
-            :is-selected="filterMode === 'event'"
-            :child-taxonomy="getChildTaxonomy('Event')"
-            :color="'#DA531E'"
-          >
-            <template v-slot:badge>
-              <Badge
-                content="Events"
-                :number="eventsCount"
-                class="cursor-pointer"
-                bgcolor="#DA531E"
-                type="event"
-                :mode="getBadgeStatus(filterMode, 'event')"
-                @click.native.prevent="badgeClick($event, 'event')"
-              ></Badge>
-            </template>
-          </BadgeFilter>
-
           <!-- Organization Badge Filter -->
           <BadgeFilter
             :is-selected="filterMode === 'organization'"
