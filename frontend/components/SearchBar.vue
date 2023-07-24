@@ -37,6 +37,7 @@
           class="search-input"
           placeholder="Search for places, people, languages or grants..."
           autocomplete="off"
+          maxlength="32"
           @update="handleSearchUpdate"
           @focus="handleInputFocus"
         >
@@ -390,15 +391,15 @@ export default {
         [
           {
             name: 'name',
-            weight: 0.3
+            weight: 0.7
           },
           {
             name: 'family.name',
-            weight: 0.7
+            weight: 0.3
           },
           {
             name: 'other_names',
-            weight: 0.7
+            weight: 0.3
           }
         ]
       )
@@ -408,28 +409,38 @@ export default {
         [
           {
             name: 'name',
-            weight: 0.3
+            weight: 0.7
           },
           {
             name: 'other_names',
-            weight: 0.7
+            weight: 0.3
           }
         ]
       )
-
       this.placesResults = this.fuzzySearch(this.places, this.searchQuery, [
         {
           name: 'name',
-          weight: 0.3
+          weight: 0.7
         },
         {
           name: 'other_names',
-          weight: 0.7
+          weight: 0.3
+        },
+        {
+          name: 'location',
+          weight: 0.3
         }
       ])
 
       const artsResults = this.fuzzySearch(this.arts, this.searchQuery, [
-        'name'
+        {
+          name: 'name',
+          weight: 0.7
+        },
+        {
+          name: 'location',
+          weight: 0.3
+        }
       ])
 
       this.artistsResults = artsResults.filter(p => p.item.kind === 'artist')
@@ -460,6 +471,8 @@ export default {
 
         this.locationResults = geoCodeResults[0].features
         this.addressResults = geoCodeResults[1].features
+
+        // Keep these for future use
         // console.log('Government', this.locationResults)
         // console.log('Mapbox', this.addressResults)
       } catch (e) {

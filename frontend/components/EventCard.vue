@@ -182,7 +182,7 @@ export default {
       }
     },
     findEventDateInRD(relatedData) {
-      return relatedData.find(data => data.data_type === 'Event Date')
+      return relatedData.find(data => data.data_type === 'event_date')
     },
     sortedEventDates(eventList, mode) {
       return eventList.sort((a, b) => {

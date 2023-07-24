@@ -367,7 +367,7 @@ export default {
           !this.socialMedia.includes(element) &&
           (!element.is_private &&
             (element.value && element.value.length !== 0)) &&
-          (element.data_type !== 'Event Date' &&
+          (element.data_type !== 'event_date' &&
             element.data_type !== 'award' &&
             element.data_type !== 'website')
         )
@@ -375,7 +375,7 @@ export default {
     },
     getEventDate() {
       return this.placename.related_data.find(element => {
-        return element.data_type === 'Event Date'
+        return element.data_type === 'event_date'
       })
     },
     getAwardList() {
