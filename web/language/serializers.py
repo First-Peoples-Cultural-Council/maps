@@ -26,7 +26,6 @@ from .models import (
 )
 from users.serializers import PublicUserSerializer, UserSerializer
 from grants.serializers import GrantSerializer
-from web.constants import VERIFIED 
 
 
 # LIGHT SERIALIZERS
@@ -357,7 +356,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
                     placename=placename,
                     taxonomy=taxonomy
                 )
-        
+
         if communities:
             placename.communities.set(communities)
 
@@ -684,9 +683,19 @@ class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
 
 # SEARCH SERIALIZERS
 class PlaceNameSearchSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+
+    def get_location(self, obj):
+        location = obj.related_data.filter(data_type="location").first()
+
+        if not location or not location.value:
+            return ""
+
+        return location.value.replace("\n", " ")
+        
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "other_names", "kind", "artists")
+        fields = ("id", "name", "location", "other_names", "kind", "artists")
 
 
 class LanguageSearchSerializer(serializers.ModelSerializer):
