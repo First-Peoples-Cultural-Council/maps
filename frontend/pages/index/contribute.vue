@@ -1415,7 +1415,8 @@ export default {
               value: related.value,
               isError: null
             })
-          } else if (related.data_type === 'Event Date') {
+          } else if (related.data_type === 'event_date') {
+            console.log(related)
             const date = new Date(related.value)
             data.dateValue = date.toISOString().slice(0, 10)
             data.timeValue = date.toTimeString().slice(0, 8)
@@ -2248,7 +2249,7 @@ export default {
     postRelatedData(id) {
       let relatedData = []
       if (this.queryType === 'Event') {
-        this.relatedData['Event Date'] = `${this.dateValue} ${this.timeValue}`
+        this.relatedData.event_date = `${this.dateValue} ${this.timeValue}`
       }
 
       const filteredRelatedData = Object.entries(this.relatedData).filter(

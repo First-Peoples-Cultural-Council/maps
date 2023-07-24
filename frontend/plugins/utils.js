@@ -40,7 +40,7 @@ export const makeMarker = (geom, icon, context) => {
   const mapboxgl = require('mapbox-gl')
   const el = document.createElement('div')
   el.className = 'marker art-marker'
-  el.style = `background-image: url('/${icon}')`
+  el.style = `background-image: url('/${icon}'); z-index: 10;`
 
   const marker = new mapboxgl.Marker(el).setLngLat(geomToLatLng(geom))
   context.$store.commit('features/setMarker', marker)

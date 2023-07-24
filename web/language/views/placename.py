@@ -403,7 +403,7 @@ class ArtSearchList(BasePlaceNameListAPIView):
         Q(name__icontains='FirstVoices') | Q(geom__exact=Point(0.0, 0.0))
     ).filter(
         kind__in=['public_art', 'artist', 'organization', 'event']
-    ).only('id', 'name', 'other_names', 'kind', 'artists')
+    ).prefetch_related('related_data')
     serializer_class = PlaceNameSearchSerializer
 
     filter_backends = [DjangoFilterBackend]
