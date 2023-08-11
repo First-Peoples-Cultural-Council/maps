@@ -285,7 +285,10 @@ export default {
               : grantYear
             : grantYear
       })
-      return getMaximum
+
+      // Grants' duration is always a year's length,
+      // so the max date is always max year + 1
+      return getMaximum + 1
     },
     grantsTypeList() {
       if (this.filterMode === 'all') {
