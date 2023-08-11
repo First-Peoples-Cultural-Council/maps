@@ -288,7 +288,7 @@ class PlaceName(CulturalModel):
             email = self.related_data.filter(Q(data_type='user_email')).first()
 
         # If both are not available, return no email
-        if not email:
+        if not email or not email.value:
             return 'No email'
 
         return _get_claim_url(email.value)
