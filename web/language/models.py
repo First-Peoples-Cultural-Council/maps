@@ -247,7 +247,7 @@ class PlaceName(CulturalModel):
     non_bc_languages = ArrayField(models.CharField(
         max_length=200), blank=True, null=True,  default=None)
     communities = models.ManyToManyField(
-        Community, default=None, related_name="places"
+        Community, blank=True, default=None, related_name="places"
     )
     other_community = models.CharField(
         max_length=64, default="", blank=True, null=True)

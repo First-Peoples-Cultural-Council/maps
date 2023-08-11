@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.gis.db import models as geomodels
 
@@ -27,11 +28,14 @@ from .widgets import LatLongWidget
 class DialectInline(admin.TabularInline):
     model = Dialect
 
+
 class LanguageLinkInline(admin.TabularInline):
     model = LanguageLink
 
+
 class CommunityLinkInline(admin.TabularInline):
     model = CommunityLink
+
 
 class RelatedDataInline(admin.TabularInline):
     model = RelatedData
@@ -90,6 +94,24 @@ class RelatedDataAdmin(admin.ModelAdmin):
     )
 
 
+class PlaceNameAdminForm(forms.ModelForm):
+    class Meta:
+        model = PlaceName
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        communities = cleaned_data.get("communities")
+        other_community = cleaned_data.get("other_community")
+
+        if not communities and not other_community:
+            raise forms.ValidationError({
+                'communities': 'Either `Communities` or `Other community` is required.'
+            })
+
+        return cleaned_data
+
+
 class PlaceNameAdmin(admin.ModelAdmin):
     list_display = ("name", "kind", "claim_url", "creator")
     list_filter = ("kind",)
@@ -106,6 +128,7 @@ class PlaceNameAdmin(admin.ModelAdmin):
     inlines = [
         RelatedDataInline,
     ]
+    form = PlaceNameAdminForm
 
 
 class MediaAdmin(admin.ModelAdmin):
@@ -135,6 +158,7 @@ class PlaceNameTaxonomyAdmin(admin.ModelAdmin):
 
 class CommunityMemberAdmin(admin.ModelAdmin):
     list_display = ("user", "community", "verified_by")
+
 
 admin.site.register(Champion)
 admin.site.register(Dialect, DialectAdmin)
