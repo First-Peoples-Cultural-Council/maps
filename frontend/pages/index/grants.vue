@@ -131,50 +131,62 @@ export default {
       mode: 'All',
       accordionContent: `
           In pursuit of a vision where our languages, arts, and cultures are thriving and valued by everyone, our Indigenous-led Crown Corporation provides grants, training, coaching and resources to communities. To apply for grants, please visit our website at https://fpcc.ca/grants/ To access information on grants awarded since 2014, use the search bar or filters below, or browse locations on the map. <br/> <br/>
-          
+
           <div id="grants-list-collapse" class="collapse-item">
-            <b><span class="collapse-icon">&#9658;</span> List of Grants</b> 
+            <b><span class="collapse-icon">&#9658;</span> List of Grants</b>
           </div>
 
           <ul id="grants-list-collapse-content" class="collapse-item-content">
             <li>ARTS - Arts One Time Grant</li>
-            <li>AIND - Individual Artists Grant</li> 
-            <li>ASHR - Sharing Traditional Arts Grant</li> 
-            <li>AORG - Organizations and Collectives Grant</li> 
-            <li>AADM - Arts Administration Internships Grant</li> 
-            <li>AMIC - Arts Micro Grants</li> 
-            <li>ALND - Community Land Based Arts Grant</li> 
-            <li>AEMIP - Emerging Music Industry Professionals Grant</li> 
-            <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant</li> 
-            <li>ATPMP - Touring, Promotion/Marketing and Performance Grant</li> 
-            <li>Heritage Program Grants</li>
-            <li>HMIC - Indigenous Heritage Micro Grant</li> 
-            <li>HOHP - Oral Histories Program</li>
+            <li>AIND - Individual Artists Grant</li>
+            <li>ASHR - Sharing Traditional Arts Grant</li>
+            <li>AORG - Organizations and Collectives Grant</li>
+            <li>AADM - Arts Administration Internships Grant</li>
+            <li>AMIC - Arts Micro Grants</li>
+            <li>AIAPS - Indigenous Arts Scholarship</li>
+            <li>AIAPC - Community Arts Spaces</li>
+            <li>ALND - Community Land Based Arts Grant</li>
+            <li>AEMIP - Emerging Music Industry Professionals Grant</li>
+            <li>AECMR - Expanding Capacity in the Indigenous Music Recording Industry Grant</li>
+            <li>ATPMP - Touring, Promotion/Marketing and Performance Grant</li>
+            <li>AIMIR - Indigenous Music Recording Industry</li>
+            
+            <li>HMIC - Indigenous Heritage Micro Grant</li>
             <li>HSOP - Sense of Place Grant</li>
-            <li>Language Program Grants</li> 
-            <li>LALI - Aboriginal Languages Initiative</li> 
-            <li>LBCLI - BC Language Initiative</li> 
-            <li>LDIGI - Digitization Program</li> 
-            <li>LFV - FirstVoices Program</li> 
-            <li>LILG - Indigenous Languages Grant</li> 
-            <li>LANG - Language One Time Grant</li> 
-            <li>LLN - Language Nest Program</li> 
-            <li>LLRPP - Language Revitalization Planning Program</li> 
-            <li>LMAP - Mentor-Apprentice Program</li> 
+            <li>HERIT - Heritage Grant</li>
+            <li>HERIT - Oral Histories Program</li>
+            <li>HERIT - Heritage Branch Pilot Project</li>
+            <li>HERIT - Climate Change Pilot Project</li>
+            <li>HERIT - Indigenous Cultural Heritage Infrastructure Grant</li>
+            <li>HERIT - Cultural Heritage Stewardship Grant</li>
+            <li>HERIT - Place Names Pilot Project</li>
+            <li>HHSP - Heritage Stewardship Program</li>
+            <li>HHIP - Heritage Infrastructure Program</li>
+            <li>HBKG - Braided Knowledge Grant</li>
+
+            <li>LALI - Aboriginal Languages Initiative</li>
+            <li>LBCLI - BC Language Initiative</li>
+            <li>LDIGI - Digitization Program</li>
+            <li>LFV - FirstVoices Program</li>
+            <li>LILG - Indigenous Languages Grant</li>
+            <li>LANG - Language One Time Grant</li>
+            <li>LLN - Language Nest Program</li>
+            <li>LLRPP - Language Revitalization Planning Program</li>
+            <li>LMAP - Mentor-Apprentice Program</li>
             <li>LPATH - Pathways to Language Vitality Program</li>
-            <li>LRML - Reclaiming My Language Program</li> 
-            <li>LTECH - Language Technology Program</li> 
-            <li>LYES - Youth Empowered Speakers Program</li> 
+            <li>LRML - Reclaiming My Language Program</li>
+            <li>LTECH - Language Technology Program</li>
+            <li>LYES - Youth Empowered Speakers Program</li>
           </ul>
-          
+
 
           <div id="partner-list-collapse" class="collapse-item">
-            <b><span class="collapse-icon">&#9658;</span> Funding Partner Acknowledgements</b> 
+            <b><span class="collapse-icon">&#9658;</span> Funding Partner Acknowledgements</b>
           </div>
-          
+
           <div id="partner-list-collapse-content" class="collapse-item-content">
             <span style="margin: 1em 0;">The key funding partners for each department are as follows:</span> <br/>
-          
+
             <div style="font-weight: 700;">Arts</div>
 
             <ul>
@@ -201,7 +213,7 @@ export default {
               <li>RSF Social Finance</li>
             </ul>
           </div>
-          
+
 
          `,
       maximumLength: 0,
