@@ -55,7 +55,25 @@
       :commonly.sync="commonly"
     ></CommunityOnly>
 
-    <b-button size="sm" variant="dark" class="mt-2" @click="handleYoutubeUpload"
+    <b-row class="field-row my-4">
+      <b-form-checkbox
+        id="is-agree"
+        v-model="isAgree"
+        class="d-inline-block ml-3"
+        name="is-agree"
+      >
+        By uploading this I acknowledge that I own the copyright to this media.
+        FPCC does not take responsibility for the content uploaded to the First
+        Peoples’ Map of B.C.
+      </b-form-checkbox>
+    </b-row>
+
+    <b-button
+      size="sm"
+      variant="dark"
+      class="mt-2"
+      :disabled="!isAgree"
+      @click="handleYoutubeUpload"
       >Upload</b-button
     >
     <b-button
@@ -91,7 +109,8 @@ export default {
       titlestate: null,
       commonly: null,
       youtubeLink: null,
-      youtubestate: null
+      youtubestate: null,
+      isAgree: false
     }
   },
   computed: {

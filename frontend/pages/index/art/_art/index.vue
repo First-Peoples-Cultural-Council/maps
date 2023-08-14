@@ -82,7 +82,9 @@
           >
             <!-- Show the Placename image if Public Art and Event -->
             <div
-              v-if="placename.image && (isPublicArt || isEvent)"
+              v-if="
+                placename.image && (isPublicArt || isEvent || isOrganization)
+              "
               class="placename-img-container"
             >
               <img class="placename-img" :src="getMediaUrl(placename.image)" />
@@ -312,6 +314,7 @@ export default {
   },
   computed: {
     placename() {
+      console.log('PLACEME', this.$store.state.arts.currentPlacename)
       return this.$store.state.arts.currentPlacename
     },
     communityNames() {
@@ -345,6 +348,9 @@ export default {
     },
     isEvent() {
       return this.placename.kind.toLowerCase() === 'event'
+    },
+    isOrganization() {
+      return this.placename.kind.toLowerCase() === 'organization'
     },
     isGalleryNotEmpty() {
       return (
