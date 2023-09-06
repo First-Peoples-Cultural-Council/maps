@@ -58,7 +58,6 @@
 </template>
 
 <script>
-import * as Cookies from 'js-cookie'
 import startCase from 'lodash/startCase'
 import { getApiUrl, getCookie, encodeFPCC } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
@@ -125,11 +124,11 @@ export default {
     // Return Places to be claimed by the user based on matching data
     this.getPlaces(email, key)
 
-    // Clear Cookies whether or not the request succeeded or failed
-    // to make sure that the user has to repeat the process
-    Cookies.remove('inviteEmail')
-    Cookies.remove('inviteKey')
-    Cookies.remove('inviteMode')
+    // Clear localStorage data whether or not the request succeeded
+    // or failed to make sure that the user has to repeat the process
+    localStorage.removeItem('fpmap_invite_mode')
+    localStorage.removeItem('fpmap_invite_email')
+    localStorage.removeItem('fpmap_invite_key')
   },
   methods: {
     getPlaceKind(place) {
@@ -147,10 +146,12 @@ export default {
       return `/${prefix}/${encodeFPCC(place.name)}`
     },
     redirectLogin(email, key) {
-      // Set cookies that will be reused later on after logging in
-      Cookies.set('inviteEmail', email)
-      Cookies.set('inviteKey', key)
-      Cookies.set('inviteMode', true)
+      // Set localStorage data that will be reused later on after logging in
+      localStorage.setItem('fpmap_invite_mode', true)
+      localStorage.setItem('fpmap_invite_email', email)
+      localStorage.setItem('fpmap_invite_key', key)
+
+      console.log('setting up localStorage', localStorage)
 
       window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
