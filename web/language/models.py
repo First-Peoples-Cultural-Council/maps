@@ -4,6 +4,7 @@ import hashlib
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import Polygon
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
@@ -84,6 +85,11 @@ class Language(CulturalModel):
 
     # Deprecated, use recording instead.
     audio_file = models.FileField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.geom and not self.bbox:
+            self.bbox = Polygon.from_bbox(self.geom.extent)
+        super().save(*args, **kwargs)
 
 
 class LanguageLink(models.Model):

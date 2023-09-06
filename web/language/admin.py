@@ -45,7 +45,7 @@ class RelatedDataInline(admin.TabularInline):
 # ADMINS
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ("name", "sleeping", "family")
-    exclude = ("audio_file", "bbox")
+    exclude = ("audio_file",)
     search_fields = ("name", "family__name")
     inlines = [DialectInline, LanguageLinkInline]
     formfield_overrides = {
