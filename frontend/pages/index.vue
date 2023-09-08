@@ -675,7 +675,7 @@ export default {
       this.$root.$emit('notification', {
         title: 'Success',
         message: 'Media Successfully uploaded',
-        time: 2000,
+        time: 5000,
         variant: 'success'
       })
 
@@ -695,13 +695,9 @@ export default {
       this.$root.$emit('notification', {
         title: 'Failed',
         message: `${type} Upload Failed, please try again`,
-        time: 2000,
+        time: 5000,
         variant: 'danger'
       })
-      this.$root.$emit('closeUploadModal')
-      if (this.isUploadArtMode) {
-        this.$root.$emit('fileUploadSuccess')
-      }
     })
 
     // Decides to show the splashscreen, if values exist, then its no longer first time visit
