@@ -199,15 +199,14 @@ export default {
             result.request.statusText === 'Created'
           ) {
             this.$root.$emit('fileUploaded', result.data)
+            this.resetToInitialState()
           } else {
             throw result
           }
         } catch (e) {
-          this.$root.$on('fileUploadFailed', 'File')
+          this.$root.$emit('fileUploadFailed', 'File')
         }
       }
-
-      this.resetToInitialState()
     },
     getFormData() {
       return getFormData({
