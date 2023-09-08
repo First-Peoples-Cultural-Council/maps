@@ -273,7 +273,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$on('fileUploadFailed', 'Audio')
+          this.$root.$emit('fileUploadFailed', 'Audio')
         }
       }
 

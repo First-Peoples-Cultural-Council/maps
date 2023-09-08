@@ -161,7 +161,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$on('fileUploadFailed', 'Note/Text')
+          this.$root.$emit('fileUploadFailed', 'Note/Text')
         }
       }
 
