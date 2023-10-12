@@ -233,7 +233,6 @@
 import Vue from 'vue'
 import Mapbox from 'mapbox-gl-vue'
 import groupBy from 'lodash/groupBy'
-import * as Cookies from 'js-cookie'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw'
 import DrawingTools from '@/components/DrawingTools.vue'
@@ -797,10 +796,9 @@ export default {
       this.loadMoreData()
     }
 
-    // Redirect to claim page if during invite mode
-    if (Cookies.get('inviteMode')) {
-      const email = Cookies.get('inviteEmail')
-      const key = Cookies.get('inviteKey')
+    if (localStorage.getItem('fpmap_invite_mode')) {
+      const email = localStorage.getItem('fpmap_invite_email')
+      const key = localStorage.getItem('fpmap_invite_key')
       this.$router.push({
         path: `/claim?email=${email}&key=${key}`
       })
@@ -824,11 +822,24 @@ export default {
       }, 250)
     },
     handleInformationModalVisibility() {
-      if (
-        Cookies.get('fpmap_info_modal_understood') !== 'true' &&
-        this.$route.path !== '/splashscreen'
-      ) {
-        this.showInformationModal = true
+      if (this.$route.path !== '/splashscreen') {
+        const storedExpiryDate = localStorage.getItem(
+          'fpmap_info_modal_agreement_expiry_date'
+        )
+
+        if (storedExpiryDate) {
+          // Check if the expires_at value of the data is past the date today
+          const expiryDate = new Date(storedExpiryDate)
+          const today = new Date()
+
+          if (today > expiryDate) {
+            // If the data is expired, show the modal
+            this.showInformationModal = true
+          }
+        } else {
+          // If there is no stored data, show the modal
+          this.showInformationModal = true
+        }
       }
     },
     setMobile(screenSizeOnLand) {
