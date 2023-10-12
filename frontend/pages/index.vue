@@ -3,6 +3,7 @@
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
     <InformationModal v-if="showInformationModal"></InformationModal>
+    <DisclaimerModal v-if="showDisclaimerModal"></DisclaimerModal>
 
     <div
       id="map-container"
@@ -252,6 +253,7 @@ import EventOverlay from '@/components/EventOverlay.vue'
 import LogInOverlay from '@/components/LogInOverlay.vue'
 import FullscreenLoading from '@/components/FullscreenLoading.vue'
 import InformationModal from '@/components/InformationModal.vue'
+import DisclaimerModal from '@/components/DisclaimerModal.vue'
 import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
@@ -338,6 +340,7 @@ export default {
     EventOverlay,
     FullscreenLoading,
     InformationModal,
+    DisclaimerModal,
     LoadingModal,
     MapControlFooter
   },
@@ -363,6 +366,7 @@ export default {
       searchKey: 'search',
       showFullscreenLoading: false,
       showInformationModal: false,
+      showDisclaimerModal: false,
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
@@ -660,13 +664,17 @@ export default {
       this.showInformationModal = false
     })
 
+    this.$root.$on('toggleDisclaimerModal', () => {
+      this.showDisclaimerModal = !this.showDisclaimerModal
+    })
+
     // Showing the Notification on Media success
     this.$root.$on('fileUploaded', data => {
       // this.modalShow = false
       this.$root.$emit('notification', {
         title: 'Success',
         message: 'Media Successfully uploaded',
-        time: 2000,
+        time: 5000,
         variant: 'success'
       })
 
@@ -686,13 +694,9 @@ export default {
       this.$root.$emit('notification', {
         title: 'Failed',
         message: `${type} Upload Failed, please try again`,
-        time: 2000,
+        time: 5000,
         variant: 'danger'
       })
-      this.$root.$emit('closeUploadModal')
-      if (this.isUploadArtMode) {
-        this.$root.$emit('fileUploadSuccess')
-      }
     })
 
     // Decides to show the splashscreen, if values exist, then its no longer first time visit
