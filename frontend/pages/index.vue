@@ -1798,7 +1798,7 @@ export default {
   flex-wrap: wrap-reverse;
   align-items: center;
   justify-content: flex-end;
-  width: 80%;
+  width: 100%;
 }
 
 .map-controls-overlay > * {

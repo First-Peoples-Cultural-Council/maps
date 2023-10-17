@@ -10,6 +10,7 @@
         <img
           v-lazy="artImage"
           :class="`card-teaser-img ${mediaExist ? '' : 'card-teaser-null'}`"
+          oncontextmenu="return false;"
         />
       </div>
       <div class="arts-card-right">
