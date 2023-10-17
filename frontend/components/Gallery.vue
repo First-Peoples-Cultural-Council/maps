@@ -80,6 +80,7 @@
               getMediaUrl(getCurrentMedia.media_file) ||
                 getMediaUrl(getCurrentMedia.image)
             "
+            oncontextmenu="return false;"
           />
           <!-- Render Youtube Video Here -->
           <iframe
@@ -117,6 +118,7 @@
                 isFullscreen ? 'img-fullscreen-mode' : ''
               }`
             "
+            oncontextmenu="return false;"
           />
           <span
             v-if="returnMediaType === 'image' || getCurrentMedia.image"
@@ -143,8 +145,16 @@
           :class="`arts-img-item ${mediaIndex === indx ? 'is-selected' : ''}`"
           @click="selectNewMedia(item)"
         >
-          <img v-if="item.media_file" v-lazy="getMediaUrl(item.media_file)" />
-          <img v-else v-lazy="getMediaUrl(item.image)" />
+          <img
+            v-if="item.media_file"
+            v-lazy="getMediaUrl(item.media_file)"
+            oncontextmenu="return false;"
+          />
+          <img
+            v-else
+            v-lazy="getMediaUrl(item.image)"
+            oncontextmenu="return false;"
+          />
         </div>
       </div>
     </div>
