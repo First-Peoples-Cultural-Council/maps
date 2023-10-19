@@ -31,8 +31,6 @@ export const formatPoint = point => {
 export const geomToLatLng = geometry => {
   if (geometry.type === 'Point') {
     return geometry.coordinates
-  } else if (geometry.type === 'LineString') {
-    return geometry.coordinates[0]
   } else {
     return geometry.coordinates[0][0]
   }
@@ -72,9 +70,11 @@ export const filterLanguages = (
   context,
   sleepingLayer
 ) => {
+  // console.log('it Got here 1')
   if (mode === 'draw' && point) {
     return languageSet.filter(lang => {
       if (!sleepingLayer && lang.sleeping) {
+        // console.log('it Got here mode')
         return false
       }
       const langBounds = formatLangBounds(lang)
@@ -84,6 +84,7 @@ export const filterLanguages = (
 
   const filteredLanguages = languageSet.filter(lang => {
     if (!sleepingLayer && lang.sleeping) {
+      // console.log('it Got here')
       return false
     }
     const langBounds = formatLangBounds(lang)
@@ -309,10 +310,6 @@ export const getYoutubeThumbnail = url => {
   return `https://img.youtube.com/vi/${isValidYoutubeLink(
         url
       )}/hqdefault.jpg`
-}
-
-export const isEmptyObject = (obj) => {
-  return Object.keys(obj).length === 0;
 }
 
 

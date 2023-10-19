@@ -4,7 +4,6 @@ import hashlib
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import Polygon
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
@@ -86,11 +85,6 @@ class Language(CulturalModel):
     # Deprecated, use recording instead.
     audio_file = models.FileField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.geom and not self.bbox:
-            self.bbox = Polygon.from_bbox(self.geom.extent)
-        super().save(*args, **kwargs)
-
 
 class LanguageLink(models.Model):
     url = models.URLField(max_length=255, default=None, null=True)
@@ -113,8 +107,10 @@ class Community(CulturalModel):
     fv_guid = models.CharField(max_length=40, blank=True, default="")
     fv_archive_link = models.URLField(max_length=255, blank=True, default="")
     languages = models.ManyToManyField(Language)
-    email = models.EmailField(max_length=255, default=None, null=True, blank=True)
-    website = models.URLField(max_length=255, default=None, null=True, blank=True)
+    email = models.EmailField(
+        max_length=255, default=None, null=True, blank=True)
+    website = models.URLField(
+        max_length=255, default=None, null=True, blank=True)
     phone = models.CharField(max_length=255, default="", blank=True)
     alt_phone = models.CharField(max_length=255, default="", blank=True)
     fax = models.CharField(max_length=255, default="", blank=True)
@@ -140,7 +136,6 @@ class CommunityLanguageStats(models.Model):
     """
     Latest, manually cleaned, aggregated LNA information for a given langugage in a particular community.
     """
-
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     fluent_speakers = models.IntegerField(default=0)
@@ -156,7 +151,8 @@ class CommunityMember(models.Model):
     ]
 
     # ROLE
-    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"), (ROLE_MEMBER, "Community Member"))
+    ROLE_CHOICES = ((ROLE_ADMIN, "Community Admin"),
+                    (ROLE_MEMBER, "Community Member"))
 
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, default=None, null=True
@@ -164,9 +160,12 @@ class CommunityMember(models.Model):
     community = models.ForeignKey(
         Community, on_delete=models.CASCADE, null=True, default=None
     )
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
-    verified_by = models.CharField(max_length=255, default="", null=True, blank=True)
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, default=UNVERIFIED)
+    role = models.CharField(
+        max_length=2, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    verified_by = models.CharField(
+        max_length=255, default="", null=True, blank=True)
     date_verified = models.DateField(null=True, blank=True)
 
     class Meta:
@@ -226,17 +225,13 @@ class PlaceName(CulturalModel):
         (REJECTED, "Rejected"),
     ]
 
-    geom = models.GeometryField(
-        null=True,
-        blank=True,
-        help_text="Use https://geojson.io/ for manually creating geometry",
-    )
+    geom = models.GeometryField(null=True, default=None)
     image = models.ImageField(null=True, blank=True, default=None)
     audio_file = models.FileField(null=True, blank=True)  # Deprecated
-    audio_name = models.CharField(max_length=64, null=True, blank=True)  # Deprecated
+    audio_name = models.CharField(
+        max_length=64, null=True, blank=True)  # Deprecated
     audio_description = models.TextField(
-        null=True, blank=True, default=""
-    )  # Deprecated
+        null=True, blank=True, default="")  # Deprecated
     audio = models.ForeignKey(
         Recording, on_delete=models.SET_NULL, null=True, blank=True
     )  # Deprecated
@@ -245,40 +240,34 @@ class PlaceName(CulturalModel):
     community_only = models.BooleanField(null=True)
     description = models.TextField(default="", null=True, blank=True)
     creator = models.ForeignKey(
-        "users.User", null=True, blank=True, on_delete=models.SET_NULL
-    )
+        "users.User", null=True, blank=True, on_delete=models.SET_NULL)
     language = models.ForeignKey(
-        Language,
-        null=True,
-        blank=True,
-        default=None,
-        on_delete=models.SET_NULL,
-        related_name="places",
+        Language, null=True, blank=True, default=None, on_delete=models.SET_NULL, related_name="places"
     )
-    non_bc_languages = ArrayField(
-        models.CharField(max_length=200), blank=True, null=True, default=None
-    )
+    non_bc_languages = ArrayField(models.CharField(
+        max_length=200), blank=True, null=True,  default=None)
     communities = models.ManyToManyField(
         Community, blank=True, default=None, related_name="places"
     )
-    other_community = models.CharField(max_length=64, default="", blank=True, null=True)
+    other_community = models.CharField(
+        max_length=64, default="", blank=True, null=True)
     taxonomies = models.ManyToManyField(
-        "Taxonomy",
-        through="PlaceNameTaxonomy",
+        'Taxonomy',
+        through='PlaceNameTaxonomy',
     )
     public_arts = models.ManyToManyField(
-        "self",
+        'self',
         symmetrical=False,
-        through="PublicArtArtist",
-        through_fields=("artist", "public_art"),
-        related_name="public_arts+",
+        through='PublicArtArtist',
+        through_fields=('artist', 'public_art'),
+        related_name='public_arts+'
     )
     artists = models.ManyToManyField(
-        "self",
+        'self',
         symmetrical=False,
-        through="PublicArtArtist",
-        through_fields=("public_art", "artist"),
-        related_name="artists+",
+        through='PublicArtArtist',
+        through_fields=('public_art', 'artist'),
+        related_name='artists+'
     )
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
@@ -292,15 +281,15 @@ class PlaceName(CulturalModel):
             return None
 
         # Look for email first
-        email = self.related_data.filter(Q(data_type="email")).first()
+        email = self.related_data.filter(Q(data_type='email')).first()
 
         # If placename has no email, look for user email
         if not email:
-            email = self.related_data.filter(Q(data_type="user_email")).first()
+            email = self.related_data.filter(Q(data_type='user_email')).first()
 
         # If both are not available, return no email
         if not email or not email.value:
-            return "No email"
+            return 'No email'
 
         return _get_claim_url(email.value)
 
@@ -310,29 +299,26 @@ class PlaceName(CulturalModel):
             return None
 
         # Only POIs should have notifications
-        if self.kind not in ["", "poi"]:
+        if self.kind not in ['', 'poi']:
             return None
 
-        subject = (
-            "Your contribution has been {} on the First Peoples' Language Map".format(
-                STATUS_DISPLAY[self.status]
-            )
-        )
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(
+            STATUS_DISPLAY[self.status])
         message = "<p>Contribution: {name} has been {status}</p>".format(
-            name=self.name, status=STATUS_DISPLAY[self.status]
-        )
+            name=self.name, status=STATUS_DISPLAY[self.status])
 
         if self.name:
-            message += "<p>Point of Interest: {}</p>".format(get_place_link(self))
+            message += '<p>Point of Interest: {}</p>'.format(
+                get_place_link(self))
 
         if self.status in [REJECTED, FLAGGED]:
-            message += "<p>Reason: {}</p>".format(self.status_reason)
-            message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+            message += '<p>Reason: {}</p>'.format(self.status_reason)
+            message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
 
         send_mail(
             subject,
             message,
-            "maps@fpcc.ca",
+            'maps@fpcc.ca',
             [self.creator.email],
             html_message=message,
         )
@@ -361,21 +347,16 @@ class PlaceName(CulturalModel):
 
         admin_list = get_admin_email_list()
 
-        formatted_kind = self.kind.upper().replace("_", " ")
-        page = (
-            get_place_link(self)
-            if self.kind == "" or self.kind == "poi"
-            else get_art_link(self)
-        )
+        formatted_kind = self.kind.upper().replace('_', ' ')
+        page = get_place_link(
+            self) if self.kind == '' or self.kind == 'poi' else get_art_link(self)
 
         message = """
             <h3>Greetings from First People's Cultural Council!</h3>
             <p>A new {} was added on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
             <p>Page: {}</p>
             <p>Miigwech, and have a good day!</p>
-        """.format(
-            formatted_kind, page
-        )
+        """.format(formatted_kind, page)
 
         send_mail(
             subject="New People's Map %s" % formatted_kind,
@@ -404,24 +385,17 @@ class Media(BaseModel):
     media_file = models.FileField(null=True, blank=True, max_length=500)
     community_only = models.BooleanField(null=True)
     placename = models.ForeignKey(
-        PlaceName,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="medias",
+        PlaceName, on_delete=models.SET_NULL, null=True, blank=True, related_name="medias"
     )
     community = models.ForeignKey(
-        Community,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        default=None,
-        related_name="medias",
+        Community, on_delete=models.SET_NULL, null=True, blank=True, default=None, related_name="medias"
     )
-    creator = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(
+        "users.User", null=True, on_delete=models.SET_NULL)
 
     # Artwork specific types
-    mime_type = models.CharField(max_length=100, default=None, null=True, blank=True)
+    mime_type = models.CharField(
+        max_length=100, default=None, null=True, blank=True)
     is_artwork = models.BooleanField(default=False)
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, null=True, default=UNVERIFIED
@@ -433,35 +407,27 @@ class Media(BaseModel):
         if self.status == UNVERIFIED:
             return None
 
-        subject = (
-            "Your contribution has been {} on the First Peoples' Language Map".format(
-                STATUS_DISPLAY[self.status]
-            )
-        )
+        subject = "Your contribution has been {} on the First Peoples' Language Map".format(
+            STATUS_DISPLAY[self.status])
         message = "<p>Contribution: {name} has been {status}</p>".format(
-            name=self.name, status=STATUS_DISPLAY[self.status]
-        )
+            name=self.name, status=STATUS_DISPLAY[self.status])
 
-        if (
-            self.placename
-            and self.placename.name
-            and self.placename.kind in ["", "poi"]
-        ):
-            message += "<p>Point of Interest: {}</p>".format(
-                get_place_link(self.placename)
-            )
+        if self.placename and self.placename.name and self.placename.kind in ['', 'poi']:
+            message += '<p>Point of Interest: {}</p>'.format(
+                get_place_link(self.placename))
 
         if self.community and self.community.name:
-            message += "<p>Community: {}</p>".format(get_comm_link(self.community))
+            message += '<p>Community: {}</p>'.format(
+                get_comm_link(self.community))
 
         if self.status in [REJECTED, FLAGGED]:
-            message += "<p>Reason: {}</p>".format(self.status_reason)
-            message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+            message += '<p>Reason: {}</p>'.format(self.status_reason)
+            message += '<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>'
 
         send_mail(
             subject,
             message,
-            "maps@fpcc.ca",
+            'maps@fpcc.ca',
             [self.creator.email],
             html_message=message,
         )
@@ -495,7 +461,7 @@ class Media(BaseModel):
         elif self.community:
             page = get_comm_link(self.community)
         else:
-            page = ""
+            page = ''
 
         formatted_kind = "ARTWORK" if self.is_artwork else "MEDIA"
 
@@ -504,9 +470,7 @@ class Media(BaseModel):
             <p>A new {} was added on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
             <p>Page: {}</p>
             <p>Miigwech, and have a good day!</p>
-        """.format(
-            formatted_kind, page
-        )
+        """.format(formatted_kind, page)
 
         send_mail(
             subject="New People's Map %s" % formatted_kind,
@@ -517,17 +481,16 @@ class Media(BaseModel):
         )
 
     class Meta:
-        ordering = ("-id",)
+        ordering = ('-id', )
 
 
 class RelatedData(models.Model):
     data_type = models.CharField(max_length=100, unique=False)
-    label = models.CharField(max_length=100, unique=False, default="")
-    value = models.CharField(max_length=255, default="", null=True, blank=True)
+    label = models.CharField(max_length=100, unique=False, default='')
+    value = models.CharField(max_length=255, default='', null=True, blank=True)
     is_private = models.BooleanField(default=False)
     placename = models.ForeignKey(
-        PlaceName, related_name="related_data", on_delete=models.CASCADE
-    )
+        PlaceName, related_name='related_data', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Related Data"
@@ -535,26 +498,31 @@ class RelatedData(models.Model):
 
 class Favourite(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, default=None, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, default=None, null=True)
     place = models.ForeignKey(
         PlaceName, on_delete=models.SET_NULL, null=True, related_name="favourites"
     )
     media = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True)
 
-    favourite_type = models.CharField(max_length=16, null=True, blank=True, default="")
-    description = models.CharField(max_length=255, null=True, blank=True, default="")
+    favourite_type = models.CharField(
+        max_length=16, null=True, blank=True, default="")
+    description = models.CharField(
+        max_length=255, null=True, blank=True, default="")
     point = models.PointField(null=True, default=None)
     zoom = models.IntegerField(default=0)
 
     def favourite_place_already_exists(user_id, place_id):
-        favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)
+        favourite = Favourite.objects.filter(
+            user__id=user_id).filter(place_id=place_id)
         if favourite:
             return True
         else:
             return False
 
     def favourite_media_already_exists(user_id, media_id):
-        favourite = Favourite.objects.filter(user__id=user_id).filter(media_id=media_id)
+        favourite = Favourite.objects.filter(
+            user__id=user_id).filter(media_id=media_id)
         if favourite:
             return True
         else:
@@ -563,7 +531,8 @@ class Favourite(BaseModel):
 
 class Notification(BaseModel):
     name = models.CharField(max_length=255, blank=True, default="")
-    user = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey("users.User", null=True,
+                             on_delete=models.SET_NULL)
     language = models.ForeignKey(
         Language, null=True, default=None, on_delete=models.SET_NULL
     )
@@ -591,11 +560,9 @@ class Dialect(BaseModel):
 
 class PublicArtArtist(models.Model):
     public_art = models.ForeignKey(
-        PlaceName, on_delete=models.CASCADE, related_name="art_artists"
-    )
+        PlaceName, on_delete=models.CASCADE, related_name='art_artists')
     artist = models.ForeignKey(
-        PlaceName, on_delete=models.CASCADE, related_name="artist_arts"
-    )
+        PlaceName, on_delete=models.CASCADE, related_name='artist_arts')
 
     def __str__(self):
         return "{} ({})".format(self.public_art, self.artist)
@@ -603,19 +570,19 @@ class PublicArtArtist(models.Model):
 
 class Taxonomy(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(default="", blank=True, null=True)
+    description = models.TextField(default='', blank=True, null=True)
     order = models.IntegerField(
         default=None,
         null=True,
         blank=True,
-        help_text="Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list",
+        help_text='Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list'
     )
     parent = models.ForeignKey(
-        "self",
+        'self',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="child_taxonomies",
+        related_name='child_taxonomies'
     )
 
     def __str__(self):
@@ -626,8 +593,10 @@ class Taxonomy(models.Model):
 
 
 class PlaceNameTaxonomy(models.Model):
-    placename = models.ForeignKey(PlaceName, on_delete=models.SET_NULL, null=True)
-    taxonomy = models.ForeignKey(Taxonomy, on_delete=models.SET_NULL, null=True)
+    placename = models.ForeignKey(
+        PlaceName, on_delete=models.SET_NULL, null=True)
+    taxonomy = models.ForeignKey(
+        Taxonomy, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "{} ({})".format(self.placename, self.taxonomy)
@@ -654,9 +623,9 @@ class LNAData(BaseModel):
     """
     Deprecated
     """
-
     lna = models.ForeignKey(LNA, on_delete=models.SET_NULL, null=True)
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True)
+    community = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True)
     fluent_speakers = models.IntegerField(default=0)
     some_speakers = models.IntegerField(default=0)
     learners = models.IntegerField(default=0)
@@ -674,11 +643,11 @@ class LNAData(BaseModel):
 
 
 def _get_claim_url(email):
-    salt = os.environ["INVITE_SALT"].encode("utf-8")
-    encoded_email = email.encode("utf-8")
+    salt = os.environ['INVITE_SALT'].encode('utf-8')
+    encoded_email = email.encode('utf-8')
     key = hashlib.sha256(salt + encoded_email).hexdigest()
     host = settings.HOST
-    return f"{host}/claim?email={email}&key={key}"
+    return f'{host}/claim?email={email}&key={key}'
 
 
 def placename_post_save(sender, instance, created, **kwargs):

@@ -1,33 +1,18 @@
 <template>
   <div>
-    <div class="upload-img-container mt-3">
-      <div v-if="file" class="upload-img">
-        <img
-          v-if="fileSrc === null"
-          class="upload-placeholder"
-          :src="require(`@/assets/images/artist_icon.svg`)"
-        />
-        <img v-else :src="fileSrc" />
-        <b-button
-          v-if="fileSrc !== null"
-          class="upload-remove"
-          @click="removeImg()"
-          >Remove Image</b-button
-        >
-      </div>
-
-      <b-form-file
-        ref="fileUpload"
-        v-model="file"
-        accept="image/*, video/*"
-        class="file-upload-input"
-        :placeholder="placeholder"
-        drop-placeholder="Drop file here..."
-      ></b-form-file>
-    </div>
-
+    <b-form-file
+      ref="fileUpload"
+      v-model="file"
+      accept="image/*, video/*"
+      class="file-upload-input"
+      :placeholder="placeholder"
+      drop-placeholder="Drop file here..."
+    ></b-form-file>
     <transition name="fade">
       <div v-if="file" class="mt-4">
+        <div v-if="errorMessage">
+          <b-alert variant="warning" show>{{ errorMessage }}</b-alert>
+        </div>
         <b-row>
           <b-col xl="12">
             <label class="font-08" for="file-name">Title</label>
@@ -63,28 +48,7 @@
           :commonly.sync="commonly"
         ></CommunityOnly>
 
-        <div v-if="errorMessage">
-          <b-alert variant="warning" show>{{ errorMessage }}</b-alert>
-        </div>
-
-        <b-row class="field-row my-4">
-          <b-form-checkbox
-            id="is-agree"
-            v-model="isAgree"
-            class="d-inline-block ml-3"
-            name="is-agree"
-          >
-            By uploading this I acknowledge that I own the copyright to this
-            media. FPCC does not take responsibility for the content uploaded to
-            the First Peoples’ Map of B.C.
-          </b-form-checkbox>
-        </b-row>
-
-        <b-button
-          variant="dark"
-          size="sm"
-          :disabled="!isAgree"
-          @click="handleUpload"
+        <b-button variant="dark" size="sm" @click="handleUpload"
           >Upload</b-button
         >
         <b-button
@@ -103,14 +67,6 @@
 import ToolTip from '@/components/Tooltip.vue'
 import { getFormData } from '@/plugins/utils.js'
 import CommunityOnly from '@/components/CommunityOnly.vue'
-
-const base64Encode = data =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(data)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = error => reject(error)
-  })
 
 export default {
   components: {
@@ -135,34 +91,15 @@ export default {
     return {
       fileName: '',
       file: null,
-      fileSrc: null,
       description: '',
       errorMessage: null,
       successMessage: null,
-      commonly: 'not_accepted',
-      isAgree: false
+      commonly: 'not_accepted'
     }
   },
   computed: {
     isArtwork() {
       return this.$route.query.type || this.$route.query.upload_artwork
-    }
-  },
-  watch: {
-    file(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        if (newValue) {
-          base64Encode(newValue)
-            .then(value => {
-              this.fileSrc = value
-            })
-            .catch(() => {
-              this.fileSrc = null
-            })
-        } else {
-          this.fileSrc = null
-        }
-      }
     }
   },
   methods: {
@@ -173,10 +110,6 @@ export default {
       this.errorMessage = null
       this.successMessage = null
       this.clearFiles()
-    },
-    removeImg() {
-      this.file = null
-      this.fileSrc = null
     },
     clearFiles() {
       this.$refs.fileUpload.reset()
@@ -199,14 +132,15 @@ export default {
             result.request.statusText === 'Created'
           ) {
             this.$root.$emit('fileUploaded', result.data)
-            this.resetToInitialState()
           } else {
             throw result
           }
         } catch (e) {
-          this.$root.$emit('fileUploadFailed', 'File')
+          this.$root.$on('fileUploadFailed', 'File')
         }
       }
+
+      this.resetToInitialState()
     },
     getFormData() {
       return getFormData({
@@ -248,7 +182,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
 .file-upload-input {
   font-size: 0.8em;
   overflow: hidden;
@@ -259,57 +193,5 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-}
-
-.upload-img-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin: 0 auto;
-
-  .upload-img {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    height: 150px;
-    border-radius: 100%;
-    border: 2px solid rgba(0, 0, 0, 0.125);
-    margin-bottom: 0.5em;
-
-    &:hover {
-      img {
-        opacity: 0.5;
-      }
-      .upload-remove {
-        display: block;
-        opacity: 1;
-      }
-    }
-  }
-  img {
-    width: 150px;
-    height: 150px;
-    border-radius: 100%;
-    object-fit: cover;
-  }
-
-  .upload-placeholder {
-    width: 90px;
-    height: 90px;
-    object-fit: contain;
-    border-radius: 0;
-  }
-
-  .upload-remove {
-    display: none;
-    position: absolute;
-    margin: auto auto;
-    font-size: 0.75em;
-    display: none;
-  }
 }
 </style>

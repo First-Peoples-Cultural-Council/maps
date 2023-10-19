@@ -4,7 +4,6 @@
     <b-modal
       id="share-embed-modal"
       v-model="show"
-      centered
       ok-title="Close"
       :ok-only="true"
       :hide-header="true"

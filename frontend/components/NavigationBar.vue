@@ -177,6 +177,19 @@
               <nuxt-link class="color-gray" to="/page/about">About</nuxt-link>
             </li>
             <li @click="closeNav">
+              <nuxt-link class="color-gray" to="/page/how-to-use"
+                >Resources</nuxt-link
+              >
+            </li>
+            <!-- <li @click="closeNav">
+              <a
+                class="color-gray"
+                href="https://fpcc.ca/resource/territory-acknowledegement/"
+                target="_blank"
+                >Territorial Acknowledgement</a
+              >
+            </li> -->
+            <li @click="closeNav">
               <nuxt-link class="color-gray" to="/page/tos"
                 >Terms of Use</nuxt-link
               >
