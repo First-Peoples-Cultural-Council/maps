@@ -1,6 +1,6 @@
 <template>
   <div class="w-100">
-    <div v-if="!isEmptyObject(placename)" class="w-100 arts-main-wrapper">
+    <div v-if="placename" class="w-100 arts-main-wrapper">
       <div
         v-if="!mobileContent"
         class="content-collapse d-none content-mobile-title"
@@ -82,9 +82,7 @@
           >
             <!-- Show the Placename image if Public Art and Event -->
             <div
-              v-if="
-                placename.image && (isPublicArt || isEvent || isOrganization)
-              "
+              v-if="placename.image && (isPublicArt || isEvent)"
               class="placename-img-container"
             >
               <img class="placename-img" :src="getMediaUrl(placename.image)" />
@@ -275,8 +273,7 @@ import {
   getApiUrl,
   encodeFPCC,
   makeMarker,
-  getMediaUrl,
-  isEmptyObject
+  getMediaUrl
 } from '@/plugins/utils.js'
 import Logo from '@/components/Logo.vue'
 import ArtsDrawer from '@/components/arts/ArtsDrawer.vue'
@@ -348,9 +345,6 @@ export default {
     },
     isEvent() {
       return this.placename.kind.toLowerCase() === 'event'
-    },
-    isOrganization() {
-      return this.placename.kind.toLowerCase() === 'organization'
     },
     isGalleryNotEmpty() {
       return (
@@ -468,7 +462,6 @@ export default {
   },
   methods: {
     getMediaUrl,
-    isEmptyObject,
     getSocMedIcon(link) {
       const str = link.toLowerCase()
       const getSoc = this.filterCondition.find(soc => {
@@ -590,11 +583,10 @@ export default {
       return this.placename.description.length >= 50
     },
     renderArtistImg(img) {
-      const getIcon =
-        this.placename && this.placename.kind
-          ? require(`@/assets/images/${this.placename.kind}_icon.svg`)
-          : ''
-      return getMediaUrl(img) || getIcon
+      return (
+        getMediaUrl(img) ||
+        require(`@/assets/images/${this.placename.kind}_icon.svg`)
+      )
     },
     checkUrlValid(url) {
       const pattern = /^((http|https|ftp):\/\/)/

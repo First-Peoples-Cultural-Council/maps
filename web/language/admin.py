@@ -20,10 +20,9 @@ from .models import (
     Recording,
     Taxonomy,
     PlaceNameTaxonomy,
-    RelatedData,
+    RelatedData
 )
-from .widgets import LatLongWidget, GeoJSONFeatureCollectionWidget
-
+from .widgets import LatLongWidget
 
 # INLINES
 class DialectInline(admin.TabularInline):
@@ -46,18 +45,23 @@ class RelatedDataInline(admin.TabularInline):
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ("name", "sleeping", "family")
     exclude = ("audio_file",)
-    search_fields = ("name", "family__name")
-    inlines = [DialectInline, LanguageLinkInline]
-    formfield_overrides = {
-        geomodels.PolygonField: {"widget": GeoJSONFeatureCollectionWidget},
-    }
+    search_fields = (
+        "name",
+        "family__name"
+    )
+    inlines = [
+        DialectInline,
+        LanguageLinkInline
+    ]
 
 
 class CommunityAdmin(admin.ModelAdmin):
     exclude = ("audio_file",)
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+    )
     formfield_overrides = {
-        geomodels.PointField: {"widget": LatLongWidget},
+        geomodels.PointField: {'widget': LatLongWidget},
     }
     inlines = [
         CommunityLinkInline,
@@ -66,12 +70,17 @@ class CommunityAdmin(admin.ModelAdmin):
 
 class DialectAdmin(admin.ModelAdmin):
     list_display = ("name", "language")
-    search_fields = ("name", "language__name")
+    search_fields = (
+        "name",
+        "language__name"
+    )
 
 
 class LNADataAdmin(admin.ModelAdmin):
     list_display = ("name", "fluent_speakers")
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+    )
 
 
 class RelatedDataAdmin(admin.ModelAdmin):
@@ -81,30 +90,24 @@ class RelatedDataAdmin(admin.ModelAdmin):
         "data_type",
         "value",
         "placename__name",
-        "placename__kind",
+        "placename__kind"
     )
 
 
 class PlaceNameAdminForm(forms.ModelForm):
     class Meta:
         model = PlaceName
-        fields = "__all__"
-        widgets = {
-            "geom": GeoJSONFeatureCollectionWidget(),
-        }
+        fields = '__all__'
 
     def clean(self):
         cleaned_data = super().clean()
-        kind = cleaned_data.get("kind")
         communities = cleaned_data.get("communities")
         other_community = cleaned_data.get("other_community")
 
-        if kind not in ["", "poi"] and not communities and not other_community:
-            raise forms.ValidationError(
-                {
-                    "communities": "Either `Communities` or `Other community` is required."
-                }
-            )
+        if not communities and not other_community:
+            raise forms.ValidationError({
+                'communities': 'Either `Communities` or `Other community` is required.'
+            })
 
         return cleaned_data
 
@@ -131,12 +134,18 @@ class PlaceNameAdmin(admin.ModelAdmin):
 class MediaAdmin(admin.ModelAdmin):
     list_display = ("name", "file_type", "media_file", "url")
     readonly_fields = ("created",)
-    search_fields = ("name", "file_type")
+    search_fields = (
+        "name",
+        "file_type"
+    )
 
 
 class TaxonomyAdmin(admin.ModelAdmin):
     list_display = ("name", "parent")
-    search_fields = ("name", "parent__name")
+    search_fields = (
+        "name",
+        "parent__name"
+    )
 
 
 class PlaceNameTaxonomyAdmin(admin.ModelAdmin):

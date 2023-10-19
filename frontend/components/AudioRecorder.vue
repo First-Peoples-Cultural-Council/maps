@@ -136,24 +136,7 @@
           :commonly.sync="commonly"
         ></CommunityOnly>
 
-        <b-row class="field-row my-4">
-          <b-form-checkbox
-            id="is-agree"
-            v-model="isAgree"
-            class="d-inline-block ml-3"
-            name="is-agree"
-          >
-            By uploading this I acknowledge that I own the copyright to this
-            media. FPCC does not take responsibility for the content uploaded to
-            the First Peoples’ Map of B.C.
-          </b-form-checkbox>
-        </b-row>
-
-        <b-button
-          variant="dark"
-          size="sm"
-          :disabled="!isAgree"
-          @click="externalAudioUpload"
+        <b-button variant="dark" size="sm" @click="externalAudioUpload"
           >Upload</b-button
         >
         <b-button
@@ -208,8 +191,7 @@ export default {
       audio: null,
       audioErrorMessage: null,
       recordingSupport: true,
-      commonly: null,
-      isAgree: false
+      commonly: null
     }
   },
   computed: {
@@ -273,7 +255,7 @@ export default {
           }
         } catch (e) {
           console.error(e)
-          this.$root.$emit('fileUploadFailed', 'Audio')
+          this.$root.$on('fileUploadFailed', 'Audio')
         }
       }
 
