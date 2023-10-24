@@ -583,12 +583,21 @@ export default {
           await this.$store.dispatch('user/setLoggedInUser')
         }
       } catch (e) {
-        console.warn(e.response)
-        this.errors = this.errors.concat(
-          Object.entries(e.response.data).map(e => {
-            return e[0] + ': ' + e[1]
-          })
-        )
+        if (e.response) {
+          console.warn(e.response)
+          this.errors = this.errors.concat(
+            Object.entries(e.response.data).map(e => {
+              return e[0] + ': ' + e[1]
+            })
+          )
+        }
+
+        this.$root.$emit('notification', {
+          title: 'Failed',
+          message: `Something went wrong, please try again`,
+          time: 5000,
+          variant: 'danger'
+        })
       }
       this.$router.push({
         path: '/profile/' + this.currentUser.id

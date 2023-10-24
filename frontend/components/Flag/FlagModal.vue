@@ -12,7 +12,7 @@
       style="fill: white;"
     ></MdFlagIcon
     >{{ title || 'Flag' }}
-    <b-modal v-model="modalShow" hide-header @ok="handleSubmit">
+    <b-modal v-model="modalShow" hide-header centered @ok="handleSubmit">
       <b-alert
         v-if="errorMessage"
         show
@@ -26,12 +26,12 @@
         :options="options"
         size="sm"
       ></b-form-select>
-      <div v-if="selected === 'c'">
+      <div>
         <h5 class="font-08 mt-3">State a reason</h5>
         <b-form-textarea
           id="textarea"
           v-model="text"
-          placeholder="Enter something..."
+          placeholder="Enter reason for flagging this content..."
           rows="3"
           max-rows="6"
         ></b-form-textarea>
@@ -80,15 +80,15 @@ export default {
   methods: {
     async handleSubmit(e) {
       e.preventDefault()
-      if (!this.selected) {
-        this.errorMessage = 'Please select an option'
+      if (!this.selected || !this.text) {
+        this.errorMessage = 'Please select an option, and state your reason.'
         return false
       }
-      e.preventDefault()
-      const reason =
-        this.selected === 'c'
-          ? this.text
-          : this.options.find(o => o.value === this.selected).text
+
+      const reason = `${
+        this.options.find(o => o.value === this.selected).text
+      }- ${this.text}`
+
       const result = await this.submitFlag(this.id, reason)
       this.modalShow = false
       if (result.message === 'Flagged!') {
