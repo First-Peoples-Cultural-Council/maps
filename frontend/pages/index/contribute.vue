@@ -844,45 +844,47 @@
 
           <hr />
 
-          <span class="field-row mt-6">
-            To be able to Submit, I agree to the following:
-          </span>
+          <template v-if="queryMode !== 'existing'">
+            <span class="field-row mt-6">
+              To be able to Submit, I agree to the following:
+            </span>
 
-          <b-row class="field-row mt-1">
-            <b-form-checkbox
-              id="is-member"
-              v-model="isMember"
-              class="d-inline-block ml-2"
-              name="is-member"
-            >
-              I am a member of the community about which I am contributing
-              information and/or this information pertains only to me.
-            </b-form-checkbox>
-          </b-row>
+            <b-row class="field-row mt-1">
+              <b-form-checkbox
+                id="is-member"
+                v-model="isMember"
+                class="d-inline-block ml-2"
+                name="is-member"
+              >
+                I am a member of the community about which I am contributing
+                information and/or this information pertains only to me.
+              </b-form-checkbox>
+            </b-row>
 
-          <b-row class="field-row mt-3">
-            <b-form-checkbox
-              id="is-appropriate"
-              v-model="isAppropriate"
-              class="d-inline-block ml-2"
-              name="is-appropriate"
-            >
-              It is culturally appropriate to share this information.
-            </b-form-checkbox>
-          </b-row>
+            <b-row class="field-row mt-3">
+              <b-form-checkbox
+                id="is-appropriate"
+                v-model="isAppropriate"
+                class="d-inline-block ml-2"
+                name="is-appropriate"
+              >
+                It is culturally appropriate to share this information.
+              </b-form-checkbox>
+            </b-row>
 
-          <b-row class="field-row mt-3 mb-5">
-            <b-form-checkbox
-              id="is-authority"
-              v-model="isGivenAuthority"
-              class="d-inline-block ml-2 text"
-              name="is-authority"
-            >
-              I have the authority and/or permission from my community (e.g.
-              from consultation with Elders, Knowledge Keepers, cultural
-              leaders, etc.) to share this information.
-            </b-form-checkbox>
-          </b-row>
+            <b-row class="field-row mt-3 mb-5">
+              <b-form-checkbox
+                id="is-authority"
+                v-model="isGivenAuthority"
+                class="d-inline-block ml-2 text"
+                name="is-authority"
+              >
+                I have the authority and/or permission from my community (e.g.
+                from consultation with Elders, Knowledge Keepers, cultural
+                leaders, etc.) to share this information.
+              </b-form-checkbox>
+            </b-row>
+          </template>
 
           <section class="pl-3 pr-3">
             <b-row class="mt-3">
@@ -1276,7 +1278,10 @@ export default {
       )
     },
     isValidToSubmit() {
-      return this.isMember && this.isAppropriate && this.isGivenAuthority
+      return (
+        (this.isMember && this.isAppropriate && this.isGivenAuthority) ||
+        this.queryMode === 'existing'
+      )
     }
   },
   watch: {
@@ -2064,7 +2069,7 @@ export default {
       }
 
       if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
-        this.errors.push('Thumbnail: Please upload an image.')
+        this.errors.push('Thumbnail: Please upload a thumbnail.')
         this.isLoading = false
         return
       }
@@ -2182,11 +2187,19 @@ export default {
           }
         } catch (e) {
           this.isLoading = false
-          this.errors = this.errors.concat(
-            Object.entries(e.response.data).map(e => {
-              return e[0] + ': ' + e[1]
-            })
-          )
+          if (e.reponse) {
+            this.errors = this.errors.concat(
+              Object.entries(e.response.data).map(e => {
+                return e[0] + ': ' + e[1]
+              })
+            )
+          }
+          this.$root.$emit('notification', {
+            title: 'Failed',
+            message: `Something went wrong, please try again`,
+            time: 5000,
+            variant: 'danger'
+          })
         }
       } else {
         try {
@@ -2237,12 +2250,21 @@ export default {
           }
         } catch (e) {
           this.isLoading = false
-          console.error(Object.entries(e.response.data))
-          this.errors = this.errors.concat(
-            Object.entries(e.response.data).map(e => {
-              return e[0] + ': ' + e[1]
-            })
-          )
+          if (e.response) {
+            console.error(Object.entries(e.response.data))
+            this.errors = this.errors.concat(
+              Object.entries(e.response.data).map(e => {
+                return e[0] + ': ' + e[1]
+              })
+            )
+          }
+
+          this.$root.$emit('notification', {
+            title: 'Failed',
+            message: `Something went wrong, please try again`,
+            time: 5000,
+            variant: 'danger'
+          })
         }
       }
     },

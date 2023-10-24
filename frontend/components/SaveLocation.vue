@@ -4,6 +4,7 @@
     <b-modal
       id="save-location-modal"
       v-model="show"
+      centered
       ok-title="Close"
       :ok-only="true"
       :hide-header="true"
