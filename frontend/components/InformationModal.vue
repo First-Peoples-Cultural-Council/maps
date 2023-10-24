@@ -48,14 +48,14 @@
 </template>
 
 <script>
+import * as Cookies from 'js-cookie'
+
 export default {
   methods: {
     handleClick(e) {
-      // Data expires after 30 days
-      localStorage.setItem(
-        'fpmap_info_modal_agreement_expiry_date',
-        new Date().getTime() + 30 * 24 * 60 * 60 * 1000
-      )
+      Cookies.set('fpmap_info_modal_understood', true, {
+        expires: new Date().getTime() + 30 * 24 * 60 * 60 * 1000
+      })
       this.$root.$emit('hideInformationModal')
     }
   }
