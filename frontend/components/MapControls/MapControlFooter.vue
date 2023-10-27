@@ -3,11 +3,6 @@
     v-if="$route.path !== '/splashscreen' && !isEmbed"
     class="map-controls-overlay"
   >
-    <div v-if="$route.path !== '/page/how-to-use'" class="help-icon">
-      <nuxt-link to="/page/how-to-use">
-        <img src="@/assets/images/help-icon.png" alt="Help" width="15px"
-      /></nuxt-link>
-    </div>
     <Zoom class="zoom-control mr-2 hide-mobile"></Zoom>
     <ResetMap class="reset-map-control mr-2 hide-mobile"></ResetMap>
     <CurrentLocation class="current-location-control mr-2"></CurrentLocation>
@@ -46,21 +41,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.help-icon {
-  background-color: #fff;
-  border: 1px solid #ddd5cc;
-  cursor: pointer;
-  padding: 0.5em 0.75em;
-  margin-right: auto;
-  margin-left: 2.5em;
-  display: flex;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 15px;
-  text-transform: uppercase;
-}
-</style>
