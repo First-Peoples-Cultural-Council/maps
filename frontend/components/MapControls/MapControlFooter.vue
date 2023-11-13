@@ -11,6 +11,7 @@
       v-if="isLoggedIn"
       class="share-embed-control mr-2"
     ></SaveLocation>
+
     <AddToTheMap class="contribute-control mr-2"></AddToTheMap>
   </div>
 </template>
@@ -40,5 +41,3 @@ export default {
   }
 }
 </script>
-
-<style></style>
