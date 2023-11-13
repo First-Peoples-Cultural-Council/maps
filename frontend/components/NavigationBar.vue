@@ -1,6 +1,17 @@
 <template>
   <div class="nav-container">
     <div class="navigation-container hide-mobile">
+      <div
+        v-if="$route.path !== '/page/how-to-use'"
+        class="nav-item-container cursor-pointer hide-mobile"
+      >
+        <nuxt-link class="text-dark" to="/page/how-to-use">
+          <nav>
+            <span>HELP</span>
+            <img src="@/assets/images/help-icon.png" alt="Help" width="20px" />
+          </nav>
+        </nuxt-link>
+      </div>
       <Event />
       <div
         v-if="isLoggedIn"
@@ -623,5 +634,20 @@ export default {
     right: 0.5em;
     padding: 0.75em;
   }
+}
+.help-icon {
+  background-color: #fff;
+  border: 1px solid #ddd5cc;
+  cursor: pointer;
+  padding: 0.5em 0.75em;
+  margin-right: auto;
+  margin-left: 2.5em;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
 }
 </style>

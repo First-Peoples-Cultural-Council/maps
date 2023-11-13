@@ -12,7 +12,14 @@
       style="fill: white;"
     ></MdFlagIcon
     >{{ title || 'Flag' }}
-    <b-modal v-model="modalShow" hide-header centered @ok="handleSubmit">
+    <b-modal
+      v-model="modalShow"
+      hide-header
+      centered
+      :ok-disabled="!isValid"
+      ok-title="Submit"
+      @ok="handleSubmit"
+    >
       <b-alert
         v-if="errorMessage"
         show
@@ -20,14 +27,14 @@
         class="font-08 padding-05"
         >{{ errorMessage }}</b-alert
       >
-      <h5 class="font-08">Select a reason</h5>
+      <h4 class="font-08">Select a reason</h4>
       <b-form-select
         v-model="selected"
         :options="options"
         size="sm"
       ></b-form-select>
       <div>
-        <h5 class="font-08 mt-3">State a reason</h5>
+        <h4 class="font-08 mt-3">State a reason</h4>
         <b-form-textarea
           id="textarea"
           v-model="text"
@@ -77,10 +84,15 @@ export default {
       errorMessage: null
     }
   },
+  computed: {
+    isValid() {
+      return this.selected && this.text
+    }
+  },
   methods: {
     async handleSubmit(e) {
       e.preventDefault()
-      if (!this.selected || !this.text) {
+      if (!this.selected && !this.text) {
         this.errorMessage = 'Please select an option, and state your reason.'
         return false
       }

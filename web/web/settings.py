@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "django.contrib.sites",
     "django.contrib.sitemaps",
+    "django.contrib.postgres",
     'django_filters',
     "rest_framework",
     "rest_framework.authtoken",
