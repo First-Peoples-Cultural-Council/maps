@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="file-upload-main">
     <div class="upload-img-container mt-3">
       <div v-if="file" class="upload-img">
         <img
@@ -83,7 +83,7 @@
         <b-button
           variant="dark"
           size="sm"
-          :disabled="!isAgree"
+          :disabled="!isValid"
           @click="handleUpload"
           >Upload</b-button
         >
@@ -146,6 +146,14 @@ export default {
   computed: {
     isArtwork() {
       return this.$route.query.type || this.$route.query.upload_artwork
+    },
+    isValid() {
+      return (
+        this.isAgree &&
+        this.fileName !== '' &&
+        this.fileName !== '' &&
+        this.fileName
+      )
     }
   },
   watch: {
@@ -189,6 +197,7 @@ export default {
 
       if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
+        this.$root.$emit('closeUploadModal')
       } else {
         const formData = this.getFormData()
 
@@ -249,9 +258,13 @@ export default {
 </script>
 
 <style lang="scss">
+.file-upload-main {
+  width: 100%;
+}
 .file-upload-input {
   font-size: 0.8em;
   overflow: hidden;
+  width: 100%;
 }
 .fade-enter-active,
 .fade-leave-active {

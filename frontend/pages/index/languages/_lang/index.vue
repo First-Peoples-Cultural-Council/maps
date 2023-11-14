@@ -66,13 +66,13 @@
             class="mt-4"
           ></LanguageSummary>
         </section>
-        <section>
+        <!-- <section>
           <LanguageSeeAll
             :content="`Learn more about ${language.name}`"
             class="mt-3"
             @click.native="handleMoreDetails"
           ></LanguageSeeAll>
-        </section>
+        </section> -->
         <!-- <Filters class="mb-1 mt-2"></Filters> -->
         <div class="badge-container mt-2 ml-3 mr-3">
           <Badge
@@ -325,7 +325,6 @@ import ArtsCard from '@/components/arts/ArtsCard.vue'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageSummary from '@/components/languages/LanguageSummary.vue'
-import LanguageSeeAll from '@/components/languages/LanguageSeeAll.vue'
 import CommunityCard from '@/components/communities/CommunityCard.vue'
 import PlacesCard from '@/components/places/PlacesCard.vue'
 import { zoomToLanguage, selectLanguage } from '@/mixins/map.js'
@@ -342,7 +341,6 @@ export default {
     LanguageDetailCard,
     LanguageDetailBadge,
     LanguageSummary,
-    LanguageSeeAll,
     CommunityCard,
     PlacesCard,
     ArtsCard,

@@ -36,6 +36,7 @@
       >
         <CardBadge
           content="Pronounce"
+          type="pronounce"
           :class="{ 'md-size-badge': variant === 'md' }"
         ></CardBadge>
       </div>
