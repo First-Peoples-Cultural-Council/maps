@@ -20,9 +20,6 @@
     </div>
 
     <div v-if="!isDetailsPage" class="arts-detail-text">
-      <div class="d-inline-block" @click.prevent.stop="handleMoreDetails">
-        <CardBadge :content="`Learn more`" color="#c46156"></CardBadge>
-      </div>
       <div
         v-if="audioFile"
         class="d-inline-block"
@@ -36,6 +33,9 @@
         @click.prevent.stop="handlePronounce(greetingFile, 'gr')"
       >
         <CardBadge content="Greeting" type="pronounce"></CardBadge>
+      </div>
+      <div class="d-inline-block" @click.prevent.stop="handleMoreDetails">
+        <CardBadge :content="`Learn more`" color="#c46156"></CardBadge>
       </div>
       <CardBadge
         v-if="link"
