@@ -260,6 +260,7 @@ export default {
           'file/setMediaFiles',
           this.getMediaData(file, file_type)
         )
+        this.$root.$emit('closeUploadModal')
       } else {
         try {
           const result = await this.$store.dispatch('file/uploadMedia', dataObj)
