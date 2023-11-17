@@ -8,7 +8,7 @@ from language.models import Language, Community, CommunityLanguageStats
 class Command(BaseCommand):
     def handle(self, *args, **options):
         filename = options.get("filename")
-        check = options.get("check", None)
+        check = options.get("check", 1)
         update_language_stats_from_file(filename, check)
 
     def add_arguments(self, parser):
