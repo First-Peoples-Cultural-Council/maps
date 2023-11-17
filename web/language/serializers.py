@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-
+from django.db.models import Sum
 
 from .models import (
     Language,
@@ -472,6 +472,10 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
     languagelink_set = LanguageLinkSerializer(read_only=True, many=True)
     dialect_set = DialectSerializer(read_only=True, many=True)
     grants = GrantSerializer(many=True, read_only=True)
+    fluent_speakers = serializers.SerializerMethodField()
+    learners = serializers.SerializerMethodField()
+    some_speakers = serializers.SerializerMethodField()
+    pop_total_value = serializers.SerializerMethodField()
 
     # lna_set = LNADetailSerializer(read_only=True, many=True)
     # Atomic Writable APIs
@@ -494,6 +498,26 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
     )
     language_audio = RecordingSerializer(read_only=True)
     greeting_audio = RecordingSerializer(read_only=True)
+
+    def get_fluent_speakers(self, instance):
+        return instance.communitylanguagestats_set.filter().aggregate(
+            total_fluent_speakers=Sum("fluent_speakers")
+        )["total_fluent_speakers"] or 0
+
+    def get_learners(self, instance):
+        return instance.communitylanguagestats_set.filter().aggregate(
+            total_active_learners=Sum("active_learners")
+        )["total_active_learners"] or 0
+
+    def get_some_speakers(self, instance):
+        return instance.communitylanguagestats_set.filter().aggregate(
+            total_semi_speakers=Sum("semi_speakers")
+        )["total_semi_speakers"] or 0
+
+    def get_pop_total_value(self, instance):
+        return instance.communitylanguagestats_set.filter().aggregate(
+            total_population=Sum("community__population")
+        )["total_population"] or 0
 
     def to_representation(self, value):
         rep = super().to_representation(value)
