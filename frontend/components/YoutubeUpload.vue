@@ -147,6 +147,7 @@ export default {
 
       if (this.$route.query.mode === 'placename' || this.$route.query.type) {
         this.$store.commit('file/setMediaFiles', this.getMediaData())
+        this.$root.$emit('closeUploadModal')
       } else {
         try {
           const result = await this.uploadNote(formData)

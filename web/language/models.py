@@ -147,6 +147,9 @@ class CommunityLanguageStats(models.Model):
     semi_speakers = models.IntegerField(default=0)
     active_learners = models.IntegerField(default=0)
 
+    class Meta:
+        verbose_name_plural = "Community Language Stats"
+
 
 class CommunityMember(models.Model):
     STATUS_CHOICES = [

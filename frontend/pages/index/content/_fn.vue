@@ -59,7 +59,7 @@
           </div>
           <ul class="list-style-none m-0 p-0 mt-2">
             <li>
-              <span class="font-08 color-gray">Population:</span>
+              <span class="font-08 color-gray">Total Population:</span>
               <span class="font-08 font-weight-bold color-gray">{{
                 commDetails.population || 'N/A'
               }}</span>
@@ -131,11 +131,7 @@
               </template>
 
               <div v-if="showCollapse">
-                <div
-                  v-for="(lna, index) in lnaByCommunity"
-                  :key="`chartlna${index}`"
-                  class="mt-4 mb-4"
-                >
+                <div class="mt-4 mb-4">
                   <PieChart
                     :chartdata="extractChartData(lna)"
                     :options="options"
@@ -357,22 +353,13 @@ export default {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        legend: {
-          labels: {
-            filter(legendItem, chartData) {
-              if (legendItem.index === 3) {
-                return false
-              }
-              return true
-            }
-          }
-        },
+        legend: {},
         tooltips: {
           callbacks: {
             label(tooltipItems, data) {
-              return `${data.labels[tooltipItems.index]}: ${(
-                data.datasets[0].data[tooltipItems.index] * 100
-              ).toFixed(1) + '%'}`
+              return `${
+                data.labels[tooltipItems.index]
+              }: ${data.datasets[0].data[tooltipItems.index].toFixed(1) + '%'}`
             }
           }
         },
@@ -386,7 +373,7 @@ export default {
             chartContext.font = '100 32px BCSans'
             chartContext.textBaseline = 'middle'
             chartContext.fillText(
-              (this.data.datasets[0].learnerData[0] * 100).toFixed(2) + '%',
+              this.data.datasets[0].learnerData[0].toFixed(1) + '%',
               this.chart.width / 2 - 30,
               this.chart.height / 2 - 5,
               200
@@ -444,18 +431,8 @@ export default {
       return details
     },
     lnaByCommunity() {
-      /**  Remove Duplicate Language LNA data **/
-      const lnaReduced = this.lnaData.reduce((uniqueLna, lnaItem) => {
-        return uniqueLna.length !== 0 &&
-          uniqueLna.some(lna => {
-            return lna.language.id === lnaItem.language.id
-          })
-          ? uniqueLna
-          : [...uniqueLna, lnaItem]
-      }, [])
-
       /** * Get LNA percentage based on Community Population **/
-      return lnaReduced
+      return this.lnaData
         .filter(lna => {
           const { fluent_speakers, semi_speakers, active_learners } = lna
 
@@ -467,8 +444,19 @@ export default {
         })
         .map(lna => {
           let fluentPercentage, semiSpeakersPercentage, activeLearnerPercentage
-          const { fluent_speakers, semi_speakers, active_learners } = lna
-          const communityPopulation = this.communityPopulation
+          const {
+            fluent_speakers,
+            semi_speakers,
+            active_learners,
+            total_population
+          } = lna
+          const communityPopulation = total_population
+
+          // To do: To Add Speaker Percentage
+          // const speaker_percentage =
+          //   ((fluent_speakers + semi_speakers + active_learners) /
+          //     total_population) *
+          //   100
 
           if (communityPopulation) {
             fluentPercentage =
@@ -487,6 +475,7 @@ export default {
             fluent_speakers: fluentPercentage,
             semi_speakers: semiSpeakersPercentage,
             learners: activeLearnerPercentage
+            // speaker_percentage: speaker_percentage.toFixed(2) + '%'
           }
         })
     },
@@ -624,28 +613,42 @@ export default {
       this.showLNAs = !this.showLNAs
       this.showCollapse = false
     },
-    extractChartData(lna) {
+
+    getPopulationTotal(field) {
+      return this.lnaData.reduce((total, item) => total + item[field], 0)
+    },
+    extractChartData() {
+      const lna = this.lnaByCommunity
       // LNA Variabale Declaration
-      const fluentSpeakerParse = parseFloat(lna.fluent_speakers)
-      const semiSpeakerParse = parseFloat(lna.semi_speakers)
-      const learnerSpeakerParse = parseFloat(lna.learners)
+      const fluentSpeakerParse = parseFloat(
+        this.getPopulationTotal('fluent_speakers')
+      )
+      const semiSpeakerParse = parseFloat(
+        this.getPopulationTotal('semi_speakers')
+      )
+      const learnerSpeakerParse = parseFloat(
+        this.getPopulationTotal('active_learners')
+      )
 
       // Result Variables
-      const fluent_speakers = fluentSpeakerParse / 100
-      const semi_speakers = semiSpeakerParse / 100
-      const learners = learnerSpeakerParse / 100
+      const fluent_speakers =
+        (fluentSpeakerParse / this.communityPopulation) * 100
+      const semi_speakers = (semiSpeakerParse / this.communityPopulation) * 100
+      const learners = (learnerSpeakerParse / this.communityPopulation) * 100
       const others =
-        (100 - (fluent_speakers * 100 + semi_speakers * 100 + learners * 100)) /
+        ((this.communityPopulation -
+          (fluentSpeakerParse + semiSpeakerParse + learnerSpeakerParse)) /
+          this.communityPopulation) *
         100
 
       return {
         name: lna.language,
-        labels: ['Fluent', 'Semi Fluent', 'Other'],
+        labels: ['Fluent', 'Semi Fluent', 'Learners', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
-            data: [fluent_speakers, semi_speakers, others],
+            backgroundColor: ['#2ecc71', '#3498db', '#963B21', '#efefef'],
+            data: [fluent_speakers, semi_speakers, learners, others],
             learnerData: [learners]
           }
         ]
