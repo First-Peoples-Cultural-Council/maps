@@ -4,28 +4,28 @@
       <li>
         <span class="font-08 color-gray">Population:</span>
         <span class="font-08 font-weight-bold color-gray">{{
-          population === 0 ? 'Unknown' : population
+          population || 0
         }}</span>
       </li>
 
       <li>
         <span class="font-08 color-gray">Fluent Speakers:</span>
         <span class="font-08 font-weight-bold color-gray">{{
-          speakers === 0 ? 'Unknown' : speakers
+          speakers || 0
         }}</span>
       </li>
 
       <li>
-        <span class="font-08 color-gray">Understanding or speak somewhat:</span>
+        <span class="font-08 color-gray">Semi Speakers:</span>
         <span class="font-08 font-weight-bold color-gray">{{
-          somewhat === 0 ? 'Unknown' : somewhat
+          somewhat || 0
         }}</span>
       </li>
 
       <li>
         <span class="font-08 color-gray">Learning Speakers:</span>
         <span class="font-08 font-weight-bold color-gray">{{
-          learners == 0 ? 'Unknown' : learners
+          learners || 0
         }}</span>
       </li>
 
