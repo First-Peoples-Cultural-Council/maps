@@ -9,6 +9,7 @@ from .models import (
     Community,
     CommunityLink,
     CommunityMember,
+    CommunityLanguageStats,
     Dialect,
     PlaceName,
     Champion,
@@ -151,6 +152,20 @@ class CommunityMemberAdmin(admin.ModelAdmin):
     list_display = ("user", "community", "verified_by")
 
 
+class CommunityLanguageStatsAdmin(admin.ModelAdmin):
+    list_display = (
+        "language",
+        "community",
+        "fluent_speakers",
+        "semi_speakers",
+        "active_learners",
+    )
+    search_fields = (
+        "language__name",
+        "community__name",
+    )
+
+
 admin.site.register(Champion)
 admin.site.register(Dialect, DialectAdmin)
 admin.site.register(PlaceName, PlaceNameAdmin)
@@ -158,6 +173,7 @@ admin.site.register(Language, LanguageAdmin)
 admin.site.register(LanguageFamily)
 admin.site.register(Community, CommunityAdmin)
 admin.site.register(CommunityMember, CommunityMemberAdmin)
+admin.site.register(CommunityLanguageStats, CommunityLanguageStatsAdmin)
 admin.site.register(Media, MediaAdmin)
 admin.site.register(Favourite)
 admin.site.register(Notification)

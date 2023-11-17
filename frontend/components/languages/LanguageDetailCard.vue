@@ -19,20 +19,23 @@
       </div>
     </div>
 
-    <div class="arts-detail-text">
+    <div v-if="!isDetailsPage" class="arts-detail-text">
       <div
         v-if="audioFile"
         class="d-inline-block"
         @click.prevent.stop="handlePronounce(audioFile, 'pr')"
       >
-        <CardBadge content="Pronounce"></CardBadge>
+        <CardBadge content="Pronounce" type="pronounce"></CardBadge>
       </div>
       <div
         v-if="greetingFile"
         class="d-inline-block"
         @click.prevent.stop="handlePronounce(greetingFile, 'gr')"
       >
-        <CardBadge content="Greeting"></CardBadge>
+        <CardBadge content="Greeting" type="pronounce"></CardBadge>
+      </div>
+      <div class="d-inline-block" @click.prevent.stop="handleMoreDetails">
+        <CardBadge :content="`Learn more`" color="#c46156"></CardBadge>
       </div>
       <CardBadge
         v-if="link"
@@ -114,6 +117,9 @@ export default {
   computed: {
     comingFromDetail() {
       return this.$store.state.languages.comingFromDetail
+    },
+    isDetailsPage() {
+      return this.$route.name === 'index-languages-lang-details'
     }
   },
   mounted() {
@@ -122,6 +128,11 @@ export default {
     })
   },
   methods: {
+    handleMoreDetails() {
+      this.$router.push({
+        path: `${encodeFPCC(this.$route.params.lang)}/details`
+      })
+    },
     handlePronounce(af, at) {
       const audioFile = af
       const audio = new Audio(audioFile)

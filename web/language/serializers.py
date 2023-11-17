@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-
+from django.db.models import Sum
 
 from .models import (
     Language,
@@ -174,12 +174,14 @@ class CommunityLNASerializer(serializers.ModelSerializer):
 class CommunityLanguageStatsSerializer(serializers.ModelSerializer):
     community = CommunityLNASerializer(read_only=True)
     language = LanguageLNASerializer(read_only=True)
+    total_population = serializers.IntegerField(source="community.population")
 
     class Meta:
         model = CommunityLanguageStats
         fields = (
             "language",
             "community",
+            "total_population",
             "fluent_speakers",
             "semi_speakers",
             "active_learners",

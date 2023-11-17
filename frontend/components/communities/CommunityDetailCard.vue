@@ -20,7 +20,7 @@
 
     <div class="arts-detail-text">
       <div v-if="audioFile" @click.prevent.stop="handlePronounce">
-        <CardBadge content="Pronounce"></CardBadge>
+        <CardBadge content="Pronounce" type="pronounce"></CardBadge>
       </div>
     </div>
 

@@ -43,6 +43,14 @@
         >{{ `You are the owner of this ${placeholder} ` }}.</b-tooltip
       >
     </div>
+    <div v-else>
+      <span>{{ content }}</span>
+      <img
+        class="card-icon"
+        src="@/assets/images/heart_liked.svg"
+        alt="Learn"
+      />
+    </div>
   </div>
 </template>
 
@@ -55,7 +63,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'pronounce'
+      default: ''
     },
     link: {
       type: String,

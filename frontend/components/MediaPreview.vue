@@ -16,7 +16,7 @@
       :toggle-modal="toggleEditModal"
     ></MediaEdit>
 
-    <b-modal v-model="modalShow" hide-header @ok="removeMedia(file)">{{
+    <b-modal v-model="modalShow" hide-header centered @ok="removeMedia(file)">{{
       `Are you sure you want to remove media named "${file.name}"?`
     }}</b-modal>
   </div>
