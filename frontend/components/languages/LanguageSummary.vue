@@ -16,7 +16,7 @@
       </li>
 
       <li>
-        <span class="font-08 color-gray">Understanding or speak somewhat:</span>
+        <span class="font-08 color-gray">Semi Speakers:</span>
         <span class="font-08 font-weight-bold color-gray">{{
           somewhat === 0 ? 'Unknown' : somewhat
         }}</span>
