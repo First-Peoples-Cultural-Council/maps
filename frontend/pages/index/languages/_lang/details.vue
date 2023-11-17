@@ -123,7 +123,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import values from 'lodash/values'
+// import values from 'lodash/values'
 import omit from 'lodash/omit'
 import LanguageDetailCard from '@/components/languages/LanguageDetailCard.vue'
 import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
@@ -163,10 +163,7 @@ export default {
         return this.language.color
       },
       lna() {
-        const lnas = values(this.language.lna_by_nation)
-        return lnas.map(lna =>
-          omit(lna, ['lna', 'id', 'name', 'pop_off_res', 'pop_on_res'])
-        )
+        return this.lnaData.map(lna => omit(lna, ['id']))
       }
     })
   },
@@ -191,10 +188,12 @@ export default {
           community,
           fluent_speakers,
           semi_speakers,
-          active_learners
+          active_learners,
+          total_population
         } = lna
         return {
           community: community.name,
+          total_population,
           fluent_speakers,
           semi_speakers,
           active_learners
