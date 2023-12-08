@@ -15,9 +15,10 @@ from language.models import (
     RelatedData,
     PublicArtArtist,
     Taxonomy,
-    PlaceNameTaxonomy
+    PlaceNameTaxonomy,
 )
 from web.constants import *
+
 
 class BaseTestCase(APITestCase):
     def setUp(self):
@@ -38,7 +39,7 @@ class BaseTestCase(APITestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca"
+            email="regular@countable.ca",
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
@@ -49,10 +50,10 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         Ensure PlaceName details API route exists
         """
-        test_placename00 = PlaceName.objects.create(
-            name="test place00"
+        test_placename00 = PlaceName.objects.create(name="test place00")
+        response = self.client.get(
+            "/api/placename/{}/".format(test_placename00.id), format="json"
         )
-        response = self.client.get("/api/placename/{}/".format(test_placename00.id), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_placename_list_route_exists(self):
@@ -61,7 +62,7 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     # GEO APIs
     def test_placename_geo_route_exists(self):
         """
@@ -76,7 +77,7 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/art-geo/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     # Search APIs
     def test_placename_search_route_exists(self):
         """
@@ -91,7 +92,7 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/art-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     # Lists for Arts tab
     def test_public_art_list_route_exists(self):
         """
@@ -120,7 +121,7 @@ class PlaceNameAPIRouteTests(APITestCase):
         """
         response = self.client.get("/api/arts/organization/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_resource_list_route_exists(self):
         """
         Ensure Resource List API route exists
@@ -159,7 +160,9 @@ class PlaceNameAPITests(BaseTestCase):
         self.community2 = Community.objects.create(name="Test Community 02")
         self.language1 = Language.objects.create(name="Test Language 01")
         self.language2 = Language.objects.create(name="Test Language 02")
-        self.taxonomy = Taxonomy.objects.create(name="Test Taxonomy", description="Test taxonomy desc.")
+        self.taxonomy = Taxonomy.objects.create(
+            name="Test Taxonomy", description="Test taxonomy desc."
+        )
 
         self.user2 = User.objects.create(
             username="testuser002",
@@ -182,6 +185,7 @@ class PlaceNameAPITests(BaseTestCase):
     """
     ONE TEST TESTS ONLY ONE SCENARIO
     """
+
     def test_placename_detail(self):
         """
         Ensure we can retrieve a newly created placename object.
@@ -197,7 +201,7 @@ class PlaceNameAPITests(BaseTestCase):
 
     def test_placename_detail_returned_fields(self):
         """
-            Ensure we can retrieve a newly created placename object.
+        Ensure we can retrieve a newly created placename object.
         """
         test_placename = PlaceName.objects.create(
             name="Test placename 001",
@@ -216,7 +220,9 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(len(response.data["communities"]), 1)
         self.assertEqual(response.data["language"], self.language1.id)
         self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
-        self.assertEqual(response.data["audio_obj"]["recorder"], self.recording.recorder)
+        self.assertEqual(
+            response.data["audio_obj"]["recorder"], self.recording.recorder
+        )
 
     def test_placename_list_not_logged_in(self):
         """
@@ -224,9 +230,7 @@ class PlaceNameAPITests(BaseTestCase):
         """
         # VERIFIED Placename
         test_placename01 = PlaceName.objects.create(
-            name="test place01",
-            language=self.language1,
-            status=VERIFIED
+            name="test place01", language=self.language1, status=VERIFIED
         )
         test_placename01.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -235,9 +239,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # UNVERIFIED Placename
         test_placename02 = PlaceName.objects.create(
-            name="test place02",
-            language=self.language1,
-            status=UNVERIFIED
+            name="test place02", language=self.language1, status=UNVERIFIED
         )
         test_placename02.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -246,9 +248,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # REJECTED Placename
         test_placename03 = PlaceName.objects.create(
-            name="test place03",
-            language=self.language1,
-            status=REJECTED
+            name="test place03", language=self.language1, status=REJECTED
         )
         test_placename03.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -257,9 +257,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # FLAGGED Placename
         test_placename04 = PlaceName.objects.create(
-            name="test place04",
-            language=self.language1,
-            status=FLAGGED
+            name="test place04", language=self.language1, status=FLAGGED
         )
         test_placename04.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -295,7 +293,7 @@ class PlaceNameAPITests(BaseTestCase):
             creator=self.admin_user,
             language=self.language1,
             community_only=True,
-            status=UNVERIFIED
+            status=UNVERIFIED,
         )
         test_placename02.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -308,7 +306,7 @@ class PlaceNameAPITests(BaseTestCase):
             creator=self.admin_user,
             language=self.language1,
             community_only=True,
-            status=REJECTED
+            status=REJECTED,
         )
         test_placename03.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -321,7 +319,7 @@ class PlaceNameAPITests(BaseTestCase):
             creator=self.admin_user,
             language=self.language1,
             community_only=True,
-            status=FLAGGED
+            status=FLAGGED,
         )
         test_placename04.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -333,7 +331,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place05",
             creator=self.user2,
             language=self.language1,
-            status=REJECTED
+            status=REJECTED,
         )
         test_placename05.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -356,7 +354,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place01",
             language=self.language1,
             community_only=True,
-            status=VERIFIED
+            status=VERIFIED,
         )
         test_placename01.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -365,9 +363,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # UNVERIFIED CommunityMember MATCHING users's community
         member_same01 = CommunityMember.objects.create(
-            user=self.admin_user,
-            community=self.community,
-            status=UNVERIFIED
+            user=self.admin_user, community=self.community, status=UNVERIFIED
         )
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -385,7 +381,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place02",
             language=self.language1,
             community_only=True,
-            status=UNVERIFIED
+            status=UNVERIFIED,
         )
         test_placename02.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -397,7 +393,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place03",
             language=self.language1,
             community_only=True,
-            status=REJECTED
+            status=REJECTED,
         )
         test_placename03.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -409,7 +405,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place04",
             language=self.language1,
             community_only=True,
-            status=FLAGGED
+            status=FLAGGED,
         )
         test_placename04.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -421,7 +417,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place05",
             language=self.language1,
             community_only=True,
-            status=VERIFIED
+            status=VERIFIED,
         )
         test_placename05.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -444,7 +440,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place01",
             language=self.language1,
             community_only=True,
-            status=VERIFIED
+            status=VERIFIED,
         )
         test_placename01.communities.set([self.community])
         response = self.client.get("/api/placename/", format="json")
@@ -468,7 +464,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place02",
             language=self.language1,
             community_only=True,
-            status=UNVERIFIED
+            status=UNVERIFIED,
         )
         test_placename02.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -487,7 +483,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place03",
             language=self.language1,
             community_only=True,
-            status=REJECTED
+            status=REJECTED,
         )
         test_placename03.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -506,7 +502,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place04",
             language=self.language1,
             community_only=True,
-            status=FLAGGED
+            status=FLAGGED,
         )
         test_placename04.communities.set([self.community2])
         response = self.client.get("/api/placename/", format="json")
@@ -525,9 +521,7 @@ class PlaceNameAPITests(BaseTestCase):
         Ensure placename list API brings newly created data which needs to be verified
         """
         admin = Administrator.objects.create(
-            user=self.admin_user,
-            language=self.language1,
-            community=self.community
+            user=self.admin_user, language=self.language1, community=self.community
         )
 
         # Must be logged in to verify a media.
@@ -539,9 +533,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # VERIFIED Placename MATCHING user's language. It MUST NOT be returned by the route
         test_placename01 = PlaceName.objects.create(
-            name="test place01",
-            language=self.language1,
-            status=VERIFIED
+            name="test place01", language=self.language1, status=VERIFIED
         )
         test_placename01.communities.set([self.community])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
@@ -553,20 +545,20 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place02",
             language=self.language1,
             status=UNVERIFIED,
-            status_reason="string"
+            status_reason="string",
         )
         test_placename02.communities.set([self.community])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        assert len(response.data[0]['status_reason']) > 0
+        assert len(response.data[0]["status_reason"]) > 0
 
         # FLAGGED Placename MATCHING user's language. It MUST be returned by the route
         test_placename03 = PlaceName.objects.create(
             name="test place03",
             language=self.language1,
             status=FLAGGED,
-            status_reason="string"
+            status_reason="string",
         )
         test_placename03.communities.set([self.community])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
@@ -578,7 +570,7 @@ class PlaceNameAPITests(BaseTestCase):
             name="test place04",
             language=self.language2,
             status=UNVERIFIED,
-            status_reason="string"
+            status_reason="string",
         )
 
         response = self.client.get("/api/placename/list_to_verify/", format="json")
@@ -711,20 +703,14 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the public_arts data of a placename
         """
-        artist = PlaceName.objects.create(
-            name="Arist",
-            kind="artist"
-        )
+        artist = PlaceName.objects.create(name="Arist", kind="artist")
         public_art = PlaceName.objects.create(
             name="Test Public Art",
             description="A test public art description.",
-            kind="public_art"
+            kind="public_art",
         )
         # Create relationship between the two placenames
-        PublicArtArtist.objects.create(
-            public_art=public_art,
-            artist=artist
-        )
+        PublicArtArtist.objects.create(public_art=public_art, artist=artist)
 
         response = self.client.get(
             "/api/placename/{}/".format(artist.id), format="json"
@@ -740,20 +726,12 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the artsist data of a placename
         """
-        public_art = PlaceName.objects.create(
-            name="Public Art",
-            kind="public_art"
-        )
+        public_art = PlaceName.objects.create(name="Public Art", kind="public_art")
         artist = PlaceName.objects.create(
-            name="Test Arist",
-            description="A test artist description.",
-            kind="artist"
+            name="Test Arist", description="A test artist description.", kind="artist"
         )
         # Create relationship between the two placenames
-        PublicArtArtist.objects.create(
-            public_art=public_art,
-            artist=artist
-        )
+        PublicArtArtist.objects.create(public_art=public_art, artist=artist)
 
         response = self.client.get(
             "/api/placename/{}/".format(public_art.id), format="json"
@@ -769,13 +747,10 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the taxonomies attached to each placename
         """
-        test_placename06 = PlaceName.objects.create(
-            name="test place06"
-        )
+        test_placename06 = PlaceName.objects.create(name="test place06")
 
         PlaceNameTaxonomy.objects.create(
-            placename=test_placename06,
-            taxonomy=self.taxonomy
+            placename=test_placename06, taxonomy=self.taxonomy
         )
 
         response = self.client.get(
@@ -792,14 +767,10 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the related_data attached to each placename
         """
-        test_placename07 = PlaceName.objects.create(
-            name="test place07"
-        )
+        test_placename07 = PlaceName.objects.create(name="test place07")
 
         location = RelatedData.objects.create(
-            data_type="location",
-            value="Test Address",
-            placename=test_placename07
+            data_type="location", value="Test Address", placename=test_placename07
         )
 
         response = self.client.get(
@@ -819,64 +790,69 @@ class PlaceNameAPITests(BaseTestCase):
         # This placename should not be a part of the result
         # because this does not have a geo
         test_placename08 = PlaceName.objects.create(  # Excluded
-            name="test place08",
-            kind="public_art"
+            name="test place08", kind="public_art"
         )
         test_placename09 = PlaceName.objects.create(  # Included (1)
             name="test place09",
             kind="artist",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename10 = PlaceName.objects.create(  # Excluded
-            name="test place10",
-            kind="organization"
+            name="test place10", kind="organization"
         )
         test_placename11 = PlaceName.objects.create(  # Included (2)
             name="test place11",
             kind="event",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename12 = PlaceName.objects.create(  # Included (3)
             name="test place12",
             kind="resource",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         # This placename should not be a part of the result
         # because this is not a node_placename
         test_placename13 = PlaceName.objects.create(  # Excluded
-            name="test place13",
-            kind="poi"
+            name="test place13", kind="poi"
         )
         # This placename should not be a part of the result
         # because this has an invalid coordinates [0, 0]
         test_placename14 = PlaceName.objects.create(  # Excluded
             name="test place14",
             kind="resource",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
-        response = self.client.get(
-            "/api/art-geo/", format="json"
-        )
+        response = self.client.get("/api/art-geo/", format="json")
 
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName
         self.assertEqual(data[0].get("id"), test_placename09.id)  # Check first data
-        self.assertEqual(data[2].get("id"), test_placename12.id)  # Check last data - should not be test_placename12
+        self.assertEqual(
+            data[2].get("id"), test_placename12.id
+        )  # Check last data - should not be test_placename12
 
     def test_placename_geo(self):
         # Even if the geometry is non-sense, include them
@@ -884,18 +860,22 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename15 = PlaceName.objects.create(  # Included (1)
             name="test place15",
             kind="poi",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
         test_placename16 = PlaceName.objects.create(  # Included (2)
             name="test place16",
             kind="",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
         # If no geometry, exclude them
         test_placename17 = PlaceName.objects.create(  # Excluded
@@ -903,16 +883,14 @@ class PlaceNameAPITests(BaseTestCase):
             kind="poi",
         )
 
-        response = self.client.get(
-            "/api/placename-geo/", format="json"
-        )
+        response = self.client.get("/api/placename-geo/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 2)
-    
+
     def test_art_types_geo_api(self):
         """
         Ensure we can get the data to display on the Arts Tab Lists
@@ -921,171 +899,195 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename18 = PlaceName.objects.create(
             name="test place18",
             kind="resource",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename19 = PlaceName.objects.create(
             name="test place19",
             kind="resource",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         test_placename20 = PlaceName.objects.create(
             name="test place20",
             kind="public_art",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename21 = PlaceName.objects.create(
             name="test place21",
             kind="public_art",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         test_placename22 = PlaceName.objects.create(
             name="test place22",
             kind="artist",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename23 = PlaceName.objects.create(
             name="test place23",
             kind="artist",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         test_placename24 = PlaceName.objects.create(
             name="test place24",
             kind="organization",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename25 = PlaceName.objects.create(
             name="test place25",
             kind="organization",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         test_placename26 = PlaceName.objects.create(
             name="test place26",
             kind="event",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename27 = PlaceName.objects.create(
             name="test place27",
             kind="event",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         test_placename28 = PlaceName.objects.create(
             name="test place28",
             kind="grant",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
+            }"""
+            ),
         )
         test_placename29 = PlaceName.objects.create(
             name="test place29",
             kind="grant",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [0, 0]
-            }""")
+            }"""
+            ),
         )
 
         # Test Public Arts
-        response = self.client.get(
-            "/api/arts/public-art/", format="json"
-        )
+        response = self.client.get("/api/arts/public-art/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
 
         # Test Artists
-        response = self.client.get(
-            "/api/arts/artist/", format="json"
-        )
+        response = self.client.get("/api/arts/artist/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
 
         # Test Organizations
-        response = self.client.get(
-            "/api/arts/organization/", format="json"
-        )
+        response = self.client.get("/api/arts/organization/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
 
         # Test Events
-        response = self.client.get(
-            "/api/arts/event/", format="json"
-        )
+        response = self.client.get("/api/arts/event/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
 
         # Test Grants
-        response = self.client.get(
-            "/api/arts/grant/", format="json"
-        )
+        response = self.client.get("/api/arts/grant/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
 
         # Test Resource
-        response = self.client.get(
-            "/api/arts/resource/", format="json"
-        )
+        response = self.client.get("/api/arts/resource/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), 1)  # Out of all the data created, only 1 should appear
-    
+        self.assertEqual(
+            len(data), 1
+        )  # Out of all the data created, only 1 should appear
+
     def test_artworks_geo_api(self):
         """
         Ensure we can get the data to display on the Arts Tab Lists
@@ -1094,21 +1096,19 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename30 = PlaceName.objects.create(
             name="test place30",
             kind="artist",
-            geom=GEOSGeometry("""{
+            geom=GEOSGeometry(
+                """{
                 "type": "Point",
                 "coordinates": [1, 1]
-            }""")
-        )
-        
-        test_media1 = Media.objects.create(
-            name="test media1",
-            placename=test_placename30,
-            is_artwork=True
+            }"""
+            ),
         )
 
-        response = self.client.get(
-            "/api/arts/artwork/", format="json"
+        test_media1 = Media.objects.create(
+            name="test media1", placename=test_placename30, is_artwork=True
         )
+
+        response = self.client.get("/api/arts/artwork/", format="json")
         data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

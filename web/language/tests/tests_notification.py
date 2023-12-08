@@ -1,16 +1,11 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from users.models import User, Administrator
+from users.models import User
 
 from language.models import (
     Language,
-    PlaceName,
     Community,
-    CommunityMember,
-    Champion,
-    Media,
     Notification,
     Notification,
 )
@@ -151,8 +146,7 @@ class NotificationAPITests(BaseTestCase):
         Ensure notification API POST method API works
         """
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -175,8 +169,7 @@ class NotificationAPITests(BaseTestCase):
         Ensure notification API POST method API works
         """
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -198,8 +191,7 @@ class NotificationAPITests(BaseTestCase):
         """
         Ensure notification API DELETE method API works
         """
-        test_notification = Notification.objects.create(
-            name="Test notification 001")
+        test_notification = Notification.objects.create(name="Test notification 001")
         response = self.client.delete(
             "/api/notification/{}/".format(test_notification.id), format="json"
         )

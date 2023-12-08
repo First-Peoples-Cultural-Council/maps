@@ -5,11 +5,7 @@ from rest_framework import status
 
 from users.models import User
 
-from language.models import (
-    PlaceName,
-    Media,
-    Favourite
-)
+from language.models import PlaceName, Media, Favourite
 
 
 class BaseTestCase(APITestCase):
@@ -29,7 +25,7 @@ class BaseTestCase(APITestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca"
+            email="regular@countable.ca",
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
@@ -77,16 +73,14 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(favourite_placename.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Favourite Placename")
-        self.assertEqual(response.data['user']['id'], self.admin_user.id)
-        self.assertEqual(response.data['place'], self.place.id)
-        self.assertEqual(response.data['favourite_type'], "favourite")
-        self.assertEqual(response.data['description'], "I like this Placename")
-        self.assertEqual(response.data['point']
-                         ['coordinates'][0], self.point.x)
-        self.assertEqual(response.data['point']
-                         ['coordinates'][1], self.point.y)
-        self.assertEqual(response.data['zoom'], 10)
+        self.assertEqual(response.data["name"], "Favourite Placename")
+        self.assertEqual(response.data["user"]["id"], self.admin_user.id)
+        self.assertEqual(response.data["place"], self.place.id)
+        self.assertEqual(response.data["favourite_type"], "favourite")
+        self.assertEqual(response.data["description"], "I like this Placename")
+        self.assertEqual(response.data["point"]["coordinates"][0], self.point.x)
+        self.assertEqual(response.data["point"]["coordinates"][1], self.point.y)
+        self.assertEqual(response.data["zoom"], 10)
 
     def test_get_favourite_media(self):
         """
@@ -106,24 +100,21 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(favourite_media.id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Favourite Media")
-        self.assertEqual(response.data['user']['id'], self.admin_user.id)
-        self.assertEqual(response.data['media'], self.media.id)
-        self.assertEqual(response.data['favourite_type'], "favourite")
-        self.assertEqual(response.data['description'], "I like this Media")
-        self.assertEqual(response.data['point']
-                         ['coordinates'][0], self.point.x)
-        self.assertEqual(response.data['point']
-                         ['coordinates'][1], self.point.y)
-        self.assertEqual(response.data['zoom'], 10)
+        self.assertEqual(response.data["name"], "Favourite Media")
+        self.assertEqual(response.data["user"]["id"], self.admin_user.id)
+        self.assertEqual(response.data["media"], self.media.id)
+        self.assertEqual(response.data["favourite_type"], "favourite")
+        self.assertEqual(response.data["description"], "I like this Media")
+        self.assertEqual(response.data["point"]["coordinates"][0], self.point.x)
+        self.assertEqual(response.data["point"]["coordinates"][1], self.point.y)
+        self.assertEqual(response.data["zoom"], 10)
 
     def test_new_favourite_placename(self):
         """
         Ensure we can retrieve a newly created Favourite object.
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -145,17 +136,16 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(created_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Favourite Place")
-        self.assertEqual(response.data['user']['id'], self.admin_user.id)
-        self.assertEqual(response.data['place'], self.place.id)
+        self.assertEqual(response.data["name"], "Favourite Place")
+        self.assertEqual(response.data["user"]["id"], self.admin_user.id)
+        self.assertEqual(response.data["place"], self.place.id)
 
     def test_new_favourite_media(self):
         """
         Ensure we can retrieve a newly created Favourite object.
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -177,10 +167,10 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(created_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Favourite Media")
-        self.assertEqual(response.data['user']['id'], self.admin_user.id)
-        self.assertEqual(response.data['media'], self.media.id)
-        self.assertEqual(response.data['media_obj']['id'], self.media.id)
+        self.assertEqual(response.data["name"], "Favourite Media")
+        self.assertEqual(response.data["user"]["id"], self.admin_user.id)
+        self.assertEqual(response.data["media"], self.media.id)
+        self.assertEqual(response.data["media_obj"]["id"], self.media.id)
 
     def test_new_favourite_point(self):
         """
@@ -207,15 +197,13 @@ class FavouriteAPITests(BaseTestCase):
             "/api/favourite/{}/".format(created_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Favourite Point")
-        self.assertEqual(response.data['user']['id'], self.admin_user.id)
-        self.assertEqual(response.data['favourite_type'], "favourite")
-        self.assertEqual(response.data['description'], "description")
-        self.assertEqual(response.data['point']
-                         ['coordinates'][0], self.point.x)
-        self.assertEqual(response.data['point']
-                         ['coordinates'][1], self.point.y)
-        self.assertEqual(response.data['zoom'], 10)
+        self.assertEqual(response.data["name"], "Favourite Point")
+        self.assertEqual(response.data["user"]["id"], self.admin_user.id)
+        self.assertEqual(response.data["favourite_type"], "favourite")
+        self.assertEqual(response.data["description"], "description")
+        self.assertEqual(response.data["point"]["coordinates"][0], self.point.x)
+        self.assertEqual(response.data["point"]["coordinates"][1], self.point.y)
+        self.assertEqual(response.data["zoom"], 10)
 
     def test_favourite_list_different_users(self):
         """
@@ -249,9 +237,7 @@ class FavouriteAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # Creating an object which DOES NOT BELONG to the Admin User
-        Favourite.objects.create(
-            user=self.regular_user, place=self.place
-        )
+        Favourite.objects.create(user=self.regular_user, place=self.place)
 
         # Since new Favourite DOES NOT BELONG to the Admin User, still return 1 result
         response = self.client.get("/api/favourite/", format="json")
@@ -363,7 +349,7 @@ class FavouriteAPITests(BaseTestCase):
             {
                 "place": self.place.id,
                 "user": self.admin_user.id,
-                "name": "Redundant Placename Favourite"
+                "name": "Redundant Placename Favourite",
             },
             format="json",
         )
@@ -374,7 +360,7 @@ class FavouriteAPITests(BaseTestCase):
             {
                 "place": self.place.id,
                 "user": self.admin_user.id,
-                "name": "Redundant Placename Favourite"
+                "name": "Redundant Placename Favourite",
             },
             format="json",
         )
@@ -385,8 +371,7 @@ class FavouriteAPITests(BaseTestCase):
         Ensure Favourite API POST method API works
         """
         # Must be logged in to submit a place.
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -397,7 +382,7 @@ class FavouriteAPITests(BaseTestCase):
             {
                 "media": self.media.id,
                 "user": self.admin_user.id,
-                "name": "Redundant Media Favourite"
+                "name": "Redundant Media Favourite",
             },
             format="json",
         )
@@ -408,7 +393,7 @@ class FavouriteAPITests(BaseTestCase):
             {
                 "media": self.media.id,
                 "user": self.admin_user.id,
-                "name": "Redundant Media Favourite"
+                "name": "Redundant Media Favourite",
             },
             format="json",
         )
