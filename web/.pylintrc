@@ -95,6 +95,7 @@ disable=raw-checker-failed,
         protected-access,
         consider-using-f-string,
         too-many-boolean-expressions,
+        no-self-use,
 
 
 # Enable the message, report, category or checker with the given id(s). You can
