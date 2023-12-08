@@ -1,3 +1,8 @@
 #!/bin/bash
 
-find . -type f -path "*.py" | grep -v migrations | xargs pylint --disable=django-not-configured --load-plugins pylint_django
+# Check if an argument is provided, use "." (current directory) as default
+target=$1
+target=${target:-.}
+
+# Run pylint on Python files, excluding migrations folder
+find "$target" -type f -name "*.py" -not -path "*/migrations/*" | xargs pylint --disable=django-not-configured --load-plugins pylint_django
