@@ -24,7 +24,7 @@ class NotificationViewSet(BaseModelViewSet):
         serializer.save(user=self.request.user)
 
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         if request and hasattr(request, 'user'):
@@ -102,7 +102,7 @@ class FavouriteViewSet(FavouriteCustomViewSet):
         )
 
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         if request and hasattr(request, 'user'):

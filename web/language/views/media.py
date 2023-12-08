@@ -200,7 +200,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)

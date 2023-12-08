@@ -34,7 +34,7 @@ class CommunityViewSet(BaseModelViewSet):
     detail_serializer_class = CommunityDetailSerializer
     queryset = Community.objects.all().order_by('name').exclude(point__isnull=True)
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if 'lang' in request.GET:
             queryset = queryset.filter(

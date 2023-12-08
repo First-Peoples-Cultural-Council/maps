@@ -29,5 +29,5 @@ class TaxonomyViewSet(mixins.ListModelMixin, GenericViewSet):
     filterset_class = TaxonomyFilterSet
 
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         return super().list(request)
