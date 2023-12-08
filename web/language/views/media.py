@@ -32,7 +32,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['placename', 'community']
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         if request and hasattr(request, 'user'):
             if request.user.is_authenticated:
                 return super().create(request)
