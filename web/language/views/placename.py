@@ -211,7 +211,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         )
 
     @action(detail=True, methods=["patch"])
-    def verify(self, request):
+    def verify(self, request, *args, **kwargs):
         instance = self.get_object()
         if request and hasattr(request, "user") and request.user.is_authenticated:
             if instance.kind not in ["", "poi"]:
@@ -238,7 +238,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         )
 
     @action(detail=True, methods=["patch"])
-    def reject(self, request):
+    def reject(self, request, *args, **kwargs):
         instance = self.get_object()
         if request and hasattr(request, "user") and request.user.is_authenticated:
             if instance.kind not in ["", "poi"]:
@@ -269,7 +269,7 @@ class PlaceNameViewSet(BaseModelViewSet):
         )
 
     @action(detail=True, methods=["patch"])
-    def flag(self, request):
+    def flag(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.kind not in ["", "poi"]:
             return Response(
