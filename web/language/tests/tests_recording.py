@@ -1,9 +1,8 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
 
-from users.models import User, Administrator
+from users.models import User
 from language.models import (
     Recording,
 )
@@ -53,8 +52,7 @@ class RecordingAPITests(BaseTestCase):
         Ensure recording API POST method API works
         """
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -65,7 +63,7 @@ class RecordingAPITests(BaseTestCase):
             {
                 "speaker": "Test speaker",
                 "recorder": "Test recorder",
-                "date_recorded": "2019-01-01"
+                "date_recorded": "2019-01-01",
             },
             format="json",
         )
@@ -81,8 +79,7 @@ class RecordingAPITests(BaseTestCase):
         Ensure recording API PATCH method API works
         """
         # Must be logged in to verify a media.
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")

@@ -19,13 +19,11 @@ from web.utils import get_place_link, get_comm_link
 
 class EmailTests(TestCase):
     def setUp(self):
-        self.from_email = 'maps@fpcc.ca'
-        self.to = 'justin@countable.ca'
+        self.from_email = "maps@fpcc.ca"
+        self.to = "justin@countable.ca"
 
-        self.test_language = Language.objects.create(
-            name="Global Test Language")
-        self.test_community = Community.objects.create(
-            name="Global Test Community")
+        self.test_language = Language.objects.create(name="Global Test Language")
+        self.test_community = Community.objects.create(name="Global Test Community")
 
         self.admin_user = User.objects.create(
             username="admin_user",
@@ -73,18 +71,13 @@ class EmailTests(TestCase):
     def test_notify(self):
         # Make Admin User a member of the test community
         CommunityMember.objects.create(
-            user=self.admin_user,
-            community=self.test_community,
-            status=VERIFIED
+            user=self.admin_user, community=self.test_community, status=VERIFIED
         )
 
         # Make Admin User a member of the new community
-        new_community = Community.objects.create(
-            name="New Community")
+        new_community = Community.objects.create(name="New Community")
         CommunityMember.objects.create(
-            user=self.admin_user,
-            community=new_community,
-            status=UNVERIFIED
+            user=self.admin_user, community=new_community, status=UNVERIFIED
         )
 
         # Favourite Placename created by Admin User to notify him
