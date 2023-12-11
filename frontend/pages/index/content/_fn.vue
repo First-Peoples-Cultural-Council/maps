@@ -46,7 +46,7 @@
         <Filters class="mb-3"></Filters>
         <section></section>
         <section class="pl-3 pr-3">
-          <div v-if="otherNames">
+          <!-- <div v-if="otherNames">
             <h5 class="other-lang-names-title text-uppercase mt-">
               Other Community Names
             </h5>
@@ -56,7 +56,7 @@
               :content="name"
               class="mr-2"
             ></LanguageDetailBadge>
-          </div>
+          </div> -->
           <ul class="list-style-none m-0 p-0 mt-2">
             <li>
               <span class="font-08 color-gray">Total Population:</span>
@@ -82,18 +82,18 @@
                 commDetails.phone || 'N/A'
               }}</span>
             </li>
-            <li>
+            <!-- <li>
               <span class="font-08 color-gray">Alternate Phone #:</span>
               <span class="font-08 font-weight-bold color-gray">{{
                 commDetails.alt_phone || 'N/A'
               }}</span>
-            </li>
-            <li>
+            </li> -->
+            <!-- <li>
               <span class="font-08 color-gray">Fax #:</span>
               <span class="font-08 font-weight-bold color-gray">{{
                 commDetails.fax || 'N/A'
               }}</span>
-            </li>
+            </li> -->
           </ul>
           <div v-if="hasCommunityPopulation" class="mt-3">
             <b-table
@@ -114,9 +114,7 @@
                     variant="light"
                     class="font-08"
                     @click="handleRowClick"
-                    >{{
-                      showCollapse ? 'Hide Charts' : 'Show Charts'
-                    }}</b-button
+                    >{{ showCollapse ? 'Hide Chart' : 'Show Chart' }}</b-button
                   >
                 </div>
                 <!-- <div class="mb-3 mt-3 showHide">
@@ -309,7 +307,7 @@ import Logo from '@/components/Logo.vue'
 import CommunityDetailCard from '@/components/communities/CommunityDetailCard.vue'
 import { zoomToPoint } from '@/mixins/map.js'
 import Filters from '@/components/Filters.vue'
-import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
+// import LanguageDetailBadge from '@/components/languages/LanguageDetailBadge.vue'
 import LanguageCard from '@/components/languages/LanguageCard.vue'
 import Badge from '@/components/Badge.vue'
 import ErrorScreen from '@/layouts/error.vue'
@@ -332,7 +330,7 @@ export default {
   components: {
     // DetailSideBar,
     CommunityDetailCard,
-    LanguageDetailBadge,
+    // LanguageDetailBadge,
     Filters,
     LanguageCard,
     Badge,
@@ -643,12 +641,12 @@ export default {
 
       return {
         name: lna.language,
-        labels: ['Fluent', 'Semi Fluent', 'Learners', 'Other'],
+        labels: ['Fluent', 'Semi Fluent', 'Other'],
         datasets: [
           {
             label: 'Data One',
-            backgroundColor: ['#2ecc71', '#3498db', '#963B21', '#efefef'],
-            data: [fluent_speakers, semi_speakers, learners, others],
+            backgroundColor: ['#2ecc71', '#3498db', '#efefef'],
+            data: [fluent_speakers, semi_speakers, others + learners],
             learnerData: [learners]
           }
         ]

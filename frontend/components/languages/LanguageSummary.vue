@@ -23,7 +23,7 @@
       </li>
 
       <li>
-        <span class="font-08 color-gray">Learning Speakers:</span>
+        <span class="font-08 color-gray">Learners:</span>
         <span class="font-08 font-weight-bold color-gray">{{
           learners || 0
         }}</span>
@@ -33,11 +33,9 @@
         <span class="font-08 color-gray">Source:</span>
         <span class="font-08 font-weight-bold color-gray"
           ><a
-            :href="
-              `https://fpcc.ca/wp-content/uploads/2020/07/FPCC-LanguageReport-180716-WEB.pdf`
-            "
+            :href="`https://fpcc.ca/resource/language-status-report-2022/`"
             target="_blank"
-            >Report on the status of B.C. First Nations Languages 2018</a
+            >Report on the Status of B.C. First Nations Languages 2022</a
           ></span
         >
       </li>
