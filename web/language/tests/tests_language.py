@@ -1,9 +1,8 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
 
-from users.models import User, Administrator
+from users.models import User
 from django.contrib.gis.geos import GEOSGeometry
 
 import json
@@ -60,8 +59,7 @@ class CommunityGeoAPITests(BaseTestCase):
         poly = GEOSGeometry(self.FAKE_GEOM)
         # Only include if it has a geometry
         self.language1 = Language.objects.create(  # Included (1)
-            name="test language1",
-            geom=poly
+            name="test language1", geom=poly
         )
         self.language2 = Language.objects.create(  # Exclude
             name="test language2",
@@ -76,22 +74,18 @@ class CommunityGeoAPITests(BaseTestCase):
         response = self.client.get("/api/language-geo/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
     def test_language_search_route_exists(self):
         """
         Ensure Language Search API route exists
         """
         response = self.client.get("/api/language-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
 
     def test_language_geo(self):
         """
         Ensure Language Geo API works
         """
-        response = self.client.get(
-            "/api/language-geo/", format="json"
-        )
+        response = self.client.get("/api/language-geo/", format="json")
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
@@ -151,17 +145,18 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.data["id"], test_language.id)
         self.assertEqual(response.data["name"], "Test language 001")
         self.assertEqual(
-            response.data["language_audio"]["speaker"], self.recording1.speaker)
+            response.data["language_audio"]["speaker"], self.recording1.speaker
+        )
         self.assertEqual(
-            response.data["language_audio"]["recorder"], self.recording1.recorder)
+            response.data["language_audio"]["recorder"], self.recording1.recorder
+        )
 
     def test_language_add_language_audio(self):
         """
         Ensure we can add a language audio to a language object.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -175,10 +170,8 @@ class LanguageAPITests(BaseTestCase):
 
         response = self.client.patch(
             "/api/language/{}/add_language_audio/".format(test_language.id),
-            {
-                "recording_id": self.recording1.id
-            },
-            format="json"
+            {"recording_id": self.recording1.id},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -190,18 +183,17 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], test_language.id)
         self.assertEqual(response.data["name"], "Test language audio")
+        self.assertEqual(response.data["language_audio"]["id"], self.recording1.id)
         self.assertEqual(
-            response.data["language_audio"]["id"], self.recording1.id)
-        self.assertEqual(
-            response.data["language_audio"]["speaker"], self.recording1.speaker)
+            response.data["language_audio"]["speaker"], self.recording1.speaker
+        )
 
     def test_language_add_greeting_audio(self):
         """
         Ensure we can add a greeting audio to a language object.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(
-            username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -215,10 +207,8 @@ class LanguageAPITests(BaseTestCase):
 
         response = self.client.patch(
             "/api/language/{}/add_greeting_audio/".format(test_language.id),
-            {
-                "recording_id": self.recording2.id
-            },
-            format="json"
+            {"recording_id": self.recording2.id},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -230,10 +220,10 @@ class LanguageAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], test_language.id)
         self.assertEqual(response.data["name"], "Test greeting audio")
+        self.assertEqual(response.data["greeting_audio"]["id"], self.recording2.id)
         self.assertEqual(
-            response.data["greeting_audio"]["id"], self.recording2.id)
-        self.assertEqual(
-            response.data["greeting_audio"]["speaker"], self.recording2.speaker)
+            response.data["greeting_audio"]["speaker"], self.recording2.speaker
+        )
 
     def test_language_list_route_exists(self):
         """
