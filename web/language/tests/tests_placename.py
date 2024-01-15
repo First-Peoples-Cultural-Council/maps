@@ -642,8 +642,7 @@ class PlaceNameAPITests(BaseTestCase):
 
         # now update it.
         response = self.client.patch(
-            "/api/placename/{}/verify/".format(created_id),
-            format="json",
+            "/api/placename/{}/verify/".format(created_id)
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

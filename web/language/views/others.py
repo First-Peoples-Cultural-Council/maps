@@ -24,7 +24,7 @@ class NotificationViewSet(BaseModelViewSet):
         serializer.save(user=self.request.user)
 
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         if request and hasattr(request, 'user'):
@@ -66,8 +66,8 @@ class FavouriteViewSet(FavouriteCustomViewSet):
                 if Favourite.favourite_media_already_exists(request.user.id, media_id):
                     return Response({'message': 'This media is already a favourite'},
                                     status=status.HTTP_409_CONFLICT)
-                else:
-                    return super(FavouriteViewSet, self).create(request, *args, **kwargs)
+
+                return super(FavouriteViewSet, self).create(request, *args, **kwargs)
 
             if 'place' in request.data.keys():
                 placename_id = int(request.data['place'])
@@ -76,13 +76,14 @@ class FavouriteViewSet(FavouriteCustomViewSet):
                 if Favourite.favourite_place_already_exists(request.user.id, placename_id):
                     return Response({'message': 'This placename is already a favourite'},
                                     status=status.HTTP_409_CONFLICT)
-                else:
-                    return super(FavouriteViewSet, self).create(request, *args, **kwargs)
+
+                return super(FavouriteViewSet, self).create(request, *args, **kwargs)
         else:
             return super(FavouriteViewSet, self).create(request, *args, **kwargs)
 
-    def retrieve(self, request, pk=None):
-        instance = self.queryset.get(pk=pk)
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
         if is_user_permitted(request, instance.user.id):
             return super().retrieve(request)
 
@@ -91,8 +92,9 @@ class FavouriteViewSet(FavouriteCustomViewSet):
             status=status.HTTP_401_UNAUTHORIZED
         )
 
-    def destroy(self, request, pk=None):
-        instance = self.queryset.get(pk=pk)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
         if is_user_permitted(request, instance.user.id):
             return super().destroy(request)
 
@@ -102,7 +104,7 @@ class FavouriteViewSet(FavouriteCustomViewSet):
         )
 
     @method_decorator(never_cache)
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         if request and hasattr(request, 'user'):
