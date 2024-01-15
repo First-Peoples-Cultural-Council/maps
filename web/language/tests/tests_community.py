@@ -5,12 +5,7 @@ from django.utils import timezone
 from users.models import User, Administrator
 from django.contrib.gis.geos import GEOSGeometry
 
-from language.models import (
-    Language,
-    Community,
-    CommunityMember,
-    Recording
-)
+from language.models import Language, Community, CommunityMember, Recording
 from web.constants import *
 
 
@@ -33,16 +28,14 @@ class BaseTestCase(APITestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca"
+            email="regular@countable.ca",
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
 
         # Initial Values for Language and Community
-        self.test_language = Language.objects.create(
-            name="Global Test Language")
-        self.test_community = Community.objects.create(
-            name="Global Test Community")
+        self.test_language = Language.objects.create(name="Global Test Language")
+        self.test_community = Community.objects.create(name="Global Test Community")
 
         # Create a Community Admin for Testing Permissions
         self.community_admin = User.objects.create(
@@ -56,7 +49,7 @@ class BaseTestCase(APITestCase):
         Administrator.objects.create(
             user=self.community_admin,
             language=self.test_language,
-            community=self.test_community
+            community=self.test_community,
         )
 
         FAKE_GEOM = """
@@ -76,12 +69,9 @@ class CommunityGeoAPITests(BaseTestCase):
         super().setUp()
 
         self.valid_community = Community.objects.create(
-            name="Valid Community",
-            point=self.point
+            name="Valid Community", point=self.point
         )
-        self.invalid_community = Community.objects.create(
-            name="Invalid Community"
-        )
+        self.invalid_community = Community.objects.create(name="Invalid Community")
 
     def test_community_geo_route_exists(self):
         """
@@ -101,9 +91,7 @@ class CommunityGeoAPITests(BaseTestCase):
         """
         Ensure Community Geo API works
         """
-        response = self.client.get(
-            "/api/community-geo/", format="json"
-        )
+        response = self.client.get("/api/community-geo/", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -118,9 +106,7 @@ class CommunityGeoAPITests(BaseTestCase):
         """
         Ensure Community Search API works
         """
-        response = self.client.get(
-            "/api/community-search/", format="json"
-        )
+        response = self.client.get("/api/community-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         data = response.json()
@@ -128,7 +114,7 @@ class CommunityGeoAPITests(BaseTestCase):
         # By fetching the first record, we're committing
         # that the valid_community was added to the search list
         valid_community = data[0]
-        self.assertEqual(valid_community.get('name'), "Valid Community")
+        self.assertEqual(valid_community.get("name"), "Valid Community")
 
 
 class CommunityAPITests(BaseTestCase):
@@ -159,10 +145,10 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.data["id"], test_community.id)
         self.assertEqual(response.data["name"], "Test community 001")
         self.assertEqual(response.data["audio"], self.recording.id)
-        self.assertEqual(response.data["audio_obj"]
-                         ["speaker"], self.recording.speaker)
-        self.assertEqual(response.data["audio_obj"]
-                         ["recorder"], self.recording.recorder)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
+        self.assertEqual(
+            response.data["audio_obj"]["recorder"], self.recording.recorder
+        )
 
     def test_community_list_route_exists(self):
         """
@@ -176,8 +162,7 @@ class CommunityAPITests(BaseTestCase):
         Ensure we can add a community audio to a community object using an admin account.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -189,10 +174,8 @@ class CommunityAPITests(BaseTestCase):
 
         response = self.client.patch(
             "/api/community/{}/add_audio/".format(test_community.id),
-            {
-                "recording_id": self.recording.id
-            },
-            format="json"
+            {"recording_id": self.recording.id},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -205,16 +188,14 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.data["id"], test_community.id)
         self.assertEqual(response.data["name"], "Test community audio")
         self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
-        self.assertEqual(response.data["audio_obj"]
-                         ["speaker"], self.recording.speaker)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
 
     def test_community_add_audio_for_non_admin(self):
         """
         Ensure we can add a community audio to a community object.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(
-            username="regular_user", password="password"))
+        self.assertTrue(self.client.login(username="regular_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -226,10 +207,8 @@ class CommunityAPITests(BaseTestCase):
 
         response = self.client.patch(
             "/api/community/{}/add_audio/".format(test_community.id),
-            {
-                "recording_id": self.recording.id
-            },
-            format="json"
+            {"recording_id": self.recording.id},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -239,8 +218,9 @@ class CommunityAPITests(BaseTestCase):
         Ensure we can add a community audio to a community object using an admin account.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(
-            username="community_admin_user", password="password"))
+        self.assertTrue(
+            self.client.login(username="community_admin_user", password="password")
+        )
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -252,10 +232,8 @@ class CommunityAPITests(BaseTestCase):
 
         response = self.client.patch(
             "/api/community/{}/add_audio/".format(test_community.id),
-            {
-                "recording_id": self.recording.id
-            },
-            format="json"
+            {"recording_id": self.recording.id},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -268,8 +246,7 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(response.data["id"], test_community.id)
         self.assertEqual(response.data["name"], "Global Test Community")
         self.assertEqual(response.data["audio_obj"]["id"], self.recording.id)
-        self.assertEqual(response.data["audio_obj"]
-                         ["speaker"], self.recording.speaker)
+        self.assertEqual(response.data["audio_obj"]["speaker"], self.recording.speaker)
 
     def test_create_community_member_post(self):
         """
@@ -279,15 +256,14 @@ class CommunityAPITests(BaseTestCase):
         test_community.point = self.point
         test_community.save()
 
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
         response = self.client.post(
             "/api/community/{}/create_membership/".format(test_community.id),
             {
                 "user_id": self.admin_user.id,
             },
             format="json",
-            follow=True
+            follow=True,
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -298,7 +274,7 @@ class CommunityAPITests(BaseTestCase):
         Administrator.objects.create(
             user=self.admin_user,
             language=self.test_language,
-            community=self.test_community
+            community=self.test_community,
         )
 
         user = User.objects.create(
@@ -309,13 +285,11 @@ class CommunityAPITests(BaseTestCase):
         )
 
         member_to_verify = CommunityMember.create_member(
-            user.id,
-            self.test_community.id
+            user.id, self.test_community.id
         )
 
         # Must be logged in to verify a CommunityMember.
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -323,7 +297,8 @@ class CommunityAPITests(BaseTestCase):
 
         # member_to_verify is not yet verified so return 1 result
         response = self.client.get(
-            "/api/community/list_member_to_verify/", format="json")
+            "/api/community/list_member_to_verify/", format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
@@ -343,7 +318,8 @@ class CommunityAPITests(BaseTestCase):
 
         # member_to_verify is now verified so return 0 results
         response = self.client.get(
-            "/api/community/list_member_to_verify/", format="json")
+            "/api/community/list_member_to_verify/", format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
@@ -354,7 +330,7 @@ class CommunityAPITests(BaseTestCase):
         Administrator.objects.create(
             user=self.admin_user,
             language=self.test_language,
-            community=self.test_community
+            community=self.test_community,
         )
 
         user = User.objects.create(
@@ -365,13 +341,11 @@ class CommunityAPITests(BaseTestCase):
         )
 
         member_to_reject = CommunityMember.create_member(
-            user.id,
-            self.test_community.id
+            user.id, self.test_community.id
         )
 
         # Must be logged in to verify a CommunityMember.
-        self.assertTrue(self.client.login(
-            username="admin_user", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -379,7 +353,8 @@ class CommunityAPITests(BaseTestCase):
 
         # member_to_reject is not yet rejected so return 1 result
         response = self.client.get(
-            "/api/community/list_member_to_verify/", format="json")
+            "/api/community/list_member_to_verify/", format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
@@ -399,6 +374,7 @@ class CommunityAPITests(BaseTestCase):
 
         # member_to_reject is now rejected so return 0 results
         response = self.client.get(
-            "/api/community/list_member_to_verify/", format="json")
+            "/api/community/list_member_to_verify/", format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)

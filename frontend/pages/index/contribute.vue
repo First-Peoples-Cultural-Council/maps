@@ -2088,7 +2088,7 @@ export default {
 
       if (this.isMediaRequired) {
         this.errors.push(
-          'Media File: Please add least one media for this artist profile.'
+          'Media File: Please add at least one media for this artist profile.'
         )
         this.isLoading = false
         return

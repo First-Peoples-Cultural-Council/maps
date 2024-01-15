@@ -72,7 +72,7 @@
         </table>
         <div v-if="language.dialect_set.length > 0">
           <h5 class="other-lang-names-title text-uppercase mt-4">
-            Dialect
+            Dialects
           </h5>
           <LanguageDetailBadge
             v-for="(dialect, index) in language.dialect_set"

@@ -316,6 +316,10 @@ class PlaceName(CulturalModel):
         if self.kind not in ["", "poi"]:
             return None
 
+        # Only send email if creator has email
+        if not (self.creator and self.creator.email):
+            return None
+
         subject = (
             "Your contribution has been {} on the First Peoples' Language Map".format(
                 STATUS_DISPLAY[self.status]

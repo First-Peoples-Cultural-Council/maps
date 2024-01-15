@@ -17,7 +17,7 @@ class GrantViewSet(mixins.ListModelMixin,
     detail_serializer_class = GrantDetailSerializer
     lookup_field = 'id'
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         return super().list(request)
 
 
@@ -27,5 +27,5 @@ class GrantCategoryViewSet(mixins.ListModelMixin, BaseGenericViewSet):
         F('parent__id',).asc(nulls_first=True),
         F('order',).asc(nulls_last=True))
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         return super().list(request)
