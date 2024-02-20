@@ -18,10 +18,13 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Envs
-        run: 'echo "$PROD_ENVS" >> local.env'
+        run: |
+          'echo "$PROD_ENVS" >> local.env'
+          'echo "$PROD_VARS" >> test.local.env'
         shell: bash
         env:
           PROD_ENVS : ${{secrets.PROD_ENVS}}
+          PROD_VARS : ${{secrets.PROD_VARS}}
 
       - name: Deploy Prod
         shell: bash
