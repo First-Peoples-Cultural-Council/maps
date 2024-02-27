@@ -19,10 +19,10 @@ jobs:
 
       - name: Envs
         run: |
-          'echo "$PROD_ENVS" >> local.env'
+          'echo "$PROD_VARS" >> local.env'
         shell: bash
         env:
-          PROD_ENVS : ${{secrets.PROD_ENVS}}
+          PROD_ENVS : ${{secrets.PROD_VARS}}
 
       - name: Deploy Prod
         shell: bash
