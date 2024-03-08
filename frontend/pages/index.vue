@@ -448,7 +448,22 @@ export default {
       return this.$store.state.arts.artsSet
     },
     artsGeoSet() {
-      return this.$store.state.arts.artsGeoSet
+      const { features } = this.$store.state.arts.artsGeoSet
+
+      const artsWithColor = features.map(feature => {
+        const languageId = feature.properties.language
+        const language = this.languageSet.find(lang => lang.id === languageId)
+        const color = language ? language.color : null
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            color
+          }
+        }
+      })
+
+      return { ...this.$store.state.arts.artsGeoSet, features: artsWithColor }
     },
     artworkSet() {
       return this.$store.state.arts.artworkSet
@@ -1245,6 +1260,7 @@ export default {
       }
 
       if (!this.isEmbed || (this.isEmbed && this.showArtsPoints)) {
+        console.log(this.artsGeoSet)
         map.addSource('arts1', {
           type: 'geojson',
           data: this.artsGeoSet,
