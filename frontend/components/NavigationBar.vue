@@ -118,6 +118,22 @@
         </nav>
       </div>
 
+      <div
+        v-if="$route.path !== '/page/how-to-use'"
+        class="navbar-icon-container cursor-pointer"
+      >
+        <nuxt-link class="text-dark cursor-pointer" to="/page/how-to-use">
+          <nav>
+            <img
+              src="@/assets/images/help-icon.png"
+              alt="Help"
+              width="35px"
+              height="35px"
+            />
+          </nav>
+        </nuxt-link>
+      </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="openNav">
         <img
           src="@/assets/images/menu_icon.svg"
@@ -592,6 +608,7 @@ export default {
 
   .mobile-search-container {
     display: flex !important;
+    align-items: center;
   }
 
   .navbar-container {
