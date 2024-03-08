@@ -42,7 +42,6 @@ ADMINS = (
 SERVER_EMAIL = "maps@fpcc.ca"
 
 FPCC_ADMINS = (
-    ("Suzanne", "suzanne@fpcc.ca"),
     ("Aimee", "ALaForge@fpcc.ca"),
 )
 
