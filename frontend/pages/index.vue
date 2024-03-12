@@ -1260,7 +1260,6 @@ export default {
       }
 
       if (!this.isEmbed || (this.isEmbed && this.showArtsPoints)) {
-        console.log(this.artsGeoSet)
         map.addSource('arts1', {
           type: 'geojson',
           data: this.artsGeoSet,
