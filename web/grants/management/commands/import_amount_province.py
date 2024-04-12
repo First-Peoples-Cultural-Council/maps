@@ -11,9 +11,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         import_amount_and_province()
 
+
 def import_amount_and_province():
-    with open('./tmp/spreadsheets/amount_province.csv') as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
+    with open("./tmp/spreadsheets/amount_province.csv", encoding="utf-8") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
 
         for row in csv_reader:
             grant = Grant.objects.get(pk=row[0])
