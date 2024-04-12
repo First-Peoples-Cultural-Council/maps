@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
 
 from web.models import BaseModel, CulturalModel
-from web.utils import get_art_link, get_comm_link, get_place_link
+from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
 from web.constants import *
 from users.models import User
 
@@ -364,8 +364,6 @@ class PlaceName(CulturalModel):
         self.notify_creator_about_status_change()
 
     def notify(self):
-        from web.utils import get_admin_email_list
-
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace("_", " ")
@@ -493,8 +491,6 @@ class Media(BaseModel):
         self.notify_creator_about_status_change()
 
     def notify(self):
-        from web.utils import get_admin_email_list
-
         admin_list = get_admin_email_list()
 
         if self.placename:
