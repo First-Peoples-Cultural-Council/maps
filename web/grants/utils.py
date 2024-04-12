@@ -12,7 +12,7 @@ def load_grants_from_spreadsheet(file_name, test=False):
     # Replace NaN values with empty string
     grants_dataframe.fillna("", inplace=True)
 
-    for index, sheet_row in grants_dataframe.iterrows():
+    for _, sheet_row in grants_dataframe.iterrows():
         category_abbreviation = sheet_row["Grant"].strip().split(" ")[0]
 
         grant_category = GrantCategory.objects.get(abbreviation=category_abbreviation)
@@ -20,8 +20,8 @@ def load_grants_from_spreadsheet(file_name, test=False):
         if test:
             print(sheet_row["Grant"])
             continue
-        else:
-            print("Saving ", sheet_row["Grant"])
+
+        print("Saving ", sheet_row["Grant"])
 
         Grant.objects.create(
             grant=sheet_row["Grant"],
