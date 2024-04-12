@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from .models import User, Administrator
-
 from language.models import Language, Community, CommunityMember, PlaceName
+from users.models import User, Administrator
 
 
 class CommunityUserSerializer(serializers.ModelSerializer):
@@ -26,7 +25,7 @@ class PlaceNameUserSerializer(serializers.ModelSerializer):
 class AdministratorUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Administrator
-        fields = ("id", )
+        fields = ("id",)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,11 +51,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         # Get original representation
-        representation = super(UserSerializer,
-                               self).to_representation(instance)
+        representation = super(UserSerializer, self).to_representation(instance)
 
         cleaned_placename_set = []
-        valid_kinds = ['', 'poi', 'public_art', 'artist', 'organization', 'event']
+        valid_kinds = ["", "poi", "public_art", "artist", "organization", "event"]
         for placename in representation["placename_set"]:
             if placename.get("kind") in valid_kinds:
                 cleaned_placename_set.append(placename)
@@ -65,11 +63,12 @@ class UserSerializer(serializers.ModelSerializer):
         # Add community membership
         for community in representation["communities"]:
             community_membership = CommunityMember.objects.filter(
-                community_id=community.get("id"), user_id=representation["id"]).first()
+                community_id=community.get("id"), user_id=representation["id"]
+            ).first()
             if community_membership:
                 community["community_membership"] = {
                     "verified_by": community_membership.verified_by,
-                    "date_verified": community_membership.date_verified
+                    "date_verified": community_membership.date_verified,
                 }
 
         return representation
@@ -100,7 +99,7 @@ class UserSerializer(serializers.ModelSerializer):
             "notification_frequency",
             "picture",
             "image",
-            "is_profile_complete"
+            "is_profile_complete",
         )
 
 

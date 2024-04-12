@@ -1,5 +1,5 @@
-import cognitojwt
 import os
+import cognitojwt
 
 region = os.environ["COGNITO_REGION"]
 userpool_id = os.environ["COGNITO_USERPOOL_ID"]

@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from language.models import Favourite, Notification, Recording
 from language.views import BaseModelViewSet
 from language.serializers import FavouriteSerializer, NotificationSerializer, RecordingSerializer
-from web.utils import is_user_permitted
+from web.permissions import is_user_permitted
 
 
 class RecordingViewSet(BaseModelViewSet):
