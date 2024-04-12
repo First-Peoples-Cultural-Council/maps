@@ -20,13 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "**5ghswp2+x=2(3)m&y+&012y6qiirl6_d3t6p#-w5grdl_z5d"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # env var, DEBUG=0 for False, DEBUG=1 for True.
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
-HOST = os.environ.get("HOST", 'https://maps.fpcc.ca')
+HOST = os.environ.get("HOST", "https://maps.fpcc.ca")
 
 ALLOWED_HOSTS = ["*"]
 
@@ -41,9 +43,7 @@ ADMINS = (
 )
 SERVER_EMAIL = "maps@fpcc.ca"
 
-FPCC_ADMINS = (
-    ("Aimee", "ALaForge@fpcc.ca"),
-)
+FPCC_ADMINS = (("Aimee", "ALaForge@fpcc.ca"),)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.postgres",
-    'django_filters',
+    "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_swagger",
@@ -155,9 +155,9 @@ STATIC_ROOT = "/static/"
 AUTH_USER_MODEL = "users.User"
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
