@@ -7,7 +7,6 @@ from language.models import (
     Language,
     Community,
     Notification,
-    Notification,
 )
 
 
@@ -105,7 +104,7 @@ class NotificationAPITests(BaseTestCase):
 
         # Creating an object which DOES NOT BELONG to the user
         # GET must return one object
-        test_notification2 = Notification.objects.create(
+        Notification.objects.create(
             user=self.user2, name="test notification2"
         )
         response = self.client.get("/api/notification/", format="json")
