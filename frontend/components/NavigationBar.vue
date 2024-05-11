@@ -396,8 +396,8 @@ export default {
   }
 
   img {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 
   .user-icon-container {
@@ -416,8 +416,8 @@ export default {
     }
 
     .user-icon {
-      width: 18px;
-      height: 18px;
+      width: 15px;
+      height: 15px;
     }
   }
 }

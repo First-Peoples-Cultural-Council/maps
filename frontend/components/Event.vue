@@ -55,8 +55,8 @@ export default {
   font-size: 12px;
 
   .menu-icon {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 
   .arts-container & {
