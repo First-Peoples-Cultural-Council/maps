@@ -375,14 +375,13 @@ export default {
   background-color: white;
   z-index: 50;
   border: 1px solid #beb2a5;
-  padding: 0.6em;
+  padding: 0.85em;
   border-radius: 1.5em;
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
   color: #151515;
   font-weight: 800;
-  font-size: 15px;
-  height: 47px;
+  font-size: 12px;
   position: relative;
 
   nav {
@@ -405,7 +404,6 @@ export default {
     position: relative;
     display: flex;
     align-items: center;
-    height: 45px;
     letter-spacing: 1px;
 
     .user-display-img {

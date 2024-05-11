@@ -32,10 +32,8 @@
       <li>
         <span class="font-08 color-gray">Source:</span>
         <span class="font-08 font-weight-bold color-gray"
-          ><a
-            :href="`https://fpcc.ca/resource/language-status-report-2022/`"
-            target="_blank"
-            >Report on the Status of B.C. First Nations Languages 2022</a
+          ><a href="https://fpcc.ca/stories/status-of-languages" target="_blank"
+            >Report on the Status of B.C. First Nations Languages</a
           ></span
         >
       </li>

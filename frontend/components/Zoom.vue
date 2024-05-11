@@ -57,6 +57,6 @@ export default {
 .zoomin img,
 .zoomout img {
   display: inline-block;
-  width: 15px;
+  width: 12.5px;
 }
 </style>

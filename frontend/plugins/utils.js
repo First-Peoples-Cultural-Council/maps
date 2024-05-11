@@ -4,7 +4,12 @@ import axios from 'axios'
 import { pointIntersects, intersects } from '../mixins/map'
 
 export const getApiUrl = path => {
-  return process.server ? `http://nginx/api/${path}` : `/api/${path}`
+  // Remove trailing '/' if it exists
+  const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path
+
+  return process.server
+    ? `http://nginx/api/${normalizedPath}`
+    : `/api/${normalizedPath}`
 }
 
 export const updateArtHistoryState = data => {
@@ -290,31 +295,27 @@ export const isValidEmail = email => {
 }
 
 export const isValidURL = email => {
-  const regex = new RegExp('^(https?:\\/\\/)?'+ 
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ 
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
-    '(\\#[-a-z\\d_]*)?$','i'); 
-  return !!regex.test(email.toLowerCase());
+  const regex = new RegExp(
+    '^(https?:\\/\\/)?' +
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+      '((\\d{1,3}\\.){3}\\d{1,3}))' +
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+      '(\\?[;&a-z\\d%_.~+=-]*)?' +
+      '(\\#[-a-z\\d_]*)?$',
+    'i'
+  )
+  return !!regex.test(email.toLowerCase())
 }
 
 export const isValidYoutubeLink = url => {
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
-      const match = url.match(regExp)
-      return match && match[7].length === 11 ? match[7] : false
+  const match = url.match(regExp)
+  return match && match[7].length === 11 ? match[7] : false
 }
 export const getYoutubeThumbnail = url => {
-
-  return `https://img.youtube.com/vi/${isValidYoutubeLink(
-        url
-      )}/hqdefault.jpg`
+  return `https://img.youtube.com/vi/${isValidYoutubeLink(url)}/hqdefault.jpg`
 }
 
-export const isEmptyObject = (obj) => {
-  return Object.keys(obj).length === 0;
+export const isEmptyObject = obj => {
+  return Object.keys(obj).length === 0
 }
-
-
-
-
