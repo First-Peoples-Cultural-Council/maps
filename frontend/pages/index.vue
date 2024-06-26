@@ -370,11 +370,9 @@ export default {
       loggingIn: false,
       showSearchOverlay: false,
       showEventOverlay: false,
-      MAPBOX_ACCESS_TOKEN:
-        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
+      MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
       MAP_OPTIONS: {
-        style:
-          'mapbox://styles/countable-web/ck9osxbys0rr71io228y2zonf/draft?optimize=true',
+        style: process.env.MAPBOX_STYLE_URL,
         maxZoom: 19,
         minZoom: 3,
         bounds
@@ -1820,6 +1818,9 @@ export default {
   margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
   border-radius: 3em;
+  font-weight: 800;
+  font-size: 12px;
+  color: #151515;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

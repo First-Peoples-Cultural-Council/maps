@@ -3,13 +3,14 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_swagger.views import get_swagger_view
-from web.sitemaps import *
-from .views import PageViewSet
 
-from django.contrib.sitemaps.views import sitemap
+from web.sitemaps import LanguageSitemap, CommunitySitemap, PlaceNameSitemap
+from web.views import PageViewSet
+
 
 schema_view = get_swagger_view(title="FPCC API")
 
@@ -23,9 +24,10 @@ router = routers.DefaultRouter()
 router.register(r"api/page", PageViewSet, basename="page")
 
 
+# pylint:disable=pointless-statement,undefined-variable
 def crash(request):
     """
-    This is for checking error handling is working.
+    This is meant to invoke a variable that's undefined to check if error handling is working.
     """
     throw
 

@@ -32,7 +32,7 @@ export default {
 }
 .reset-map-control h5 {
   font-weight: 800;
-  font-size: 15px;
+  font-size: 12px;
   color: #151515;
   margin: 0;
   padding: 0.5em 0.75em;

@@ -13,6 +13,8 @@ module.exports = {
     COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
     COGNITO_URL: process.env.COGNITO_URL,
     COGNITO_HOST: process.env.COGNITO_HOST,
+    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+    MAPBOX_STYLE_URL: process.env.MAPBOX_STYLE_URL,
     HOST: process.env.HOST
   },
 
@@ -146,11 +148,28 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend(config, { isDev, isClient }) {
+      // Add cache busting for static files in production
+      if (!isDev && isClient) {
+        config.module.rules.forEach(rule => {
+          if (rule.use) {
+            rule.use.forEach(use => {
+              if (use.loader === 'url-loader') {
+                use.options = {
+                  ...use.options,
+                  name: '[path][name].[ext]?[contenthash]'
+                }
+              }
+            })
+          }
+        })
+      }
+
+      // Add configuration for eslint-loader
       config.node = {
         fs: 'empty'
       }
-      if (ctx.dev && ctx.isClient) {
+      if (isDev && isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,

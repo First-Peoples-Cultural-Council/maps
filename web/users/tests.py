@@ -1,9 +1,8 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from .models import User
 from language.models import Language, Community
+from users.models import User
 
 
 class UserAPITests(APITestCase):
@@ -24,7 +23,6 @@ class UserAPITests(APITestCase):
         self.user.languages.add(self.language2)
         self.user.communities.add(self.community1)
         self.user.save()
-        # self.user.communities.add(self.community2)
 
     ###### ONE TEST TESTS ONLY ONE SCENARIO ######
 

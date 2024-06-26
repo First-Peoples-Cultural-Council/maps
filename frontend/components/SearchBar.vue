@@ -3,251 +3,250 @@
     class="searchbar-container"
     :class="{ 'searchbar-container-detail': isDetailMode }"
   >
-    <div class="searchbar-input-container">
-      <div v-if="mobile" class="searchbar-mobile-header">
-        <div class="search-mobile-icon">
-          <img src="@/assets/images/search_icon.svg" alt="Search" />
-        </div>
-        <div class="search-mobile-input">
-          <b-form-input
-            id="search-input"
-            v-model="searchQuery"
-            type="text"
-            class="search-input"
-            placeholder="Search for any terms, like Secwepemctsin..."
-            autocomplete="off"
-            @update="handleSearchUpdate"
-            @focus="handleInputFocus"
-          >
-          </b-form-input>
-        </div>
-        <div class="search-mobile-close-icon">
-          <img
-            src="@/assets/images/close_icon.svg"
-            alt="Close"
-            @click="$root.$emit('closeSearchOverlay', true)"
-          />
-        </div>
+    <div v-if="mobile" class="searchbar-mobile-header">
+      <div class="search-mobile-icon">
+        <img src="@/assets/images/search_icon.svg" alt="Search" />
       </div>
-      <div v-else class="searchbar-not-mobile">
+      <div class="search-mobile-input">
         <b-form-input
           id="search-input"
           v-model="searchQuery"
-          type="search"
+          type="text"
           class="search-input"
-          placeholder="Search for places, people, languages or grants..."
+          placeholder="Search for any terms, like Secwepemctsin..."
           autocomplete="off"
-          maxlength="32"
           @update="handleSearchUpdate"
           @focus="handleInputFocus"
         >
         </b-form-input>
+      </div>
+      <div class="search-mobile-close-icon">
         <img
-          class="search-icon"
-          src="@/assets/images/search_icon.svg"
-          alt="Search"
+          src="@/assets/images/close_icon.svg"
+          alt="Close"
+          @click="$root.$emit('closeSearchOverlay', true)"
         />
       </div>
+    </div>
+    <div v-else class="searchbar-not-mobile">
+      <b-form-input
+        id="search-input"
+        v-model="searchQuery"
+        type="search"
+        class="search-input"
+        placeholder="Search for places, people, languages or grants..."
+        autocomplete="off"
+        maxlength="32"
+        @update="handleSearchUpdate"
+        @focus="handleInputFocus"
+      >
+      </b-form-input>
+      <img
+        v-if="!searchQuery"
+        class="search-icon"
+        src="@/assets/images/search_icon.svg"
+        alt="Search"
+      />
+    </div>
 
-      <div v-if="mobile">
-        <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
-          Search Term: {{ searchQuery }}
-        </h5>
-        <div v-if="isSearchEmpty" class="nosearch-results p-3">
+    <div v-if="mobile">
+      <h5 v-if="searchQuery" class="font-08 font-weight-bold p-3">
+        Search Term: {{ searchQuery }}
+      </h5>
+      <div v-if="isSearchEmpty" class="nosearch-results p-3">
+        <Contact
+          error="No search results were found"
+          subject="FPCC Map: Didn't find what I was looking for (search)"
+        ></Contact>
+      </div>
+      <div v-else class="pt-2">
+        <div
+          v-for="(results, key) in searchResults"
+          :key="key"
+          class="search-row"
+        >
+          <div v-if="results.length > 0" class="mb-3">
+            <h5
+              v-if="key === 'Locations'"
+              class="search-result-group font-1 pl-3 pr-3"
+            >
+              Locations from the B.C. Geographical Names Database
+            </h5>
+            <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+              {{ key.replace(/_/g, ' ') }}
+            </h5>
+            <div
+              v-for="(result, index) in results"
+              :key="index"
+              class="search-results pl-3 pr-3"
+            >
+              <h5
+                v-if="key === 'Languages' || key === 'Communities'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="handleResultClick($event, key, result.item.name)"
+              >
+                <div v-html="highlightSearch(result.item.name, result)"></div>
+              </h5>
+              <h5
+                v-else-if="
+                  key === 'Places' ||
+                    key === 'Artists' ||
+                    key === 'Public_Arts' ||
+                    key === 'Organizations' ||
+                    key === 'Resources' ||
+                    key === 'Events' ||
+                    key === 'Grants'
+                "
+                class="search-result-title font-1 font-weight-normal"
+                @click="handleResultClick($event, key, result.item.name)"
+              >
+                <div v-html="highlightSearch(result.item.name, result)"></div>
+              </h5>
+              <h5
+                v-else-if="key === 'Locations'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="
+                  handleResultClick(
+                    $event,
+                    key,
+                    result.properties.name,
+                    result.geometry,
+                    result
+                  )
+                "
+              >
+                {{ result.name }} -
+                {{ result.properties.feature.relativeLocation }}
+              </h5>
+              <h5
+                v-else-if="key === 'Address'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="
+                  handleResultClick(
+                    $event,
+                    key,
+                    result.place_name,
+                    result.geometry,
+                    result
+                  )
+                "
+              >
+                {{ result.place_name }}
+              </h5>
+            </div>
+            <hr />
+          </div>
+        </div>
+        <div>
           <Contact
-            error="No search results were found"
             subject="FPCC Map: Didn't find what I was looking for (search)"
           ></Contact>
-        </div>
-        <div v-else class="pt-2">
-          <div
-            v-for="(results, key) in searchResults"
-            :key="key"
-            class="search-row"
-          >
-            <div v-if="results.length > 0" class="mb-3">
-              <h5
-                v-if="key === 'Locations'"
-                class="search-result-group font-1 pl-3 pr-3"
-              >
-                Locations from the B.C. Geographical Names Database
-              </h5>
-              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key.replace(/_/g, ' ') }}
-              </h5>
-              <div
-                v-for="(result, index) in results"
-                :key="index"
-                class="search-results pl-3 pr-3"
-              >
-                <h5
-                  v-if="key === 'Languages' || key === 'Communities'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.item.name)"
-                >
-                  <div v-html="highlightSearch(result.item.name, result)"></div>
-                </h5>
-                <h5
-                  v-else-if="
-                    key === 'Places' ||
-                      key === 'Artists' ||
-                      key === 'Public_Arts' ||
-                      key === 'Organizations' ||
-                      key === 'Resources' ||
-                      key === 'Events' ||
-                      key === 'Grants'
-                  "
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.item.name)"
-                >
-                  <div v-html="highlightSearch(result.item.name, result)"></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Locations'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick(
-                      $event,
-                      key,
-                      result.properties.name,
-                      result.geometry,
-                      result
-                    )
-                  "
-                >
-                  {{ result.name }} -
-                  {{ result.properties.feature.relativeLocation }}
-                </h5>
-                <h5
-                  v-else-if="key === 'Address'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick(
-                      $event,
-                      key,
-                      result.place_name,
-                      result.geometry,
-                      result
-                    )
-                  "
-                >
-                  {{ result.place_name }}
-                </h5>
-              </div>
-              <hr />
-            </div>
-          </div>
-          <div>
-            <Contact
-              subject="FPCC Map: Didn't find what I was looking for (search)"
-            ></Contact>
-          </div>
         </div>
       </div>
-      <b-popover
-        v-else
-        target="search-input"
-        placement="bottom"
-        :show.sync="show"
-        triggers=""
-        @click.native="handlePopOverClick"
-      >
-        <template slot="title">
-          Search Term: {{ searchQuery }}
-        </template>
-        <div v-if="isSearchEmpty" class="nosearch-results p-3">
+    </div>
+    <b-popover
+      v-else
+      target="search-input"
+      placement="bottom"
+      :show.sync="show"
+      triggers=""
+      @click.native="handlePopOverClick"
+    >
+      <template slot="title">
+        Search Term: {{ searchQuery }}
+      </template>
+      <div v-if="isSearchEmpty" class="nosearch-results p-3">
+        <Contact
+          error="No search results were found"
+          subject="FPCC Map: Didn't find what I was looking for (search)"
+        ></Contact>
+      </div>
+      <div v-else class="pt-2">
+        <div
+          v-for="(results, key) in searchResults"
+          :key="key"
+          class="search-row"
+        >
+          <div v-if="results.length > 0" class="mb-3">
+            <h5
+              v-if="key === 'Locations'"
+              class="search-result-group font-1 pl-3 pr-3"
+            >
+              Locations from the B.C. Geographical Names Database
+            </h5>
+            <h5 v-else class="search-result-group font-1 pl-3 pr-3">
+              {{ key.replace(/_/g, ' ') }}
+            </h5>
+            <div
+              v-for="(result, index) in results"
+              :key="index"
+              class="search-results pl-3 pr-3"
+            >
+              <h5
+                v-if="key === 'Languages' || key === 'Communities'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="handleResultClick($event, key, result.item.name)"
+              >
+                <div v-html="highlightSearch(result.item.name, result)"></div>
+              </h5>
+              <h5
+                v-else-if="
+                  key === 'Places' ||
+                    key === 'Artists' ||
+                    key === 'Public_Arts' ||
+                    key === 'Organizations' ||
+                    key === 'Resources' ||
+                    key === 'Events' ||
+                    key === 'Grants'
+                "
+                class="search-result-title font-1 font-weight-normal"
+                @click="handleResultClick($event, key, result.item.name)"
+              >
+                <div v-html="highlightSearch(result.item.name, result)"></div>
+              </h5>
+              <h5
+                v-else-if="key === 'Locations'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="
+                  handleResultClick(
+                    $event,
+                    key,
+                    result.properties.name,
+                    result.geometry,
+                    result
+                  )
+                "
+              >
+                {{ result.name }} -
+                {{ result.properties.feature.relativeLocation }}
+              </h5>
+              <h5
+                v-else-if="key === 'Address'"
+                class="search-result-title font-1 font-weight-normal"
+                @click="
+                  handleResultClick(
+                    $event,
+                    key,
+                    result.place_name,
+                    result.geometry,
+                    result
+                  )
+                "
+              >
+                {{ result.place_name }}
+              </h5>
+            </div>
+            <hr />
+          </div>
+        </div>
+        <div>
           <Contact
-            error="No search results were found"
             subject="FPCC Map: Didn't find what I was looking for (search)"
           ></Contact>
         </div>
-        <div v-else class="pt-2">
-          <div
-            v-for="(results, key) in searchResults"
-            :key="key"
-            class="search-row"
-          >
-            <div v-if="results.length > 0" class="mb-3">
-              <h5
-                v-if="key === 'Locations'"
-                class="search-result-group font-1 pl-3 pr-3"
-              >
-                Locations from the B.C. Geographical Names Database
-              </h5>
-              <h5 v-else class="search-result-group font-1 pl-3 pr-3">
-                {{ key.replace(/_/g, ' ') }}
-              </h5>
-              <div
-                v-for="(result, index) in results"
-                :key="index"
-                class="search-results pl-3 pr-3"
-              >
-                <h5
-                  v-if="key === 'Languages' || key === 'Communities'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.item.name)"
-                >
-                  <div v-html="highlightSearch(result.item.name, result)"></div>
-                </h5>
-                <h5
-                  v-else-if="
-                    key === 'Places' ||
-                      key === 'Artists' ||
-                      key === 'Public_Arts' ||
-                      key === 'Organizations' ||
-                      key === 'Resources' ||
-                      key === 'Events' ||
-                      key === 'Grants'
-                  "
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="handleResultClick($event, key, result.item.name)"
-                >
-                  <div v-html="highlightSearch(result.item.name, result)"></div>
-                </h5>
-                <h5
-                  v-else-if="key === 'Locations'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick(
-                      $event,
-                      key,
-                      result.properties.name,
-                      result.geometry,
-                      result
-                    )
-                  "
-                >
-                  {{ result.name }} -
-                  {{ result.properties.feature.relativeLocation }}
-                </h5>
-                <h5
-                  v-else-if="key === 'Address'"
-                  class="search-result-title font-1 font-weight-normal"
-                  @click="
-                    handleResultClick(
-                      $event,
-                      key,
-                      result.place_name,
-                      result.geometry,
-                      result
-                    )
-                  "
-                >
-                  {{ result.place_name }}
-                </h5>
-              </div>
-              <hr />
-            </div>
-          </div>
-          <div>
-            <Contact
-              subject="FPCC Map: Didn't find what I was looking for (search)"
-            ></Contact>
-          </div>
-        </div>
-      </b-popover>
-      <!-- <span class="searchbar-icon"></span> -->
-    </div>
+      </div>
+    </b-popover>
+    <!-- <span class="searchbar-icon"></span> -->
   </div>
 </template>
 
@@ -274,8 +273,7 @@ export default {
   },
   data() {
     return {
-      MAPBOX_ACCESS_TOKEN:
-        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
+      MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
       show: false,
       searchQuery: '',
       searchResultClicked: false,
@@ -656,6 +654,7 @@ export default {
   width: 100%;
   display: flex;
   position: relative;
+  height: 100%;
 }
 
 .search-icon {
@@ -717,7 +716,7 @@ export default {
 
 .search-input.form-control {
   border-radius: 3em;
-  padding: 1.4em;
+  padding: 0.85em;
   box-shadow: 0px 3px 6px #00000022;
 }
 

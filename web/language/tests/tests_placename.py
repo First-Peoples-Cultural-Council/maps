@@ -1,8 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
-
-from users.models import User, Administrator
 from django.contrib.gis.geos import GEOSGeometry
 
 from language.models import (
@@ -17,7 +15,13 @@ from language.models import (
     Taxonomy,
     PlaceNameTaxonomy,
 )
-from web.constants import *
+from users.models import User, Administrator
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+)
 
 
 class BaseTestCase(APITestCase):
@@ -181,10 +185,6 @@ class PlaceNameAPITests(BaseTestCase):
             created=self.now,
             date_recorded=self.now,
         )
-
-    """
-    ONE TEST TESTS ONLY ONE SCENARIO
-    """
 
     def test_placename_detail(self):
         """
@@ -448,7 +448,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 0)
 
         # Administrator of the pair language/community
-        admin = Administrator.objects.create(
+        Administrator.objects.create(
             user=self.admin_user,
             community=self.community,
             language=self.language1,
@@ -520,7 +520,7 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure placename list API brings newly created data which needs to be verified
         """
-        admin = Administrator.objects.create(
+        Administrator.objects.create(
             user=self.admin_user, language=self.language1, community=self.community
         )
 
@@ -576,6 +576,18 @@ class PlaceNameAPITests(BaseTestCase):
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
+        self.assertEqual(
+            any(d.get("id") == test_placename01.id for d in response.data), False
+        )
+        self.assertEqual(
+            any(d.get("id") == test_placename02.id for d in response.data), True
+        )
+        self.assertEqual(
+            any(d.get("id") == test_placename03.id for d in response.data), True
+        )
+        self.assertEqual(
+            any(d.get("id") == test_placename04.id for d in response.data), False
+        )
 
     def test_placename_post(self):
         # Must be logged in to submit a place.
@@ -641,9 +653,7 @@ class PlaceNameAPITests(BaseTestCase):
         created_id = placename.id
 
         # now update it.
-        response = self.client.patch(
-            "/api/placename/{}/verify/".format(created_id)
-        )
+        response = self.client.patch("/api/placename/{}/verify/".format(created_id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         place = PlaceName.objects.get(pk=created_id)
@@ -746,14 +756,14 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the taxonomies attached to each placename
         """
-        test_placename06 = PlaceName.objects.create(name="test place06")
+        test_placename = PlaceName.objects.create(name="test place01")
 
         PlaceNameTaxonomy.objects.create(
-            placename=test_placename06, taxonomy=self.taxonomy
+            placename=test_placename, taxonomy=self.taxonomy
         )
 
         response = self.client.get(
-            "/api/placename/{}/".format(test_placename06.id), format="json"
+            "/api/placename/{}/".format(test_placename.id), format="json"
         )
 
         data = response.json()
@@ -766,14 +776,14 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we can retrieve the related_data attached to each placename
         """
-        test_placename07 = PlaceName.objects.create(name="test place07")
+        test_placename = PlaceName.objects.create(name="test place")
 
         location = RelatedData.objects.create(
-            data_type="location", value="Test Address", placename=test_placename07
+            data_type="location", value="Test Address", placename=test_placename
         )
 
         response = self.client.get(
-            "/api/placename/{}/".format(test_placename07.id), format="json"
+            "/api/placename/{}/".format(test_placename.id), format="json"
         )
 
         data = response.json()
@@ -786,13 +796,14 @@ class PlaceNameAPITests(BaseTestCase):
         """
         Ensure we only retrieve node_placenames from art-geo API
         """
+
         # This placename should not be a part of the result
         # because this does not have a geo
-        test_placename08 = PlaceName.objects.create(  # Excluded
-            name="test place08", kind="public_art"
+        test_placename01 = PlaceName.objects.create(  # Excluded
+            name="test place01", kind="public_art"
         )
-        test_placename09 = PlaceName.objects.create(  # Included (1)
-            name="test place09",
+        test_placename02 = PlaceName.objects.create(  # Included (1)
+            name="test place02",
             kind="artist",
             geom=GEOSGeometry(
                 """{
@@ -801,11 +812,11 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename10 = PlaceName.objects.create(  # Excluded
-            name="test place10", kind="organization"
+        test_placename03 = PlaceName.objects.create(  # Excluded
+            name="test place03", kind="organization"
         )
-        test_placename11 = PlaceName.objects.create(  # Included (2)
-            name="test place11",
+        test_placename04 = PlaceName.objects.create(  # Included (2)
+            name="test place04",
             kind="event",
             geom=GEOSGeometry(
                 """{
@@ -814,8 +825,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename12 = PlaceName.objects.create(  # Included (3)
-            name="test place12",
+        test_placename05 = PlaceName.objects.create(  # Included (3)
+            name="test place05",
             kind="resource",
             geom=GEOSGeometry(
                 """{
@@ -826,13 +837,13 @@ class PlaceNameAPITests(BaseTestCase):
         )
         # This placename should not be a part of the result
         # because this is not a node_placename
-        test_placename13 = PlaceName.objects.create(  # Excluded
-            name="test place13", kind="poi"
+        test_placename06 = PlaceName.objects.create(  # Excluded
+            name="test place06", kind="poi"
         )
         # This placename should not be a part of the result
         # because this has an invalid coordinates [0, 0]
-        test_placename14 = PlaceName.objects.create(  # Excluded
-            name="test place14",
+        test_placename07 = PlaceName.objects.create(  # Excluded
+            name="test place07",
             kind="resource",
             geom=GEOSGeometry(
                 """{
@@ -848,16 +859,23 @@ class PlaceNameAPITests(BaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 3)  # Only 3 data with geom and is a Node PlaceName
-        self.assertEqual(data[0].get("id"), test_placename09.id)  # Check first data
-        self.assertEqual(
-            data[2].get("id"), test_placename12.id
-        )  # Check last data - should not be test_placename12
+        self.assertEqual(any(d.get("id") == test_placename01.id for d in data), False)
+        self.assertEqual(any(d.get("id") == test_placename02.id for d in data), True)
+        self.assertEqual(any(d.get("id") == test_placename03.id for d in data), False)
+        self.assertEqual(any(d.get("id") == test_placename04.id for d in data), True)
+        self.assertEqual(any(d.get("id") == test_placename05.id for d in data), True)
+        self.assertEqual(any(d.get("id") == test_placename06.id for d in data), False)
+        self.assertEqual(any(d.get("id") == test_placename07.id for d in data), False)
 
     def test_placename_geo(self):
-        # Even if the geometry is non-sense, include them
-        # If kind is blank or poi, include them
-        test_placename15 = PlaceName.objects.create(  # Included (1)
-            name="test place15",
+        """
+        Ensure we include placenames in the Geo API regardless if the geom is bad or the kind is blank.
+
+        Placenames with no geom are excluded.
+        """
+
+        test_placename01 = PlaceName.objects.create(  # Included (1)
+            name="test place01",
             kind="poi",
             geom=GEOSGeometry(
                 """{
@@ -866,8 +884,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename16 = PlaceName.objects.create(  # Included (2)
-            name="test place16",
+        test_placename02 = PlaceName.objects.create(  # Included (2)
+            name="test place02",
             kind="",
             geom=GEOSGeometry(
                 """{
@@ -876,27 +894,32 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
+
         # If no geometry, exclude them
-        test_placename17 = PlaceName.objects.create(  # Excluded
-            name="test place17",
+        test_placename03 = PlaceName.objects.create(  # Excluded
+            name="test place03",
             kind="poi",
         )
 
         response = self.client.get("/api/placename-geo/", format="json")
+
         # By fetching "features" specifically, we're committing
         # that this API si a GEO Feature API
         data = response.json().get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 2)
+        self.assertEqual(any(d.get("id") == test_placename01.id for d in data), True)
+        self.assertEqual(any(d.get("id") == test_placename02.id for d in data), True)
+        self.assertEqual(any(d.get("id") == test_placename03.id for d in data), False)
 
     def test_art_types_geo_api(self):
         """
         Ensure we can get the data to display on the Arts Tab Lists
         """
         # Don't show Place Names without Geom or cooridinates = [0, 0]
-        test_placename18 = PlaceName.objects.create(
-            name="test place18",
+        PlaceName.objects.create(
+            name="test place01",
             kind="resource",
             geom=GEOSGeometry(
                 """{
@@ -905,8 +928,9 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename19 = PlaceName.objects.create(
-            name="test place19",
+
+        PlaceName.objects.create(
+            name="test place02",
             kind="resource",
             geom=GEOSGeometry(
                 """{
@@ -916,8 +940,8 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_placename20 = PlaceName.objects.create(
-            name="test place20",
+        PlaceName.objects.create(
+            name="test place03",
             kind="public_art",
             geom=GEOSGeometry(
                 """{
@@ -926,8 +950,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename21 = PlaceName.objects.create(
-            name="test place21",
+        PlaceName.objects.create(
+            name="test place04",
             kind="public_art",
             geom=GEOSGeometry(
                 """{
@@ -937,8 +961,8 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_placename22 = PlaceName.objects.create(
-            name="test place22",
+        PlaceName.objects.create(
+            name="test place05",
             kind="artist",
             geom=GEOSGeometry(
                 """{
@@ -947,8 +971,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename23 = PlaceName.objects.create(
-            name="test place23",
+        PlaceName.objects.create(
+            name="test place06",
             kind="artist",
             geom=GEOSGeometry(
                 """{
@@ -958,8 +982,8 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_placename24 = PlaceName.objects.create(
-            name="test place24",
+        PlaceName.objects.create(
+            name="test place07",
             kind="organization",
             geom=GEOSGeometry(
                 """{
@@ -968,8 +992,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename25 = PlaceName.objects.create(
-            name="test place25",
+        PlaceName.objects.create(
+            name="test place08",
             kind="organization",
             geom=GEOSGeometry(
                 """{
@@ -979,8 +1003,8 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_placename26 = PlaceName.objects.create(
-            name="test place26",
+        PlaceName.objects.create(
+            name="test place09",
             kind="event",
             geom=GEOSGeometry(
                 """{
@@ -989,8 +1013,9 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename27 = PlaceName.objects.create(
-            name="test place27",
+
+        PlaceName.objects.create(
+            name="test place10",
             kind="event",
             geom=GEOSGeometry(
                 """{
@@ -1000,8 +1025,8 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_placename28 = PlaceName.objects.create(
-            name="test place28",
+        PlaceName.objects.create(
+            name="test place11",
             kind="grant",
             geom=GEOSGeometry(
                 """{
@@ -1010,8 +1035,8 @@ class PlaceNameAPITests(BaseTestCase):
             }"""
             ),
         )
-        test_placename29 = PlaceName.objects.create(
-            name="test place29",
+        PlaceName.objects.create(
+            name="test place12",
             kind="grant",
             geom=GEOSGeometry(
                 """{
@@ -1092,8 +1117,8 @@ class PlaceNameAPITests(BaseTestCase):
         Ensure we can get the data to display on the Arts Tab Lists
         """
         # Don't show Medias whose Place Name is without Geom
-        test_placename30 = PlaceName.objects.create(
-            name="test place30",
+        test_placename = PlaceName.objects.create(
+            name="test place",
             kind="artist",
             geom=GEOSGeometry(
                 """{
@@ -1103,11 +1128,9 @@ class PlaceNameAPITests(BaseTestCase):
             ),
         )
 
-        test_media1 = Media.objects.create(
-            name="test media1", placename=test_placename30, is_artwork=True
+        Media.objects.create(
+            name="test media1", placename=test_placename, is_artwork=True
         )
 
         response = self.client.get("/api/arts/artwork/", format="json")
-        data = response.json()
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)

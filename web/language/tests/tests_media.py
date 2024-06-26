@@ -1,7 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from users.models import User, Administrator
 
 from language.models import (
     Language,
@@ -10,7 +9,13 @@ from language.models import (
     CommunityMember,
     Media,
 )
-from web.constants import *
+from users.models import User, Administrator
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+)
 
 
 class BaseTestCase(APITestCase):
@@ -57,7 +62,7 @@ class MediaAPITests(BaseTestCase):
         placename1.communities.set([self.community1])
 
         # VERIFIED Media
-        media01 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -68,7 +73,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # UNVERIFIED Media
-        media02 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -79,7 +84,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # REJECTED Media
-        media03 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -90,7 +95,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # FLAGGED Media
-        media04 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -120,7 +125,7 @@ class MediaAPITests(BaseTestCase):
         placename1.communities.set([self.community1])
 
         # VERIFIED Media
-        media01 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.admin_user,
             file_type="string",
@@ -132,7 +137,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # UNVERIFIED Media
-        media02 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.admin_user,
             file_type="string",
@@ -144,7 +149,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # REJECTED Media
-        media03 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.admin_user,
             file_type="string",
@@ -156,7 +161,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 3)
 
         # FLAGGED Media
-        media04 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.admin_user,
             file_type="string",
@@ -168,7 +173,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 4)
 
         # REJECTED Media from another user
-        media05 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.regular_user,
             file_type="string",
@@ -180,7 +185,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 4)
 
         # FLAGGED Media from another user
-        media06 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             creator=self.regular_user,
             file_type="string",
@@ -209,7 +214,7 @@ class MediaAPITests(BaseTestCase):
         placename1.communities.set([self.community1])
 
         # VERIFIED COMMUNITY_ONLY Media
-        media01 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -236,7 +241,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # UNVERIFIED COMMUNITY_ONLY Media
-        media02 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -248,7 +253,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # REJECTED COMMUNITY_ONLY Media
-        media03 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -260,7 +265,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 3)
 
         # FLAGGED COMMUNITY_ONLY Media
-        media04 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -272,7 +277,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 4)
 
         # VERIFIED Media from another community
-        media05 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             community=self.community2,
@@ -290,7 +295,7 @@ class MediaAPITests(BaseTestCase):
         placename2.communities.set([self.community2])
 
         # VERIFIED Media from another placename from another community
-        media06 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename2,
@@ -455,23 +460,26 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(media.placename.id, placename.id)
 
     def test_repeated_names_for_media(self):
-        test_media1 = Media.objects.create(
+        # Create media named "test media"
+        Media.objects.create(
             name="test media",
             file_type="string",
         )
 
-        test_media2 = Media.objects.create(
+        # Create another with the same name
+        Media.objects.create(
             name="test media",
             file_type="string",
         )
 
-        self.assertEqual(1, 1)
+        matching_media_count = Media.objects.filter(name="test media").count()
+        self.assertEqual(matching_media_count, 2)
 
     def test_list_to_verify(self):
         """
         Ensure media list API brings newly created data which needs to be verified
         """
-        admin = Administrator.objects.create(
+        Administrator.objects.create(
             user=self.admin_user, language=self.language1, community=self.community1
         )
 
@@ -495,7 +503,7 @@ class MediaAPITests(BaseTestCase):
         placename2.communities.set([self.community2])
 
         # VERIFIED Media MATCHING admin's language. It MUST NOT be returned by the route
-        media_same01 = Media.objects.create(
+        Media.objects.create(
             name="test media01",
             file_type="string",
             placename=placename1,
@@ -506,7 +514,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 0)
 
         # UNVERIFIED Media MATCHING admin's language. It MUST be returned by the route
-        media_same02 = Media.objects.create(
+        Media.objects.create(
             name="test media02",
             file_type="string",
             placename=placename1,
@@ -519,7 +527,7 @@ class MediaAPITests(BaseTestCase):
         assert len(response.data[0]["status_reason"]) > 0
 
         # FLAGGED Media MATCHING admin's language. It MUST be returned by the route
-        media_diff01 = Media.objects.create(
+        Media.objects.create(
             name="test media03",
             file_type="string",
             placename=placename1,
@@ -531,7 +539,7 @@ class MediaAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # UNVERIFIED Media NOT MATCHING admin's language. It MUST NOT be returned by the route
-        test_media04 = Media.objects.create(
+        Media.objects.create(
             name="test media04",
             file_type="string",
             placename=placename2,
@@ -546,7 +554,7 @@ class MediaAPITests(BaseTestCase):
         self.community1.languages.add(self.language1)
         self.community1.save()
 
-        media_same03 = Media.objects.create(
+        Media.objects.create(
             name="test media02",
             file_type="string",
             community=self.community1,
@@ -561,7 +569,7 @@ class MediaAPITests(BaseTestCase):
         self.community2.languages.add(self.language1)
         self.community2.save()
 
-        media_same04 = Media.objects.create(
+        Media.objects.create(
             name="test media02",
             file_type="string",
             community=self.community2,
@@ -628,7 +636,7 @@ class MediaAPITests(BaseTestCase):
 
         created_id = test_media.id
 
-        # now update it.
+        # Now update it.
         response = self.client.patch(
             "/api/media/{}/verify/".format(created_id),
             {"status_reason": "test reason status"},
@@ -806,25 +814,28 @@ class MediaAPITests(BaseTestCase):
         # Check if medias are added in the PlaceName media list
         self.assertTrue(len(data.get("medias")) == 4)
         self.assertEqual(data.get("medias")[0].get("id"), test_media04.id)
+        self.assertEqual(data.get("medias")[1].get("id"), test_media03.id)
+        self.assertEqual(data.get("medias")[2].get("id"), test_media02.id)
         self.assertEqual(data.get("medias")[3].get("id"), test_media01.id)
 
     def test_media_order(self):
         """
         Ensure media is ordered in reverse chronological order.
         """
+
         test_placename_with_media = PlaceName.objects.create(
             name="Test PlaceName with Media"
         )
-        test_media01 = Media.objects.create(
+        Media.objects.create(
             name="Test media 01", file_type="image", placename=test_placename_with_media
         )
-        test_media02 = Media.objects.create(
+        Media.objects.create(
             name="Test media 02", file_type="image", placename=test_placename_with_media
         )
-        test_media03 = Media.objects.create(
+        Media.objects.create(
             name="Test media 03", file_type="image", placename=test_placename_with_media
         )
-        test_media04 = Media.objects.create(
+        Media.objects.create(
             name="Test media 04", file_type="image", placename=test_placename_with_media
         )
 
