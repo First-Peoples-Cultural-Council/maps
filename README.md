@@ -316,6 +316,20 @@ docker-compose exec web python manage.py test
 
 ```
 
+## Linting
+
+### Python
+
+We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
+
+```
+# Linting for entire folder
+docker-compose exec web sh pylint.sh <folder_name>
+
+# Linting for specific file
+docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
+```
+
 ### Notifications
 
 The system sends users notifications weekly, including:

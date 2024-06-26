@@ -128,7 +128,6 @@ def get_values(model, start_id):
                     "&", search_value, all_values, model
                 )
 
-            value_list = []
             for _id in set(possible_value_ids):
                 if model == "language":
                     obj = Language.objects.get(pk=_id)

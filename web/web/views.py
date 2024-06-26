@@ -1,6 +1,7 @@
-from .models import Page
-from .serializers import PageSerializer
 from rest_framework import viewsets
+
+from web.models import Page
+from web.serializers import PageSerializer
 
 
 class PageViewSet(viewsets.ModelViewSet):

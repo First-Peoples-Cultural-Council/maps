@@ -2,8 +2,7 @@ from django.contrib.gis.db import models
 
 
 class BaseModel(models.Model):
-    name = models.CharField(
-        "Traditional Name", max_length=255, default="", unique=True)
+    name = models.CharField("Traditional Name", max_length=255, default="", unique=True)
     modified = models.DateTimeField("date modified", auto_now=True)
     created = models.DateTimeField("date created", auto_now_add=True)
 

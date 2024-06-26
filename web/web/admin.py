@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Page
+
 from markdownx.admin import MarkdownxModelAdmin
+from web.models import Page
 
 admin.site.register(Page, MarkdownxModelAdmin)

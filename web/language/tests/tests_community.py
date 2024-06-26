@@ -1,12 +1,11 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
-
-from users.models import User, Administrator
 from django.contrib.gis.geos import GEOSGeometry
 
 from language.models import Language, Community, CommunityMember, Recording
-from web.constants import *
+from users.models import User, Administrator
+from web.constants import VERIFIED, REJECTED
 
 
 class BaseTestCase(APITestCase):

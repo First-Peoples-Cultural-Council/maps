@@ -12,9 +12,9 @@ scheduler.add_jobstore(DjangoJobStore(), "default")
     scheduler,
     "cron",
     # second="*",
-    misfire_grace_time=60
-    * 60
-    # This is set to 20 hours to give plenty of time to run missed jobs the same day, but avoid them overrunning into the following day.
+    misfire_grace_time=60 * 60
+    # This is set to 20 hours to give plenty of time to run missed jobs
+    # the same day, but avoid them overrunning into the following day.
     * 20,
     second=0,
     minute=0,

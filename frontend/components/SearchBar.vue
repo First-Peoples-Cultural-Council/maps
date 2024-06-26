@@ -273,8 +273,7 @@ export default {
   },
   data() {
     return {
-      MAPBOX_ACCESS_TOKEN:
-        'pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA',
+      MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
       show: false,
       searchQuery: '',
       searchResultClicked: false,

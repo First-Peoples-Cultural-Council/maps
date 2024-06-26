@@ -1,16 +1,10 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.utils import timezone
-
-from users.models import User
 from django.contrib.gis.geos import GEOSGeometry
 
-import json
-
-from language.models import (
-    Language,
-    Recording,
-)
+from language.models import Language, Recording
+from users.models import User
 
 
 class BaseTestCase(APITestCase):

@@ -1,10 +1,9 @@
+from datetime import timedelta
+
 from django.test import TestCase
 from django.utils import timezone
 
-from datetime import timedelta
-
 from language.notifications import notify
-from users.models import User
 from language.models import (
     Language,
     Community,
@@ -13,8 +12,15 @@ from language.models import (
     CommunityMember,
     Favourite,
 )
-from web.constants import *
+from users.models import User
 from web.utils import get_place_link, get_comm_link
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+    STATUS_DISPLAY,
+)
 
 
 class EmailTests(TestCase):
