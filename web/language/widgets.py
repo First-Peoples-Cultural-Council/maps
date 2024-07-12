@@ -14,6 +14,7 @@ class LatLongWidget(forms.MultiWidget):
     A Widget that splits Point input into latitude/longitude text inputs.
     """
 
+    # pylint: disable=unused-argument
     def __init__(self, attrs=None, date_format=None, time_format=None):
         widgets = (forms.TextInput(attrs=attrs), forms.TextInput(attrs=attrs))
         super(LatLongWidget, self).__init__(widgets, attrs)
@@ -36,18 +37,18 @@ class LatLongWidget(forms.MultiWidget):
 
 
 class GeoJSONFeatureCollectionWidget(forms.Textarea):
-    def format_value(self, geom):
+    def format_value(self, value):
         # Allow null values to pass through unmodified
-        if not geom:
+        if not value:
             return None
 
         # Convert the GEOSGeometry to GeoJSON
-        if geom.geom_type == "Point":
-            geojson_geometry = Point(geom.coords)
-        elif geom.geom_type == "LineString":
-            geojson_geometry = LineString(geom.coords)
-        elif geom.geom_type == "Polygon":
-            geojson_geometry = Polygon(geom.coords)
+        if value.geom_type == "Point":
+            geojson_geometry = Point(value.coords)
+        elif value.geom_type == "LineString":
+            geojson_geometry = LineString(value.coords)
+        elif value.geom_type == "Polygon":
+            geojson_geometry = Polygon(value.coords)
         else:
             raise ValueError("Unsupported geometry type")
 
