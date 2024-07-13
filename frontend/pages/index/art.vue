@@ -144,7 +144,7 @@
             class="search-empty-container"
           >
             <img src="@/assets/images/search_icon.svg" />
-            Filter result not found. Please try again.
+            Sorry, no results found. Please adjust your filters and try again.
           </b-row>
         </section>
       </template>
