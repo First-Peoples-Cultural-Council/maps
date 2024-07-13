@@ -164,6 +164,10 @@ export default {
       this.$router.push({
         path
       })
+
+      if (this.$route.name === 'index-art') {
+        this.$store.commit('arts/setFilter', 'artwork')
+      }
     },
 
     toggleFold(e) {

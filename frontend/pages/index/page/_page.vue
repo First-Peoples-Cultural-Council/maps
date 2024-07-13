@@ -2,7 +2,7 @@
   <div v-if="content">
     <div class="nav-header cursor-pointer p-2" @click.prevent="handleNavLink">
       <img
-        src="../../../assets/images/symbol@2x.png"
+        src="@/assets/images/symbol@2x.png"
         alt="Language Map Of British Columbia"
         height="auto"
         width="50"

@@ -87,14 +87,14 @@ export default {
       if (this.mode === 'arts') {
         const mode = this.filterMode
         if (mode === 'artwork') {
-          return `Filter based of name, medium, and description...`
+          return `Search for artist name, or medium...`
         } else {
-          return `Filter based on ${
+          return `Search for ${
             mode === 'public_art' ? 'public art' : mode
           }'s name...`
         }
       } else {
-        return 'Filter based on Grants name...'
+        return 'Search for grants name...'
       }
     }
   }
