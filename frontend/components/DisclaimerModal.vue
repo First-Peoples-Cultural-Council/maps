@@ -3,7 +3,7 @@
     <div class="information-modal">
       <div class="information-modal-header">
         <img
-          src="../assets/images/symbol@2x.png"
+          src="@/assets/images/symbol@2x.png"
           alt="Language Map Of British Columbia"
           height="auto"
           width="50"

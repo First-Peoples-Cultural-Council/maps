@@ -95,8 +95,11 @@
               </b-row>
             </div>
           </section>
-          <section v-if="mode !== 'lang'" class="community-section pl-3 pr-3">
-            <h5 class="language-family mt-2 ">Communities</h5>
+          <section
+            v-if="mode !== 'lang' && paginatedCommunities.length"
+            class="community-section pl-3 pr-3"
+          >
+            <h5 class="language-family-header mt-2 ">Communities</h5>
             <b-row>
               <b-col
                 v-for="community in paginatedCommunities"
@@ -1826,7 +1829,7 @@ export default {
   margin-bottom: 0.5rem;
 }
 .detailModeContainer {
-  padding-left: 500px !important;
+  padding-left: 425px !important;
 }
 .markerCluster {
   opacity: 0.5;
@@ -2059,7 +2062,7 @@ export default {
 }
 
 .sb-detail {
-  width: 500px;
+  width: 425px;
 }
 
 .content-mobile > div {

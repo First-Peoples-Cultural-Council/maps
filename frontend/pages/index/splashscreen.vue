@@ -5,12 +5,12 @@
         <div class="header-logo" @click="redirectToHome">
           <img
             class="fpcc-logo"
-            src="../../assets/images/symbol@2x.png"
+            src="@/assets/images/symbol@2x.png"
             alt="Language Map Of British Columbia"
           />
           <img
             class="fpcc-logo-text hide-mobile"
-            src="../../assets/images/splashscreen/fpcc_logo2x.png"
+            src="@/assets/images/splashscreen/fpcc_logo2x.png"
             alt="Language Map Of British Columbia"
           />
           <!-- <span class="mt-3 hide-mobile">
@@ -20,7 +20,7 @@
         </div>
 
         <img
-          src="../../assets/images/splashscreen/stars_dark.svg"
+          src="@/assets/images/splashscreen/stars_dark.svg"
           alt="Language Map Of British Columbia"
           class="fpcc-star-dark"
         />
@@ -30,7 +30,7 @@
           <div class="splash-detail">
             <span class="fpcc-title">First Peoples' Map of B.C.</span>
             <img
-              src="../../assets/images/splashscreen/zigzag.svg"
+              src="@/assets/images/splashscreen/zigzag.svg"
               alt="Language Map Of British Columbia"
               class="mt-4 mb-4"
             />
@@ -40,7 +40,7 @@
             </span>
           </div>
           <img
-            src="../../assets/images/splashscreen/hero_img.svg"
+            src="@/assets/images/splashscreen/hero_img.svg"
             alt="Language Map Of British Columbia"
             class="fpcc-splash-img"
           />
@@ -48,7 +48,7 @@
 
         <div class="splash-nav">
           <img
-            src="../../assets/images/splashscreen/stars_light.svg"
+            src="@/assets/images/splashscreen/stars_light.svg"
             alt="Language Map Of British Columbia"
             class="fpcc-star-light"
           />
