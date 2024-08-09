@@ -26,7 +26,7 @@ from web.constants import (
     POI,
 )
 from web.models import BaseModel, CulturalModel
-from web.utils import get_art_link, get_comm_link, get_place_link
+from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
 from users.models import User
 
 
@@ -188,7 +188,9 @@ class CommunityMember(models.Model):
 
     class Meta:
         unique_together = ("user", "community")
+        verbose_name_plural = "Community Members"
 
+    @staticmethod
     def create_member(user_id, community_id):
         member = CommunityMember()
         member.user = User.objects.get(pk=user_id)
@@ -198,31 +200,28 @@ class CommunityMember(models.Model):
 
         return member
 
+    @staticmethod
     def member_exists(user_id, community_id):
         member = CommunityMember.objects.filter(user__id=user_id).filter(
             community__id=community_id
         )
-        if member:
-            return True
-        else:
-            return False
+        return member.exists()
 
-    def verify_member(id, admin):
-        member = CommunityMember.objects.get(pk=int(id))
+    @staticmethod
+    def verify_member(user_id, admin):
+        member = CommunityMember.objects.get(pk=int(user_id))
         member.status = VERIFIED
         member.verified_by = admin.get_full_name()
         member.date_verified = timezone.now()
         member.save()
 
-    def reject_member(id, admin):
-        member = CommunityMember.objects.get(pk=int(id))
+    @staticmethod
+    def reject_member(user_id, admin):
+        member = CommunityMember.objects.get(pk=int(user_id))
         member.status = REJECTED
         member.verified_by = admin.get_full_name()
         member.date_verified = timezone.now()
         member.save()
-
-    class Meta:
-        verbose_name_plural = "Community Members"
 
 
 class PlaceName(CulturalModel):
@@ -379,16 +378,11 @@ class PlaceName(CulturalModel):
         self.notify_creator_about_status_change()
 
     def notify(self):
-        from web.utils import get_admin_email_list
 
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace("_", " ")
-        page = (
-            get_place_link(self)
-            if self.kind == "" or self.kind == "poi"
-            else get_art_link(self)
-        )
+        page = get_place_link(self) if self.kind in ["", "poi"] else get_art_link(self)
 
         message = """
             <h3>Greetings from First People's Cultural Council!</h3>
@@ -509,8 +503,6 @@ class Media(BaseModel):
         self.notify_creator_about_status_change()
 
     def notify(self):
-        from web.utils import get_admin_email_list
-
         admin_list = get_admin_email_list()
 
         if self.placename:
@@ -569,19 +561,15 @@ class Favourite(BaseModel):
     point = models.PointField(null=True, default=None)
     zoom = models.IntegerField(default=0)
 
+    @staticmethod
     def favourite_place_already_exists(user_id, place_id):
         favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)
-        if favourite:
-            return True
-        else:
-            return False
+        return favourite.exists()
 
+    @staticmethod
     def favourite_media_already_exists(user_id, media_id):
         favourite = Favourite.objects.filter(user__id=user_id).filter(media_id=media_id)
-        if favourite:
-            return True
-        else:
-            return False
+        return favourite.exists()
 
 
 class Notification(BaseModel):
@@ -705,6 +693,7 @@ def _get_claim_url(email):
     return f"{host}/claim?email={email}&key={key}"
 
 
+# pylint: disable=unused-argument
 def placename_post_save(sender, instance, created, **kwargs):
     placename = instance
 
@@ -712,6 +701,7 @@ def placename_post_save(sender, instance, created, **kwargs):
         placename.notify()
 
 
+# pylint: disable=unused-argument
 def media_post_save(sender, instance, created, **kwargs):
     media = instance
 
