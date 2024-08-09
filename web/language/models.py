@@ -9,10 +9,24 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
-
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+    STATUS_DISPLAY,
+    ROLE_ADMIN,
+    ROLE_MEMBER,
+    PUBLIC_ART,
+    ORGANIZATION,
+    ARTIST,
+    EVENT,
+    RESOURCE,
+    GRANT,
+    POI,
+)
 from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link
-from web.constants import *
 from users.models import User
 
 
@@ -307,6 +321,7 @@ class PlaceName(CulturalModel):
 
         return _get_claim_url(email.value)
 
+    # pylint: disable=line-too-long
     def notify_creator_about_status_change(self):
         # UNVERIFIED means newly created
         if self.status == UNVERIFIED:
@@ -435,6 +450,7 @@ class Media(BaseModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
+    # pylint: disable=line-too-long
     def notify_creator_about_status_change(self):
         # UNVERIFIED means newly created
         if self.status == UNVERIFIED:
@@ -615,7 +631,8 @@ class Taxonomy(models.Model):
         default=None,
         null=True,
         blank=True,
-        help_text="Value that determines the ordering of taxonomy. The lower the value is, the higher it is on the list",
+        help_text="Value that determines the ordering of taxonomy."
+        "The lower the value is, the higher it is on the list.",
     )
     parent = models.ForeignKey(
         "self",

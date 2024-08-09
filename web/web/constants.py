@@ -1,11 +1,11 @@
 ERRORS = {
-    'NOT_AUTHORIZED': 'You are not authorized to perform this action.',
-    'NO_RECORDING': 'No Recording provided.',
-    'NO_COMMUNITY': 'No Community provided.',
-    'NO_COMMUNITY_MEMBER': 'No Community Member selected.',
-    'COMMUNITY_MEMBER_EXISTS': 'User is already a Community Member.',
-    'USER_NOT_FOUND': 'User does not exist.',
-    'LOGIN_REQUIRED': 'You need to be logged in to perform this action.'
+    "NOT_AUTHORIZED": "You are not authorized to perform this action.",
+    "NO_RECORDING": "No Recording provided.",
+    "NO_COMMUNITY": "No Community provided.",
+    "NO_COMMUNITY_MEMBER": "No Community Member selected.",
+    "COMMUNITY_MEMBER_EXISTS": "User is already a Community Member.",
+    "USER_NOT_FOUND": "User does not exist.",
+    "LOGIN_REQUIRED": "You need to be logged in to perform this action.",
 }
 
 # VERIFICATION STATUS
@@ -15,11 +15,7 @@ VERIFIED = "VE"
 REJECTED = "RE"
 
 # DISPLAY NAMES FOR VERIFICATION STATUS
-STATUS_DISPLAY = {
-    VERIFIED: 'Verified',
-    REJECTED: 'Rejected',
-    FLAGGED: 'Flagged'
-}
+STATUS_DISPLAY = {VERIFIED: "Verified", REJECTED: "Rejected", FLAGGED: "Flagged"}
 
 # ROLES
 ROLE_ADMIN = "RA"
