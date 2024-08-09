@@ -22,9 +22,10 @@ class UserManager(BaseUserManager):
         """
         if not email:
             raise ValueError(_("Users must have an email address"))
+
         if len(password) < 8:
-            raise ValidationError(
-                "Passwords must be at least 8 characters long")
+            raise ValidationError("Passwords must be at least 8 characters long")
+
         user = self.model(email=self.normalize_email(email))
         user.username = username
         user.set_password(password)
@@ -45,52 +46,59 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     objects = UserManager()
-    last_notified = models.DateTimeField(
-        auto_now_add=True
-    )
+    last_notified = models.DateTimeField(auto_now_add=True)
     picture = models.URLField(max_length=255, null=True)
     image = models.ImageField(null=True, blank=True, default=None)
     notification_frequency = models.IntegerField(default=7)
     artist_profile = models.ForeignKey(
-        "language.Placename", on_delete=models.SET_NULL, default=None, blank=True, null=True
+        "language.Placename",
+        on_delete=models.SET_NULL,
+        default=None,
+        blank=True,
+        null=True,
     )
     communities = models.ManyToManyField(
         "language.Community", through="language.CommunityMember"
     )
-    other_community = models.CharField(
-        max_length=64, default="", blank=True, null=True)
+    other_community = models.CharField(max_length=64, default="", blank=True, null=True)
 
     languages = models.ManyToManyField("language.Language")
-    non_bc_languages = ArrayField(models.CharField(
-        max_length=200), blank=True, null=True, default=None)
+    non_bc_languages = ArrayField(
+        models.CharField(max_length=200), blank=True, null=True, default=None
+    )
     bio = models.TextField(null=True, blank=True, default="")
 
     def __str__(self):
         return self.get_full_name()
-    
+
     @property
     def is_profile_complete(self):
-        has_language = self.languages.count() > 0 or len(self.non_bc_languages or []) > 0
+        has_language = (
+            self.languages.count() > 0 or len(self.non_bc_languages or []) > 0
+        )
         has_community = self.communities.count() > 0 or self.other_community
         return bool(has_language and has_community)
 
     def get_full_name(self):
         if self.first_name:
             return "{} {}".format(self.first_name, self.last_name).strip()
-        else:
-            return "Someone Anonymous"
-    
+        return "Someone Anonymous"
+
+    # pylint: disable=import-outside-toplevel
     def notify(self):
         from web.utils import get_admin_email_list
 
         admin_list = get_admin_email_list()
 
-        message = """
+        message = (
+            """
             <h3>Greetings from First People's Cultural Council!</h3>
             <p>A new user has registered on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
             <p>Email: %s</p>
             <p>Miigwech, and have a good day!</p>
-        """ % self.email
+        """
+            % self.email
+        )
 
         send_mail(
             subject="New First People's Map User",
@@ -116,11 +124,13 @@ class Administrator(models.Model):
         )
 
 
+# pylint: disable=unused-argument
 def user_post_save(sender, instance, created, **kwargs):
     user = instance
 
     if created:
         user.notify()
+
 
 # Add Hook to User Model (Django Signals)
 # For every User model update, trigger user_post_save function
