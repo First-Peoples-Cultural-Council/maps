@@ -6,6 +6,8 @@ from grants.models import Grant, GrantCategory
 
 
 class Command(BaseCommand):
+    help = "Load grants from an excel spreadsheet. Run migrate_manytomany_fields.py and geocode_grants.py after."
+
     def handle(self, *args, **options):
         load_grants_from_spreadsheet(options["file_name"], options["test"])
 

@@ -8,7 +8,8 @@ from grants.models import Grant
 
 
 class Command(BaseCommand):
-    help = "Load grants from old arts database."
+    help = "Add point to a grant based on the address."
+
     def add_arguments(self, parser):
         parser.add_argument("--starting_id", type=int)
         parser.add_argument("--GOOGLE_API_KEY", type=str)
