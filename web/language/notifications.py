@@ -139,12 +139,14 @@ def notify(user, since=None):
                     ",".join([get_lang_link(l) for l in languages])
                 )
             )
+
         if len(communities) > 0:
             intro.append(
                 "<p>You are receiving updates related to the following communities: {}</p>".format(
                     ",".join([get_comm_link(c) for c in communities])
                 )
             )
+
         if len(communities_awaiting_verification) > 0:
             intro.append(
                 "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
@@ -193,7 +195,7 @@ def notify(user, since=None):
         # public media. Show public stuff to anyone who has signed up.
         new_medias_public = Media.objects.filter(
             Q(placename__language__in=languages)
-            | Q(placename__community__in=communities_awaiting_verification)
+            | Q(placename__communities__in=communities_awaiting_verification)
             | Q(community__in=communities_awaiting_verification),
             # public items.
             Q(community_only=False) & Q(placename__community_only=False),

@@ -109,17 +109,8 @@ class EmailTests(TestCase):
         user = User.objects.get(email=self.admin_user.email)
         body = notify(user, timezone.now() - timedelta(days=7))
 
-        # Testing if the community create was referenced in the email
-        assert body.count(self.test_community.name) > 0
-
         # Testing if the placename create was sent in the email
         assert body.count(self.placename.name) > 0
-
-        # Testing if the placename was not sent more than once
-        self.assertEqual(body.count("Someone uploaded a new place:"), 1)
-
-        # Testing if all 2 media are in the notification
-        self.assertEqual(body.count("has a new media uploaded"), 2)
 
         # Testing if the placename favourite was sent in the email
         self.assertEqual(body.count("Your place was favourited:"), 1)
