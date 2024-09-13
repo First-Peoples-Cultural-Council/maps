@@ -63,7 +63,7 @@
             :speakers="language.fluent_speakers.toString() || 'NA'"
             :somewhat="language.some_speakers.toString() || 'NA'"
             :learners="language.learners.toString() || 'NA'"
-            class="mt-4"
+            class="mt-2"
           ></LanguageSummary>
         </section>
         <!-- <section>

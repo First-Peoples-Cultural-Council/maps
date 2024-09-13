@@ -220,12 +220,12 @@ export default {
 <style scoped>
 .arts-detail-card {
   cursor: pointer;
-  border-bottom: 3px solid #f9f9f9;
   display: flex;
   justify-content: flex-start;
-  width: 100%;
   border: 1px solid #ebe6dc;
-  padding: 1em 0 1em 1em;
+  border-bottom: 0;
+  width: 100%;
+  padding: 1em 0 0 1em;
   border-radius: 0.25em;
   position: relative;
 }

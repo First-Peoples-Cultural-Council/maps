@@ -97,8 +97,7 @@ export default {
   margin-bottom: 0.5em;
 }
 .card-badge span {
-  text-transform: uppercase;
-  font-weight: Bold;
+  font-weight: 800;
   font-size: 12px;
 }
 .card-badge span,
