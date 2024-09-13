@@ -148,11 +148,28 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend(config, { isDev, isClient }) {
+      // Add cache busting for static files in production
+      if (!isDev && isClient) {
+        config.module.rules.forEach(rule => {
+          if (rule.use) {
+            rule.use.forEach(use => {
+              if (use.loader === 'url-loader') {
+                use.options = {
+                  ...use.options,
+                  name: '[path][name].[ext]?[contenthash]'
+                }
+              }
+            })
+          }
+        })
+      }
+
+      // Add configuration for eslint-loader
       config.node = {
         fs: 'empty'
       }
-      if (ctx.dev && ctx.isClient) {
+      if (isDev && isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,

@@ -7,7 +7,7 @@ from language.models import Language, Community, PlaceName
 
 
 class Command(BaseCommand):
-    help = ""
+    help = "Map grants to their language, community, and placename."
 
     def handle(self, *args, **options):
         migrate_manytomany_fields(options["start_id"])

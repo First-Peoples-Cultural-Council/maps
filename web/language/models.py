@@ -9,7 +9,24 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
 from django.contrib.postgres.fields import ArrayField
-
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+    STATUS_DISPLAY,
+    ROLE_ADMIN,
+    ROLE_MEMBER,
+    PUBLIC_ART,
+    ORGANIZATION,
+    ARTIST,
+    EVENT,
+    RESOURCE,
+    GRANT,
+    POI,
+)
+from web.models import BaseModel, CulturalModel
+from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
 from users.models import User
 from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
@@ -187,6 +204,10 @@ class CommunityMember(models.Model):
     verified_by = models.CharField(max_length=255, default="", null=True, blank=True)
     date_verified = models.DateField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ("user", "community")
+        verbose_name_plural = "Community Members"
+
     @staticmethod
     def create_member(user_id, community_id):
         member = CommunityMember()
@@ -219,10 +240,6 @@ class CommunityMember(models.Model):
         member.verified_by = admin.get_full_name()
         member.date_verified = timezone.now()
         member.save()
-
-    class Meta:
-        unique_together = ("user", "community")
-        verbose_name_plural = "Community Members"
 
 
 class PlaceName(CulturalModel):
@@ -321,6 +338,7 @@ class PlaceName(CulturalModel):
 
         return _get_claim_url(email.value)
 
+    # pylint: disable=line-too-long
     def notify_creator_about_status_change(self):
         # UNVERIFIED means newly created
         if self.status == UNVERIFIED:
@@ -383,11 +401,7 @@ class PlaceName(CulturalModel):
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace("_", " ")
-
-        if self.kind in ["", "poi"]:
-            page = get_place_link(self)
-        else:
-            page = get_art_link(self)
+        page = get_place_link(self) if self.kind in ["", "poi"] else get_art_link(self)
 
         message = """
             <h3>Greetings from First People's Cultural Council!</h3>
@@ -449,6 +463,7 @@ class Media(BaseModel):
     )
     status_reason = models.TextField(default="", blank=True)
 
+    # pylint: disable=line-too-long
     def notify_creator_about_status_change(self):
         # UNVERIFIED means newly created
         if self.status == UNVERIFIED:
@@ -569,19 +584,13 @@ class Favourite(BaseModel):
 
     @staticmethod
     def favourite_place_already_exists(user_id, place_id):
-        return (
-            Favourite.objects.filter(user__id=user_id)
-            .filter(place_id=place_id)
-            .exists()
-        )
+        favourite = Favourite.objects.filter(user__id=user_id).filter(place_id=place_id)
+        return favourite.exists()
 
     @staticmethod
     def favourite_media_already_exists(user_id, media_id):
-        return (
-            Favourite.objects.filter(user__id=user_id)
-            .filter(media_id=media_id)
-            .exists()
-        )
+        favourite = Favourite.objects.filter(user__id=user_id).filter(media_id=media_id)
+        return favourite.exists()
 
 
 class Notification(BaseModel):
@@ -707,7 +716,7 @@ def _get_claim_url(email):
     return f"{host}/claim?email={email}&key={key}"
 
 
-# pylint:disable=unused-argument
+# pylint: disable=unused-argument
 def placename_post_save(sender, instance, created, **kwargs):
     placename = instance
 
@@ -715,7 +724,7 @@ def placename_post_save(sender, instance, created, **kwargs):
         placename.notify()
 
 
-# pylint:disable=unused-argument
+# pylint: disable=unused-argument
 def media_post_save(sender, instance, created, **kwargs):
     media = instance
 

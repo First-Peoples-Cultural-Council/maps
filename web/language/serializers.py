@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from django.db.models import Sum
 
-from .models import (
+from language.models import (
     Language,
     PlaceName,
     PublicArtArtist,
@@ -22,9 +21,9 @@ from .models import (
     CommunityLanguageStats,
     Taxonomy,
     PlaceNameTaxonomy,
-    RelatedData
+    RelatedData,
 )
-from users.serializers import PublicUserSerializer, UserSerializer
+from users.serializers import PublicUserSerializer
 from grants.serializers import GrantSerializer
 
 
@@ -53,7 +52,7 @@ class MediaLightSerializer(serializers.ModelSerializer):
             "placename",
             "community",
             "community_only",
-            "created"
+            "created",
         )
 
 
@@ -68,7 +67,7 @@ class PlaceNameLightSerializer(serializers.ModelSerializer):
             "communities",
             "community_only",
             "creator",
-            "taxonomies"
+            "taxonomies",
         )
 
 
@@ -100,14 +99,7 @@ class DialectSerializer(serializers.ModelSerializer):
 class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = (
-            "id",
-            "audio_file",
-            "speaker",
-            "recorder",
-            "created",
-            "date_recorded"
-        )
+        fields = ("id", "audio_file", "speaker", "recorder", "created", "date_recorded")
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -115,8 +107,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Language
-        fields = ("name", "id", "color", "bbox",
-                  "sleeping", "family", "other_names")
+        fields = ("name", "id", "color", "bbox", "sleeping", "family", "other_names")
 
 
 class LNASerializer(serializers.ModelSerializer):
@@ -200,29 +191,18 @@ class CommunityMemberSerializer(serializers.ModelSerializer):
 class RelatedPlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image"
-        )
+        fields = ("id", "name", "image")
 
 
 class PlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "kind",
-            "status",
-            "status_reason"
-        )
+        fields = ("id", "name", "kind", "status", "status_reason")
 
 
 class MediaSerializer(serializers.ModelSerializer):
     creator = PublicUserSerializer(read_only=True)
-    placename_obj = PlaceNameLightSerializer(
-        source="placename", read_only=True)
+    placename_obj = PlaceNameLightSerializer(source="placename", read_only=True)
 
     class Meta:
         model = Media
@@ -242,7 +222,7 @@ class MediaSerializer(serializers.ModelSerializer):
             "creator",
             "mime_type",
             "is_artwork",
-            "created"
+            "created",
         )
 
 
@@ -264,7 +244,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
             "favourite_type",
             "description",
             "point",
-            "zoom"
+            "zoom",
         )
 
 
@@ -275,34 +255,33 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ("id", "name", "user", "language",
-                  "community", "language_obj", "community_obj")
+        fields = (
+            "id",
+            "name",
+            "user",
+            "language",
+            "community",
+            "language_obj",
+            "community_obj",
+        )
 
 
 class FavouritePlaceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favourite
-        fields = (
-            "id",
-        )
+        fields = ("id",)
 
 
 class TaxonomySerializer(serializers.ModelSerializer):
     class Meta:
         model = Taxonomy
-        fields = (
-            'id',
-            'name',
-            'description',
-            'order',
-            'parent'
-        )
+        fields = ("id", "name", "description", "order", "parent")
 
 
 class RelatedDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelatedData
-        fields = '__all__'
+        fields = "__all__"
 
 
 # DETAIL SERIALIZERS
@@ -326,16 +305,18 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
 
     # Primary Key Related fields -> could be updated by passing a list of ids
     artists = serializers.PrimaryKeyRelatedField(
-        queryset=PlaceName.objects.filter(kind='artist'), many=True, required=False)
+        queryset=PlaceName.objects.filter(kind="artist"), many=True, required=False
+    )
     taxonomies = serializers.PrimaryKeyRelatedField(
-        queryset=Taxonomy.objects.all(), many=True, required=False)
+        queryset=Taxonomy.objects.all(), many=True, required=False
+    )
 
     def create(self, validated_data):
         # If related_data is included in the payload, pop it first
-        related_data = validated_data.pop('related_data', [])
-        artists = validated_data.pop('artists', [])
-        taxonomies = validated_data.pop('taxonomies', [])
-        communities = validated_data.pop('communities', [])
+        related_data = validated_data.pop("related_data", [])
+        artists = validated_data.pop("artists", [])
+        taxonomies = validated_data.pop("taxonomies", [])
+        communities = validated_data.pop("communities", [])
 
         # Save the PlaceName without a related_data
         placename = PlaceName.objects.create(**validated_data)
@@ -347,17 +328,11 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
 
         if artists:
             for artist in artists:
-                PublicArtArtist.objects.create(
-                    public_art=placename,
-                    artist=artist
-                )
+                PublicArtArtist.objects.create(public_art=placename, artist=artist)
 
         if taxonomies:
             for taxonomy in taxonomies:
-                PlaceNameTaxonomy.objects.create(
-                    placename=placename,
-                    taxonomy=taxonomy
-                )
+                PlaceNameTaxonomy.objects.create(placename=placename, taxonomy=taxonomy)
 
         if communities:
             placename.communities.set(communities)
@@ -366,11 +341,11 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # If the instance already has related_data, we must first delete them
-        if 'related_data' in validated_data:
+        if "related_data" in validated_data:
             RelatedData.objects.filter(placename__id=instance.id).delete()
 
         # If related_data is included in the payload, pop it first
-        related_data = validated_data.pop('related_data', [])
+        related_data = validated_data.pop("related_data", [])
 
         # Update all the other properties in the validated_data
         placename = super().update(instance, validated_data)
@@ -378,44 +353,45 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
         # Save all related data one by one if they were added in the payload
         if len(related_data) > 0:
             for data in related_data:
-                data['placename'] = placename
+                data["placename"] = placename
                 RelatedData.objects.create(**data)
 
         return placename
 
     def to_representation(self, instance):
         # Get original representation
-        representation = super(PlaceNameDetailSerializer,
-                               self).to_representation(instance)
+        representation = super(PlaceNameDetailSerializer, self).to_representation(
+            instance
+        )
 
         # Alter representation for taxonomies
         # From list of ids -> to list of Taxonomy dictionaries
         taxonomies_representation = []
-        taxonomies = representation.get('taxonomies')
+        taxonomies = representation.get("taxonomies")
         for taxonomy_id in taxonomies:
             curr_taxonomy = Taxonomy.objects.get(pk=taxonomy_id)
             serializer = TaxonomySerializer(curr_taxonomy)
             taxonomies_representation.append(serializer.data)
-        representation['taxonomies'] = taxonomies_representation
+        representation["taxonomies"] = taxonomies_representation
 
         # Alter representation for taxonomies
         # From list of ids -> to list of PlaceName dictionaries
         artists_representation = []
-        artists = representation.get('artists')
+        artists = representation.get("artists")
         for artist_id in artists:
             curr_artist = PlaceName.objects.get(pk=artist_id)
             serializer = RelatedPlaceNameSerializer(curr_artist)
             artists_representation.append(serializer.data)
-        representation['artists'] = artists_representation
+        representation["artists"] = artists_representation
 
         communities_representation = []
-        communities = representation.get('communities')
+        communities = representation.get("communities")
         if communities:
             for community in communities:
                 community_details = Community.objects.get(pk=community)
                 serializer = CommunitySerializer(community_details)
                 communities_representation.append(serializer.data)
-        representation['communities'] = communities_representation
+        representation["communities"] = communities_representation
 
         return representation
 
@@ -448,7 +424,7 @@ class PlaceNameDetailSerializer(serializers.ModelSerializer):
             "artists",
             "related_data",
             "created",
-            "grants"
+            "grants",
         )
         depth = 1
 
@@ -495,20 +471,18 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
     language_audio = RecordingSerializer(read_only=True)
     greeting_audio = RecordingSerializer(read_only=True)
 
-    def to_representation(self, value):
-        rep = super().to_representation(value)
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
         by_nation = {}
         # get most recent lna for each nation
-        for lnadata in LNAData.objects.filter(lna__language=value).select_related(
+        for lnadata in LNAData.objects.filter(lna__language=instance).select_related(
             "lna"
         ):
             if lnadata.community_id in by_nation:
                 if lnadata.lna.year > by_nation[lnadata.community_id]["lna"]["year"]:
-                    by_nation[lnadata.community_id] = LNADataSerializer(
-                        lnadata).data
+                    by_nation[lnadata.community_id] = LNADataSerializer(lnadata).data
             else:
-                by_nation[lnadata.community_id] = LNADataSerializer(
-                    lnadata).data
+                by_nation[lnadata.community_id] = LNADataSerializer(lnadata).data
         rep["lna_by_nation"] = by_nation
         return rep
 
@@ -546,7 +520,7 @@ class LanguageDetailSerializer(serializers.ModelSerializer):
             "avg_hrs_wk_languages_in_language_nests",
             "community_adult_language_classes",
             "fv_guid",
-            "grants"
+            "grants",
         )
 
 
@@ -582,13 +556,16 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     )
 
     # hide history lnas for now, just show most recent
-    def to_representation(self, value):
-        rep = super().to_representation(value)
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
         by_lang = {}
         lnas = []
         # get most recent lna for each nation
-        lnadatas = LNAData.objects.filter(
-            community=value).select_related("lna").order_by("-lna__year")
+        lnadatas = (
+            LNAData.objects.filter(community=instance)
+            .select_related("lna")
+            .order_by("-lna__year")
+        )
         for lnadata in lnadatas:
             if not lnadata.lna:
                 continue
@@ -599,8 +576,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             lna_serialized = LNADataSerializer(lnadata).data
             lna_name = lna_serialized["lna"]["name"]
             # print(lna_name)
-            lna_serialized['lna']['url'] = self.build_lna_external_url(
-                lna_name)
+            lna_serialized["lna"]["url"] = self.build_lna_external_url(lna_name)
             # print(lna_serialized['lna'])
 
             if lid in by_lang:
@@ -619,9 +595,9 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     def build_lna_external_url(self, lna_name):
         permalink = "https://maps.fpcc.ca/lna/"
         try:
-            lna_external_id = lna_name.split('-')[0].strip().replace("LNA", "")
+            lna_external_id = lna_name.split("-")[0].strip().replace("LNA", "")
             lna_link = permalink + lna_external_id
-        except:
+        except Exception as _:
             lna_link = permalink
         return lna_link
 
@@ -657,7 +633,7 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
             "population_off_reserve",
             "fv_guid",
             "fv_archive_link",
-            "grants"
+            "grants",
         )
 
 
@@ -679,7 +655,7 @@ class CommunityGeoSerializer(GeoFeatureModelSerializer):
 class PlaceNameGeoSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = PlaceName
-        fields = ("id", "name", "kind", "communities")
+        fields = ("id", "name", "kind", "communities", "language")
         geo_field = "geom"
 
 
@@ -694,7 +670,7 @@ class PlaceNameSearchSerializer(serializers.ModelSerializer):
             return ""
 
         return location.value.replace("\n", " ")
-        
+
     class Meta:
         model = PlaceName
         fields = ("id", "name", "location", "other_names", "kind", "artists")
@@ -720,13 +696,7 @@ class ArtPlaceNameSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "kind",
-            "image",
-            "taxonomies"
-        )
+        fields = ("id", "name", "kind", "image", "taxonomies")
         geo_field = "geom"
 
 
@@ -735,9 +705,7 @@ class EventArtSerializer(ArtPlaceNameSerializer):
 
     class Meta:
         model = PlaceName
-        fields = ArtPlaceNameSerializer.Meta.fields + (
-            "related_data",
-        )
+        fields = ArtPlaceNameSerializer.Meta.fields + ("related_data",)
         geo_field = "geom"
 
 
@@ -746,14 +714,7 @@ class ArtworkPlaceNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlaceName
-        fields = (
-            "id",
-            "name",
-            "image",
-            "kind",
-            "artists",
-            "geom"
-        )
+        fields = ("id", "name", "image", "kind", "artists", "geom")
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
@@ -761,17 +722,10 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Media
-        fields = (
-            "id",
-            "name",
-            "file_type",
-            "url",
-            "media_file",
-            "placename"
-        )
+        fields = ("id", "name", "file_type", "url", "media_file", "placename")
 
-    def to_representation(self, value):
-        representation = super().to_representation(value)
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
 
         updated_representation = {}
         updated_representation["id"] = representation["id"]
@@ -783,7 +737,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
             "file_type": representation["file_type"],
             "media_file": representation["media_file"],
             "url": representation["url"],
-            "placename": representation["placename"]
+            "placename": representation["placename"],
         }
 
         return updated_representation
