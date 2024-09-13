@@ -7,7 +7,7 @@ from grants.models import Grant
 
 
 class Command(BaseCommand):
-    help = "Load grants from old arts database."
+    help = "Add point to a grant based on the address."
 
     def add_arguments(self, parser):
         parser.add_argument("--starting_id", type=int)
@@ -39,13 +39,9 @@ def geocode_grants(starting_id, google_api_key):
 
         full_address_string = ", ".join(full_address).replace("#", "").replace("&", " ")
 
-        google_api_base_url = "https://maps.googleapis.com/maps/api/geocode/json/"
-        url = "{google_api_base_url}?address={address}&sensor=false&key={google_api_key}".format(
-            google_api_base_url=google_api_base_url,
-            address=full_address_string,
-            google_api_key=google_api_key,
+        r = requests.get(
+            f"https://maps.googleapis.com/maps/api/geocode/json?address={full_address_string}&sensor=false&key={google_api_key}"
         )
-        r = requests.get(url)
 
         data = r.json()
         response_status = data.get("status")
