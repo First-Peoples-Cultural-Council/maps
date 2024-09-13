@@ -446,7 +446,22 @@ export default {
       return this.$store.state.arts.artsSet
     },
     artsGeoSet() {
-      return this.$store.state.arts.artsGeoSet
+      const { features } = this.$store.state.arts.artsGeoSet
+
+      const artsWithColor = features.map(feature => {
+        const languageId = feature.properties.language
+        const language = this.languageSet.find(lang => lang.id === languageId)
+        const color = language ? language.color : null
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            color
+          }
+        }
+      })
+
+      return { ...this.$store.state.arts.artsGeoSet, features: artsWithColor }
     },
     artworkSet() {
       return this.$store.state.arts.artworkSet
@@ -1803,6 +1818,9 @@ export default {
   margin-bottom: 0.4em;
   box-shadow: 0px 3px 6px #00000022;
   border-radius: 3em;
+  font-weight: 800;
+  font-size: 12px;
+  color: #151515;
 }
 .sidebar-divider {
   margin-bottom: 0.5rem;

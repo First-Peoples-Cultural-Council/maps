@@ -118,6 +118,22 @@
         </nav>
       </div>
 
+      <div
+        v-if="$route.path !== '/page/how-to-use'"
+        class="navbar-icon-container cursor-pointer"
+      >
+        <nuxt-link class="text-dark cursor-pointer" to="/page/how-to-use">
+          <nav>
+            <img
+              src="@/assets/images/help-icon.png"
+              alt="Help"
+              width="35px"
+              height="35px"
+            />
+          </nav>
+        </nuxt-link>
+      </div>
+
       <div class="navbar-icon-container cursor-pointer" @click="openNav">
         <img
           src="@/assets/images/menu_icon.svg"
@@ -359,14 +375,13 @@ export default {
   background-color: white;
   z-index: 50;
   border: 1px solid #beb2a5;
-  padding: 0.6em;
+  padding: 0.85em;
   border-radius: 1.5em;
   margin-right: 0.5em;
   box-shadow: 0px 3px 6px #00000022;
   color: #151515;
   font-weight: 800;
-  font-size: 15px;
-  height: 47px;
+  font-size: 12px;
   position: relative;
 
   nav {
@@ -381,15 +396,14 @@ export default {
   }
 
   img {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 
   .user-icon-container {
     position: relative;
     display: flex;
     align-items: center;
-    height: 45px;
     letter-spacing: 1px;
 
     .user-display-img {
@@ -402,8 +416,8 @@ export default {
     }
 
     .user-icon {
-      width: 18px;
-      height: 18px;
+      width: 15px;
+      height: 15px;
     }
   }
 }
@@ -592,6 +606,7 @@ export default {
 
   .mobile-search-container {
     display: flex !important;
+    align-items: center;
   }
 
   .navbar-container {

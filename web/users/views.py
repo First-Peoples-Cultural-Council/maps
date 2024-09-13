@@ -52,11 +52,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
-        # TODO: Use authentication_classes and permission_classes instead
-        pk = self.kwargs.get("pk")
-
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(pk):
+            if request.user.is_authenticated and request.user.id == int(
+                kwargs.get("pk")
+            ):
                 return super().retrieve(request)
 
         return Response(
@@ -66,10 +65,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def partial_update(self, request, *args, **kwargs):
-        pk = self.kwargs.get("pk")
-
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(pk):
+            if request.user.is_authenticated and request.user.id == int(
+                kwargs.get("pk")
+            ):
                 return super().partial_update(request)
 
         return Response(
@@ -105,6 +104,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                 )
                 user.save()
                 is_new = True
+
             login(request, user)
             return Response(
                 {"success": True, "email": user.email, "id": user.id, "new": is_new}

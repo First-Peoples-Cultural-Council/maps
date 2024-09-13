@@ -2,6 +2,7 @@ import re
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from users.models import Administrator
 
 
 def format_fpcc(s):
@@ -40,6 +41,29 @@ def get_art_link(p):
     )
 
 
+def is_user_permitted(request, pk_to_compare):
+    """
+    Check if a user is permitted to perform an operation
+    """
+    if request and hasattr(request, "user"):
+        if request.user.is_authenticated and request.user.id == int(pk_to_compare):
+            return True
+
+    return False
+
+
+def is_user_community_admin(request, community):
+    community_admins = list(
+        Administrator.objects.filter(community=community).values_list("user", flat=True)
+    )
+
+    if request and hasattr(request, "user"):
+        if request.user.is_staff or request.user.id in community_admins:
+            return True
+
+    return False
+
+
 def get_admin_email_list():
     # Return Test Email if in DEBUG mode [TODO: Make configurable in the future]
     if settings.DEBUG:
@@ -47,8 +71,7 @@ def get_admin_email_list():
 
     # FPCC ADMINS that are registered in the site and are also assigned a superuser status
     registered_admins = list(
-        get_user_model()
-        .objects.filter(
+        get_user_model().objects.filter(
             is_superuser=True,
             email__isnull=False,
         )

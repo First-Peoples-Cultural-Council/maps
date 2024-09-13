@@ -44,7 +44,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: white;
-  padding: 0.6em;
+  padding: 0.5em;
   border-radius: 1.5em;
   z-index: 50;
   margin-right: 0.5em;
@@ -52,11 +52,11 @@ export default {
   border: 1px solid #beb2a5;
   color: #151515;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 12px;
 
   .menu-icon {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 
   .arts-container & {

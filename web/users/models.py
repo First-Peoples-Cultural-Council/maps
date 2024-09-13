@@ -9,8 +9,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.views.decorators.debug import sensitive_variables
 from django.utils.translation import ugettext_lazy as _
 
-from web.utils import get_admin_email_list
-
 
 class UserManager(BaseUserManager):
 
@@ -24,12 +22,15 @@ class UserManager(BaseUserManager):
         """
         if not email:
             raise ValueError(_("Users must have an email address"))
+
         if len(password) < 8:
             raise ValidationError("Passwords must be at least 8 characters long")
+
         user = self.model(email=self.normalize_email(email))
         user.username = username
         user.set_password(password)
         user.save(using=self._db)
+
         return user
 
     @sensitive_variables("password")
@@ -82,9 +83,12 @@ class User(AbstractUser):
     def get_full_name(self):
         if self.first_name:
             return "{} {}".format(self.first_name, self.last_name).strip()
-        return "Anonymous"
+        return "Someone Anonymous"
 
+    # pylint: disable=import-outside-toplevel
     def notify(self):
+        from web.utils import get_admin_email_list
+
         admin_list = get_admin_email_list()
 
         message = f"""
@@ -119,7 +123,7 @@ class Administrator(models.Model):
         )
 
 
-# pylint:disable=unused-argument
+# pylint: disable=unused-argument
 def user_post_save(sender, instance, created, **kwargs):
     user = instance
 

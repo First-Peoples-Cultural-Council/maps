@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.gis.db import models as geomodels
 
-from .models import (
+from language.models import (
     Language,
     LanguageLink,
     LanguageFamily,
@@ -23,7 +23,7 @@ from .models import (
     PlaceNameTaxonomy,
     RelatedData,
 )
-from .widgets import LatLongWidget, GeoJSONFeatureCollectionWidget
+from language.widgets import LatLongWidget, GeoJSONFeatureCollectionWidget
 
 
 # INLINES

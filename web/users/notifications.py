@@ -22,7 +22,7 @@ def _format_fpcc(s):
     return s
 
 
-# pylint:disable=line-too-long
+# pylint: disable=line-too-long
 def send_claim_profile_invite(email):
     """
     Send claim profile invitation through email.
@@ -138,5 +138,5 @@ def send_claim_profile_invites(email=None):
             .values_list("value", flat=True)
         )
 
-    for email_address in emails:
-        send_claim_profile_invite(email_address)
+    for current_email in emails:
+        send_claim_profile_invite(current_email)

@@ -362,7 +362,7 @@ export default {
   margin: 0;
   padding: 0.5em 2em;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 12px;
   color: #ffffff;
   text-transform: uppercase;
   animation: shadowpulse 5s ease infinite;
