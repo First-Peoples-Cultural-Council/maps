@@ -41,6 +41,10 @@
               :status="place.status"
             ></PlacesDetailCard>
           </div>
+
+          <hr class="sidebar-divider" />
+          <Filters class="mb-4"></Filters>
+
           <section class="mt-3 ml-4 mr-4 ">
             <div class="mb-2">
               <b-row>
@@ -168,8 +172,7 @@
               </h5>
             </div>
           </section>
-          <hr class="sidebar-divider" />
-          <Filters class="mb-4"></Filters>
+
           <section class="m-1 ml-4 mr-4">
             <div v-if="isLoggedIn">
               <UploadTool :id="place.id" type="placename"></UploadTool>

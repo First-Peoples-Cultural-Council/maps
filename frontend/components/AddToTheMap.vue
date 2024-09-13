@@ -28,6 +28,28 @@
             an existing place, and edit from there
           </div>
         </b-list-group-item>-->
+
+        <b-list-group-item button @click="validateArtist($event)">
+          <div class="d-flex">
+            <div class="d-flex align-items-center pr-3">
+              <img
+                class="point-btn"
+                src="@/assets/images/artwork_icon.svg"
+                alt="Add a line"
+              />
+            </div>
+
+            <div>
+              <div class="contribute-list-group-title font-weight-bold">
+                Upload Your Artwork (I'm an Artist)
+              </div>
+              This options lets you upload an Artwork under your Artist profile.
+              If you haven't created an Artist profile, you will be redirected
+              to Artist creation.
+            </div>
+          </div></b-list-group-item
+        >
+
         <b-list-group-item
           button
           @click="handlePlaceClick($event, 'placename', 'Artist')"
@@ -72,25 +94,6 @@
           </div></b-list-group-item
         >
 
-        <b-list-group-item button @click="handleClick($event, 'point')">
-          <div class="d-flex">
-            <div class="d-flex align-items-center pr-3">
-              <img
-                class="point-btn"
-                src="@/assets/images/add_point_icon_big.svg"
-                alt="Add a point"
-              />
-            </div>
-
-            <div>
-              <div class="contribute-list-group-title font-weight-bold">
-                Add a point
-              </div>
-              This option triggers drawing mode, where you will be able to
-              select a specific point to contribute
-            </div>
-          </div></b-list-group-item
-        >
         <b-list-group-item
           button
           @click="handlePlaceClick($event, 'placename', 'Event')"
@@ -134,26 +137,26 @@
           </div></b-list-group-item
         >
 
-        <b-list-group-item button @click="validateArtist($event)">
+        <b-list-group-item button @click="handleClick($event, 'point')">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
               <img
                 class="point-btn"
-                src="@/assets/images/artwork_icon.svg"
-                alt="Add a line"
+                src="@/assets/images/add_point_icon_big.svg"
+                alt="Add a point"
               />
             </div>
 
             <div>
               <div class="contribute-list-group-title font-weight-bold">
-                Upload Your Artwork (I'm an Artist)
+                Add a point
               </div>
-              This options lets you upload an Artwork under your Artist profile.
-              If you haven't created an Artist profile, you will be redirected
-              to Artist creation.
+              This option triggers drawing mode, where you will be able to
+              select a specific point to contribute
             </div>
           </div></b-list-group-item
         >
+
         <b-list-group-item button @click="handleClick($event, 'polygon')">
           <div class="d-flex">
             <div class="d-flex align-items-center pr-3">
