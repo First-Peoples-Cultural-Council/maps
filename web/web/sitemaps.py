@@ -1,5 +1,7 @@
 from django.contrib.sitemaps import Sitemap
+
 from language.models import Language, Community, PlaceName
+
 
 class BaseSitemap(Sitemap):
     changefreq = "never"
@@ -10,40 +12,41 @@ class BaseSitemap(Sitemap):
 
     def format_name(self, name):
         name = name.lower()
-        name = name.replace('\\', r'')
-        name = name.replace('/', r'')
-        name = name.replace('>', r'')
-        name = name.replace('<', r'')
-        name = name.replace('?', r'')
-        name = name.replace(')', r'')
-        name = name.replace('()', r'')
-        name = name.replace('~', r'')
-        name = name.replace('!', r'')
-        name = name.replace('@', r'')
-        name = name.replace('#', r'')
-        name = name.replace('$', r'')
-        name = name.replace('%', r'')
-        name = name.replace('^', r'')
-        name = name.replace('&', r'')
-        name = name.replace('*', r'')
-        name = name.replace('=', r'')
-        name = name.replace('+', r'')
-        name = name.replace(']', r'')
-        name = name.replace('[', r'')
-        name = name.replace('{', r'')
-        name = name.replace('}', r'')
-        name = name.replace('|', r'')
-        name = name.replace(';', r'')
-        name = name.replace(':', r'')
-        name = name.replace('_', r'')
-        name = name.replace('.', r'')
-        name = name.replace(',', r'')
-        name = name.replace('`', r'')
-        name = name.replace('\'', r'')
-        name = name.replace('  ', r'-')
-        name = name.replace(' ', r'-')
+        name = name.replace("\\", r"")
+        name = name.replace("/", r"")
+        name = name.replace(">", r"")
+        name = name.replace("<", r"")
+        name = name.replace("?", r"")
+        name = name.replace(")", r"")
+        name = name.replace("()", r"")
+        name = name.replace("~", r"")
+        name = name.replace("!", r"")
+        name = name.replace("@", r"")
+        name = name.replace("#", r"")
+        name = name.replace("$", r"")
+        name = name.replace("%", r"")
+        name = name.replace("^", r"")
+        name = name.replace("&", r"")
+        name = name.replace("*", r"")
+        name = name.replace("=", r"")
+        name = name.replace("+", r"")
+        name = name.replace("]", r"")
+        name = name.replace("[", r"")
+        name = name.replace("{", r"")
+        name = name.replace("}", r"")
+        name = name.replace("|", r"")
+        name = name.replace(";", r"")
+        name = name.replace(":", r"")
+        name = name.replace("_", r"")
+        name = name.replace(".", r"")
+        name = name.replace(",", r"")
+        name = name.replace("`", r"")
+        name = name.replace("'", r"")
+        name = name.replace("  ", r"-")
+        name = name.replace(" ", r"-")
 
         return name
+
 
 class LanguageSitemap(BaseSitemap):
     changefreq = "never"
@@ -52,8 +55,8 @@ class LanguageSitemap(BaseSitemap):
     def items(self):
         return Language.objects.all()
 
-    def location(self,obj):
-        return '/languages/' + self.format_name(obj.name)
+    def location(self, obj):
+        return "/languages/" + self.format_name(obj.name)
 
 
 class CommunitySitemap(BaseSitemap):
@@ -63,8 +66,8 @@ class CommunitySitemap(BaseSitemap):
     def items(self):
         return Community.objects.all()
 
-    def location(self,obj):
-        return '/content/' + self.format_name(obj.name)
+    def location(self, obj):
+        return "/content/" + self.format_name(obj.name)
 
 
 class PlaceNameSitemap(BaseSitemap):
@@ -74,5 +77,5 @@ class PlaceNameSitemap(BaseSitemap):
     def items(self):
         return PlaceName.objects.all()
 
-    def location(self,obj):
-        return '/place-names/' + self.format_name(obj.name)
+    def location(self, obj):
+        return "/place-names/" + self.format_name(obj.name)

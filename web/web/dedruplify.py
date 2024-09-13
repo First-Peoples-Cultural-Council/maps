@@ -1,0 +1,217 @@
+import os
+import json
+from decimal import Decimal
+from datetime import datetime
+import pymysql
+
+from django.contrib.gis.geos import Point
+
+
+class DeDruplifierClient:
+
+    def __init__(self, host, user, pw, db, file_site=None, tax_terms=None):
+        self.db_name = db
+        self.db = pymysql.connect(
+            host, user, pw, db, cursorclass=pymysql.cursors.DictCursor
+        )
+        self.file_site = file_site
+        self.tax_terms = tax_terms
+
+    def query(self, sql):
+        with self.db.cursor() as cursor:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+        return results
+
+    def map_drupal_items(self, drupal_table, LocalTable, mapping=None):
+        items = []
+
+        if not mapping:
+            mapping = {}
+
+        with open("tmp/%s.json" % drupal_table, encoding="utf-8") as file:
+            drupal_data = json.load(file)
+
+            for _, rec in drupal_data.items():
+                # print(rec)
+                try:
+                    item = LocalTable.objects.get(name=rec["title"])
+                except LocalTable.DoesNotExist:
+                    item = LocalTable(name=rec["title"])
+                for k, v in mapping.items():
+                    if k in rec:  # missing from data.
+                        if k.endswith("target_id"):
+
+                            FKTable = getattr(LocalTable, v).field.related_model
+                            try:
+                                obj = FKTable.objects.get(name=rec[k + "_title"][0])
+                                print("setting", FKTable, v, "to", obj)
+                                setattr(item, v, obj)
+                            except FKTable.DoesNotExist:
+                                print(k, "with pk", rec[k + "_title"], "does not exist")
+                            except KeyError:
+                                print("WARN:", rec, "has no", k + "_title")
+                        elif k.endswith("_lat"):
+                            pt = Point(rec[k[:-4] + "_lon"][0], rec[k][0])
+                            setattr(item, v, pt)
+                        else:
+                            if len(rec[k]) > 1:
+                                print(v, "has", len(rec[k]))
+                                setattr(item, v, ",".join(rec[k]))
+                            else:
+                                setattr(item, v, rec[k][0])
+                    else:
+                        print("has no", k)
+                item.save()
+                items.append((rec, item))
+                print("saved", item)
+        return items
+
+    def map_taxonomy(self):
+        """
+        Schema is:
+            CREATE TABLE `taxonomy_index` (
+                `nid` int(10) unsigned NOT NULL DEFAULT '0',
+                `tid` int(10) unsigned NOT NULL DEFAULT '0',
+                `sticky` tinyint(4) DEFAULT '0',
+                `created` int(11) NOT NULL DEFAULT '0'
+            )
+
+            CREATE TABLE `taxonomy_term_data` (
+                `tid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `vid` int(10) unsigned NOT NULL DEFAULT '0',
+                `name` varchar(255) NOT NULL DEFAULT '',
+                `description` longtext,
+                `weight` int(11) NOT NULL DEFAULT '0' COMMENT 'The weight of this term in relation to other terms.',
+                `format` varchar(255) DEFAULT NULL COMMENT 'The filter_format.format of the description.',
+                `uuid` char(36) NOT NULL DEFAULT '' COMMENT 'The Universally Unique Identifier.',
+                PRIMARY KEY (`tid`),
+                KEY `vid_name` (`vid`,`name`),
+                KEY `name` (`name`),
+                KEY `taxonomy_tree` (`vid`,`weight`,`name`),
+                KEY `uuid` (`uuid`)
+            ) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8;
+            /*!40101 SET character_set_client = @saved_cs_client */;
+        """
+        self.tax_terms = self.query("select * from taxonomy_term_data;")
+        self.query("select * from taxonomy_index;")
+
+    def update(self):
+        """
+        DeDruplify - remove the Drupal node schema with foreign fields and save flat JSON
+        """
+
+        os.makedirs("tmp/files", exist_ok=True)
+
+        nodes = self.query("select * from node;")
+        _nodes = {}
+        _by_id = {}
+        for node in nodes:
+            # "nid": 273, "vid": 330, "type": "tm_language", "language": "und", "title": "Wakashan", "uid": 1,
+            # "status": 1, "created": 1372273871, "changed": 1372273871, "comment": 0, "promote": 0, "sticky": 0,
+            # "tnid": 0, "translate": 0, "uuid"
+            new_node = {"type": node["type"], "title": node["title"]}
+
+            # Store Taxonomies
+            taxonomy_list = []
+            for row in self.query(
+                """
+                SELECT
+                    taxonomy_term_data.name,
+                    taxonomy_index.nid
+                FROM
+                    taxonomy_index
+                    JOIN taxonomy_term_data ON taxonomy_term_data.tid = taxonomy_index.tid
+                WHERE
+                    taxonomy_index.nid={};
+                """.format(
+                    node["nid"]
+                )
+            ):
+                taxonomy_list.append(row["name"])
+
+            if len(taxonomy_list) > 0:
+                new_node["taxonomy_list"] = taxonomy_list
+
+            if node["type"] not in _nodes:
+                _nodes[node["type"]] = {}
+            _nodes[node["type"]][node["nid"]] = new_node
+            _by_id[node["nid"]] = new_node
+        for k, v in _nodes.items():
+            print("type:", k, len(v))
+        tables = [
+            r["Tables_in_{}".format(self.db_name)]
+            for r in self.query("show tables;")[:]
+        ]
+
+        _files = {}
+        # download files.
+        if self.file_site:
+            for row in self.query("select * from file_managed"):
+                print(row)
+                uri = row["uri"].replace("public://", "")
+                _files[row["fid"]] = uri
+                output_filename = os.path.join("tmp/files", uri)
+                output_dir = os.path.dirname(output_filename)
+                os.makedirs(output_dir, exist_ok=True)
+                cmd = "wget {}/{} -P {}".format(self.file_site, uri, output_dir)
+                print(cmd)
+                if not os.path.exists(output_filename):
+                    os.system(cmd)
+            # download from https://maps.fpcc.ca/sites/default/files/<path>
+
+        # flatten these dynamic fields into nice object lists.
+        # man, what were we thinking in the late 90s...
+        for table in tables:
+            if table.startswith("field_data_"):
+                print(table, "being loaded.")
+                for row in self.query("select * from %s" % table):
+                    if row["entity_type"] != "node":
+                        continue
+
+                    for k, v in row.items():
+                        if (
+                            k.startswith("field_")
+                            or "value" in k
+                            and not k.endswith("_format")
+                        ):
+                            if isinstance(v, bytes):
+                                continue
+
+                            if isinstance(v, Decimal):
+                                v = float(v)
+                            elif isinstance(v, datetime):
+                                v = v.isoformat()
+
+                            target = _nodes[row["bundle"]][row["entity_id"]]
+                            if k not in target:
+                                target[k] = []
+                            if v not in target[k]:  # add unique values to the list
+                                target[k].append(v)
+
+        # remap foreign keys using natural values (node titles)
+        for _, rec in _by_id.items():
+            tmp = {}
+            tmp.update(rec)
+            for k, v in tmp.items():
+
+                # files
+                if k.endswith("_fid") and self.file_site:
+                    print(k, rec[k])
+                    newval = [_files[v[0]]]
+                    rec[k + "_filename"] = newval
+                # other fields
+                if k.endswith("target_id"):
+                    rec[k + "_title"] = []
+                    rec[k + "_type"] = []
+                    for item in v:
+                        if item in _by_id:
+                            rec[k + "_title"].append(_by_id[item]["title"])
+                            rec[k + "_type"].append(_by_id[item]["type"])
+                        else:
+                            rec[k + "_title"].append(None)
+                            rec[k + "_type"].append(None)
+
+        for typ, data in _nodes.items():
+            with open("tmp/{}.json".format(typ), "w", encoding="utf-8") as file:
+                json.dump(data, file, indent=4, sort_keys=True)

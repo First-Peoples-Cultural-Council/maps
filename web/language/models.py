@@ -28,6 +28,24 @@ from web.constants import (
 from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
 from users.models import User
+from web.models import BaseModel, CulturalModel
+from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
+from web.constants import (
+    FLAGGED,
+    UNVERIFIED,
+    VERIFIED,
+    REJECTED,
+    STATUS_DISPLAY,
+    ROLE_ADMIN,
+    ROLE_MEMBER,
+    PUBLIC_ART,
+    ORGANIZATION,
+    ARTIST,
+    EVENT,
+    RESOURCE,
+    GRANT,
+    POI,
+)
 
 
 class LanguageFamily(BaseModel):
@@ -197,15 +215,15 @@ class CommunityMember(models.Model):
         member.community = Community.objects.get(pk=community_id)
         member.status = UNVERIFIED
         member.save()
-
         return member
 
     @staticmethod
     def member_exists(user_id, community_id):
-        member = CommunityMember.objects.filter(user__id=user_id).filter(
-            community__id=community_id
+        return (
+            CommunityMember.objects.filter(user__id=user_id)
+            .filter(community__id=community_id)
+            .exists()
         )
-        return member.exists()
 
     @staticmethod
     def verify_member(user_id, admin):
@@ -348,7 +366,9 @@ class PlaceName(CulturalModel):
 
         if self.status in [REJECTED, FLAGGED]:
             message += "<p>Reason: {}</p>".format(self.status_reason)
-            message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+            message += """
+                <p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>
+            """
 
         send_mail(
             subject,
@@ -378,7 +398,6 @@ class PlaceName(CulturalModel):
         self.notify_creator_about_status_change()
 
     def notify(self):
-
         admin_list = get_admin_email_list()
 
         formatted_kind = self.kind.upper().replace("_", " ")
@@ -473,7 +492,9 @@ class Media(BaseModel):
 
         if self.status in [REJECTED, FLAGGED]:
             message += "<p>Reason: {}</p>".format(self.status_reason)
-            message += "<p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>"
+            message += """
+                <p>Please apply the suggested changes and try to submit your contribution for evaluation again.</p>
+            """
 
         send_mail(
             subject,
@@ -619,8 +640,10 @@ class Taxonomy(models.Model):
         default=None,
         null=True,
         blank=True,
-        help_text="Value that determines the ordering of taxonomy."
-        "The lower the value is, the higher it is on the list.",
+        help_text=(
+            "Value that determines the ordering of taxonomy."
+            "The lower the value is, the higher it is on the list"
+        ),
     )
     parent = models.ForeignKey(
         "self",

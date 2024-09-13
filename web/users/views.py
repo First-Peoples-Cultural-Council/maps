@@ -115,18 +115,18 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def auth(self, request):
-        if request.user.is_authenticated:
-            return Response(
-                {
-                    "is_authenticated": True,
-                    "user": UserSerializer(request.user).data,
-                    "administration_list": Administrator.objects.filter(
-                        user=request.user
-                    ).count(),
-                }
-            )
+        if not request.user.is_authenticated:
+            return Response({"is_authenticated": False})
 
-        return Response({"is_authenticated": False})
+        return Response(
+            {
+                "is_authenticated": True,
+                "user": UserSerializer(request.user).data,
+                "administration_list": Administrator.objects.filter(
+                    user=request.user
+                ).count(),
+            }
+        )
 
     @action(detail=False)
     def logout(self, request):

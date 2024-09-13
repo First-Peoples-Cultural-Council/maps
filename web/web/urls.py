@@ -27,7 +27,7 @@ router.register(r"api/page", PageViewSet, basename="page")
 # pylint: disable=pointless-statement,undefined-variable
 def crash(request):
     """
-    This is for checking error handling is working.
+    This is meant to invoke a variable that's undefined to check if error handling is working.
     """
     throw
 

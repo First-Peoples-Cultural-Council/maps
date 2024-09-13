@@ -25,14 +25,14 @@ def _format_fpcc(s):
 # pylint: disable=line-too-long
 def send_claim_profile_invite(email):
     """
-    Triggers Mail Sending
-
-    email data refers to RelatedData with data_type = 'email'
+    Send claim profile invitation through email.
     """
+
     salt = os.environ["INVITE_SALT"].encode("utf-8")
     encoded_email = email.encode("utf-8")
     key = hashlib.sha256(salt + encoded_email).hexdigest()
 
+    # email data refers to RelatedData with data_type = 'email'
     email_data = RelatedData.objects.exclude(
         (Q(value="") | Q(placename__kind__in=["resource", "grant"]))
     ).filter(

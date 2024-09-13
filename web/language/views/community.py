@@ -25,7 +25,7 @@ from language.serializers import (
     CommunitySearchSerializer,
 )
 from web.permissions import IsAdminOrReadOnly
-from web.utils import is_user_community_admin
+from web.permissions import is_user_community_admin
 from web.constants import UNVERIFIED, VERIFIED, REJECTED
 
 

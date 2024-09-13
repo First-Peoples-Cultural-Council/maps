@@ -9,6 +9,7 @@ from django.contrib.gis.geos import (
 from geojson import Feature, FeatureCollection, Point, LineString, Polygon
 
 
+# pylint:disable=unused-argument
 class LatLongWidget(forms.MultiWidget):
     """
     A Widget that splits Point input into latitude/longitude text inputs.

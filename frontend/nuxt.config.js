@@ -13,6 +13,8 @@ module.exports = {
     COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
     COGNITO_URL: process.env.COGNITO_URL,
     COGNITO_HOST: process.env.COGNITO_HOST,
+    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+    MAPBOX_STYLE_URL: process.env.MAPBOX_STYLE_URL,
     HOST: process.env.HOST
   },
 

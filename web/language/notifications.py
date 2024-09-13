@@ -49,6 +49,7 @@ def get_new_media_messages(new_medias):
 
 def get_new_places_messages(new_places, scope="New Places"):
     messages = []
+
     if new_places.count():
         messages.append("<h3>{}</h3><ul>".format(scope))
         for place in new_places:
@@ -56,6 +57,7 @@ def get_new_places_messages(new_places, scope="New Places"):
                 "place" if place.kind in ["", "poi"] else place.kind.replace("_", " ")
             )
             link = get_place_link(place)
+
             if place.creator:
                 creator_name = str(place.creator)
             else:
@@ -68,6 +70,7 @@ def get_new_places_messages(new_places, scope="New Places"):
                 )
             )
         messages.append("</ul>")
+
     return messages
 
 
@@ -157,6 +160,7 @@ def notify(user, since=None):
             )
 
     messages = []
+
     # If somethe user is a member of a language, notify them of all the public places in their language of interest.
     for language in languages:
         new_places = PlaceName.objects.filter(
@@ -208,8 +212,8 @@ def notify(user, since=None):
     )
     messages += get_my_favourites_messages(my_favourites)
 
+    # No new information for this person."
     if len(messages) == 0:
-        # No new information for this person."
         return
 
     html = "\n".join(intro + messages)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Grant, GrantCategory
+from grants.models import Grant, GrantCategory
 
 
 class GrantAdmin(admin.ModelAdmin):

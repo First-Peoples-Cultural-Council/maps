@@ -30,6 +30,7 @@ class UserManager(BaseUserManager):
         user.username = username
         user.set_password(password)
         user.save(using=self._db)
+
         return user
 
     @sensitive_variables("password")
@@ -90,15 +91,13 @@ class User(AbstractUser):
 
         admin_list = get_admin_email_list()
 
-        message = (
-            """
+        message = f"""
             <h3>Greetings from First People's Cultural Council!</h3>
-            <p>A new user has registered on our website <a href="https://maps.fpcc.ca/" target="_blank">First People's Map</a>.</p>
-            <p>Email: %s</p>
+            <p>A new user has registered on our website <a href="https://maps.fpcc.ca/"
+            target="_blank">First People's Map</a>.</p>
+            <p>Email: {self.email}</p>
             <p>Miigwech, and have a good day!</p>
         """
-            % self.email
-        )
 
         send_mail(
             subject="New First People's Map User",
