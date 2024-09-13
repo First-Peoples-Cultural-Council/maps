@@ -1,6 +1,6 @@
 #!/bin/bash
 
-coverage run manage.py test
+coverage run --omit=*/migrations*,*/management*,*/tests* manage.py test "$@"
 coverage report -m
-coverage xml --omit=*/migrations*,*/management*
+coverage xml
 sed -i 's/\/code/\./g' coverage.xml
