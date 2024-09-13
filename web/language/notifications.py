@@ -10,13 +10,11 @@ from language.models import (
     Media,
     Favourite,
     CommunityMember,
-    Language,
-    Community,
     PublicArtArtist,
 )
 from users.models import User
-from web.utils import get_lang_link, get_comm_link, get_place_link, format_fpcc
 from web.constants import VERIFIED
+from web.utils import get_lang_link, get_comm_link, get_place_link, format_fpcc
 
 
 def get_new_media_messages(new_medias):
@@ -51,21 +49,19 @@ def get_new_media_messages(new_medias):
 
 def get_new_places_messages(new_places, scope="New Places"):
     messages = []
+
     if new_places.count():
         messages.append("<h3>{}</h3><ul>".format(scope))
-
         for place in new_places:
             placename_type = (
                 "place" if place.kind in ["", "poi"] else place.kind.replace("_", " ")
             )
-
             link = get_place_link(place)
 
             if place.creator:
                 creator_name = str(place.creator)
             else:
                 creator_name = "Someone"
-
             messages.append(
                 """
                     <li>{} uploaded a new {}: {}.</li>
@@ -73,8 +69,8 @@ def get_new_places_messages(new_places, scope="New Places"):
                     creator_name, placename_type, link
                 )
             )
-
         messages.append("</ul>")
+
     return messages
 
 
@@ -105,7 +101,7 @@ def get_my_favourites_messages(my_favourites):
     return messages
 
 
-# pylint:disable=line-too-long
+# pylint: disable=line-too-long
 def notify(user, since=None):
     since = since or user.last_notified
     user_is_admin = user.email in [a[1] for a in settings.ADMINS] or user.email in [
@@ -124,9 +120,6 @@ def notify(user, since=None):
     intro.append("<p>Hello, {}!".format(user_name))
 
     if user_is_admin:
-        languages = Language.objects.all()
-        communities = Community.objects.all()
-
         intro.append(
             "<p>As an Admin, you will be receiving updates to all Languages and Communities."
         )
@@ -156,6 +149,7 @@ def notify(user, since=None):
                     ",".join([get_comm_link(c) for c in communities])
                 )
             )
+
         if len(communities_awaiting_verification) > 0:
             intro.append(
                 "<p>You are still awaiting membership verification in the following communities: {}</p>".format(
@@ -205,7 +199,7 @@ def notify(user, since=None):
         # public media. Show public stuff to anyone who has signed up.
         new_medias_public = Media.objects.filter(
             Q(placename__language__in=languages)
-            | Q(placename__community__in=communities_awaiting_verification)
+            | Q(placename__communities__in=communities_awaiting_verification)
             | Q(community__in=communities_awaiting_verification),
             # public items.
             Q(community_only=False) & Q(placename__community_only=False),
@@ -218,23 +212,24 @@ def notify(user, since=None):
     )
     messages += get_my_favourites_messages(my_favourites)
 
-    if len(messages) > 0:
-        html = "\n".join(intro + messages)
-        html += """
-        <p>If you'd like to unsubscribe, change your notification settings <a href='{}/profile/edit/{}'>here</a>.</p>
-        """.format(
-            settings.HOST, user.id
-        )
-        send_mail(
-            "Your Updates on the First Peoples' Language Map",
-            html,
-            "maps@fpcc.ca",
-            [user.email],
-            html_message=html,
-        )
-        return html
+    # No new information for this person."
+    if len(messages) == 0:
+        return
 
-    return None
+    html = "\n".join(intro + messages)
+    html += """
+    <p>If you'd like to unsubscribe, change your notification settings <a href='{}/profile/edit/{}'>here</a>.</p>
+    """.format(
+        settings.HOST, user.id
+    )
+    send_mail(
+        "Your Updates on the First Peoples' Language Map",
+        html,
+        "maps@fpcc.ca",
+        [user.email],
+        html_message=html,
+    )
+    return html
 
 
 def notify_no_media(user):

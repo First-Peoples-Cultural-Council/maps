@@ -15,6 +15,7 @@ class LatLongWidget(forms.MultiWidget):
     A Widget that splits Point input into latitude/longitude text inputs.
     """
 
+    # pylint: disable=unused-argument
     def __init__(self, attrs=None, date_format=None, time_format=None):
         widgets = (forms.TextInput(attrs=attrs), forms.TextInput(attrs=attrs))
         super(LatLongWidget, self).__init__(widgets, attrs)

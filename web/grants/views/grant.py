@@ -7,7 +7,7 @@ from grants.serializers import (
     GrantDetailSerializer,
     GrantCategorySerializer,
 )
-from .base import BaseGenericViewSet
+from grants.views.base import BaseGenericViewSet
 
 
 class GrantViewSet(
