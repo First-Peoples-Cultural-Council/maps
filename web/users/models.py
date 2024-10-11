@@ -81,7 +81,7 @@ class User(AbstractUser):
         return bool(has_language and has_community)
 
     def get_full_name(self):
-        if self.first_name:
+        if self.first_name or self.last_name:
             return "{} {}".format(self.first_name, self.last_name).strip()
         return "Someone Anonymous"
 
