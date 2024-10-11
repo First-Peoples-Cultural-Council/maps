@@ -91,10 +91,6 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         )
 
     @method_decorator(never_cache)
-    def detail(self, request):
-        return super().detail(request)
-
-    @method_decorator(never_cache)
     @action(detail=False)
     def auth(self, request):
         if not request.user.is_authenticated:
@@ -146,30 +142,6 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         # TODO: invalidate the JWT on cognito
         logout(request)
         return Response({"success": True})
-
-    @action(detail=False)
-    def search(self, request):
-        users_results = []
-        params = request.GET.get("search_params")
-
-        if params:
-            qs = User.objects.filter(
-                Q(first_name__icontains=params)
-                | Q(last_name__icontains=params)
-                | Q(email__icontains=params)
-            )
-
-            users_results = [
-                {
-                    "id": user.id,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "email": user.email,
-                }
-                for user in qs
-            ]
-
-        return Response(users_results)
 
 
 class ConfirmClaimView(APIView):
