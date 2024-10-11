@@ -53,9 +53,16 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(
-                kwargs.get("pk")
-            ):
+            user_id = int(kwargs.get("pk"))
+
+            # Signed in but attempting to retrieve a different user
+            if request.user.is_authenticated and request.user.id != user_id:
+                return Response(
+                    {"message": "You do not have access to this user's info."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            if request.user.is_authenticated and request.user.id == user_id:
                 return super().retrieve(request)
 
         return Response(
@@ -66,9 +73,16 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def partial_update(self, request, *args, **kwargs):
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(
-                kwargs.get("pk")
-            ):
+            user_id = int(kwargs.get("pk"))
+
+            # Signed in but attempting to patch a different user
+            if request.user.is_authenticated and request.user.id != user_id:
+                return Response(
+                    {"message": "You do not have access to update this user's info."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            if request.user.is_authenticated and request.user.id == user_id:
                 return super().partial_update(request)
 
         return Response(
@@ -79,6 +93,22 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def detail(self, request):
         return super().detail(request)
+
+    @method_decorator(never_cache)
+    @action(detail=False)
+    def auth(self, request):
+        if not request.user.is_authenticated:
+            return Response({"is_authenticated": False})
+
+        return Response(
+            {
+                "is_authenticated": True,
+                "user": UserSerializer(request.user).data,
+                "administration_list": Administrator.objects.filter(
+                    user=request.user
+                ).count(),
+            }
+        )
 
     @method_decorator(never_cache)
     @action(detail=False)
@@ -97,8 +127,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                     email=result["email"].strip(),
                     username=result["email"].replace("@", "__"),
                     password="",
-                    # not currently used, default to None
-                    picture=result.get("picture", None),
+                    picture=result.get("picture", None),  # unused, default to None
                     first_name=result["given_name"],
                     last_name=result["family_name"],
                 )
@@ -112,25 +141,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
         return Response({"success": False})
 
-    @method_decorator(never_cache)
-    @action(detail=False)
-    def auth(self, request):
-        if not request.user.is_authenticated:
-            return Response({"is_authenticated": False})
-
-        return Response(
-            {
-                "is_authenticated": True,
-                "user": UserSerializer(request.user).data,
-                "administration_list": Administrator.objects.filter(
-                    user=request.user
-                ).count(),
-            }
-        )
-
     @action(detail=False)
     def logout(self, request):
-        # TODO: invalidate the JWT on cognito ?
+        # TODO: invalidate the JWT on cognito
         logout(request)
         return Response({"success": True})
 
