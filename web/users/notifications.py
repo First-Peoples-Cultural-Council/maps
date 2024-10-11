@@ -8,18 +8,7 @@ from django.core.mail import send_mail
 from django.db.models import Q
 
 from language.models import RelatedData
-
-
-def _format_fpcc(s):
-
-    s = s.strip().lower()
-    s = re.sub(
-        r"\\|\/|>|<|\?|\)|\(|~|!|@|#|$|^|%|&|\*|=|\+|]|}|\[|{|\||;|:|_|\.|,|`|'|\"",
-        "",
-        s,
-    )
-    s = re.sub(r"\s+", "-", s)
-    return s
+from web.utils import format_fpcc
 
 
 # pylint: disable=line-too-long
@@ -67,7 +56,7 @@ def send_claim_profile_invite(email):
         for data in email_data:
             profile_links += """<p style="margin-left:24px;"><a href='{host}/art/{profile}' target='_blank'>{host}/art/{profile}</a></p>""".format(
                 host=settings.HOST,
-                profile=_format_fpcc(data.placename.name),
+                profile=format_fpcc(data.placename.name),
             )
 
         message = """
