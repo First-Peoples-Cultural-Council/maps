@@ -20,9 +20,12 @@ class CustomOpenAPISchema(SwaggerAutoSchema):
                 description = description.strip().replace("\r", "")
 
                 if description and (summary is None):
-                    # description from docstring... do summary magic
                     summary, description = self.split_summary_from_description(
                         description
                     )
+
+        # If there's no description, set it to the summary for consistency
+        if summary and not description:
+            description = summary
 
         return summary, description
