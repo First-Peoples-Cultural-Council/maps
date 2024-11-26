@@ -175,7 +175,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
         instance = self.get_object()
 
-        if request and hasattr(request, "user") and request.user.is_authenticated:
+        if (
+            request
+            and hasattr(request, "user")
+            and (self.request.user.is_staff or self.request.user.is_superuser)
+        ):
             if instance.status == VERIFIED:
                 return Response(
                     {"success": False, "message": "Media has already been verified."},
@@ -201,7 +205,11 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
         instance = self.get_object()
 
-        if request and hasattr(request, "user") and request.user.is_authenticated:
+        if (
+            request
+            and hasattr(request, "user")
+            and (self.request.user.is_staff or self.request.user.is_superuser)
+        ):
             if instance.status == VERIFIED:
                 return Response(
                     {"success": False, "message": "Media has already been verified."},
