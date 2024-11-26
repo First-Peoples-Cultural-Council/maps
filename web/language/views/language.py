@@ -18,6 +18,10 @@ from web.permissions import IsAdminOrReadOnly
 
 
 class LanguageViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a Language object (read only/Django admin access required).
+    """
+
     permission_classes = [IsAdminOrReadOnly]
 
     serializer_class = LanguageSerializer

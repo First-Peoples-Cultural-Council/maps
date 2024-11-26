@@ -36,6 +36,9 @@ class CommunityViewSet(BaseModelViewSet):
     queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
 
     def list(self, request, *args, **kwargs):
+        """
+        List all Communities.
+        """
         queryset = self.get_queryset()
         if "lang" in request.GET:
             queryset = queryset.filter(
@@ -44,15 +47,29 @@ class CommunityViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-    @method_decorator(never_cache)
-    def detail(self, request):
-        return super().detail(request)
+    def create(self, request, *args, **kwargs):
+        """
+        Create a Community object (Django admin access required).
+        """
+
+        if (
+            request
+            and hasattr(request, "user")
+            and (self.request.user.is_staff or self.request.user.is_superuser)
+        ):
+            return super().create(request, *args, **kwargs)
+
+        return Response(
+            {
+                "success": False,
+                "message": "Only staff can create communities.",
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     def update(self, request, *args, **kwargs):
         """
         Update a Community object (community admin access required).
-
-        This is only accessible to the community's admin configured through the Administrator model.
         """
 
         instance = self.get_object()
@@ -67,8 +84,6 @@ class CommunityViewSet(BaseModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """
         Delete a Community object (community admin access required).
-
-        This is only accessible to the community's admin configured through the Administrator model.
         """
 
         instance = self.get_object()
@@ -330,6 +345,10 @@ class CommunityLanguageStatsViewSet(BaseModelViewSet):
 
 
 class ChampionViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a Champion object (read only/Django admin access required).
+    """
+
     permission_classes = [IsAdminOrReadOnly]
 
     serializer_class = ChampionSerializer

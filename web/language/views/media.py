@@ -192,7 +192,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response(
             {
                 "success": False,
-                "message": "Only Administrators can verify contributions.",
+                "message": "Only staff can verify contributions.",
             },
             status=status.HTTP_403_FORBIDDEN,
         )
@@ -227,7 +227,7 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         return Response(
             {
                 "success": False,
-                "message": "Only Administrators can reject contributions.",
+                "message": "Only staff can reject contributions.",
             },
             status=status.HTTP_403_FORBIDDEN,
         )
