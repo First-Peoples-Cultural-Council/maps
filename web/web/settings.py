@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_swagger",
     "rest_framework_gis",
+    "drf_yasg",
     "django_apscheduler",
     "language",
     "grants",
