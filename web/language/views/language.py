@@ -34,6 +34,10 @@ class LanguageViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def add_language_audio(self, request, pk):
+        """
+        Add a `language_audio` (Recording) to a Language (Django admin access required).
+        """
+
         # TODO - Instead of refetching language using PK, use self.get_object()
         if "recording_id" not in request.data.keys():
             return Response({"message": "No Recording was sent in the request"})
@@ -55,6 +59,10 @@ class LanguageViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def add_greeting_audio(self, request, pk):
+        """
+        Add a `greeting_audio` (Recording) to a Language (Django admin access required).
+        """
+
         # TODO - Instead of refetching language using PK, use self.get_object()
         if "recording_id" not in request.data.keys():
             return Response({"message": "No Recording was sent in the request"})
@@ -75,6 +83,10 @@ class LanguageViewSet(BaseModelViewSet):
         )
 
     def create_membership(self, request):
+        """
+        Add a Language to a User object (deprecated).
+        """
+
         # TODO - Instead of refetching language using PK, use self.get_object()
         language_id = int(request.data["language"]["id"])
         language = Language.objects.get(pk=language_id)
@@ -87,6 +99,10 @@ class LanguageViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class LanguageGeoList(generics.ListAPIView):
+    """
+    List all Languages, in a geo format, to be used in the frontend's map.
+    """
+
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["name"]
 
@@ -98,6 +114,10 @@ class LanguageGeoList(generics.ListAPIView):
 
 # Search List APIViews
 class LanguageSearchList(generics.ListAPIView):
+    """
+    List all Languages to be used in the frontend's search bar.
+    """
+
     queryset = Language.objects.filter(geom__isnull=False).only(
         "name", "other_names", "family"
     )

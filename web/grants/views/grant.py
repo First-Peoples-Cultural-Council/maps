@@ -21,6 +21,9 @@ class GrantViewSet(
     lookup_field = "id"
 
     def list(self, request, *args, **kwargs):
+        """
+        List all Grants, in a geo format, to be used in the frontend's map.
+        """
         return super().list(request)
 
 
@@ -36,4 +39,7 @@ class GrantCategoryViewSet(mixins.ListModelMixin, BaseGenericViewSet):
     )
 
     def list(self, request, *args, **kwargs):
+        """
+        List all grant categories.
+        """
         return super().list(request)

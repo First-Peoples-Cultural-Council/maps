@@ -257,6 +257,10 @@ class ConfirmClaimView(APIView):
 
 class ValidateInviteView(APIView):
     def post(self, request):
+        """
+        Validates the key in the invitation link sent to artists.
+        """
+        
         data = request.data
 
         if "email" in data and "key" in data:

@@ -9,6 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from users.models import Administrator
 from language.models import Language, PlaceName, Media, PublicArtArtist
@@ -64,6 +66,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @method_decorator(login_required)
     def create(self, request, *args, **kwargs):
+        """
+        Create a PlaceName of any `kind` (login required).
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 required_fields_missing = False
@@ -142,6 +148,10 @@ class PlaceNameViewSet(BaseModelViewSet):
             obj.save()
 
     def update(self, request, *args, **kwargs):
+        """
+        Update a PlaceName object (login/ownership required)
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 placename = PlaceName.objects.get(pk=kwargs.get("pk"))
@@ -185,6 +195,10 @@ class PlaceNameViewSet(BaseModelViewSet):
         )
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Delete a PlaceName object (login/ownership required).
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 placename = PlaceName.objects.get(pk=kwargs.get("pk"))
@@ -212,6 +226,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, *args, **kwargs):
+        """
+        Sets the status of a PlaceName's status to `VERIFIED` (Django admin access required).
+        """
+
         instance = self.get_object()
         if request and hasattr(request, "user") and request.user.is_authenticated:
             if instance.kind not in ["", "poi"]:
@@ -239,6 +257,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, *args, **kwargs):
+        """
+        Sets the status of a PlaceName's status to `REJECTED` (Django admin access required).
+        """
+
         instance = self.get_object()
         if request and hasattr(request, "user") and request.user.is_authenticated:
             if instance.kind not in ["", "poi"]:
@@ -270,6 +292,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, *args, **kwargs):
+        """
+        Sets the status of a PlaceName's status to `FLAGGED`.
+        """
+
         instance = self.get_object()
         if instance.kind not in ["", "poi"]:
             return Response(
@@ -295,6 +321,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a PlaceName object (viewable information may vary)
+        """
+
         placename = PlaceName.objects.get(pk=kwargs.get("pk"))
         serializer = self.get_serializer(placename)
         serializer_data = serializer.data
@@ -365,6 +395,10 @@ class PlaceNameViewSet(BaseModelViewSet):
 
 # GEO LIST APIVIEWS
 class PlaceNameGeoList(generics.ListAPIView):
+    """
+    List all POIs, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         PlaceName.objects.exclude(name__icontains="FirstVoices")
         .filter(kind__in=["poi", ""], geom__isnull=False)
@@ -394,6 +428,10 @@ class PlaceNameGeoList(generics.ListAPIView):
 
 
 class ArtGeoList(generics.ListAPIView):
+    """
+    List all arts in a geo format (can be filtered by language).
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -406,13 +444,22 @@ class ArtGeoList(generics.ListAPIView):
     )
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = [
-        "language",
-    ]
+    filterset_fields = ["language"]
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
-    def list(self, request, *args, **kwargs):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "language",
+                openapi.IN_QUERY,
+                description="Filter results by language ID",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            )
+        ],
+    )
+    def get(self, request, *args, **kwargs):
         queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
@@ -420,6 +467,10 @@ class ArtGeoList(generics.ListAPIView):
 
 # SEARCH LIST APIVIEWS
 class PlaceNameSearchList(BasePlaceNameListAPIView):
+    """
+    List all POIs to be used in the frontend's search bar.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -431,6 +482,10 @@ class PlaceNameSearchList(BasePlaceNameListAPIView):
 
 
 class ArtSearchList(BasePlaceNameListAPIView):
+    """
+    List all arts to be used in the frontend's search bar.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -446,6 +501,10 @@ class ArtSearchList(BasePlaceNameListAPIView):
 
 # ART TYPES
 class PublicArtList(BasePlaceNameListAPIView):
+    """
+    List all public arts, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -457,6 +516,10 @@ class PublicArtList(BasePlaceNameListAPIView):
 
 
 class ArtistList(BasePlaceNameListAPIView):
+    """
+    List all artists, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -468,6 +531,10 @@ class ArtistList(BasePlaceNameListAPIView):
 
 
 class EventList(BasePlaceNameListAPIView):
+    """
+    List all events, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = PlaceName.objects.exclude(
         Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
     ).filter(kind="event", geom__isnull=False)
@@ -475,6 +542,10 @@ class EventList(BasePlaceNameListAPIView):
 
 
 class OrganizationList(BasePlaceNameListAPIView):
+    """
+    List all organizations, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -486,6 +557,10 @@ class OrganizationList(BasePlaceNameListAPIView):
 
 
 class ResourceList(BasePlaceNameListAPIView):
+    """
+    List all resources, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -497,6 +572,10 @@ class ResourceList(BasePlaceNameListAPIView):
 
 
 class GrantList(BasePlaceNameListAPIView):
+    """
+    List all grants in a geo format (deprecated).
+    """
+
     queryset = (
         PlaceName.objects.exclude(
             Q(name__icontains="FirstVoices") | Q(geom__exact=Point(0.0, 0.0))
@@ -509,6 +588,10 @@ class GrantList(BasePlaceNameListAPIView):
 
 # ARTWORKS
 class ArtworkList(generics.ListAPIView):
+    """
+    List all artworks, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         Media.objects.exclude(Q(placename__name__icontains="FirstVoices"))
         .filter(is_artwork=True, placename__geom__isnull=False)
@@ -522,6 +605,10 @@ class ArtworkList(generics.ListAPIView):
 
 
 class ArtworkPlaceNameList(generics.ListAPIView):
+    """
+    List all PlaceNames with media attached to it.
+    """
+
     queryset = PlaceName.objects.exclude(
         Q(medias__isnull=True) | Q(geom__exact=Point(0.0, 0.0))
     ).only("id", "name", "image", "kind", "geom")

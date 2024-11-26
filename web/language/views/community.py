@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 
 from users.models import User, Administrator
 from language.models import (
@@ -48,6 +49,12 @@ class CommunityViewSet(BaseModelViewSet):
         return super().detail(request)
 
     def update(self, request, *args, **kwargs):
+        """
+        Update Community details (community admin access required).
+
+        This is only accessible to the community's admin configured through the Administrator model.
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             return super().update(request, *args, **kwargs)
@@ -58,6 +65,12 @@ class CommunityViewSet(BaseModelViewSet):
         )
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Delete a Community object (community admin access required).
+
+        This is only accessible to the community's admin configured through the Administrator model.
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             return super().update(request, *args, **kwargs)
@@ -69,6 +82,12 @@ class CommunityViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a Community object (viewable information may vary).
+
+        Media/PlaceName configured as `community_only` will not be returned if the user is not a community member.
+        """
+
         instance = self.get_object()
         serializer = CommunityDetailSerializer(instance)
         serialized_data = serializer.data
@@ -123,6 +142,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
+        """
+        Add a Recording to a Community object (community admin access required).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             if "recording_id" not in request.data.keys():
@@ -151,6 +174,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["post"])
     def create_membership(self, request, pk):
+        """
+        Add a Community to a User object (deprecated).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             if "user_id" not in request.data.keys():
@@ -182,6 +209,10 @@ class CommunityViewSet(BaseModelViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def list_member_to_verify(self, request):
+        """
+        Lists all members that are awaiting verification.
+        """
+
         # 'VERIFIED' or 'REJECTED' members do not need to the verified
         members = CommunityMember.objects.exclude(status__exact=VERIFIED).exclude(
             status__exact=REJECTED
@@ -201,6 +232,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=False, methods=["post"])
     def verify_member(self, request):
+        """
+        Sets the status of a user's CommunityMembership to `VERIFIED`.
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 user_id = int(request.data["user_id"])
@@ -222,9 +257,7 @@ class CommunityViewSet(BaseModelViewSet):
 
                         return Response({"message": "Verified!"})
 
-                    return Response(
-                        {"message", "User is already a community member"}
-                    )
+                    return Response({"message", "User is already a community member"})
 
                 return Response(
                     {"message", "Only Administrators can verify community members"}
@@ -236,6 +269,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=False, methods=["post"])
     def reject_member(self, request):
+        """
+        Sets the status of a user's CommunityMembership to `REJECTED`.
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 if "user_id" not in request.data.keys():
@@ -302,6 +339,10 @@ class ChampionViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class CommunityGeoList(generics.ListAPIView):
+    """
+    List all Communities, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         Community.objects.filter(point__isnull=False)
         .only("name", "other_names", "point")
@@ -321,6 +362,10 @@ class CommunityGeoList(generics.ListAPIView):
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
+    """
+    List all Communities to be used in the frontend's search bar.
+    """
+
     queryset = (
         Community.objects.filter(point__isnull=False).only("name").order_by("name")
     )
