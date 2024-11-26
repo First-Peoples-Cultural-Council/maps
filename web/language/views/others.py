@@ -29,6 +29,10 @@ class NotificationViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
+        """
+        List all notifications (login required).
+        """
+
         queryset = self.get_queryset()
 
         if request and hasattr(request, "user"):

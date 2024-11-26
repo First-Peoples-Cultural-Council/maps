@@ -227,7 +227,7 @@ class PlaceNameViewSet(BaseModelViewSet):
     @action(detail=True, methods=["patch"])
     def verify(self, request, *args, **kwargs):
         """
-        Sets the status of a PlaceName's status to `VERIFIED` (Django admin access required).
+        Set the status of a PlaceName's status to `VERIFIED` (Django admin access required).
         """
 
         instance = self.get_object()

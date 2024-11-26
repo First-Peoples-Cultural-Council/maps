@@ -33,6 +33,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filterset_fields = ["placename", "community"]
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a Media object (automatically set to `VERIFIED` if the creator is a community admin).
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 return super().create(request)
@@ -64,6 +68,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
             obj.save()
 
     def update(self, request, *args, **kwargs):
+        """
+        Update a Media object (login/ownership required).
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 media = Media.objects.get(pk=kwargs.get("pk"))
@@ -90,6 +98,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
         )
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Destroy a Media object (login/ownership required).
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 media = Media.objects.get(pk=kwargs.get("pk"))
@@ -118,6 +130,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):
+        """
+        List all Media that are awaiting verification (community/language admin access required)
+        """
+
         # 'VERIFIED' Media do not need to the verified
         queryset = (
             self.get_queryset()
@@ -153,6 +169,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=["patch"])
     def verify(self, request, *args, **kwargs):
+        """
+        Set the Media's status to `VERIFIED` (Django admin access required).
+        """
+
         instance = self.get_object()
 
         if request and hasattr(request, "user") and request.user.is_authenticated:
@@ -175,6 +195,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, *args, **kwargs):
+        """
+        Set the Media's status to `REJECTED` (Django admin access required).
+        """
+
         instance = self.get_object()
 
         if request and hasattr(request, "user") and request.user.is_authenticated:
@@ -202,6 +226,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
 
     @action(detail=True, methods=["patch"])
     def flag(self, request, *args, **kwargs):
+        """
+        Set the Media's status to `FLAGGED`.
+        """
+
         instance = self.get_object()
 
         if instance.status == VERIFIED:
@@ -219,6 +247,10 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
+        """
+        List all Media.
+        """
+
         queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)

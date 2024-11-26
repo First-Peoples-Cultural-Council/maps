@@ -52,6 +52,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
+        """
+        Get a User object (only supports retrieving current user info)
+        """
         if request and hasattr(request, "user"):
             user_id = int(kwargs.get("pk"))
 
@@ -72,6 +75,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def partial_update(self, request, *args, **kwargs):
+        """
+        Patch User information
+        """
+
         if request and hasattr(request, "user"):
             user_id = int(kwargs.get("pk"))
 
@@ -93,6 +100,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def auth(self, request):
+        """
+        Retrieve authentication information.
+        """
+
         if not request.user.is_authenticated:
             return Response({"is_authenticated": False})
 
@@ -110,8 +121,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @action(detail=False)
     def login(self, request):
         """
-        This API expects a JWT from AWS Cognito, which it uses to authenticate our user
+        Allow a user to log in by consuming a JWT from AWS Cognito
         """
+
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
         if "email" in result:
@@ -139,6 +151,9 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @action(detail=False)
     def logout(self, request):
+        """
+        Log the current User out and invalidates the JWT in Cognito
+        """
         # TODO: invalidate the JWT on cognito
         logout(request)
         return Response({"success": True})
@@ -146,6 +161,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
 class ConfirmClaimView(APIView):
     def get(self, request):
+        """
+        Get all Artist profiles to be claimed, based on the invite link.
+        """
+
         data = request.GET
 
         if "email" in data and "key" in data:
@@ -197,6 +216,10 @@ class ConfirmClaimView(APIView):
 
     @method_decorator(never_cache, login_required)
     def post(self, request):
+        """
+        Confirm Artist profiles claim action, and sets the current user as the creator for said profiles.
+        """
+
         data = request.data
 
         if "email" in data and "key" in data and "user_id" in data:
@@ -260,7 +283,7 @@ class ValidateInviteView(APIView):
         """
         Validates the key in the invitation link sent to artists.
         """
-        
+
         data = request.data
 
         if "email" in data and "key" in data:

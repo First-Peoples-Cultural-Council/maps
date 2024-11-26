@@ -50,7 +50,7 @@ class CommunityViewSet(BaseModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
-        Update Community details (community admin access required).
+        Update a Community object (community admin access required).
 
         This is only accessible to the community's admin configured through the Administrator model.
         """
@@ -210,7 +210,7 @@ class CommunityViewSet(BaseModelViewSet):
     @action(detail=False)
     def list_member_to_verify(self, request):
         """
-        Lists all members that are awaiting verification.
+        List all members that are awaiting verification for the user's community (community admin access required).
         """
 
         # 'VERIFIED' or 'REJECTED' members do not need to the verified
@@ -233,7 +233,7 @@ class CommunityViewSet(BaseModelViewSet):
     @action(detail=False, methods=["post"])
     def verify_member(self, request):
         """
-        Sets the status of a user's CommunityMembership to `VERIFIED`.
+        Set the status of a user's CommunityMembership to `VERIFIED`.
         """
 
         if request and hasattr(request, "user"):
