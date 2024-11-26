@@ -8,7 +8,7 @@ class CustomOpenAPISchema(SwaggerAutoSchema):
         Get description and summary from docstring if it's provided. Otherwise, use the default behavior.
         """
 
-        docstring = inspect.getdoc(self.view)
+        docstring = self._sch.get_description(self.path, self.method) or ""
         if docstring:
             description = docstring
             summary = docstring.split("\n")[0]
