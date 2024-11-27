@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from rest_framework import mixins, status
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from language.models import Favourite, Notification, Recording
 from language.views import BaseModelViewSet
@@ -21,30 +22,16 @@ class RecordingViewSet(BaseModelViewSet):
 
 
 class NotificationViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a Notification object (login required).
+    """
+
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    @method_decorator(never_cache)
-    def list(self, request, *args, **kwargs):
-        """
-        List all notifications (login required).
-        """
-
-        queryset = self.get_queryset()
-
-        if request and hasattr(request, "user"):
-            if request.user.is_authenticated:
-                queryset = queryset.filter(user__id=request.user.id)
-                serializer = self.serializer_class(queryset, many=True)
-                return Response(serializer.data)
-
-        return Response(
-            {"message": "Only logged in users can view theirs favourites"},
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
 
 
 # To enable only CREATE and DELETE, we create a custom ViewSet class...
