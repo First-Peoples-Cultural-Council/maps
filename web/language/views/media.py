@@ -32,6 +32,12 @@ class MediaViewSet(MediaCustomViewSet, GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["placename", "community"]
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a Media object.
+        """
+        return super().retrieve(request)
+
     def create(self, request, *args, **kwargs):
         """
         Create a Media object (automatically set to `VERIFIED` if the creator is a community admin).

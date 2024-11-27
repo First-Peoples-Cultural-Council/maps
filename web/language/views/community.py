@@ -331,6 +331,10 @@ class CommunityViewSet(BaseModelViewSet):
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a CommunityLanguageStats object (read only/Django admin access required).
+    """
+
     permission_classes = [IsAdminOrReadOnly]
 
     serializer_class = CommunityLanguageStatsSerializer

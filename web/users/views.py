@@ -53,7 +53,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
         """
-        Get a User object (only supports retrieving current user info)
+        Retrieve a User object (only supports retrieving current user info).
         """
         if request and hasattr(request, "user"):
             user_id = int(kwargs.get("pk"))
@@ -76,7 +76,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
     @method_decorator(never_cache)
     def partial_update(self, request, *args, **kwargs):
         """
-        Patch User information
+        Partially update User object
         """
 
         if request and hasattr(request, "user"):

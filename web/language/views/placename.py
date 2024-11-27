@@ -358,6 +358,10 @@ class PlaceNameViewSet(BaseModelViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def list_to_verify(self, request):
+        """
+        List all POIs that are awaiting verification (community/language admin access required).
+        """
+
         # 'VERIFIED' PlaceNames do not need to the verified
         queryset = (
             self.get_queryset()
@@ -388,6 +392,9 @@ class PlaceNameViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
+        """
+        List all PlaceNames (viewable information may vary).
+        """
         queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
@@ -448,17 +455,6 @@ class ArtGeoList(generics.ListAPIView):
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "language",
-                openapi.IN_QUERY,
-                description="Filter results by language ID",
-                type=openapi.TYPE_INTEGER,
-                required=False,
-            )
-        ],
-    )
     def get(self, request, *args, **kwargs):
         queryset = get_queryset_for_user(self, request)
         serializer = self.serializer_class(queryset, many=True)
