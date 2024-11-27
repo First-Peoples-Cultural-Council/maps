@@ -354,14 +354,18 @@ For more information about tests, run `docker-compose exec web python manage.py 
 
 We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
 
+Check linting for the entire backend project
 ```
-# Check linting for the entire backend project
 docker-compose exec web sh pylint.sh
+```
 
-# Check linting for an entire folder
+Check linting for an entire folder
+```
 docker-compose exec web sh pylint.sh <folder_name>
+```
 
-# Check linting for a specific file
+Check linting for a specific file
+```
 docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
 ```
 
