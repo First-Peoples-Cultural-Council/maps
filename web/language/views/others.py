@@ -13,12 +13,17 @@ from language.serializers import (
     NotificationSerializer,
     RecordingSerializer,
 )
-from web.permissions import is_user_permitted
+from web.permissions import is_user_permitted, IsAuthenticatedUserOrReadOnly
 
 
 class RecordingViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a Recording object (read only/login required).
+    """
+
     serializer_class = RecordingSerializer
     queryset = Recording.objects.all()
+    permission_classes = [IsAuthenticatedUserOrReadOnly]
 
 
 class NotificationViewSet(BaseModelViewSet):
