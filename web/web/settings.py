@@ -59,8 +59,8 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
-    "rest_framework_swagger",
     "rest_framework_gis",
+    "drf_yasg",
     "django_apscheduler",
     "language",
     "grants",
@@ -175,12 +175,14 @@ if DEBUG:
         "rest_framework.renderers.BrowsableAPIRenderer",
     )
 
+SWAGGER_SETTINGS = {
+    "DEFAULT_AUTO_SCHEMA_CLASS": "web.schema.CustomOpenAPISchema",
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
 }

@@ -35,6 +35,9 @@ class CommunityViewSet(BaseModelViewSet):
     queryset = Community.objects.all().order_by("name").exclude(point__isnull=True)
 
     def list(self, request, *args, **kwargs):
+        """
+        List all Communities.
+        """
         queryset = self.get_queryset()
         if "lang" in request.GET:
             queryset = queryset.filter(
@@ -43,11 +46,31 @@ class CommunityViewSet(BaseModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-    @method_decorator(never_cache)
-    def detail(self, request):
-        return super().detail(request)
+    def create(self, request, *args, **kwargs):
+        """
+        Create a Community object (Django admin access required).
+        """
+
+        if (
+            request
+            and hasattr(request, "user")
+            and (self.request.user.is_staff or self.request.user.is_superuser)
+        ):
+            return super().create(request, *args, **kwargs)
+
+        return Response(
+            {
+                "success": False,
+                "message": "Only staff can create communities.",
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     def update(self, request, *args, **kwargs):
+        """
+        Update a Community object (community admin access required).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             return super().update(request, *args, **kwargs)
@@ -58,6 +81,10 @@ class CommunityViewSet(BaseModelViewSet):
         )
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Delete a Community object (community admin access required).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             return super().update(request, *args, **kwargs)
@@ -69,6 +96,12 @@ class CommunityViewSet(BaseModelViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a Community object (viewable information may vary).
+
+        Media/PlaceName configured as `community_only` will not be returned if the user is not a community member.
+        """
+
         instance = self.get_object()
         serializer = CommunityDetailSerializer(instance)
         serialized_data = serializer.data
@@ -123,6 +156,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def add_audio(self, request, pk):
+        """
+        Add a Recording to a Community object (community admin access required).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             if "recording_id" not in request.data.keys():
@@ -151,6 +188,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=True, methods=["post"])
     def create_membership(self, request, pk):
+        """
+        Add a Community to a User object (deprecated).
+        """
+
         instance = self.get_object()
         if is_user_community_admin(request, instance):
             if "user_id" not in request.data.keys():
@@ -182,6 +223,10 @@ class CommunityViewSet(BaseModelViewSet):
     @method_decorator(never_cache)
     @action(detail=False)
     def list_member_to_verify(self, request):
+        """
+        List all members that are awaiting verification for the user's community (community admin access required).
+        """
+
         # 'VERIFIED' or 'REJECTED' members do not need to the verified
         members = CommunityMember.objects.exclude(status__exact=VERIFIED).exclude(
             status__exact=REJECTED
@@ -201,6 +246,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=False, methods=["post"])
     def verify_member(self, request):
+        """
+        Set the status of a user's CommunityMembership to `VERIFIED`.
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 user_id = int(request.data["user_id"])
@@ -222,9 +271,7 @@ class CommunityViewSet(BaseModelViewSet):
 
                         return Response({"message": "Verified!"})
 
-                    return Response(
-                        {"message", "User is already a community member"}
-                    )
+                    return Response({"message", "User is already a community member"})
 
                 return Response(
                     {"message", "Only Administrators can verify community members"}
@@ -236,6 +283,10 @@ class CommunityViewSet(BaseModelViewSet):
 
     @action(detail=False, methods=["post"])
     def reject_member(self, request):
+        """
+        Sets the status of a user's CommunityMembership to `REJECTED`.
+        """
+
         if request and hasattr(request, "user"):
             if request.user.is_authenticated:
                 if "user_id" not in request.data.keys():
@@ -279,6 +330,10 @@ class CommunityViewSet(BaseModelViewSet):
 
 
 class CommunityLanguageStatsViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a CommunityLanguageStats object (read only/Django admin access required).
+    """
+
     permission_classes = [IsAdminOrReadOnly]
 
     serializer_class = CommunityLanguageStatsSerializer
@@ -293,6 +348,10 @@ class CommunityLanguageStatsViewSet(BaseModelViewSet):
 
 
 class ChampionViewSet(BaseModelViewSet):
+    """
+    Get/Create/Update/Delete a Champion object (read only/Django admin access required).
+    """
+
     permission_classes = [IsAdminOrReadOnly]
 
     serializer_class = ChampionSerializer
@@ -302,6 +361,10 @@ class ChampionViewSet(BaseModelViewSet):
 
 # Geo List APIViews
 class CommunityGeoList(generics.ListAPIView):
+    """
+    List all Communities, in a geo format, to be used in the frontend's map.
+    """
+
     queryset = (
         Community.objects.filter(point__isnull=False)
         .only("name", "other_names", "point")
@@ -321,6 +384,10 @@ class CommunityGeoList(generics.ListAPIView):
 
 # Search List APIViews
 class CommunitySearchList(generics.ListAPIView):
+    """
+    List all Communities to be used in the frontend's search bar.
+    """
+
     queryset = (
         Community.objects.filter(point__isnull=False).only("name").order_by("name")
     )

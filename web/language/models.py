@@ -28,24 +28,6 @@ from web.constants import (
 from web.models import BaseModel, CulturalModel
 from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
 from users.models import User
-from web.models import BaseModel, CulturalModel
-from web.utils import get_art_link, get_comm_link, get_place_link, get_admin_email_list
-from web.constants import (
-    FLAGGED,
-    UNVERIFIED,
-    VERIFIED,
-    REJECTED,
-    STATUS_DISPLAY,
-    ROLE_ADMIN,
-    ROLE_MEMBER,
-    PUBLIC_ART,
-    ORGANIZATION,
-    ARTIST,
-    EVENT,
-    RESOURCE,
-    GRANT,
-    POI,
-)
 
 
 class LanguageFamily(BaseModel):
