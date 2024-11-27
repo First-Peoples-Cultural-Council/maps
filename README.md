@@ -314,25 +314,35 @@ For backend testing, we are using Django and Django Rest Framework's built-in te
 
 Examples:
 
+Running all tests:
 ```
-# Running all tests
 docker-compose exec web sh test.sh
-
-# Testing a specific app
-docker-compose exec web sh test.sh language
-
-# Testing a specific file
-docker-compose exec web sh test.sh language.tests.tests_language
-
-# Testing a specific class with multiple tests
-docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests
-
-# Testing a specific test case
-docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests.test_language_detail_route_exists
-
-# Coverage test (specifying app/file/class/test also applies)
-docker-compose exec web sh test-cov.sh
 ```
+
+Testing a specific app
+```
+docker-compose exec web sh test.sh language
+```
+
+Testing a specific file
+```
+docker-compose exec web sh test.sh language.tests.tests_language
+```
+
+Testing a specific class with multiple tests
+```
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests
+```
+
+Testing a specific test case
+```
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests.test_language_detail_route_exists
+```
+
+Coverage test (specifying app/file/class/test also applies)
+```
+docker-compose exec web sh test-cov.sh
+``````
 
 Running a coverage test will create a `coverage.xml` file which indicates which lines were executed and which lines were not. This will also generate a report in the terminal which shows a percentage of the total coverage, and the coverage per file, based on the tests executed.
 
