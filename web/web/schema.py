@@ -1,5 +1,4 @@
 from drf_yasg.inspectors import SwaggerAutoSchema
-import inspect
 
 
 class CustomOpenAPISchema(SwaggerAutoSchema):

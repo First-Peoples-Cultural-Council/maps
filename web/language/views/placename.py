@@ -9,8 +9,6 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from users.models import Administrator
 from language.models import Language, PlaceName, Media, PublicArtArtist
