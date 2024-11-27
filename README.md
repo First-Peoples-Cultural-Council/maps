@@ -165,15 +165,19 @@ _The API writes objects "atomically", meaning only one database row can be edite
 
 ## Contributing
 
-To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file. If you ever have coding style problems, you can fix them by running:
+To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file.
+
+### Linting
+
+#### Frontend
+
+If you ever have coding style problems, you can fix them by running:
 
 ```
-
 docker-compose exec frontend yarn lint --fix
-
 ```
 
-Vscode settings for automatic linting
+These are the Vscode settings for automatic linting
 ```
 "eslint.validate": [
     {
@@ -194,6 +198,24 @@ Vscode settings for automatic linting
 "vetur.validation.template": false,
 "editor.fontSize": 16,
 "terminal.integrated.scrollback": 50000
+```
+#### Backend
+
+We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
+
+Check linting for the entire backend project
+```
+docker-compose exec web sh pylint.sh
+```
+
+Check linting for an entire folder
+```
+docker-compose exec web sh pylint.sh <folder_name>
+```
+
+Check linting for a specific file
+```
+docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
 ```
 
 ### Example, add a new database field.
@@ -307,27 +329,6 @@ docker-compose exec web sh test-cov.sh
 Running a coverage test will create a `coverage.xml` file which indicates which lines were executed and which lines were not. This will also generate a report in the terminal which shows a percentage of the total coverage, and the coverage per file, based on the tests executed.
 
 For more information about tests, run `docker-compose exec web python manage.py help test`
-
-## Linting
-
-### Python
-
-We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
-
-Check linting for the entire backend project
-```
-docker-compose exec web sh pylint.sh
-```
-
-Check linting for an entire folder
-```
-docker-compose exec web sh pylint.sh <folder_name>
-```
-
-Check linting for a specific file
-```
-docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
-```
 
 ### Notifications
 
