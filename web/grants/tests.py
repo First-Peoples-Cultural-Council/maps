@@ -61,7 +61,6 @@ class GrantAPITests(BaseTestCase):
         """
         response = self.client.get("/api/grants/", format="json")
         data = response.data
-        print(data)
         features = data.get("features")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -87,7 +86,6 @@ class GrantAPITests(BaseTestCase):
         """
         response = self.client.get("/api/grant-categories/", format="json")
         data = response.data
-        print(data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 1)
