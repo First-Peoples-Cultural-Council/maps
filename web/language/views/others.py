@@ -13,7 +13,7 @@ from language.serializers import (
     NotificationSerializer,
     RecordingSerializer,
 )
-from web.permissions import is_user_permitted, IsAuthenticatedUserOrReadOnly
+from web.permissions import is_user_permitted, IsAuthenticatedUserOrReadOnly, IsNotificationOwner
 
 
 class RecordingViewSet(BaseModelViewSet):
@@ -33,7 +33,13 @@ class NotificationViewSet(BaseModelViewSet):
 
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsNotificationOwner]
+
+    @method_decorator(never_cache)
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(user__id=request.user.id)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
