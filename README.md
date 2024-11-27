@@ -297,7 +297,7 @@ docker-compose exec web python manage.py get_categories
 
 ## Testing
 
-To test frontend:
+### Frontend
 
 The docker container is by default on sleep. Need to comment out `command: sleep 1000000` on `docker-compose.override.yml` then restart the container.
 The test container is dependant on the frontend and the web container, and make sure these are running
@@ -308,13 +308,35 @@ docker-compose up test
 
 ```
 
-To test backend API:
+### Backend
+
+For backend testing, we are using Django and Django Rest Framework's built-in testing modules. The test files are either named `tests.py` or `tests_<name>.py`.
+
+Examples:
 
 ```
+# Running all tests
+docker-compose exec web sh test.sh
 
-docker-compose exec web python manage.py test
+# Testing a specific app
+docker-compose exec web sh test.sh language
 
+# Testing a specific file
+docker-compose exec web sh test.sh language.tests.tests_language
+
+# Testing a specific class with multiple tests
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests
+
+# Testing a specific test case
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests.test_language_detail_route_exists
+
+# Coverage test (specifying app/file/class/test also applies)
+docker-compose exec web sh test-cov.sh
 ```
+
+Running a coverage test will create a `coverage.xml` file which indicates which lines were executed and which lines were not. This will also generate a report in the terminal which shows a percentage of the total coverage, and the coverage per file, based on the tests executed.
+
+For more information about tests, run `docker-compose exec web python manage.py help test`
 
 ## Linting
 
@@ -323,10 +345,13 @@ docker-compose exec web python manage.py test
 We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
 
 ```
-# Linting for entire folder
+# Check linting for the entire backend project
+docker-compose exec web sh pylint.sh
+
+# Check linting for an entire folder
 docker-compose exec web sh pylint.sh <folder_name>
 
-# Linting for specific file
+# Check linting for a specific file
 docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
 ```
 
