@@ -2,14 +2,6 @@
 
 This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestones 3 and 2 of this project. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
 
-## Technology Stack Overview
-
-- Fully Dockerized, and configured with docker-compose.
-- Uses PostgreSQL and PostGIS.
-- API-Driven Django. We don't use Django's templates for anything.
-- Uses Nuxt.js for SEO-friendly modern templates.
-- Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
-
 ## Installation
 
 Clone the project.
@@ -349,3 +341,19 @@ docker-compose exec web python manage.py test_notifications --email <email of us
 ```
 
 Specifying a number days (integer) will always force-send updates the specified number of days of updates, regardless of whether those updates have already been sent.
+
+## Technology Stack Overview
+
+- Fully Dockerized, and configured with docker-compose.
+- Uses PostgreSQL and PostGIS.
+- API-Driven Django. We don't use Django's templates for anything.
+- Uses Nuxt.js for SEO-friendly modern templates.
+- Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
+
+### Relevant Backend Libraries
+- Authentication - [Cognito JWT](https://pypi.org/project/cognitojwt/)
+- APIs - [Django Rest Framework](https://www.django-rest-framework.org/)
+- GIS - [GeoJSON](https://pypi.org/project/geojson/)
+- Linting - [Pylint](https://pypi.org/project/pylint/)
+- Testing Coverage - [Coverage](https://coverage.readthedocs.io/)
+- API documentation - [DRF YASG (Swagger)](https://drf-yasg.readthedocs.io/en/stable/)
