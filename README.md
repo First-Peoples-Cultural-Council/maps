@@ -155,6 +155,26 @@ curl --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --
 
 _The API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope._
 
+## Uploading Grants
+
+To upload new grants, use the `load_grants` command. FPCC will provide a .xlsx file containing a list of grants. The file should have the following columns in the first sheet: Grant, Language, Year, Recipient, Community/Affiliation, Title, Project Brief, Amount, Address, City, Province, Postal Code
+
+```
+docker-compose exec web python manage.py load_grants --file_name=/link/to/your/file
+```
+
+You may also provide a --test flag in order to see the grants being imported and if there are any errors.
+
+```
+docker-compose exec web python manage.py load_grants --file_name=/link/to/your/file --test=1
+```
+
+After successfully uploading the grants, we will use the `migrate_manytomany_fields` command in order to link these grants to their Language/Community/Artist/Public Art.
+
+```
+docker-compose exec web python manage.py migrate_manytomany_fields
+```
+
 ## Contributing
 
 To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file.
