@@ -34,10 +34,6 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 ./docs/restore-pg
 ```
 
-## Deployment
-
-  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps.fpcc.ca` nightly.
-  * We auto-deploy the `develop` branch of `https://github.com/countable-web/maps` to `http://maps.fpcc.ca:8080` nightly.
 
 ## Public API
 
@@ -266,13 +262,6 @@ Only the `https://github.com/First-Peoples-Cultural-Council/maps` has GH Action 
 PROD_ENVS= # populate the local.env.template file provided.
 KNOWN_HOSTS= # `ssh-keyscan <production server>` output
 PROD_DEPLOY_KEY= # private key of producion server
-```
-
-`.github/workflows/cd-stage.yml` - The `develop` branch is deployed by GitHub Actions to staging, `fplm.countable.ca` by default.
-Only the countable-web fork has secrets set to deploy here, as follows.
-```
-KNOWN_HOSTS= # `ssh-keyscan <stage server>` output
-BOOL= # private key of staging server
 ```
 
 ## Bootstrapping data (Not necessary to run again)
