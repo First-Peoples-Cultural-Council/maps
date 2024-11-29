@@ -12,22 +12,30 @@ from language.filters import ListFilter
 
 
 class TaxonomyFilterSet(FilterSet):
-    names = ListFilter(field_name='name', lookup_expr='in')
+    names = ListFilter(field_name="name", lookup_expr="in")
 
     class Meta:
         model = Taxonomy
-        fields = ('names', 'parent')
+        fields = ("names", "parent")
 
 
 class TaxonomyViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = TaxonomySerializer
     queryset = Taxonomy.objects.all().order_by(
-        F('parent__id',).asc(nulls_first=True),
-        F('order',).asc(nulls_last=True))
+        F(
+            "parent__id",
+        ).asc(nulls_first=True),
+        F(
+            "order",
+        ).asc(nulls_last=True),
+    )
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = TaxonomyFilterSet
 
     @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
+        """
+        List all Taxonomies to be used in the frontend's filters.
+        """
         return super().list(request)

@@ -45,6 +45,15 @@ class IsAuthenticatedUserOrReadOnly(BasePermission):
         return bool(request.method in SAFE_METHODS or request.user)
 
 
+class IsNotificationOwner(BasePermission):
+    """
+    Check if the user making the request is the owner of the Notification
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+
 def is_user_permitted(request, pk_to_compare):
     """
     Check if a user is permitted to perform an operation

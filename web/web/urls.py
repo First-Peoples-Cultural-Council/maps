@@ -4,15 +4,21 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
-from rest_framework import routers
+from rest_framework import routers, permissions
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework_swagger.views import get_swagger_view
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 from web.sitemaps import LanguageSitemap, CommunitySitemap, PlaceNameSitemap
 from web.views import PageViewSet
 
 
-schema_view = get_swagger_view(title="FPCC API")
+# schema_view = get_swagger_view(title="FPCC API")
+schema_view = get_schema_view(
+   openapi.Info(title="FPCC API", default_version='v1'),
+   public=True,
+   permission_classes=(permissions.IsAdminUser,),
+)
 
 sitemaps = {
     "language": LanguageSitemap(),
@@ -45,7 +51,7 @@ urlpatterns = (
         path("api/", include("grants.urls"), name="grants"),
         path("api/", include("users.urls"), name="users"),
         url("docs/crash/$", crash),
-        url("docs/$", schema_view),
+        url("docs/$", schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         path(
             "sitemap.xml",
             sitemap,

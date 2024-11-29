@@ -40,6 +40,11 @@ class NotificationAPITests(BaseTestCase):
         super().setUp()
         self.community1 = Community.objects.create(name="Test Community 1")
         self.language1 = Language.objects.create(name="Test Language 01")
+        self.user_owned_notification = Notification.objects.create(
+            name="User Owned Notification",
+            language=self.language1,
+            user=self.user,
+        )
 
     # ONE TEST TESTS ONLY ONE SCENARIO
 
@@ -47,47 +52,68 @@ class NotificationAPITests(BaseTestCase):
         """
         Ensure we can retrieve a newly created notification object.
         """
-        test_notification = Notification.objects.create(
-            name="Test notification 001",
-            language=self.language1,
-        )
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
         response = self.client.get(
-            "/api/notification/{}/".format(test_notification.id), format="json"
+            "/api/notification/{}/".format(self.user_owned_notification.id),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["name"], "Test notification 001")
+        self.assertEqual(response.data["name"], self.user_owned_notification.name)
 
     def test_notification_list_authorized_access(self):
         """
-        Ensure Notification list API route exists
+        Ensure Notification list API is accessible to logged in users
         """
         # Must be logged in
-        self.client.login(username="testuser001", password="password")
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
 
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            f"/api/notification/{self.user_owned_notification.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_notification_list_unauthenticated(self):
+        """
+        Ensure Notification list API is only accessible to logged in users
+        """
+        response = self.client.get("/api/notification/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            f"/api/notification/{self.user_owned_notification.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_notification_list_unauthorized_access(self):
         """
-        Ensure Notification list API route exists
+        Ensure Notification is not visible to non-owners
         """
-        response = self.client.get("/api/notification/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue(self.client.login(username="testuser002", password="password"))
+
+        response = self.client.get(
+            f"/api/notification/{self.user_owned_notification.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_notification_list_different_users(self):
         """
-        Ensure Notification API DELETE method API works
+        Ensure only own notifications are visible to the current user
         """
+
         # Must be logged in
         self.client.login(username="testuser001", password="password")
 
-        # No data so far for the user
+        # 1 data so far for the user (in setUp)
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data), 1)
 
         # Creating an object which BELONGS to the user
-        # GET must return one object
+        # GET must return two objects
         response = self.client.post(
             "/api/notification/",
             {
@@ -100,45 +126,43 @@ class NotificationAPITests(BaseTestCase):
 
         response2 = self.client.get("/api/notification/", format="json")
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response2.data), 1)
+        self.assertEqual(len(response2.data), 2)
 
         # Creating an object which DOES NOT BELONG to the user
-        # GET must return one object
-        Notification.objects.create(
-            user=self.user2, name="test notification2"
-        )
+        # GET must still return two objects
+        Notification.objects.create(user=self.user2, name="test notification2")
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
 
         # Creating an object which BELONGS to the user
-        # GET must return two objects
+        # GET must return three objects
         test_notification3 = Notification.objects.create(
             user=self.user, name="test notification3"
         )
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 3)
 
         # Deleting the object which BELONGS to the user
-        # GET must return one object
+        # GET must return two object
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = self.client.delete(
             "/api/notification/{}/".format(created_id1), format="json"
         )
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
 
         # Deleting the object which BELONGS to the user
-        # GET must return zero objects
+        # GET must return 1 object
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = self.client.delete(
             "/api/notification/{}/".format(test_notification3.id), format="json"
         )
         response = self.client.get("/api/notification/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data), 1)
 
     def test_notification_post_with_language(self):
         """
@@ -190,8 +214,15 @@ class NotificationAPITests(BaseTestCase):
         """
         Ensure notification API DELETE method API works
         """
-        test_notification = Notification.objects.create(name="Test notification 001")
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+
         response = self.client.delete(
-            "/api/notification/{}/".format(test_notification.id), format="json"
+            "/api/notification/{}/".format(self.user_owned_notification.id),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+# test_notification_delete
+# test_notification_detail
+# test_notification_list_different_users

@@ -2,14 +2,6 @@
 
 This is a web map that helps explore Indigenous language data. This README file includes new materials added in Milestones 3 and 2 of this project. [See Milestone 1 deliverables here](./README-MILESTONE1.md).
 
-## Technology Stack Overview
-
-- Fully Dockerized, and configured with docker-compose.
-- Uses PostgreSQL and PostGIS.
-- API-Driven Django. We don't use Django's templates for anything.
-- Uses Nuxt.js for SEO-friendly modern templates.
-- Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
-
 ## Installation
 
 Clone the project.
@@ -42,50 +34,6 @@ Acquire a database dump. If the file is `db.sql` in your repo root, do:
 ./docs/restore-pg
 ```
 
-For loading arts data in your local environment, acquire a database dump for the data in `fp-artsmap.ca`. If the file is `arts.sql` in your repo root, follow the instructions below:
-
-- Add another service in your docker-compose.override.yml with the following data:
-    ```
-    arts_db:
-        image: mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: mysql
-            MYSQL_USER: mysql
-            MYSQL_DATABASE: arts
-            MYSQL_PASSWORD: mysql
-            MYSQL_ROOT_HOST: '%'
-        networks:
-            - back-tier
-        volumes:
-            - mysqldb-files:/var/lib/mysql
-    ```
-- Add volume for the new service:
-    ```
-    volumes:
-        ...
-        mysqldb-files:
-            driver: local
-    ```
-- Run the command below in another terminal to start the new service without stopping the others:
-    ```
-    docker-compose up -d
-    ```
-- Restore the `arts.sql` dump:
-    ```
-    docker cp arts.sql maps_arts_db_1:/tmp
-    docker-compose exec arts_db bash
-    cd /tmp
-    mysql -u mysql -p arts < arts.sql
-    ```
-- Trigger load_arts command in web:
-    ```
-    docker-compose exec web python manage.py load_arts
-    ```
-
-## Deployment
-
-  * We auto-deploy the `master` branch of `https://github.com/First-Peoples-Cultural-Council/maps` to `https://maps.fpcc.ca` nightly.
-  * We auto-deploy the `develop` branch of `https://github.com/countable-web/maps` to `http://maps.fpcc.ca:8080` nightly.
 
 ## Public API
 
@@ -203,17 +151,41 @@ curl --header "Authorization: Token cfc2b213a4adfbae02332fbbfb45ec09e56413a4" --
 
 _The API writes objects "atomically", meaning only one database row can be edited or added per request. This is to help make the API simple and predicable (simple consistent CRUD for each table), as writing inline objects (while convenient) can lead to nontrivial edge cases. (For example, we need conventions on whether to assume anything not included in a PATCH is to be deleted from the set, modified if it includes updates, and should those modifications follow PATCH conventions as well...). For a small single-purpose writable API that wasn't part of our project focus, the atomic method is predictable and simple, allowing our focus to be on other scope._
 
+## Uploading Grants
+
+To upload new grants, use the `load_grants` command. FPCC will provide a .xlsx file containing a list of grants. The file should have the following columns in the first sheet: Grant, Language, Year, Recipient, Community/Affiliation, Title, Project Brief, Amount, Address, City, Province, Postal Code
+
+```
+docker-compose exec web python manage.py load_grants --file_name=/link/to/your/file
+```
+
+You may also provide a --test flag in order to see the grants being imported and if there are any errors.
+
+```
+docker-compose exec web python manage.py load_grants --file_name=/link/to/your/file --test=1
+```
+
+After successfully uploading the grants, we will use the `migrate_manytomany_fields` command in order to link these grants to their Language/Community/Artist/Public Art.
+
+```
+docker-compose exec web python manage.py migrate_manytomany_fields
+```
+
 ## Contributing
 
-To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file. If you ever have coding style problems, you can fix them by running:
+To work on a feature locally, configure your editor to use the `black` code style for Python, and the `prettier` style for Javascript, HTML and CSS. Use the local `.pretterrc` file.
+
+### Linting
+
+#### Frontend
+
+If you ever have coding style problems, you can fix them by running:
 
 ```
-
 docker-compose exec frontend yarn lint --fix
-
 ```
 
-Vscode settings for automatic linting
+These are the Vscode settings for automatic linting
 ```
 "eslint.validate": [
     {
@@ -234,6 +206,24 @@ Vscode settings for automatic linting
 "vetur.validation.template": false,
 "editor.fontSize": 16,
 "terminal.integrated.scrollback": 50000
+```
+#### Backend
+
+We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
+
+Check linting for the entire backend project
+```
+docker-compose exec web sh pylint.sh
+```
+
+Check linting for an entire folder
+```
+docker-compose exec web sh pylint.sh <folder_name>
+```
+
+Check linting for a specific file
+```
+docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
 ```
 
 ### Example, add a new database field.
@@ -274,13 +264,6 @@ KNOWN_HOSTS= # `ssh-keyscan <production server>` output
 PROD_DEPLOY_KEY= # private key of producion server
 ```
 
-`.github/workflows/cd-stage.yml` - The `develop` branch is deployed by GitHub Actions to staging, `fplm.countable.ca` by default.
-Only the countable-web fork has secrets set to deploy here, as follows.
-```
-KNOWN_HOSTS= # `ssh-keyscan <stage server>` output
-BOOL= # private key of staging server
-```
-
 ## Bootstrapping data (Not necessary to run again)
 
 This project was originally ported from a Drupal database, and we have a somewhat generic way of getting things out of Drupal the first time. Doing this requires populating the old database secrets in your docker-compose.override.yml
@@ -297,7 +280,7 @@ docker-compose exec web python manage.py get_categories
 
 ## Testing
 
-To test frontend:
+### Frontend
 
 The docker container is by default on sleep. Need to comment out `command: sleep 1000000` on `docker-compose.override.yml` then restart the container.
 The test container is dependant on the frontend and the web container, and make sure these are running
@@ -308,27 +291,45 @@ docker-compose up test
 
 ```
 
-To test backend API:
+### Backend
 
+For backend testing, we are using Django and Django Rest Framework's built-in testing modules. The test files are either named `tests.py` or `tests_<name>.py`.
+
+Examples:
+
+Running all tests:
+```
+docker-compose exec web sh test.sh
 ```
 
-docker-compose exec web python manage.py test
-
+Testing a specific app
+```
+docker-compose exec web sh test.sh language
 ```
 
-## Linting
-
-### Python
-
-We use pylint to detect linting errors in Python. Disclaimer: pylint is only used to detect errors an does not automatically fix them. Linting fixes have to be manually applied by the developer.
-
+Testing a specific file
 ```
-# Linting for entire folder
-docker-compose exec web sh pylint.sh <folder_name>
-
-# Linting for specific file
-docker-compose exec web sh pylint.sh <folder_name>/<file_name>/
+docker-compose exec web sh test.sh language.tests.tests_language
 ```
+
+Testing a specific class with multiple tests
+```
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests
+```
+
+Testing a specific test case
+```
+docker-compose exec web sh test.sh language.tests.tests_language.LanguageAPITests.test_language_detail_route_exists
+```
+
+Coverage test (specifying app/file/class/test also applies)
+```
+docker-compose exec web sh test-cov.sh
+``````
+
+Running a coverage test will create a `coverage.xml` file which indicates which lines were executed and which lines were not. This will also generate a report in the terminal which shows a percentage of the total coverage, and the coverage per file, based on the tests executed.
+
+For more information about tests, run `docker-compose exec web python manage.py help test`
 
 ### Notifications
 
@@ -349,3 +350,19 @@ docker-compose exec web python manage.py test_notifications --email <email of us
 ```
 
 Specifying a number days (integer) will always force-send updates the specified number of days of updates, regardless of whether those updates have already been sent.
+
+## Technology Stack Overview
+
+- Fully Dockerized, and configured with docker-compose.
+- Uses PostgreSQL and PostGIS.
+- API-Driven Django. We don't use Django's templates for anything.
+- Uses Nuxt.js for SEO-friendly modern templates.
+- Proxies all ports through port 80, the default, including websockets, so there's no need to worry about the port of anything when developing.
+
+### Relevant Backend Libraries
+- Authentication - [Cognito JWT](https://pypi.org/project/cognitojwt/)
+- APIs - [Django Rest Framework](https://www.django-rest-framework.org/)
+- GIS - [GeoJSON](https://pypi.org/project/geojson/)
+- Linting - [Pylint](https://pypi.org/project/pylint/)
+- Testing Coverage - [Coverage](https://coverage.readthedocs.io/)
+- API documentation - [DRF YASG (Swagger)](https://drf-yasg.readthedocs.io/en/stable/)

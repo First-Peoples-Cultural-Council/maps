@@ -52,10 +52,20 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a User object (only supports retrieving current user info).
+        """
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(
-                kwargs.get("pk")
-            ):
+            user_id = int(kwargs.get("pk"))
+
+            # Signed in but attempting to retrieve a different user
+            if request.user.is_authenticated and request.user.id != user_id:
+                return Response(
+                    {"message": "You do not have access to this user's info."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            if request.user.is_authenticated and request.user.id == user_id:
                 return super().retrieve(request)
 
         return Response(
@@ -65,10 +75,21 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
     @method_decorator(never_cache)
     def partial_update(self, request, *args, **kwargs):
+        """
+        Partially update User object
+        """
+
         if request and hasattr(request, "user"):
-            if request.user.is_authenticated and request.user.id == int(
-                kwargs.get("pk")
-            ):
+            user_id = int(kwargs.get("pk"))
+
+            # Signed in but attempting to patch a different user
+            if request.user.is_authenticated and request.user.id != user_id:
+                return Response(
+                    {"message": "You do not have access to update this user's info."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            if request.user.is_authenticated and request.user.id == user_id:
                 return super().partial_update(request)
 
         return Response(
@@ -77,44 +98,12 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         )
 
     @method_decorator(never_cache)
-    def detail(self, request):
-        return super().detail(request)
-
-    @method_decorator(never_cache)
-    @action(detail=False)
-    def login(self, request):
-        """
-        This API expects a JWT from AWS Cognito, which it uses to authenticate our user
-        """
-        id_token = request.GET.get("id_token")
-        result = verify_token(id_token)
-        if "email" in result:
-            try:
-                user = User.objects.get(email=result["email"].strip())
-                is_new = False
-            except User.DoesNotExist:
-                user = User(
-                    email=result["email"].strip(),
-                    username=result["email"].replace("@", "__"),
-                    password="",
-                    # not currently used, default to None
-                    picture=result.get("picture", None),
-                    first_name=result["given_name"],
-                    last_name=result["family_name"],
-                )
-                user.save()
-                is_new = True
-
-            login(request, user)
-            return Response(
-                {"success": True, "email": user.email, "id": user.id, "new": is_new}
-            )
-
-        return Response({"success": False})
-
-    @method_decorator(never_cache)
     @action(detail=False)
     def auth(self, request):
+        """
+        Retrieve authentication information.
+        """
+
         if not request.user.is_authenticated:
             return Response({"is_authenticated": False})
 
@@ -128,39 +117,54 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
             }
         )
 
+    @method_decorator(never_cache)
     @action(detail=False)
-    def logout(self, request):
-        # TODO: invalidate the JWT on cognito ?
-        logout(request)
-        return Response({"success": True})
+    def login(self, request):
+        """
+        Allow a user to log in by consuming a JWT from AWS Cognito
+        """
 
-    @action(detail=False)
-    def search(self, request):
-        users_results = []
-        params = request.GET.get("search_params")
+        id_token = request.GET.get("id_token")
+        result = verify_token(id_token)
+        if "email" in result:
+            try:
+                user = User.objects.get(email=result["email"].strip())
+                is_new = False
+            except User.DoesNotExist:
+                user = User(
+                    email=result["email"].strip(),
+                    username=result["email"].replace("@", "__"),
+                    password="",
+                    picture=result.get("picture", None),  # unused, default to None
+                    first_name=result["given_name"],
+                    last_name=result["family_name"],
+                )
+                user.save()
+                is_new = True
 
-        if params:
-            qs = User.objects.filter(
-                Q(first_name__icontains=params)
-                | Q(last_name__icontains=params)
-                | Q(email__icontains=params)
+            login(request, user)
+            return Response(
+                {"success": True, "email": user.email, "id": user.id, "new": is_new}
             )
 
-            users_results = [
-                {
-                    "id": user.id,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "email": user.email,
-                }
-                for user in qs
-            ]
+        return Response({"success": False})
 
-        return Response(users_results)
+    @action(detail=False)
+    def logout(self, request):
+        """
+        Log the current User out and invalidates the JWT in Cognito
+        """
+        # TODO: invalidate the JWT on cognito
+        logout(request)
+        return Response({"success": True})
 
 
 class ConfirmClaimView(APIView):
     def get(self, request):
+        """
+        Get all Artist profiles to be claimed, based on the invite link.
+        """
+
         data = request.GET
 
         if "email" in data and "key" in data:
@@ -212,6 +216,10 @@ class ConfirmClaimView(APIView):
 
     @method_decorator(never_cache, login_required)
     def post(self, request):
+        """
+        Confirm Artist profiles claim action, and sets the current user as the creator for said profiles.
+        """
+
         data = request.data
 
         if "email" in data and "key" in data and "user_id" in data:
@@ -272,6 +280,10 @@ class ConfirmClaimView(APIView):
 
 class ValidateInviteView(APIView):
     def post(self, request):
+        """
+        Validates the key in the invitation link sent to artists.
+        """
+
         data = request.data
 
         if "email" in data and "key" in data:
