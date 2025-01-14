@@ -29,7 +29,6 @@ class BaseTestCase(APITestCase):
             grant_category=self.test_category,
         )
 
-        # This grant will not appear since we filter out grants without points
         self.test_grant_no_point = Grant.objects.create(
             grant="Test Grant No Point",
             title="Test Grant No Point Title",
@@ -38,12 +37,19 @@ class BaseTestCase(APITestCase):
         )
 
 
-class GrantAPIRouteTests(APITestCase):
+class GrantAPIRouteTests(BaseTestCase):
     def test_grant_list_route_exists(self):
         """
         Ensure Grant List API route exists
         """
         response = self.client.get("/api/grants/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_grant_detail_route_exists(self):
+        """
+        Ensure Grant Detail API route exists
+        """
+        response = self.client.get(f"/api/grants/{self.test_grant.id}/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_grant_category_route_exists(self):
