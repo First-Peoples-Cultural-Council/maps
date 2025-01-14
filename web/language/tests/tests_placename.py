@@ -6,6 +6,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from language.models import (
     Language,
     PlaceName,
+    Champion,
     Community,
     CommunityMember,
     Media,
@@ -26,7 +27,6 @@ from web.constants import (
 
 class BaseTestCase(APITestCase):
     def setUp(self):
-        # Create an Admin Type User
         self.admin_user = User.objects.create(
             username="admin_user",
             first_name="Admin",
@@ -38,7 +38,6 @@ class BaseTestCase(APITestCase):
         self.admin_user.set_password("password")
         self.admin_user.save()
 
-        # Create a Regular User with no Privileges
         self.regular_user = User.objects.create(
             username="regular_user",
             first_name="Regular",
@@ -47,9 +46,39 @@ class BaseTestCase(APITestCase):
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
+        self.now = timezone.now()
+
+        self.community1 = Community.objects.create(name="Test Community 01")
+        self.community2 = Community.objects.create(name="Test Community 02")
+        self.language1 = Language.objects.create(name="Test Language 01")
+        self.language2 = Language.objects.create(name="Test Language 02")
+        self.taxonomy = Taxonomy.objects.create(
+            name="Test Taxonomy", description="Test taxonomy desc."
+        )
+
+        self.new_user = User.objects.create(
+            username="new_user",
+            first_name="New",
+            last_name="User",
+            email="new.user@countable.ca",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.new_user.set_password("password")
+        self.new_user.save()
+
+        self.recording = Recording.objects.create(
+            speaker="Test recording",
+            recorder="Test recording",
+            created=self.now,
+            date_recorded=self.now,
+        )
+        self.test_champion = Champion.objects.create(
+            name="Test Champion", bio="Test Bio", job="Test Job"
+        )
 
 
-class PlaceNameAPIRouteTests(APITestCase):
+class PlaceNameAPIRouteTests(BaseTestCase):
     def test_placename_detail_route_exists(self):
         """
         Ensure PlaceName details API route exists
@@ -65,6 +94,13 @@ class PlaceNameAPIRouteTests(APITestCase):
         Ensure PlaceName list API route exists
         """
         response = self.client.get("/api/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_placename_list_to_verify_route_exists(self):
+        """
+        Ensure PlaceName list API route exists
+        """
+        response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # GEO APIs
@@ -135,7 +171,7 @@ class PlaceNameAPIRouteTests(APITestCase):
 
     def test_grant_list_route_exists(self):
         """
-        Ensure Grant List API route exists
+        Ensure Grant List API route exists (deprecated)
         """
         response = self.client.get("/api/arts/grant/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,42 +185,31 @@ class PlaceNameAPIRouteTests(APITestCase):
 
     def test_poi_list_route_exists(self):
         """
-        Ensure Art Search API route exists
+        Ensure POI List API route exists
         """
         response = self.client.get("/api/arts/placename/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_champion_list_route_exists(self):
+        """
+        Ensure Champion List API route exists
+        """
+        response = self.client.get("/api/champion/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_champion_detail_route_exists(self):
+        """
+        Ensure Champion Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/champion/{self.test_champion.id}/", format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class PlaceNameAPITests(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.now = timezone.now()
-
-        self.community = Community.objects.create(name="Test Community")
-        self.community2 = Community.objects.create(name="Test Community 02")
-        self.language1 = Language.objects.create(name="Test Language 01")
-        self.language2 = Language.objects.create(name="Test Language 02")
-        self.taxonomy = Taxonomy.objects.create(
-            name="Test Taxonomy", description="Test taxonomy desc."
-        )
-
-        self.user2 = User.objects.create(
-            username="testuser002",
-            first_name="Test2",
-            last_name="user 002",
-            email="test2@countable.ca",
-            is_staff=True,
-            is_superuser=True,
-        )
-        self.user2.set_password("password")
-        self.user2.save()
-
-        self.recording = Recording.objects.create(
-            speaker="Test recording",
-            recorder="Test recording",
-            created=self.now,
-            date_recorded=self.now,
-        )
 
     def test_placename_detail(self):
         """
@@ -210,7 +235,7 @@ class PlaceNameAPITests(BaseTestCase):
             audio_description="string",
             language=self.language1,
         )
-        test_placename.communities.set([self.community])
+        test_placename.communities.set([self.community1])
         response = self.client.get(
             "/api/placename/{}/".format(test_placename.id), format="json"
         )
@@ -232,7 +257,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename01 = PlaceName.objects.create(
             name="test place01", language=self.language1, status=VERIFIED
         )
-        test_placename01.communities.set([self.community])
+        test_placename01.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -241,7 +266,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename02 = PlaceName.objects.create(
             name="test place02", language=self.language1, status=UNVERIFIED
         )
-        test_placename02.communities.set([self.community])
+        test_placename02.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -250,7 +275,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename03 = PlaceName.objects.create(
             name="test place03", language=self.language1, status=REJECTED
         )
-        test_placename03.communities.set([self.community])
+        test_placename03.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -259,7 +284,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename04 = PlaceName.objects.create(
             name="test place04", language=self.language1, status=FLAGGED
         )
-        test_placename04.communities.set([self.community])
+        test_placename04.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -282,7 +307,7 @@ class PlaceNameAPITests(BaseTestCase):
             language=self.language1,
             community_only=True,
         )
-        test_placename01.communities.set([self.community])
+        test_placename01.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -308,7 +333,7 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=REJECTED,
         )
-        test_placename03.communities.set([self.community])
+        test_placename03.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
@@ -329,11 +354,11 @@ class PlaceNameAPITests(BaseTestCase):
         # REJECTED Placename from another user
         test_placename05 = PlaceName.objects.create(
             name="test place05",
-            creator=self.user2,
+            creator=self.new_user,
             language=self.language1,
             status=REJECTED,
         )
-        test_placename05.communities.set([self.community])
+        test_placename05.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 4)
@@ -356,14 +381,14 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=VERIFIED,
         )
-        test_placename01.communities.set([self.community])
+        test_placename01.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
         # UNVERIFIED CommunityMember MATCHING users's community
         member_same01 = CommunityMember.objects.create(
-            user=self.admin_user, community=self.community, status=UNVERIFIED
+            user=self.admin_user, community=self.community1, status=UNVERIFIED
         )
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -383,7 +408,7 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=UNVERIFIED,
         )
-        test_placename02.communities.set([self.community])
+        test_placename02.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -395,7 +420,7 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=REJECTED,
         )
-        test_placename03.communities.set([self.community])
+        test_placename03.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
@@ -407,7 +432,7 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=FLAGGED,
         )
-        test_placename04.communities.set([self.community])
+        test_placename04.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 4)
@@ -442,7 +467,7 @@ class PlaceNameAPITests(BaseTestCase):
             community_only=True,
             status=VERIFIED,
         )
-        test_placename01.communities.set([self.community])
+        test_placename01.communities.set([self.community1])
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
@@ -450,7 +475,7 @@ class PlaceNameAPITests(BaseTestCase):
         # Administrator of the pair language/community
         Administrator.objects.create(
             user=self.admin_user,
-            community=self.community,
+            community=self.community1,
             language=self.language1,
         )
 
@@ -472,7 +497,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 1)
 
         # After changing the placename to the Administrator community
-        test_placename02.communities.set([self.community])
+        test_placename02.communities.set([self.community1])
 
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -491,7 +516,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 2)
 
         # After changing the placename to the Administrator community
-        test_placename03.communities.set([self.community])
+        test_placename03.communities.set([self.community1])
 
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -510,7 +535,7 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(len(response.data), 3)
 
         # After changing the placename to the Administrator community
-        test_placename04.communities.set([self.community])
+        test_placename04.communities.set([self.community1])
 
         response = self.client.get("/api/placename/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -521,7 +546,7 @@ class PlaceNameAPITests(BaseTestCase):
         Ensure placename list API brings newly created data which needs to be verified
         """
         Administrator.objects.create(
-            user=self.admin_user, language=self.language1, community=self.community
+            user=self.admin_user, language=self.language1, community=self.community1
         )
 
         # Must be logged in to verify a media.
@@ -535,7 +560,7 @@ class PlaceNameAPITests(BaseTestCase):
         test_placename01 = PlaceName.objects.create(
             name="test place01", language=self.language1, status=VERIFIED
         )
-        test_placename01.communities.set([self.community])
+        test_placename01.communities.set([self.community1])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
@@ -547,7 +572,7 @@ class PlaceNameAPITests(BaseTestCase):
             status=UNVERIFIED,
             status_reason="string",
         )
-        test_placename02.communities.set([self.community])
+        test_placename02.communities.set([self.community1])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -560,7 +585,7 @@ class PlaceNameAPITests(BaseTestCase):
             status=FLAGGED,
             status_reason="string",
         )
-        test_placename03.communities.set([self.community])
+        test_placename03.communities.set([self.community1])
         response = self.client.get("/api/placename/list_to_verify/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -606,7 +631,7 @@ class PlaceNameAPITests(BaseTestCase):
                 "common_name": "string",
                 "community_only": True,
                 "description": "string",
-                "communities": [self.community.id],
+                "communities": [self.community1.id],
                 "language": self.language1.id,
                 "audio": self.recording.id,
             },
@@ -648,7 +673,7 @@ class PlaceNameAPITests(BaseTestCase):
         placename.name = "test place"
         placename.language = self.language1
         placename.save()
-        placename.communities.set([self.community])
+        placename.communities.set([self.community1])
 
         created_id = placename.id
 
@@ -672,7 +697,7 @@ class PlaceNameAPITests(BaseTestCase):
         placename.creator = self.admin_user
         placename.language = self.language1
         placename.save()
-        placename.communities.set([self.community])
+        placename.communities.set([self.community1])
 
         created_id = placename.id
 
@@ -693,7 +718,7 @@ class PlaceNameAPITests(BaseTestCase):
         placename.creator = self.admin_user
         placename.language = self.language1
         placename.save()
-        placename.communities.set([self.community])
+        placename.communities.set([self.community1])
 
         created_id = placename.id
 

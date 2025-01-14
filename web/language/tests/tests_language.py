@@ -9,16 +9,16 @@ from users.models import User
 
 class BaseTestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create(
-            username="testuser001",
-            first_name="Test",
-            last_name="user 001",
-            email="test@countable.ca",
+        self.admin_user = User.objects.create(
+            username="admin_user",
+            first_name="Admin",
+            last_name="User",
+            email="admin@countable.ca",
             is_staff=True,
             is_superuser=True,
         )
-        self.user.set_password("password")
-        self.user.save()
+        self.admin_user.set_password("password")
+        self.admin_user.save()
 
         self.FAKE_GEOM = """
             {
@@ -45,21 +45,48 @@ class BaseTestCase(APITestCase):
                 ]
             }"""
 
-
-class CommunityGeoAPITests(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-
         poly = GEOSGeometry(self.FAKE_GEOM)
-        # Only include if it has a geometry
-        self.language1 = Language.objects.create(  # Included (1)
+
+        self.language1 = Language.objects.create(  # With geom
             name="test language1", geom=poly
         )
-        self.language2 = Language.objects.create(  # Exclude
+        self.language2 = Language.objects.create(  # Without geom
             name="test language2",
         )
 
-    # ONE TEST TESTS ONLY ONE SCENARIO ######
+
+class LanguageAPIRouteTests(BaseTestCase):
+    def test_language_list_route_exists(self):
+        """
+        Ensure Language List API route exists
+        """
+        response = self.client.get("/api/language/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_language_detail_route_exists(self):
+        """
+        Ensure Language Detail API route exists
+        """
+        response = self.client.get(f"/api/language/{self.language1.id}/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_language_add_greeting_audio_route_exists(self):
+        """
+        Ensure Language Add Greeting Audio API route exists
+        """
+        response = self.client.get(
+            f"/api/language/{self.language1.id}/add_greeting_audio/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_language_add_language_audio_route_exists(self):
+        """
+        Ensure Language Add Language Audio API route exists
+        """
+        response = self.client.get(
+            f"/api/language/{self.language1.id}/add_language_audio/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_language_geo_route_exists(self):
         """
@@ -74,6 +101,10 @@ class CommunityGeoAPITests(BaseTestCase):
         """
         response = self.client.get("/api/language-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class LanguageGeoAPITests(BaseTestCase):
+    # ONE TEST TESTS ONLY ONE SCENARIO ######
 
     def test_language_geo(self):
         """
@@ -150,7 +181,7 @@ class LanguageAPITests(BaseTestCase):
         Ensure we can add a language audio to a language object.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
@@ -187,7 +218,7 @@ class LanguageAPITests(BaseTestCase):
         Ensure we can add a greeting audio to a language object.
         """
         # Must be logged in
-        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         # Check we're logged in
         response = self.client.get("/api/user/auth/")
