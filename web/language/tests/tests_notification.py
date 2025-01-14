@@ -34,10 +34,6 @@ class BaseTestCase(APITestCase):
         self.user2.set_password("password")
         self.user2.save()
 
-
-class NotificationAPITests(BaseTestCase):
-    def setUp(self):
-        super().setUp()
         self.community1 = Community.objects.create(name="Test Community 1")
         self.language1 = Language.objects.create(name="Test Language 01")
         self.user_owned_notification = Notification.objects.create(
@@ -46,6 +42,28 @@ class NotificationAPITests(BaseTestCase):
             user=self.user,
         )
 
+
+class NotificationAPIRouteTests(BaseTestCase):
+    def test_notification_list_route_exists(self):
+        """
+        Ensure Notification List API exists
+        """
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        response = self.client.get("/api/notification/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_notification_detail_route_exists(self):
+        """
+        Ensure Notification Detail API exists
+        """
+        self.assertTrue(self.client.login(username="testuser001", password="password"))
+        response = self.client.get(
+            f"/api/notification/{self.user_owned_notification.id}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class NotificationAPITests(BaseTestCase):
     # ONE TEST TESTS ONLY ONE SCENARIO
 
     def test_notification_detail(self):

@@ -44,16 +44,40 @@ class BaseTestCase(APITestCase):
         self.point = GEOSGeometry(self.FAKE_GEOM)
 
 
-class FavouriteAPITests(BaseTestCase):
+class FavouriteAPIRouteTests(BaseTestCase):
     def test_favourite_list_route_exists(self):
         """
         Ensure Favourite list API route exists
         """
-        # Must be logged in
-        self.client.login(username="admin_user", password="password")
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
 
         response = self.client.get("/api/favourite/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_favourite_detail_route_exists(self):
+        """
+        Ensure Favourite Detail API route exists
+        """
+
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
+
+        favourite_placename = Favourite.objects.create(
+            name="Test Favourite Placename",
+            user=self.admin_user,
+            place=self.place,
+            favourite_type="favourite",
+            description="I like this Placename",
+            point=self.point,
+            zoom=10,
+        )
+
+        response = self.client.get(
+            f"/api/favourite/{favourite_placename.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class FavouriteAPITests(BaseTestCase):
 
     def test_get_favourite_placename(self):
         """
