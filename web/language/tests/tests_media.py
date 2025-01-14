@@ -31,7 +31,7 @@ class BaseTestCase(APITestCase):
         self.admin_user.set_password("password")
         self.admin_user.save()
 
-        # Create a Regular User with no Privileges
+        # Create a regular user with no privileges
         self.regular_user = User.objects.create(
             username="regular_user",
             first_name="Regular",
@@ -40,6 +40,74 @@ class BaseTestCase(APITestCase):
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
+
+
+class MediaAPIRouteTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.verified_media = Media.objects.create(
+            name="Verified Media",
+            file_type="string",
+            status=VERIFIED,
+        )
+
+        self.unverified_media = Media.objects.create(
+            name="Unverified Media",
+            file_type="string",
+            status=UNVERIFIED,
+        )
+
+    def test_media_list_route_exists(self):
+        """
+        Ensure Media List API route exists
+        """
+        response = self.client.get("/api/media/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_media_list_to_verify_route_exists(self):
+        """
+        Ensure Media List to Verify API route exists
+        """
+        self.assertTrue(self.client.login(username="admin_user", password="password"))
+        response = self.client.get(f"/api/media/list_to_verify/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_media_detail_route_exists(self):
+        """
+        Ensure Media Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/media/{self.verified_media.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_media_flag_route_exists(self):
+        """
+        Ensure Media Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/media/{self.unverified_media.id}/flag/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_media_reject_route_exists(self):
+        """
+        Ensure Media Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/media/{self.unverified_media.id}/reject/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_media_verify_route_exists(self):
+        """
+        Ensure Media Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/media/{self.unverified_media.id}/verify/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class MediaAPITests(BaseTestCase):

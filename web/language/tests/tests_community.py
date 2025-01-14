@@ -3,54 +3,19 @@ from rest_framework import status
 from django.utils import timezone
 from django.contrib.gis.geos import GEOSGeometry
 
-from language.models import Language, Community, CommunityMember, Recording
+from language.models import (
+    Language,
+    Community,
+    CommunityMember,
+    CommunityLanguageStats,
+    Recording,
+)
 from users.models import User, Administrator
 from web.constants import VERIFIED, REJECTED
 
 
 class BaseTestCase(APITestCase):
     def setUp(self):
-        # Create an Admin Type User
-        self.admin_user = User.objects.create(
-            username="admin_user",
-            first_name="Admin",
-            last_name="User",
-            email="admin@countable.ca",
-            is_staff=True,
-            is_superuser=True,
-        )
-        self.admin_user.set_password("password")
-        self.admin_user.save()
-
-        # Create a Regular User with no Privileges
-        self.regular_user = User.objects.create(
-            username="regular_user",
-            first_name="Regular",
-            last_name="User",
-            email="regular@countable.ca",
-        )
-        self.regular_user.set_password("password")
-        self.regular_user.save()
-
-        # Initial Values for Language and Community
-        self.test_language = Language.objects.create(name="Global Test Language")
-        self.test_community = Community.objects.create(name="Global Test Community")
-
-        # Create a Community Admin for Testing Permissions
-        self.community_admin = User.objects.create(
-            username="community_admin_user",
-            first_name="Community Admin",
-            last_name="User",
-            email="community_admin@countable.ca",
-        )
-        self.community_admin.set_password("password")
-        self.community_admin.save()
-        Administrator.objects.create(
-            user=self.community_admin,
-            language=self.test_language,
-            community=self.test_community,
-        )
-
         FAKE_GEOM = """
             {
                 "type": "Point",
@@ -62,16 +27,60 @@ class BaseTestCase(APITestCase):
         """
         self.point = GEOSGeometry(FAKE_GEOM)
 
-
-class CommunityGeoAPITests(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.valid_community = Community.objects.create(
-            name="Valid Community", point=self.point
+        self.admin_user = User.objects.create(
+            username="admin_user",
+            first_name="Admin",
+            last_name="User",
+            email="admin@countable.ca",
+            is_staff=True,
+            is_superuser=True,
         )
+        self.admin_user.set_password("password")
+        self.admin_user.save()
+
+        self.regular_user = User.objects.create(
+            username="regular_user",
+            first_name="Regular",
+            last_name="User",
+            email="regular@countable.ca",
+        )
+        self.regular_user.set_password("password")
+        self.regular_user.save()
+
+        self.test_language = Language.objects.create(name="Global Test Language")
+        self.test_community = Community.objects.create(
+            name="Global Test Community", point=FAKE_GEOM
+        )
+
+        self.community_admin = User.objects.create(
+            username="community_admin_user",
+            first_name="Community Admin",
+            last_name="User",
+            email="community_admin@countable.ca",
+        )
+        self.community_admin.set_password("password")
+        self.community_admin.save()
+
+        Administrator.objects.create(
+            user=self.community_admin,
+            language=self.test_language,
+            community=self.test_community,
+        )
+
+        # Create a community without a point, which does not show in the list/search APIs
         self.invalid_community = Community.objects.create(name="Invalid Community")
 
+        # Create a test stats
+        self.test_stats = CommunityLanguageStats.objects.create(
+            community=self.test_community,
+            language=self.test_language,
+            fluent_speakers=1,
+            semi_speakers=1,
+            active_learners=1,
+        )
+
+
+class CommunityAPIRouteTests(BaseTestCase):
     def test_community_geo_route_exists(self):
         """
         Ensure Community Geo API route exists
@@ -86,6 +95,73 @@ class CommunityGeoAPITests(BaseTestCase):
         response = self.client.get("/api/community-search/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_community_list_route_exists(self):
+        """
+        Ensure Community List API route exists
+        """
+        response = self.client.get("/api/community/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_list_member_to_verify_route_exists(self):
+        """
+        Ensure Community List Members to Verify API route exists
+        """
+        response = self.client.get(
+            "/api/community/list_member_to_verify/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_member_verify_route_exists(self):
+        """
+        Ensure Community Member Verify API route exists
+        """
+        response = self.client.get("/api/community/verify_member/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_community_member_reject_route_exists(self):
+        """
+        Ensure Community Member Reject API route exists
+        """
+        response = self.client.get("/api/community/reject_member/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_community_detail_route_exists(self):
+        """
+        Ensure Community Detail API route exists
+        """
+        response = self.client.get(
+            f"/api/community/{self.test_community.id}/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_community_add_audio_route_exists(self):
+        """
+        Ensure Community Add Audio API route exists
+        """
+        self.assertTrue(
+            self.client.login(username="community_admin_user", password="password")
+        )
+        response = self.client.get(
+            f"/api/community/{self.test_community.id}/add_audio/", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_stats_list_route_exists(self):
+        """
+        Ensure Stats List API route exists
+        """
+        response = self.client.get("/api/stats/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_stats_detail_route_exists(self):
+        """
+        Ensure Stats Detail API route exists
+        """
+        response = self.client.get(f"/api/stats/{self.test_stats.id}/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class CommunityGeoAPITests(BaseTestCase):
     def test_community_geo(self):
         """
         Ensure Community Geo API works
@@ -95,7 +171,7 @@ class CommunityGeoAPITests(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # By fetching "features" specifically, we're committing
-        # that this API si a GEO Feature API
+        # that this API is a GEO Feature API
         data = response.json().get("features")
 
         # Only count 1 because the 2nd community in setUp() is invalid
@@ -111,9 +187,9 @@ class CommunityGeoAPITests(BaseTestCase):
         data = response.json()
 
         # By fetching the first record, we're committing
-        # that the valid_community was added to the search list
-        valid_community = data[0]
-        self.assertEqual(valid_community.get("name"), "Valid Community")
+        # that the test_community was added to the search list
+        test_community = data[0]
+        self.assertEqual(test_community.get("name"), "Global Test Community")
 
 
 class CommunityAPITests(BaseTestCase):
@@ -148,13 +224,6 @@ class CommunityAPITests(BaseTestCase):
         self.assertEqual(
             response.data["audio_obj"]["recorder"], self.recording.recorder
         )
-
-    def test_community_list_route_exists(self):
-        """
-        Ensure community list API route exists
-        """
-        response = self.client.get("/api/community/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_community_add_audio_for_admin(self):
         """
