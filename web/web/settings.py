@@ -37,13 +37,11 @@ MEDIA_URL = "/media/"
 APPEND_SLASH = True
 
 ADMINS = (
-    ("Clark", "clark@countable.ca"),
-    ("Justin", "justin@countable.ca"),
     ("Rohit", "rsharma@fpcc.ca"),
 )
 SERVER_EMAIL = "maps@fpcc.ca"
 
-FPCC_ADMINS = (("Aimee", "ALaForge@fpcc.ca"),)
+FPCC_ADMINS = (("Evangaline", "evangaline@fpcc.ca"),)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
