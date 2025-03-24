@@ -376,8 +376,15 @@ class CommunityGeoList(generics.ListAPIView):
         language_query = self.request.GET.get("language")
 
         if language_query:
-            language = Language.objects.get(name=language_query)
-            return Community.objects.filter(languages=language.id)
+            try:
+                language = Language.objects.get(name=language_query)
+                return Community.objects.filter(languages=language.id)
+            except Language.DoesNotExist:
+                # Return a Bad Request response if the Language doesn't exist
+                return Response(
+                    {'detail': f'Language "{language_query}" not found.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         return super().get_queryset()
 

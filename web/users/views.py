@@ -56,7 +56,18 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         Retrieve a User object (only supports retrieving current user info).
         """
         if request and hasattr(request, "user"):
-            user_id = int(kwargs.get("pk"))
+            # Safely attempt to get user_id from kwargs and convert to an integer
+            user_id_str = kwargs.get("pk")
+
+            try:
+                # Attempt to convert 'pk' to an integer
+                user_id = int(user_id_str)
+            except (TypeError, ValueError):
+                # If the conversion fails (e.g., 'undefined'), return a 400 Bad Request
+                return Response(
+                    {"message": f"Invalid user ID: {user_id_str}. It must be an integer."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # Signed in but attempting to retrieve a different user
             if request.user.is_authenticated and request.user.id != user_id:
@@ -80,7 +91,18 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
         """
 
         if request and hasattr(request, "user"):
-            user_id = int(kwargs.get("pk"))
+            # Safely attempt to get user_id from kwargs and convert to an integer
+            user_id_str = kwargs.get("pk")
+
+            try:
+                # Attempt to convert 'pk' to an integer
+                user_id = int(user_id_str)
+            except (TypeError, ValueError):
+                # If the conversion fails (e.g., 'undefined'), return a 400 Bad Request
+                return Response(
+                    {"message": f"Invalid user ID: {user_id_str}. It must be an integer."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # Signed in but attempting to patch a different user
             if request.user.is_authenticated and request.user.id != user_id:
