@@ -15,7 +15,7 @@ class BaseTestCase(APITestCase):
             username="admin_user",
             first_name="Admin",
             last_name="User",
-            email="admin@countable.ca",
+            email="maps@fpcc.ca",
             is_staff=True,
             is_superuser=True,
         )
@@ -27,7 +27,7 @@ class BaseTestCase(APITestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca",
+            email="fv-monitoring@fpcc.ca",
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
@@ -41,7 +41,7 @@ class BaseTestCase(APITestCase):
             username="community_admin_user",
             first_name="Community Admin",
             last_name="User",
-            email="community_admin@countable.ca",
+            email="imit@fpcc.ca",
         )
         self.community_admin.set_password("password")
         self.community_admin.save()
@@ -280,7 +280,7 @@ class CommunityAPITests(BaseTestCase):
             username="test_user",
             first_name="Test",
             last_name="User",
-            email="test_user@countable.ca",
+            email="fv-monitoring@fpcc.ca",
         )
 
         member_to_verify = CommunityMember.create_member(
@@ -336,7 +336,7 @@ class CommunityAPITests(BaseTestCase):
             username="test_user",
             first_name="Test",
             last_name="User",
-            email="test_user@countable.ca",
+            email="fv-monitoring@fpcc.ca",
         )
 
         member_to_reject = CommunityMember.create_member(

@@ -26,7 +26,7 @@ from web.constants import (
 class EmailTests(TestCase):
     def setUp(self):
         self.from_email = "maps@fpcc.ca"
-        self.to = "justin@countable.ca"
+        self.to = "rsharma@fpcc.ca"
 
         self.test_language = Language.objects.create(name="Global Test Language")
         self.test_community = Community.objects.create(name="Global Test Community")
@@ -47,7 +47,7 @@ class EmailTests(TestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca",
+            email="imit@fpcc.ca",
         )
 
         self.placename = PlaceName.objects.create(

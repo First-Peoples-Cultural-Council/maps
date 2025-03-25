@@ -16,7 +16,7 @@ class BaseTestCase(APITestCase):
             username="testuser001",
             first_name="Test",
             last_name="user 001",
-            email="test@countable.ca",
+            email="maps@fpcc.ca",
             is_staff=True,
             is_superuser=True,
         )
@@ -27,7 +27,7 @@ class BaseTestCase(APITestCase):
             username="testuser002",
             first_name="Test2",
             last_name="user 002",
-            email="test2@countable.ca",
+            email="imit@fpcc.ca",
             is_staff=True,
             is_superuser=True,
         )

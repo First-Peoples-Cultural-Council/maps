@@ -16,7 +16,7 @@ class UserAPITests(APITestCase):
             username="testuser001",
             first_name="Test",
             last_name="user 001",
-            email="test1@countable.ca",
+            email="imit@fpcc.ca",
         )
         self.user1.set_password("password")
         self.user1.languages.add(self.language1)
@@ -28,7 +28,7 @@ class UserAPITests(APITestCase):
             username="testuser002",
             first_name="Test",
             last_name="user 002",
-            email="test2@countable.ca",
+            email="fv-monitoring@fpcc.ca",
         )
         self.user2.set_password("password")
         self.user2.languages.add(self.language1)
@@ -94,7 +94,7 @@ class UserAPITests(APITestCase):
                 "username": "testuser001",
                 "first_name": "Test",
                 "last_name": "user 001",
-                "email": "test1@countable.ca",
+                "email": "imit@fpcc.ca",
             },
             format="json",
         )

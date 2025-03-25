@@ -31,7 +31,7 @@ class BaseTestCase(APITestCase):
             username="admin_user",
             first_name="Admin",
             last_name="User",
-            email="admin@countable.ca",
+            email="maps@fpcc.ca",
             is_staff=True,
             is_superuser=True,
         )
@@ -43,7 +43,7 @@ class BaseTestCase(APITestCase):
             username="regular_user",
             first_name="Regular",
             last_name="User",
-            email="regular@countable.ca",
+            email="imit@fpcc.ca",
         )
         self.regular_user.set_password("password")
         self.regular_user.save()
@@ -172,7 +172,7 @@ class PlaceNameAPITests(BaseTestCase):
             username="testuser002",
             first_name="Test2",
             last_name="user 002",
-            email="test2@countable.ca",
+            email="fv-monitoring@fpcc.ca",
             is_staff=True,
             is_superuser=True,
         )

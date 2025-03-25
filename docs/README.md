@@ -1,6 +1,6 @@
 # First Peoples' Language Map (FPLM)
 
-This repository contains planning materials for the FPLM web app project. At Countable we believe a key part of planning is developing an early prototype. We've included much of the data intended for Phase 2 in this [MapBox base layer](https://api.mapbox.com/styles/v1/countable-web/cjwcq8ybe06so1cpin5lz5sfj.html?fresh=true&title=true&access_token=pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA#4.78/52.44/-123.85).
+This repository contains planning materials for the FPLM web app project. The data intended for Phase 2 is here [MapBox base layer](https://api.mapbox.com/styles/v1/countable-web/cjwcq8ybe06so1cpin5lz5sfj.html?fresh=true&title=true&access_token=pk.eyJ1IjoiY291bnRhYmxlLXdlYiIsImEiOiJjamQyZG90dzAxcmxmMndtdzBuY3Ywa2ViIn0.MU-sGTVDS9aGzgdJJ3EwHA#4.78/52.44/-123.85).
 
 ## Deliverables
 
