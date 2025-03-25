@@ -148,6 +148,10 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
 
         id_token = request.GET.get("id_token")
         result = verify_token(id_token)
+
+        if result is None:
+            return Response({"success": False, "error": "Token expired or invalid. Please log in again."})
+
         if "email" in result:
             try:
                 user = User.objects.get(email=result["email"].strip())
@@ -169,7 +173,7 @@ class UserViewSet(UserCustomViewSet, GenericViewSet):
                 {"success": True, "email": user.email, "id": user.id, "new": is_new}
             )
 
-        return Response({"success": False})
+        return Response({"success": False, "error": "Invalid token"})
 
     @action(detail=False)
     def logout(self, request):
