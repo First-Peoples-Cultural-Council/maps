@@ -51,4 +51,3 @@ networks:
 volumes:
     static:
         driver: local
-
