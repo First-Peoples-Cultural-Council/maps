@@ -9,12 +9,6 @@ module.exports = {
     host: '0.0.0.0' // default: localhost
   },
 
-  matomo: {
-    matomoUrl: 'https://analytics.firstvoices.com/',
-    siteId: 6,
-    enableLinkTracking: true
-  },
-
   env: {
     COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
     COGNITO_URL: process.env.COGNITO_URL,

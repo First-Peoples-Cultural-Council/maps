@@ -18,7 +18,7 @@ services:
       - /srv/s1/media:/media
 
   frontend:
-    command: bash -c "yarn add @nuxtjs/matomo && yarn build && yarn start"
+    command: bash -c "yarn && yarn build && yarn start"
     environment:
       - HOST=https://maps.fpcc.ca
       - COGNITO_HOST=https://maps.fpcc.ca
