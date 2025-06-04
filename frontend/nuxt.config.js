@@ -9,11 +9,14 @@ module.exports = {
     host: '0.0.0.0' // default: localhost
   },
 
-  matomo: {
-    matomoUrl: 'https://analytics.firstvoices.com/',
-    siteId: 6,
-    enableLinkTracking: true
-  },
+  matomo:
+    process.env.NODE_ENV === 'production'
+      ? {
+          matomoUrl: 'https://analytics.firstvoices.com/',
+          siteId: 6,
+          enableLinkTracking: true
+        }
+      : {},
 
   env: {
     COGNITO_APP_CLIENT_ID: process.env.COGNITO_APP_CLIENT_ID,
@@ -108,7 +111,8 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
-    'nuxt-vue-multiselect'
+    'nuxt-vue-multiselect',
+    '@nuxtjs/matomo'
   ],
   markdownit: {
     injected: true
