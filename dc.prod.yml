@@ -24,7 +24,6 @@ services:
       - NODE_ENV=production
       - COGNITO_URL=https://auth.firstvoices.com
       - COGNITO_APP_CLIENT_ID=tssmvghv2kfepud7tth4olugp
-      - NODE_OPTIONS='--max-old-space-size=2560'
     command: bash -c "yarn && yarn build && yarn start"
     restart: always
   test:
