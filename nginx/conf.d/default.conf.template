@@ -31,6 +31,14 @@ server {
         return 301 https://$host$request_uri;
     }  
 
+    error_page 502 503 /maintenance.html;
+
+    location /elb-healthcheck {
+        access_log off;
+        return 200 'OK';
+        add_header Content-Type text/plain;
+    }
+
     location /static {
         alias /static;
         autoindex on;
@@ -40,6 +48,11 @@ server {
         alias /media;
         autoindex on;
         expires 30d;
+    }
+
+    location = /maintenance.html {
+        root /usr/share/nginx/html;
+        internal;
     }
 
     location ~ ^/(api|admin|geo|docs|flatpages|sitemap.xml) {
@@ -56,6 +69,7 @@ server {
         proxy_send_timeout          1200;
         proxy_read_timeout          1200;
         send_timeout                1200;
+        proxy_intercept_errors on;
     }
 
 
@@ -77,6 +91,7 @@ server {
         proxy_send_timeout          1200;
         proxy_read_timeout          1200;
         send_timeout                1200;
+        proxy_intercept_errors on;
     }
 
 }
