@@ -31,87 +31,128 @@
             height: 100vh;
             overflow-y: auto;
             box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.1); 
-            background-image: url('/assets/images/splashscreen/green_greetings_1920.svg'); 
+            background-image: url('/assets/green_greetings_1920.svg');
             background-size: auto 100%;
             background-position: center center;
-            background-color: #00343b; 
-            color: #fff; 
+            background-color: #00343b;
+            color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         }
 
-        /* Removed splash-header and related styles */
+        .splash-header {
+            position: relative;
+            height: 100px;
+            width: 100%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            margin-left: 5%;
+            color: #a32720;
+            height: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: default;
+        }
+
+        .fpcc-logo {
+            display: block;
+            width: 70px;
+            height: 100%;
+            padding: 1em 0;
+            object-fit: contain;
+            margin-right: 0.75em;
+        }
+
+        .fpcc-logo-text {
+            width: 250px;
+        }
+
+        .fpcc-star-dark {
+            position: absolute;
+            right: 5%;
+            top: 75%;
+            height: auto;
+            width: 80px;
+            z-index: 10;
+        }
 
         .splash-detail-content {
             display: flex;
             flex-direction: column;
-            align-items: center; 
+            align-items: center;
             justify-content: center;
-            flex-grow: 1; 
+            flex-grow: 1;
             min-height: auto;
-            margin: auto; 
-            width: 80%; 
-            max-width: 700px; 
+            margin: auto;
+            width: 80%;
+            max-width: 700px;
             color: #fff;
-            padding: 2em 0; 
-            text-align: center; 
+            padding: 2em 0;
+            text-align: center;
         }
 
         .splash-detail {
             display: flex;
             flex-direction: column;
-            align-items: center; 
+            align-items: center;
             position: relative;
-            font-family: 'Faustina', serif; 
+            font-family: 'Faustina', serif;
             margin-bottom: 2em;
         }
 
         .fpcc-title {
             font-size: 34px;
             font-weight: 500;
-            margin-bottom: 15px; 
+            margin-bottom: 15px;
         }
 
         .fpcc-description {
             font-size: 20px;
             font-weight: 500;
-            width: 80%; 
-            max-width: 600px; 
-            margin: 0 auto; 
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
             margin-bottom: 1em;
         }
 
         #countdown {
-            font-size: 3.5em; 
+            font-size: 3.5em;
             margin-top: 30px;
             margin-bottom: 30px;
-            color: #b47a2b; 
+            color: #b47a2b;
             font-weight: 700;
             letter-spacing: 2px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         .refresh-prompt {
             margin-top: 30px;
             font-size: 1.2em;
             display: none;
-            color: #fff; 
+            color: #fff;
         }
 
         button {
             width: 180px;
             height: 50px;
-            display: inline-flex; 
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 0.8em;
-            background: #00343b; 
+            background: #00343b;
             border-radius: 2em;
-            border: 2px solid #b47a2b; 
+            border: 2px solid #b47a2b;
             font-size: 16px;
-            margin-top: 1em; 
+            margin-top: 1em;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #fff; 
+            color: #fff;
             cursor: pointer;
             transition: transform 0.2s ease, border-color 0.2s ease;
             font-weight: 600;
@@ -119,14 +160,12 @@
 
         button:hover {
             transform: scale(1.05);
-            border: 2px solid #a32720; 
+            border: 2px solid #a32720;
         }
 
         @media screen and (max-width: 992px) {
-            /* Removed mobile splash-header styles */
-
+            background-image: url('/assets/green_greetings_mobile.svg');
             .splash-content-container {
-                background-image: url('/assets/images/splashscreen/green_greetings_mobile.svg'); 
                 width: 100vw;
                 height: 100vh;
                 overflow-y: auto;
