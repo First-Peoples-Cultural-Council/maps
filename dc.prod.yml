@@ -24,8 +24,6 @@ services:
       - NODE_ENV=production
       - COGNITO_URL=https://auth.firstvoices.com
       - COGNITO_APP_CLIENT_ID=tssmvghv2kfepud7tth4olugp
-      - MATOMO_URL=https://analytics.firstvoices.com/
-      - MATOMO_SITE_ID=6
     command: bash -c "yarn && yarn build && /usr/local/bin/node --max-old-space-size=2560 server/index.js"
     restart: always
   test:

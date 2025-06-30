@@ -90,8 +90,7 @@ module.exports = {
     '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' },
     { src: '~plugins/progressbar.js', mode: 'client' },
-    { src: '~plugins/histogram.js', mode: 'client' },
-    '~/plugins/matomo.js' // <-- Adding this plugin to init Matomo at runtime especially during container restarts
+    { src: '~plugins/histogram.js', mode: 'client' }
   ],
   /*
    ** Nuxt.js modules
@@ -103,8 +102,7 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
-    'nuxt-vue-multiselect',
-    'nuxt-matomo'
+    'nuxt-vue-multiselect'
   ],
   markdownit: {
     injected: true
@@ -116,21 +114,6 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-
-  // Runtime config for variables that can change without rebuild
-  publicRuntimeConfig: {
-    matomoHost: process.env.MATOMO_URL || '',
-    matomoSiteId: process.env.MATOMO_SITE_ID || ''
-  },
-
-  // Disable the built-in matomo module automatic tracking (we do it manually in the plugin)
-  matomo: {
-    matomoUrl: process.env.MATOMO_URL,
-    siteId: process.env.MATOMO_SITE_ID,
-    router: true,
-    disabled: process.env.NODE_ENV !== 'production',
-    trackInitialView: true
-  },
 
   /*
    ** Build configuration
