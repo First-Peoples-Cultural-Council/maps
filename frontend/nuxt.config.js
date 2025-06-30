@@ -26,6 +26,23 @@ module.exports = {
       {
         src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from%2CObject.assign`,
         body: true
+      },
+      // Add Matomo tracking script here
+      {
+        type: 'text/javascript',
+        innerHTML: `
+          var _paq = window._paq = window._paq || [];
+          _paq.push(["trackPageView"]);
+          _paq.push(["enableLinkTracking"]);
+          (function() {
+            var u="//analytics.firstvoices.com/";
+            _paq.push(["setTrackerUrl", u+"matomo.php"]);
+            _paq.push(["setSiteId", "6"]);
+            var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
+            g.type="text/javascript"; g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
+          })();
+        `,
+        body: true // Make sure it loads in the body (for async loading)
       }
     ],
     title: "First Peoples' Map of B.C.",
@@ -60,7 +77,10 @@ module.exports = {
         href:
           'https://fonts.googleapis.com/css?family=Faustina:400,500,700&display=swap'
       }
-    ]
+    ],
+    __dangerouslyDisableSanitizersByTagID: {
+      'nuxt-head': ['innerHTML'] // This is required to safely inject the script
+    }
   },
 
   /*
@@ -102,8 +122,7 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
-    'nuxt-vue-multiselect',
-    'nuxt-matomo'
+    'nuxt-vue-multiselect'
   ],
   markdownit: {
     injected: true
@@ -115,17 +134,6 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-
-  // Disable the built-in matomo module automatic tracking (we do it manually in the plugin)
-  matomo: {
-    matomoUrl: process.env.MATOMO_URL,
-    siteId: process.env.MATOMO_SITE_ID,
-    router: true,
-    disabled: process.env.NODE_ENV !== 'production',
-    trackInitialView: true,
-    scriptUrl: process.env.MATOMO_URL + 'matomo.js',
-    trackerUrl: process.env.MATOMO_URL + 'matomo.php'
-  },
 
   /*
    ** Build configuration
