@@ -102,7 +102,8 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
-    'nuxt-vue-multiselect'
+    'nuxt-vue-multiselect',
+    'nuxt-matomo'
   ],
   markdownit: {
     injected: true
@@ -114,6 +115,15 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
+
+  // Disable the built-in matomo module automatic tracking (we do it manually in the plugin)
+  matomo: {
+    matomoUrl: process.env.MATOMO_URL,
+    siteId: process.env.MATOMO_SITE_ID,
+    router: true,
+    disabled: false,
+    trackInitialView: true
+  },
 
   /*
    ** Build configuration

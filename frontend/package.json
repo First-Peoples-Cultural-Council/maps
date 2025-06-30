@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "nuxt-matomo": "^1.2.4",
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/eslint-config": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
