@@ -80,9 +80,6 @@ module.exports = {
           'https://fonts.googleapis.com/css?family=Faustina:400,500,700&display=swap'
       }
     ],
-    __dangerouslyDisableSanitizersByTagID: {
-      'nuxt-head': ['innerHTML'] // This is required to safely inject the script
-    }
   },
 
   /*
