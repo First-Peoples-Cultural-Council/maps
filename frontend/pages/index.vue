@@ -660,6 +660,22 @@ export default {
     }
   },
   async mounted() {
+    if (process.client && process.env.NODE_ENV === 'production') {
+      window._paq = window._paq || []
+      window._paq.push(['trackPageView'])
+      window._paq.push(['enableLinkTracking'])
+
+      const u = 'https://analytics.firstvoices.com/'
+      window._paq.push(['setTrackerUrl', u + 'matomo.php'])
+      window._paq.push(['setSiteId', '6'])
+
+      const d = document
+      const g = d.createElement('script')
+      const s = d.getElementsByTagName('script')[0]
+      g.async = true
+      g.src = u + 'matomo.js'
+      s.parentNode.insertBefore(g, s)
+    }
     this.$root.$on('updateData', () => {
       this.$eventHub.whenMap(map => {
         this.updateData(map)
