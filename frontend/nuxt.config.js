@@ -121,8 +121,10 @@ module.exports = {
     matomoUrl: process.env.MATOMO_URL,
     siteId: process.env.MATOMO_SITE_ID,
     router: true,
-    disabled: false,
-    trackInitialView: true
+    disabled: process.env.NODE_ENV !== 'production',
+    trackInitialView: true,
+    scriptUrl: process.env.MATOMO_URL + 'matomo.js',
+    trackerUrl: process.env.MATOMO_URL + 'matomo.php'
   },
 
   /*
