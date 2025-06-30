@@ -29,20 +29,22 @@ module.exports = {
       },
       // Add Matomo tracking script here
       {
-        type: 'text/javascript',
+        hid: 'matomo',
         innerHTML: `
           var _paq = window._paq = window._paq || [];
-          _paq.push(["trackPageView"]);
-          _paq.push(["enableLinkTracking"]);
+          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
           (function() {
-            var u="//analytics.firstvoices.com/";
-            _paq.push(["setTrackerUrl", u+"matomo.php"]);
-            _paq.push(["setSiteId", "6"]);
-            var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
-            g.type="text/javascript"; g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
+            var u="https://analytics.firstvoices.com/"; 
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '6']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
           })();
         `,
-        body: true // Make sure it loads in the body (for async loading)
+        type: 'text/javascript',
+        body: true,
       }
     ],
     title: "First Peoples' Map of B.C.",
