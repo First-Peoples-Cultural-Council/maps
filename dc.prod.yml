@@ -27,4 +27,4 @@ services:
     command: bash -c "yarn && yarn build && /usr/local/bin/node --max-old-space-size=2560 server/index.js"
     restart: always
   test:
-    command: sleep 1000000
+    command: sleep 900
