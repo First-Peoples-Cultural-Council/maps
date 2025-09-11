@@ -31,6 +31,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: "ec2-35-183-34-28.ca-central-1.compute.amazonaws.com"
+          timeout: 1800
           username: jenkins
           key: ${{ secrets.PROD_DEPLOY_KEY }}
           script: |
