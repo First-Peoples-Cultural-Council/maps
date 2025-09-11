@@ -24,7 +24,7 @@ module.exports = {
   head: {
     script: [
       {
-        src: `https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.closest%2CArray.from%2CObject.assign`,
+        src: `https://polyfill-fastly.io/v3/polyfill.min.js?features=Element.prototype.closest,Array.from,Object.assign`,
         body: true
       },
     ],
