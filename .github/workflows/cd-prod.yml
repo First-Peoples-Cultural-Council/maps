@@ -32,6 +32,7 @@ jobs:
         with:
           host: "ec2-35-183-34-28.ca-central-1.compute.amazonaws.com"
           timeout: 1800s
+          command_timeout: 1800s
           username: jenkins
           key: ${{ secrets.PROD_DEPLOY_KEY }}
           script: |
