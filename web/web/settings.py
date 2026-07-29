@@ -184,3 +184,6 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
 }
+
+# Temporary fix to prepare for django 4.x
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
