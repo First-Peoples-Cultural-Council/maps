@@ -175,6 +175,8 @@ SWAGGER_SETTINGS = {
     "DEFAULT_AUTO_SCHEMA_CLASS": "web.schema.CustomOpenAPISchema",
 }
 
+SWAGGER_USE_COMPAT_RENDERERS = False
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",

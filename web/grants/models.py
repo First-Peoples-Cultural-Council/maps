@@ -41,7 +41,7 @@ class Grant(models.Model):
     title = models.TextField(**optional)
     project_brief = models.TextField(**optional)
     amount = models.DecimalField(
-        validators=[MinValueValidator(0.0)],
+        validators=[MinValueValidator(0)],
         default=0.0,
         decimal_places=2,
         max_digits=100,

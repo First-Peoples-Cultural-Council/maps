@@ -32,7 +32,7 @@ from .views import (
 
 router = routers.DefaultRouter()
 # Used only for data managmement by admins
-router.register(r"stats", CommunityLanguageStatsViewSet, basename="placename")
+router.register(r"stats", CommunityLanguageStatsViewSet, basename="stats")
 router.register(r"champion", ChampionViewSet, basename="champion")
 
 # Used for data management and application usage

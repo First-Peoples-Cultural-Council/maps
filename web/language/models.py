@@ -187,7 +187,11 @@ class CommunityMember(models.Model):
     date_verified = models.DateField(null=True, blank=True)
 
     class Meta:
-        unique_together = ("user", "community")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "community"], name="unique_community_member"
+            )
+        ]
         verbose_name_plural = "Community Members"
 
     @staticmethod
