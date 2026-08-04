@@ -2,13 +2,13 @@ version: '3.3'
 
 services:
   db:
-    image: postgis/postgis:12-3.0
+    image: postgis/postgis:14.3.3
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - pg12-data:/var/lib/postgresql/data
+      - pg14-data:/var/lib/postgresql/data
     networks:
       - back-tier
   nginx:
@@ -46,5 +46,5 @@ services:
       - ./web/media:/media
 
 volumes:
-  pg12-data:
+  pg14-data:
     driver: local
