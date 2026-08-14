@@ -100,7 +100,6 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/eslint-module',
     '@nuxtjs/markdownit',
     'nuxt-vue-multiselect'
   ],
@@ -167,17 +166,6 @@ module.exports = {
       // Add configuration for eslint-loader
       config.node = {
         fs: 'empty'
-      }
-      if (isDev && isClient) {
-        config.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /(node_modules)/,
-          options: {
-            fix: true
-          }
-        })
       }
     }
   }

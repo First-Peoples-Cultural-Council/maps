@@ -660,7 +660,7 @@ export default {
     }
   },
   async mounted() {
-    if (process.client && process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production') {
       window._paq = window._paq || []
       window._paq.push(['trackPageView'])
       window._paq.push(['enableLinkTracking'])
