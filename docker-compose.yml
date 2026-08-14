@@ -10,7 +10,7 @@ services:
             - back-tier
 
     frontend:
-        image: node:13
+        image: node:22.18.0
         volumes:
             - ./frontend:/code
         networks:
@@ -18,6 +18,7 @@ services:
         working_dir: /code/
         command: ./command.sh
         environment:
+            - NODE_OPTIONS=--openssl-legacy-provider
             - MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoiZnBjYyIsImEiOiJjbHJ6Y2RrZ2kxa3NlMndsemNqbTMwajk3In0.Ptmj4UY9iIzIO3UVPpaOUg
             - MAPBOX_STYLE_URL=mapbox://styles/fpcc/cls0kyxqh00b301pvb06p0r07/?optimize=true
 
