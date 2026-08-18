@@ -19,6 +19,9 @@ jobs:
   build-frontend-dev:
     name: Build Frontend (Dev)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         working-directory: frontend
@@ -46,3 +49,34 @@ jobs:
             -f Dockerfile \
             -t frontend-dev:${{ github.sha }} \
             .
+
+      - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push frontend image to ECR (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        run: |
+          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+          ECR_REPOSITORY="${{ vars.ECR_REPOSITORY }}"
+          IMAGE_SHA_TAG="dev-${GITHUB_SHA}"
+
+          if [[ -z "$ECR_REPOSITORY" ]]; then
+            echo "ECR_REPOSITORY variable is required"
+            exit 1
+          fi
+
+          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
+          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:dev-latest"
+
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:dev-latest"
