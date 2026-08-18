@@ -44,5 +44,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build-${{ github.sha }}
-          path: frontend/.nuxt
+          path: frontend/.nuxt/**
+          include-hidden-files: true
           if-no-files-found: error
