@@ -3,7 +3,6 @@ name: Frontend Dev Build
 on:
   push:
     branches:
-      - devops-workflows
       - dev
     paths:
       - frontend/**
