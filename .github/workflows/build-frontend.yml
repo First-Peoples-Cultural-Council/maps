@@ -39,3 +39,10 @@ jobs:
 
       - name: Build frontend
         run: yarn run build
+
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-${{ github.sha }}
+          path: frontend/.nuxt
+          if-no-files-found: error
