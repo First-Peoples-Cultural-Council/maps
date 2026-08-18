@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14.21.3
+          node-version: 13
           cache: yarn
           cache-dependency-path: frontend/yarn.lock
 
