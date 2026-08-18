@@ -46,11 +46,3 @@ jobs:
             -f Dockerfile \
             -t frontend-dev:${{ github.sha }} \
             .
-
-      - name: Upload frontend build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build-${{ github.sha }}
-          path: frontend/.nuxt/**
-          include-hidden-files: true
-          if-no-files-found: error
