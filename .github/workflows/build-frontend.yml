@@ -22,13 +22,12 @@ jobs:
     name: Build Frontend (Dev)
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ${{ vars.FPCC_DEFAULT_AWS_REGION || vars.AWS_REGION || secrets.FPCC_DEFAULT_AWS_REGION }}
-      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY || secrets.ECR_REPOSITORY }}
-      AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.AWS_ACCESS_KEY_ID || secrets.FPCC_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.AWS_SECRET_ACCESS_KEY || secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
     permissions:
       contents: read
-      id-token: write
     defaults:
       run:
         working-directory: frontend
@@ -61,62 +60,23 @@ jobs:
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
-            echo "Missing AWS access key secret. Expected one of: AWS_ACCESS_KEY_ID or FPCC_AWS_ACCESS_KEY_ID."
+            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
             exit 1
           fi
 
           if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
-            echo "Missing AWS secret access key. Expected one of: AWS_SECRET_ACCESS_KEY or FPCC_AWS_SECRET_ACCESS_KEY."
+            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
             exit 1
           fi
 
           if [[ -z "$AWS_REGION" ]]; then
-            echo "Missing AWS region. Expected one of: vars.FPCC_DEFAULT_AWS_REGION, vars.AWS_REGION, or secrets.FPCC_DEFAULT_AWS_REGION."
+            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
             exit 1
           fi
 
           if [[ -z "$ECR_REPOSITORY" ]]; then
-            echo "Missing ECR repository. Expected one of: vars.ECR_REPOSITORY or secrets.ECR_REPOSITORY."
+            echo "Missing secret: ECR_REPOSITORY"
             exit 1
-          fi
-
-      - name: Show resolved input sources (safe)
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
-        env:
-          AWS_KEY_NEW: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_KEY_LEGACY: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_NEW: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SECRET_LEGACY: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION_NEW: ${{ vars.AWS_REGION }}
-          AWS_REGION_LEGACY: ${{ vars.FPCC_DEFAULT_AWS_REGION }}
-          AWS_REGION_SECRET_FALLBACK: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
-          ECR_REPO_VAR: ${{ vars.ECR_REPOSITORY }}
-          ECR_REPO_SECRET: ${{ secrets.ECR_REPOSITORY }}
-        run: |
-          if [[ -n "$AWS_KEY_NEW" ]]; then
-            echo "AWS access key source: secrets.AWS_ACCESS_KEY_ID"
-          elif [[ -n "$AWS_KEY_LEGACY" ]]; then
-            echo "AWS access key source: secrets.FPCC_AWS_ACCESS_KEY_ID"
-          fi
-
-          if [[ -n "$AWS_SECRET_NEW" ]]; then
-            echo "AWS secret key source: secrets.AWS_SECRET_ACCESS_KEY"
-          elif [[ -n "$AWS_SECRET_LEGACY" ]]; then
-            echo "AWS secret key source: secrets.FPCC_AWS_SECRET_ACCESS_KEY"
-          fi
-
-          if [[ -n "$AWS_REGION_LEGACY" ]]; then
-            echo "AWS region source: vars.FPCC_DEFAULT_AWS_REGION"
-          elif [[ -n "$AWS_REGION_NEW" ]]; then
-            echo "AWS region source: vars.AWS_REGION"
-          elif [[ -n "$AWS_REGION_SECRET_FALLBACK" ]]; then
-            echo "AWS region source: secrets.FPCC_DEFAULT_AWS_REGION"
-          fi
-
-          if [[ -n "$ECR_REPO_VAR" ]]; then
-            echo "ECR repository source: vars.ECR_REPOSITORY"
-          elif [[ -n "$ECR_REPO_SECRET" ]]; then
-            echo "ECR repository source: secrets.ECR_REPOSITORY"
           fi
 
       - name: Configure AWS credentials
