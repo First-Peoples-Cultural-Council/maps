@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - dev
+      - devops-workflows
     paths:
       - frontend/**
       - .github/workflows/build-frontend.yml
   pull_request:
     branches:
       - dev
+      - devops-workflows
     paths:
       - frontend/**
       - .github/workflows/build-frontend.yml
@@ -51,24 +53,32 @@ jobs:
             .
 
       - name: Configure AWS credentials
-        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Push frontend image to ECR (dev)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY="${{ vars.ECR_REPOSITORY }}"
-          IMAGE_SHA_TAG="dev-${GITHUB_SHA}"
+          ECR_REPOSITORY="${{ secrets.ECR_REPOSITORY }}"
+
+          if [[ "$GITHUB_REF_NAME" == "devops-workflows" ]]; then
+            IMAGE_TAG_PREFIX="devops"
+          else
+            IMAGE_TAG_PREFIX="dev"
+          fi
+
+          IMAGE_SHA_TAG="${IMAGE_TAG_PREFIX}-${GITHUB_SHA}"
+          IMAGE_LATEST_TAG="${IMAGE_TAG_PREFIX}-latest"
 
           if [[ -z "$ECR_REPOSITORY" ]]; then
             echo "ECR_REPOSITORY variable is required"
@@ -76,7 +86,7 @@ jobs:
           fi
 
           docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
-          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:dev-latest"
+          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_LATEST_TAG"
 
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:dev-latest"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_LATEST_TAG"
