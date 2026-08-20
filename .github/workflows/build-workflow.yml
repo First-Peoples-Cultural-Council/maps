@@ -4,20 +4,6 @@ on:
   push:
     branches:
       - dev
-      - devops-workflows
-    paths:
-      - frontend/**
-      - web/**
-      - .github/workflows/build-workflow.yml
-  pull_request:
-    branches:
-      - dev
-      - devops-workflows
-    paths:
-      - frontend/**
-      - web/**
-      - .github/workflows/build-workflow.yml
-  workflow_dispatch:
 
 jobs:
   set-context:
@@ -31,13 +17,7 @@ jobs:
         id: context
         shell: bash
         run: |
-          if [[ "$GITHUB_REF_NAME" == "devops-workflows" ]]; then
-            IMAGE_TAG_PREFIX="devops"
-          else
-            IMAGE_TAG_PREFIX="dev"
-          fi
-
-          IMAGE_SHA_TAG="${IMAGE_TAG_PREFIX}-${GITHUB_SHA}"
+          IMAGE_SHA_TAG="dev-${GITHUB_SHA}"
 
           echo "image_sha_tag=$IMAGE_SHA_TAG" >> "$GITHUB_OUTPUT"
 
@@ -88,7 +68,6 @@ jobs:
             ../web
 
       - name: Validate AWS/ECR inputs
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
             echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
@@ -111,7 +90,6 @@ jobs:
           fi
 
       - name: Configure AWS credentials
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID_INPUT }}
@@ -120,11 +98,9 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Push frontend and backend images to ECR
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           IMAGE_SHA_TAG="${{ needs.set-context.outputs.image_sha_tag }}"
