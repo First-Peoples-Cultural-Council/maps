@@ -18,9 +18,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  set-context:
+    name: Set Context
+    runs-on: ubuntu-latest
+    outputs:
+      image_sha_tag: ${{ steps.context.outputs.image_sha_tag }}
+
+    steps:
+      - name: Compute branch context
+        id: context
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_NAME" == "devops-workflows" ]]; then
+            IMAGE_TAG_PREFIX="devops"
+          else
+            IMAGE_TAG_PREFIX="dev"
+          fi
+
+          IMAGE_SHA_TAG="${IMAGE_TAG_PREFIX}-${GITHUB_SHA}"
+
+          echo "image_sha_tag=$IMAGE_SHA_TAG" >> "$GITHUB_OUTPUT"
+
   build-frontend-dev:
     name: Build Frontend (Dev)
     runs-on: ubuntu-latest
+    needs: [set-context]
     env:
       AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -96,15 +118,7 @@ jobs:
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-
-          if [[ "$GITHUB_REF_NAME" == "devops-workflows" ]]; then
-            IMAGE_TAG_PREFIX="devops"
-          else
-            IMAGE_TAG_PREFIX="dev"
-          fi
-
-          IMAGE_SHA_TAG="${IMAGE_TAG_PREFIX}-${GITHUB_SHA}"
-          IMAGE_LATEST_TAG="${IMAGE_TAG_PREFIX}-latest"
+          IMAGE_SHA_TAG="${{ needs.set-context.outputs.image_sha_tag }}"
 
           if [[ -z "$ECR_REPOSITORY" ]]; then
             echo "ECR_REPOSITORY variable is required"
@@ -112,7 +126,5 @@ jobs:
           fi
 
           docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
-          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_LATEST_TAG"
 
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_LATEST_TAG"
