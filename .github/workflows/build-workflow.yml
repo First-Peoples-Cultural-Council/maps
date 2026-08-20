@@ -1,4 +1,4 @@
-name: Frontend Dev Build
+name: Build Images
 
 on:
   push:
@@ -7,14 +7,16 @@ on:
       - devops-workflows
     paths:
       - frontend/**
-      - .github/workflows/build-frontend.yml
+      - web/**
+      - .github/workflows/build-workflow.yml
   pull_request:
     branches:
       - dev
       - devops-workflows
     paths:
       - frontend/**
-      - .github/workflows/build-frontend.yml
+      - web/**
+      - .github/workflows/build-workflow.yml
   workflow_dispatch:
 
 jobs:
@@ -39,8 +41,8 @@ jobs:
 
           echo "image_sha_tag=$IMAGE_SHA_TAG" >> "$GITHUB_OUTPUT"
 
-  build-frontend-dev:
-    name: Build Frontend (Dev)
+  build-and-push-images:
+    name: Build and Push Images (Dev)
     runs-on: ubuntu-latest
     needs: [set-context]
     env:
@@ -78,6 +80,13 @@ jobs:
             -t frontend-dev:${{ github.sha }} \
             .
 
+      - name: Build backend Docker image (no push)
+        run: |
+          docker build \
+            -f ../web/Dockerfile \
+            -t backend-dev:${{ github.sha }} \
+            ../web
+
       - name: Validate AWS/ECR inputs
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
@@ -114,17 +123,21 @@ jobs:
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push frontend image to ECR (dev)
+      - name: Push frontend and backend images to ECR
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           IMAGE_SHA_TAG="${{ needs.set-context.outputs.image_sha_tag }}"
+          FE_TAG="${IMAGE_SHA_TAG}-fe"
+          BE_TAG="${IMAGE_SHA_TAG}-be"
 
           if [[ -z "$ECR_REPOSITORY" ]]; then
             echo "ECR_REPOSITORY variable is required"
             exit 1
           fi
 
-          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
+          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$FE_TAG"
+          docker tag "backend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$BE_TAG"
 
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_SHA_TAG"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$FE_TAG"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$BE_TAG"
