@@ -21,6 +21,11 @@ jobs:
   build-frontend-dev:
     name: Build Frontend (Dev)
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.FPCC_DEFAULT_AWS_REGION || vars.AWS_REGION || secrets.FPCC_DEFAULT_AWS_REGION }}
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY || secrets.ECR_REPOSITORY }}
+      AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.AWS_ACCESS_KEY_ID || secrets.FPCC_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.AWS_SECRET_ACCESS_KEY || secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
     permissions:
       contents: read
       id-token: write
@@ -52,13 +57,36 @@ jobs:
             -t frontend-dev:${{ github.sha }} \
             .
 
+      - name: Validate AWS/ECR inputs
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
+        run: |
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
+            echo "Missing AWS access key. Set one of: AWS_ACCESS_KEY_ID or FPCC_AWS_ACCESS_KEY_ID (secret)."
+            exit 1
+          fi
+
+          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
+            echo "Missing AWS secret key. Set one of: AWS_SECRET_ACCESS_KEY or FPCC_AWS_SECRET_ACCESS_KEY (secret)."
+            exit 1
+          fi
+
+          if [[ -z "$AWS_REGION" ]]; then
+            echo "Missing AWS region. Set one of: vars.FPCC_DEFAULT_AWS_REGION, vars.AWS_REGION, or secrets.FPCC_DEFAULT_AWS_REGION."
+            exit 1
+          fi
+
+          if [[ -z "$ECR_REPOSITORY" ]]; then
+            echo "Missing ECR repository. Set vars.ECR_REPOSITORY or secrets.ECR_REPOSITORY."
+            exit 1
+          fi
+
       - name: Configure AWS credentials
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID_INPUT }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY_INPUT }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -69,7 +97,6 @@ jobs:
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/devops-workflows')
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY="${{ secrets.ECR_REPOSITORY }}"
 
           if [[ "$GITHUB_REF_NAME" == "devops-workflows" ]]; then
             IMAGE_TAG_PREFIX="devops"
