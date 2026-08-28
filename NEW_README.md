@@ -25,7 +25,8 @@ Install [Homebrew](https://brew.sh/) and [pyenv](https://github.com/pyenv/pyenv)
 
 ```sh
 brew update
-brew install pyenv postgresql@17 postgis gdal geos node@22
+brew install pyenv postgresql@17
+brew install postgis gdal geos
 pyenv install -s 3.11.13
 npm install --global yarn@1.22.22
 ```
@@ -156,9 +157,10 @@ cd frontend
 cp .env.local.example .env.local
 ```
 
-The defaults point the frontend to Django at `http://localhost:8000`. Add the
-development Mapbox and Cognito values to `.env.local` as needed. This file is
-ignored by Git and must not contain production secrets.
+The defaults point the frontend to Django at `http://localhost:8000` and include
+the development Mapbox configuration required to load the map. Add the Cognito
+values to `.env.local` if you need authentication. This file is ignored by Git
+and must not contain production secrets.
 
 Install the locked dependencies and start Nuxt:
 
