@@ -1,11 +1,18 @@
 const webpack = require('webpack')
 
+const localDev = process.env.LOCAL_DEV === '1'
+const backendURL =
+  process.env.BACKEND_URL || (localDev ? 'http://localhost:8000' : undefined)
+const frontendURL =
+  process.env.FRONTEND_URL ||
+  (localDev ? 'http://localhost:3000' : process.env.HOST)
+
 module.exports = {
   dev: process.env.NODE_ENV !== 'production',
 
   mode: 'universal',
   server: {
-    port: 80, // default: 3000
+    port: Number(process.env.FRONTEND_PORT) || (localDev ? 3000 : 80),
     host: '0.0.0.0' // default: localhost
   },
 
@@ -15,7 +22,8 @@ module.exports = {
     COGNITO_HOST: process.env.COGNITO_HOST,
     MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
     MAPBOX_STYLE_URL: process.env.MAPBOX_STYLE_URL,
-    HOST: process.env.HOST
+    HOST: frontendURL,
+    BACKEND_URL: backendURL
   },
 
   /*
@@ -71,8 +79,17 @@ module.exports = {
   },
 
   axios: {
-    baseURL: process.env.HOST
+    baseURL: backendURL || process.env.HOST,
+    browserBaseURL: backendURL ? '/' : process.env.HOST,
+    proxy: Boolean(backendURL)
   },
+
+  proxy: backendURL
+    ? {
+        '/api/': backendURL,
+        '/media/': backendURL
+      }
+    : {},
 
   /*
    ** Global CSS

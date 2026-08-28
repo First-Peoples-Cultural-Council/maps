@@ -6,9 +6,13 @@ import { pointIntersects, intersects } from '../mixins/map'
 export const getApiUrl = path => {
   // Remove trailing '/' if it exists
   const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path
+  const backendUrl = (process.env.BACKEND_URL || 'http://nginx').replace(
+    /\/$/,
+    ''
+  )
 
   return process.server
-    ? `http://nginx/api/${normalizedPath}`
+    ? `${backendUrl}/api/${normalizedPath}`
     : `/api/${normalizedPath}`
 }
 

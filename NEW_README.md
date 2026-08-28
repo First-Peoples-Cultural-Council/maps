@@ -25,8 +25,9 @@ Install [Homebrew](https://brew.sh/) and [pyenv](https://github.com/pyenv/pyenv)
 
 ```sh
 brew update
-brew install pyenv postgresql@17 postgis gdal geos
+brew install pyenv postgresql@17 postgis gdal geos node@22
 pyenv install -s 3.11.13
+npm install --global yarn@1.22.22
 ```
 
 This project uses PostgreSQL port `5433` so it can run alongside another PostgreSQL version. Open the PostgreSQL 17 configuration file:
@@ -144,6 +145,31 @@ To stop or restart PostgreSQL 17:
 brew services stop postgresql@17
 brew services start postgresql@17
 ```
+
+### 8. Start the frontend
+
+Keep Django running and open a second terminal at the repository root. Configure
+the frontend environment separately from the backend `.env`:
+
+```sh
+cd frontend
+cp .env.local.example .env.local
+```
+
+The defaults point the frontend to Django at `http://localhost:8000`. Add the
+development Mapbox and Cognito values to `.env.local` as needed. This file is
+ignored by Git and must not contain production secrets.
+
+Install the locked dependencies and start Nuxt:
+
+```sh
+yarn install --frozen-lockfile
+yarn dev:local
+```
+
+Open <http://localhost:3000>. Nuxt proxies `/api/` and `/media/` requests to the
+backend URL configured by `BACKEND_URL`, keeping browser requests same-origin.
+Stop the frontend with `Control-C`.
 
 ## Create an admin user
 
