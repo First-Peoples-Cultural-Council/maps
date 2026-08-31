@@ -10,16 +10,40 @@ jobs:
     name: Set Context
     runs-on: ubuntu-latest
     outputs:
-      image_sha_tag: ${{ steps.context.outputs.image_sha_tag }}
+      environment: ${{ steps.context.outputs.environment }}
+      fe_tag: ${{ steps.context.outputs.fe_tag }}
+      be_tag: ${{ steps.context.outputs.be_tag }}
 
     steps:
-      - name: Compute branch context
+      - name: Compute Env
         id: context
         shell: bash
         run: |
-          IMAGE_SHA_TAG="dev-${GITHUB_SHA}"
-
-          echo "image_sha_tag=$IMAGE_SHA_TAG" >> "$GITHUB_OUTPUT"
+      
+          if [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+      
+            ENVIRONMENT="dev"
+            SHORT_SHA="${GITHUB_SHA::7}"
+            IMAGE_SHA_TAG="dev-${SHORT_SHA}"
+      
+            FE_TAG="fe-${IMAGE_SHA_TAG}"
+            BE_TAG="be-${IMAGE_SHA_TAG}"
+      
+          elif [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+      
+            ENVIRONMENT="prod"
+      
+            FE_TAG="fe-${GITHUB_REF_NAME}"
+            BE_TAG="be-${GITHUB_REF_NAME}"
+      
+          else
+            echo "Unsupported deployment source"
+            exit 1
+          fi
+      
+          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "fe_tag=$FE_TAG" >> "$GITHUB_OUTPUT"
+          echo "be_tag=$BE_TAG" >> "$GITHUB_OUTPUT"
 
   build-and-push-images:
     name: Build and Push Images (Dev)
@@ -103,9 +127,8 @@ jobs:
       - name: Push frontend and backend images to ECR
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          IMAGE_SHA_TAG="${{ needs.set-context.outputs.image_sha_tag }}"
-          FE_TAG="${IMAGE_SHA_TAG}-fe"
-          BE_TAG="${IMAGE_SHA_TAG}-be"
+          FE_TAG="${{ needs.set-context.outputs.fe_tag }}"
+          BE_TAG="${{ needs.set-context.outputs.be_tag }}"
 
           if [[ -z "$ECR_REPOSITORY" ]]; then
             echo "ECR_REPOSITORY variable is required"
