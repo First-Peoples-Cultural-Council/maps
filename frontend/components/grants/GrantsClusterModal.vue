@@ -7,7 +7,7 @@
         v-for="grant in grants"
         :key="grant.properties.id"
         href="#"
-        @click="showGrantModal(grant)"
+        @click.prevent.stop="showGrantModal(grant)"
       >
         {{ grant.properties.recipient }} - {{ grant.properties.grant }}
       </a>

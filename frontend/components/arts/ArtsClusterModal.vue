@@ -7,7 +7,7 @@
         v-for="placename in placenames"
         :key="placename.properties.id"
         href="#"
-        @click="goToPlacename(placename)"
+        @click.prevent.stop="goToPlacename(placename)"
       >
         {{ placename.properties.name }} -
         {{ placename.properties.kind.replace('_', ' ') }}
