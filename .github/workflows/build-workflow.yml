@@ -140,3 +140,87 @@ jobs:
 
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$FE_TAG"
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$BE_TAG"
+  update-values:
+    name: Update Helm Values
+    runs-on: ubuntu-latest
+
+    needs:
+      - set-context
+      - build-and-push-images
+
+    env:
+      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Select Values File
+        id: values
+        shell: bash
+        run: |
+          ENVIRONMENT="${{ needs.set-context.outputs.environment }}"
+
+          if [[ "$ENVIRONMENT" == "prod" ]]; then
+            VALUES_FILE="Values.prod_maps.yaml"
+          else
+            VALUES_FILE="Values.dev_maps.yaml"
+          fi
+
+          echo "values_file=$VALUES_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Download Values File
+        run: |
+          aws codecommit get-file \
+            --repository-name "${{ secrets.CODE_COMMIT }}" \
+            --file-path "${{ steps.values.outputs.values_file }}" \
+            --query fileContent \
+            --output text | base64 -d > values.yaml
+
+      - name: Update Image Tags
+        run: |
+          yq -i '
+            .frontend.image.tag = "${{ needs.set-context.outputs.fe_tag }}"
+          ' values.yaml
+
+          yq -i '
+            .backend.image.tag = "${{ needs.set-context.outputs.be_tag }}"
+          ' values.yaml
+
+      - name: Get Current Commit
+        id: commit
+        run: |
+          COMMIT_ID=$(aws codecommit get-branch \
+            --repository-name "${{ secrets.CODE_COMMIT }}" \
+            --branch-name main \
+            --query branch.commitId \
+            --output text)
+
+          echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Updated Values File
+        run: |
+          FILE_CONTENT=$(base64 -w 0 values.yaml)
+
+          aws codecommit put-file \
+            --repository-name "${{ secrets.CODE_COMMIT }}" \
+            --branch-name main \
+            --file-path "${{ steps.values.outputs.values_file }}" \
+            --file-content "$FILE_CONTENT" \
+            --parent-commit-id "${{ steps.commit.outputs.commit_id }}" \
+            --commit-message "Update Maps image tags (${{
+              needs.set-context.outputs.fe_tag
+            }} / ${{
+              needs.set-context.outputs.be_tag
+            }})"
+          echo "Latest image tag is updated for this environment"
