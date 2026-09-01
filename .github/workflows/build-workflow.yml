@@ -1,13 +1,28 @@
-name: Build Images
+name: Maps Deployment
 
 on:
   push:
     branches:
       - dev
 
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maps-images-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
 jobs:
   set-context:
-    name: Set Context
+    name: Set Build Context
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.context.outputs.environment }}
@@ -15,7 +30,7 @@ jobs:
       be_tag: ${{ steps.context.outputs.be_tag }}
 
     steps:
-      - name: Compute Env
+      - name: Compute Environment and Image Tags
         id: context
         shell: bash
         run: |
@@ -57,35 +72,43 @@ jobs:
           echo "Backend tag: $BE_TAG"
 
   build-frontend:
-    name: Build Frontend
+    name: Build and Push Frontend
     runs-on: ubuntu-latest
-    needs: [set-context]
-    env:
-      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
+    needs:
+      - set-context
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Required Configuration
+      - name: Validate AWS and ECR Configuration
         shell: bash
+        env:
+          AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
 
-          required_values=(
-            "${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}"
-            "${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}"
-            "$AWS_REGION"
-            "$ECR_REPOSITORY"
-          )
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+            exit 1
+          fi
 
-          for value in "${required_values[@]}"; do
-            if [[ -z "$value" ]]; then
-              echo "Required AWS or ECR configuration is missing"
-              exit 1
-            fi
-          done
+          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
+            exit 1
+          fi
+
+          if [[ -z "$AWS_REGION" ]]; then
+            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
+            exit 1
+          fi
+
+          if [[ -z "$ECR_REPOSITORY" ]]; then
+            echo "Missing secret: ECR_REPOSITORY"
+            exit 1
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -116,7 +139,7 @@ jobs:
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: arm64,amd64
+          platforms: arm64
 
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -128,57 +151,48 @@ jobs:
           file: ./frontend/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: >-
-            ${{ steps.login-ecr.outputs.registry }}/${{
-              env.ECR_REPOSITORY
-            }}:${{ needs.set-context.outputs.fe_tag }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.fe_tag }}
           cache-from: type=gha,scope=maps-frontend
           cache-to: type=gha,mode=max,scope=maps-frontend
           provenance: false
 
-      - name: Verify Frontend Image Platforms
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{
-            needs.set-context.outputs.fe_tag
-          }}"
-
-          docker buildx imagetools inspect "$IMAGE"
-
   build-backend:
-    name: Build Backend
+    name: Build and Push Backend
     runs-on: ubuntu-latest
     needs:
       - set-context
-
-    env:
-      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Required Configuration
+      - name: Validate AWS and ECR Configuration
         shell: bash
+        env:
+          AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
 
-          required_values=(
-            "${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}"
-            "${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}"
-            "$AWS_REGION"
-            "$ECR_REPOSITORY"
-          )
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+            exit 1
+          fi
 
-          for value in "${required_values[@]}"; do
-            if [[ -z "$value" ]]; then
-              echo "Required AWS or ECR configuration is missing"
-              exit 1
-            fi
-          done
+          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
+            exit 1
+          fi
+
+          if [[ -z "$AWS_REGION" ]]; then
+            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
+            exit 1
+          fi
+
+          if [[ -z "$ECR_REPOSITORY" ]]; then
+            echo "Missing secret: ECR_REPOSITORY"
+            exit 1
+          fi
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -194,7 +208,7 @@ jobs:
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: arm64,amd64
+          platforms: arm64
 
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -206,24 +220,10 @@ jobs:
           file: ./web/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: >-
-            ${{ steps.login-ecr.outputs.registry }}/${{
-              env.ECR_REPOSITORY
-            }}:${{ needs.set-context.outputs.be_tag }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.be_tag }}
           cache-from: type=gha,scope=maps-backend
           cache-to: type=gha,mode=max,scope=maps-backend
           provenance: false
-
-      - name: Verify Backend Image Platforms
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{
-            needs.set-context.outputs.be_tag
-          }}"
-
-          docker buildx imagetools inspect "$IMAGE"
 
   update-values:
     name: Update Helm Values
@@ -235,79 +235,143 @@ jobs:
       - build-backend
 
     env:
-      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+      CODE_COMMIT_REPOSITORY: ${{ secrets.CODE_COMMIT }}
+      FE_TAG: ${{ needs.set-context.outputs.fe_tag }}
+      BE_TAG: ${{ needs.set-context.outputs.be_tag }}
 
     steps:
+      - name: Validate CodeCommit Configuration
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+            exit 1
+          fi
+
+          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
+            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
+            exit 1
+          fi
+
+          if [[ -z "$AWS_REGION" ]]; then
+            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
+            exit 1
+          fi
+
+          if [[ -z "$CODE_COMMIT_REPOSITORY" ]]; then
+            echo "Missing secret: CODE_COMMIT"
+            exit 1
+          fi
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
-
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Select Values File
         id: values
         shell: bash
         run: |
+          set -euo pipefail
+
           ENVIRONMENT="${{ needs.set-context.outputs.environment }}"
 
-          if [[ "$ENVIRONMENT" == "prod" ]]; then
-            VALUES_FILE="Values.prod_maps.yaml"
-          else
-            VALUES_FILE="Values.dev_maps.yaml"
-          fi
+          case "$ENVIRONMENT" in
+            dev)
+              VALUES_FILE="Values.dev_maps.yaml"
+              ;;
+            prod)
+              VALUES_FILE="Values.prod_maps.yaml"
+              ;;
+            *)
+              echo "Unsupported environment: $ENVIRONMENT"
+              exit 1
+              ;;
+          esac
 
           echo "values_file=$VALUES_FILE" >> "$GITHUB_OUTPUT"
+          echo "Selected values file: $VALUES_FILE"
 
       - name: Download Values File
+        shell: bash
         run: |
+          set -euo pipefail
+
           aws codecommit get-file \
-            --repository-name "${{ secrets.CODE_COMMIT }}" \
+            --repository-name "$CODE_COMMIT_REPOSITORY" \
+            --commit-specifier main \
             --file-path "${{ steps.values.outputs.values_file }}" \
             --query fileContent \
-            --output text | base64 -d > values.yaml
+            --output text |
+          base64 -d > values.yaml
+
+          test -s values.yaml
 
       - name: Update Image Tags
-        run: |
-          yq -i '
-            .frontend.image.tag = "${{ needs.set-context.outputs.fe_tag }}"
-          ' values.yaml
+        uses: mikefarah/yq@v4.45.4
+        env:
+          FE_TAG: ${{ env.FE_TAG }}
+          BE_TAG: ${{ env.BE_TAG }}
+        with:
+          cmd: >-
+            yq -i
+            '.frontend.image.tag = strenv(FE_TAG) |
+            .backend.image.tag = strenv(BE_TAG)'
+            values.yaml
 
-          yq -i '
-            .backend.image.tag = "${{ needs.set-context.outputs.be_tag }}"
-          ' values.yaml
+      - name: Validate Updated Image Tags
+        uses: mikefarah/yq@v4.45.4
+        env:
+          FE_TAG: ${{ env.FE_TAG }}
+          BE_TAG: ${{ env.BE_TAG }}
+        with:
+          cmd: >-
+            yq -e
+            '.frontend.image.tag == strenv(FE_TAG) and
+            .backend.image.tag == strenv(BE_TAG)'
+            values.yaml
 
-      - name: Get Current Commit
+      - name: Get Current CodeCommit Revision
         id: commit
+        shell: bash
         run: |
-          COMMIT_ID=$(aws codecommit get-branch \
-            --repository-name "${{ secrets.CODE_COMMIT }}" \
-            --branch-name main \
-            --query branch.commitId \
-            --output text)
+          set -euo pipefail
+
+          COMMIT_ID=$(
+            aws codecommit get-branch \
+              --repository-name "$CODE_COMMIT_REPOSITORY" \
+              --branch-name main \
+              --query branch.commitId \
+              --output text
+          )
+
+          if [[ -z "$COMMIT_ID" || "$COMMIT_ID" == "None" ]]; then
+            echo "Unable to find current CodeCommit revision"
+            exit 1
+          fi
 
           echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
 
       - name: Upload Updated Values File
+        shell: bash
         run: |
-          FILE_CONTENT=$(base64 -w 0 values.yaml)
+          set -euo pipefail
 
           aws codecommit put-file \
-            --repository-name "${{ secrets.CODE_COMMIT }}" \
+            --repository-name "$CODE_COMMIT_REPOSITORY" \
             --branch-name main \
             --file-path "${{ steps.values.outputs.values_file }}" \
-            --file-content "$FILE_CONTENT" \
+            --file-content fileb://values.yaml \
             --parent-commit-id "${{ steps.commit.outputs.commit_id }}" \
-            --commit-message "Update Maps image tags (${{
-              needs.set-context.outputs.fe_tag
-            }} / ${{
-              needs.set-context.outputs.be_tag
-            }})" \
-            > /dev/null 2>&1
-          echo "Latest image tag is updated for this environment"
+            --commit-message "Update Maps image tags ($FE_TAG / $BE_TAG)" \
+            --no-cli-pager \
+            > /dev/null
+
+          echo "Latest image tags were updated for the ${{ needs.set-context.outputs.environment }} environment"
