@@ -69,10 +69,6 @@ jobs:
             exit 1
           fi
 
-#          echo "::add-mask::$ENVIRONMENT"
-#          echo "::add-mask::$FE_TAG"
-#          echo "::add-mask::$BE_TAG"
-
           echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
           echo "fe_tag=$FE_TAG" >> "$GITHUB_OUTPUT"
           echo "be_tag=$BE_TAG" >> "$GITHUB_OUTPUT"
@@ -132,18 +128,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: true
-
-#      - name: Mask Container Registry
-#        shell: bash
-#        env:
-#          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#          IMAGE_TAG: ${{ needs.set-context.outputs.fe_tag }}
-#        run: |
-#          echo "test masking on this runner"
-#          echo "::add-mask::$REGISTRY"
-#          echo "::add-mask::$IMAGE_TAG"
-#          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY"
-#          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Set Up Cross-Platform Support
         uses: docker/setup-qemu-action@v4
@@ -224,18 +208,6 @@ jobs:
         with:
           mask-password: true
 
-#      - name: Mask Container Registry
-#        shell: bash
-#        env:
-#          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#          IMAGE_TAG: ${{ needs.set-context.outputs.be_tag }}
-#        run: |
-#          echo "Test masking on this runner"
-#          echo "::add-mask::$REGISTRY"
-#          echo "::add-mask::$IMAGE_TAG"
-#          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY"
-#          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
       - name: Set Up Cross-Platform Support
         uses: docker/setup-qemu-action@v4
         with:
@@ -289,14 +261,6 @@ jobs:
       BE_TAG: ${{ needs.set-context.outputs.be_tag }}
 
     steps:
-#      - name: Mask Deployment Configuration
-#        shell: bash
-#        run: |
-#          echo "Test masking on this runner"
-#          echo "::add-mask::$CODE_COMMIT_REPOSITORY"
-#          echo "::add-mask::$FE_TAG"
-#          echo "::add-mask::$BE_TAG"
-
       - name: Validate Deployment Configuration
         shell: bash
         env:
@@ -342,8 +306,6 @@ jobs:
               ;;
           esac
 
-#          echo "::add-mask::$ENVIRONMENT"
-#          echo "::add-mask::$VALUES_FILE"
           echo "values_file=$VALUES_FILE" >> "$GITHUB_OUTPUT"
 
       - name: Download Deployment Configuration
@@ -415,7 +377,6 @@ jobs:
 
           rm -f codecommit-revision-error.log
 
-#          echo "::add-mask::$COMMIT_ID"
           echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
 
       - name: Publish Deployment Configuration
