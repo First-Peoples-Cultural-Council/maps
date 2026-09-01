@@ -20,11 +20,6 @@ env:
   AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
-   Prevent Docker Buildx from publishing detailed build summaries
-   and build records in the GitHub Actions interface.
-  DOCKER_BUILD_SUMMARY: "false"
-  DOCKER_BUILD_RECORD_UPLOAD: "false"
-
 jobs:
   set-context:
     name: Prepare Build
