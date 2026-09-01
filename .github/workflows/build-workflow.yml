@@ -20,17 +20,23 @@ env:
   AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
+  # Prevent Docker Buildx from publishing detailed build summaries
+  # and build records in the GitHub Actions interface.
+  DOCKER_BUILD_SUMMARY: "false"
+  DOCKER_BUILD_RECORD_UPLOAD: "false"
+
 jobs:
   set-context:
-    name: Set Build Context
+    name: Prepare Build
     runs-on: ubuntu-latest
+
     outputs:
       environment: ${{ steps.context.outputs.environment }}
       fe_tag: ${{ steps.context.outputs.fe_tag }}
       be_tag: ${{ steps.context.outputs.be_tag }}
 
     steps:
-      - name: Compute Environment and Image Tags
+      - name: Prepare Build Context
         id: context
         shell: bash
         run: |
@@ -51,7 +57,7 @@ jobs:
             RELEASE_TAG="${{ github.event.release.tag_name }}"
 
             if [[ -z "$RELEASE_TAG" ]]; then
-              echo "Release tag is missing"
+              echo "Required release information is unavailable"
               exit 1
             fi
 
@@ -63,16 +69,16 @@ jobs:
             exit 1
           fi
 
+          echo "::add-mask::$ENVIRONMENT"
+          echo "::add-mask::$FE_TAG"
+          echo "::add-mask::$BE_TAG"
+
           echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
           echo "fe_tag=$FE_TAG" >> "$GITHUB_OUTPUT"
           echo "be_tag=$BE_TAG" >> "$GITHUB_OUTPUT"
 
-          echo "Environment: $ENVIRONMENT"
-          echo "Frontend tag: $FE_TAG"
-          echo "Backend tag: $BE_TAG"
-
   build-frontend:
-    name: Build and Push Frontend
+    name: Build Frontend
     runs-on: ubuntu-latest
 
     needs:
@@ -82,7 +88,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate AWS and ECR Configuration
+      - name: Validate Build Configuration
         shell: bash
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
@@ -90,61 +96,63 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
+                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
+                -z "$AWS_REGION" ||
+                -z "$ECR_REPOSITORY" ]]; then
+            echo "Required build configuration is unavailable"
             exit 1
           fi
 
-          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
-            exit 1
-          fi
-
-          if [[ -z "$AWS_REGION" ]]; then
-            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
-            exit 1
-          fi
-
-          if [[ -z "$ECR_REPOSITORY" ]]; then
-            echo "Missing secret: ECR_REPOSITORY"
-            exit 1
-          fi
-
-      - name: Setup Node.js
+      - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22.18"
           cache: yarn
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Install Frontend Dependencies
+      - name: Install Dependencies
         working-directory: frontend
         run: yarn install --frozen-lockfile
 
-      - name: Build Frontend Application
+      - name: Build Application
         working-directory: frontend
         run: yarn run build
 
-      - name: Configure AWS Credentials
+      - name: Configure Build Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
 
-      - name: Login to Amazon ECR
+      - name: Authenticate Container Registry
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
 
-      - name: Set Up QEMU
+      - name: Mask Container Registry
+        shell: bash
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ needs.set-context.outputs.fe_tag }}
+        run: |
+          echo "::add-mask::$REGISTRY"
+          echo "::add-mask::$IMAGE_TAG"
+          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY"
+          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Set Up Cross-Platform Support
         uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
-      - name: Set Up Docker Buildx
+      - name: Set Up Container Builder
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and Push Frontend Image
+      - name: Build and Publish Frontend
         uses: docker/build-push-action@v7
         with:
           context: ./frontend
@@ -157,8 +165,9 @@ jobs:
           provenance: false
 
   build-backend:
-    name: Build and Push Backend
+    name: Build Backend
     runs-on: ubuntu-latest
+
     needs:
       - set-context
 
@@ -166,7 +175,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate AWS and ECR Configuration
+      - name: Validate Build Configuration
         shell: bash
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
@@ -174,46 +183,48 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
+                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
+                -z "$AWS_REGION" ||
+                -z "$ECR_REPOSITORY" ]]; then
+            echo "Required build configuration is unavailable"
             exit 1
           fi
 
-          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
-            exit 1
-          fi
-
-          if [[ -z "$AWS_REGION" ]]; then
-            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
-            exit 1
-          fi
-
-          if [[ -z "$ECR_REPOSITORY" ]]; then
-            echo "Missing secret: ECR_REPOSITORY"
-            exit 1
-          fi
-
-      - name: Configure AWS Credentials
+      - name: Configure Build Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
 
-      - name: Login to Amazon ECR
+      - name: Authenticate Container Registry
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
 
-      - name: Set Up QEMU
+      - name: Mask Container Registry
+        shell: bash
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ needs.set-context.outputs.be_tag }}
+        run: |
+          echo "::add-mask::$REGISTRY"
+          echo "::add-mask::$IMAGE_TAG"
+          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY"
+          echo "::add-mask::$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Set Up Cross-Platform Support
         uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
-      - name: Set Up Docker Buildx
+      - name: Set Up Container Builder
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and Push Backend Image
+      - name: Build and Publish Backend
         uses: docker/build-push-action@v7
         with:
           context: ./web
@@ -226,7 +237,7 @@ jobs:
           provenance: false
 
   update-values:
-    name: Update Helm Values
+    name: Update Deployment Configuration
     runs-on: ubuntu-latest
 
     needs:
@@ -240,7 +251,14 @@ jobs:
       BE_TAG: ${{ needs.set-context.outputs.be_tag }}
 
     steps:
-      - name: Validate CodeCommit Configuration
+      - name: Mask Deployment Configuration
+        shell: bash
+        run: |
+          echo "::add-mask::$CODE_COMMIT_REPOSITORY"
+          echo "::add-mask::$FE_TAG"
+          echo "::add-mask::$BE_TAG"
+
+      - name: Validate Deployment Configuration
         shell: bash
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
@@ -248,34 +266,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
+          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
+                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
+                -z "$AWS_REGION" ||
+                -z "$CODE_COMMIT_REPOSITORY" ]]; then
+            echo "Required deployment configuration is unavailable"
             exit 1
           fi
 
-          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
-            exit 1
-          fi
-
-          if [[ -z "$AWS_REGION" ]]; then
-            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
-            exit 1
-          fi
-
-          if [[ -z "$CODE_COMMIT_REPOSITORY" ]]; then
-            echo "Missing secret: CODE_COMMIT"
-            exit 1
-          fi
-
-      - name: Configure AWS Credentials
+      - name: Configure Deployment Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
 
-      - name: Select Values File
+      - name: Select Deployment Configuration
         id: values
         shell: bash
         run: |
@@ -291,15 +298,16 @@ jobs:
               VALUES_FILE="Values.prod_maps.yaml"
               ;;
             *)
-              echo "Unsupported environment: $ENVIRONMENT"
+              echo "Unsupported deployment environment"
               exit 1
               ;;
           esac
 
+          echo "::add-mask::$ENVIRONMENT"
+          echo "::add-mask::$VALUES_FILE"
           echo "values_file=$VALUES_FILE" >> "$GITHUB_OUTPUT"
-          echo "Selected values file: $VALUES_FILE"
 
-      - name: Download Values File
+      - name: Download Deployment Configuration
         shell: bash
         run: |
           set -euo pipefail
@@ -309,12 +317,19 @@ jobs:
             --commit-specifier main \
             --file-path "${{ steps.values.outputs.values_file }}" \
             --query fileContent \
-            --output text |
+            --output text \
+            2> codecommit-download-error.log |
           base64 -d > values.yaml
 
-          test -s values.yaml
+          if [[ ! -s values.yaml ]]; then
+            echo "Unable to download deployment configuration"
+            cat codecommit-download-error.log
+            exit 1
+          fi
 
-      - name: Update Image Tags
+          rm -f codecommit-download-error.log
+
+      - name: Update Image References
         uses: mikefarah/yq@v4.45.4
         env:
           FE_TAG: ${{ env.FE_TAG }}
@@ -326,7 +341,7 @@ jobs:
             .backend.image.tag = strenv(BE_TAG)'
             values.yaml
 
-      - name: Validate Updated Image Tags
+      - name: Validate Deployment Configuration
         uses: mikefarah/yq@v4.45.4
         env:
           FE_TAG: ${{ env.FE_TAG }}
@@ -338,7 +353,7 @@ jobs:
             .backend.image.tag == strenv(BE_TAG)'
             values.yaml
 
-      - name: Get Current CodeCommit Revision
+      - name: Get Current Configuration Revision
         id: commit
         shell: bash
         run: |
@@ -349,29 +364,40 @@ jobs:
               --repository-name "$CODE_COMMIT_REPOSITORY" \
               --branch-name main \
               --query branch.commitId \
-              --output text
+              --output text \
+              2> codecommit-revision-error.log
           )
 
           if [[ -z "$COMMIT_ID" || "$COMMIT_ID" == "None" ]]; then
-            echo "Unable to find current CodeCommit revision"
+            echo "Unable to find the current deployment configuration revision"
+            cat codecommit-revision-error.log
             exit 1
           fi
 
+          rm -f codecommit-revision-error.log
+
+          echo "::add-mask::$COMMIT_ID"
           echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
 
-      - name: Upload Updated Values File
+      - name: Publish Deployment Configuration
         shell: bash
         run: |
           set -euo pipefail
 
-          aws codecommit put-file \
+          if ! aws codecommit put-file \
             --repository-name "$CODE_COMMIT_REPOSITORY" \
             --branch-name main \
             --file-path "${{ steps.values.outputs.values_file }}" \
             --file-content fileb://values.yaml \
             --parent-commit-id "${{ steps.commit.outputs.commit_id }}" \
-            --commit-message "Update Maps image tags ($FE_TAG / $BE_TAG)" \
+            --commit-message "Update Maps deployment image references" \
             --no-cli-pager \
-            > /dev/null
+            > /dev/null 2> codecommit-upload-error.log; then
 
-          echo "Latest image tags were updated for the ${{ needs.set-context.outputs.environment }} environment"
+            echo "Unable to publish the deployment configuration"
+            cat codecommit-upload-error.log
+            exit 1
+          fi
+
+          rm -f codecommit-upload-error.log
+          echo "Deployment configuration updated successfully"
