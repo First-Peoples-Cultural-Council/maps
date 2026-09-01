@@ -222,5 +222,6 @@ jobs:
               needs.set-context.outputs.fe_tag
             }} / ${{
               needs.set-context.outputs.be_tag
-            }})"
+            }})" \
+            > /dev/null 2>&1
           echo "Latest image tag is updated for this environment"
