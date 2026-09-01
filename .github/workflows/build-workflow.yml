@@ -19,134 +19,220 @@ jobs:
         id: context
         shell: bash
         run: |
-      
-          if [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-      
+          set -euo pipefail
+
+          if [[ "${GITHUB_EVENT_NAME}" == "push" &&
+                "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+
             ENVIRONMENT="dev"
             SHORT_SHA="${GITHUB_SHA::7}"
-            IMAGE_SHA_TAG="dev-${SHORT_SHA}"
-      
-            FE_TAG="fe-${IMAGE_SHA_TAG}"
-            BE_TAG="be-${IMAGE_SHA_TAG}"
-      
+
+            FE_TAG="fe-dev-${SHORT_SHA}"
+            BE_TAG="be-dev-${SHORT_SHA}"
+
           elif [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
-      
+
             ENVIRONMENT="prod"
-      
-            FE_TAG="fe-${GITHUB_REF_NAME}"
-            BE_TAG="be-${GITHUB_REF_NAME}"
-      
+            RELEASE_TAG="${{ github.event.release.tag_name }}"
+
+            if [[ -z "$RELEASE_TAG" ]]; then
+              echo "Release tag is missing"
+              exit 1
+            fi
+
+            FE_TAG="fe-${RELEASE_TAG}"
+            BE_TAG="be-${RELEASE_TAG}"
+
           else
-            echo "Unsupported deployment source"
+            echo "Unsupported workflow trigger"
             exit 1
           fi
-      
+
           echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
           echo "fe_tag=$FE_TAG" >> "$GITHUB_OUTPUT"
           echo "be_tag=$BE_TAG" >> "$GITHUB_OUTPUT"
 
-  build-and-push-images:
-    name: Build and Push Images (Dev)
+          echo "Environment: $ENVIRONMENT"
+          echo "Frontend tag: $FE_TAG"
+          echo "Backend tag: $BE_TAG"
+
+  build-frontend:
+    name: Build Frontend
     runs-on: ubuntu-latest
     needs: [set-context]
     env:
       AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-    permissions:
-      contents: read
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Required Configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_values=(
+            "${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}"
+            "${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}"
+            "$AWS_REGION"
+            "$ECR_REPOSITORY"
+          )
+
+          for value in "${required_values[@]}"; do
+            if [[ -z "$value" ]]; then
+              echo "Required AWS or ECR configuration is missing"
+              exit 1
+            fi
+          done
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.18
+          node-version: "22.18"
           cache: yarn
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Install dependencies
+      - name: Install Frontend Dependencies
+        working-directory: frontend
         run: yarn install --frozen-lockfile
 
-      - name: Build frontend
+      - name: Build Frontend Application
+        working-directory: frontend
         run: yarn run build
 
-      - name: Build frontend Docker image (no push)
-        run: |
-          docker build \
-            -f Dockerfile \
-            -t frontend-dev:${{ github.sha }} \
-            .
-
-      - name: Build backend Docker image (no push)
-        run: |
-          docker build \
-            -f ../web/Dockerfile \
-            -t backend-dev:${{ github.sha }} \
-            ../web
-
-      - name: Validate AWS/ECR inputs
-        run: |
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_ACCESS_KEY_ID"
-            exit 1
-          fi
-
-          if [[ -z "$AWS_SECRET_ACCESS_KEY_INPUT" ]]; then
-            echo "Missing secret: FPCC_AWS_SECRET_ACCESS_KEY"
-            exit 1
-          fi
-
-          if [[ -z "$AWS_REGION" ]]; then
-            echo "Missing secret: FPCC_DEFAULT_AWS_REGION"
-            exit 1
-          fi
-
-          if [[ -z "$ECR_REPOSITORY" ]]; then
-            echo "Missing secret: ECR_REPOSITORY"
-            exit 1
-          fi
-
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID_INPUT }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY_INPUT }}
+          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push frontend and backend images to ECR
+      - name: Set Up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64,amd64
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: >-
+            ${{ steps.login-ecr.outputs.registry }}/${{
+              env.ECR_REPOSITORY
+            }}:${{ needs.set-context.outputs.fe_tag }}
+          cache-from: type=gha,scope=maps-frontend
+          cache-to: type=gha,mode=max,scope=maps-frontend
+          provenance: false
+
+      - name: Verify Frontend Image Platforms
+        shell: bash
         run: |
-          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          FE_TAG="${{ needs.set-context.outputs.fe_tag }}"
-          BE_TAG="${{ needs.set-context.outputs.be_tag }}"
+          set -euo pipefail
 
-          if [[ -z "$ECR_REPOSITORY" ]]; then
-            echo "ECR_REPOSITORY variable is required"
-            exit 1
-          fi
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{
+            needs.set-context.outputs.fe_tag
+          }}"
 
-          docker tag "frontend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$FE_TAG"
-          docker tag "backend-dev:${GITHUB_SHA}" "$ECR_REGISTRY/$ECR_REPOSITORY:$BE_TAG"
+          docker buildx imagetools inspect "$IMAGE"
 
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$FE_TAG"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$BE_TAG"
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    needs:
+      - set-context
+
+    env:
+      AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Required Configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_values=(
+            "${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}"
+            "${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}"
+            "$AWS_REGION"
+            "$ECR_REPOSITORY"
+          )
+
+          for value in "${required_values[@]}"; do
+            if [[ -z "$value" ]]; then
+              echo "Required AWS or ECR configuration is missing"
+              exit 1
+            fi
+          done
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set Up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64,amd64
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./web
+          file: ./web/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: >-
+            ${{ steps.login-ecr.outputs.registry }}/${{
+              env.ECR_REPOSITORY
+            }}:${{ needs.set-context.outputs.be_tag }}
+          cache-from: type=gha,scope=maps-backend
+          cache-to: type=gha,mode=max,scope=maps-backend
+          provenance: false
+
+      - name: Verify Backend Image Platforms
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{
+            needs.set-context.outputs.be_tag
+          }}"
+
+          docker buildx imagetools inspect "$IMAGE"
+
   update-values:
     name: Update Helm Values
     runs-on: ubuntu-latest
 
     needs:
       - set-context
-      - build-and-push-images
+      - build-frontend
+      - build-backend
 
     env:
       AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
