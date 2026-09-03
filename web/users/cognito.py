@@ -1,5 +1,5 @@
 import os
-import cognitojwt
+from cognitojwt import decode
 from jose.exceptions import ExpiredSignatureError, JWTError
 
 # Get environment variables
@@ -14,7 +14,7 @@ keys_url = "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json".forma
 def verify_token(token):
     try:
         # Attempt to decode the token using cognitojwt
-        verified_claims: dict = cognitojwt.decode(
+        verified_claims: dict = decode(
             token,
             region,
             userpool_id,
