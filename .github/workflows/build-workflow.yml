@@ -458,7 +458,21 @@ jobs:
           IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
         run: |
           IMAGE_DIGEST=$(docker buildx imagetools inspect "$IMAGE_REF" --raw | jq -r '.manifests[] | select(.platform.os == "linux" and .platform.architecture == "amd64") | .digest')
-          aws ecr start-image-scan --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
+          SCAN_STATUS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" --query 'imageScanStatus.status' --output text 2>/dev/null || true)
+
+          if [[ "$SCAN_STATUS" != "IN_PROGRESS" && "$SCAN_STATUS" != "COMPLETE" ]]; then
+            if ! SCAN_OUTPUT=$(aws ecr start-image-scan --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" 2>&1); then
+              if [[ "$SCAN_OUTPUT" == *"LimitExceededException"* ]]; then
+                echo "ECR scan quota reached; using the existing scan"
+              else
+                echo "$SCAN_OUTPUT"
+                exit 1
+              fi
+            fi
+          else
+            echo "ECR scan is already $SCAN_STATUS; reusing it"
+          fi
+
           aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
           echo "List of findings for ${{ matrix.image }}:"
           aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '.imageScanFindings.findings'
