@@ -1,0 +1,88 @@
+name: Build Maps Backend
+
+on:
+  push:
+    branches:
+      - dev
+      - master
+    tags:
+      - "r-*"
+  pull_request:
+    branches:
+      - dev
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  django-tests:
+    name: Django tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python-version: ["3.11.13"] # Keep in sync with web/.python-version and web/Dockerfile.
+
+    services:
+      postgres:
+        image: postgis/postgis:14-3.3
+        env:
+          POSTGRES_DB: maps_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d maps_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_NAME: maps_ci
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: 5432
+      DEBUG: 1
+      SECRET_KEY: ci-only-secret-key
+      COGNITO_REGION: ca-central-1
+      COGNITO_USERPOOL_ID: ci-user-pool
+      COGNITO_APP_CLIENT_ID: ci-app-client
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: web/requirements.txt
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            gdal-bin \
+            libgdal-dev \
+            libgeos-dev \
+            libpq-dev \
+            libproj-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r web/requirements.txt
+
+      - name: Run Django system checks
+        working-directory: web
+        run: python manage.py check
+
+      - name: Run Django tests
+        working-directory: web
+        run: python manage.py test --noinput
