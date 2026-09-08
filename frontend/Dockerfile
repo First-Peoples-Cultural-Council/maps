@@ -8,12 +8,18 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 COPY . .
+
+ARG BACKEND_URL
+ENV BACKEND_URL=${BACKEND_URL}
 ENV NODE_ENV=production
 RUN yarn run build
 
 FROM node:22.18.0-bookworm-slim AS runtime
 
 WORKDIR /app
+
+ARG BACKEND_URL
+ENV BACKEND_URL=${BACKEND_URL}
 ENV NODE_ENV=production
 
 RUN corepack enable && corepack prepare yarn@1.22.22 --activate

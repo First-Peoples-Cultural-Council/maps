@@ -162,6 +162,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.fe_tag }}
+          build-args: |
+            BACKEND_URL=http://maps-backend:8000
           cache-from: type=gha,scope=maps-frontend
           cache-to: type=gha,mode=max,scope=maps-frontend
           provenance: false
