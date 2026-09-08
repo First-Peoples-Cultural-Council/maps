@@ -396,3 +396,54 @@ jobs:
 
           rm -f codecommit-upload-error.log
           echo "Deployment configuration updated successfully"
+
+  image-scan:
+    name: Image Scans (${{ matrix.image }})
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    needs:
+      - set-context
+      - update-values
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: frontend
+            tag: ${{ needs.set-context.outputs.fe_tag }}
+          - image: backend
+            tag: ${{ needs.set-context.outputs.be_tag }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Authenticate Container Registry
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
+
+      - name: Set Up Trivy CLI
+        uses: aquasecurity/setup-trivy@v0.3.1
+        with:
+          version: v0.74.0
+          cache: true
+
+      - name: Run Trivy Scan
+        env:
+          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+        run: trivy image --platform linux/amd64 --scanners vuln "$IMAGE_REF"
+
+      - name: Run ECR Scan
+        env:
+          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+        run: |
+          IMAGE_DIGEST=$(docker buildx imagetools inspect "$IMAGE_REF" --raw | jq -r '.manifests[] | select(.platform.os == "linux" and .platform.architecture == "amd64") | .digest')
+          aws ecr start-image-scan --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
+          aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
+          echo "List of findings for ${{ matrix.image }}:"
+          aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '.imageScanFindings.findings'
