@@ -9,7 +9,7 @@ map $sent_http_content_type $expires {
 server {
 
     listen 80 default_server;
-    server_name locahost maps.fpcc.ca fplm.countable.ca;
+    server_name locahost maps.fpcc.ca;
     client_max_body_size 0;
 
     sendfile off;
