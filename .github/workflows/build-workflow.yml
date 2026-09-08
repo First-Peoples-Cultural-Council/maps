@@ -449,11 +449,15 @@ jobs:
           cache: true
 
       - name: Run Trivy Scan
+        id: trivy
+        continue-on-error: true
         env:
           IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
-        run: trivy image --platform linux/amd64 --scanners vuln "$IMAGE_REF"
+        run: trivy image --platform linux/amd64 --scanners vuln --severity HIGH,CRITICAL --exit-code 1 "$IMAGE_REF"
 
       - name: Run ECR Scan
+        id: ecr
+        continue-on-error: true
         env:
           IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
         run: |
@@ -474,5 +478,19 @@ jobs:
           fi
 
           aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
-          echo "List of findings for ${{ matrix.image }}:"
-          aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '.imageScanFindings.findings'
+          FINDINGS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '[.imageScanFindings.findings[]? | select(.severity == "HIGH" or .severity == "CRITICAL")]')
+
+          echo "HIGH and CRITICAL ECR findings for ${{ matrix.image }}:"
+          echo "$FINDINGS" | jq .
+
+          [[ $(echo "$FINDINGS" | jq length) -eq 0 ]]
+
+      - name: Evaluate Scan Results
+        if: always()
+        run: |
+          if [[ "${{ steps.trivy.outcome }}" == "failure" || "${{ steps.ecr.outcome }}" == "failure" ]]; then
+            echo "HIGH or CRITICAL vulnerabilities found for ${{ matrix.image }}"
+            exit 1
+          fi
+
+          echo "No HIGH or CRITICAL vulnerabilities found for ${{ matrix.image }}"
