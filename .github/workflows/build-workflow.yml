@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - dev
-      - FPMT-168-trivy-ecr-scans
-
-  pull_request:
-    branches:
-      - dev
 
   release:
     types:
@@ -42,10 +37,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ||
-                ("${GITHUB_EVENT_NAME}" == "push" &&
-                 ("${GITHUB_REF}" == "refs/heads/dev" ||
-                  "${GITHUB_REF}" == "refs/heads/FPMT-168-trivy-ecr-scans")) ]]; then
+          if [[ "${GITHUB_EVENT_NAME}" == "push" &&
+                "${GITHUB_REF}" == "refs/heads/dev" ]]; then
 
             ENVIRONMENT="dev"
             SHORT_SHA="${GITHUB_SHA::7}"
@@ -251,7 +244,6 @@ jobs:
   update-values:
     name: Update Deployment Configuration
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' || github.ref == 'refs/heads/dev'
 
     needs:
       - set-context
@@ -411,14 +403,7 @@ jobs:
     continue-on-error: true
     needs:
       - set-context
-      - build-frontend
-      - build-backend
       - update-values
-    if: >-
-      always() &&
-      needs.build-frontend.result == 'success' &&
-      needs.build-backend.result == 'success' &&
-      (needs.update-values.result == 'success' || needs.update-values.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:
