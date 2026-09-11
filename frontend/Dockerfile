@@ -1,4 +1,4 @@
-FROM node:22.18.0-bookworm AS builder
+FROM node:22.23.2-bookworm AS builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 ENV NODE_ENV=production
 RUN yarn run build
 
-FROM node:22.18.0-bookworm-slim AS runtime
+FROM node:22.23.2-bookworm-slim AS runtime
 
 WORKDIR /app
 ENV NODE_ENV=production
