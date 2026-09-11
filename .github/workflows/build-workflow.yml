@@ -1,7 +1,11 @@
-name: Maps Deployment
+name: Maps Tests and Deployment
 
 on:
   push:
+    branches:
+      - dev
+
+  pull_request:
     branches:
       - dev
 
@@ -13,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: maps-images-${{ github.workflow }}-${{ github.ref }}
+  group: maps-workflow-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -21,9 +25,38 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
+  backend-tests:
+    name: Backend Tests
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+    uses: ./.github/workflows/test-backend.yml
+
+  frontend-tests:
+    name: Frontend Tests
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+    uses: ./.github/workflows/test-frontend.yml
+
   set-context:
     name: Prepare Build
     runs-on: ubuntu-latest
+
+    needs:
+      - backend-tests
+      - frontend-tests
+
+    if: >-
+      always() &&
+      (
+        github.event_name == 'release' ||
+        (
+          github.event_name == 'push' &&
+          needs.backend-tests.result == 'success' &&
+          needs.frontend-tests.result == 'success'
+        )
+      )
 
     outputs:
       environment: ${{ steps.context.outputs.environment }}
