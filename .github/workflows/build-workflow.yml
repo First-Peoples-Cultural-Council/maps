@@ -398,3 +398,133 @@ jobs:
 
           rm -f codecommit-upload-error.log
           echo "Deployment configuration updated successfully"
+
+  image-scan:
+    name: Image Scans (${{ matrix.image }})
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    needs:
+      - set-context
+      - update-values
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: frontend
+            tag: ${{ needs.set-context.outputs.fe_tag }}
+          - image: backend
+            tag: ${{ needs.set-context.outputs.be_tag }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Authenticate Container Registry
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
+
+      - name: Set Up Trivy CLI
+        uses: aquasecurity/setup-trivy@v0.3.1
+        with:
+          version: v0.74.0
+          cache: true
+
+      - name: Run Trivy Scan
+        id: trivy
+        continue-on-error: true
+        env:
+          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+        run: |
+          if trivy image --platform linux/amd64 --scanners vuln --severity HIGH,CRITICAL --format json --output trivy-findings.json --exit-code 1 "$IMAGE_REF"; then
+            SCAN_EXIT=0
+          else
+            SCAN_EXIT=$?
+          fi
+
+          jq '[.Results[]?.Vulnerabilities[]? | {VulnerabilityID, PkgName, InstalledVersion, FixedVersion, Severity, Title}]' trivy-findings.json
+          exit "$SCAN_EXIT"
+
+      - name: Run ECR Scan
+        id: ecr
+        continue-on-error: true
+        env:
+          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+        run: |
+          IMAGE_DIGEST=$(docker buildx imagetools inspect "$IMAGE_REF" --raw | jq -r '.manifests[] | select(.platform.os == "linux" and .platform.architecture == "amd64") | .digest')
+          SCAN_STATUS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" --query 'imageScanStatus.status' --output text 2>/dev/null || true)
+
+          if [[ "$SCAN_STATUS" != "IN_PROGRESS" && "$SCAN_STATUS" != "COMPLETE" ]]; then
+            if ! SCAN_OUTPUT=$(aws ecr start-image-scan --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" 2>&1); then
+              if [[ "$SCAN_OUTPUT" == *"LimitExceededException"* ]]; then
+                echo "ECR scan quota reached; using the existing scan"
+              else
+                echo "$SCAN_OUTPUT"
+                exit 1
+              fi
+            fi
+          else
+            echo "ECR scan is already $SCAN_STATUS; reusing it"
+          fi
+
+          aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
+          aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '[.imageScanFindings.findings[]? | select(.severity == "HIGH" or .severity == "CRITICAL")]' > ecr-findings.json
+
+          echo "HIGH and CRITICAL ECR findings for ${{ matrix.image }}:"
+          jq . ecr-findings.json
+
+          [[ $(jq length ecr-findings.json) -eq 0 ]]
+
+      - name: Evaluate Scan Results
+        if: always()
+        run: |
+          TRIVY_HIGH="N/A"
+          TRIVY_CRITICAL="N/A"
+          ECR_HIGH="N/A"
+          ECR_CRITICAL="N/A"
+
+          if [[ -f trivy-findings.json ]]; then
+            TRIVY_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-findings.json)
+            TRIVY_CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-findings.json)
+          fi
+
+          if [[ -f ecr-findings.json ]]; then
+            ECR_HIGH=$(jq '[.[] | select(.severity == "HIGH")] | length' ecr-findings.json)
+            ECR_CRITICAL=$(jq '[.[] | select(.severity == "CRITICAL")] | length' ecr-findings.json)
+          fi
+
+          TRIVY_RESULT="Passed"
+          ECR_RESULT="Passed"
+          OVERALL_RESULT="Passed"
+
+          [[ "${{ steps.trivy.outcome }}" == "success" ]] || TRIVY_RESULT="Failed"
+          [[ "${{ steps.ecr.outcome }}" == "success" ]] || ECR_RESULT="Failed"
+
+          if [[ "$TRIVY_RESULT" == "Failed" || "$ECR_RESULT" == "Failed" ]]; then
+            OVERALL_RESULT="Failed"
+          fi
+
+          {
+            echo "## Image Security Scan: ${{ matrix.image }}"
+            echo
+            echo "**Tag:** \`${{ matrix.tag }}\`  "
+            echo "**Platform:** \`linux/amd64\`  "
+            echo "**Overall result:** **$OVERALL_RESULT**"
+            echo
+            echo "| Scanner | High | Critical | Result |"
+            echo "| --- | ---: | ---: | --- |"
+            echo "| Trivy | $TRIVY_HIGH | $TRIVY_CRITICAL | $TRIVY_RESULT |"
+            echo "| ECR | $ECR_HIGH | $ECR_CRITICAL | $ECR_RESULT |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$OVERALL_RESULT" == "Failed" ]]; then
+            echo "HIGH or CRITICAL vulnerabilities found for ${{ matrix.image }}"
+            exit 1
+          fi
+
+          echo "No HIGH or CRITICAL vulnerabilities found for ${{ matrix.image }}"
