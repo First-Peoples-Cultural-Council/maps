@@ -1,8 +1,8 @@
-FROM python:3.11-slim-bullseye
+FROM python:3.11-slim-bookworm
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libproj-dev \
     gdal-bin \
     libpq-dev \
