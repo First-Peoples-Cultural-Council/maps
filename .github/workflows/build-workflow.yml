@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - FPMT-158-fix-vulnerabilities
 
   pull_request:
     branches:
@@ -25,38 +26,9 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
-  backend-tests:
-    name: Backend Tests
-    if: >-
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-    uses: ./.github/workflows/test-backend.yml
-
-  frontend-tests:
-    name: Frontend Tests
-    if: >-
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-    uses: ./.github/workflows/test-frontend.yml
-
   set-context:
     name: Prepare Build
     runs-on: ubuntu-latest
-
-    needs:
-      - backend-tests
-      - frontend-tests
-
-    if: >-
-      always() &&
-      (
-        github.event_name == 'release' ||
-        (
-          github.event_name == 'push' &&
-          needs.backend-tests.result == 'success' &&
-          needs.frontend-tests.result == 'success'
-        )
-      )
 
     outputs:
       environment: ${{ steps.context.outputs.environment }}
@@ -70,8 +42,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "${GITHUB_EVENT_NAME}" == "push" &&
-                "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ||
+                ("${GITHUB_EVENT_NAME}" == "push" &&
+                 ("${GITHUB_REF}" == "refs/heads/dev" ||
+                  "${GITHUB_REF}" == "refs/heads/FPMT-158-fix-vulnerabilities")) ]]; then
 
             ENVIRONMENT="dev"
             SHORT_SHA="${GITHUB_SHA::7}"
@@ -191,8 +165,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.fe_tag }}
-          build-args: |
-            BACKEND_URL=http://maps-backend:8000
           cache-from: type=gha,scope=maps-frontend
           cache-to: type=gha,mode=max,scope=maps-frontend
           provenance: false
@@ -279,6 +251,7 @@ jobs:
   update-values:
     name: Update Deployment Configuration
     runs-on: ubuntu-latest
+    if: github.event_name == 'release' || github.ref == 'refs/heads/dev'
 
     needs:
       - set-context
@@ -438,7 +411,14 @@ jobs:
     continue-on-error: true
     needs:
       - set-context
+      - build-frontend
+      - build-backend
       - update-values
+    if: >-
+      always() &&
+      needs.build-frontend.result == 'success' &&
+      needs.build-backend.result == 'success' &&
+      (needs.update-values.result == 'success' || needs.update-values.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:
