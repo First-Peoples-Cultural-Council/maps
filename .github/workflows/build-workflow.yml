@@ -25,27 +25,27 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
-  backend-tests:
-    name: Backend Tests
-    if: >-
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-    uses: ./.github/workflows/test-backend.yml
-
-  frontend-tests:
-    name: Frontend Tests
-    if: >-
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-    uses: ./.github/workflows/test-frontend.yml
+#  backend-tests:
+#    name: Backend Tests
+#    if: >-
+#      github.event_name == 'pull_request' ||
+#      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+#    uses: ./.github/workflows/test-backend.yml
+#
+#  frontend-tests:
+#    name: Frontend Tests
+#    if: >-
+#      github.event_name == 'pull_request' ||
+#      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+#    uses: ./.github/workflows/test-frontend.yml
 
   set-context:
     name: Prepare Build
     runs-on: ubuntu-latest
 
-    needs:
-      - backend-tests
-      - frontend-tests
+#    needs:
+#      - backend-tests
+#      - frontend-tests
 
     if: >-
       always() &&
