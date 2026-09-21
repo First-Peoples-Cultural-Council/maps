@@ -47,16 +47,16 @@ jobs:
 #      - backend-tests
 #      - frontend-tests
 
-    if: >-
-      always() &&
-      (
-        github.event_name == 'release' ||
-        (
-          github.event_name == 'push' &&
-          needs.backend-tests.result == 'success' &&
-          needs.frontend-tests.result == 'success'
-        )
-      )
+#    if: >-
+#      always() &&
+#      (
+#        github.event_name == 'release' ||
+#        (
+#          github.event_name == 'push' &&
+#          needs.backend-tests.result == 'success' &&
+#          needs.frontend-tests.result == 'success'
+#        )
+#      )
 
     outputs:
       environment: ${{ steps.context.outputs.environment }}
