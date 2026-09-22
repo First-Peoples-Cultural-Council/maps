@@ -144,6 +144,9 @@ jobs:
         env:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
           MAPBOX_STYLE_URL: ${{ secrets.MAPBOX_STYLE_URL }}
+          COGNITO_URL: ${{ secrets.COGNITO_URL }}
+          COGNITO_APP_CLIENT_ID: ${{ secrets.COGNITO_APP_CLIENT_ID }}
+          COGNITO_HOST: ${{ secrets.COGNITO_HOST }}
         run: yarn run build
 
       - name: Configure Build Credentials
@@ -198,6 +201,9 @@ jobs:
             BACKEND_URL=http://maps-backend:8000
             MAPBOX_ACCESS_TOKEN=${{ secrets.MAPBOX_ACCESS_TOKEN }}
             MAPBOX_STYLE_URL=${{ secrets.MAPBOX_STYLE_URL }}
+            COGNITO_URL=${{ secrets.COGNITO_URL }}
+            COGNITO_APP_CLIENT_ID=${{ secrets.COGNITO_APP_CLIENT_ID }}
+            COGNITO_HOST=${{ secrets.COGNITO_HOST }}
           cache-from: type=gha,scope=maps-frontend
           cache-to: type=gha,mode=max,scope=maps-frontend
           provenance: false
