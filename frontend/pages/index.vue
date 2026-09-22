@@ -1622,6 +1622,10 @@ export default {
         'fn-places'
       ]
 
+      if (!this.map) {
+        return
+      }
+
       if (name === 'index-grants' || name === 'index-grants-grants') {
         safeSetLayersVisibility(this.map, grantsLayer, 'visible')
         safeSetLayersVisibility(this.map, layersToToggle, 'none')
