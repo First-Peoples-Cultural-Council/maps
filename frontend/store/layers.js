@@ -1,3 +1,8 @@
+import {
+  safeSetFilter,
+  safeSetLayerVisibility
+} from '@/plugins/mapbox-safe.js'
+
 export const state = () => ({
   layers: [
     {
@@ -76,20 +81,20 @@ export const mutations = {
     if (toggleLayer.name === 'Sleeping Languages') {
       if (!toggleLayer.active) {
         layer.layerNames.map(l => {
-          map.setFilter(l, ['!', ['get', 'sleeping']])
+          safeSetFilter(map, l, ['!', ['get', 'sleeping']])
         })
       } else {
         layer.layerNames.map(l => {
-          map.setFilter(l, ['!=', 'name', ''])
+          safeSetFilter(map, l, ['!=', 'name', ''])
         })
       }
     } else if (toggleLayer.active) {
       layer.layerNames.map(l => {
-        map.setLayoutProperty(l, 'visibility', 'visible')
+        safeSetLayerVisibility(map, l, 'visible')
       })
     } else {
       layer.layerNames.map(l => {
-        map.setLayoutProperty(l, 'visibility', 'none')
+        safeSetLayerVisibility(map, l, 'none')
       })
     }
   }

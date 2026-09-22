@@ -950,6 +950,7 @@ import {
   isValidEmail,
   isValidURL
 } from '@/plugins/utils.js'
+import { safeSetSourceData } from '@/plugins/mapbox-safe.js'
 import ErrorScreen from '@/layouts/error.vue'
 
 const base64Encode = data =>
@@ -2020,7 +2021,7 @@ export default {
       }
 
       this.$eventHub.whenMap(map => {
-        map.getSource('places1').setData('/api/placename-geo/')
+        safeSetSourceData(map, 'places1', '/api/placename-geo/')
         this.$router.push({
           path: '/place-names/' + encodeFPCC(this.traditionalName)
         })
