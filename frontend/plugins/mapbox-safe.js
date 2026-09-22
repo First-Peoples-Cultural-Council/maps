@@ -3,6 +3,9 @@ const warnMapOperation = (operationName, targetType, targetId, reason) => {
   console.warn(`[Mapbox] Skipping ${operationName}${target}: ${reason}.`)
 }
 
+const MAX_RETRY_ATTEMPTS = 3
+const queuedMapOperations = new WeakMap()
+
 const runMapAction = (operationName, action) => {
   try {
     action()
@@ -14,39 +17,47 @@ const runMapAction = (operationName, action) => {
 }
 
 const getQueuedMapOperations = map => {
-  if (!map.__fpccQueuedMapOperations) {
-    map.__fpccQueuedMapOperations = {}
+  if (!queuedMapOperations.has(map)) {
+    queuedMapOperations.set(map, {})
   }
 
-  return map.__fpccQueuedMapOperations
+  return queuedMapOperations.get(map)
 }
 
-const queueMapOperation = (map, key, fn) => {
+const queueMapOperation = (map, key, attempt, fn) => {
   const queuedOperations = getQueuedMapOperations(map)
-  queuedOperations[key] = fn
+  queuedOperations[key] = {
+    attempt,
+    fn
+  }
 
   if (queuedOperations[`${key}:scheduled`]) {
     return true
   }
 
   queuedOperations[`${key}:scheduled`] = true
+  let flushed = false
 
   const flush = () => {
+    if (flushed) {
+      return
+    }
+
+    flushed = true
     const operation = queuedOperations[key]
     delete queuedOperations[key]
     delete queuedOperations[`${key}:scheduled`]
 
-    if (typeof operation === 'function') {
-      operation()
+    if (operation && typeof operation.fn === 'function') {
+      operation.fn(operation.attempt)
     }
   }
 
   if (typeof map.once === 'function') {
-    map.once('idle', flush)
-    return true
+    map.once('styledata', flush)
   }
 
-  flush()
+  setTimeout(flush, attempt * 100)
   return true
 }
 
@@ -91,7 +102,7 @@ const getSourceStatus = (map, sourceId) => {
   return null
 }
 
-const runWhenLayerReady = (map, layerId, operationName, action) => {
+const runWhenLayerReady = (map, layerId, operationName, action, attempt = 0) => {
   const status = getLayerStatus(map, layerId)
   if (!status) {
     return runMapAction(operationName, action)
@@ -102,20 +113,24 @@ const runWhenLayerReady = (map, layerId, operationName, action) => {
     return false
   }
 
-  queueMapOperation(map, `layer:${operationName}:${layerId}`, () => {
-    const queuedStatus = getLayerStatus(map, layerId)
-    if (queuedStatus) {
-      warnMapOperation(operationName, 'layer', layerId, queuedStatus)
-      return false
-    }
+  if (attempt >= MAX_RETRY_ATTEMPTS) {
+    warnMapOperation(operationName, 'layer', layerId, status)
+    return false
+  }
 
-    return runMapAction(operationName, action)
-  })
+  queueMapOperation(
+    map,
+    `layer:${operationName}:${layerId}`,
+    attempt + 1,
+    nextAttempt => {
+      runWhenLayerReady(map, layerId, operationName, action, nextAttempt)
+    }
+  )
 
   return false
 }
 
-const runWhenSourceReady = (map, sourceId, operationName, action) => {
+const runWhenSourceReady = (map, sourceId, operationName, action, attempt = 0) => {
   const status = getSourceStatus(map, sourceId)
   if (!status) {
     return runMapAction(operationName, action)
@@ -126,15 +141,19 @@ const runWhenSourceReady = (map, sourceId, operationName, action) => {
     return false
   }
 
-  queueMapOperation(map, `source:${operationName}:${sourceId}`, () => {
-    const queuedStatus = getSourceStatus(map, sourceId)
-    if (queuedStatus) {
-      warnMapOperation(operationName, 'source', sourceId, queuedStatus)
-      return false
-    }
+  if (attempt >= MAX_RETRY_ATTEMPTS) {
+    warnMapOperation(operationName, 'source', sourceId, status)
+    return false
+  }
 
-    return runMapAction(operationName, action)
-  })
+  queueMapOperation(
+    map,
+    `source:${operationName}:${sourceId}`,
+    attempt + 1,
+    nextAttempt => {
+      runWhenSourceReady(map, sourceId, operationName, action, nextAttempt)
+    }
+  )
 
   return false
 }
