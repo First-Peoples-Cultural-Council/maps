@@ -38,7 +38,6 @@ const queueMapOperation = (map, key, attempt, fn) => {
   queuedOperations[`${key}:scheduled`] = true
   let flushed = false
   let removeListener = () => {}
-  let timeoutId
 
   const flush = () => {
     if (flushed) {
@@ -64,7 +63,7 @@ const queueMapOperation = (map, key, attempt, fn) => {
     map.once('styledata', flush)
   }
 
-  timeoutId = setTimeout(flush, attempt * 100)
+  const timeoutId = setTimeout(flush, attempt * 100)
   return true
 }
 
