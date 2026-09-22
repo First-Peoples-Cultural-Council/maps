@@ -37,6 +37,7 @@ const queueMapOperation = (map, key, attempt, fn) => {
 
   queuedOperations[`${key}:scheduled`] = true
   let flushed = false
+  let removeListener = () => {}
 
   const flush = () => {
     if (flushed) {
@@ -44,6 +45,7 @@ const queueMapOperation = (map, key, attempt, fn) => {
     }
 
     flushed = true
+    removeListener()
     const operation = queuedOperations[key]
     delete queuedOperations[key]
     delete queuedOperations[`${key}:scheduled`]
@@ -53,7 +55,10 @@ const queueMapOperation = (map, key, attempt, fn) => {
     }
   }
 
-  if (typeof map.once === 'function') {
+  if (typeof map.on === 'function' && typeof map.off === 'function') {
+    map.on('styledata', flush)
+    removeListener = () => map.off('styledata', flush)
+  } else if (typeof map.once === 'function') {
     map.once('styledata', flush)
   }
 
@@ -170,7 +175,9 @@ export const safeSetLayerVisibility = (map, layerId, visibility) => {
 }
 
 export const safeSetLayersVisibility = (map, layerIds, visibility) => {
-  layerIds.forEach(layerId => safeSetLayerVisibility(map, layerId, visibility))
+  return layerIds.map(layerId =>
+    safeSetLayerVisibility(map, layerId, visibility)
+  )
 }
 
 export const safeSetFilter = (map, layerId, filter) => {
