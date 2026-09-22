@@ -1,4 +1,5 @@
 import grantMarker from '@/assets/images/grant_icon.png'
+import { safeSetFilter } from '@/plugins/mapbox-safe.js'
 
 const addLangLayers = map => {
   map.addLayer({
@@ -109,7 +110,7 @@ const addLangLayers = map => {
     }
   })
 
-  map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
+  safeSetFilter(map, 'fn-lang-areas-highlighted', ['in', 'name', ''])
 }
 
 const addNationsLayers = map => {

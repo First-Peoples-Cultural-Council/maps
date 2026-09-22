@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import { geomToLatLng } from '@/plugins/utils.js'
+import { safeSetFilter } from '@/plugins/mapbox-safe.js'
 
 const _markers = []
+
 Vue.prototype.$eventHub = new Vue({}) // Global event bus
 
 Vue.prototype.$eventHub.whenMap = function(fn) {
@@ -44,7 +46,7 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
       route.name !== 'index-languages-lang' ||
       route.name !== 'index-languages-lang-details'
     ) {
-      this.map.setFilter('fn-lang-areas-highlighted', ['in', 'name', ''])
+      safeSetFilter(this.map, 'fn-lang-areas-highlighted', ['in', 'name', ''])
     }
 
     // console.log('routed to', route.name)

@@ -1,12 +1,14 @@
+import { safeSetFilter } from '@/plugins/mapbox-safe.js'
+
 export const zoomToLanguage = ({ map, lang }) => {
   if (!map) return
   const bounds = [lang.bbox.coordinates[0][0], lang.bbox.coordinates[0][2]]
   map.fitBounds(bounds, { padding: 30 })
   // selectLanguage({ map, lang })
-  map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
+  safeSetFilter(map, 'fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 export const selectLanguage = ({ map, lang }) => {
-  map.setFilter('fn-lang-areas-highlighted', ['in', 'name', lang.name])
+  safeSetFilter(map, 'fn-lang-areas-highlighted', ['in', 'name', lang.name])
 }
 
 export const zoomToIdealBox = ({ map }) => {

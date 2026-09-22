@@ -261,6 +261,11 @@ import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
 import MapControlFooter from '@/components/MapControls/MapControlFooter.vue'
+import {
+  safeSetLayerVisibility,
+  safeSetLayersVisibility,
+  safeSetSourceData
+} from '@/plugins/mapbox-safe.js'
 
 import {
   getApiUrl,
@@ -590,13 +595,16 @@ export default {
     const mapState = this.$store.state.mapinstance.mapState
     const forceReset = this.$store.state.mapinstance.forceReset
     if (
-      to.name === 'index' ||
-      (to.name === 'index-languages' && from.name === 'index-languages-lang') ||
-      (to.name === 'index-art' && from.name === 'index-art-art') ||
-      (to.name === 'index-heritages' &&
-        from.name === 'index-place-names-placename') ||
-      to.name === 'index-place-names' ||
-      to.name === 'index-first-nations'
+      map &&
+      typeof map.flyTo === 'function' &&
+      (to.name === 'index' ||
+        (to.name === 'index-languages' &&
+          from.name === 'index-languages-lang') ||
+        (to.name === 'index-art' && from.name === 'index-art-art') ||
+        (to.name === 'index-heritages' &&
+          from.name === 'index-place-names-placename') ||
+        to.name === 'index-place-names' ||
+        to.name === 'index-first-nations')
     ) {
       let lat, lng, zoom
       if (!forceReset) {
@@ -1172,8 +1180,6 @@ export default {
 
       this.handleInformationModalVisibility()
 
-      this.showFullscreenLoading = false
-
       this.$store.commit(
         'grants/setVisibleGrantsCount',
         this.countVisibleGrants(map.getBounds())
@@ -1204,9 +1210,7 @@ export default {
       })
 
       this.$root.$on('showGrantsLayer', () => {
-        grantsLayer.forEach(layer => {
-          this.map.setLayoutProperty(layer, 'visibility', 'visible')
-        })
+        safeSetLayersVisibility(this.map, grantsLayer, 'visible')
       })
 
       this.$root.$on('filterGrants', () => {
@@ -1217,7 +1221,7 @@ export default {
       this.$root.$on('updateGrantsMarkers', features => {
         const geoJSON = JSON.parse(JSON.stringify(this.grantsGeo))
         if (features) geoJSON.features = features
-        map.getSource('grants1').setData(geoJSON)
+        safeSetSourceData(map, 'grants1', geoJSON)
       })
 
       this.$root.$on('getLocation', () => {
@@ -1322,8 +1326,10 @@ export default {
         this.updateHash(map)
       })
 
-      map.setLayoutProperty('fn-reserve-outlines', 'visibility', 'none')
-      map.setLayoutProperty('fn-reserve-areas', 'visibility', 'none')
+      safeSetLayerVisibility(map, 'fn-reserve-outlines', 'none')
+      safeSetLayerVisibility(map, 'fn-reserve-areas', 'none')
+      this.toggleLayers(this.$route.name)
+      this.showFullscreenLoading = false
       MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
       const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -1503,9 +1509,6 @@ export default {
       map.draw = draw
 
       this.$eventHub.$emit('map-loaded', map)
-
-      // Checks if grants page on initial load
-      this.toggleLayers(this.$route.name)
     },
     zoomToHash(map) {
       const hash = this.$route.hash
@@ -1619,24 +1622,12 @@ export default {
         'fn-places'
       ]
 
-      if (this.map) {
-        if (name === 'index-grants' || name === 'index-grants-grants') {
-          grantsLayer.forEach(layer => {
-            this.map.setLayoutProperty(layer, 'visibility', 'visible')
-          })
-
-          layersToToggle.forEach(layer => {
-            this.map.setLayoutProperty(layer, 'visibility', 'none')
-          })
-        } else {
-          grantsLayer.forEach(layer => {
-            this.map.setLayoutProperty(layer, 'visibility', 'none')
-          })
-
-          layersToToggle.forEach(layer => {
-            this.map.setLayoutProperty(layer, 'visibility', 'visible')
-          })
-        }
+      if (name === 'index-grants' || name === 'index-grants-grants') {
+        safeSetLayersVisibility(this.map, grantsLayer, 'visible')
+        safeSetLayersVisibility(this.map, layersToToggle, 'none')
+      } else {
+        safeSetLayersVisibility(this.map, grantsLayer, 'none')
+        safeSetLayersVisibility(this.map, layersToToggle, 'visible')
       }
     },
 
