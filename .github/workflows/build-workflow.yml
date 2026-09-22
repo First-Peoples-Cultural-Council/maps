@@ -9,10 +9,6 @@ on:
     branches:
       - dev
 
-  release:
-    types:
-      - published
-
 permissions:
   contents: read
 
@@ -21,47 +17,34 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AWS_REGION: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
-#  backend-tests:
-#    name: Backend Tests
-#    if: >-
-#      github.event_name == 'pull_request' ||
-#      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-#    uses: ./.github/workflows/test-backend.yml
-#
-#  frontend-tests:
-#    name: Frontend Tests
-#    if: >-
-#      github.event_name == 'pull_request' ||
-#      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-#    uses: ./.github/workflows/test-frontend.yml
+  # Re-enable these when the reusable test workflows are ready.
+  #
+  # backend-tests:
+  #   name: Backend Tests
+  #   if: >-
+  #     github.event_name == 'pull_request' ||
+  #     (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+  #   uses: ./.github/workflows/test-backend.yml
+  #
+  # frontend-tests:
+  #   name: Frontend Tests
+  #   if: >-
+  #     github.event_name == 'pull_request' ||
+  #     (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+  #   uses: ./.github/workflows/test-frontend.yml
 
   set-context:
     name: Prepare Build
     runs-on: ubuntu-latest
-
-#    needs:
-#      - backend-tests
-#      - frontend-tests
-
-#    if: >-
-#      always() &&
-#      (
-#        github.event_name == 'release' ||
-#        (
-#          github.event_name == 'push' &&
-#          needs.backend-tests.result == 'success' &&
-#          needs.frontend-tests.result == 'success'
-#        )
-#      )
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
 
     outputs:
       environment: ${{ steps.context.outputs.environment }}
-      fe_tag: ${{ steps.context.outputs.fe_tag }}
-      be_tag: ${{ steps.context.outputs.be_tag }}
+      frontend_tag: ${{ steps.context.outputs.frontend_tag }}
+      backend_tag: ${{ steps.context.outputs.backend_tag }}
 
     steps:
       - name: Prepare Build Context
@@ -70,63 +53,63 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "${GITHUB_EVENT_NAME}" == "push" &&
-                "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+          SHORT_SHA="${GITHUB_SHA::7}"
 
-            ENVIRONMENT="dev"
-            SHORT_SHA="${GITHUB_SHA::7}"
-
-            FE_TAG="fe-dev-${SHORT_SHA}"
-            BE_TAG="be-dev-${SHORT_SHA}"
-
-          elif [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
-
-            ENVIRONMENT="prod"
-            RELEASE_TAG="${{ github.event.release.tag_name }}"
-
-            if [[ -z "$RELEASE_TAG" ]]; then
-              echo "Required release information is unavailable"
-              exit 1
-            fi
-
-            FE_TAG="fe-${RELEASE_TAG}"
-            BE_TAG="be-${RELEASE_TAG}"
-
-          else
-            echo "Unsupported workflow trigger"
-            exit 1
-          fi
-
-          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
-          echo "fe_tag=$FE_TAG" >> "$GITHUB_OUTPUT"
-          echo "be_tag=$BE_TAG" >> "$GITHUB_OUTPUT"
+          echo "environment=dev" >> "$GITHUB_OUTPUT"
+          echo "frontend_tag=fe-dev-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "backend_tag=be-dev-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
 
   pull-helm-chart:
-    name: Download Helm Charts
+    name: Prepare Helm Chart
     runs-on: ubuntu-latest
+    environment: dev
 
     needs:
       - set-context
 
     steps:
-      - name: Checkout fv-infra
+      - name: Validate Infrastructure Configuration
+        shell: bash
+        env:
+          INFRA_REPOSITORY: ${{ secrets.INFRA_REPOSITORY }}
+          PULL_CONFIG_SECRET: ${{ secrets.PULL_CONFIG_SECRET }}
+        run: |
+          set -euo pipefail
+
+          test -n "$INFRA_REPOSITORY"
+          test -n "$PULL_CONFIG_SECRET"
+
+      - name: Checkout Infrastructure Repository
         uses: actions/checkout@v5
         with:
-          repository: First-Peoples-Cultural-Council/fv-infra
+          repository: ${{ secrets.INFRA_REPOSITORY }}
           ref: dev
           token: ${{ secrets.PULL_CONFIG_SECRET }}
-          path: helm
+          path: fv-infra
+          sparse-checkout: |
+            helm/maps
+          sparse-checkout-cone-mode: false
 
-      - name: Upload Helm Charts
+      - name: Validate Helm Chart
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f fv-infra/helm/maps/Chart.yaml
+          test -d fv-infra/helm/maps/templates
+
+      - name: Upload Helm Chart
         uses: actions/upload-artifact@v4
         with:
-          name: helm
-          path: helm
-
+          name: maps-helm-chart
+          path: fv-infra/helm/maps
+          if-no-files-found: error
+          retention-days: 1
 
   build-frontend:
-    name: Build and Upload Frontend Image
+    name: Build and Publish Frontend
     runs-on: ubuntu-latest
+    environment: dev
 
     needs:
       - set-context
@@ -140,23 +123,32 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION_INPUT: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+          ECR_REPOSITORY_INPUT: ${{ secrets.ECR_REPOSITORY }}
+          MAPBOX_ACCESS_TOKEN_INPUT: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+          MAPBOX_STYLE_URL_INPUT: ${{ secrets.MAPBOX_STYLE_URL }}
+          COGNITO_URL_INPUT: ${{ secrets.COGNITO_URL }}
+          COGNITO_APP_CLIENT_ID_INPUT: ${{ secrets.COGNITO_APP_CLIENT_ID }}
+          COGNITO_HOST_INPUT: ${{ secrets.COGNITO_HOST }}
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
-                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
-                -z "$AWS_REGION" ||
-                -z "$ECR_REPOSITORY" ]]; then
-            echo "Required build configuration is unavailable"
-            exit 1
-          fi
+          test -n "$AWS_ACCESS_KEY_ID_INPUT"
+          test -n "$AWS_SECRET_ACCESS_KEY_INPUT"
+          test -n "$AWS_REGION_INPUT"
+          test -n "$ECR_REPOSITORY_INPUT"
+          test -n "$MAPBOX_ACCESS_TOKEN_INPUT"
+          test -n "$MAPBOX_STYLE_URL_INPUT"
+          test -n "$COGNITO_URL_INPUT"
+          test -n "$COGNITO_APP_CLIENT_ID_INPUT"
+          test -n "$COGNITO_HOST_INPUT"
 
-      - name: Configure Build Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
           mask-aws-account-id: true
 
       - name: Authenticate Container Registry
@@ -165,13 +157,12 @@ jobs:
         with:
           mask-password: true
 
-      - name: Set Up Cross-Platform Support
+      - name: Set Up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
-
-      - name: Set Up Container Builder
+      - name: Set Up Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Build and Publish Frontend
@@ -181,7 +172,10 @@ jobs:
           file: ./frontend/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.fe_tag }}
+          tags: >-
+            ${{ steps.login-ecr.outputs.registry }}/${{
+            secrets.ECR_REPOSITORY }}:${{
+            needs.set-context.outputs.frontend_tag }}
           build-args: |
             BACKEND_URL=http://maps-backend:8000
             MAPBOX_ACCESS_TOKEN=${{ secrets.MAPBOX_ACCESS_TOKEN }}
@@ -194,8 +188,9 @@ jobs:
           provenance: false
 
   build-backend:
-    name: Build and Upload Backend Image
+    name: Build and Publish Backend
     runs-on: ubuntu-latest
+    environment: dev
 
     needs:
       - set-context
@@ -209,23 +204,22 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION_INPUT: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+          ECR_REPOSITORY_INPUT: ${{ secrets.ECR_REPOSITORY }}
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
-                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
-                -z "$AWS_REGION" ||
-                -z "$ECR_REPOSITORY" ]]; then
-            echo "Required build configuration is unavailable"
-            exit 1
-          fi
+          test -n "$AWS_ACCESS_KEY_ID_INPUT"
+          test -n "$AWS_SECRET_ACCESS_KEY_INPUT"
+          test -n "$AWS_REGION_INPUT"
+          test -n "$ECR_REPOSITORY_INPUT"
 
-      - name: Configure Build Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
           mask-aws-account-id: true
 
       - name: Authenticate Container Registry
@@ -234,12 +228,12 @@ jobs:
         with:
           mask-password: true
 
-      - name: Set Up Cross-Platform Support
+      - name: Set Up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
-      - name: Set Up Container Builder
+      - name: Set Up Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Build and Publish Backend
@@ -249,7 +243,10 @@ jobs:
           file: ./web/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ needs.set-context.outputs.be_tag }}
+          tags: >-
+            ${{ steps.login-ecr.outputs.registry }}/${{
+            secrets.ECR_REPOSITORY }}:${{
+            needs.set-context.outputs.backend_tag }}
           cache-from: type=gha,scope=maps-backend
           cache-to: type=gha,mode=max,scope=maps-backend
           provenance: false
@@ -257,6 +254,7 @@ jobs:
   update-values:
     name: Update Deployment Configuration
     runs-on: ubuntu-latest
+    environment: dev
 
     needs:
       - set-context
@@ -265,8 +263,8 @@ jobs:
 
     env:
       CODE_COMMIT_REPOSITORY: ${{ secrets.CODE_COMMIT }}
-      FE_TAG: ${{ needs.set-context.outputs.fe_tag }}
-      BE_TAG: ${{ needs.set-context.outputs.be_tag }}
+      FRONTEND_TAG: ${{ needs.set-context.outputs.frontend_tag }}
+      BACKEND_TAG: ${{ needs.set-context.outputs.backend_tag }}
 
     steps:
       - name: Validate Deployment Configuration
@@ -274,64 +272,46 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION_INPUT: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
         run: |
           set -euo pipefail
 
-          if [[ -z "$AWS_ACCESS_KEY_ID_INPUT" ||
-                -z "$AWS_SECRET_ACCESS_KEY_INPUT" ||
-                -z "$AWS_REGION" ||
-                -z "$CODE_COMMIT_REPOSITORY" ]]; then
-            echo "Required deployment configuration is unavailable"
-            exit 1
-          fi
+          test -n "$AWS_ACCESS_KEY_ID_INPUT"
+          test -n "$AWS_SECRET_ACCESS_KEY_INPUT"
+          test -n "$AWS_REGION_INPUT"
+          test -n "$CODE_COMMIT_REPOSITORY"
+          test -n "$FRONTEND_TAG"
+          test -n "$BACKEND_TAG"
 
-      - name: Configure Deployment Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
           mask-aws-account-id: true
-
-      - name: Select Deployment Configuration
-        id: values
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          ENVIRONMENT="${{ needs.set-context.outputs.environment }}"
-
-          case "$ENVIRONMENT" in
-            dev)
-              VALUES_FILE="Values.dev_maps.yaml"
-              ;;
-            prod)
-              VALUES_FILE="Values.prod_maps.yaml"
-              ;;
-            *)
-              echo "Unsupported deployment environment"
-              exit 1
-              ;;
-          esac
-
-          echo "values_file=$VALUES_FILE" >> "$GITHUB_OUTPUT"
 
       - name: Download Deployment Configuration
         shell: bash
         run: |
           set -euo pipefail
 
-          aws codecommit get-file \
+          if ! aws codecommit get-file \
             --repository-name "$CODE_COMMIT_REPOSITORY" \
             --commit-specifier main \
-            --file-path "${{ steps.values.outputs.values_file }}" \
+            --file-path "Values.dev_maps.yaml" \
             --query fileContent \
             --output text \
             2> codecommit-download-error.log |
-          base64 -d > values.yaml
+            base64 -d > values.yaml; then
+
+            echo "Unable to download deployment configuration"
+            cat codecommit-download-error.log
+            exit 1
+          fi
 
           if [[ ! -s values.yaml ]]; then
-            echo "Unable to download deployment configuration"
+            echo "Downloaded deployment configuration is empty"
             cat codecommit-download-error.log
             exit 1
           fi
@@ -341,25 +321,25 @@ jobs:
       - name: Update Image References
         uses: mikefarah/yq@v4.45.4
         env:
-          FE_TAG: ${{ env.FE_TAG }}
-          BE_TAG: ${{ env.BE_TAG }}
+          FRONTEND_TAG: ${{ env.FRONTEND_TAG }}
+          BACKEND_TAG: ${{ env.BACKEND_TAG }}
         with:
           cmd: >-
             yq -i
-            '.frontend.image.tag = strenv(FE_TAG) |
-            .backend.image.tag = strenv(BE_TAG)'
+            '.frontend.image.tag = strenv(FRONTEND_TAG) |
+            .backend.image.tag = strenv(BACKEND_TAG)'
             values.yaml
 
-      - name: Validate Deployment Configuration
+      - name: Validate Image References
         uses: mikefarah/yq@v4.45.4
         env:
-          FE_TAG: ${{ env.FE_TAG }}
-          BE_TAG: ${{ env.BE_TAG }}
+          FRONTEND_TAG: ${{ env.FRONTEND_TAG }}
+          BACKEND_TAG: ${{ env.BACKEND_TAG }}
         with:
           cmd: >-
             yq -e
-            '.frontend.image.tag == strenv(FE_TAG) and
-            .backend.image.tag == strenv(BE_TAG)'
+            '.frontend.image.tag == strenv(FRONTEND_TAG) and
+            .backend.image.tag == strenv(BACKEND_TAG)'
             values.yaml
 
       - name: Get Current Configuration Revision
@@ -384,7 +364,6 @@ jobs:
           fi
 
           rm -f codecommit-revision-error.log
-
           echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
 
       - name: Publish Deployment Configuration
@@ -395,12 +374,13 @@ jobs:
           if ! aws codecommit put-file \
             --repository-name "$CODE_COMMIT_REPOSITORY" \
             --branch-name main \
-            --file-path "${{ steps.values.outputs.values_file }}" \
+            --file-path "Values.dev_maps.yaml" \
             --file-content fileb://values.yaml \
             --parent-commit-id "${{ steps.commit.outputs.commit_id }}" \
-            --commit-message "Update Maps deployment image references" \
+            --commit-message "Update Maps dev image references" \
             --no-cli-pager \
-            > /dev/null 2> codecommit-upload-error.log; then
+            > /dev/null \
+            2> codecommit-upload-error.log; then
 
             echo "Unable to publish the deployment configuration"
             cat codecommit-upload-error.log
@@ -408,39 +388,60 @@ jobs:
           fi
 
           rm -f codecommit-upload-error.log
-          echo "Deployment configuration updated successfully"
+
       - name: Upload Helm Values
         uses: actions/upload-artifact@v4
         with:
-          name: helm-values
+          name: maps-helm-values
           path: values.yaml
+          if-no-files-found: error
+          retention-days: 1
 
   helm-upgrade-dev:
-    name: Deploy - Dev
+    name: Deploy to Dev
     runs-on: ubuntu-latest
+    environment: dev
 
     needs:
+      - set-context
       - update-values
       - pull-helm-chart
 
-    if: github.ref == 'refs/heads/dev'
-
-    environment: dev
-
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Download Helm Charts
+      - name: Download Helm Chart
         uses: actions/download-artifact@v4
         with:
-          name: helm
-          path: ./
+          name: maps-helm-chart
+          path: ./chart
 
       - name: Download Helm Values
         uses: actions/download-artifact@v4
         with:
-          name: helm-values
+          name: maps-helm-values
           path: .
+
+      - name: Validate Deployment Inputs
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID_INPUT: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY_INPUT: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION_INPUT: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+          EKS_CLUSTER_NAME_INPUT: ${{ secrets.EKS_CLUSTER_NAME }}
+          K8S_NAMESPACE_INPUT: ${{ vars.K8S_NAMESPACE }}
+          HELM_RELEASE_NAME_INPUT: ${{ vars.HELM_RELEASE_NAME }}
+        run: |
+          set -euo pipefail
+
+          test -n "$AWS_ACCESS_KEY_ID_INPUT"
+          test -n "$AWS_SECRET_ACCESS_KEY_INPUT"
+          test -n "$AWS_REGION_INPUT"
+          test -n "$EKS_CLUSTER_NAME_INPUT"
+          test -n "$K8S_NAMESPACE_INPUT"
+          test -n "$HELM_RELEASE_NAME_INPUT"
+
+          test -f ./chart/Chart.yaml
+          test -d ./chart/templates
+          test -f ./values.yaml
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -448,71 +449,119 @@ jobs:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
+          mask-aws-account-id: true
 
-      - name: Configure kubectl
-        run: |
-          aws eks update-kubeconfig \
-            --region ${{ secrets.FPCC_DEFAULT_AWS_REGION }} \
-            --name firstvoices-eks
-
-      - name: Verify Cluster Access
-        run: |
-          kubectl get ns 2026-08-maps-dev
-          helm list -n 2026-08-maps-dev
-
-      - name: Setup Helm
+      - name: Set Up Helm
         uses: azure/setup-helm@v4
 
-      - name: Helm Lint
+      - name: Configure Kubernetes
+        shell: bash
         run: |
-          helm lint ./helm/maps \
-            -f values.yaml
+          set -euo pipefail
+
+          aws eks update-kubeconfig \
+            --region "${{ secrets.FPCC_DEFAULT_AWS_REGION }}" \
+            --name "${{ secrets.EKS_CLUSTER_NAME }}"
+
+      - name: Verify Cluster Access
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl cluster-info
+          kubectl get namespace "${{ vars.K8S_NAMESPACE }}"
+          helm list --namespace "${{ vars.K8S_NAMESPACE }}"
+
+      - name: Lint Helm Chart
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          helm lint ./chart \
+            --values ./values.yaml
+
+      - name: Render Helm Manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          helm template \
+            "${{ vars.HELM_RELEASE_NAME }}" \
+            ./chart \
+            --namespace "${{ vars.K8S_NAMESPACE }}" \
+            --values ./values.yaml \
+            > /dev/null
 
       - name: Deploy Maps
+        shell: bash
         run: |
+          set -euo pipefail
+
           helm upgrade \
             --install \
-            maps-dev \
-            ./helm/maps \
-            -n 2026-08-maps-dev \
+            "${{ vars.HELM_RELEASE_NAME }}" \
+            ./chart \
+            --namespace "${{ vars.K8S_NAMESPACE }}" \
             --create-namespace \
-            -f values.yaml \
+            --values ./values.yaml \
             --atomic \
             --wait \
             --timeout 15m
 
       - name: Verify Rollout
+        shell: bash
         run: |
+          set -euo pipefail
+
           kubectl rollout status deployment/maps-frontend \
-            -n 2026-08-maps-dev \
+            --namespace "${{ vars.K8S_NAMESPACE }}" \
             --timeout=10m
 
           kubectl rollout status deployment/maps-backend \
-            -n 2026-08-maps-dev \
+            --namespace "${{ vars.K8S_NAMESPACE }}" \
             --timeout=10m
 
+      - name: Deployment Summary
+        shell: bash
+        run: |
+          {
+            echo "## Maps Dev Deployment"
+            echo
+            echo "**Release:** \`${{ vars.HELM_RELEASE_NAME }}\`"
+            echo
+            echo "**Namespace:** \`${{ vars.K8S_NAMESPACE }}\`"
+            echo
+            echo "**Frontend image tag:** \`${{ needs.set-context.outputs.frontend_tag }}\`"
+            echo "**Backend image tag:** \`${{ needs.set-context.outputs.backend_tag }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   image-scan:
-    name: Image Scans (${{ matrix.image }})
+    name: Image Scan (${{ matrix.image }})
     runs-on: ubuntu-22.04
+    environment: dev
     continue-on-error: true
+
     needs:
       - set-context
       - helm-upgrade-dev
+
     strategy:
       fail-fast: false
       matrix:
         include:
           - image: frontend
-            tag: ${{ needs.set-context.outputs.fe_tag }}
+            tag: ${{ needs.set-context.outputs.frontend_tag }}
+
           - image: backend
-            tag: ${{ needs.set-context.outputs.be_tag }}
+            tag: ${{ needs.set-context.outputs.backend_tag }}
+
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.FPCC_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.FPCC_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.FPCC_DEFAULT_AWS_REGION }}
           mask-aws-account-id: true
 
       - name: Authenticate Container Registry
@@ -521,83 +570,202 @@ jobs:
         with:
           mask-password: true
 
-      - name: Set Up Trivy CLI
+      - name: Set Up Trivy
         uses: aquasecurity/setup-trivy@v0.3.1
         with:
           version: v0.74.0
           cache: true
 
+      - name: Validate Image Reference
+        shell: bash
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY_INPUT: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ matrix.tag }}
+        run: |
+          set -euo pipefail
+
+          test -n "$ECR_REGISTRY"
+          test -n "$ECR_REPOSITORY_INPUT"
+          test -n "$IMAGE_TAG"
+
+          echo "Scanning $ECR_REGISTRY/$ECR_REPOSITORY_INPUT:$IMAGE_TAG"
+
       - name: Run Trivy Scan
         id: trivy
         continue-on-error: true
+        shell: bash
         env:
-          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+          IMAGE_REFERENCE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ matrix.tag }}
         run: |
-          if trivy image --platform linux/amd64 --scanners vuln --severity HIGH,CRITICAL --format json --output trivy-findings.json --exit-code 1 "$IMAGE_REF"; then
-            SCAN_EXIT=0
-          else
-            SCAN_EXIT=$?
-          fi
+          set -euo pipefail
 
-          jq '[.Results[]?.Vulnerabilities[]? | {VulnerabilityID, PkgName, InstalledVersion, FixedVersion, Severity, Title}]' trivy-findings.json
-          exit "$SCAN_EXIT"
+          trivy image \
+            --platform linux/amd64 \
+            --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-findings.json \
+            --exit-code 1 \
+            "$IMAGE_REFERENCE"
 
       - name: Run ECR Scan
         id: ecr
         continue-on-error: true
+        shell: bash
         env:
-          IMAGE_REF: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.tag }}
+          IMAGE_REFERENCE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ matrix.tag }}
+          ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          IMAGE_DIGEST=$(docker buildx imagetools inspect "$IMAGE_REF" --raw | jq -r '.manifests[] | select(.platform.os == "linux" and .platform.architecture == "amd64") | .digest')
-          SCAN_STATUS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" --query 'imageScanStatus.status' --output text 2>/dev/null || true)
+          set -euo pipefail
 
-          if [[ "$SCAN_STATUS" != "IN_PROGRESS" && "$SCAN_STATUS" != "COMPLETE" ]]; then
-            if ! SCAN_OUTPUT=$(aws ecr start-image-scan --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" 2>&1); then
+          IMAGE_DIGEST=$(
+            docker buildx imagetools inspect \
+              "$IMAGE_REFERENCE" \
+              --raw |
+            jq -r '
+              .manifests[]? |
+              select(
+                .platform.os == "linux" and
+                .platform.architecture == "amd64"
+              ) |
+              .digest
+            ' |
+            head -n 1
+          )
+
+          if [[ -z "$IMAGE_DIGEST" || "$IMAGE_DIGEST" == "null" ]]; then
+            echo "Unable to determine the linux/amd64 image digest"
+            exit 1
+          fi
+
+          echo "Scanning image digest: $IMAGE_DIGEST"
+
+          SCAN_STATUS=$(
+            aws ecr describe-image-scan-findings \
+              --repository-name "$ECR_REPOSITORY_NAME" \
+              --image-id "imageDigest=$IMAGE_DIGEST" \
+              --query 'imageScanStatus.status' \
+              --output text \
+              2>/dev/null ||
+            true
+          )
+
+          echo "Current ECR scan status: $SCAN_STATUS"
+
+          if [[ "$SCAN_STATUS" != "IN_PROGRESS" &&
+                "$SCAN_STATUS" != "COMPLETE" ]]; then
+
+            if ! SCAN_OUTPUT=$(
+              aws ecr start-image-scan \
+                --repository-name "$ECR_REPOSITORY_NAME" \
+                --image-id "imageDigest=$IMAGE_DIGEST" \
+                2>&1
+            ); then
               if [[ "$SCAN_OUTPUT" == *"LimitExceededException"* ]]; then
-                echo "ECR scan quota reached; using the existing scan"
+                echo "ECR scan quota reached; attempting to use an existing scan"
               else
                 echo "$SCAN_OUTPUT"
                 exit 1
               fi
             fi
-          else
-            echo "ECR scan is already $SCAN_STATUS; reusing it"
           fi
 
-          aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST"
-          aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id "imageDigest=$IMAGE_DIGEST" | jq '[.imageScanFindings.findings[]? | select(.severity == "HIGH" or .severity == "CRITICAL")]' > ecr-findings.json
+          aws ecr wait image-scan-complete \
+            --repository-name "$ECR_REPOSITORY_NAME" \
+            --image-id "imageDigest=$IMAGE_DIGEST"
 
-          echo "HIGH and CRITICAL ECR findings for ${{ matrix.image }}:"
-          jq . ecr-findings.json
+          aws ecr describe-image-scan-findings \
+            --repository-name "$ECR_REPOSITORY_NAME" \
+            --image-id "imageDigest=$IMAGE_DIGEST" \
+            --query 'imageScanFindings.findings' \
+            --output json \
+            > ecr-findings.json
 
-          [[ $(jq length ecr-findings.json) -eq 0 ]]
+          jq '
+            [
+              .[]? |
+              select(
+                .severity == "HIGH" or
+                .severity == "CRITICAL"
+              )
+            ]
+          ' ecr-findings.json > ecr-high-critical.json
+
+          echo "HIGH and CRITICAL ECR findings:"
+          jq . ecr-high-critical.json
+
+          test "$(jq length ecr-high-critical.json)" -eq 0
 
       - name: Evaluate Scan Results
         if: always()
+        shell: bash
         run: |
+          set -euo pipefail
+
           TRIVY_HIGH="N/A"
           TRIVY_CRITICAL="N/A"
           ECR_HIGH="N/A"
           ECR_CRITICAL="N/A"
 
           if [[ -f trivy-findings.json ]]; then
-            TRIVY_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-findings.json)
-            TRIVY_CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-findings.json)
+            TRIVY_HIGH=$(
+              jq '
+                [
+                  .Results[]?.Vulnerabilities[]? |
+                  select(.Severity == "HIGH")
+                ] |
+                length
+              ' trivy-findings.json
+            )
+
+            TRIVY_CRITICAL=$(
+              jq '
+                [
+                  .Results[]?.Vulnerabilities[]? |
+                  select(.Severity == "CRITICAL")
+                ] |
+                length
+              ' trivy-findings.json
+            )
           fi
 
-          if [[ -f ecr-findings.json ]]; then
-            ECR_HIGH=$(jq '[.[] | select(.severity == "HIGH")] | length' ecr-findings.json)
-            ECR_CRITICAL=$(jq '[.[] | select(.severity == "CRITICAL")] | length' ecr-findings.json)
+          if [[ -f ecr-high-critical.json ]]; then
+            ECR_HIGH=$(
+              jq '
+                [
+                  .[]? |
+                  select(.severity == "HIGH")
+                ] |
+                length
+              ' ecr-high-critical.json
+            )
+
+            ECR_CRITICAL=$(
+              jq '
+                [
+                  .[]? |
+                  select(.severity == "CRITICAL")
+                ] |
+                length
+              ' ecr-high-critical.json
+            )
           fi
 
           TRIVY_RESULT="Passed"
           ECR_RESULT="Passed"
           OVERALL_RESULT="Passed"
 
-          [[ "${{ steps.trivy.outcome }}" == "success" ]] || TRIVY_RESULT="Failed"
-          [[ "${{ steps.ecr.outcome }}" == "success" ]] || ECR_RESULT="Failed"
+          if [[ "${{ steps.trivy.outcome }}" != "success" ]]; then
+            TRIVY_RESULT="Failed"
+          fi
 
-          if [[ "$TRIVY_RESULT" == "Failed" || "$ECR_RESULT" == "Failed" ]]; then
+          if [[ "${{ steps.ecr.outcome }}" != "success" ]]; then
+            ECR_RESULT="Failed"
+          fi
+
+          if [[ "$TRIVY_RESULT" == "Failed" ||
+                "$ECR_RESULT" == "Failed" ]]; then
             OVERALL_RESULT="Failed"
           fi
 
@@ -620,3 +788,15 @@ jobs:
           fi
 
           echo "No HIGH or CRITICAL vulnerabilities found for ${{ matrix.image }}"
+
+      - name: Upload Security Scan Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-${{ matrix.image }}-${{ matrix.tag }}
+          path: |
+            trivy-findings.json
+            ecr-findings.json
+            ecr-high-critical.json
+          if-no-files-found: warn
+          retention-days: 7
