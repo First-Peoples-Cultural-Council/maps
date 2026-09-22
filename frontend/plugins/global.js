@@ -43,7 +43,7 @@ Vue.prototype.$eventHub.$on('route-changed', function(route) {
     this.doneReveal() // hide the little magnifier element when routing, it's dependent on a hover and the map position.
     // hide the highlight box if we navigate away from a language detail.
     if (
-      route.name !== 'index-languages-lang' &&
+      route.name !== 'index-languages-lang' ||
       route.name !== 'index-languages-lang-details'
     ) {
       safeSetFilter(this.map, 'fn-lang-areas-highlighted', ['in', 'name', ''])
