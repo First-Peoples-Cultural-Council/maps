@@ -98,7 +98,7 @@ export default {
   async asyncData({ params, $axios, store }) {
     const now = new Date()
 
-    const grants = await $axios.$get(getApiUrl(`grants`))
+    const grants = await $axios.$get(`${getApiUrl('grants')}/`)
 
     const grantFind = grants.features.find(a => {
       if (a.properties.name) {

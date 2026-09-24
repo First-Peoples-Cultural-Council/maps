@@ -806,7 +806,7 @@ export default {
             this.$axios.$get(getApiUrl('art-geo')),
             this.$axios.$get(getApiUrl('taxonomy')),
             this.$axios.$get(getApiUrl('arts/event')),
-            this.$axios.$get(getApiUrl('grants')),
+            this.$axios.$get(`${getApiUrl('grants')}/`),
             this.$axios.$get(getApiUrl('grant-categories'))
           ])
 
@@ -824,6 +824,9 @@ export default {
 
           this.$store.commit('grants/setGrants', results[6].features)
           this.$store.commit('grants/setGrantsGeo', results[6])
+          this.$eventHub.whenMap(map => {
+            safeSetSourceData(map, 'grants1', results[6])
+          })
 
           const taxonomies = [
             ...results[4],
@@ -1323,7 +1326,7 @@ export default {
 
       map.addSource('grants1', {
         type: 'geojson',
-        data: '/api/grants/',
+        data: this.grantsGeo,
         cluster: true,
         maxzoom: 20,
         clusterMaxZoom: 20,
