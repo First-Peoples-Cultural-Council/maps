@@ -1,6 +1,7 @@
 export const state = () => ({
   isMobile: false,
   isDataLoaded: false,
+  isDeferredDataLoaded: false,
   isEmbed: false,
   showOtherLanguages: false,
   showCommunities: false,
@@ -16,6 +17,9 @@ export const mutations = {
   },
   setIsDataLoaded(state, isLoaded) {
     state.isDataLoaded = isLoaded
+  },
+  setIsDeferredDataLoaded(state, isLoaded) {
+    state.isDeferredDataLoaded = isLoaded
   },
   setIsEmbed(state, isEmbed) {
     state.isEmbed = isEmbed

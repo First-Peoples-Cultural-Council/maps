@@ -1,6 +1,6 @@
 export const state = () => ({
   grantsSet: [],
-  grantsGeo: [],
+  grantsGeo: { features: [] },
   filterDate: null,
   currentGrant: null,
   categorySearchSet: [],

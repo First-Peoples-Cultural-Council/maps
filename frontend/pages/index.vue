@@ -501,85 +501,32 @@ export default {
       this.handleInformationModalVisibility()
     }
   },
-  async asyncData({ params, $axios, store, hash }) {
-    const auth = await $axios.$get(
-      `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
-    )
-    if (auth.is_authenticated) {
-      store.commit('user/setUser', auth.user)
-      store.commit('user/setPicture', auth.user.picture)
-      store.commit('user/setLoggedIn', true)
-    }
-    return { auth }
-  },
   async fetch({ $axios, store, route }) {
     if (!store.state.app.isDataLoaded) {
-      // Only fetch search data
-      const results = await Promise.all([
+      const currentLanguages = store.state.languages.languageSet
+      const requests = [
         $axios.$get(getApiUrl('language-search')),
-        $axios.$get(getApiUrl('community-search')),
-        $axios.$get(getApiUrl('placename-search')),
-        $axios.$get(getApiUrl('art-search')),
-        $axios.$get(getApiUrl('art-geo')),
-        $axios.$get(getApiUrl('taxonomy')),
-        $axios.$get(getApiUrl('arts/event')),
-        $axios.$get(getApiUrl('grants')),
-        $axios.$get(getApiUrl('grant-categories'))
-      ])
+        $axios.$get(getApiUrl('community-search'))
+      ]
+
+      if (currentLanguages.length === 0) {
+        requests.push(
+          $axios.$get(getApiUrl('language')),
+          $axios.$get(getApiUrl('community'))
+        )
+      }
+
+      const results = await Promise.all(requests)
 
       store.commit('languages/setSearchStore', results[0])
       store.commit('communities/setSearchStore', results[1])
-      store.commit('places/setSearchStore', results[2])
-      store.commit('arts/setSearchStore', results[3])
-
-      // Set Art Geo Set - for visible Arts count
-      store.commit('arts/setGeo', results[4].features)
-      store.commit('arts/setGeoStore', results[4])
-
-      // Set Grants Geo Set
-      store.commit('grants/setGrants', results[7].features)
-      store.commit('grants/setGrantsGeo', results[7])
-
-      const taxonomies = [
-        ...results[5],
-        ...Array.from(['image', 'video', 'audio']).map(type => {
-          return {
-            id: type,
-            name: type
-          }
-        })
-      ]
-      store.commit(
-        'arts/setTaxonomySearchSet',
-        taxonomies.map(tax => {
-          tax.isChecked = false
-          return tax
-        })
-      )
-
-      // Store Grants Category List
-      store.commit(
-        'grants/setGrantCategorySearchSet',
-        results[8].map(tax => {
-          tax.isChecked = false
-          return tax
-        })
-      )
-
-      const currentLanguages = store.state.languages.languageSet
 
       if (currentLanguages.length === 0) {
-        // Fetch languages and communites data
-        const languages = await $axios.$get(getApiUrl('language'))
-        const communities = await $axios.$get(getApiUrl('community'))
+        store.commit('languages/set', groupBy(results[2], 'family.name'))
+        store.commit('languages/setStore', results[2])
 
-        // Set language stores
-        store.commit('languages/set', groupBy(languages, 'family.name')) // All data
-        store.commit('languages/setStore', languages) // Updating data based on map
-
-        // Set community stores
-        store.commit('communities/set', communities) // All data
-        store.commit('communities/setStore', communities) // Updating data based on map
+        store.commit('communities/set', results[3])
+        store.commit('communities/setStore', results[3])
       }
 
       store.commit('app/setIsDataLoaded', true)
@@ -843,8 +790,72 @@ export default {
         path: `/claim?email=${email}&key=${key}`
       })
     }
+
+    this.fetchDeferredData()
   },
   methods: {
+    async fetchDeferredData() {
+      if (!this.$store.state.app.isDeferredDataLoaded) {
+        try {
+          const results = await Promise.all([
+            this.$axios.$get(
+              `${getApiUrl('user/auth/?timestamp=${new Date().getTime()')}}`
+            ),
+            this.$axios.$get(getApiUrl('placename-search')),
+            this.$axios.$get(getApiUrl('art-search')),
+            this.$axios.$get(getApiUrl('art-geo')),
+            this.$axios.$get(getApiUrl('taxonomy')),
+            this.$axios.$get(getApiUrl('arts/event')),
+            this.$axios.$get(getApiUrl('grants')),
+            this.$axios.$get(getApiUrl('grant-categories'))
+          ])
+
+          const auth = results[0]
+          if (auth.is_authenticated) {
+            this.$store.commit('user/setUser', auth.user)
+            this.$store.commit('user/setPicture', auth.user.picture)
+            this.$store.commit('user/setLoggedIn', true)
+          }
+
+          this.$store.commit('places/setSearchStore', results[1])
+          this.$store.commit('arts/setSearchStore', results[2])
+          this.$store.commit('arts/setGeo', results[3].features)
+          this.$store.commit('arts/setGeoStore', results[3])
+
+          this.$store.commit('grants/setGrants', results[6].features)
+          this.$store.commit('grants/setGrantsGeo', results[6])
+
+          const taxonomies = [
+            ...results[4],
+            ...Array.from(['image', 'video', 'audio']).map(type => {
+              return {
+                id: type,
+                name: type
+              }
+            })
+          ]
+          this.$store.commit(
+            'arts/setTaxonomySearchSet',
+            taxonomies.map(tax => {
+              tax.isChecked = false
+              return tax
+            })
+          )
+
+          this.$store.commit(
+            'grants/setGrantCategorySearchSet',
+            results[7].map(tax => {
+              tax.isChecked = false
+              return tax
+            })
+          )
+
+          this.$store.commit('app/setIsDeferredDataLoaded', true)
+        } catch (error) {
+          console.error('Failed to fetch deferred homepage data', error)
+        }
+      }
+    },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },

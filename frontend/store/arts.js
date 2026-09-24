@@ -10,7 +10,7 @@ export const state = () => ({
   artsSearchSet: [],
   taxonomySearchSet: [],
   artsGeo: [],
-  artsGeoSet: [],
+  artsGeoSet: { features: [] },
   artworks: [],
   artworkSet: [],
   eventsSet: []
