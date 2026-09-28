@@ -186,7 +186,7 @@
               ></DrawingTools>
             </b-alert>
           </div>
-          <div class="map-loading">
+          <div v-if="showFullscreenLoading" class="map-loading">
             Loading Map
             <b-spinner type="grow" label="Spinning"></b-spinner>
           </div>
@@ -1343,7 +1343,6 @@ export default {
       safeSetLayerVisibility(map, 'fn-reserve-outlines', 'none')
       safeSetLayerVisibility(map, 'fn-reserve-areas', 'none')
       this.toggleLayers(this.$route.name)
-      this.showFullscreenLoading = false
       MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
       const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -1621,6 +1620,21 @@ export default {
       this.updateMapState(map)
     },
     mapSourceData(map, source) {
+      if (this.showFullscreenLoading) {
+        const initialSources = ['langs1']
+        if (!this.isEmbed || this.showCommunities) {
+          initialSources.push('communities1')
+        }
+        if (!this.isEmbed || this.showHeritagePoints) {
+          initialSources.push('places1')
+        }
+
+        if (
+          initialSources.every(id => map.getSource(id) && map.isSourceLoaded(id))
+        ) {
+          this.showFullscreenLoading = false
+        }
+      }
       if (source.sourceId === 'arts1') {
         // this.updateMarkers(map)
       }
