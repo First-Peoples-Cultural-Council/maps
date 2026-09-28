@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - dev
+      - FPMT-167-unit-test-fixes
 
   pull_request:
-    branches:
-      - dev
-
 permissions:
   contents: read
 
@@ -20,21 +18,23 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
-  # Re-enable these when the reusable test workflows are ready.
-  #
-  # backend-tests:
-  #   name: Backend Tests
-  #   if: >-
-  #     github.event_name == 'pull_request' ||
-  #     (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-  #   uses: ./.github/workflows/test-backend.yml
-  #
-  # frontend-tests:
-  #   name: Frontend Tests
-  #   if: >-
-  #     github.event_name == 'pull_request' ||
-  #     (github.event_name == 'push' && github.ref == 'refs/heads/dev')
-  #   uses: ./.github/workflows/test-frontend.yml
+  backend-tests:
+    name: Backend Tests
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' &&
+      (github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/FPMT-167-unit-test-fixes'))
+    uses: ./.github/workflows/test-backend.yml
+
+  frontend-tests:
+    name: Frontend Tests
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' &&
+      (github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/FPMT-167-unit-test-fixes'))
+    uses: ./.github/workflows/test-frontend.yml
 
   set-context:
     name: Prepare Build
