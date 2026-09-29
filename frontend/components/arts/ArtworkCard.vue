@@ -149,9 +149,14 @@ export default {
   methods: {
     handleArtistNameClick(name) {
       this.$store.commit('sidebar/setDrawerContent', false)
-      this.$router.push({
-        path: `/art/${encodeFPCC(name)}`
-      })
+      this.$root.$emit('startArtsMapLoading')
+      this.$router.push(
+        { path: `/art/${encodeFPCC(name)}` },
+        () => {},
+        () => {
+          this.$root.$emit('stopArtsMapLoading')
+        }
+      )
     },
     handleMouseOver() {
       this.hover = true

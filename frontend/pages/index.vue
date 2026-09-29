@@ -510,7 +510,9 @@ export default {
         (this.mapLoadingLabel === 'Loading heritage map' &&
           to.name !== 'index-place-names-placename') ||
         (this.mapLoadingLabel === 'Loading community map' &&
-          to.name !== 'index-content-fn')
+          to.name !== 'index-content-fn') ||
+        (this.mapLoadingLabel === 'Loading arts map' &&
+          to.name !== 'index-art-art')
       ) {
         this.mapLoadingLabel = null
       }
@@ -657,6 +659,8 @@ export default {
     this.$root.$on('stopHeritageMapLoading', this.stopHeritageMapLoading)
     this.$root.$on('startCommunityMapLoading', this.startCommunityMapLoading)
     this.$root.$on('stopCommunityMapLoading', this.stopCommunityMapLoading)
+    this.$root.$on('startArtsMapLoading', this.startArtsMapLoading)
+    this.$root.$on('stopArtsMapLoading', this.stopArtsMapLoading)
 
     setTimeout(() => {
       if (this.user) {
@@ -821,6 +825,8 @@ export default {
     this.$root.$off('stopHeritageMapLoading', this.stopHeritageMapLoading)
     this.$root.$off('startCommunityMapLoading', this.startCommunityMapLoading)
     this.$root.$off('stopCommunityMapLoading', this.stopCommunityMapLoading)
+    this.$root.$off('startArtsMapLoading', this.startArtsMapLoading)
+    this.$root.$off('stopArtsMapLoading', this.stopArtsMapLoading)
   },
   methods: {
     startLanguageMapLoading() {
@@ -844,6 +850,14 @@ export default {
     },
     stopCommunityMapLoading() {
       if (this.mapLoadingLabel === 'Loading community map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startArtsMapLoading() {
+      this.mapLoadingLabel = 'Loading arts map'
+    },
+    stopArtsMapLoading() {
+      if (this.mapLoadingLabel === 'Loading arts map') {
         this.mapLoadingLabel = null
       }
     },

@@ -515,9 +515,14 @@ export default {
       if (this.isDrawerShown) {
         this.toggleArtsDrawer()
       }
-      this.$router.push({
-        path: `/art/${encodeFPCC(name)}`
-      })
+      this.$root.$emit('startArtsMapLoading')
+      this.$router.push(
+        { path: `/art/${encodeFPCC(name)}` },
+        () => {},
+        () => {
+          this.$root.$emit('stopArtsMapLoading')
+        }
+      )
     },
     selectMedia(currentArt) {
       // If Same Artwork is clicked, close the drawer

@@ -566,15 +566,24 @@ export default {
       window.open(`https://fp-artsmap.ca/node/${data}`)
     },
     setupMap() {
+      if (!this.placename || !this.placename.geom) {
+        this.$root.$emit('stopArtsMapLoading')
+        return
+      }
       this.$eventHub.whenMap(map => {
+        const onMoveEnd = () => {
+          this.$root.$emit('stopArtsMapLoading')
+        }
         if (this.$route.hash.length <= 1) {
-          if (this.placename.geom)
-            zoomToPoint({ map, geom: this.placename.geom, zoom: 11 })
+          map.once('moveend', onMoveEnd)
+          zoomToPoint({ map, geom: this.placename.geom, zoom: 11 })
         }
-        if (this.placename.geom) {
-          const icon = this.placename.kind + '_icon.svg'
-          makeMarker(this.placename.geom, icon, this).addTo(map)
+        if (!map.isMoving()) {
+          map.off('moveend', onMoveEnd)
+          onMoveEnd()
         }
+        const icon = this.placename.kind + '_icon.svg'
+        makeMarker(this.placename.geom, icon, this).addTo(map)
       })
     },
     toggleDescription() {
