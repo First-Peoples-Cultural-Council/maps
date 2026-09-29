@@ -1,5 +1,4 @@
 import grantMarker from '@/assets/images/grant_icon.png'
-import { safeSetFilter } from '@/plugins/mapbox-safe.js'
 
 const addLangLayers = map => {
   map.addLayer({
@@ -65,6 +64,7 @@ const addLangLayers = map => {
   map.addLayer({
     id: 'fn-lang-areas-highlighted',
     type: 'line',
+    filter: ['in', 'name', ''],
     source: 'langs1',
     layout: {
       visibility: 'visible'
@@ -109,8 +109,6 @@ const addLangLayers = map => {
       'line-dasharray': [2, 1]
     }
   })
-
-  safeSetFilter(map, 'fn-lang-areas-highlighted', ['in', 'name', ''])
 }
 
 const addNationsLayers = map => {
