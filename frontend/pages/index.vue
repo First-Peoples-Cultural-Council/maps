@@ -378,6 +378,7 @@ export default {
       searchKey: 'search',
       showFullscreenLoading: false,
       mapLoadingLabel: null,
+      searchMapLoadingRoute: null,
       showInformationModal: false,
       showDisclaimerModal: false,
       loggingIn: false,
@@ -512,9 +513,14 @@ export default {
         (this.mapLoadingLabel === 'Loading community map' &&
           to.name !== 'index-content-fn') ||
         (this.mapLoadingLabel === 'Loading arts map' &&
-          to.name !== 'index-art-art')
+          to.name !== 'index-art-art') ||
+        (this.mapLoadingLabel === 'Loading map' &&
+          (this.searchMapLoadingRoute
+            ? to.name !== this.searchMapLoadingRoute
+            : to.name !== from.name))
       ) {
         this.mapLoadingLabel = null
+        this.searchMapLoadingRoute = null
       }
     }
   },
@@ -661,6 +667,8 @@ export default {
     this.$root.$on('stopCommunityMapLoading', this.stopCommunityMapLoading)
     this.$root.$on('startArtsMapLoading', this.startArtsMapLoading)
     this.$root.$on('stopArtsMapLoading', this.stopArtsMapLoading)
+    this.$root.$on('startSearchMapLoading', this.startSearchMapLoading)
+    this.$root.$on('stopSearchMapLoading', this.stopSearchMapLoading)
 
     setTimeout(() => {
       if (this.user) {
@@ -827,12 +835,28 @@ export default {
     this.$root.$off('stopCommunityMapLoading', this.stopCommunityMapLoading)
     this.$root.$off('startArtsMapLoading', this.startArtsMapLoading)
     this.$root.$off('stopArtsMapLoading', this.stopArtsMapLoading)
+    this.$root.$off('startSearchMapLoading', this.startSearchMapLoading)
+    this.$root.$off('stopSearchMapLoading', this.stopSearchMapLoading)
   },
   methods: {
+    startSearchMapLoading(routeName = null) {
+      this.searchMapLoadingRoute = routeName
+      this.mapLoadingLabel = 'Loading map'
+    },
+    stopSearchMapLoading(routeName = null) {
+      if (
+        this.mapLoadingLabel === 'Loading map' &&
+        this.searchMapLoadingRoute === routeName
+      ) {
+        this.mapLoadingLabel = null
+        this.searchMapLoadingRoute = null
+      }
+    },
     startLanguageMapLoading() {
       this.mapLoadingLabel = 'Loading language map'
     },
     stopLanguageMapLoading() {
+      this.stopSearchMapLoading('index-languages-lang')
       if (this.mapLoadingLabel === 'Loading language map') {
         this.mapLoadingLabel = null
       }
@@ -841,6 +865,7 @@ export default {
       this.mapLoadingLabel = 'Loading heritage map'
     },
     stopHeritageMapLoading() {
+      this.stopSearchMapLoading('index-place-names-placename')
       if (this.mapLoadingLabel === 'Loading heritage map') {
         this.mapLoadingLabel = null
       }
@@ -849,6 +874,7 @@ export default {
       this.mapLoadingLabel = 'Loading community map'
     },
     stopCommunityMapLoading() {
+      this.stopSearchMapLoading('index-content-fn')
       if (this.mapLoadingLabel === 'Loading community map') {
         this.mapLoadingLabel = null
       }
@@ -857,6 +883,7 @@ export default {
       this.mapLoadingLabel = 'Loading arts map'
     },
     stopArtsMapLoading() {
+      this.stopSearchMapLoading('index-art-art')
       if (this.mapLoadingLabel === 'Loading arts map') {
         this.mapLoadingLabel = null
       }

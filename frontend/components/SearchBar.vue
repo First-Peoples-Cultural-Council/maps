@@ -541,6 +541,16 @@ export default {
         this.show = true
       }
     },
+    navigateToMapResult(path, routeName) {
+      this.$root.$emit('startSearchMapLoading', routeName)
+      this.$router.push(
+        { path },
+        () => {},
+        () => {
+          this.$root.$emit('stopSearchMapLoading', routeName)
+        }
+      )
+    },
     handleResultClick(event, type, data, geom = null, result = null) {
       if (this.popup) {
         this.popup.remove()
@@ -556,9 +566,10 @@ export default {
       this.show = false
       this.searchQuery = data
       if (type === 'Places') {
-        return this.$router.push({
-          path: `/place-names/${encodeFPCC(data)}`
-        })
+        return this.navigateToMapResult(
+          `/place-names/${encodeFPCC(data)}`,
+          'index-place-names-placename'
+        )
       }
 
       if (
@@ -569,33 +580,37 @@ export default {
         type === 'Events' ||
         type === 'Grants'
       ) {
-        return this.$router.push({
-          path: `/art/${encodeFPCC(data)}`
-        })
+        return this.navigateToMapResult(`/art/${encodeFPCC(data)}`, 'index-art-art')
       }
 
       if (type === 'Languages') {
-        return this.$router.push({
-          path: `/languages/${encodeFPCC(data)}`
-        })
+        return this.navigateToMapResult(
+          `/languages/${encodeFPCC(data)}`,
+          'index-languages-lang'
+        )
       }
 
       if (type === 'Communities') {
-        return this.$router.push({
-          path: `/content/${encodeFPCC(data)}`
-        })
+        return this.navigateToMapResult(`/content/${encodeFPCC(data)}`, 'index-content-fn')
       }
 
       if (type === 'Arts') {
-        return this.$router.push({
-          path: `/art/${encodeFPCC(data)}`
-        })
+        return this.navigateToMapResult(`/art/${encodeFPCC(data)}`, 'index-art-art')
       }
 
       if (type === 'Locations' || type === 'Address') {
         const self = this
+        this.$root.$emit('startSearchMapLoading')
         this.$eventHub.whenMap(map => {
+          const onMoveEnd = () => {
+            self.$root.$emit('stopSearchMapLoading')
+          }
+          map.once('moveend', onMoveEnd)
           zoomToPoint({ map, geom, zoom: 11 })
+          if (!map.isMoving()) {
+            map.off('moveend', onMoveEnd)
+            onMoveEnd()
+          }
           const el = document.createElement('div')
           el.className = 'marker search-marker'
           el.style = "background-image: url('https://i.imgur.com/MK4NUzI.png')"
