@@ -401,6 +401,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.geo_place) {
+      this.$root.$emit('stopHeritageMapLoading')
+    }
     this.$root.$on('fileUploadedPlaces', r => {
       this.$store.dispatch('places/getPlaceMedias', {
         id: this.place.id
@@ -471,6 +474,15 @@ export default {
     },
     setupMap(geom) {
       this.$eventHub.whenMap(map => {
+        const onMoveEnd = () => {
+          this.$root.$emit('stopHeritageMapLoading')
+        }
+        const shouldZoom =
+          this.$route.hash.length <= 1 &&
+          ['Point', 'Polygon', 'LineString'].includes(geom.type)
+        if (shouldZoom) {
+          map.once('moveend', onMoveEnd)
+        }
         if (this.$route.hash.length <= 1) {
           if (geom.type === 'Point') {
             zoomToPoint({ map, geom, zoom: 13 })
@@ -490,6 +502,11 @@ export default {
               padding: 30
             })
           }
+        }
+
+        if (!shouldZoom || !map.isMoving()) {
+          map.off('moveend', onMoveEnd)
+          onMoveEnd()
         }
 
         makeMarker(this.geo_place.geometry, 'poi_icon.svg', this).addTo(map)

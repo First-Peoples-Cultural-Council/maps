@@ -214,14 +214,24 @@ export default {
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
-          this.$router.push({
-            path: `/languages/${encodeFPCC(name)}`
-          })
+          this.$root.$emit('startLanguageMapLoading')
+          this.$router.push(
+            { path: `/languages/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.$root.$emit('stopLanguageMapLoading')
+            }
+          )
           break
         case 'comm':
-          this.$router.push({
-            path: `/content/${encodeFPCC(name)}`
-          })
+          this.$root.$emit('startCommunityMapLoading')
+          this.$router.push(
+            { path: `/content/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.$root.$emit('stopCommunityMapLoading')
+            }
+          )
           break
       }
     },

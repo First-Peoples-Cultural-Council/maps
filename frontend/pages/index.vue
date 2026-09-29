@@ -186,7 +186,7 @@
               ></DrawingTools>
             </b-alert>
           </div>
-          <div class="map-loading">
+          <div v-if="showFullscreenLoading" class="map-loading">
             Loading Map
             <b-spinner type="grow" label="Spinning"></b-spinner>
           </div>
@@ -202,6 +202,10 @@
             @map-moveend="mapMoveEnd"
             @map-sourcedata="mapSourceData"
           ></Mapbox>
+          <div v-if="mapLoadingLabel" class="map-loading-backdrop" role="status">
+            <b-spinner :label="mapLoadingLabel"></b-spinner>
+            <span>{{ mapLoadingLabel }}...</span>
+          </div>
           <MapControlFooter />
           <ModalNotification></ModalNotification>
           <div v-if="!isDrawMode && !isEmbed" class="map-navigation-container">
@@ -373,6 +377,8 @@ export default {
       searchQuery: '',
       searchKey: 'search',
       showFullscreenLoading: false,
+      mapLoadingLabel: null,
+      searchMapLoadingRoute: null,
       showInformationModal: false,
       showDisclaimerModal: false,
       loggingIn: false,
@@ -499,6 +505,23 @@ export default {
   watch: {
     $route(to, from) {
       this.handleInformationModalVisibility()
+      if (
+        (this.mapLoadingLabel === 'Loading language map' &&
+          to.name !== 'index-languages-lang') ||
+        (this.mapLoadingLabel === 'Loading heritage map' &&
+          to.name !== 'index-place-names-placename') ||
+        (this.mapLoadingLabel === 'Loading community map' &&
+          to.name !== 'index-content-fn') ||
+        (this.mapLoadingLabel === 'Loading arts map' &&
+          to.name !== 'index-art-art') ||
+        (this.mapLoadingLabel === 'Loading map' &&
+          (this.searchMapLoadingRoute
+            ? to.name !== this.searchMapLoadingRoute
+            : to.name !== from.name))
+      ) {
+        this.mapLoadingLabel = null
+        this.searchMapLoadingRoute = null
+      }
     }
   },
   async fetch({ $axios, store, route }) {
@@ -636,6 +659,16 @@ export default {
         this.updateData(map)
       })
     })
+    this.$root.$on('startLanguageMapLoading', this.startLanguageMapLoading)
+    this.$root.$on('stopLanguageMapLoading', this.stopLanguageMapLoading)
+    this.$root.$on('startHeritageMapLoading', this.startHeritageMapLoading)
+    this.$root.$on('stopHeritageMapLoading', this.stopHeritageMapLoading)
+    this.$root.$on('startCommunityMapLoading', this.startCommunityMapLoading)
+    this.$root.$on('stopCommunityMapLoading', this.stopCommunityMapLoading)
+    this.$root.$on('startArtsMapLoading', this.startArtsMapLoading)
+    this.$root.$on('stopArtsMapLoading', this.stopArtsMapLoading)
+    this.$root.$on('startSearchMapLoading', this.startSearchMapLoading)
+    this.$root.$on('stopSearchMapLoading', this.stopSearchMapLoading)
 
     setTimeout(() => {
       if (this.user) {
@@ -793,7 +826,68 @@ export default {
 
     this.fetchDeferredData()
   },
+  beforeDestroy() {
+    this.$root.$off('startLanguageMapLoading', this.startLanguageMapLoading)
+    this.$root.$off('stopLanguageMapLoading', this.stopLanguageMapLoading)
+    this.$root.$off('startHeritageMapLoading', this.startHeritageMapLoading)
+    this.$root.$off('stopHeritageMapLoading', this.stopHeritageMapLoading)
+    this.$root.$off('startCommunityMapLoading', this.startCommunityMapLoading)
+    this.$root.$off('stopCommunityMapLoading', this.stopCommunityMapLoading)
+    this.$root.$off('startArtsMapLoading', this.startArtsMapLoading)
+    this.$root.$off('stopArtsMapLoading', this.stopArtsMapLoading)
+    this.$root.$off('startSearchMapLoading', this.startSearchMapLoading)
+    this.$root.$off('stopSearchMapLoading', this.stopSearchMapLoading)
+  },
   methods: {
+    startSearchMapLoading(routeName = null) {
+      this.searchMapLoadingRoute = routeName
+      this.mapLoadingLabel = 'Loading map'
+    },
+    stopSearchMapLoading(routeName = null) {
+      if (
+        this.mapLoadingLabel === 'Loading map' &&
+        this.searchMapLoadingRoute === routeName
+      ) {
+        this.mapLoadingLabel = null
+        this.searchMapLoadingRoute = null
+      }
+    },
+    startLanguageMapLoading() {
+      this.mapLoadingLabel = 'Loading language map'
+    },
+    stopLanguageMapLoading() {
+      this.stopSearchMapLoading('index-languages-lang')
+      if (this.mapLoadingLabel === 'Loading language map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startHeritageMapLoading() {
+      this.mapLoadingLabel = 'Loading heritage map'
+    },
+    stopHeritageMapLoading() {
+      this.stopSearchMapLoading('index-place-names-placename')
+      if (this.mapLoadingLabel === 'Loading heritage map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startCommunityMapLoading() {
+      this.mapLoadingLabel = 'Loading community map'
+    },
+    stopCommunityMapLoading() {
+      this.stopSearchMapLoading('index-content-fn')
+      if (this.mapLoadingLabel === 'Loading community map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startArtsMapLoading() {
+      this.mapLoadingLabel = 'Loading arts map'
+    },
+    stopArtsMapLoading() {
+      this.stopSearchMapLoading('index-art-art')
+      if (this.mapLoadingLabel === 'Loading arts map') {
+        this.mapLoadingLabel = null
+      }
+    },
     async fetchDeferredData() {
       if (!this.$store.state.app.isDeferredDataLoaded) {
         try {
@@ -914,14 +1008,24 @@ export default {
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
-          this.$router.push({
-            path: `/languages/${encodeFPCC(name)}`
-          })
+          this.startLanguageMapLoading()
+          this.$router.push(
+            { path: `/languages/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.stopLanguageMapLoading()
+            }
+          )
           break
         case 'comm':
-          this.$router.push({
-            path: `/content/${encodeFPCC(name)}`
-          })
+          this.startCommunityMapLoading()
+          this.$router.push(
+            { path: `/content/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.stopCommunityMapLoading()
+            }
+          )
           break
       }
     },
@@ -1343,7 +1447,6 @@ export default {
       safeSetLayerVisibility(map, 'fn-reserve-outlines', 'none')
       safeSetLayerVisibility(map, 'fn-reserve-areas', 'none')
       this.toggleLayers(this.$route.name)
-      this.showFullscreenLoading = false
       MapboxDraw.modes.draw_polygon = require('mapbox-gl-draw-freehand-mode').default
       const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -1621,6 +1724,21 @@ export default {
       this.updateMapState(map)
     },
     mapSourceData(map, source) {
+      if (this.showFullscreenLoading) {
+        const initialSources = ['langs1']
+        if (!this.isEmbed || this.showCommunities) {
+          initialSources.push('communities1')
+        }
+        if (!this.isEmbed || this.showHeritagePoints) {
+          initialSources.push('places1')
+        }
+
+        if (
+          initialSources.every(id => map.getSource(id) && map.isSourceLoaded(id))
+        ) {
+          this.showFullscreenLoading = false
+        }
+      }
       if (source.sourceId === 'arts1') {
         // this.updateMarkers(map)
       }
@@ -1764,6 +1882,20 @@ export default {
   position: relative;
   height: 100vh;
   width: 100%;
+}
+
+.map-loading-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  color: #333;
+  font-weight: 600;
 }
 
 #map {
