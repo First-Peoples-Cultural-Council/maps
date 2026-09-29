@@ -202,9 +202,9 @@
             @map-moveend="mapMoveEnd"
             @map-sourcedata="mapSourceData"
           ></Mapbox>
-          <div v-if="showLanguageMapLoading" class="map-loading-backdrop" role="status">
-            <b-spinner label="Loading language map"></b-spinner>
-            <span>Loading language map...</span>
+          <div v-if="mapLoadingLabel" class="map-loading-backdrop" role="status">
+            <b-spinner :label="mapLoadingLabel"></b-spinner>
+            <span>{{ mapLoadingLabel }}...</span>
           </div>
           <MapControlFooter />
           <ModalNotification></ModalNotification>
@@ -377,7 +377,7 @@ export default {
       searchQuery: '',
       searchKey: 'search',
       showFullscreenLoading: false,
-      showLanguageMapLoading: false,
+      mapLoadingLabel: null,
       showInformationModal: false,
       showDisclaimerModal: false,
       loggingIn: false,
@@ -504,8 +504,15 @@ export default {
   watch: {
     $route(to, from) {
       this.handleInformationModalVisibility()
-      if (to.name !== 'index-languages-lang') {
-        this.showLanguageMapLoading = false
+      if (
+        (this.mapLoadingLabel === 'Loading language map' &&
+          to.name !== 'index-languages-lang') ||
+        (this.mapLoadingLabel === 'Loading heritage map' &&
+          to.name !== 'index-place-names-placename') ||
+        (this.mapLoadingLabel === 'Loading community map' &&
+          to.name !== 'index-content-fn')
+      ) {
+        this.mapLoadingLabel = null
       }
     }
   },
@@ -646,6 +653,10 @@ export default {
     })
     this.$root.$on('startLanguageMapLoading', this.startLanguageMapLoading)
     this.$root.$on('stopLanguageMapLoading', this.stopLanguageMapLoading)
+    this.$root.$on('startHeritageMapLoading', this.startHeritageMapLoading)
+    this.$root.$on('stopHeritageMapLoading', this.stopHeritageMapLoading)
+    this.$root.$on('startCommunityMapLoading', this.startCommunityMapLoading)
+    this.$root.$on('stopCommunityMapLoading', this.stopCommunityMapLoading)
 
     setTimeout(() => {
       if (this.user) {
@@ -806,13 +817,35 @@ export default {
   beforeDestroy() {
     this.$root.$off('startLanguageMapLoading', this.startLanguageMapLoading)
     this.$root.$off('stopLanguageMapLoading', this.stopLanguageMapLoading)
+    this.$root.$off('startHeritageMapLoading', this.startHeritageMapLoading)
+    this.$root.$off('stopHeritageMapLoading', this.stopHeritageMapLoading)
+    this.$root.$off('startCommunityMapLoading', this.startCommunityMapLoading)
+    this.$root.$off('stopCommunityMapLoading', this.stopCommunityMapLoading)
   },
   methods: {
     startLanguageMapLoading() {
-      this.showLanguageMapLoading = true
+      this.mapLoadingLabel = 'Loading language map'
     },
     stopLanguageMapLoading() {
-      this.showLanguageMapLoading = false
+      if (this.mapLoadingLabel === 'Loading language map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startHeritageMapLoading() {
+      this.mapLoadingLabel = 'Loading heritage map'
+    },
+    stopHeritageMapLoading() {
+      if (this.mapLoadingLabel === 'Loading heritage map') {
+        this.mapLoadingLabel = null
+      }
+    },
+    startCommunityMapLoading() {
+      this.mapLoadingLabel = 'Loading community map'
+    },
+    stopCommunityMapLoading() {
+      if (this.mapLoadingLabel === 'Loading community map') {
+        this.mapLoadingLabel = null
+      }
     },
     async fetchDeferredData() {
       if (!this.$store.state.app.isDeferredDataLoaded) {
@@ -934,19 +967,24 @@ export default {
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
-          this.showLanguageMapLoading = true
+          this.startLanguageMapLoading()
           this.$router.push(
             { path: `/languages/${encodeFPCC(name)}` },
             () => {},
             () => {
-              this.showLanguageMapLoading = false
+              this.stopLanguageMapLoading()
             }
           )
           break
         case 'comm':
-          this.$router.push({
-            path: `/content/${encodeFPCC(name)}`
-          })
+          this.startCommunityMapLoading()
+          this.$router.push(
+            { path: `/content/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.stopCommunityMapLoading()
+            }
+          )
           break
       }
     },

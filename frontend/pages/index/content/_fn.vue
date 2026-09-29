@@ -582,7 +582,11 @@ export default {
   },
   created() {
     // We don't always catch language routing updates, so also zoom to language on create.
-    this.setupMap()
+    if (this.community && this.community.point) {
+      this.setupMap()
+    } else {
+      this.$root.$emit('stopCommunityMapLoading')
+    }
   },
   mounted() {
     this.$root.$on('fileUploadedCommunity', r => {
@@ -654,8 +658,16 @@ export default {
     },
     setupMap() {
       this.$eventHub.whenMap(map => {
+        const onMoveEnd = () => {
+          this.$root.$emit('stopCommunityMapLoading')
+        }
         if (this.$route.hash.length <= 1) {
+          map.once('moveend', onMoveEnd)
           zoomToPoint({ map, geom: this.community.point, zoom: 11 })
+        }
+        if (!map.isMoving()) {
+          map.off('moveend', onMoveEnd)
+          onMoveEnd()
         }
         const icon = 'community_icon.svg'
         makeMarker(this.community.point, icon, this).addTo(map)

@@ -224,9 +224,14 @@ export default {
           )
           break
         case 'comm':
-          this.$router.push({
-            path: `/content/${encodeFPCC(name)}`
-          })
+          this.$root.$emit('startCommunityMapLoading')
+          this.$router.push(
+            { path: `/content/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.$root.$emit('stopCommunityMapLoading')
+            }
+          )
           break
       }
     },

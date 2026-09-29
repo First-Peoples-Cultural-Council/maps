@@ -146,9 +146,14 @@ export default {
   },
   methods: {
     handleCardClick(e, name) {
-      this.$router.push({
-        path: `/place-names/${encodeFPCC(name)}`
-      })
+      this.$root.$emit('startHeritageMapLoading')
+      this.$router.push(
+        { path: `/place-names/${encodeFPCC(name)}` },
+        () => {},
+        () => {
+          this.$root.$emit('stopHeritageMapLoading')
+        }
+      )
     },
     loadMoreData() {
       this.$store.commit('sidebar/toggleLoading', true)
