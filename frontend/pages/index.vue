@@ -202,6 +202,10 @@
             @map-moveend="mapMoveEnd"
             @map-sourcedata="mapSourceData"
           ></Mapbox>
+          <div v-if="showLanguageMapLoading" class="map-loading-backdrop" role="status">
+            <b-spinner label="Loading language map"></b-spinner>
+            <span>Loading language map...</span>
+          </div>
           <MapControlFooter />
           <ModalNotification></ModalNotification>
           <div v-if="!isDrawMode && !isEmbed" class="map-navigation-container">
@@ -373,6 +377,7 @@ export default {
       searchQuery: '',
       searchKey: 'search',
       showFullscreenLoading: false,
+      showLanguageMapLoading: false,
       showInformationModal: false,
       showDisclaimerModal: false,
       loggingIn: false,
@@ -499,6 +504,9 @@ export default {
   watch: {
     $route(to, from) {
       this.handleInformationModalVisibility()
+      if (to.name !== 'index-languages-lang') {
+        this.showLanguageMapLoading = false
+      }
     }
   },
   async fetch({ $axios, store, route }) {
@@ -636,6 +644,8 @@ export default {
         this.updateData(map)
       })
     })
+    this.$root.$on('startLanguageMapLoading', this.startLanguageMapLoading)
+    this.$root.$on('stopLanguageMapLoading', this.stopLanguageMapLoading)
 
     setTimeout(() => {
       if (this.user) {
@@ -793,7 +803,17 @@ export default {
 
     this.fetchDeferredData()
   },
+  beforeDestroy() {
+    this.$root.$off('startLanguageMapLoading', this.startLanguageMapLoading)
+    this.$root.$off('stopLanguageMapLoading', this.stopLanguageMapLoading)
+  },
   methods: {
+    startLanguageMapLoading() {
+      this.showLanguageMapLoading = true
+    },
+    stopLanguageMapLoading() {
+      this.showLanguageMapLoading = false
+    },
     async fetchDeferredData() {
       if (!this.$store.state.app.isDeferredDataLoaded) {
         try {
@@ -914,9 +934,14 @@ export default {
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
-          this.$router.push({
-            path: `/languages/${encodeFPCC(name)}`
-          })
+          this.showLanguageMapLoading = true
+          this.$router.push(
+            { path: `/languages/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.showLanguageMapLoading = false
+            }
+          )
           break
         case 'comm':
           this.$router.push({
@@ -1778,6 +1803,20 @@ export default {
   position: relative;
   height: 100vh;
   width: 100%;
+}
+
+.map-loading-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  color: #333;
+  font-weight: 600;
 }
 
 #map {

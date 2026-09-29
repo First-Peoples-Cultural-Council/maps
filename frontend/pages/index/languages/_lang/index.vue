@@ -406,7 +406,7 @@ export default {
   watch: {
     language(newlang, oldlang) {
       if (oldlang && newlang && oldlang.name !== newlang.name) {
-        zoomToLanguage({ map: this.mapinstance, lang: newlang })
+        this.zoomToSelectedLanguage(this.mapinstance, newlang)
       }
     }
   },
@@ -472,9 +472,10 @@ export default {
     // We don't always catch language routing updates, so also zoom to language on create.
     this.$eventHub.whenMap(map => {
       if (this.$route.hash.length <= 1) {
-        zoomToLanguage({ map, lang: this.language })
+        this.zoomToSelectedLanguage(map, this.language)
       } else {
         selectLanguage({ map, lang: this.language })
+        this.$root.$emit('stopLanguageMapLoading')
       }
     })
     this.$root.$emit('triggerScrollVisibilityCheck')
@@ -485,6 +486,21 @@ export default {
   },
   methods: {
     getMediaUrl,
+    zoomToSelectedLanguage(map, language) {
+      if (!map) {
+        this.$root.$emit('stopLanguageMapLoading')
+        return
+      }
+      const onMoveEnd = () => {
+        this.$root.$emit('stopLanguageMapLoading')
+      }
+      map.once('moveend', onMoveEnd)
+      zoomToLanguage({ map, lang: language })
+      if (!map.isMoving()) {
+        map.off('moveend', onMoveEnd)
+        onMoveEnd()
+      }
+    },
     handleCollapseClick(value) {
       this.$store.commit('sidebar/setMobileContent', value)
       this.$root.$emit('toggleScrollIndicatorVisibility')
@@ -498,9 +514,14 @@ export default {
     handleCardClick($event, name, type) {
       switch (type) {
         case 'lang':
-          this.$router.push({
-            path: `/languages/${encodeFPCC(name)}`
-          })
+          this.$root.$emit('startLanguageMapLoading')
+          this.$router.push(
+            { path: `/languages/${encodeFPCC(name)}` },
+            () => {},
+            () => {
+              this.$root.$emit('stopLanguageMapLoading')
+            }
+          )
           break
         case 'art':
           this.$router.push({
