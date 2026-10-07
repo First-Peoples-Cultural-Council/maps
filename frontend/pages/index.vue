@@ -720,7 +720,7 @@ export default {
     })
 
     // Decides to show the splashscreen, if values exist, then its no longer first time visit
-    if (localStorage.getItem('fpcc-splashscreen') === null) {
+    if (!this.isEmbed && localStorage.getItem('fpcc-splashscreen') === null) {
       // Redirect to /languages
       if (this.$route.path === '/') {
         this.$router.push({
@@ -970,7 +970,7 @@ export default {
       }, 250)
     },
     handleInformationModalVisibility() {
-      if (this.$route.path !== '/splashscreen') {
+      if (!this.isEmbed && this.$route.path !== '/splashscreen') {
         const storedExpiryDate = localStorage.getItem(
           'fpmap_info_modal_agreement_expiry_date'
         )
