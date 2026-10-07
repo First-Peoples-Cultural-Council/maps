@@ -148,10 +148,20 @@ export default {
       audio: null
     }
   },
-  mounted() {
-    this.$root.$on('stopPlaceAudio', () => {
+  watch: {
+    audioFile() {
       this.stopAudio()
-    })
+    },
+    id() {
+      this.stopAudio()
+    }
+  },
+  mounted() {
+    this.$root.$on('stopPlaceAudio', this.stopAudio)
+  },
+  beforeDestroy() {
+    this.$root.$off('stopPlaceAudio', this.stopAudio)
+    this.stopAudio()
   },
   methods: {
     getVariant(status) {
@@ -162,19 +172,20 @@ export default {
         FL: 'warning'
       }[status]
     },
-    handlePronounce() {
-      if (this.audio && !this.audio.paused) {
-        this.audio.pause()
-        this.audio = null
+    async handlePronounce() {
+      this.stopAudio()
+      if (!this.audioFile) {
         return
       }
 
-      this.audio = this.audio || new Audio(this.audioFile)
-
-      if (this.audio.paused) {
-        this.audio.play()
-      } else {
-        this.audio.pause()
+      const audio = new Audio(this.audioFile)
+      this.audio = audio
+      try {
+        await audio.play()
+      } catch (error) {
+        if (this.audio === audio) {
+          this.stopAudio()
+        }
       }
     },
     handleReturn() {
@@ -211,6 +222,7 @@ export default {
     stopAudio() {
       if (this.audio) {
         this.audio.pause()
+        this.audio = null
       }
     }
   }
