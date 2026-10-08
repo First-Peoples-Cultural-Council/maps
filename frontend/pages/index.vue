@@ -932,6 +932,9 @@ export default {
           this.$store.commit('arts/setSearchStore', results[2])
           this.$store.commit('arts/setGeo', results[3].features)
           this.$store.commit('arts/setGeoStore', results[3])
+          this.$eventHub.whenMap(map => {
+            safeSetSourceData(map, 'arts1', this.artsGeoSet)
+          })
 
           this.$store.commit('grants/setGrants', results[6].features)
           this.$store.commit('grants/setGrantsGeo', results[6])
