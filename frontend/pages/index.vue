@@ -11,6 +11,7 @@
       :class="{
         detailModeContainer: isDetailMode,
         'arts-container': isDrawerShown,
+        'mobile-help-open': isHelpPage,
         'map-container-pl': !isEmbed
       }"
     >
@@ -130,6 +131,7 @@
         :class="{
           'sb-detail': isDetailMode,
           'mobile-content-open': mobileContent,
+          'help-page-panel': isHelpPage,
           'hide-scroll-y': isGalleryShown
         }"
       >
@@ -138,6 +140,18 @@
       <div v-else>
         <nuxt-child />
       </div>
+
+      <nav
+        v-if="isHelpPage && !isEmbed"
+        class="help-section-navigation sidebar-tabs"
+        aria-label="Map sections"
+      >
+        <b-nav tabs fill>
+          <b-nav-item to="/languages">Languages</b-nav-item>
+          <b-nav-item to="/art">Arts</b-nav-item>
+          <b-nav-item to="/heritages">Heritage</b-nav-item>
+        </b-nav>
+      </nav>
 
       <div class="maps-panel">
         <div class="map-main-container">
@@ -206,7 +220,7 @@
             <b-spinner :label="mapLoadingLabel"></b-spinner>
             <span>{{ mapLoadingLabel }}...</span>
           </div>
-          <MapControlFooter />
+          <MapControlFooter class="map-control-footer" />
           <ModalNotification></ModalNotification>
           <div v-if="!isDrawMode && !isEmbed" class="map-navigation-container">
             <SearchBar
@@ -404,6 +418,9 @@ export default {
     }
   },
   computed: {
+    isHelpPage() {
+      return this.$route.path === '/page/how-to-use'
+    },
     isProfileComplete() {
       return this.user.is_profile_complete
     },
@@ -2242,6 +2259,10 @@ export default {
   width: 100%;
 }
 
+.help-section-navigation {
+  display: none;
+}
+
 .sb-detail {
   width: 425px;
 }
@@ -2264,6 +2285,47 @@ export default {
 }
 
 @media (max-width: 992px) {
+  .mobile-help-open {
+    --help-bottom-bar-height: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-help-open .help-page-panel {
+    top: 50px;
+    bottom: var(--help-bottom-bar-height);
+    height: auto;
+    display: block;
+    align-items: initial;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-help-open .help-section-navigation {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--help-bottom-bar-height);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: #03333a;
+    z-index: 901;
+  }
+
+  .help-section-navigation .nav-link {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-help-open .map-navigation-container {
+    z-index: 902;
+  }
+
+  .mobile-help-open .map-control-footer {
+    display: none;
+  }
+
   .arts-container {
     padding-left: 0;
   }
