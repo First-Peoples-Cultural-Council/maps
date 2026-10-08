@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     resetMap() {
-      this.$root.$emit('resetMap')
+      this.$root.$emit('resetMap', { resetSidebar: true })
 
       // if on grants page, reset current grants
       if (this.$route.name === 'index-grants') {

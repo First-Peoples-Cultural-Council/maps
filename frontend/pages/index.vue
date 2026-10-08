@@ -1303,9 +1303,33 @@ export default {
         this.countVisibleGrants(map.getBounds())
       )
 
-      this.$root.$on('resetMap', () => {
+      this.$root.$on('resetMap', async ({ resetSidebar = false } = {}) => {
+        if (resetSidebar) {
+          if (this.$route.name !== 'index') {
+            this.$store.commit('mapinstance/setForceReset', true)
+            await this.$router.push({ path: '/' })
+          }
+
+          this.mode = 'All'
+          this.maximumLength = 10
+          await this.$nextTick()
+          this.$store.commit('mapinstance/setForceReset', false)
+          this.$store.commit('sidebar/set', false)
+          this.$store.commit('sidebar/setMobileContent', false)
+          this.$store.commit('sidebar/setDrawerContent', false)
+          this.$store.commit('sidebar/setGallery', false)
+          this.$store.commit('sidebar/toggleCollapse', false)
+          this.$store.commit('sidebar/toggleLoading', false)
+          this.$store.commit('sidebar/setScrollIndicatorValue', false)
+          this.$store.commit('grants/setCurrentGrant', null)
+          this.$el
+            .querySelectorAll('#sidebar-container, #side-inner-collapse')
+            .forEach(container => {
+              container.scrollTop = 0
+            })
+        }
         this.clearFeatures()
-        zoomToIdealBox({ map })
+        zoomToIdealBox({ map: this.map })
       })
 
       this.$root.$on('showGrantModal', grant => {
