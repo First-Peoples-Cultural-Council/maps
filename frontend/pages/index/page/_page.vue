@@ -1,5 +1,12 @@
 <template>
-  <div v-if="content">
+  <div v-if="content" :class="{ 'help-page-content': isHelpPage }">
+    <header v-if="isHelpPage" class="mobile-help-header">
+      <nuxt-link to="/" class="help-back-link">
+        <img src="@/assets/images/return_icon_hover.svg" alt="" />
+        <span>Back to map</span>
+      </nuxt-link>
+      <h1>Help</h1>
+    </header>
     <div class="nav-header cursor-pointer p-2" @click.prevent="handleNavLink">
       <img
         src="@/assets/images/symbol@2x.png"
@@ -69,6 +76,11 @@ myMD.use(require('markdown-it-container'), 'accordion', {
   }
 })
 export default {
+  computed: {
+    isHelpPage() {
+      return this.$route.params.page === 'how-to-use'
+    }
+  },
   async asyncData({ params, $axios, store }) {
     const result = await $axios.$get(
       `${getApiUrl(`page/?timestamp=${new Date().getTime()}`)}`
@@ -109,6 +121,52 @@ export default {
 </script>
 
 <style scoped>
+.mobile-help-header {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .help-page-content > .nav-header,
+  .help-page-content > hr,
+  .help-page-content .fpcc-card-more {
+    display: none;
+  }
+
+  .mobile-help-header {
+    display: block;
+    padding: 1em 1.5em;
+    border-bottom: 1px solid #dedcda;
+    margin-bottom: 1.5em;
+  }
+
+  .mobile-help-header h1 {
+    font-size: 24px;
+    margin: 0.75em 0 0;
+  }
+
+  .help-back-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5em 0.75em;
+    gap: 0.5em;
+    background: #632015;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .help-back-link img {
+    width: 15px;
+    height: 15px;
+  }
+
+  .help-page-content .page-content-container {
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+  }
+}
+
 .community-detail-icon-container img {
   display: inline-block;
   width: 100%;

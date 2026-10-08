@@ -118,11 +118,14 @@
         </nav>
       </div>
 
-      <div
-        v-if="$route.path !== '/page/how-to-use'"
-        class="navbar-icon-container cursor-pointer"
-      >
-        <nuxt-link class="text-dark cursor-pointer" to="/page/how-to-use">
+      <div class="navbar-icon-container cursor-pointer">
+        <nuxt-link
+          class="text-dark cursor-pointer mobile-help-link"
+          to="/page/how-to-use"
+          aria-label="Help"
+          title="Help"
+          :aria-current="$route.path === '/page/how-to-use' ? 'page' : null"
+        >
           <nav>
             <img
               src="@/assets/images/help-icon.png"
@@ -607,6 +610,20 @@ export default {
   .mobile-search-container {
     display: flex !important;
     align-items: center;
+  }
+
+  .mobile-help-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 40px;
+    border-bottom: 3px solid transparent;
+  }
+
+  .mobile-help-link[aria-current='page'] {
+    background-color: #f4eee9;
+    border-bottom-color: #632015;
   }
 
   .navbar-container {
