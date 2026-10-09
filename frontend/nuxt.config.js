@@ -10,7 +10,6 @@ const frontendURL =
 module.exports = {
   dev: process.env.NODE_ENV !== 'production',
 
-  mode: 'universal',
   server: {
     port: Number(process.env.FRONTEND_PORT) || (localDev ? 3000 : 80),
     host: '0.0.0.0' // default: localhost
@@ -151,9 +150,11 @@ module.exports = {
     postcss: {
       // Add plugin names as key and arguments as value
       // Install them before as dependencies with npm or yarn
-      plugins: {
-        'postcss-flexbugs-fixes': {},
-        'postcss-css-variables': {}
+      postcssOptions: {
+        plugins: {
+          'postcss-flexbugs-fixes': {},
+          'postcss-css-variables': {}
+        }
       },
       preset: {
         autoprefixer: {

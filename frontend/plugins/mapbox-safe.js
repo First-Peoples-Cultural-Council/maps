@@ -84,10 +84,6 @@ const getLayerStatus = (map, layerId) => {
     return 'map is unavailable'
   }
 
-  if (typeof map.isStyleLoaded !== 'function' || !map.isStyleLoaded()) {
-    return 'map style is not loaded'
-  }
-
   if (typeof map.getLayer !== 'function' || !map.getLayer(layerId)) {
     return 'layer does not exist'
   }
@@ -98,10 +94,6 @@ const getLayerStatus = (map, layerId) => {
 const getSourceStatus = (map, sourceId) => {
   if (!map) {
     return 'map is unavailable'
-  }
-
-  if (typeof map.isStyleLoaded !== 'function' || !map.isStyleLoaded()) {
-    return 'map style is not loaded'
   }
 
   if (typeof map.getSource !== 'function') {
@@ -186,7 +178,15 @@ export const safeSetLayerVisibility = (map, layerId, visibility) => {
 }
 
 export const safeSetLayersVisibility = (map, layerIds, visibility) => {
-  return layerIds.every(layerId => safeSetLayerVisibility(map, layerId, visibility))
+  let allLayersReady = true
+
+  layerIds.forEach(layerId => {
+    if (!safeSetLayerVisibility(map, layerId, visibility)) {
+      allLayersReady = false
+    }
+  })
+
+  return allLayersReady
 }
 
 export const safeSetFilter = (map, layerId, filter) => {
