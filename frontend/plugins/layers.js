@@ -372,7 +372,7 @@ const addGrantsLayers = (map, context) => {
 
     map.addLayer({
       id: 'fn-grants-unclustered-points',
-      type: 'circle',
+      type: 'symbol',
       source: 'grants1',
       filter: ['!', ['has', 'point_count']],
       layout: {
