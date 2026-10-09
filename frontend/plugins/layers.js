@@ -418,6 +418,8 @@ const addGrantsLayers = (map, context) => {
           }
         })
     })
+
+    context.toggleLayers(context.$route.name)
   })
 }
 
