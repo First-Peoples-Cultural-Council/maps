@@ -3,11 +3,11 @@
     <div class="cursor-pointer" @click="toggleLayer">
       <span class="font-08 d-inline-block"> {{ layer.name }}</span>
       <span class="float-right">
-        <span v-if="id === 3" class="reserve-loading-slot">
+        <span class="layer-loading-slot">
           <b-spinner
-            v-if="showReserveLoading"
-            class="reserve-loading-spinner"
-            label="Loading reserves"
+            v-if="showLoading"
+            class="layer-loading-spinner"
+            :label="'Loading ' + layer.name"
           ></b-spinner>
         </span>
         <img v-if="on" src="@/assets/images/on.svg" alt="On" />
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import isEqual from 'lodash/isEqual'
+
 export default {
   props: {
     id: {
@@ -27,7 +29,7 @@ export default {
   },
   data() {
     return {
-      showReserveLoading: false
+      showLoading: false
     }
   },
   computed: {
@@ -39,33 +41,50 @@ export default {
     },
     on() {
       return this.layer.active
+    },
+    isFilterToggle() {
+      return this.layer.name === 'Sleeping Languages'
     }
   },
   watch: {
     on(active) {
-      if (!active) this.stopReserveLoading()
+      if (!active && !this.isFilterToggle) this.stopLoading()
     }
   },
   beforeDestroy() {
-    this.stopReserveLoading()
+    this.stopLoading()
   },
   methods: {
-    stopReserveLoading() {
-      if (this.reserveLoadingCleanup) this.reserveLoadingCleanup()
-      this.showReserveLoading = false
+    stopLoading() {
+      if (this.loadingCleanup) this.loadingCleanup()
+      this.showLoading = false
     },
-    trackReserveLoading(map) {
-      this.stopReserveLoading()
+    trackLoading(map) {
+      this.stopLoading()
 
-      const stop = () => this.stopReserveLoading()
+      const visibility = this.on ? 'visible' : 'none'
+      const filter = this.on ? ['!=', 'name', ''] : ['!', ['get', 'sleeping']]
+
+      const stop = () => this.stopLoading()
       const onRender = () => {
-        const reserveLayers = this.layer.layerNames.map(id => map.getLayer(id))
-        const ready = reserveLayers.every(
-          layer =>
-            layer &&
-            map.getLayoutProperty(layer.id, 'visibility') === 'visible' &&
-            map.isSourceLoaded(layer.source)
-        )
+        const mapLayers = this.layer.layerNames
+          .map(id => map.getLayer(id))
+          .filter(Boolean)
+        const ready =
+          mapLayers.length > 0 &&
+          mapLayers.every(layer => {
+            const layerVisibility =
+              map.getLayoutProperty(layer.id, 'visibility') || 'visible'
+            const applied = this.isFilterToggle
+              ? isEqual(map.getFilter(layer.id), filter)
+              : layerVisibility === visibility
+            return (
+              applied &&
+              (layerVisibility === 'none' ||
+                !layer.source ||
+                map.isSourceLoaded(layer.source))
+            )
+          })
         if (ready) stop()
       }
       const onError = event => {
@@ -80,17 +99,17 @@ export default {
         }
       }
       const delayTimer = setTimeout(() => {
-        this.showReserveLoading = true
+        this.showLoading = true
       }, 200)
       const timeoutTimer = setTimeout(stop, 15000)
 
-      this.reserveLoadingCleanup = () => {
+      this.loadingCleanup = () => {
         clearTimeout(delayTimer)
         clearTimeout(timeoutTimer)
         map.off('render', onRender)
         map.off('error', onError)
         map.off('remove', stop)
-        this.reserveLoadingCleanup = null
+        this.loadingCleanup = null
       }
       map.on('render', onRender)
       map.on('error', onError)
@@ -103,12 +122,10 @@ export default {
           map
         })
 
-        if (this.id === 3) {
-          if (this.on) this.trackReserveLoading(map)
-          else this.stopReserveLoading()
-        }
+        if (this.on || this.isFilterToggle) this.trackLoading(map)
+        else this.stopLoading()
 
-        if (this.layer.name === 'Sleeping Languages') {
+        if (this.isFilterToggle) {
           this.$eventHub.whenMap(map => {
             this.$root.$emit('updateData')
           })
@@ -120,14 +137,14 @@ export default {
 </script>
 
 <style scoped>
-.reserve-loading-slot {
+.layer-loading-slot {
   display: inline-flex;
   width: 1rem;
   height: 0.75rem;
   vertical-align: middle;
 }
 
-.reserve-loading-spinner {
+.layer-loading-spinner {
   width: 0.75rem;
   height: 0.75rem;
   border-width: 0.12rem;
