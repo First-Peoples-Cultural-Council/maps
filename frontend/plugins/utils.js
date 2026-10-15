@@ -4,8 +4,13 @@ import axios from 'axios'
 import { pointIntersects, intersects } from '../mixins/map'
 
 export const getApiUrl = path => {
-  // Remove trailing '/' if it exists
-  const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path
+  const queryIndex = path.indexOf('?')
+  const pathname = queryIndex === -1 ? path : path.slice(0, queryIndex)
+  const query = queryIndex === -1 ? '' : path.slice(queryIndex)
+  const normalizedPath = `${pathname.replace(/\/+$/, '')}/${query.replace(
+    /\/+$/,
+    ''
+  )}`
   const backendUrl = (process.env.BACKEND_URL || 'http://nginx').replace(
     /\/$/,
     ''

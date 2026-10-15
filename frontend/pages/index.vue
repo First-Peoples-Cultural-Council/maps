@@ -917,7 +917,7 @@ export default {
             this.$axios.$get(getApiUrl('art-geo')),
             this.$axios.$get(getApiUrl('taxonomy')),
             this.$axios.$get(getApiUrl('arts/event')),
-            this.$axios.$get(`${getApiUrl('grants')}/`),
+            this.$axios.$get(getApiUrl('grants')),
             this.$axios.$get(getApiUrl('grant-categories'))
           ])
 
