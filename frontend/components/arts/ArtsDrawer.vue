@@ -281,9 +281,14 @@ export default {
     },
     checkArtistProfile(name) {
       this.toggleArtsDrawer()
-      this.$router.push({
-        path: `/art/${encodeFPCC(name)}`
-      })
+      this.$root.$emit('startArtsMapLoading')
+      this.$router.push(
+        { path: `/art/${encodeFPCC(name)}` },
+        () => {},
+        () => {
+          this.$root.$emit('stopArtsMapLoading')
+        }
+      )
     },
     setCurrentMedia(media) {
       this.$store.commit('arts/setCurrentMedia', media)
