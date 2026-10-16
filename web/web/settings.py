@@ -38,6 +38,8 @@ HOST = os.environ.get("HOST", "https://maps.fpcc.ca")
 
 ALLOWED_HOSTS = ["*"]
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 MEDIA_ROOT = "/media/"
 MEDIA_URL = "/media/"
 APPEND_SLASH = True

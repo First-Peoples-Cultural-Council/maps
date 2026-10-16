@@ -85,8 +85,8 @@ module.exports = {
 
   proxy: backendURL
     ? {
-        '/api/': backendURL,
-        '/media/': backendURL
+        '/api/': { target: backendURL, changeOrigin: false },
+        '/media/': { target: backendURL, changeOrigin: false }
       }
     : {},
 
