@@ -612,9 +612,14 @@ export default {
       return pattern.test(newUrl) ? url : `https://${newUrl}`
     },
     checkArtistProfile(name) {
-      this.$router.push({
-        path: `/art/${encodeFPCC(name)}`
-      })
+      this.$root.$emit('startArtsMapLoading')
+      this.$router.push(
+        { path: `/art/${encodeFPCC(name)}` },
+        () => {},
+        () => {
+          this.$root.$emit('stopArtsMapLoading')
+        }
+      )
     },
     getHeaderTitle() {
       if (this.placename) {
