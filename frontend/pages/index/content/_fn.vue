@@ -598,11 +598,6 @@ export default {
   },
   methods: {
     getMediaUrl,
-    isMediaCreator(media, user) {
-      if (media.creator && user && user.id) {
-        return user.id === media.creator.id || user.id === media.creator
-      }
-    },
     handleCollapseClick(value) {
       this.$store.commit('sidebar/setMobileContent', value)
       this.$root.$emit('toggleScrollIndicatorVisibility')
