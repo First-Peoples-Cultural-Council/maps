@@ -316,6 +316,9 @@ jobs:
 
           rm -f codecommit-download-error.log
 
+          # Preserve the repository version for comparison.
+          cp values.yaml values.original.yaml
+
       - name: Update Image References
         uses: mikefarah/yq@v4.45.4
         env:
@@ -340,8 +343,23 @@ jobs:
             .backend.image.tag == strenv(BACKEND_TAG)'
             values.yaml
 
+      - name: Check for Deployment Configuration Changes
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if cmp -s values.original.yaml values.yaml; then
+            echo "No deployment configuration changes detected"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Deployment configuration changes detected"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get Current Configuration Revision
         id: commit
+        if: steps.changes.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -365,6 +383,7 @@ jobs:
           echo "commit_id=$COMMIT_ID" >> "$GITHUB_OUTPUT"
 
       - name: Publish Deployment Configuration
+        if: steps.changes.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -386,6 +405,15 @@ jobs:
           fi
 
           rm -f codecommit-upload-error.log
+
+      - name: Deployment Configuration Summary
+        shell: bash
+        run: |
+          if [[ "${{ steps.changes.outputs.changed }}" == "true" ]]; then
+            echo "Deployment configuration updated in CodeCommit"
+          else
+            echo "CodeCommit already contains these image tags; update skipped"
+          fi
 
       - name: Upload Helm Values
         uses: actions/upload-artifact@v4
@@ -504,7 +532,7 @@ jobs:
             --values ./values.yaml \
             --atomic \
             --wait \
-            --timeout 15m
+            --timeout 5m
 
       - name: Verify Rollout
         shell: bash
@@ -513,11 +541,11 @@ jobs:
 
           kubectl rollout status deployment/maps-frontend \
             --namespace "${{ vars.K8S_NAMESPACE }}" \
-            --timeout=10m
+            --timeout=5m
 
           kubectl rollout status deployment/maps-backend \
             --namespace "${{ vars.K8S_NAMESPACE }}" \
-            --timeout=10m
+            --timeout=5m
 
       - name: Deployment Summary
         shell: bash
