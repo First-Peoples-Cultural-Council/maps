@@ -429,22 +429,33 @@ export default {
     }
   },
   async asyncData({ params, $axios, store, $router }) {
-    const arts = await $axios.$get(getApiUrl(`art-search?format=json`))
-    if (arts) {
-      const art = arts.find(a => {
-        if (a.name) {
-          return encodeFPCC(a.name) === params.art
-        }
-      })
+    const findArt = arts =>
+      (arts || []).find(a => a.name && encodeFPCC(a.name) === params.art)
 
+    // Reuse the search set loaded by the home page; it may be stale, so fall
+    // back to a fresh art-search on a miss or if the cached id no longer resolves.
+    let placename = null
+    const cachedArt = findArt(store.state.arts.artsSearchSet)
+    if (cachedArt) {
+      placename = await $axios
+        .$get(getApiUrl('placename/' + cachedArt.id))
+        .catch(() => null)
+    }
+
+    if (!placename) {
+      const art = findArt(
+        await $axios.$get(getApiUrl(`art-search?format=json`))
+      )
       if (art) {
-        const placename = await $axios.$get(getApiUrl('placename/' + art.id))
+        placename = await $axios.$get(getApiUrl('placename/' + art.id))
+      }
+    }
 
-        store.commit('arts/setCurrentPlacename', placename)
-        const isServer = !!process.server
-        return {
-          isServer
-        }
+    if (placename) {
+      store.commit('arts/setCurrentPlacename', placename)
+      const isServer = !!process.server
+      return {
+        isServer
       }
     }
   },
