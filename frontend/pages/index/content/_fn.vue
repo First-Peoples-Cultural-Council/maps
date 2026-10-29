@@ -510,23 +510,39 @@ export default {
     next()
   },
   async asyncData({ params, $axios, store, $route }) {
-    const communities = await $axios.$get(
-      getApiUrl(`community?timestamp=${new Date().getTime()}/`)
-    )
-    const community = communities.find(
-      comm => encodeFPCC(comm.name) === params.fn
-    )
+    const findCommunity = communities =>
+      (communities || []).find(comm => encodeFPCC(comm.name) === params.fn)
 
-    if (community) {
-      const result = await Promise.all([
+    const loadCommunity = communityId =>
+      Promise.all([
         $axios.$get(
           getApiUrl(
-            `community/${community.id}?timestamp=${new Date().getTime()}/`
+            `community/${communityId}?timestamp=${new Date().getTime()}/`
           )
         ),
-        $axios.$get(getApiUrl(`stats?community=${community.id}`))
+        $axios.$get(getApiUrl(`stats?community=${communityId}`))
       ])
 
+    // Reuse the community list loaded by the home page; it may be stale, so fall
+    // back to a fresh list on a miss or if the cached id no longer resolves.
+    let community = findCommunity(store.state.communities.communitySet)
+    let result = null
+    if (community) {
+      result = await loadCommunity(community.id).catch(() => null)
+    }
+
+    if (!result) {
+      community = findCommunity(
+        await $axios.$get(
+          getApiUrl(`community?timestamp=${new Date().getTime()}/`)
+        )
+      )
+      if (community) {
+        result = await loadCommunity(community.id)
+      }
+    }
+
+    if (result) {
       const communityDetail = result[0]
       const lnaData = result[1]
 

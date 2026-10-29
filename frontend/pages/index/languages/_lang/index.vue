@@ -413,16 +413,11 @@ export default {
   async asyncData({ $axios, store, params }) {
     const languageName = params.lang
 
-    const languages = await $axios.$get(getApiUrl(`language/`))
+    const findLanguage = languages =>
+      (languages || []).find(lang => encodeFPCC(lang.name) === languageName)
 
-    const language = languages.find(
-      lang => encodeFPCC(lang.name) === languageName
-    )
-
-    if (language) {
-      const languageId = language.id
-      const isServer = !!process.server
-      const result = await Promise.all([
+    const loadLanguage = languageId =>
+      Promise.all([
         $axios.$get(
           getApiUrl(`language/${languageId}?timestamp=${new Date().getTime()}`)
         ),
@@ -430,6 +425,24 @@ export default {
         $axios.$get(getApiUrl(`art-geo/?lang=${languageId}`)),
         $axios.$get(getApiUrl(`placename-geo/?lang=${languageId}`))
       ])
+
+    // Reuse the language list loaded by the home page; it may be stale, so fall
+    // back to a fresh list on a miss or if the cached id no longer resolves.
+    let result = null
+    const cachedLanguage = findLanguage(store.state.languages.languageSet)
+    if (cachedLanguage) {
+      result = await loadLanguage(cachedLanguage.id).catch(() => null)
+    }
+
+    if (!result) {
+      const language = findLanguage(await $axios.$get(getApiUrl(`language/`)))
+      if (language) {
+        result = await loadLanguage(language.id)
+      }
+    }
+
+    if (result) {
+      const isServer = !!process.server
 
       try {
         await store.dispatch('user/getNotifications', {
