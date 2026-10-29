@@ -125,6 +125,10 @@ export default {
         if (this.on || this.isFilterToggle) this.trackLoading(map)
         else this.stopLoading()
 
+        if (this.on && this.layer.name === 'Grants') {
+          this.$store.dispatch('grants/loadGrants')
+        }
+
         if (this.isFilterToggle) {
           this.$eventHub.whenMap(map => {
             this.$root.$emit('updateData')
