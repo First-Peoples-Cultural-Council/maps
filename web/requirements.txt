@@ -16,7 +16,7 @@ xlrd==2.0.1
 unidecode==1.1.1
 geojson==2.5.0
 greenlet==3.1.1
-pylint==3.2.7
+pylint==4.0.9
 pylint-django==2.6.1
 coverage==7.6.1
 drf-yasg==1.21.10
