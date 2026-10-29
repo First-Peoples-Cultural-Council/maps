@@ -379,12 +379,16 @@ export default {
 
     if (geo_place) {
       await Promise.all([
-        store.dispatch('places/getPlace', {
-          id: geo_place.id
-        }),
-        store.dispatch('places/getPlaceMedias', {
-          id: geo_place.id
-        }),
+        store
+          .dispatch('places/getPlace', {
+            id: geo_place.id
+          })
+          .then(place =>
+            store.dispatch('places/getPlaceMedias', {
+              id: geo_place.id,
+              place
+            })
+          ),
         store.dispatch('user/getPlacesToVerify'),
         store.dispatch('user/getMediaToVerify')
       ])
