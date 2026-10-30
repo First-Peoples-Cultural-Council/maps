@@ -71,10 +71,13 @@ module.exports = {
   },
 
   /*
-   ** Customize the progress-bar color
+   ** Route-change progress bar (brand gold; shown immediately for visible feedback)
    */
   loading: {
-    color: '#fff'
+    color: '#B47A2B',
+    failedColor: '#99281C',
+    height: '3px',
+    throttle: 0
   },
 
   axios: {
@@ -106,7 +109,8 @@ module.exports = {
     '~/plugins/lazyloading',
     { src: '~plugins/ga.js', mode: 'client' },
     { src: '~plugins/progressbar.js', mode: 'client' },
-    { src: '~plugins/histogram.js', mode: 'client' }
+    { src: '~plugins/histogram.js', mode: 'client' },
+    { src: '~plugins/navigation-state.js', mode: 'client' }
   ],
   /*
    ** Nuxt.js modules
