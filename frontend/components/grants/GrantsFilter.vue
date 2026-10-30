@@ -86,6 +86,9 @@ export default {
     }
   },
   computed: {
+    isGrantsLoaded() {
+      return this.$store.state.grants.isGrantsLoaded
+    },
     getMaximumDate() {
       // return maximum date list
       return new Date(this.maxDate, 1, 1).valueOf()
@@ -96,15 +99,23 @@ export default {
       return new Date(this.minDate, 1, 1).valueOf()
     }
   },
+  watch: {
+    isGrantsLoaded(isLoaded) {
+      if (isLoaded) this.$nextTick(this.resetDateRange)
+    }
+  },
   mounted() {
-    this.fromValue = this.prettify(this.getMinimumDate)
-    this.toValue = this.prettify(this.getMaximumDate)
-    this.setStoreDateValues()
+    this.resetDateRange()
   },
   destroyed() {
     window.removeEventListener('resize', this.screenChecker)
   },
   methods: {
+    resetDateRange() {
+      this.fromValue = this.prettify(this.getMinimumDate)
+      this.toValue = this.prettify(this.getMaximumDate)
+      this.setStoreDateValues()
+    },
     isNumber(evt) {
       evt = evt || window.event
       const charCode = evt.which ? evt.which : evt.keyCode

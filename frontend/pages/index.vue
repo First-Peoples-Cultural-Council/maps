@@ -520,6 +520,18 @@ export default {
     }
   },
   watch: {
+    // Grants load lazily (grants route or Grants layer), possibly after the map is ready.
+    grantsGeo(grantsGeo) {
+      this.$eventHub.whenMap(map => {
+        safeSetSourceData(map, 'grants1', grantsGeo)
+        const bounds = map.getBounds()
+        this.$store.commit('grants/setGrants', this.filterGrants(bounds))
+        this.$store.commit(
+          'grants/setVisibleGrantsCount',
+          this.countVisibleGrants(bounds)
+        )
+      })
+    },
     $route(to, from) {
       this.handleInformationModalVisibility()
       if (
@@ -916,9 +928,7 @@ export default {
             this.$axios.$get(getApiUrl('art-search')),
             this.$axios.$get(getApiUrl('art-geo')),
             this.$axios.$get(getApiUrl('taxonomy')),
-            this.$axios.$get(getApiUrl('arts/event')),
-            this.$axios.$get(getApiUrl('grants')),
-            this.$axios.$get(getApiUrl('grant-categories'))
+            this.$axios.$get(getApiUrl('arts/event'))
           ])
 
           const auth = results[0]
@@ -936,12 +946,6 @@ export default {
             safeSetSourceData(map, 'arts1', this.artsGeoSet)
           })
 
-          this.$store.commit('grants/setGrants', results[6].features)
-          this.$store.commit('grants/setGrantsGeo', results[6])
-          this.$eventHub.whenMap(map => {
-            safeSetSourceData(map, 'grants1', results[6])
-          })
-
           const taxonomies = [
             ...results[4],
             ...Array.from(['image', 'video', 'audio']).map(type => {
@@ -954,14 +958,6 @@ export default {
           this.$store.commit(
             'arts/setTaxonomySearchSet',
             taxonomies.map(tax => {
-              tax.isChecked = false
-              return tax
-            })
-          )
-
-          this.$store.commit(
-            'grants/setGrantCategorySearchSet',
-            results[7].map(tax => {
               tax.isChecked = false
               return tax
             })

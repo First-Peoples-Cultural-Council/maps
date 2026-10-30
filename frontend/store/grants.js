@@ -1,6 +1,11 @@
+import { getApiUrl } from '@/plugins/utils.js'
+
+let pendingGrantsLoad = null
+
 export const state = () => ({
   grantsSet: [],
   grantsGeo: { features: [] },
+  isGrantsLoaded: false,
   filterDate: null,
   currentGrant: null,
   categorySearchSet: [],
@@ -37,5 +42,42 @@ export const mutations = {
   },
   setVisibleGrantsCount(state, count) {
     state.visibleGrantsCount = count
+  },
+  setIsGrantsLoaded(state, isLoaded) {
+    state.isGrantsLoaded = isLoaded
+  }
+}
+
+export const actions = {
+  loadGrants({ state, commit }) {
+    if (state.isGrantsLoaded) return Promise.resolve()
+
+    if (!pendingGrantsLoad) {
+      pendingGrantsLoad = Promise.all([
+        this.$axios.$get(getApiUrl('grants')),
+        this.$axios.$get(getApiUrl('grant-categories'))
+      ])
+        .then(([grants, categories]) => {
+          // Categories first: grant badges and cards look up each grant's category.
+          commit(
+            'setGrantCategorySearchSet',
+            categories.map(category => {
+              category.isChecked = false
+              return category
+            })
+          )
+          commit('setGrantsGeo', grants)
+          commit('setGrants', grants.features)
+          commit('setIsGrantsLoaded', true)
+        })
+        .catch(error => {
+          console.error('Failed to fetch grants data', error)
+        })
+        .finally(() => {
+          pendingGrantsLoad = null
+        })
+    }
+
+    return pendingGrantsLoad
   }
 }

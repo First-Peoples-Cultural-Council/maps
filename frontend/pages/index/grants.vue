@@ -386,6 +386,8 @@ export default {
     this.$root.$emit('resetMap')
   },
   mounted() {
+    this.$store.dispatch('grants/loadGrants')
+
     this.$eventHub.whenMap(map => {
       this.$root.$emit('toggleMapLayers')
     })
