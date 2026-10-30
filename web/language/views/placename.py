@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -450,6 +451,19 @@ class ArtGeoList(generics.ListAPIView):
     serializer_class = PlaceNameGeoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["language"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        language_id = self.request.GET.get("lang")
+        if language_id:
+            language = get_object_or_404(Language, pk=language_id)
+            language_filter = Q(language=language)
+            if language.geom:
+                language_filter |= Q(geom__intersects=language.geom)
+            queryset = queryset.filter(language_filter)
+
+        return queryset
 
     # Users can contribute this data, so never cache it.
     @method_decorator(never_cache)
