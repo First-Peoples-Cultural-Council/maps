@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'is-navigating': isNavigating }">
     <FullscreenLoading v-if="showFullscreenLoading"></FullscreenLoading>
     <LoadingModal></LoadingModal>
     <InformationModal v-if="showInformationModal"></InformationModal>
@@ -135,6 +135,7 @@
           'hide-scroll-y': isGalleryShown
         }"
       >
+        <NavigatingIndicator />
         <nuxt-child class="route-child-container" />
       </div>
       <div v-else>
@@ -279,6 +280,7 @@ import LoadingModal from '@/components/LoadingModal.vue'
 import GrantsClusterModal from '@/components/grants/GrantsClusterModal.vue'
 import ArtsClusterModal from '@/components/arts/ArtsClusterModal.vue'
 import MapControlFooter from '@/components/MapControls/MapControlFooter.vue'
+import NavigatingIndicator from '@/components/NavigatingIndicator.vue'
 import {
   safeSetLayerVisibility,
   safeSetLayersVisibility,
@@ -368,7 +370,8 @@ export default {
     InformationModal,
     DisclaimerModal,
     LoadingModal,
-    MapControlFooter
+    MapControlFooter,
+    NavigatingIndicator
   },
   head() {
     return {
@@ -418,6 +421,9 @@ export default {
     }
   },
   computed: {
+    isNavigating() {
+      return this.$store.state.sidebar.isNavigating
+    },
     isHelpPage() {
       return this.$route.path === '/page/how-to-use'
     },
