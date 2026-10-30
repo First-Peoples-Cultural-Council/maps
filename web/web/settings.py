@@ -38,6 +38,11 @@ HOST = os.environ.get("HOST", "https://maps.fpcc.ca")
 
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://maps.fpcc.ca,https://*.fpcc.ca,http://localhost,http://127.0.0.1",
+).split(",")
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 MEDIA_ROOT = "/media/"
