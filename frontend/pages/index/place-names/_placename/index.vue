@@ -421,11 +421,6 @@ export default {
     isMTV(media, mtv) {
       return mtv.find(m => m.id === media.id)
     },
-    isMediaCreator(media, user) {
-      if (media.creator && user) {
-        return user.id === media.creator.id || user.id === media.creator
-      }
-    },
     handleCreatorClick(e, creator) {
       this.$router.push({
         path: `/profile/${creator.id}`

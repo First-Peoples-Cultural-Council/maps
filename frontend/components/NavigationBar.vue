@@ -315,10 +315,7 @@ export default {
       this.$store.commit('user/setLoggedIn', false)
       this.$store.commit('user/setPicture', null)
 
-      setTimeout(() => {
-        window.location.href =
-          'https://auth.firstvoices.com/logout?response_type=token&client_id=tssmvghv2kfepud7tth4olugp&redirect_uri=https://maps.fpcc.ca'
-      }, 500)
+      this.redirectLogout()
     },
     handleLogoClick() {
       this.$router.push({
@@ -350,7 +347,10 @@ export default {
       window.location.href = `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
     },
     redirectLogout() {
-      window.location.href = `${process.env.COGNITO_URL}/logout?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`
+      // Cognito only returns to the app when `logout_uri` is used and matches
+      // an "Allowed sign-out URL" on the app client;
+      const logoutUri = encodeURIComponent(process.env.COGNITO_HOST)
+      window.location.href = `${process.env.COGNITO_URL}/logout?client_id=${process.env.COGNITO_APP_CLIENT_ID}&logout_uri=${logoutUri}`
     },
     getLoginUrl() {
       return `${process.env.COGNITO_URL}/login?response_type=token&client_id=${process.env.COGNITO_APP_CLIENT_ID}&redirect_uri=${process.env.COGNITO_HOST}`

@@ -77,6 +77,9 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    # Kept above UpdateCacheMiddleware so the per-site cache stores one
+    # uncompressed copy instead of one variant per Accept-Encoding value.
+    "django.middleware.gzip.GZipMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.cache.UpdateCacheMiddleware",

@@ -40,6 +40,15 @@ Vue.mixin({
     }
   },
   methods: {
+    isMediaCreator(media, user) {
+      if (!this.isLoggedIn || !user || !user.id || !media || !media.creator) {
+        return false
+      }
+      // API may return the creator as an object or as a plain user id.
+      const creatorId =
+        typeof media.creator === 'object' ? media.creator.id : media.creator
+      return user.id === creatorId
+    },
     getBadgeStatus(mode, data) {
       if (mode === 'All') {
         return 'neutral'

@@ -170,16 +170,27 @@ export default {
   async asyncData({ $axios, store, params }) {
     const languageName = params.lang
 
-    const languages = await $axios.$get(getApiUrl(`language/`))
-    const language = languages.find(
-      lang => encodeFPCC(lang.name) === languageName
-    )
-    const languageId = language.id
+    const findLanguage = languages =>
+      (languages || []).find(lang => encodeFPCC(lang.name) === languageName)
 
-    const result = await Promise.all([
-      $axios.$get(getApiUrl(`language/${languageId}`)),
-      $axios.$get(getApiUrl(`stats?language=${languageId}`))
-    ])
+    const loadLanguage = languageId =>
+      Promise.all([
+        $axios.$get(getApiUrl(`language/${languageId}`)),
+        $axios.$get(getApiUrl(`stats?language=${languageId}`))
+      ])
+
+    // Reuse the language list loaded by the home page; it may be stale, so fall
+    // back to a fresh list on a miss or if the cached id no longer resolves.
+    let result = null
+    const cachedLanguage = findLanguage(store.state.languages.languageSet)
+    if (cachedLanguage) {
+      result = await loadLanguage(cachedLanguage.id).catch(() => null)
+    }
+
+    if (!result) {
+      const language = findLanguage(await $axios.$get(getApiUrl(`language/`)))
+      result = await loadLanguage(language.id)
+    }
 
     return {
       language: result[0],
