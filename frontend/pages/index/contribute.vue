@@ -2069,7 +2069,7 @@ export default {
         return
       }
 
-      if ((this.queryType === 'Public Art' || 'Artist') && !this.fileSrc) {
+      if ((this.queryType === 'Public Art' || this.queryType === 'Artist') && !this.fileSrc) {
         this.errors.push('Thumbnail: Please upload a thumbnail.')
         this.isLoading = false
         return
