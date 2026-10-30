@@ -867,6 +867,66 @@ class PlaceNameAPITests(BaseTestCase):
         self.assertEqual(any(d.get("id") == test_placename06.id for d in data), False)
         self.assertEqual(any(d.get("id") == test_placename07.id for d in data), False)
 
+    def test_art_geo_filtered_by_language(self):
+        """
+        Ensure art-geo?lang= only returns arts inside the language area or linked to the language.
+        """
+        point = """{"type": "Point", "coordinates": [%s, %s]}"""
+        self.language1.geom = GEOSGeometry(
+            """{
+            "type": "Polygon",
+            "coordinates": [[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]]
+        }"""
+        )
+        self.language1.save()
+
+        inside_area = PlaceName.objects.create(  # Included: inside polygon
+            name="inside area", kind="public_art", geom=GEOSGeometry(point % (5, 5))
+        )
+        linked_language = PlaceName.objects.create(  # Included: language FK
+            name="linked language",
+            kind="artist",
+            language=self.language1,
+            geom=GEOSGeometry(point % (50, 50)),
+        )
+        other_language = PlaceName.objects.create(  # Excluded
+            name="other language",
+            kind="organization",
+            language=self.language2,
+            geom=GEOSGeometry(point % (50, 50)),
+        )
+
+        def get_ids(language_id):
+            response = self.client.get(
+                "/api/art-geo/?lang={}".format(language_id), format="json"
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            return {d.get("id") for d in response.json().get("features")}
+
+        self.assertEqual(
+            get_ids(self.language1.id), {inside_area.id, linked_language.id}
+        )
+
+        # A language without geometry only matches by language FK
+        self.assertEqual(get_ids(self.language2.id), {other_language.id})
+
+
+        # When a user is authenticated, the API still returns the same set of placenames
+        # that are either inside the language area or linked to the language. This ensures that the
+        # filter logic is consistent regardless of authentication status.
+        self.client.force_authenticate(user=self.regular_user)
+        self.assertEqual(
+            get_ids(self.language1.id), {inside_area.id, linked_language.id}
+        )
+        self.client.force_authenticate(user=None)
+
+        response = self.client.get("/api/art-geo/?lang=999999", format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Without ?lang= everything is still returned
+        response = self.client.get("/api/art-geo/", format="json")
+        self.assertEqual(len(response.json().get("features")), 3)
+
     def test_placename_geo(self):
         """
         Ensure we include placenames in the Geo API regardless if the geom is bad or the kind is blank.
