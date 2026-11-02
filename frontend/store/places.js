@@ -56,9 +56,12 @@ export const mutations = {
 
 export const actions = {
   async getPlaceMedias({ commit }, data) {
-    const result = await this.$axios.$get(
-      getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
-    )
+    // Callers that already fetched the placename can pass it as `place`.
+    const result =
+      data.place ||
+      (await this.$axios.$get(
+        getApiUrl(`placename/${data.id}?timestamp=${new Date().getTime()}/`)
+      ))
     // console.log('Dispatch', result.medias)
     commit('setMedias', result.medias)
     return result
@@ -84,33 +87,41 @@ export const actions = {
       commit('setAudioFile', null)
     }
 
+    const requests = []
+
     if (result.community) {
-      await dispatch(
-        'places/getPlaceCommunity',
-        {
-          id: result.community.id
-        },
-        {
-          root: true
-        }
+      requests.push(
+        dispatch(
+          'places/getPlaceCommunity',
+          {
+            id: result.community.id
+          },
+          {
+            root: true
+          }
+        )
       )
     } else {
       commit('setPlaceCommunity', null)
     }
 
     if (result.language) {
-      await dispatch(
-        'places/getPlaceLanguage',
-        {
-          id: result.language
-        },
-        {
-          root: true
-        }
+      requests.push(
+        dispatch(
+          'places/getPlaceLanguage',
+          {
+            id: result.language
+          },
+          {
+            root: true
+          }
+        )
       )
     } else {
       commit('setPlaceLanguage', null)
     }
+
+    await Promise.all(requests)
     return result
   },
 
