@@ -97,9 +97,16 @@ export default {
       // to be used for searching its child taxonomies
 
       const poiTaxonomy = this.$store.state.arts.taxonomySearchSet.find(
-        taxonomy => taxonomy.name.toLowerCase() === 'point of interest'
+        taxonomy =>
+          taxonomy &&
+          taxonomy.name &&
+          taxonomy.name.toLowerCase() === 'point of interest'
       )
+      if (!poiTaxonomy) {
+        return []
+      }
       return this.$store.state.arts.taxonomySearchSet.filter(taxonomy => {
+        if (!taxonomy || !taxonomy.name) return false
         // Detect taxonomy name with parenthesis, and remove it
         const regExp = /\(([^)]+)\)/
         const matches = regExp.exec(taxonomy.name)
