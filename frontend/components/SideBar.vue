@@ -24,6 +24,7 @@
               </b-nav-item>
             </b-nav>
           </div>
+          <NavigatingIndicator />
           <div class="sidebar-content">
             <slot name="content"></slot>
             <slot name="badges"></slot>
@@ -76,6 +77,7 @@
           <template v-slot:badges>
             <slot name="badges"></slot>
           </template>
+          <NavigatingIndicator />
           <slot name="cards"></slot>
         </SideBarFold>
       </div>
@@ -92,13 +94,15 @@ import Logo from '@/components/Logo.vue'
 import SideBarFold from '@/components/SideBarFold.vue'
 import Contact from '@/components/Contact.vue'
 import ScrollDownIndicator from '@/components/ScrollDownIndicator.vue'
+import NavigatingIndicator from '@/components/NavigatingIndicator.vue'
 
 export default {
   components: {
     Logo,
     SideBarFold,
     Contact,
-    ScrollDownIndicator
+    ScrollDownIndicator,
+    NavigatingIndicator
   },
   filters: {
     lowerCase(value) {
